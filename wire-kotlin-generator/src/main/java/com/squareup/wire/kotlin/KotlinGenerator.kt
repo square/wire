@@ -585,8 +585,16 @@ class KotlinGenerator private constructor(
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
-            .returns(parentClassName.asNullable())
-            .addStatement("return values().find { it.value == value }")
+            .returns(parentClassName)
+            .apply {
+              addCode("return when (value) {\n%>")
+              message.constants().forEach { constant ->
+                addCode("%L -> %L\n", constant.tag(), nameAllocator[constant])
+              }
+              // TODO(egorand): Use %P when KotlinPoet 1.0.0-RC3 (or 1.0.0) lands
+              addCode("else -> throw IllegalArgumentException(%S + value)", "Unexpected value: ")
+              addCode("\n%<}\n") // close the block
+            }
             .build())
         .build()
 
