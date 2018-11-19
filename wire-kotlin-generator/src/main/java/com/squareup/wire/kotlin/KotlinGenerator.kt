@@ -643,8 +643,8 @@ class KotlinGenerator private constructor(
   private fun isEnum(field: Field): Boolean = schema.getType(field.type()) is EnumType
 
   private fun Field.getDeclaration(allocatedName: String) = when {
-    isRepeated -> CodeBlock.of("var $allocatedName = mutableListOf<%T>()", typeName(type()))
-    type().isMap -> CodeBlock.of("var $allocatedName = mutableMapOf<%T, %T>()",
+    isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", typeName(type()))
+    type().isMap -> CodeBlock.of("val $allocatedName = mutableMapOf<%T, %T>()",
         typeName(type().keyType()), typeName(type().valueType()))
     else -> CodeBlock.of("var $allocatedName: %T = %L", declarationClass(), getDefaultValue(this))
   }

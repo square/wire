@@ -28,9 +28,12 @@ data class Thing(val name: String? = null, val unknownFields: ByteString = ByteS
 
     companion object {
         @JvmField
-        val ADAPTER: ProtoAdapter<Thing> =
-                object : ProtoAdapter<Thing>(FieldEncoding.LENGTH_DELIMITED, Thing::class.java) {
-            override fun encodedSize(value: Thing): Int = ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
+        val ADAPTER: ProtoAdapter<Thing> = object : ProtoAdapter<Thing>(
+            FieldEncoding.LENGTH_DELIMITED, 
+            Thing::class.java
+        ) {
+            override fun encodedSize(value: Thing): Int = 
+                ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
                 value.unknownFields.size
 
             override fun encode(writer: ProtoWriter, value: Thing) {
