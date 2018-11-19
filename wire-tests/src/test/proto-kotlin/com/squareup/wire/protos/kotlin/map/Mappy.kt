@@ -29,12 +29,15 @@ data class Mappy(val things: Map<String, Thing>, val unknownFields: ByteString =
 
     companion object {
         @JvmField
-        val ADAPTER: ProtoAdapter<Mappy> =
-                object : ProtoAdapter<Mappy>(FieldEncoding.LENGTH_DELIMITED, Mappy::class.java) {
+        val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(
+            FieldEncoding.LENGTH_DELIMITED, 
+            Mappy::class.java
+        ) {
             private val thingsAdapter: ProtoAdapter<Map<String, Thing>> =
                     ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER)
 
-            override fun encodedSize(value: Mappy): Int = thingsAdapter.encodedSizeWithTag(1, value.things) +
+            override fun encodedSize(value: Mappy): Int = 
+                thingsAdapter.encodedSizeWithTag(1, value.things) +
                 value.unknownFields.size
 
             override fun encode(writer: ProtoWriter, value: Mappy) {
@@ -43,7 +46,7 @@ data class Mappy(val things: Map<String, Thing>, val unknownFields: ByteString =
             }
 
             override fun decode(reader: ProtoReader): Mappy {
-                var things = mutableMapOf<String, Thing>()
+                val things = mutableMapOf<String, Thing>()
                 val unknownFields = reader.forEachTag { tag ->
                     when (tag) {
                         1 -> things.putAll(thingsAdapter.decode(reader))

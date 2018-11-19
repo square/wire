@@ -107,7 +107,7 @@ data class Person(
                 var name: String? = null
                 var id: Int? = null
                 var email: String? = null
-                var phone = mutableListOf<PhoneNumber>()
+                val phone = mutableListOf<PhoneNumber>()
                 val unknownFields = reader.forEachTag { tag ->
                     when (tag) {
                         1 -> name = ProtoAdapter.STRING.decode(reader)
