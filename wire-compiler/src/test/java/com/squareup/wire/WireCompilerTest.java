@@ -537,7 +537,7 @@ public class WireCompilerTest {
   private enum TargetLanguage {
     JAVA {
       @Override String protoPathArg() {
-        return "--proto_path=../wire-runtime/src/test/proto";
+        return "--proto_path=../wire-tests/src/test/proto";
       }
       @Override String outArg(String testDirPath) {
         return "--java_out=" + testDirPath;
@@ -548,7 +548,7 @@ public class WireCompilerTest {
     },
     KOTLIN {
       @Override String protoPathArg() {
-        return "--proto_path=../wire-runtime/src/test/proto/kotlin";
+        return "--proto_path=../wire-tests/src/test/proto/kotlin";
       }
       @Override String outArg(String testDirPath) {
         return "--kotlin_out=" + testDirPath;
@@ -564,11 +564,11 @@ public class WireCompilerTest {
 
     File expectedFile(String path, String suffix) {
       String protoFolder = "/proto-" + protoFolderSuffix() + "/";
-      File expectedFile = new File("../wire-runtime/src/test" + protoFolder + path + suffix);
+      File expectedFile = new File("../wire-tests/src/test" + protoFolder + path + suffix);
       if (expectedFile.exists()) {
         System.out.println("Comparing against expected output " + expectedFile.getName());
       } else {
-        expectedFile = new File("../wire-runtime/src/test" + protoFolder + path);
+        expectedFile = new File("../wire-tests/src/test" + protoFolder + path);
       }
       return expectedFile;
     }

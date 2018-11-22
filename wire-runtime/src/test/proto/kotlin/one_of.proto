@@ -19,7 +19,7 @@ option java_package = "com.squareup.wire.protos.kotlin";
 
 message OneOfMessage {
 
-  // Must have a foo or a bar.
+  // Must have a foo or a bar or a baz.
   oneof choice {
     // What foo.
     int32 foo = 1;

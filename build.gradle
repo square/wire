@@ -40,7 +40,9 @@ buildscript {
               'jdk6': "org.jetbrains.kotlin:kotlin-stdlib",
               'jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
           ],
-          'test': "org.jetbrains.kotlin:kotlin-test",
+          'test': [
+              'junit': "org.jetbrains.kotlin:kotlin-test-junit",
+          ],
       ],
       'moshi': "com.squareup.moshi:moshi:${versions.moshi}",
       'junit': "junit:junit:${versions.junit}",
