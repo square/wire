@@ -5,7 +5,7 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class KotlinGeneratorTest {
-  @Test fun `basic`() {
+  @Test fun basic() {
     val repoBuilder = RepoBuilder()
       .add("message.proto", """
         |message Person {
@@ -33,7 +33,7 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("WORK(1),"))
   }
 
-  @Test fun `default values are generated`() {
+  @Test fun defaultValues() {
     val repoBuilder = RepoBuilder()
       .add("message.proto", """
         |message Message {
@@ -49,7 +49,7 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("val d: Long = 0x21"))
   }
 
-  @Test fun `name allocator is used`() {
+  @Test fun nameAllocatorIsUsed() {
     val repoBuilder = RepoBuilder()
       .add("message.proto", """
         |message Message {

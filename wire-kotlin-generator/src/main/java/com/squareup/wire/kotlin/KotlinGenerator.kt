@@ -228,7 +228,7 @@ class KotlinGenerator private constructor(
     val returnBody = CodeBlock.builder()
         .add("return %T(%>\n", className)
 
-    type.fields().forEach { field ->
+    type.withOneOfs().forEach { field ->
       val fieldName = nameAllocator.get(field)
 
       val throwExceptionBlock = if (!field.isRepeated
@@ -311,7 +311,7 @@ class KotlinGenerator private constructor(
     val fields = message.withOneOfs()
 
     fields.forEach { field ->
-      var fieldClass: TypeName = typeName(field.type())
+      var fieldClass: TypeName
       val fieldName = nameAllocator.get(field)
       val fieldType = field.type()
       var defaultValue = CodeBlock.of("null")
@@ -327,6 +327,7 @@ class KotlinGenerator private constructor(
           defaultValue = CodeBlock.of("emptyMap()")
         }
         !field.isRequired -> fieldClass = typeName(fieldType).asNullable()
+        else -> fieldClass = typeName(fieldType)
       }
 
       if (field.default != null) {
@@ -335,7 +336,7 @@ class KotlinGenerator private constructor(
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      if (!field.isRequired) {
+      if (!field.isRequired && !fieldType.isMap) {
         parameterSpec.defaultValue(defaultValue)
       }
 

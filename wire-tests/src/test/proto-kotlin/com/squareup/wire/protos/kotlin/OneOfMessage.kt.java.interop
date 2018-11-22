@@ -8,18 +8,17 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
+import com.squareup.wire.WireField
 import com.squareup.wire.internal.Internal
-import kotlin.Deprecated
-import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class OneOfMessage(
-    val foo: Int? = null,
-    val bar: String? = null,
-    val baz: String? = null,
+    @WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.INT32") val foo: Int? = null,
+    @WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter.STRING") val bar: String? = null,
+    @WireField(tag = 4, adapter = "com.squareup.wire.ProtoAdapter.STRING") val baz: String? = null,
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
     init {
@@ -28,21 +27,59 @@ data class OneOfMessage(
         }
     }
 
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
-    override fun newBuilder(): Builder = Builder(this.copy())
+    override fun newBuilder(): Builder {
+        val builder = Builder()
+        builder.foo = foo
+        builder.bar = bar
+        builder.baz = baz
+        builder.addUnknownFields(unknownFields())
+        return builder
+    }
 
-    class Builder(private val message: OneOfMessage) : Message.Builder<OneOfMessage, Builder>() {
-        override fun build(): OneOfMessage = message
+    class Builder : Message.Builder<OneOfMessage, Builder>() {
+        internal var foo: Int? = null
+
+        internal var bar: String? = null
+
+        internal var baz: String? = null
+
+        /**
+         * What foo. */
+        fun foo(foo: Int): Builder {
+            this.foo = foo
+            return this
+        }
+
+        /**
+         * Such bar. */
+        fun bar(bar: String): Builder {
+            this.bar = bar
+            return this
+        }
+
+        /**
+         * Nice baz. */
+        fun baz(baz: String): Builder {
+            this.baz = baz
+            return this
+        }
+
+        override fun build(): OneOfMessage = OneOfMessage(
+            foo = foo,
+            bar = bar,
+            baz = baz,
+            unknownFields = buildUnknownFields()
+        )
     }
 
     companion object {
         @JvmField
-        val ADAPTER: ProtoAdapter<OneOfMessage> =
-                object : ProtoAdapter<OneOfMessage>(FieldEncoding.LENGTH_DELIMITED, OneOfMessage::class.java) {
-            override fun encodedSize(value: OneOfMessage): Int = ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
+        val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
+            FieldEncoding.LENGTH_DELIMITED, 
+            OneOfMessage::class.java
+        ) {
+            override fun encodedSize(value: OneOfMessage): Int = 
+                ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
                 ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) +
                 ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) +
                 value.unknownFields.size

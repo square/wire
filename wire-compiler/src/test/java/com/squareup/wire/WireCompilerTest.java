@@ -436,12 +436,12 @@ public class WireCompilerTest {
     String[] sources = {
         "one_of.proto"
     };
-    invokeCompiler(TargetLanguage.KOTLIN, sources);
+    invokeCompiler(TargetLanguage.KOTLIN, sources, "--java_interop");
 
     String[] outputs = {
         "com/squareup/wire/protos/kotlin/OneOfMessage.kt"
     };
-    assertOutputs(TargetLanguage.KOTLIN, outputs);
+    assertOutputs(TargetLanguage.KOTLIN, outputs, ".java.interop");
   }
 
   private void invokeCompiler(String[] sources, String... extraArgs) throws Exception {
