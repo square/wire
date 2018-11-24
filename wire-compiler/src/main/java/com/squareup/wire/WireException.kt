@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import com.squareup.javapoet.JavaFile;
-import com.squareup.kotlinpoet.FileSpec;
-import java.nio.file.Path;
+internal class WireException : Exception {
+  constructor(message: String) : super(message)
 
-interface WireLogger {
-  void setQuiet(boolean quiet);
-  void artifact(Path outputPath, JavaFile javaFile);
-  void artifact(Path outputPath, FileSpec kotlinFile);
-  void info(String message);
+  constructor(message: String, throwable: Throwable) : super(message, throwable)
 }

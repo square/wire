@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-final class WireException extends Exception {
-  WireException(String message) {
-    super(message);
-  }
+import com.squareup.javapoet.JavaFile
+import com.squareup.kotlinpoet.FileSpec
+import java.nio.file.Path
 
-  WireException(String message, Throwable throwable) {
-    super(message, throwable);
-  }
+interface WireLogger {
+  fun setQuiet(quiet: Boolean)
+  fun artifact(outputPath: Path, javaFile: JavaFile)
+  fun artifact(outputPath: Path, kotlinFile: FileSpec)
+  fun info(message: String)
 }
