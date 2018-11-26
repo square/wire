@@ -98,7 +98,7 @@ class KotlinGenerator private constructor(
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
             }
-            message.fields().forEach { field ->
+            message.fieldsWithOneOfs().forEach { field ->
               newName(field.name(), field)
             }
           }
@@ -130,6 +130,14 @@ class KotlinGenerator private constructor(
       addAndroidCreator(type, companionObjBuilder)
     }
 
+    if (type.oneOfs().isNotEmpty()) {
+      if (javaInterOp) {
+        classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
+      } else {
+        // TODO emit oneofs using sealed classes.
+      }
+    }
+
     classBuilder.addType(companionObjBuilder.build())
 
     addMessageConstructor(type, classBuilder)
@@ -137,6 +145,22 @@ class KotlinGenerator private constructor(
     type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
     return classBuilder.build()
+  }
+
+  private fun generateInitializerOneOfBlock(type: MessageType): CodeBlock {
+    val oneOfs = type.oneOfs()
+    val result = CodeBlock.Builder()
+    val nameAllocator = nameAllocator(type)
+    oneOfs
+        .filter { oneOf -> oneOf.fields().size >= 2 }
+        .forEach { oneOf ->
+          val fieldNames = oneOf.fields().map { nameAllocator.get(it) }.joinToString(", ")
+          result.beginControlFlow("require (%T.countNonNull(%L) > 1)",
+              Internal::class, fieldNames)
+          result.addStatement("\"At most one of $fieldNames may be non-null\"")
+          result.endControlFlow()
+        }
+    return result.build()
   }
 
   private fun generateNewBuilderMethod(type: MessageType, builderClassName: ClassName): FunSpec {
@@ -158,7 +182,7 @@ class KotlinGenerator private constructor(
 
     funBuilder.addStatement("val builder = Builder()")
 
-    type.fields().forEach { field ->
+    type.fieldsWithOneOfs().forEach { field ->
       val fieldName = nameAllocator.get(field)
       funBuilder.addStatement("builder.%1L = %1L", fieldName)
     }
@@ -202,12 +226,11 @@ class KotlinGenerator private constructor(
     val returnBody = CodeBlock.builder()
         .add("return %T(%>\n", className)
 
-    type.fields().forEach { field ->
+    type.fieldsWithOneOfs().forEach { field ->
       val fieldName = nameAllocator.get(field)
 
       val throwExceptionBlock = if (!field.isRepeated
-          && !field.isOptional
-          && field.default == null) {
+          && field.isRequired) {
         CodeBlock.of(" ?: throw %1T.%2L(%3L, %3S)",
             internalClass,
             "missingRequiredFields",
@@ -250,7 +273,7 @@ class KotlinGenerator private constructor(
         .addParameter(fieldName, field.getClass())
         .returns(builderType)
     if (field.documentation().isNotEmpty()) {
-      funBuilder.addKdoc(field.documentation())
+      funBuilder.addKdoc(field.documentation() + "\n")
     }
     if (field.isDeprecated) {
       funBuilder.addAnnotation(AnnotationSpec.builder(Deprecated::class)
@@ -283,14 +306,15 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val byteClass = typeName(ProtoType.BYTES)
 
-    message.fields().forEach { field ->
+    val fields = message.fieldsWithOneOfs()
+
+    fields.forEach { field ->
       var fieldClass: TypeName
       val fieldName = nameAllocator.get(field)
       val fieldType = field.type()
       var defaultValue = CodeBlock.of("null")
 
       when {
-        field.isOptional -> fieldClass = typeName(fieldType).asNullable()
         field.isRepeated -> {
           fieldClass = List::class.asClassName().parameterizedBy(typeName(fieldType))
           defaultValue = CodeBlock.of("emptyList()")
@@ -300,6 +324,7 @@ class KotlinGenerator private constructor(
               .parameterizedBy(typeName(fieldType.keyType()), typeName(fieldType.valueType()))
           defaultValue = CodeBlock.of("emptyMap()")
         }
+        !field.isRequired -> fieldClass = typeName(fieldType).asNullable()
         else -> fieldClass = typeName(fieldType)
       }
 
@@ -309,7 +334,7 @@ class KotlinGenerator private constructor(
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      if (field.isOptional || field.isRepeated) {
+      if (!field.isRequired && !fieldType.isMap) {
         parameterSpec.defaultValue(defaultValue)
       }
 
@@ -398,7 +423,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val body = buildCodeBlock {
       add("return \n%>")
-      message.fields().forEach { field ->
+      message.fieldsWithOneOfs().forEach { field ->
         val adapterName = getAdapterName(field)
         val fieldName = nameAllocator.get(field)
         add("%L.%LencodedSizeWithTag(%L, value.%L) +\n",
@@ -422,7 +447,7 @@ class KotlinGenerator private constructor(
     val body = CodeBlock.builder()
     val nameAllocator = nameAllocator(message)
 
-    message.fields().forEach { field ->
+    message.fieldsWithOneOfs().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator.get(field)
       body.addStatement("%L.%LencodeWithTag(writer, %L, value.%L)",
@@ -458,7 +483,7 @@ class KotlinGenerator private constructor(
 
     decodeBlock.addStatement("%>when (tag) {%>")
 
-    message.fields().forEach { field ->
+    message.fieldsWithOneOfs().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator.get(field)
 
@@ -471,7 +496,7 @@ class KotlinGenerator private constructor(
         field.type().isMap -> decodeBodyTemplate = "%L -> %L.putAll(%L.decode(reader))"
         else -> {
           decodeBodyTemplate = "%L -> %L = %L.decode(reader)"
-          if (!field.isOptional && field.default == null) {
+          if (field.isRequired) {
             throwExceptionBlock = CodeBlock.of(" ?: throw %1T.missingRequiredFields(%2L, %2S)",
                 internalClass,
                 field.name())
@@ -660,6 +685,12 @@ class KotlinGenerator private constructor(
     isRepeated -> List::class.asClassName().parameterizedBy(baseClass)
     isOptional && default == null -> baseClass.asNullable()
     else -> baseClass.asNonNull()
+  }
+
+  private fun MessageType.fieldsWithOneOfs(): List<Field> {
+    return if (javaInterOp)
+      fieldsAndOneOfFields()
+    else fields()
   }
 
   companion object {

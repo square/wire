@@ -186,7 +186,8 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
           '--kotlin_out=wire-tests/src/test/proto-kotlin.java.interop',
           '--java_interop',
           'person.proto',
-          'deprecated.proto'
+          'deprecated.proto',
+          'one_of.proto'
   ]
 }
 task copyKotlinJavaInteropFiles(type: Copy) {
