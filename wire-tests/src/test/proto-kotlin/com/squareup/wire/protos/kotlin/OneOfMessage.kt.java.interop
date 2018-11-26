@@ -22,8 +22,8 @@ data class OneOfMessage(
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
     init {
-        if (Internal.countNonNull(foo, bar, baz) > 1) {
-            throw IllegalArgumentException("at most one of foo, bar, baz may be non-null")
+        require (Internal.countNonNull(foo, bar, baz) > 1) {
+            "At most one of foo, bar, baz may be non-null"
         }
     }
 
@@ -44,21 +44,24 @@ data class OneOfMessage(
         internal var baz: String? = null
 
         /**
-         * What foo. */
+         * What foo.
+         */
         fun foo(foo: Int): Builder {
             this.foo = foo
             return this
         }
 
         /**
-         * Such bar. */
+         * Such bar.
+         */
         fun bar(bar: String): Builder {
             this.bar = bar
             return this
         }
 
         /**
-         * Nice baz. */
+         * Nice baz.
+         */
         fun baz(baz: String): Builder {
             this.baz = baz
             return this

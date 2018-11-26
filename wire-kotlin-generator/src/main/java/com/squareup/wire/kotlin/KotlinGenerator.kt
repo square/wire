@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.kotlin
 
-import com.google.common.collect.ImmutableList
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
@@ -99,7 +98,7 @@ class KotlinGenerator private constructor(
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
             }
-            message.withOneOfs().forEach { field ->
+            message.fieldsWithOneOfs().forEach { field ->
               newName(field.name(), field)
             }
           }
@@ -131,7 +130,7 @@ class KotlinGenerator private constructor(
       addAndroidCreator(type, companionObjBuilder)
     }
 
-    if (type.oneOfs().size != 0) {
+    if (type.oneOfs().isNotEmpty()) {
       if (javaInterOp) {
         classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
       } else {
@@ -156,10 +155,9 @@ class KotlinGenerator private constructor(
         .filter { oneOf -> oneOf.fields().size >= 2 }
         .forEach { oneOf ->
           val fieldNames = oneOf.fields().map { nameAllocator.get(it) }.joinToString(", ")
-          result.beginControlFlow("if (%T.countNonNull(%L) > 1)",
+          result.beginControlFlow("require (%T.countNonNull(%L) > 1)",
               Internal::class, fieldNames)
-          result.addStatement("throw IllegalArgumentException(" +
-              "\"at most one of " + "$fieldNames may be non-null\")")
+          result.addStatement("\"At most one of $fieldNames may be non-null\"")
           result.endControlFlow()
         }
     return result.build()
@@ -184,7 +182,7 @@ class KotlinGenerator private constructor(
 
     funBuilder.addStatement("val builder = Builder()")
 
-    type.withOneOfs().forEach { field ->
+    type.fieldsWithOneOfs().forEach { field ->
       val fieldName = nameAllocator.get(field)
       funBuilder.addStatement("builder.%1L = %1L", fieldName)
     }
@@ -228,7 +226,7 @@ class KotlinGenerator private constructor(
     val returnBody = CodeBlock.builder()
         .add("return %T(%>\n", className)
 
-    type.withOneOfs().forEach { field ->
+    type.fieldsWithOneOfs().forEach { field ->
       val fieldName = nameAllocator.get(field)
 
       val throwExceptionBlock = if (!field.isRepeated
@@ -275,7 +273,7 @@ class KotlinGenerator private constructor(
         .addParameter(fieldName, field.getClass())
         .returns(builderType)
     if (field.documentation().isNotEmpty()) {
-      funBuilder.addKdoc(field.documentation())
+      funBuilder.addKdoc(field.documentation() + "\n")
     }
     if (field.isDeprecated) {
       funBuilder.addAnnotation(AnnotationSpec.builder(Deprecated::class)
@@ -308,7 +306,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val byteClass = typeName(ProtoType.BYTES)
 
-    val fields = message.withOneOfs()
+    val fields = message.fieldsWithOneOfs()
 
     fields.forEach { field ->
       var fieldClass: TypeName
@@ -425,7 +423,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val body = buildCodeBlock {
       add("return \n%>")
-      message.withOneOfs().forEach { field ->
+      message.fieldsWithOneOfs().forEach { field ->
         val adapterName = getAdapterName(field)
         val fieldName = nameAllocator.get(field)
         add("%L.%LencodedSizeWithTag(%L, value.%L) +\n",
@@ -449,7 +447,7 @@ class KotlinGenerator private constructor(
     val body = CodeBlock.builder()
     val nameAllocator = nameAllocator(message)
 
-    message.withOneOfs().forEach { field ->
+    message.fieldsWithOneOfs().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator.get(field)
       body.addStatement("%L.%LencodeWithTag(writer, %L, value.%L)",
@@ -485,7 +483,7 @@ class KotlinGenerator private constructor(
 
     decodeBlock.addStatement("%>when (tag) {%>")
 
-    message.withOneOfs().forEach { field ->
+    message.fieldsWithOneOfs().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator.get(field)
 
@@ -689,7 +687,7 @@ class KotlinGenerator private constructor(
     else -> baseClass.asNonNull()
   }
 
-  private fun MessageType.withOneOfs(): ImmutableList<Field> {
+  private fun MessageType.fieldsWithOneOfs(): List<Field> {
     return if (javaInterOp)
       fieldsAndOneOfFields()
     else fields()

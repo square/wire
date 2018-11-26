@@ -45,28 +45,32 @@ data class Person(
         internal var phone: List<PhoneNumber> = Internal.newMutableList()
 
         /**
-         * The customer's full name. */
+         * The customer's full name.
+         */
         fun name(name: String): Builder {
             this.name = name
             return this
         }
 
         /**
-         * The customer's ID number. */
+         * The customer's ID number.
+         */
         fun id(id: Int): Builder {
             this.id = id
             return this
         }
 
         /**
-         * Email address for the customer. */
+         * Email address for the customer.
+         */
         fun email(email: String?): Builder {
             this.email = email
             return this
         }
 
         /**
-         * A list of the customer's phone numbers. */
+         * A list of the customer's phone numbers.
+         */
         fun phone(phone: List<PhoneNumber>): Builder {
             Internal.checkElementsNotNull(phone)
             this.phone = phone
@@ -173,14 +177,16 @@ data class Person(
             internal var type: PhoneType = PhoneType.HOME
 
             /**
-             * The customer's phone number. */
+             * The customer's phone number.
+             */
             fun number(number: String): Builder {
                 this.number = number
                 return this
             }
 
             /**
-             * The type of phone stored here. */
+             * The type of phone stored here.
+             */
             fun type(type: PhoneType): Builder {
                 this.type = type
                 return this
