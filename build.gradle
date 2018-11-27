@@ -12,7 +12,7 @@ buildscript {
       'okio': '2.1.0',
       'moshi': '1.6.0',
       'junit': '4.12',
-      'assertj': '1.7.0',
+      'assertj': '3.11.0',
       'jimfs': '1.0',
       'animalSniffer': '1.16',
       'animalSnifferGradle': '1.4.3',
