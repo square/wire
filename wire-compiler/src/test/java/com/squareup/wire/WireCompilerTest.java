@@ -666,6 +666,18 @@ public class WireCompilerTest {
         logger.getLog());
   }
 
+  @Test public void testCircularReference() throws Exception {
+    String[] sources = {
+            "circularreference/Parent.proto",
+            "circularreference/Child.proto"
+    };
+    String[] outputs = {
+            "com/squareup/circularreference/protos/Parent.java",
+            "com/squareup/circularreference/protos/Child.java"
+    };
+    testProto(sources, outputs);
+  }
+
   @Test public void sanitizeJavadocStripsTrailingWhitespace() {
     String input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  ";
     String expected = "The quick brown fox\nJumps over\n\nThe lazy dog";

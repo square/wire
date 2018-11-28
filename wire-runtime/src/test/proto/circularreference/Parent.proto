@@ -1,0 +1,9 @@
+import "circularreference/Child.proto";
+package squareup.circularreference;
+
+option java_package = "com.squareup.circularreference.protos";
+
+message Parent {
+  optional Child child = 1;
+}
+

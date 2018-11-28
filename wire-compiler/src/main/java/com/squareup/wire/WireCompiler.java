@@ -619,8 +619,8 @@ public class WireCompiler {
       if (!loadedDependencies.contains(dependency)) {
         String dep = repoPath + File.separator + dependency;
         ProtoFile dependencyFile = io.parse(dep);
-        loadSymbolsHelper(dependencyFile, loadedDependencies, pass);
         loadedDependencies.add(dependency);
+        loadSymbolsHelper(dependencyFile, loadedDependencies, pass);
       }
     }
 
