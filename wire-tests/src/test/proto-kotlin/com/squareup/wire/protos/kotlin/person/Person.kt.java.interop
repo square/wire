@@ -21,7 +21,8 @@ import okio.ByteString
 data class Person(
     @WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.STRING") val name: String,
     @WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter.INT32") val id: Int,
-    @WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter.STRING") val email: String? = null,
+    @WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter.STRING") val email: String? =
+            null,
     @WireField(tag = 4, adapter = "PhoneNumber.ADAPTER") val phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
@@ -152,7 +153,7 @@ data class Person(
                     0 -> MOBILE
                     1 -> HOME
                     2 -> WORK
-                    else -> throw IllegalArgumentException("Unexpected value: " + value)
+                    else -> throw IllegalArgumentException("Unexpected value: $value")
                 }
             }
         }
