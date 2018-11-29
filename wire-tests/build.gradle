@@ -18,6 +18,7 @@ jar {
 dependencies {
   testImplementation project(':wire-runtime')
   testImplementation project(':wire-test-utils')
+  testImplementation deps.kotlin.stdlib.jdk6
   testImplementation deps.junit
   testImplementation deps.assertj
   testImplementation deps.jimfs

@@ -15,7 +15,7 @@ buildscript {
       'assertj': '3.11.0',
       'jimfs': '1.0',
       'animalSniffer': '1.16',
-      'animalSnifferGradle': '1.4.3',
+      'animalSnifferGradle': '1.4.6',
       'maven': '3.5.0',
       'mavenAnnotations': '3.5',
       'mavenPluginBuilder': '1.2.1',
