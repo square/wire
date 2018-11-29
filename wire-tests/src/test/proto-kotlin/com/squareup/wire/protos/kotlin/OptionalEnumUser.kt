@@ -16,14 +16,17 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class OptionalEnumUser(val optional_enum: OptionalEnum? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
+data class OptionalEnumUser(val optional_enum: OptionalEnum? = null, val unknownFields: ByteString =
+        ByteString.EMPTY) : Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER,
+        unknownFields) {
     @Deprecated(
             message = "Shouldn't be used in Kotlin",
             level = DeprecationLevel.HIDDEN
     )
     override fun newBuilder(): Builder = Builder(this.copy())
 
-    class Builder(private val message: OptionalEnumUser) : Message.Builder<OptionalEnumUser, Builder>() {
+    class Builder(private val message: OptionalEnumUser) : Message.Builder<OptionalEnumUser,
+            Builder>() {
         override fun build(): OptionalEnumUser = message
     }
 
@@ -73,7 +76,7 @@ data class OptionalEnumUser(val optional_enum: OptionalEnum? = null, val unknown
                 override fun fromValue(value: Int): OptionalEnum = when (value) {
                     1 -> FOO
                     2 -> BAR
-                    else -> throw IllegalArgumentException("Unexpected value: " + value)
+                    else -> throw IllegalArgumentException("Unexpected value: $value")
                 }
             }
         }

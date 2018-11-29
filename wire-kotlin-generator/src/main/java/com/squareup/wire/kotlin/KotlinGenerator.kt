@@ -111,8 +111,8 @@ class KotlinGenerator private constructor(
     val className = typeName(type.type())
     val builderClassName = className.nestedClass("Builder")
     val nameAllocator = nameAllocator(type)
-    val adapterName = nameAllocator.get("ADAPTER")
-    val unknownFields = nameAllocator.get("unknownFields")
+    val adapterName = nameAllocator["ADAPTER"]
+    val unknownFields = nameAllocator["unknownFields"]
     val superclass = if (emitAndroid) ANDROID_MESSAGE else MESSAGE
     val companionObjBuilder = TypeSpec.companionObjectBuilder()
 
@@ -154,7 +154,7 @@ class KotlinGenerator private constructor(
     oneOfs
         .filter { oneOf -> oneOf.fields().size >= 2 }
         .forEach { oneOf ->
-          val fieldNames = oneOf.fields().map { nameAllocator.get(it) }.joinToString(", ")
+          val fieldNames = oneOf.fields().joinToString(", ", transform = nameAllocator::get)
           result.beginControlFlow("require (%T.countNonNull(%L) > 1)",
               Internal::class, fieldNames)
           result.addStatement("\"At most one of $fieldNames may be non-null\"")
@@ -183,7 +183,7 @@ class KotlinGenerator private constructor(
     funBuilder.addStatement("val builder = Builder()")
 
     type.fieldsWithOneOfs().forEach { field ->
-      val fieldName = nameAllocator.get(field)
+      val fieldName = nameAllocator[field]
       funBuilder.addStatement("builder.%1L = %1L", fieldName)
     }
 
@@ -224,10 +224,10 @@ class KotlinGenerator private constructor(
     val internalClass = ClassName("com.squareup.wire.internal", "Internal")
 
     val returnBody = CodeBlock.builder()
-        .add("return %T(%>\n", className)
+        .add("return %T(⇥\n", className)
 
     type.fieldsWithOneOfs().forEach { field ->
-      val fieldName = nameAllocator.get(field)
+      val fieldName = nameAllocator[field]
 
       val throwExceptionBlock = if (!field.isRepeated
           && field.isRequired) {
@@ -255,7 +255,7 @@ class KotlinGenerator private constructor(
         .returns(className)
         .addCode(returnBody
             .add("unknownFields = buildUnknownFields()")
-            .add("%<\n)\n") // close the block
+            .add("⇤\n)\n") // close the block
             .build())
         .build()
 
@@ -268,7 +268,7 @@ class KotlinGenerator private constructor(
     nameAllocator: NameAllocator,
     builderType: TypeName
   ): FunSpec {
-    val fieldName = nameAllocator.get(field)
+    val fieldName = nameAllocator[field]
     val funBuilder = FunSpec.builder(fieldName)
         .addParameter(fieldName, field.getClass())
         .returns(builderType)
@@ -310,7 +310,7 @@ class KotlinGenerator private constructor(
 
     fields.forEach { field ->
       var fieldClass: TypeName
-      val fieldName = nameAllocator.get(field)
+      val fieldName = nameAllocator[field]
       val fieldType = field.type()
       var defaultValue = CodeBlock.of("null")
 
@@ -324,13 +324,13 @@ class KotlinGenerator private constructor(
               .parameterizedBy(typeName(fieldType.keyType()), typeName(fieldType.valueType()))
           defaultValue = CodeBlock.of("emptyMap()")
         }
-        !field.isRequired -> fieldClass = typeName(fieldType).asNullable()
+        !field.isRequired -> fieldClass = typeName(fieldType).copy(nullable = true)
         else -> fieldClass = typeName(fieldType)
       }
 
       if (field.default != null) {
         defaultValue = getDefaultValue(field)
-        fieldClass = typeName(fieldType).asNonNull()
+        fieldClass = typeName(fieldType).copy(nullable = false)
       }
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
@@ -351,7 +351,7 @@ class KotlinGenerator private constructor(
           .build())
     }
 
-    val unknownFields = nameAllocator.get("unknownFields")
+    val unknownFields = nameAllocator["unknownFields"]
     constructorBuilder.addParameter(
         ParameterSpec.builder(unknownFields, byteClass)
             .defaultValue("%T.EMPTY", byteClass)
@@ -380,13 +380,13 @@ class KotlinGenerator private constructor(
   private fun addAdapter(type: MessageType, companionObjBuilder: TypeSpec.Builder) {
     val nameAllocator = nameAllocator(type)
     val parentClassName = generatedTypeName(type)
-    val adapterName = nameAllocator.get("ADAPTER")
+    val adapterName = nameAllocator["ADAPTER"]
 
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("\n%>%T.LENGTH_DELIMITED",
+        .addSuperclassConstructorParameter("\n⇥%T.LENGTH_DELIMITED",
             FieldEncoding::class.asClassName())
-        .addSuperclassConstructorParameter("\n%T::class.java\n%<", parentClassName)
+        .addSuperclassConstructorParameter("\n%T::class.java\n⇤", parentClassName)
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
@@ -422,17 +422,17 @@ class KotlinGenerator private constructor(
     val className = generatedTypeName(message)
     val nameAllocator = nameAllocator(message)
     val body = buildCodeBlock {
-      add("return \n%>")
+      add("return \n⇥")
       message.fieldsWithOneOfs().forEach { field ->
         val adapterName = getAdapterName(field)
-        val fieldName = nameAllocator.get(field)
+        val fieldName = nameAllocator[field]
         add("%L.%LencodedSizeWithTag(%L, value.%L) +\n",
             adapterName,
             if (field.isRepeated) "asRepeated()." else "",
             field.tag(),
             fieldName)
       }
-      add("value.unknownFields.size%<\n")
+      add("value.unknownFields.size⇤\n")
     }
     return FunSpec.builder("encodedSize")
         .addParameter("value", className)
@@ -449,7 +449,7 @@ class KotlinGenerator private constructor(
 
     message.fieldsWithOneOfs().forEach { field ->
       val adapterName = getAdapterName(field)
-      val fieldName = nameAllocator.get(field)
+      val fieldName = nameAllocator[field]
       body.addStatement("%L.%LencodeWithTag(writer, %L, value.%L)",
           adapterName,
           if (field.isRepeated) "asRepeated()." else "",
@@ -475,17 +475,17 @@ class KotlinGenerator private constructor(
     val declarationBody = CodeBlock.builder()
 
     val returnBody = CodeBlock.builder()
-    returnBody.addStatement("return %T(%>", className)
+    returnBody.addStatement("return %T(⇥", className)
 
     val decodeBlock = CodeBlock.builder()
     decodeBlock.addStatement(
         "val unknownFields = reader.forEachTag { tag ->")
 
-    decodeBlock.addStatement("%>when (tag) {%>")
+    decodeBlock.addStatement("⇥when (tag) {⇥")
 
     message.fieldsWithOneOfs().forEach { field ->
       val adapterName = getAdapterName(field)
-      val fieldName = nameAllocator.get(field)
+      val fieldName = nameAllocator[field]
 
       var throwExceptionBlock = CodeBlock.of("")
       val decodeBodyTemplate: String
@@ -512,10 +512,10 @@ class KotlinGenerator private constructor(
     val tagHandlerClass = ClassName("com.squareup.wire", "TagHandler")
 
     decodeBlock.addStatement("else -> %T.%L", tagHandlerClass, "UNKNOWN_TAG")
-    decodeBlock.add("%<}\n%<}\n") // close the block
+    decodeBlock.add("⇤}\n⇤}\n") // close the block
 
     returnBody.add("unknownFields = unknownFields")
-    returnBody.add("%<\n)\n") // close the block
+    returnBody.add("⇤\n)\n") // close the block
 
     return FunSpec.builder("decode")
         .addParameter("reader", ProtoReader::class)
@@ -556,7 +556,7 @@ class KotlinGenerator private constructor(
     val type = message.type()
     val nameAllocator = nameAllocator(message)
 
-    val valueName = nameAllocator.get("value")
+    val valueName = nameAllocator["value"]
 
     val builder = TypeSpec.enumBuilder(type.simpleName())
         .addSuperinterface(WireEnum::class)
@@ -574,7 +574,7 @@ class KotlinGenerator private constructor(
         .addType(generateEnumAdapter(message))
 
     message.constants().forEach { constant ->
-      builder.addEnumConstant(nameAllocator.get(constant), TypeSpec.anonymousClassBuilder()
+      builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
           .addSuperclassConstructorParameter("%L", constant.tag())
           .addKdoc(constant.documentation())
           .build())
@@ -599,26 +599,25 @@ class KotlinGenerator private constructor(
     val parentClassName = nameToKotlinName.getValue(message.type())
     val nameAllocator = nameAllocator(message)
 
-    val adapterName = nameAllocator.get("ADAPTER")
-    val valueName = nameAllocator.get("value")
+    val adapterName = nameAllocator["ADAPTER"]
+    val valueName = nameAllocator["value"]
 
     val companionObjBuilder = TypeSpec.companionObjectBuilder()
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("\n%>%T::class.java\n%<", parentClassName)
+        .addSuperclassConstructorParameter("\n⇥%T::class.java\n⇤", parentClassName)
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
             .returns(parentClassName)
             .apply {
-              addCode("return when (value) {\n%>")
+              addCode("return when (value) {\n⇥")
               message.constants().forEach { constant ->
                 addCode("%L -> %L\n", constant.tag(), nameAllocator[constant])
               }
-              // TODO(egorand): Use %P when KotlinPoet 1.0.0-RC3 (or 1.0.0) lands
-              addCode("else -> throw IllegalArgumentException(%S + value)", "Unexpected value: ")
-              addCode("\n%<}\n") // close the block
+              addCode("else -> throw IllegalArgumentException(%P)", "Unexpected value: \$value")
+              addCode("\n⇤}\n") // close the block
             }
             .build())
         .build()
@@ -643,7 +642,7 @@ class KotlinGenerator private constructor(
   private fun addAndroidCreator(type: MessageType, companionObjBuilder: TypeSpec.Builder) {
     val nameAllocator = nameAllocator(type)
     val parentClassName = generatedTypeName(type)
-    val creatorName = nameAllocator.get("CREATOR")
+    val creatorName = nameAllocator["CREATOR"]
     val creatorTypeName = ClassName("android.os", "Parcelable", "Creator")
         .parameterizedBy(parentClassName)
 
@@ -678,13 +677,13 @@ class KotlinGenerator private constructor(
   private fun Field.declarationClass(): TypeName {
     val fieldClass = getClass()
     if (isRepeated || default != null) return fieldClass
-    return fieldClass.asNullable()
+    return fieldClass.copy(nullable = true)
   }
 
   private fun Field.getClass(baseClass: TypeName = nameToKotlinName.getValue(type())) = when {
     isRepeated -> List::class.asClassName().parameterizedBy(baseClass)
-    isOptional && default == null -> baseClass.asNullable()
-    else -> baseClass.asNonNull()
+    isOptional && default == null -> baseClass.copy(nullable = true)
+    else -> baseClass.copy(nullable = false)
   }
 
   private fun MessageType.fieldsWithOneOfs(): List<Field> {
