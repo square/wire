@@ -19,6 +19,7 @@ import com.google.common.collect.Iterables
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.wire.schema.ProtoType
 import java.nio.file.Path
 
 internal class StringWireLogger : WireLogger {
@@ -38,6 +39,10 @@ internal class StringWireLogger : WireLogger {
   @Synchronized override fun artifact(outputPath: Path, kotlinFile: FileSpec) {
     val typeSpec = Iterables.getOnlyElement(kotlinFile.members) as TypeSpec
     buffer.append("$outputPath ${kotlinFile.packageName}.${typeSpec.name}\n")
+  }
+
+  override fun artifactSkipped(type: ProtoType) {
+    buffer.append("skipped $type\n")
   }
 
   @Synchronized override fun info(message: String) {

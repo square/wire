@@ -17,11 +17,13 @@ package com.squareup.wire
 
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.wire.schema.ProtoType
 import java.nio.file.Path
 
 interface WireLogger {
   fun setQuiet(quiet: Boolean)
   fun artifact(outputPath: Path, javaFile: JavaFile)
   fun artifact(outputPath: Path, kotlinFile: FileSpec)
+  fun artifactSkipped(type: ProtoType)
   fun info(message: String)
 }

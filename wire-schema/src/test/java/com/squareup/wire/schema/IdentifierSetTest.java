@@ -24,7 +24,8 @@ public final class IdentifierSetTest {
     assertThat(IdentifierSet.enclosing("a.b.Outer#member")).isEqualTo("a.b.Outer");
     assertThat(IdentifierSet.enclosing("a.b.Outer")).isEqualTo("a.b.*");
     assertThat(IdentifierSet.enclosing("a.b.*")).isEqualTo("a.*");
-    assertThat(IdentifierSet.enclosing("a.*")).isNull();
+    assertThat(IdentifierSet.enclosing("a.*")).isEqualTo("*");
+    assertThat(IdentifierSet.enclosing("*")).isNull();
   }
 
   @Test public void enclosingOnNestedClass() throws Exception {
@@ -74,6 +75,14 @@ public final class IdentifierSetTest {
     assertThat(policy(set, "a.b.c.Message#member")).isEqualTo(Policy.INCLUDED);
     assertThat(policy(set, "a.c.Another")).isEqualTo(Policy.UNSPECIFIED);
     assertThat(policy(set, "a.c.Another#member")).isEqualTo(Policy.UNSPECIFIED);
+  }
+
+  @Test public void includeAll() throws Exception {
+    IdentifierSet set = new IdentifierSet.Builder()
+        .include("*")
+        .build();
+    assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED);
+    assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED);
   }
 
   @Test public void excludeType() throws Exception {

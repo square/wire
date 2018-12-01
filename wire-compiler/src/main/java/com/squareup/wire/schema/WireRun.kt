@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.schema
+
+import com.squareup.wire.WireLogger
+import java.nio.file.FileSystem
 
 /**
  * An invocation of the Wire compiler. Each invocation performs the following operations:
@@ -135,51 +138,65 @@ data class WireRun(
   val targets: List<Target>
 ) {
 
-  sealed class Target {
-    /**
-     * Proto types to generate sources for with this target. Types included here will be generated
-     * for this target and not for subsequent targets in the task.
-     *
-     * This list should contain package names (suffixed with `.*`) and type names only. It should
-     * not contain member names.
-     */
-    abstract val elements: List<String>
+  fun execute(fs: FileSystem, logger: WireLogger) {
+    // 1. Read source `.proto` files.
+    val schemaLoader = NewSchemaLoader(fs, sourcePath, protoPath)
+    val protoFiles = schemaLoader.load()
 
-    /** Generate `.java` sources. */
-    data class JavaTarget(
-      override val elements: List<String> = listOf("*"),
+    // 2. Validate the schema and resolve references
+    val fullSchema = Linker(protoFiles).link()
 
-      val outDirectory: String,
+    // 3. Optionally prune the schema.
+    val schema = treeShake(fullSchema, logger)
 
-      /** True for emitted types to implement `android.os.Parcelable`. */
-      val android: Boolean = false,
+    // 4. Call each target.
+    val typesToHandle = mutableListOf<Type>()
+    for (protoFile in schema.protoFiles()) {
+      if (schemaLoader.sourceLocationPaths.contains(protoFile.location().path())) {
+        typesToHandle += protoFile.types()
+      }
+    }
+    for (target in targets) {
+      val typeHandler = target.newHandler(schema, fs, logger)
 
-      /** True to enable the `androidx.annotation.Nullable` annotation where applicable. */
-      val androidAnnotations: Boolean = false,
+      val identifierSet = IdentifierSet.Builder()
+          .include(target.elements)
+          .build()
 
-      /**
-       * True to emit code that uses reflection for reading, writing, and toString methods which are
-       * normally implemented with generated code.
-       */
-      val compact: Boolean = false
-    ): Target()
+      val i = typesToHandle.iterator()
+      while (i.hasNext()) {
+        val type = i.next()
+        if (identifierSet.includes(type.type())) {
+          typeHandler.handle(type)
+          i.remove()
+        }
+      }
 
-    /** Generate `.kt` sources. */
-    data class KotlinTarget(
-      override val elements: List<String> = listOf("*"),
+      for (rule in identifierSet.unusedIncludes()) {
+        logger.info("Unused element in target elements: $rule")
+      }
+    }
+  }
 
-      val outDirectory: String,
+  /** Returns a subset of schema with unreachable and unwanted elements removed. */
+  private fun treeShake(schema: Schema, logger: WireLogger): Schema {
+    if (treeShakingRoots == listOf("*") && treeShakingRubbish.isEmpty()) return schema
 
-      /** True for emitted types to implement `android.os.Parcelable`. */
-      val android: Boolean = false,
+    val identifierSet = IdentifierSet.Builder()
+        .include(treeShakingRoots)
+        .exclude(treeShakingRubbish)
+        .build()
 
-      /** True for emitted types to implement APIs for easier migration from the Java target. */
-      val javaInterop: Boolean = false
-    ): Target()
+    val result = schema.prune(identifierSet)
 
-    /** Omit code generation for these sources. Use this for a dry-run. */
-    data class NullTarget(
-      override val elements: List<String> = listOf("*")
-    ): Target()
+    for (rule in identifierSet.unusedIncludes()) {
+      logger.info("Unused element in treeShakingRoots: $rule")
+    }
+
+    for (rule in identifierSet.unusedExcludes()) {
+      logger.info("Unused element in treeShakingRubbish: $rule")
+    }
+
+    return result
   }
 }

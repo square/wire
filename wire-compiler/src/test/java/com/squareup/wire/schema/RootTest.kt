@@ -24,7 +24,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Test
 import java.nio.file.FileSystem
+import java.nio.file.FileVisitResult
 import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.test.assertFailsWith
@@ -136,6 +140,24 @@ fun FileSystem.add(pathString: String, contents: String) {
     Files.createDirectories(path.parent)
   }
   Files.write(path, contents.toByteArray(UTF_8))
+}
+
+fun FileSystem.get(pathString: String): String {
+  val path = getPath(pathString)
+  return String(Files.readAllBytes(path), UTF_8)
+}
+
+fun FileSystem.find(path: String): Set<String> {
+  val result = mutableSetOf<String>()
+  Files.walkFileTree(getPath(path), object : SimpleFileVisitor<Path>() {
+    override fun visitFile(path: Path, attrs: BasicFileAttributes): FileVisitResult {
+      if (!Files.isDirectory(path)) {
+        result.add(path.toString())
+      }
+      return FileVisitResult.CONTINUE
+    }
+  })
+  return result
 }
 
 fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>) {
