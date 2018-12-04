@@ -18,6 +18,7 @@ package com.squareup.wire
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.wire.schema.ProtoType
 import java.nio.file.Path
 
 internal class ConsoleWireLogger : WireLogger {
@@ -48,5 +49,9 @@ internal class ConsoleWireLogger : WireLogger {
     } else {
       println("Writing ${kotlinFile.packageName}.${typeSpec.name} to $outputPath")
     }
+  }
+
+  override fun artifactSkipped(type: ProtoType) {
+    println("Skipping $type")
   }
 }

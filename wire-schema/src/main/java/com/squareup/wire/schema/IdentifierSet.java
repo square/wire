@@ -139,7 +139,7 @@ public final class IdentifierSet {
    *   <li>If it is a type it returns the enclosing package with a wildcard, like {@code
    *       squareup.dinosaurs.*}.
    *   <li>If it is a package with a wildcard, it returns the parent package with a wildcard, like
-   *       {@code squareup.*}.
+   *       {@code squareup.*}. The root wildcard is a lone asterisk, {@code *}.
    * </ul>
    */
   static String enclosing(String identifier) {
@@ -150,7 +150,7 @@ public final class IdentifierSet {
     int dot = identifier.lastIndexOf('.', from);
     if (dot != -1) return identifier.substring(0, dot) + ".*";
 
-    return null;
+    return !identifier.equals("*") ? "*" : null;
   }
 
   public Set<String> unusedIncludes() {
