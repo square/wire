@@ -365,6 +365,15 @@ class WireCompilerTest {
   @Test
   fun testOneOfKotlin() {
     val sources = arrayOf("one_of.proto")
+    compileToKotlin(sources)
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/OneOfMessage.kt")
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun testOneOfKotlinJavaInterop() {
+    val sources = arrayOf("one_of.proto")
     compileToKotlin(sources, "--java_interop")
 
     val outputs = arrayOf("com/squareup/wire/protos/kotlin/OneOfMessage.kt")

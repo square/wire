@@ -27,6 +27,7 @@ import com.squareup.kotlinpoet.KModifier.DATA
 import com.squareup.kotlinpoet.KModifier.INTERNAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
+import com.squareup.kotlinpoet.KModifier.SEALED
 import com.squareup.kotlinpoet.LONG
 import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
@@ -50,6 +51,7 @@ import com.squareup.wire.internal.Internal
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
+import com.squareup.wire.schema.OneOf
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
@@ -98,8 +100,14 @@ class KotlinGenerator private constructor(
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
             }
-            message.fieldsWithOneOfs().forEach { field ->
+            message.fieldsAndOneOfFields().forEach { field ->
               newName(field.name(), field)
+            }
+
+            if (!javaInterOp) {
+              message.oneOfs().forEach { oneOf ->
+                newName(oneOf.name(), oneOf)
+              }
             }
           }
         }
@@ -144,7 +152,37 @@ class KotlinGenerator private constructor(
 
     type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
+    if (!javaInterOp) {
+      type.oneOfs().forEach { classBuilder.addType(generateOneOfClass(type, it)) }
+    }
+
     return classBuilder.build()
+  }
+
+  private fun generateOneOfClass(type: MessageType, oneOf: OneOf): TypeSpec {
+    val nameAllocator = nameAllocator(type)
+    val oneOfClassName = nameAllocator[oneOf].capitalize()
+    val oneOfClassType = type.oneOfClass(oneOf)
+    val builder = TypeSpec.classBuilder(oneOfClassName)
+        .addModifiers(SEALED)
+    oneOf.fields().forEach { oneOf ->
+      val name = nameAllocator[oneOf]
+      val className = name.capitalize()
+      val fieldClass = typeName(oneOf.type())
+
+      builder.addType(TypeSpec.classBuilder(className)
+          .addModifiers(DATA)
+          .primaryConstructor(FunSpec.constructorBuilder()
+              .addParameter(ParameterSpec.builder(name, fieldClass)
+                  .build())
+              .build())
+          .addProperty(PropertySpec.builder(name, fieldClass)
+              .initializer(name)
+              .build())
+          .superclass(oneOfClassType)
+          .build())
+    }
+    return builder.build()
   }
 
   private fun generateInitializerOneOfBlock(type: MessageType): CodeBlock {
@@ -182,7 +220,7 @@ class KotlinGenerator private constructor(
 
     funBuilder.addStatement("val builder = Builder()")
 
-    type.fieldsWithOneOfs().forEach { field ->
+    type.fieldsWithJavaInteropOneOfs().forEach { field ->
       val fieldName = nameAllocator[field]
       funBuilder.addStatement("builder.%1L = %1L", fieldName)
     }
@@ -226,7 +264,7 @@ class KotlinGenerator private constructor(
     val returnBody = CodeBlock.builder()
         .add("return %T(⇥\n", className)
 
-    type.fieldsWithOneOfs().forEach { field ->
+    type.fieldsWithJavaInteropOneOfs().forEach { field ->
       val fieldName = nameAllocator[field]
 
       val throwExceptionBlock = if (!field.isRepeated
@@ -306,7 +344,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val byteClass = typeName(ProtoType.BYTES)
 
-    val fields = message.fieldsWithOneOfs()
+    val fields = message.fieldsWithJavaInteropOneOfs()
 
     fields.forEach { field ->
       var fieldClass: TypeName
@@ -349,6 +387,19 @@ class KotlinGenerator private constructor(
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
           .initializer(fieldName)
           .build())
+    }
+
+    if (!javaInterOp) {
+      message.oneOfs().forEach { oneOf ->
+        val name = nameAllocator[oneOf]
+        val fieldType = message.oneOfClass(oneOf).copy(nullable = true)
+        constructorBuilder.addParameter(ParameterSpec.builder(name, fieldType)
+            .defaultValue("null")
+            .build())
+        classBuilder.addProperty(PropertySpec.builder(name, fieldType)
+            .initializer(name)
+            .build())
+      }
     }
 
     val unknownFields = nameAllocator["unknownFields"]
@@ -423,7 +474,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val body = buildCodeBlock {
       add("return \n⇥")
-      message.fieldsWithOneOfs().forEach { field ->
+      message.fieldsWithJavaInteropOneOfs().forEach { field ->
         val adapterName = getAdapterName(field)
         val fieldName = nameAllocator[field]
         add("%L.%LencodedSizeWithTag(%L, value.%L) +\n",
@@ -432,6 +483,25 @@ class KotlinGenerator private constructor(
             field.tag(),
             fieldName)
       }
+
+      if (!javaInterOp) {
+        message.oneOfs().forEach { oneOf ->
+          val oneOfName = nameAllocator[oneOf]
+          val oneOfClass = message.oneOfClass(oneOf)
+          addStatement("when (value.$oneOfName) {⇥")
+          oneOf.fields().forEach { field ->
+            val fieldName = nameAllocator[field]
+            val adapterName = getAdapterName(field)
+            addStatement(
+                "is %T -> %L.encodedSizeWithTag(${field.tag()}, value.$oneOfName.$fieldName)",
+                oneOfClass.nestedClass(fieldName.capitalize()),
+                adapterName)
+          }
+          addStatement("else -> 0")
+          addStatement("⇤} +")
+        }
+      }
+
       add("value.unknownFields.size⇤\n")
     }
     return FunSpec.builder("encodedSize")
@@ -447,7 +517,7 @@ class KotlinGenerator private constructor(
     val body = CodeBlock.builder()
     val nameAllocator = nameAllocator(message)
 
-    message.fieldsWithOneOfs().forEach { field ->
+    message.fieldsWithJavaInteropOneOfs().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator[field]
       body.addStatement("%L.%LencodeWithTag(writer, %L, value.%L)",
@@ -455,6 +525,23 @@ class KotlinGenerator private constructor(
           if (field.isRepeated) "asRepeated()." else "",
           field.tag(),
           fieldName)
+    }
+
+    if (!javaInterOp) {
+      message.oneOfs().forEach { oneOf ->
+        val oneOfName = nameAllocator[oneOf]
+        val oneOfClass = message.oneOfClass(oneOf)
+        body.addStatement("when (value.$oneOfName) {⇥")
+        oneOf.fields().forEach { field ->
+          val fieldName = nameAllocator[field]
+          val adapterName = getAdapterName(field)
+          body.addStatement(
+              "is %T -> %L.encodeWithTag(writer, ${field.tag()}, value.$oneOfName.$fieldName)",
+              oneOfClass.nestedClass(fieldName.capitalize()),
+              adapterName)
+        }
+        body.addStatement("⇤}")
+      }
     }
 
     body.addStatement("writer.writeBytes(value.unknownFields)")
@@ -483,7 +570,7 @@ class KotlinGenerator private constructor(
 
     decodeBlock.addStatement("⇥when (tag) {⇥")
 
-    message.fieldsWithOneOfs().forEach { field ->
+    message.fieldsWithJavaInteropOneOfs().forEach { field ->
       val adapterName = getAdapterName(field)
       val fieldName = nameAllocator[field]
 
@@ -507,6 +594,25 @@ class KotlinGenerator private constructor(
       declarationBody.addStatement("%L", fieldDeclaration)
       decodeBlock.addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
       returnBody.addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+    }
+
+    if (!javaInterOp) {
+      message.oneOfs().forEach { oneOf ->
+        val name = oneOf.name()
+        val oneOfClass = message.oneOfClass(oneOf)
+
+        declarationBody.addStatement("var $name: %T = null", oneOfClass.copy(nullable = true))
+        returnBody.addStatement("%1L = %1L,", name)
+        oneOf.fields().forEach { field ->
+          val adapterName = getAdapterName(field)
+          val fieldName = field.name().capitalize()
+          val fieldClass = oneOfClass.nestedClass(fieldName)
+
+          decodeBlock.addStatement("${field.tag()} -> $name = %T(%L.decode(reader))",
+              fieldClass,
+              adapterName)
+        }
+      }
     }
 
     val tagHandlerClass = ClassName("com.squareup.wire", "TagHandler")
@@ -686,10 +792,11 @@ class KotlinGenerator private constructor(
     else -> baseClass.copy(nullable = false)
   }
 
-  private fun MessageType.fieldsWithOneOfs(): List<Field> {
+  private fun MessageType.fieldsWithJavaInteropOneOfs(): List<Field> {
     return if (javaInterOp)
       fieldsAndOneOfFields()
-    else fields()
+    else
+      fields()
   }
 
   companion object {
@@ -742,6 +849,11 @@ class KotlinGenerator private constructor(
 
       return KotlinGenerator(schema, map, emitAndroid, javaInterop)
     }
+  }
+
+  private fun MessageType.oneOfClass(oneOf: OneOf): ClassName {
+    val name = oneOf.name().capitalize()
+    return typeName(type()).nestedClass(name)
   }
 }
 
