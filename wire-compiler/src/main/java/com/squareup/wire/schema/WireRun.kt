@@ -15,8 +15,10 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.ConsoleWireLogger
 import com.squareup.wire.WireLogger
 import java.nio.file.FileSystem
+import java.nio.file.FileSystems
 
 /**
  * An invocation of the Wire compiler. Each invocation performs the following operations:
@@ -138,7 +140,7 @@ data class WireRun(
   val targets: List<Target>
 ) {
 
-  fun execute(fs: FileSystem, logger: WireLogger) {
+  fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
     // 1. Read source `.proto` files.
     val schemaLoader = NewSchemaLoader(fs, sourcePath, protoPath)
     val protoFiles = schemaLoader.load()
