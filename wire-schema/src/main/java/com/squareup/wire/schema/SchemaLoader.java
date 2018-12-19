@@ -49,7 +49,7 @@ import static com.google.common.collect.Iterables.getOnlyElement;
  * relative to the root of the archive.
  */
 public final class SchemaLoader {
-  private static final String DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto";
+  static final String DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto";
 
   private final List<Path> sources = new ArrayList<>();
   private final List<String> protos = new ArrayList<>();
