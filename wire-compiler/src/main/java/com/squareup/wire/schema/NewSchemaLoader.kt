@@ -16,6 +16,10 @@
 package com.squareup.wire.schema
 
 import com.google.common.io.Closer
+import com.squareup.wire.schema.SchemaLoader.DESCRIPTOR_PROTO
+import com.squareup.wire.schema.internal.parser.ProtoParser
+import okio.buffer
+import okio.source
 import java.io.Closeable
 import java.io.IOException
 import java.nio.file.FileSystem
@@ -83,6 +87,22 @@ class NewSchemaLoader(
     }
 
     return loaded.values.toList()
+  }
+
+  /**
+   * Returns Google's protobuf descriptor, which defines standard options like default, deprecated,
+   * and java_package. If the user has provided their own version of the descriptor proto, that is
+   * preferred.
+   */
+  @Throws(IOException::class)
+  fun loadDescriptorProto(): ProtoFile {
+    val resourceAsStream = SchemaLoader::class.java.getResourceAsStream("/$DESCRIPTOR_PROTO")
+    resourceAsStream.source().buffer().use { source ->
+      val data = source.readUtf8()
+      val location = Location.get(DESCRIPTOR_PROTO)
+      val element = ProtoParser.parse(location, data)
+      return ProtoFile.get(element)
+    }
   }
 
   private fun load(locationAndPath: LocationAndPath) {

@@ -145,13 +145,16 @@ data class WireRun(
     val schemaLoader = NewSchemaLoader(fs, sourcePath, protoPath)
     val protoFiles = schemaLoader.load()
 
-    // 2. Validate the schema and resolve references
-    val fullSchema = Linker(protoFiles).link()
+    // 2. Load descriptor proto
+    val protoFilesPlusDescriptor = protoFiles.plus(schemaLoader.loadDescriptorProto())
 
-    // 3. Optionally prune the schema.
+    // 3. Validate the schema and resolve references
+    val fullSchema = Linker(protoFilesPlusDescriptor).link()
+
+    // 4. Optionally prune the schema.
     val schema = treeShake(fullSchema, logger)
 
-    // 4. Call each target.
+    // 5. Call each target.
     val typesToHandle = mutableListOf<Type>()
     for (protoFile in schema.protoFiles()) {
       if (schemaLoader.sourceLocationPaths.contains(protoFile.location().path())) {

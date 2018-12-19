@@ -181,6 +181,28 @@ class WireRunTest {
         "generated/kt/squareup/colors/Blue.kt")
   }
 
+  @Test
+  fun javaPackageForJvmLanguages() {
+    writeSquareProto()
+    writeRhombusProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf("polygons/src/main/proto"),
+        targets = listOf(
+            Target.JavaTarget(
+                outDirectory = "generated/java",
+                elements = listOf("squareup.polygons.Square")),
+            Target.KotlinTarget(
+                outDirectory = "generated/kt")
+        )
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+        "generated/java/com/squareup/polygons/Square.java",
+        "generated/kt/com/squareup/polygons/Rhombus.kt")
+  }
+
   private fun writeRedProto() {
     fs.add("colors/src/main/proto/squareup/colors/red.proto", """
           |syntax = "proto2";
@@ -211,6 +233,29 @@ class WireRunTest {
           |  repeated double angles = 1;
           |}
           """.trimMargin())
+  }
+
+  private fun writeSquareProto() {
+    fs.add("polygons/src/main/proto/squareup/polygons/square.proto", """
+          |syntax = "proto2";
+          |package squareup.polygons;
+          |option java_package = "com.squareup.polygons";
+          |message Square {
+          |  optional double length = 1;
+          |}
+          """.trimMargin())
+  }
+
+  private fun writeRhombusProto() {
+    fs.add("polygons/src/main/proto/squareup/polygons/rhombus.proto", """
+        |syntax = "proto2";
+        |package squareup.polygons;
+        |option java_package = "com.squareup.polygons";
+        |message Rhombus {
+        |  optional double length = 1;
+        |  optional double acute_angle = 2;
+        |}
+        """.trimMargin())
   }
 }
 
