@@ -39,6 +39,7 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.jvm.jvmField
+import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
@@ -654,7 +655,12 @@ class KotlinGenerator private constructor(
    *     HOME(0),
    *     ...
    *     override fun getValue(): Int = value
-   *     object ADAPTER { ... }
+   *
+   *     companion object {
+   *       fun fromValue(value: Int): PhoneType = ...
+   *
+   *       val ADAPTER: ProtoAdapter<PhoneType> = ...
+   *     }
    * ```
    * }
    */
@@ -677,7 +683,7 @@ class KotlinGenerator private constructor(
             .addModifiers(OVERRIDE)
             .addStatement("return $valueName")
             .build())
-        .addType(generateEnumAdapter(message))
+        .addType(generateEnumCompanion(message))
 
     message.constants().forEach { constant ->
       builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
@@ -689,26 +695,45 @@ class KotlinGenerator private constructor(
     return builder.build()
   }
 
+  private fun generateEnumCompanion(message: EnumType): TypeSpec {
+    val parentClassName = nameToKotlinName.getValue(message.type())
+    val nameAllocator = nameAllocator(message)
+    val valueName = nameAllocator["value"]
+    val fromValue = FunSpec.builder("fromValue")
+        .jvmStatic()
+        .addParameter(valueName, Int::class)
+        .returns(parentClassName)
+        .apply {
+          addCode("return when (value) {\n⇥")
+          message.constants().forEach { constant ->
+            addCode("%L -> %L\n", constant.tag(), nameAllocator[constant])
+          }
+          addCode("else -> throw IllegalArgumentException(%P)", "Unexpected value: \$value")
+          addCode("\n⇤}\n") // close the block
+        }
+        .build()
+    return TypeSpec.companionObjectBuilder()
+        .addFunction(fromValue)
+        .addProperty(generateEnumAdapter(message))
+        .build()
+  }
+
   /**
    * Example
    * ```
-   * companion object {
-   *     @JvmField
-   *     val ADAPTER = object : EnumAdapter<PhoneType>(PhoneType::class.java) {
-   *         override fun fromValue(value: Int): PhoneType? = values().find { it.value == value }
-   *     }
+   * @JvmField
+   * val ADAPTER = object : EnumAdapter<PhoneType>(PhoneType::class.java) {
+   *     override fun fromValue(value: Int): PhoneType = PhoneType.fromValue(value)
    * }
    * ```
    */
-
-  private fun generateEnumAdapter(message: EnumType): TypeSpec {
+  private fun generateEnumAdapter(message: EnumType): PropertySpec {
     val parentClassName = nameToKotlinName.getValue(message.type())
     val nameAllocator = nameAllocator(message)
 
     val adapterName = nameAllocator["ADAPTER"]
     val valueName = nameAllocator["value"]
 
-    val companionObjBuilder = TypeSpec.companionObjectBuilder()
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
@@ -717,22 +742,13 @@ class KotlinGenerator private constructor(
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
             .returns(parentClassName)
-            .apply {
-              addCode("return when (value) {\n⇥")
-              message.constants().forEach { constant ->
-                addCode("%L -> %L\n", constant.tag(), nameAllocator[constant])
-              }
-              addCode("else -> throw IllegalArgumentException(%P)", "Unexpected value: \$value")
-              addCode("\n⇤}\n") // close the block
-            }
+            .addStatement("return %T.fromValue(value)", parentClassName)
             .build())
         .build()
 
-    return companionObjBuilder.addProperty(
-        PropertySpec.builder(adapterName, adapterType)
-            .jvmField()
-            .initializer("%L", adapterObject)
-            .build())
+    return PropertySpec.builder(adapterName, adapterType)
+        .jvmField()
+        .initializer("%L", adapterObject)
         .build()
   }
 

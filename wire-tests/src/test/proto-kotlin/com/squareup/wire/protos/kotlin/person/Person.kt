@@ -17,6 +17,7 @@ import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class Person(
@@ -98,12 +99,15 @@ data class Person(
             val ADAPTER: ProtoAdapter<PhoneType> = object : EnumAdapter<PhoneType>(
                 PhoneType::class.java
             ) {
-                override fun fromValue(value: Int): PhoneType = when (value) {
-                    0 -> MOBILE
-                    1 -> HOME
-                    2 -> WORK
-                    else -> throw IllegalArgumentException("Unexpected value: $value")
-                }
+                override fun fromValue(value: Int): PhoneType = PhoneType.fromValue(value)
+            }
+
+            @JvmStatic
+            fun fromValue(value: Int): PhoneType = when (value) {
+                0 -> MOBILE
+                1 -> HOME
+                2 -> WORK
+                else -> throw IllegalArgumentException("Unexpected value: $value")
             }
         }
     }
