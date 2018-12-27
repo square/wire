@@ -389,6 +389,15 @@ class WireCompilerTest {
     assertKotlinOutputs(outputs, ".java.interop")
   }
 
+  @Test
+  fun testPercentSignsInKDoc() {
+    val sources = arrayOf("percents_in_kdoc.proto")
+    compileToKotlin(sources, "--java_interop")
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/Percents.kt")
+    assertKotlinOutputs(outputs, ".java.interop")
+  }
+
   private fun compileToJava(sources: Array<String>, vararg extraArgs: String) =
       invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
 
