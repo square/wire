@@ -311,8 +311,8 @@ class KotlinGenerator private constructor(
     val funBuilder = FunSpec.builder(fieldName)
         .addParameter(fieldName, field.getClass())
         .returns(builderType)
-    if (field.documentation().isNotEmpty()) {
-      funBuilder.addKdoc(field.documentation() + "\n")
+    if (field.documentation().isNotBlank()) {
+      funBuilder.addKdoc("%L\n", field.documentation())
     }
     if (field.isDeprecated) {
       funBuilder.addAnnotation(AnnotationSpec.builder(Deprecated::class)
@@ -688,7 +688,11 @@ class KotlinGenerator private constructor(
     message.constants().forEach { constant ->
       builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
           .addSuperclassConstructorParameter("%L", constant.tag())
-          .addKdoc(constant.documentation())
+          .apply {
+            if (constant.documentation().isNotBlank()) {
+              addKdoc("%L\n", constant.documentation())
+            }
+          }
           .build())
     }
 

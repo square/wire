@@ -188,7 +188,8 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
           '--java_interop',
           'person.proto',
           'deprecated.proto',
-          'one_of.proto'
+          'one_of.proto',
+          'percents_in_kdoc.proto'
   ]
 }
 task copyKotlinJavaInteropFiles(type: Copy) {

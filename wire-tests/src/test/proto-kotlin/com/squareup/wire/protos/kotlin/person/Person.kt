@@ -89,7 +89,8 @@ data class Person(
         HOME(1),
 
         /**
-         * Could be phone or fax. */
+         * Could be phone or fax.
+         */
         WORK(2);
 
         override fun getValue(): Int = value
