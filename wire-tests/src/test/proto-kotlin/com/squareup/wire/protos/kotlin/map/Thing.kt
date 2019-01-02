@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
+import com.squareup.wire.WireField
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -15,8 +16,9 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Thing(val name: String? = null, val unknownFields: ByteString = ByteString.EMPTY) :
-        Message<Thing, Thing.Builder>(ADAPTER, unknownFields) {
+data class Thing(@WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.STRING") val name:
+        String? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<Thing,
+        Thing.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
             message = "Shouldn't be used in Kotlin",
             level = DeprecationLevel.HIDDEN
