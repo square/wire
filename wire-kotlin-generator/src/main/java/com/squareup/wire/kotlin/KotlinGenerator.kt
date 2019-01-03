@@ -377,12 +377,10 @@ class KotlinGenerator private constructor(
         parameterSpec.defaultValue(defaultValue)
       }
 
-      if (javaInterOp) {
-        parameterSpec.addAnnotation(AnnotationSpec.builder(WireField::class)
-            .addMember("tag = %L", field.tag())
-            .addMember("adapter = %S", getAdapterName(field))
-            .build())
-      }
+      parameterSpec.addAnnotation(AnnotationSpec.builder(WireField::class)
+          .addMember("tag = %L", field.tag())
+          .addMember("adapter = %S", getAdapterName(field))
+          .build())
 
       constructorBuilder.addParameter(parameterSpec.build())
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
