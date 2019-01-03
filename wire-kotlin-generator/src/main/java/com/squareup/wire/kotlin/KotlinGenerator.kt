@@ -16,6 +16,7 @@
 package com.squareup.wire.kotlin
 
 import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.AnnotationSpec.UseSiteTarget.FIELD
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -378,6 +379,7 @@ class KotlinGenerator private constructor(
       }
 
       parameterSpec.addAnnotation(AnnotationSpec.builder(WireField::class)
+          .useSiteTarget(FIELD)
           .addMember("tag = %L", field.tag())
           .addMember("adapter = %S", getAdapterName(field))
           .build())

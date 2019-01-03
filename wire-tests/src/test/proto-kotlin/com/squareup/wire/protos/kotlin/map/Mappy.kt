@@ -17,9 +17,9 @@ import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Mappy(@WireField(tag = 1, adapter = "thingsAdapter") val things: Map<String, Thing>, val
-        unknownFields: ByteString = ByteString.EMPTY) : Message<Mappy, Mappy.Builder>(ADAPTER,
-        unknownFields) {
+data class Mappy(@field:WireField(tag = 1, adapter = "thingsAdapter") val things: Map<String,
+        Thing>, val unknownFields: ByteString = ByteString.EMPTY) : Message<Mappy,
+        Mappy.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
             message = "Shouldn't be used in Kotlin",
             level = DeprecationLevel.HIDDEN
