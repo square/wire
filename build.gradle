@@ -6,9 +6,9 @@ buildscript {
       'gson': '2.8.1',
       'guava': '20.0',
       'javapoet': '1.10.0',
-      'kotlinpoet': '1.0.0',
+      'kotlinpoet': '1.0.1',
       'jsr305': '3.0.2',
-      'kotlin': '1.3.0',
+      'kotlin': '1.3.11',
       'okio': '2.1.0',
       'moshi': '1.6.0',
       'junit': '4.12',
@@ -19,7 +19,7 @@ buildscript {
       'maven': '3.5.0',
       'mavenAnnotations': '3.5',
       'mavenPluginBuilder': '1.2.1',
-      'mavenPublish': '0.4.0',
+      'mavenPublish': '0.6.0',
   ]
 
   ext.deps = [
