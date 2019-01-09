@@ -82,7 +82,7 @@ data class OptionalEnumUser(@field:WireField(tag = 1, adapter = "OptionalEnum.AD
             fun fromValue(value: Int): OptionalEnum = when (value) {
                 1 -> FOO
                 2 -> BAR
-                else -> throw IllegalArgumentException("Unexpected value: $value")
+                else -> throw IllegalArgumentException("""Unexpected value: $value""")
             }
         }
     }

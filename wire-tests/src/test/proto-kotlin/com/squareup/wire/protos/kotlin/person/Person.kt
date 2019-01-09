@@ -111,7 +111,7 @@ data class Person(
                 0 -> MOBILE
                 1 -> HOME
                 2 -> WORK
-                else -> throw IllegalArgumentException("Unexpected value: $value")
+                else -> throw IllegalArgumentException("""Unexpected value: $value""")
             }
         }
     }
