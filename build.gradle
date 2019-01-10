@@ -19,10 +19,14 @@ buildscript {
       'maven': '3.5.0',
       'mavenAnnotations': '3.5',
       'mavenPluginBuilder': '1.2.1',
-      'mavenPublish': '0.4.0',
+      'mavenPublish': '0.6.0',
   ]
 
   ext.deps = [
+      plugins: [
+          kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+          shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
+      ],    
       'android': "com.google.android:android:${versions.android}",
       'guava': "com.google.guava:guava:${versions.guava}",
       'okio': "com.squareup.okio:okio:${versions.okio}",
@@ -35,7 +39,6 @@ buildscript {
           'annotations': "com.google.auto.value:auto-value-annotations:${versions.autovalue}"
       ],
       'kotlin': [
-          'gradle': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
           'stdlib': [
               'jdk6': "org.jetbrains.kotlin:kotlin-stdlib",
               'jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
@@ -64,7 +67,8 @@ buildscript {
   ]
 
   dependencies {
-    classpath deps.kotlin.gradle
+    classpath deps.plugins.kotlin
+    classpath deps.plugins.shadow
     classpath deps.animalSniffer.gradle
     classpath deps.maven.plugin.builder
     classpath deps.maven.plugin.publish
@@ -85,7 +89,17 @@ allprojects {
   }
 }
 
-subprojects {
+subprojects { project ->
+  // The `application` plugin internally applies the `distribution` plugin and
+  // automatically adds tasks to create/publish tar and zip artifacts.
+  // https://docs.gradle.org/current/userguide/application_plugin.html
+  // https://docs.gradle.org/current/userguide/distribution_plugin.html#sec:publishing_distributions_upload
+  plugins.withType(DistributionPlugin) {
+    distTar.enabled = false
+    distZip.enabled = false
+    configurations.archives.artifacts.removeAll { it.file =~ 'tar' || it.file =~ 'zip' }
+  }
+
   apply plugin: 'com.vanniktech.maven.publish'
   apply plugin: 'checkstyle'
 
