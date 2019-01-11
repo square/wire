@@ -1,5 +1,6 @@
 apply plugin: 'application'
 apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -16,3 +17,19 @@ dependencies {
   implementation project(':wire-schema')
   implementation deps.kotlin.stdlib.jdk8
 }
+
+shadowJar {
+  classifier = 'jar-with-dependencies'
+}
+
+artifacts {
+  archives shadowJar
+}
+
+// The `shadow` plugin internally applies the `distribution` plugin and
+// automatically adds tasks to create respective tar and zip artifacts.
+// https://github.com/johnrengelman/shadow/issues/347#issuecomment-424726972
+// https://github.com/johnrengelman/shadow/commit/a824e4f6e4618785deb7f084c4a80ce1b78fc4fd
+shadowDistTar.enabled = false
+shadowDistZip.enabled = false
+configurations.archives.artifacts.removeAll { it.file =~ 'tar' || it.file =~ 'zip' }

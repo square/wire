@@ -12,3 +12,6 @@ out/
 # Gradle
 .gradle
 build
+
+# Maven
+plugin*.xml
