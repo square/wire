@@ -33,10 +33,10 @@ class NewSchemaLoader(
   private val fs: FileSystem,
 
   /** See [com.squareup.wire.WireRun.sourcePath]. */
-  private val sourcePath: List<String>,
+  private val sourcePath: List<Location>,
 
   /** See [com.squareup.wire.WireRun.protoPath]. */
-  private val protoPath: List<String> = listOf()
+  private val protoPath: List<Location> = listOf()
 ) : Closeable {
   private val closer = Closer.create()
 
@@ -105,13 +105,16 @@ class NewSchemaLoader(
     }
   }
 
-  private fun load(locationAndPath: LocationAndPath) {
-    val protoFile = locationAndPath.parse()
-    val importPath = protoFile.importPath()
+  private fun load(protoFilePath: ProtoFilePath) {
+    val protoFile = protoFilePath.parse()
+    val importPath = protoFile.importPath(protoFilePath.location)
 
-    if (locationAndPath.location.path() != importPath
-        && !locationAndPath.location.path().endsWith("/$importPath")) {
-      errors += "expected ${locationAndPath.path} to have a path ending with $importPath"
+    // If the .proto was specified as a full path without a separate base directory that it's
+    // relative to, confirm that the import path and file system path agree.
+    if (protoFilePath.location.base().isEmpty()
+        && protoFilePath.location.path() != importPath
+        && !protoFilePath.location.path().endsWith("/$importPath")) {
+      errors += "expected ${protoFilePath.location.path()} to have a path ending with $importPath"
     }
 
     loaded[importPath] = protoFile
@@ -119,12 +122,13 @@ class NewSchemaLoader(
   }
 
   /** Convert `pathStrings` into roots that can be searched. */
-  private fun allRoots(closer: Closer, pathStrings: List<String>): List<Root> {
+  private fun allRoots(closer: Closer, locations: List<Location>): List<Root> {
     val result = mutableListOf<Root>()
-    for (pathString in pathStrings) {
-      val path = fs.getPath(pathString)
+    val baseToRoots = mutableMapOf<String, List<Root>>()
+
+    for (location in locations) {
       try {
-        result += path.roots(closer)
+        result += location.roots(fs, closer, baseToRoots)
       } catch (e: IllegalArgumentException) {
         errors += e.message!!
       }
@@ -137,11 +141,14 @@ class NewSchemaLoader(
   }
 }
 
-/**
- * Returns a path like `squareup/dinosaurs/Dinosaur.proto` for a file based on its package name
- * (like `squareup.dinosaurs`) and its file name (like `Dinosaur.proto`).
- */
-internal fun ProtoFile.importPath() : String {
-  val filename = location().path().substringAfterLast('/')
+internal fun ProtoFile.importPath(location: Location): String {
+  return when {
+    location.base().isEmpty() -> canonicalImportPath(location)
+    else -> location.path()
+  }
+}
+
+internal fun ProtoFile.canonicalImportPath(location: Location): String {
+  val filename = location.path().substringAfterLast('/')
   return packageName().replace('.', '/') + "/" + filename
 }

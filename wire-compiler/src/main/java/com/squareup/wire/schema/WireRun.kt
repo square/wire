@@ -40,17 +40,17 @@ import java.nio.file.FileSystems
  * Source Directories and Archives
  * -------------------------------
  *
- * The [sourcePath] and [protoPath] lists contain strings that are of the following forms:
+ * The [sourcePath] and [protoPath] lists contain locations that are of the following forms:
  *
- *  * Paths to `.proto` files.
+ *  * Locations of `.proto` files.
  *
- *  * Paths to directories that contain a tree of `.proto` files. Typically this is a directory
+ *  * Locations of directories that contain a tree of `.proto` files. Typically this is a directory
  *    ending in `src/main/proto`.
  *
- *  * Paths to `.zip` and `.jar` archives that contain a tree of `.proto` files. Typically this is
- *    a `.jar` file from a Maven repository.
+ *  * Locations of `.zip` and `.jar` archives that contain a tree of `.proto` files. Typically this
+ *    is a `.jar` file from a Maven repository.
  *
- * When one `.proto` message imports another, the import is resolved from the base of each directory
+ * When one `.proto` message imports another, the import is resolved from the base of each location
  * and archive. If the build is in the unfortunate situation where an import could be resolved by
  * multiple files, whichever was listed first takes precedence.
  *
@@ -110,12 +110,12 @@ data class WireRun(
   /**
    * Source `.proto` files for this task to generate from.
    */
-  val sourcePath: List<String>,
+  val sourcePath: List<Location>,
 
   /**
    * Sources `.proto` files for this task to use when resolving references.
    */
-  val protoPath: List<String> = listOf(),
+  val protoPath: List<Location> = listOf(),
 
   /**
    * The roots of the schema model. Wire will prune the schema model to only include types in this
