@@ -32,8 +32,8 @@ class WireRunTest {
     writeTriangleProto()
 
     val wireRun = WireRun(
-        sourcePath = listOf("colors/src/main/proto"),
-        protoPath = listOf("polygons/src/main/proto"),
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(Target.JavaTarget(outDirectory = "generated/java"))
     )
     wireRun.execute(fs, logger)
@@ -54,8 +54,8 @@ class WireRunTest {
     writeTriangleProto()
 
     val wireRun = WireRun(
-        sourcePath = listOf("colors/src/main/proto"),
-        protoPath = listOf("polygons/src/main/proto"),
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
     )
     wireRun.execute(fs, logger)
@@ -76,8 +76,8 @@ class WireRunTest {
     writeTriangleProto()
 
     val wireRun = WireRun(
-        sourcePath = listOf("colors/src/main/proto"),
-        protoPath = listOf("polygons/src/main/proto"),
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
             Target.KotlinTarget(
                 outDirectory = "generated/kt",
@@ -104,8 +104,8 @@ class WireRunTest {
     writeTriangleProto()
 
     val wireRun = WireRun(
-        sourcePath = listOf("colors/src/main/proto"),
-        protoPath = listOf("polygons/src/main/proto"),
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
             Target.JavaTarget(
                 outDirectory = "generated/java",
@@ -132,8 +132,8 @@ class WireRunTest {
     writeTriangleProto()
 
     val wireRun = WireRun(
-        sourcePath = listOf("colors/src/main/proto"),
-        protoPath = listOf("polygons/src/main/proto"),
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
         treeShakingRoots = listOf("squareup.colors.Blue"),
         targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
     )
@@ -150,8 +150,8 @@ class WireRunTest {
     writeTriangleProto()
 
     val wireRun = WireRun(
-        sourcePath = listOf("colors/src/main/proto"),
-        protoPath = listOf("polygons/src/main/proto"),
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
         treeShakingRubbish = listOf("squareup.colors.Red"),
         targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
     )
@@ -168,8 +168,8 @@ class WireRunTest {
     writeTriangleProto()
 
     val wireRun = WireRun(
-        sourcePath = listOf("colors/src/main/proto"),
-        protoPath = listOf("polygons/src/main/proto"),
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
             Target.NullTarget(elements = listOf("squareup.colors.Red")),
             Target.KotlinTarget(outDirectory = "generated/kt")
@@ -187,7 +187,7 @@ class WireRunTest {
     writeRhombusProto()
 
     val wireRun = WireRun(
-        sourcePath = listOf("polygons/src/main/proto"),
+        sourcePath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
             Target.JavaTarget(
                 outDirectory = "generated/java",

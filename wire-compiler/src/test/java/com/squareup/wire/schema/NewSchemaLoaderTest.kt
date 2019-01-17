@@ -76,8 +76,8 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin())
 
-    val sourcePath = listOf("colors/src/main/proto")
-    val protoPath = listOf("polygons/src/main/proto", "lib/curves.zip")
+    val sourcePath = listOf(Location.get("colors/src/main/proto"))
+    val protoPath = listOf(Location.get("polygons/src/main/proto"), Location.get("lib/curves.zip"))
     val loader = NewSchemaLoader(fs, sourcePath, protoPath)
     val protoFiles = loader.use { it.load() }
     assertThat(protoFiles.map { it.location().path() }).containsExactlyInAnyOrder(
@@ -95,7 +95,7 @@ class NewSchemaLoaderTest {
 
   @Test
   fun noSourcesFound() {
-    val sourcePath = listOf<String>()
+    val sourcePath = listOf<Location>()
     val exception = assertFailsWith<IllegalArgumentException> {
       NewSchemaLoader(fs, sourcePath).use { it.load() }
     }
@@ -103,7 +103,7 @@ class NewSchemaLoaderTest {
   }
 
   @Test
-  fun packageDoesNotMatchFileSystem() {
+  fun packageDoesNotMatchFileSystemIsOkayWithBaseDirectory() {
     fs.add("colors/src/main/proto/squareup/shapes/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
@@ -111,7 +111,20 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin())
 
-    val sourcePath = listOf("colors/src/main/proto")
+    val sourcePath = listOf(Location.get("colors/src/main/proto", "squareup/shapes/blue.proto"))
+    NewSchemaLoader(fs, sourcePath).use { it.load() }
+  }
+
+  @Test
+  fun packageDoesNotMatchFileSystemFailsWithoutBaseDirectory() {
+    fs.add("colors/src/main/proto/squareup/shapes/blue.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Blue {
+        |}
+        """.trimMargin())
+
+    val sourcePath = listOf(Location.get("colors/src/main/proto/squareup/shapes/blue.proto"))
     val exception = assertFailsWith<IllegalArgumentException> {
       NewSchemaLoader(fs, sourcePath).use { it.load() }
     }
