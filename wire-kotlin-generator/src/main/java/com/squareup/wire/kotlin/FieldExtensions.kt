@@ -22,11 +22,11 @@ package com.squareup.wire.kotlin
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.ProtoType
 
-val Field.isMap: Boolean
+internal val Field.isMap: Boolean
   get() = type().isMap
 
-val Field.keyType: ProtoType
+internal val Field.keyType: ProtoType
   get() = type().keyType()
 
-val Field.valueType: ProtoType
+internal val Field.valueType: ProtoType
   get() = type().valueType()
