@@ -18,9 +18,10 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-data class OptionalEnumUser(@field:WireField(tag = 1, adapter = "OptionalEnum.ADAPTER") val
-        optional_enum: OptionalEnum? = null, val unknownFields: ByteString = ByteString.EMPTY) :
-        Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
+data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
+        "OptionalEnumUser.OptionalEnum.ADAPTER") val optional_enum: OptionalEnum? = null, val
+        unknownFields: ByteString = ByteString.EMPTY) : Message<OptionalEnumUser,
+        OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
             message = "Shouldn't be used in Kotlin",
             level = DeprecationLevel.HIDDEN
@@ -39,11 +40,11 @@ data class OptionalEnumUser(@field:WireField(tag = 1, adapter = "OptionalEnum.AD
             OptionalEnumUser::class.java
         ) {
             override fun encodedSize(value: OptionalEnumUser): Int = 
-                OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
+                OptionalEnumUser.OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
                 value.unknownFields.size
 
             override fun encode(writer: ProtoWriter, value: OptionalEnumUser) {
-                OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
+                OptionalEnumUser.OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
                 writer.writeBytes(value.unknownFields)
             }
 
@@ -51,7 +52,7 @@ data class OptionalEnumUser(@field:WireField(tag = 1, adapter = "OptionalEnum.AD
                 var optional_enum: OptionalEnum? = null
                 val unknownFields = reader.forEachTag { tag ->
                     when (tag) {
-                        1 -> optional_enum = OptionalEnum.ADAPTER.decode(reader)
+                        1 -> optional_enum = OptionalEnumUser.OptionalEnum.ADAPTER.decode(reader)
                         else -> TagHandler.UNKNOWN_TAG
                     }
                 }

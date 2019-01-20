@@ -1,0 +1,21 @@
+package squareup.protos.kotlin;
+
+option java_package = "com.squareup.wire.protos.kotlin";
+
+message MessageWithStatus {
+  enum Status {
+    A = 1;
+  }
+}
+
+message OtherMessageWithStatus {
+  enum Status {
+    A = 1;
+  }
+}
+
+// Enum names must be fully qualified in generated Kotlin
+message MessageUsingMultipleEnums {
+  optional MessageWithStatus.Status a = 1;
+  optional OtherMessageWithStatus.Status b = 2;
+}

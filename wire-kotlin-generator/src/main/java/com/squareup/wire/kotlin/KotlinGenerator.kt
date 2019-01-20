@@ -654,7 +654,15 @@ class KotlinGenerator private constructor(
     return when {
       isScalar -> CodeBlock.of("%T.%L", ProtoAdapter::class, simpleName().toUpperCase(Locale.US))
       isMap -> throw IllegalArgumentException("Can't create single adapter for map type $this")
-      else -> CodeBlock.of("%L.ADAPTER", typeName.simpleName)
+      else -> CodeBlock.of("%L.ADAPTER", typeName.getQualifiedName())
+    }
+  }
+
+  private fun ClassName.getQualifiedName(): String {
+    return if (packageName.isEmpty()) {
+      canonicalName
+    } else {
+      canonicalName.removePrefix("$packageName.")
     }
   }
 
