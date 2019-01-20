@@ -829,14 +829,6 @@ class KotlinGenerator private constructor(
     else -> baseClass.copy(nullable = false)
   }
 
-  private val Field.typeName: TypeName
-    get() = when {
-      isRepeated -> List::class.asClassName().parameterizedBy(type().typeName)
-      isMap -> Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
-      !isRequired || default != null -> type().typeName.copy(nullable = true)
-      else -> type().typeName
-    }
-
   private fun Field.getDefaultValue(): CodeBlock {
     return when {
       isRepeated && !javaInterOp -> CodeBlock.of("emptyList()")
