@@ -353,29 +353,10 @@ class KotlinGenerator private constructor(
     val fields = message.fieldsWithJavaInteropOneOfs()
 
     fields.forEach { field ->
-      var fieldClass: TypeName
+      val fieldClass = field.typeName
       val fieldName = nameAllocator[field]
       val fieldType = field.type()
-      var defaultValue = CodeBlock.of("null")
-
-      when {
-        field.isRepeated -> {
-          fieldClass = List::class.asClassName().parameterizedBy(fieldType.typeName)
-          defaultValue = CodeBlock.of("emptyList()")
-        }
-        fieldType.isMap -> {
-          fieldClass = Map::class.asTypeName()
-              .parameterizedBy(fieldType.keyType().typeName, fieldType.valueType().typeName)
-          defaultValue = CodeBlock.of("emptyMap()")
-        }
-        !field.isRequired -> fieldClass = fieldType.typeName.copy(nullable = true)
-        else -> fieldClass = fieldType.typeName
-      }
-
-      if (field.default != null) {
-        defaultValue = field.getDefaultValue()
-        fieldClass = fieldType.typeName.copy(nullable = false)
-      }
+      val defaultValue = field.getDefaultValue()
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
       if (!field.isRequired && !fieldType.isMap) {
@@ -829,16 +810,17 @@ class KotlinGenerator private constructor(
     else -> baseClass.copy(nullable = false)
   }
 
+  private val Field.typeName: TypeName
+    get() = when {
+      isRepeated -> List::class.asClassName().parameterizedBy(type().typeName)
+      isMap -> Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
+      !isRequired || default != null -> type().typeName.copy(nullable = true)
+      else -> type().typeName
+    }
+
   private fun Field.getDefaultValue(): CodeBlock {
     return when {
-      isRepeated -> {
-        if (javaInterOp) {
-          val internalClass = ClassName("com.squareup.wire.internal", "Internal")
-          CodeBlock.of("%T.newMutableList()", internalClass)
-        } else {
-          CodeBlock.of("emptyList()")
-        }
-      }
+      isRepeated -> CodeBlock.of("emptyList()")
       isMap -> CodeBlock.of("emptyMap()")
       default != null -> {
         if (isEnum) {

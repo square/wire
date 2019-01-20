@@ -119,7 +119,7 @@ data class Person(
     data class PhoneNumber(
         @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.STRING") val number:
                 String,
-        @field:WireField(tag = 2, adapter = "PhoneType.ADAPTER") val type: PhoneType =
+        @field:WireField(tag = 2, adapter = "PhoneType.ADAPTER") val type: PhoneType? =
                 PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
     ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
