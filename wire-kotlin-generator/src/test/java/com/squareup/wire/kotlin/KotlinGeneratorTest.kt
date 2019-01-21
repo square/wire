@@ -41,7 +41,7 @@ class KotlinGeneratorTest {
         |  optional int32 b = 2 [default = 0x20 ];
         |  optional int64 c = 3 [default = 11 ];
         |  optional int64 d = 4 [default = 0x21 ];
-        |}""".trimMargin());
+        |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Message")
     assertTrue(code.contains("val a: Int = 10"))
     assertTrue(code.contains("val b: Int = 0x20"))
