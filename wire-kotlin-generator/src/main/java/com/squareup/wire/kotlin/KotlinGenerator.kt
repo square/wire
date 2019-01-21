@@ -831,14 +831,22 @@ class KotlinGenerator private constructor(
 
   private fun Field.getDefaultValue(): CodeBlock {
     return when {
-      isRepeated && !javaInterOp -> CodeBlock.of("emptyList()")
-      isRepeated && javaInterOp -> {
-        val internalClass = ClassName("com.squareup.wire.internal", "Internal")
-        CodeBlock.of("%T.newMutableList()", internalClass)
+      isRepeated -> {
+        if (javaInterOp) {
+          val internalClass = ClassName("com.squareup.wire.internal", "Internal")
+          CodeBlock.of("%T.newMutableList()", internalClass)
+        } else {
+          CodeBlock.of("emptyList()")
+        }
       }
       isMap -> CodeBlock.of("emptyMap()")
-      default != null && isEnum -> CodeBlock.of("%T.%L", type().typeName, default)
-      default != null -> CodeBlock.of("%L", default)
+      default != null -> {
+        if (isEnum) {
+          CodeBlock.of("%T.%L", type().typeName, default)
+        } else {
+          CodeBlock.of("%L", default)
+        }
+      }
       else -> CodeBlock.of("null")
     }
   }
