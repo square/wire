@@ -25,6 +25,8 @@ dependencies {
 // JAVA
 
 task generateJavaTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Java classes from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -37,6 +39,8 @@ task generateJavaTests(type: JavaExec) {
 // NO OPTIONS
 
 task generateNoOptionsTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Java classes with no options from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -55,6 +59,8 @@ generateNoOptionsTests.finalizedBy copyNoOptionsFiles
 // COMPACT
 
 task generateCompactTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates compact Java classes from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -81,11 +87,16 @@ task copyRepeatedPackedAndMapTest(type: Copy) {
   from 'wire-tests/src/test/proto-java.compact/com/squareup/wire/protos/RepeatedPackedAndMap.java'
   into 'wire-gson-support/src/test/java/com/squareup/wire/protos'
 }
-task generateGsonTests(dependsOn: [copyAllTypesTest, copyRepeatedPackedAndMapTest])
+task generateGsonTests(dependsOn: [copyAllTypesTest, copyRepeatedPackedAndMapTest]) {
+  group = 'Generate Tests'
+  description = 'Generates Java classes that use Gson from the test protos'
+}
 
 // INCLUDES / EXCLUDES
 
 task generateIncludesExcludesTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Java classes with included and excluded protos from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -106,6 +117,8 @@ generateIncludesExcludesTests.finalizedBy copyIncludesExcludesFiles
 // ANDROID
 
 task generateAndroidTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Java classes for Android from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -125,6 +138,8 @@ generateAndroidTests.finalizedBy copyAndroidFiles
 // ANDROID COMPACT
 
 task generateAndroidCompactTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates compact Java classes for Android from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -145,6 +160,8 @@ generateAndroidCompactTests.finalizedBy copyAndroidCompactFiles
 // KOTLIN
 
 task generateKotlinTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -160,6 +177,8 @@ task generateKotlinTests(type: JavaExec) {
 // KOTLIN ANDROID
 
 task generateKotlinAndroidTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes for Android from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -180,6 +199,8 @@ generateKotlinAndroidTests.finalizedBy copyKotlinAndroidFiles
 // KOTLIN JAVA INTEROP
 
 task generateKotlinJavaInteropTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes with Java interop from the test protos'
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
@@ -212,5 +233,8 @@ task removeTempDirs(type: Delete) {
 task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generateNoOptionsTests, 
     generateGsonTests, generateIncludesExcludesTests, generateAndroidTests, 
     generateAndroidCompactTests, generateKotlinTests, generateKotlinAndroidTests, 
-    generateKotlinJavaInteropTests])
+    generateKotlinJavaInteropTests]) {
+  group = 'Generate Tests'
+  description = 'Generates all test classes'
+}
 generateTests.finalizedBy removeTempDirs
