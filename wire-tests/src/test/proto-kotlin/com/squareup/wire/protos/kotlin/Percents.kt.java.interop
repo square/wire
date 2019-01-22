@@ -14,7 +14,7 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Percents(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.STRING") val
+data class Percents(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val
         text: String? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<Percents,
         Percents.Builder>(ADAPTER, unknownFields) {
     override fun newBuilder(): Builder {

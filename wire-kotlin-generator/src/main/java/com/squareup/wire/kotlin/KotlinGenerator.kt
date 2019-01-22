@@ -366,7 +366,7 @@ class KotlinGenerator private constructor(
       parameterSpec.addAnnotation(AnnotationSpec.builder(WireField::class)
           .useSiteTarget(FIELD)
           .addMember("tag = %L", field.tag())
-          .addMember("adapter = %S", field.getAdapterName())
+          .addMember("adapter = %S", field.getAdapterName(nameDelimiter = '#'))
           .build())
 
       constructorBuilder.addParameter(parameterSpec.build())
@@ -642,19 +642,22 @@ class KotlinGenerator private constructor(
   }
 
   // TODO add support for custom adapters.
-  private fun Field.getAdapterName(): CodeBlock {
+  private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
     return if (type().isMap) {
       CodeBlock.of("%NAdapter", name())
     } else {
-      type().getAdapterName()
+      type().getAdapterName(nameDelimiter)
     }
   }
 
-  private fun ProtoType.getAdapterName(): CodeBlock {
+  private fun ProtoType.getAdapterName(adapterFieldDelimiterName: Char = '.'): CodeBlock {
     return when {
-      isScalar -> CodeBlock.of("%T.%L", ProtoAdapter::class, simpleName().toUpperCase(Locale.US))
+      isScalar -> CodeBlock.of(
+          "%T$adapterFieldDelimiterName%L",
+          ProtoAdapter::class, simpleName().toUpperCase(Locale.US)
+      )
       isMap -> throw IllegalArgumentException("Can't create single adapter for map type $this")
-      else -> CodeBlock.of("%T.ADAPTER", typeName)
+      else -> CodeBlock.of("%T${adapterFieldDelimiterName}ADAPTER", typeName)
     }
   }
 

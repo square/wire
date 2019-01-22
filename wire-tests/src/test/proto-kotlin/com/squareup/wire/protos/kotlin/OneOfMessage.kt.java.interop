@@ -16,11 +16,11 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class OneOfMessage(
-    @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.INT32") val foo: Int? =
+    @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") val foo: Int? =
             null,
-    @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter.STRING") val bar: String? =
+    @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") val bar: String? =
             null,
-    @field:WireField(tag = 4, adapter = "com.squareup.wire.ProtoAdapter.STRING") val baz: String? =
+    @field:WireField(tag = 4, adapter = "com.squareup.wire.ProtoAdapter#STRING") val baz: String? =
             null,
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
