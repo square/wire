@@ -26,8 +26,9 @@ data class Person(
     @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter.INT32") val id: Int,
     @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter.STRING") val email: String?
             = null,
-    @field:WireField(tag = 4, adapter = "PhoneNumber.ADAPTER") val phone: List<PhoneNumber> =
-            emptyList(),
+    @field:WireField(tag = 4, adapter =
+            "com.squareup.wire.protos.kotlin.person.Person.PhoneNumber.ADAPTER") val phone:
+            List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -119,8 +120,9 @@ data class Person(
     data class PhoneNumber(
         @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter.STRING") val number:
                 String,
-        @field:WireField(tag = 2, adapter = "PhoneType.ADAPTER") val type: PhoneType? =
-                PhoneType.HOME,
+        @field:WireField(tag = 2, adapter =
+                "com.squareup.wire.protos.kotlin.person.Person.PhoneType.ADAPTER") val type:
+                PhoneType? = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
     ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
         @Deprecated(
