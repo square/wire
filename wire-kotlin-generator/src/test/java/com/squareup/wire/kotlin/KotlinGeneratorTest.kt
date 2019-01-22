@@ -43,10 +43,10 @@ class KotlinGeneratorTest {
         |  optional int64 d = 4 [default = 0x21 ];
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Message")
-    assertTrue(code.contains("val a: Int = 10"))
-    assertTrue(code.contains("val b: Int = 0x20"))
-    assertTrue(code.contains("val c: Long = 11"))
-    assertTrue(code.contains("val d: Long = 0x21"))
+    assertTrue(code.contains("val a: Int? = 10"))
+    assertTrue(code.contains("val b: Int? = 0x20"))
+    assertTrue(code.contains("val c: Long? = 11"))
+    assertTrue(code.contains("val d: Long? = 0x21"))
   }
 
   @Test fun nameAllocatorIsUsed() {
