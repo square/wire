@@ -15,11 +15,11 @@ import okio.ByteString
 
 data class MessageUsingMultipleEnums(
     @field:WireField(tag = 1, adapter =
-            "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER") val a:
+            "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER") @JvmField val a:
             MessageWithStatus.Status? = null,
     @field:WireField(tag = 2, adapter =
-            "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER") val b:
-            OtherMessageWithStatus.Status? = null,
+            "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER") @JvmField val
+            b: OtherMessageWithStatus.Status? = null,
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageUsingMultipleEnums, MessageUsingMultipleEnums.Builder>(ADAPTER, unknownFields) {
     override fun newBuilder(): Builder {
@@ -31,9 +31,11 @@ data class MessageUsingMultipleEnums(
     }
 
     class Builder : Message.Builder<MessageUsingMultipleEnums, Builder>() {
-        internal var a: MessageWithStatus.Status? = null
+        @JvmField
+        var a: MessageWithStatus.Status? = null
 
-        internal var b: OtherMessageWithStatus.Status? = null
+        @JvmField
+        var b: OtherMessageWithStatus.Status? = null
 
         fun a(a: MessageWithStatus.Status?): Builder {
             this.a = a

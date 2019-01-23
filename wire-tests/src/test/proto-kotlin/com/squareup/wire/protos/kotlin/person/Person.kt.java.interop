@@ -20,13 +20,15 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class Person(
-    @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val name: String,
-    @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") val id: Int,
-    @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") val email: String?
-            = null,
+    @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val name:
+            String,
+    @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") @JvmField val id:
+            Int,
+    @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val
+            email: String? = null,
     @field:WireField(tag = 4, adapter =
-            "com.squareup.wire.protos.kotlin.person.Person.PhoneNumber#ADAPTER") val phone:
-            List<PhoneNumber> = emptyList(),
+            "com.squareup.wire.protos.kotlin.person.Person.PhoneNumber#ADAPTER") @JvmField val
+            phone: List<PhoneNumber> = emptyList(),
     val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
     override fun newBuilder(): Builder {
@@ -40,13 +42,17 @@ data class Person(
     }
 
     class Builder : Message.Builder<Person, Builder>() {
-        internal var name: String? = null
+        @JvmField
+        var name: String? = null
 
-        internal var id: Int? = null
+        @JvmField
+        var id: Int? = null
 
-        internal var email: String? = null
+        @JvmField
+        var email: String? = null
 
-        internal var phone: List<PhoneNumber> = emptyList()
+        @JvmField
+        var phone: List<PhoneNumber> = emptyList()
 
         /**
          * The customer's full name.
@@ -167,11 +173,11 @@ data class Person(
     }
 
     data class PhoneNumber(
-        @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val number:
-                String,
+        @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val
+                number: String,
         @field:WireField(tag = 2, adapter =
-                "com.squareup.wire.protos.kotlin.person.Person.PhoneType#ADAPTER") val type:
-                PhoneType? = PhoneType.HOME,
+                "com.squareup.wire.protos.kotlin.person.Person.PhoneType#ADAPTER") @JvmField val
+                type: PhoneType? = PhoneType.HOME,
         val unknownFields: ByteString = ByteString.EMPTY
     ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
         override fun newBuilder(): Builder {
@@ -183,9 +189,11 @@ data class Person(
         }
 
         class Builder : Message.Builder<PhoneNumber, Builder>() {
-            internal var number: String? = null
+            @JvmField
+            var number: String? = null
 
-            internal var type: PhoneType = PhoneType.HOME
+            @JvmField
+            var type: PhoneType = PhoneType.HOME
 
             /**
              * The customer's phone number.
