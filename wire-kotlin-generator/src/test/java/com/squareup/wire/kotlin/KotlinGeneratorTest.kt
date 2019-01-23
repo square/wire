@@ -1,7 +1,10 @@
 package com.squareup.wire.kotlin
 
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.wire.schema.IdentifierSet
 import com.squareup.wire.schema.RepoBuilder
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class KotlinGeneratorTest {
@@ -63,5 +66,24 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
     assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
     assertTrue(code.contains("1 -> when_ = ProtoAdapter.FLOAT.decode(reader)"))
+  }
+
+  @Test fun enclosing() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+          |message A {
+          |  message B {
+          |  }
+          |  optional B b = 1;
+          |}""".trimMargin())
+        .schema()
+
+    val pruned = schema.prune(IdentifierSet.Builder().include("A.B").build())
+
+    val kotlinGenerator = KotlinGenerator.invoke(pruned)
+    val typeSpec = kotlinGenerator.generateType(pruned.getType("A"))
+    val code = FileSpec.get("", typeSpec).toString()
+    assertTrue(code.contains("object A {"))
+    assertTrue(code.contains("data class B(.*) : Message<B, B.Builder>".toRegex()))
   }
 }

@@ -50,6 +50,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.Internal
+import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
@@ -80,6 +81,7 @@ class KotlinGenerator private constructor(
   fun generateType(type: Type): TypeSpec = when (type) {
     is MessageType -> generateMessage(type)
     is EnumType -> generateEnum(type)
+    is EnclosingType -> generateEnclosing(type)
     else -> error("Unknown type $type")
   }
 
@@ -789,6 +791,15 @@ class KotlinGenerator private constructor(
         .jvmField()
         .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
         .build())
+  }
+
+  private fun generateEnclosing(type: EnclosingType): TypeSpec {
+    val classBuilder = TypeSpec.objectBuilder(type.typeName)
+
+    type.nestedTypes()
+        .forEach { classBuilder.addType(generateType(it)) }
+
+    return classBuilder.build()
   }
 
   private val Field.isEnum: Boolean
