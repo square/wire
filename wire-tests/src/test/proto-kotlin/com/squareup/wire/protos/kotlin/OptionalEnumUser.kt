@@ -19,7 +19,7 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
-        "com.squareup.wire.protos.kotlin.OptionalEnumUser.OptionalEnum.ADAPTER") val optional_enum:
+        "com.squareup.wire.protos.kotlin.OptionalEnumUser.OptionalEnum#ADAPTER") val optional_enum:
         OptionalEnum? = null, val unknownFields: ByteString = ByteString.EMPTY) :
         Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
     @Deprecated(

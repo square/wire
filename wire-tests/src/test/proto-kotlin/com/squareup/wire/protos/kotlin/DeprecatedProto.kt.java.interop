@@ -16,7 +16,7 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class DeprecatedProto(@field:WireField(tag = 1, adapter =
-        "com.squareup.wire.ProtoAdapter.STRING") val foo: String? = null, val unknownFields:
+        "com.squareup.wire.ProtoAdapter#STRING") val foo: String? = null, val unknownFields:
         ByteString = ByteString.EMPTY) : Message<DeprecatedProto, DeprecatedProto.Builder>(ADAPTER,
         unknownFields) {
     override fun newBuilder(): Builder {
