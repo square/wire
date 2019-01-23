@@ -25,7 +25,6 @@ import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier.DATA
-import com.squareup.kotlinpoet.KModifier.INTERNAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.KModifier.SEALED
@@ -288,12 +287,16 @@ class KotlinGenerator private constructor(
     type.fieldsWithJavaInteropOneOfs().forEach { field ->
       val fieldName = nameAllocator[field]
 
+      val propertyBuilder = PropertySpec.builder(fieldName, field.declarationClass)
+          .mutable(true)
+          .initializer(field.getDefaultValue())
+
+      if (javaInterOp) {
+        propertyBuilder.addAnnotation(JvmField::class)
+      }
+
       builder
-          .addProperty(PropertySpec.builder(fieldName, field.declarationClass)
-              .mutable(true)
-              .initializer(field.getDefaultValue())
-              .addModifiers(INTERNAL)
-              .build())
+          .addProperty(propertyBuilder.build())
           .addFunction(builderSetter(field, nameAllocator, builderClass))
     }
 
@@ -368,6 +371,10 @@ class KotlinGenerator private constructor(
           .addMember("tag = %L", field.tag())
           .addMember("adapter = %S", field.getAdapterName(nameDelimiter = '#'))
           .build())
+
+      if (javaInterOp) {
+        parameterSpec.addAnnotation(JvmField::class)
+      }
 
       constructorBuilder.addParameter(parameterSpec.build())
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
