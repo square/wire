@@ -17,6 +17,8 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.wire.schema.EnclosingType;
+import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
@@ -411,5 +413,31 @@ public final class JavaGeneratorTest {
         .contains(""
         + "public static final Parcelable.Creator<B> CREATOR = AndroidMessage.newCreator(ADAPTER)");
         ;
+  }
+
+  @Test
+  public void enclosingTypeIsNotMessage() {
+    Schema schema = new RepoBuilder()
+        .add("message.proto", ""
+            + "message A {\n"
+            + "  message B {\n"
+            + "  }\n"
+            + "  optional B b = 1;\n"
+            + "}\n")
+        .schema();
+
+    Schema pruned = schema.prune(new IdentifierSet.Builder()
+        .include("A.B")
+        .build());
+
+    JavaGenerator javaGenerator = JavaGenerator.get(schema);
+    TypeSpec typeSpec = javaGenerator.generateType(pruned.getType("A"));
+    assertThat(JavaFile.builder("", typeSpec).build().toString())
+        .contains(""
+            + "public final class A {\n"
+            + "  private A() {\n"
+            + "    throw new AssertionError();\n"
+            + "  }")
+        .contains("public static final class B extends Message<B, B.Builder> {");
   }
 }
