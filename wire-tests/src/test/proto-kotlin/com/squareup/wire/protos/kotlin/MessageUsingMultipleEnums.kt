@@ -69,6 +69,11 @@ data class MessageUsingMultipleEnums(
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: MessageUsingMultipleEnums): MessageUsingMultipleEnums? =
+          value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

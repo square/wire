@@ -52,6 +52,10 @@ data class MessageWithStatus(val unknownFields: ByteString = ByteString.EMPTY) :
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: MessageWithStatus): MessageWithStatus? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 

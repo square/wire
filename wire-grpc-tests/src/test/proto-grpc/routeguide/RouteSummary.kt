@@ -79,6 +79,10 @@ data class RouteSummary(
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: RouteSummary): RouteSummary? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

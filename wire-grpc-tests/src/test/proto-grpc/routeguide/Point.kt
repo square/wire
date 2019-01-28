@@ -65,6 +65,10 @@ data class Point(
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: Point): Point? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

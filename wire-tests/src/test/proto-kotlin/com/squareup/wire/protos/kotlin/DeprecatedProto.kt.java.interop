@@ -70,6 +70,10 @@ data class DeprecatedProto(@field:WireField(tag = 1, adapter =
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: DeprecatedProto): DeprecatedProto? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

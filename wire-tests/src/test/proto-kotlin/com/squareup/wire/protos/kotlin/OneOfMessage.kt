@@ -66,6 +66,10 @@ data class OneOfMessage(val choice: Choice? = null, val unknownFields: ByteStrin
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: OneOfMessage): OneOfMessage? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 

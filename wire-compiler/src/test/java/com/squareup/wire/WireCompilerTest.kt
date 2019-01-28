@@ -424,6 +424,24 @@ class WireCompilerTest {
     assertKotlinOutputs(outputs, ".java.interop")
   }
 
+  @Test
+  fun testRedactedKotlin() {
+    val sources = arrayOf("redacted_test.proto", "option_redacted.proto")
+    compileToKotlin(sources)
+
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/kotlin/redacted/NotRedacted.kt",
+        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedChild.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedCycleA.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedCycleB.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedRepeated.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedRequired.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedExtension.kt"
+    )
+    assertKotlinOutputs(outputs)
+  }
+
   private fun compileToJava(sources: Array<String>, vararg extraArgs: String) =
       invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
 

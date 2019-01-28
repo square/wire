@@ -63,6 +63,12 @@ data class Rectangle(
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: Rectangle): Rectangle? = value.copy(
+        lo = value.lo?.let(Point.ADAPTER::redact),
+        hi = value.hi?.let(Point.ADAPTER::redact),
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }
