@@ -1,0 +1,71 @@
+buildscript {
+  dependencies {
+    classpath deps.protobufGradlePlugin
+  }
+
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'ru.vyarus.animalsniffer'
+apply plugin: 'com.google.protobuf'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+protobuf {
+  plugins {
+    grpc {
+      artifact = deps.grpc.genJava
+    }
+  }
+
+  protoc {
+    artifact = deps.protoc
+  }
+
+  generateProtoTasks {
+    ofSourceSet('test')*.plugins {
+      // Apply the "grpc" plugin whose spec is defined above, without
+      // options.  Note the braces cannot be omitted, otherwise the
+      // plugin will not be added. This is because of the implicit way
+      // NamedDomainObjectContainer binds the methods.
+      grpc {}
+    }
+  }
+}
+
+sourceSets {
+  test.java.srcDirs += 'build/generated/source/proto/test/grpc'
+  test.java.srcDirs += 'build/generated/source/proto/test/java'
+  test.java.srcDirs += 'src/test/proto-grpc'
+}
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-grpc-tests')
+  }
+}
+
+animalsniffer {
+  sourceSets = [sourceSets.main]
+  ignore 'com.squareup.wire.internal'
+}
+
+dependencies {
+  api deps.okio
+  api deps.okhttp
+  api deps.kotlin.coroutines.core
+  api project(':wire-runtime')
+  compileOnly deps.android
+  compileOnly deps.jsr305
+  testImplementation deps.junit
+  testImplementation deps.assertj
+  testImplementation deps.grpc.netty
+  testImplementation deps.grpc.protobuf
+  testImplementation deps.grpc.stub
+}

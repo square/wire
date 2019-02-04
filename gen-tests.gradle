@@ -3,11 +3,11 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 def PROTOS = Files.find(
-      Paths.get("wire-tests/src/test/proto"),
+      Paths.get("${rootProject.rootDir}/wire-tests/src/test/proto"),
       Integer.MAX_VALUE,
       { path, attrs -> attrs.isRegularFile() }
     )
-    .map { path -> Paths.get("wire-tests/src/test/proto").relativize(path) }
+    .map { path -> Paths.get("${rootProject.rootDir}/wire-tests/src/test/proto").relativize(path) }
     .filter { path -> !path.startsWith("kotlin") }
     .map { path -> path.toString() }
     .filter { path -> path.endsWith(".proto") }
@@ -222,6 +222,32 @@ task copyKotlinJavaInteropFiles(type: Copy) {
 }
 generateKotlinJavaInteropTests.finalizedBy copyKotlinJavaInteropFiles
 
+// GRPC
+
+def GRPC_PROTOS = Files.find(
+        Paths.get("${rootProject.rootDir}/wire-grpc-tests/src/test/proto"),
+        Integer.MAX_VALUE,
+        { path, attrs -> attrs.isRegularFile() }
+)
+        .map { path -> Paths.get("${rootProject.rootDir}/wire-grpc-tests/src/test/proto").relativize(path) }
+        .filter { path -> !path.startsWith("kotlin") }
+        .map { path -> path.toString() }
+        .filter { path -> path.endsWith(".proto") }
+        .sorted()
+        .collect(Collectors.toList())
+
+task generateGrpcTests(type: JavaExec) {
+  group = 'Generate gRPC Tests'
+  description = 'Generates Kotlin classes from the gRPC test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-grpc-tests/src/test/proto',
+          '--kotlin_out=wire-grpc-tests/src/test/proto-grpc',
+          'routeguide/RouteGuideProto.proto'
+  ] + GRPC_PROTOS
+}
+
 task removeTempDirs(type: Delete) {
   delete 'wire-tests/src/test/proto-java.noOptions',
       'wire-tests/src/test/proto-java.compact',
@@ -235,7 +261,7 @@ task removeTempDirs(type: Delete) {
 task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generateNoOptionsTests, 
     generateGsonTests, generateIncludesExcludesTests, generateAndroidTests, 
     generateAndroidCompactTests, generateKotlinTests, generateKotlinAndroidTests, 
-    generateKotlinJavaInteropTests]) {
+    generateKotlinJavaInteropTests, generateGrpcTests]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
 }
