@@ -2,15 +2,20 @@ buildscript {
   ext.versions = [
       'android': '4.1.1.4',
       'autovalue': '1.6.2',
+      'coroutines': '1.1.1',
       'errorprone': '2.0.21',
+      'grpc': '1.14.0',
       'gson': '2.8.1',
       'guava': '20.0',
       'javapoet': '1.10.0',
       'kotlinpoet': '1.0.1',
       'jsr305': '3.0.2',
       'kotlin': '1.3.20',
-      'okio': '2.1.0',
+      'okio': '2.2.2',
+      'okhttp': '3.13.0-SNAPSHOT',
       'moshi': '1.6.0',
+      'protobuf': '0.8.8',
+      'protoc': '3.0.0',
       'junit': '4.12',
       'assertj': '3.11.0',
       'jimfs': '1.0',
@@ -19,18 +24,24 @@ buildscript {
       'maven': '3.5.0',
       'mavenAnnotations': '3.5',
       'mavenPluginBuilder': '1.2.1',
-      'mavenPublish': '0.6.0',
+      'mavenPublish': '0.6.0'
   ]
 
   ext.deps = [
       plugins: [
           kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
           shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
-      ],    
+      ],
       'android': "com.google.android:android:${versions.android}",
       'guava': "com.google.guava:guava:${versions.guava}",
       'okio': "com.squareup.okio:okio:${versions.okio}",
       'jsr305': "com.google.code.findbugs:jsr305:${versions.jsr305}",
+      'grpc': [
+          "genJava": "io.grpc:protoc-gen-grpc-java:${versions.grpc}",
+          "netty": "io.grpc:grpc-netty:${versions.grpc}",
+          "protobuf": "io.grpc:grpc-protobuf:${versions.grpc}",
+          "stub": "io.grpc:grpc-stub:${versions.grpc}",
+      ],
       'gson': "com.google.code.gson:gson:${versions.gson}",
       'javapoet': "com.squareup:javapoet:${versions.javapoet}",
       'kotlinpoet': "com.squareup:kotlinpoet:${versions.kotlinpoet}",
@@ -38,6 +49,7 @@ buildscript {
           'compiler': "com.google.auto.value:auto-value:${versions.autovalue}",
           'annotations': "com.google.auto.value:auto-value-annotations:${versions.autovalue}"
       ],
+      'okhttp': "com.squareup.okhttp3:okhttp:${versions.okhttp}",
       'kotlin': [
           'stdlib': [
               'jdk6': "org.jetbrains.kotlin:kotlin-stdlib",
@@ -46,6 +58,9 @@ buildscript {
           'test': [
               'junit': "org.jetbrains.kotlin:kotlin-test-junit",
           ],
+          'coroutines': [
+              'core': "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+          ]
       ],
       'moshi': "com.squareup.moshi:moshi:${versions.moshi}",
       'junit': "junit:junit:${versions.junit}",
@@ -63,7 +78,9 @@ buildscript {
               'builder': "gradle.plugin.com.liferay:gradle-plugins-maven-plugin-builder:${versions.mavenPluginBuilder}",
               'publish': "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}",
           ]
-      ]
+      ],
+      'protoc': "com.google.protobuf:protoc:${versions.protoc}",
+      'protobufGradlePlugin': "com.google.protobuf:protobuf-gradle-plugin:${versions.protobuf}"
   ]
 
   dependencies {
@@ -86,6 +103,10 @@ allprojects {
 
   repositories {
     mavenCentral()
+    // TODO(oldergod) remove once okHttp ships duplex
+    maven{
+      url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
   }
 }
 
