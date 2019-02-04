@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-syntax = "proto3";
+syntax = "proto2";
 
 package routeguide;
 
@@ -51,18 +51,18 @@ service RouteGuide {
 // Latitudes should be in the range +/- 90 degrees and longitude should be in
 // the range +/- 180 degrees (inclusive).
 message Point {
-  int32 latitude = 1;
-  int32 longitude = 2;
+  optional int32 latitude = 1;
+  optional int32 longitude = 2;
 }
 
 // A latitude-longitude rectangle, represented as two diagonally opposite
 // points "lo" and "hi".
 message Rectangle {
   // One corner of the rectangle.
-  Point lo = 1;
+  optional Point lo = 1;
 
   // The other corner of the rectangle.
-  Point hi = 2;
+  optional Point hi = 2;
 }
 
 // A feature names something at a given point.
@@ -70,10 +70,10 @@ message Rectangle {
 // If a feature could not be named, the name is empty.
 message Feature {
   // The name of the feature.
-  string name = 1;
+  optional string name = 1;
 
   // The point where the feature is detected.
-  Point location = 2;
+  optional Point location = 2;
 }
 
 // Not used in the RPC.  Instead, this is here for the form serialized to disk.
@@ -84,10 +84,10 @@ message FeatureDatabase {
 // A RouteNote is a message sent while at a given point.
 message RouteNote {
   // The location from which the message is sent.
-  Point location = 1;
+  optional Point location = 1;
 
   // The message to be sent.
-  string message = 2;
+  optional string message = 2;
 }
 
 // A RouteSummary is received in response to a RecordRoute rpc.
@@ -97,14 +97,14 @@ message RouteNote {
 // the distance between each point.
 message RouteSummary {
   // The number of points received.
-  int32 point_count = 1;
+  optional int32 point_count = 1;
 
   // The number of known features passed while traversing the route.
-  int32 feature_count = 2;
+  optional int32 feature_count = 2;
 
   // The distance covered in metres.
-  int32 distance = 3;
+  optional int32 distance = 3;
 
   // The duration of the traversal in seconds.
-  int32 elapsed_time = 4;
+  optional int32 elapsed_time = 4;
 }
