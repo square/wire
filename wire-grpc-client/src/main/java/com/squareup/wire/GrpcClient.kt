@@ -17,6 +17,7 @@ package com.squareup.wire
 
 import com.squareup.wire.GrpcEncoding.Companion.toGrpcEncoding
 import com.squareup.wire.GrpcMethod.Companion.toGrpc
+import com.squareup.wire.internal.invokeSuspending
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -44,9 +45,7 @@ class GrpcClient private constructor(
 ) {
   fun <T : Service> create(service: KClass<T>): T {
     val methodToService: Map<Method, GrpcMethod<*, *>> =
-        service.java.methods.associate { method ->
-          method to method.toGrpc<Any, Any>()
-        }
+        service.java.methods.associate { method -> method to method.toGrpc<Any, Any>() }
 
     return Proxy.newProxyInstance(service.java.classLoader, arrayOf<Class<*>>(service.java),
         object : InvocationHandler {

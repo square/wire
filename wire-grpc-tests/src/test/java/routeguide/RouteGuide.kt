@@ -17,7 +17,6 @@ package routeguide
 
 import com.squareup.wire.Service
 import com.squareup.wire.WireRpc
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
