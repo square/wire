@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.genericParameterType
+import com.squareup.wire.internal.rawType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
