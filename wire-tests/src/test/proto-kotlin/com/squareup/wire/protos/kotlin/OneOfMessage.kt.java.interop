@@ -16,109 +16,109 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class OneOfMessage(
-    @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") @JvmField val foo:
-            Int? = null,
-    @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val bar:
-            String? = null,
-    @field:WireField(tag = 4, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val baz:
-            String? = null,
-    val unknownFields: ByteString = ByteString.EMPTY
+  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") @JvmField val foo:
+      Int? = null,
+  @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val bar:
+      String? = null,
+  @field:WireField(tag = 4, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val baz:
+      String? = null,
+  val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
-    init {
-        require (Internal.countNonNull(foo, bar, baz) > 1) {
-            "At most one of foo, bar, baz may be non-null"
-        }
+  init {
+    require (Internal.countNonNull(foo, bar, baz) > 1) {
+      "At most one of foo, bar, baz may be non-null"
+    }
+  }
+
+  override fun newBuilder(): Builder {
+    val builder = Builder()
+    builder.foo = foo
+    builder.bar = bar
+    builder.baz = baz
+    builder.addUnknownFields(unknownFields())
+    return builder
+  }
+
+  class Builder : Message.Builder<OneOfMessage, Builder>() {
+    @JvmField
+    var foo: Int? = null
+
+    @JvmField
+    var bar: String? = null
+
+    @JvmField
+    var baz: String? = null
+
+    /**
+     * What foo.
+     */
+    fun foo(foo: Int): Builder {
+      this.foo = foo
+      return this
     }
 
-    override fun newBuilder(): Builder {
-        val builder = Builder()
-        builder.foo = foo
-        builder.bar = bar
-        builder.baz = baz
-        builder.addUnknownFields(unknownFields())
-        return builder
+    /**
+     * Such bar.
+     */
+    fun bar(bar: String): Builder {
+      this.bar = bar
+      return this
     }
 
-    class Builder : Message.Builder<OneOfMessage, Builder>() {
-        @JvmField
+    /**
+     * Nice baz.
+     */
+    fun baz(baz: String): Builder {
+      this.baz = baz
+      return this
+    }
+
+    override fun build(): OneOfMessage = OneOfMessage(
+      foo = foo,
+      bar = bar,
+      baz = baz,
+      unknownFields = buildUnknownFields()
+    )
+  }
+
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      OneOfMessage::class.java
+    ) {
+      override fun encodedSize(value: OneOfMessage): Int = 
+        ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
+        ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) +
+        ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) +
+        value.unknownFields.size
+
+      override fun encode(writer: ProtoWriter, value: OneOfMessage) {
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
+        ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
+        writer.writeBytes(value.unknownFields)
+      }
+
+      override fun decode(reader: ProtoReader): OneOfMessage {
         var foo: Int? = null
-
-        @JvmField
         var bar: String? = null
-
-        @JvmField
         var baz: String? = null
-
-        /**
-         * What foo.
-         */
-        fun foo(foo: Int): Builder {
-            this.foo = foo
-            return this
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            1 -> foo = ProtoAdapter.INT32.decode(reader)
+            3 -> bar = ProtoAdapter.STRING.decode(reader)
+            4 -> baz = ProtoAdapter.STRING.decode(reader)
+            else -> TagHandler.UNKNOWN_TAG
+          }
         }
-
-        /**
-         * Such bar.
-         */
-        fun bar(bar: String): Builder {
-            this.bar = bar
-            return this
-        }
-
-        /**
-         * Nice baz.
-         */
-        fun baz(baz: String): Builder {
-            this.baz = baz
-            return this
-        }
-
-        override fun build(): OneOfMessage = OneOfMessage(
-            foo = foo,
-            bar = bar,
-            baz = baz,
-            unknownFields = buildUnknownFields()
+        return OneOfMessage(
+          foo = foo,
+          bar = bar,
+          baz = baz,
+          unknownFields = unknownFields
         )
+      }
     }
-
-    companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            OneOfMessage::class.java
-        ) {
-            override fun encodedSize(value: OneOfMessage): Int = 
-                ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
-                ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) +
-                ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) +
-                value.unknownFields.size
-
-            override fun encode(writer: ProtoWriter, value: OneOfMessage) {
-                ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
-                ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
-                ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
-                writer.writeBytes(value.unknownFields)
-            }
-
-            override fun decode(reader: ProtoReader): OneOfMessage {
-                var foo: Int? = null
-                var bar: String? = null
-                var baz: String? = null
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        1 -> foo = ProtoAdapter.INT32.decode(reader)
-                        3 -> bar = ProtoAdapter.STRING.decode(reader)
-                        4 -> baz = ProtoAdapter.STRING.decode(reader)
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return OneOfMessage(
-                    foo = foo,
-                    bar = bar,
-                    baz = baz,
-                    unknownFields = unknownFields
-                )
-            }
-        }
-    }
+  }
 }

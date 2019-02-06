@@ -17,7 +17,6 @@ package com.squareup.wire
 
 import com.squareup.javapoet.JavaFile
 import com.squareup.wire.java.JavaGenerator
-import com.squareup.wire.schema.Type
 import java.io.IOException
 import java.nio.file.FileSystem
 import java.util.concurrent.Callable
@@ -26,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 internal class JavaFileWriter(
   private val destination: String,
   private val javaGenerator: JavaGenerator,
-  private val queue: ConcurrentLinkedQueue<Type>,
+  private val queue: ConcurrentLinkedQueue<PendingTypeFileSpec>,
   private val dryRun: Boolean,
   private val fs: FileSystem,
   private val log: WireLogger
@@ -35,7 +34,8 @@ internal class JavaFileWriter(
   @Throws(IOException::class)
   override fun call() {
     while (true) {
-      val type = queue.poll() ?: return
+      val type = queue.poll()?.type ?: return
+
 
       val typeSpec = javaGenerator.generateType(type)
       val javaTypeName = javaGenerator.generatedTypeName(type)

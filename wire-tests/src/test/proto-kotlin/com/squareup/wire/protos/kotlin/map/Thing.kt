@@ -17,46 +17,46 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Thing(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val
-        name: String? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<Thing,
-        Thing.Builder>(ADAPTER, unknownFields) {
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
-    override fun newBuilder(): Builder = Builder(this.copy())
+    name: String? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<Thing,
+    Thing.Builder>(ADAPTER, unknownFields) {
+  @Deprecated(
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
+  )
+  override fun newBuilder(): Builder = Builder(this.copy())
 
-    class Builder(private val message: Thing) : Message.Builder<Thing, Builder>() {
-        override fun build(): Thing = message
-    }
+  class Builder(private val message: Thing) : Message.Builder<Thing, Builder>() {
+    override fun build(): Thing = message
+  }
 
-    companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<Thing> = object : ProtoAdapter<Thing>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            Thing::class.java
-        ) {
-            override fun encodedSize(value: Thing): Int = 
-                ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-                value.unknownFields.size
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<Thing> = object : ProtoAdapter<Thing>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      Thing::class.java
+    ) {
+      override fun encodedSize(value: Thing): Int = 
+        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
+        value.unknownFields.size
 
-            override fun encode(writer: ProtoWriter, value: Thing) {
-                ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
-                writer.writeBytes(value.unknownFields)
-            }
+      override fun encode(writer: ProtoWriter, value: Thing) {
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
+        writer.writeBytes(value.unknownFields)
+      }
 
-            override fun decode(reader: ProtoReader): Thing {
-                var name: String? = null
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        1 -> name = ProtoAdapter.STRING.decode(reader)
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return Thing(
-                    name = name,
-                    unknownFields = unknownFields
-                )
-            }
+      override fun decode(reader: ProtoReader): Thing {
+        var name: String? = null
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            1 -> name = ProtoAdapter.STRING.decode(reader)
+            else -> TagHandler.UNKNOWN_TAG
+          }
         }
+        return Thing(
+          name = name,
+          unknownFields = unknownFields
+        )
+      }
     }
+  }
 }

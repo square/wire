@@ -16,60 +16,60 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class DeprecatedProto(@field:WireField(tag = 1, adapter =
-        "com.squareup.wire.ProtoAdapter#STRING") @JvmField val foo: String? = null, val
-        unknownFields: ByteString = ByteString.EMPTY) : Message<DeprecatedProto,
-        DeprecatedProto.Builder>(ADAPTER, unknownFields) {
-    override fun newBuilder(): Builder {
-        val builder = Builder()
-        builder.foo = foo
-        builder.addUnknownFields(unknownFields())
-        return builder
+    "com.squareup.wire.ProtoAdapter#STRING") @JvmField val foo: String? = null, val unknownFields:
+    ByteString = ByteString.EMPTY) : Message<DeprecatedProto, DeprecatedProto.Builder>(ADAPTER,
+    unknownFields) {
+  override fun newBuilder(): Builder {
+    val builder = Builder()
+    builder.foo = foo
+    builder.addUnknownFields(unknownFields())
+    return builder
+  }
+
+  class Builder : Message.Builder<DeprecatedProto, Builder>() {
+    @JvmField
+    var foo: String? = null
+
+    @Deprecated(message = "foo is deprecated")
+    fun foo(foo: String?): Builder {
+      this.foo = foo
+      return this
     }
 
-    class Builder : Message.Builder<DeprecatedProto, Builder>() {
-        @JvmField
+    override fun build(): DeprecatedProto = DeprecatedProto(
+      foo = foo,
+      unknownFields = buildUnknownFields()
+    )
+  }
+
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      DeprecatedProto::class.java
+    ) {
+      override fun encodedSize(value: DeprecatedProto): Int = 
+        ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
+        value.unknownFields.size
+
+      override fun encode(writer: ProtoWriter, value: DeprecatedProto) {
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
+        writer.writeBytes(value.unknownFields)
+      }
+
+      override fun decode(reader: ProtoReader): DeprecatedProto {
         var foo: String? = null
-
-        @Deprecated(message = "foo is deprecated")
-        fun foo(foo: String?): Builder {
-            this.foo = foo
-            return this
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            1 -> foo = ProtoAdapter.STRING.decode(reader)
+            else -> TagHandler.UNKNOWN_TAG
+          }
         }
-
-        override fun build(): DeprecatedProto = DeprecatedProto(
-            foo = foo,
-            unknownFields = buildUnknownFields()
+        return DeprecatedProto(
+          foo = foo,
+          unknownFields = unknownFields
         )
+      }
     }
-
-    companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            DeprecatedProto::class.java
-        ) {
-            override fun encodedSize(value: DeprecatedProto): Int = 
-                ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
-                value.unknownFields.size
-
-            override fun encode(writer: ProtoWriter, value: DeprecatedProto) {
-                ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
-                writer.writeBytes(value.unknownFields)
-            }
-
-            override fun decode(reader: ProtoReader): DeprecatedProto {
-                var foo: String? = null
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        1 -> foo = ProtoAdapter.STRING.decode(reader)
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return DeprecatedProto(
-                    foo = foo,
-                    unknownFields = unknownFields
-                )
-            }
-        }
-    }
+  }
 }
