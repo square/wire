@@ -171,7 +171,8 @@ task generateKotlinTests(type: JavaExec) {
       'optional_enum.proto',
       'map.proto',
       'one_of.proto',
-      'same_name_enum.proto'
+      'same_name_enum.proto',
+      'service_kotlin.proto'
   ]
 }
 
@@ -225,16 +226,16 @@ generateKotlinJavaInteropTests.finalizedBy copyKotlinJavaInteropFiles
 // GRPC
 
 def GRPC_PROTOS = Files.find(
-        Paths.get("${rootProject.rootDir}/wire-grpc-tests/src/test/proto"),
-        Integer.MAX_VALUE,
-        { path, attrs -> attrs.isRegularFile() }
-)
-        .map { path -> Paths.get("${rootProject.rootDir}/wire-grpc-tests/src/test/proto").relativize(path) }
-        .filter { path -> !path.startsWith("kotlin") }
-        .map { path -> path.toString() }
-        .filter { path -> path.endsWith(".proto") }
-        .sorted()
-        .collect(Collectors.toList())
+      Paths.get("${rootProject.rootDir}/wire-grpc-tests/src/test/proto"),
+      Integer.MAX_VALUE,
+      { path, attrs -> attrs.isRegularFile() }
+    )
+    .map { path -> Paths.get("${rootProject.rootDir}/wire-grpc-tests/src/test/proto").relativize(path) }
+    .filter { path -> !path.startsWith("kotlin") }
+    .map { path -> path.toString() }
+    .filter { path -> path.endsWith(".proto") }
+    .sorted()
+    .collect(Collectors.toList())
 
 task generateGrpcTests(type: JavaExec) {
   group = 'Generate gRPC Tests'
