@@ -16,59 +16,59 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class MessageUsingMultipleEnums(
-    @field:WireField(tag = 1, adapter =
-            "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER") val a:
-            MessageWithStatus.Status? = null,
-    @field:WireField(tag = 2, adapter =
-            "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER") val b:
-            OtherMessageWithStatus.Status? = null,
-    val unknownFields: ByteString = ByteString.EMPTY
+  @field:WireField(tag = 1, adapter =
+      "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER") val a:
+      MessageWithStatus.Status? = null,
+  @field:WireField(tag = 2, adapter =
+      "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER") val b:
+      OtherMessageWithStatus.Status? = null,
+  val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageUsingMultipleEnums, MessageUsingMultipleEnums.Builder>(ADAPTER, unknownFields) {
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
-    override fun newBuilder(): Builder = Builder(this.copy())
+  @Deprecated(
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
+  )
+  override fun newBuilder(): Builder = Builder(this.copy())
 
-    class Builder(private val message: MessageUsingMultipleEnums) :
-            Message.Builder<MessageUsingMultipleEnums, Builder>() {
-        override fun build(): MessageUsingMultipleEnums = message
-    }
+  class Builder(private val message: MessageUsingMultipleEnums) :
+      Message.Builder<MessageUsingMultipleEnums, Builder>() {
+    override fun build(): MessageUsingMultipleEnums = message
+  }
 
-    companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
-                ProtoAdapter<MessageUsingMultipleEnums>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            MessageUsingMultipleEnums::class.java
-        ) {
-            override fun encodedSize(value: MessageUsingMultipleEnums): Int = 
-                MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a) +
-                OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b) +
-                value.unknownFields.size
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
+        ProtoAdapter<MessageUsingMultipleEnums>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      MessageUsingMultipleEnums::class.java
+    ) {
+      override fun encodedSize(value: MessageUsingMultipleEnums): Int = 
+        MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a) +
+        OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b) +
+        value.unknownFields.size
 
-            override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums) {
-                MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
-                OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
-                writer.writeBytes(value.unknownFields)
-            }
+      override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums) {
+        MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
+        OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
+        writer.writeBytes(value.unknownFields)
+      }
 
-            override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
-                var a: MessageWithStatus.Status? = null
-                var b: OtherMessageWithStatus.Status? = null
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        1 -> a = MessageWithStatus.Status.ADAPTER.decode(reader)
-                        2 -> b = OtherMessageWithStatus.Status.ADAPTER.decode(reader)
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return MessageUsingMultipleEnums(
-                    a = a,
-                    b = b,
-                    unknownFields = unknownFields
-                )
-            }
+      override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
+        var a: MessageWithStatus.Status? = null
+        var b: OtherMessageWithStatus.Status? = null
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            1 -> a = MessageWithStatus.Status.ADAPTER.decode(reader)
+            2 -> b = OtherMessageWithStatus.Status.ADAPTER.decode(reader)
+            else -> TagHandler.UNKNOWN_TAG
+          }
         }
+        return MessageUsingMultipleEnums(
+          a = a,
+          b = b,
+          unknownFields = unknownFields
+        )
+      }
     }
+  }
 }

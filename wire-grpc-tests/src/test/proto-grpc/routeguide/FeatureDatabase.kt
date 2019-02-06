@@ -17,47 +17,47 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class FeatureDatabase(@field:WireField(tag = 1, adapter = "routeguide.Feature#ADAPTER") val
-        feature: List<Feature> = emptyList(), val unknownFields: ByteString = ByteString.EMPTY) :
-        Message<FeatureDatabase, FeatureDatabase.Builder>(ADAPTER, unknownFields) {
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
-    override fun newBuilder(): Builder = Builder(this.copy())
+    feature: List<Feature> = emptyList(), val unknownFields: ByteString = ByteString.EMPTY) :
+    Message<FeatureDatabase, FeatureDatabase.Builder>(ADAPTER, unknownFields) {
+  @Deprecated(
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
+  )
+  override fun newBuilder(): Builder = Builder(this.copy())
 
-    class Builder(private val message: FeatureDatabase) : Message.Builder<FeatureDatabase,
-            Builder>() {
-        override fun build(): FeatureDatabase = message
-    }
+  class Builder(private val message: FeatureDatabase) : Message.Builder<FeatureDatabase, Builder>()
+      {
+    override fun build(): FeatureDatabase = message
+  }
 
-    companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<FeatureDatabase> = object : ProtoAdapter<FeatureDatabase>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            FeatureDatabase::class.java
-        ) {
-            override fun encodedSize(value: FeatureDatabase): Int = 
-                Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature) +
-                value.unknownFields.size
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<FeatureDatabase> = object : ProtoAdapter<FeatureDatabase>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      FeatureDatabase::class.java
+    ) {
+      override fun encodedSize(value: FeatureDatabase): Int = 
+        Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature) +
+        value.unknownFields.size
 
-            override fun encode(writer: ProtoWriter, value: FeatureDatabase) {
-                Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
-                writer.writeBytes(value.unknownFields)
-            }
+      override fun encode(writer: ProtoWriter, value: FeatureDatabase) {
+        Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
+        writer.writeBytes(value.unknownFields)
+      }
 
-            override fun decode(reader: ProtoReader): FeatureDatabase {
-                val feature = mutableListOf<Feature>()
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        1 -> feature.add(Feature.ADAPTER.decode(reader))
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return FeatureDatabase(
-                    feature = feature,
-                    unknownFields = unknownFields
-                )
-            }
+      override fun decode(reader: ProtoReader): FeatureDatabase {
+        val feature = mutableListOf<Feature>()
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            1 -> feature.add(Feature.ADAPTER.decode(reader))
+            else -> TagHandler.UNKNOWN_TAG
+          }
         }
+        return FeatureDatabase(
+          feature = feature,
+          unknownFields = unknownFields
+        )
+      }
     }
+  }
 }

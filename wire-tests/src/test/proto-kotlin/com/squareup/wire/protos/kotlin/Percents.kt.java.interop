@@ -15,61 +15,61 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Percents(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING")
-        @JvmField val text: String? = null, val unknownFields: ByteString = ByteString.EMPTY) :
-        Message<Percents, Percents.Builder>(ADAPTER, unknownFields) {
-    override fun newBuilder(): Builder {
-        val builder = Builder()
-        builder.text = text
-        builder.addUnknownFields(unknownFields())
-        return builder
+    @JvmField val text: String? = null, val unknownFields: ByteString = ByteString.EMPTY) :
+    Message<Percents, Percents.Builder>(ADAPTER, unknownFields) {
+  override fun newBuilder(): Builder {
+    val builder = Builder()
+    builder.text = text
+    builder.addUnknownFields(unknownFields())
+    return builder
+  }
+
+  class Builder : Message.Builder<Percents, Builder>() {
+    @JvmField
+    var text: String? = null
+
+    /**
+     * e.g. "No limits, free to send and just 2.75% to receive".
+     */
+    fun text(text: String?): Builder {
+      this.text = text
+      return this
     }
 
-    class Builder : Message.Builder<Percents, Builder>() {
-        @JvmField
+    override fun build(): Percents = Percents(
+      text = text,
+      unknownFields = buildUnknownFields()
+    )
+  }
+
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<Percents> = object : ProtoAdapter<Percents>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      Percents::class.java
+    ) {
+      override fun encodedSize(value: Percents): Int = 
+        ProtoAdapter.STRING.encodedSizeWithTag(1, value.text) +
+        value.unknownFields.size
+
+      override fun encode(writer: ProtoWriter, value: Percents) {
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
+        writer.writeBytes(value.unknownFields)
+      }
+
+      override fun decode(reader: ProtoReader): Percents {
         var text: String? = null
-
-        /**
-         * e.g. "No limits, free to send and just 2.75% to receive".
-         */
-        fun text(text: String?): Builder {
-            this.text = text
-            return this
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            1 -> text = ProtoAdapter.STRING.decode(reader)
+            else -> TagHandler.UNKNOWN_TAG
+          }
         }
-
-        override fun build(): Percents = Percents(
-            text = text,
-            unknownFields = buildUnknownFields()
+        return Percents(
+          text = text,
+          unknownFields = unknownFields
         )
+      }
     }
-
-    companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<Percents> = object : ProtoAdapter<Percents>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            Percents::class.java
-        ) {
-            override fun encodedSize(value: Percents): Int = 
-                ProtoAdapter.STRING.encodedSizeWithTag(1, value.text) +
-                value.unknownFields.size
-
-            override fun encode(writer: ProtoWriter, value: Percents) {
-                ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
-                writer.writeBytes(value.unknownFields)
-            }
-
-            override fun decode(reader: ProtoReader): Percents {
-                var text: String? = null
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        1 -> text = ProtoAdapter.STRING.decode(reader)
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return Percents(
-                    text = text,
-                    unknownFields = unknownFields
-                )
-            }
-        }
-    }
+  }
 }

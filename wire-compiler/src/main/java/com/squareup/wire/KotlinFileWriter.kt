@@ -16,7 +16,9 @@
 package com.squareup.wire
 
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.kotlin.KotlinGenerator
+import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
 import java.io.IOException
@@ -27,7 +29,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 internal class KotlinFileWriter(
   private val destination: String,
   private val kotlinGenerator: KotlinGenerator,
-  private val queue: ConcurrentLinkedQueue<Any>,
+  private val queue: ConcurrentLinkedQueue<PendingFileSpec>,
   private val fs: FileSystem,
   private val log: WireLogger,
   private val dryRun: Boolean
@@ -36,11 +38,10 @@ internal class KotlinFileWriter(
   @Throws(IOException::class)
   override fun call() {
     while (true) {
-      val next = queue.poll() ?: return
-      val kotlinFile = when (next) {
-        is Type -> generateFileForType(next)
-        is Service -> generateFileForService(next)
-        else -> throw IllegalArgumentException("Unsupported item $next")
+      val pendingFile = queue.poll() ?: return
+      val kotlinFile = when (pendingFile) {
+        is PendingTypeFileSpec -> generateFileForType(pendingFile.type)
+        is PendingServiceFileSpec -> generateFileForService(pendingFile.service)
       }
 
       val path = fs.getPath(destination)
@@ -50,10 +51,11 @@ internal class KotlinFileWriter(
       try {
         kotlinFile.writeTo(path)
       } catch (e: IOException) {
-        val className = when (next) {
-          is Type -> kotlinGenerator.generatedTypeName(next).canonicalName
-          is Service -> next.type().toString()
-          else -> next.toString()
+        val className = when (pendingFile) {
+          is PendingTypeFileSpec ->
+            kotlinGenerator.generatedTypeName(pendingFile.type).canonicalName
+          is PendingServiceFileSpec ->
+            pendingFile.service.type().toString()
         }
         throw IOException(
             "Error emitting ${kotlinFile.packageName}.$className to $destination",
@@ -63,28 +65,26 @@ internal class KotlinFileWriter(
   }
 
   private fun generateFileForType(type: Type): FileSpec {
-    val typeSpec = kotlinGenerator.generateType(type)
-    val className = kotlinGenerator.generatedTypeName(type)
-    return FileSpec.builder(className.packageName, typeSpec.name!!)
-        .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-        .apply {
-          val location = type.location()
-          if (location != null) {
-            addComment("\nSource file: %L", location.withPathOnly())
-          }
-        }
-        .addType(typeSpec)
-        .build()
+    return generateFile(
+        packageName = kotlinGenerator.generatedTypeName(type).packageName,
+        typeSpec = kotlinGenerator.generateType(type),
+        location = type.location()
+    )
   }
 
   private fun generateFileForService(service: Service): FileSpec {
-    val typeSpec = kotlinGenerator.generateService(service)
-    val packageName = service.type().enclosingTypeOrPackage()
+    return generateFile(
+        packageName = service.type().enclosingTypeOrPackage(),
+        typeSpec = kotlinGenerator.generateService(service),
+        location = service.location()
+    )
+  }
+
+  private fun generateFile(packageName: String, typeSpec: TypeSpec, location: Location?): FileSpec {
     return FileSpec.builder(packageName, typeSpec.name!!)
         .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
         .indent("  ")
         .apply {
-          val location = service.location()
           if (location != null) {
             addComment("\nSource file: %L", location.withPathOnly())
           }

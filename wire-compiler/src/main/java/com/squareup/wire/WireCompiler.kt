@@ -122,14 +122,14 @@ class WireCompiler internal constructor(
     }
 
     /** Queue which can contain both [Type]s and [Service]s. */
-    val queue = ConcurrentLinkedQueue<Any>()
+    val queue = ConcurrentLinkedQueue<PendingFileSpec>()
     for (protoFile in schema.protoFiles()) {
       // Check if we're skipping files not explicitly named.
       if (!sourceFileNames.isEmpty() && protoFile.location().path() !in sourceFileNames) {
         if (namedFilesOnly || protoFile.location().path() == DESCRIPTOR_PROTO) continue
       }
-      queue.addAll(protoFile.types())
-      queue.addAll(protoFile.services())
+      queue.addAll(protoFile.types().map(::PendingTypeFileSpec))
+      queue.addAll(protoFile.services().map(::PendingServiceFileSpec))
     }
 
     val executor = Executors.newCachedThreadPool()
@@ -149,7 +149,7 @@ class WireCompiler internal constructor(
             .withCompact(emitCompact)
 
         // No services for Java.
-        val types = ConcurrentLinkedQueue<Type>(queue.filterIsInstance<Type>())
+        val types = ConcurrentLinkedQueue(queue.filterIsInstance<PendingTypeFileSpec>())
         for (i in 0 until MAX_WRITE_CONCURRENCY) {
           val task = JavaFileWriter(javaOut, javaGenerator, types, dryRun, fs, log)
           futures.add(executor.submit(task))

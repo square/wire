@@ -19,72 +19,72 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
-        "com.squareup.wire.protos.kotlin.OptionalEnumUser.OptionalEnum#ADAPTER") val optional_enum:
-        OptionalEnum? = null, val unknownFields: ByteString = ByteString.EMPTY) :
-        Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
-    override fun newBuilder(): Builder = Builder(this.copy())
+    "com.squareup.wire.protos.kotlin.OptionalEnumUser.OptionalEnum#ADAPTER") val optional_enum:
+    OptionalEnum? = null, val unknownFields: ByteString = ByteString.EMPTY) :
+    Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
+  @Deprecated(
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
+  )
+  override fun newBuilder(): Builder = Builder(this.copy())
 
-    class Builder(private val message: OptionalEnumUser) : Message.Builder<OptionalEnumUser,
-            Builder>() {
-        override fun build(): OptionalEnumUser = message
+  class Builder(private val message: OptionalEnumUser) : Message.Builder<OptionalEnumUser,
+      Builder>() {
+    override fun build(): OptionalEnumUser = message
+  }
+
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<OptionalEnumUser> = object : ProtoAdapter<OptionalEnumUser>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      OptionalEnumUser::class.java
+    ) {
+      override fun encodedSize(value: OptionalEnumUser): Int = 
+        OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
+        value.unknownFields.size
+
+      override fun encode(writer: ProtoWriter, value: OptionalEnumUser) {
+        OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
+        writer.writeBytes(value.unknownFields)
+      }
+
+      override fun decode(reader: ProtoReader): OptionalEnumUser {
+        var optional_enum: OptionalEnum? = null
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            1 -> optional_enum = OptionalEnum.ADAPTER.decode(reader)
+            else -> TagHandler.UNKNOWN_TAG
+          }
+        }
+        return OptionalEnumUser(
+          optional_enum = optional_enum,
+          unknownFields = unknownFields
+        )
+      }
     }
+  }
+
+  enum class OptionalEnum(private val value: Int) : WireEnum {
+    FOO(1),
+
+    BAR(2);
+
+    override fun getValue(): Int = value
 
     companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<OptionalEnumUser> = object : ProtoAdapter<OptionalEnumUser>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            OptionalEnumUser::class.java
-        ) {
-            override fun encodedSize(value: OptionalEnumUser): Int = 
-                OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
-                value.unknownFields.size
+      @JvmField
+      val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
+        OptionalEnum::class.java
+      ) {
+        override fun fromValue(value: Int): OptionalEnum = OptionalEnum.fromValue(value)
+      }
 
-            override fun encode(writer: ProtoWriter, value: OptionalEnumUser) {
-                OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
-                writer.writeBytes(value.unknownFields)
-            }
-
-            override fun decode(reader: ProtoReader): OptionalEnumUser {
-                var optional_enum: OptionalEnum? = null
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        1 -> optional_enum = OptionalEnum.ADAPTER.decode(reader)
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return OptionalEnumUser(
-                    optional_enum = optional_enum,
-                    unknownFields = unknownFields
-                )
-            }
-        }
+      @JvmStatic
+      fun fromValue(value: Int): OptionalEnum = when (value) {
+        1 -> FOO
+        2 -> BAR
+        else -> throw IllegalArgumentException("""Unexpected value: $value""")
+      }
     }
-
-    enum class OptionalEnum(private val value: Int) : WireEnum {
-        FOO(1),
-
-        BAR(2);
-
-        override fun getValue(): Int = value
-
-        companion object {
-            @JvmField
-            val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
-                OptionalEnum::class.java
-            ) {
-                override fun fromValue(value: Int): OptionalEnum = OptionalEnum.fromValue(value)
-            }
-
-            @JvmStatic
-            fun fromValue(value: Int): OptionalEnum = when (value) {
-                1 -> FOO
-                2 -> BAR
-                else -> throw IllegalArgumentException("""Unexpected value: $value""")
-            }
-        }
-    }
+  }
 }

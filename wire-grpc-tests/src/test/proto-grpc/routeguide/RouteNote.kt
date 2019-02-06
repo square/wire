@@ -17,54 +17,54 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RouteNote(
-    @field:WireField(tag = 1, adapter = "routeguide.Point#ADAPTER") val location: Point? = null,
-    @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val message:
-            String? = null,
-    val unknownFields: ByteString = ByteString.EMPTY
+  @field:WireField(tag = 1, adapter = "routeguide.Point#ADAPTER") val location: Point? = null,
+  @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val message: String?
+      = null,
+  val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteNote, RouteNote.Builder>(ADAPTER, unknownFields) {
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
-    override fun newBuilder(): Builder = Builder(this.copy())
+  @Deprecated(
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
+  )
+  override fun newBuilder(): Builder = Builder(this.copy())
 
-    class Builder(private val message: RouteNote) : Message.Builder<RouteNote, Builder>() {
-        override fun build(): RouteNote = message
-    }
+  class Builder(private val message: RouteNote) : Message.Builder<RouteNote, Builder>() {
+    override fun build(): RouteNote = message
+  }
 
-    companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            RouteNote::class.java
-        ) {
-            override fun encodedSize(value: RouteNote): Int = 
-                Point.ADAPTER.encodedSizeWithTag(1, value.location) +
-                ProtoAdapter.STRING.encodedSizeWithTag(2, value.message) +
-                value.unknownFields.size
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      RouteNote::class.java
+    ) {
+      override fun encodedSize(value: RouteNote): Int = 
+        Point.ADAPTER.encodedSizeWithTag(1, value.location) +
+        ProtoAdapter.STRING.encodedSizeWithTag(2, value.message) +
+        value.unknownFields.size
 
-            override fun encode(writer: ProtoWriter, value: RouteNote) {
-                Point.ADAPTER.encodeWithTag(writer, 1, value.location)
-                ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
-                writer.writeBytes(value.unknownFields)
-            }
+      override fun encode(writer: ProtoWriter, value: RouteNote) {
+        Point.ADAPTER.encodeWithTag(writer, 1, value.location)
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
+        writer.writeBytes(value.unknownFields)
+      }
 
-            override fun decode(reader: ProtoReader): RouteNote {
-                var location: Point? = null
-                var message: String? = null
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        1 -> location = Point.ADAPTER.decode(reader)
-                        2 -> message = ProtoAdapter.STRING.decode(reader)
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return RouteNote(
-                    location = location,
-                    message = message,
-                    unknownFields = unknownFields
-                )
-            }
+      override fun decode(reader: ProtoReader): RouteNote {
+        var location: Point? = null
+        var message: String? = null
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            1 -> location = Point.ADAPTER.decode(reader)
+            2 -> message = ProtoAdapter.STRING.decode(reader)
+            else -> TagHandler.UNKNOWN_TAG
+          }
         }
+        return RouteNote(
+          location = location,
+          message = message,
+          unknownFields = unknownFields
+        )
+      }
     }
+  }
 }

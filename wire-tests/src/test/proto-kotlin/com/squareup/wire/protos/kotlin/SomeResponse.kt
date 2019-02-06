@@ -15,40 +15,40 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class SomeResponse(val unknownFields: ByteString = ByteString.EMPTY) : Message<SomeResponse,
-        SomeResponse.Builder>(ADAPTER, unknownFields) {
-    @Deprecated(
-            message = "Shouldn't be used in Kotlin",
-            level = DeprecationLevel.HIDDEN
-    )
-    override fun newBuilder(): Builder = Builder(this.copy())
+    SomeResponse.Builder>(ADAPTER, unknownFields) {
+  @Deprecated(
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
+  )
+  override fun newBuilder(): Builder = Builder(this.copy())
 
-    class Builder(private val message: SomeResponse) : Message.Builder<SomeResponse, Builder>() {
-        override fun build(): SomeResponse = message
-    }
+  class Builder(private val message: SomeResponse) : Message.Builder<SomeResponse, Builder>() {
+    override fun build(): SomeResponse = message
+  }
 
-    companion object {
-        @JvmField
-        val ADAPTER: ProtoAdapter<SomeResponse> = object : ProtoAdapter<SomeResponse>(
-            FieldEncoding.LENGTH_DELIMITED, 
-            SomeResponse::class.java
-        ) {
-            override fun encodedSize(value: SomeResponse): Int = 
-                value.unknownFields.size
+  companion object {
+    @JvmField
+    val ADAPTER: ProtoAdapter<SomeResponse> = object : ProtoAdapter<SomeResponse>(
+      FieldEncoding.LENGTH_DELIMITED, 
+      SomeResponse::class.java
+    ) {
+      override fun encodedSize(value: SomeResponse): Int = 
+        value.unknownFields.size
 
-            override fun encode(writer: ProtoWriter, value: SomeResponse) {
-                writer.writeBytes(value.unknownFields)
-            }
+      override fun encode(writer: ProtoWriter, value: SomeResponse) {
+        writer.writeBytes(value.unknownFields)
+      }
 
-            override fun decode(reader: ProtoReader): SomeResponse {
-                val unknownFields = reader.forEachTag { tag ->
-                    when (tag) {
-                        else -> TagHandler.UNKNOWN_TAG
-                    }
-                }
-                return SomeResponse(
-                    unknownFields = unknownFields
-                )
-            }
+      override fun decode(reader: ProtoReader): SomeResponse {
+        val unknownFields = reader.forEachTag { tag ->
+          when (tag) {
+            else -> TagHandler.UNKNOWN_TAG
+          }
         }
+        return SomeResponse(
+          unknownFields = unknownFields
+        )
+      }
     }
+  }
 }
