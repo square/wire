@@ -121,4 +121,16 @@ public final class RepoBuilder {
         .build();
     return fileSpec.toString();
   }
+
+  public String generateGrpcKotlin(String serviceName) {
+    Schema schema = schema();
+    KotlinGenerator grpcGenerator = KotlinGenerator.get(schema, false, false);
+    Service service = schema.getService(serviceName);
+    com.squareup.kotlinpoet.TypeSpec typeSpec = grpcGenerator.generateService(service);
+    String packageName = service.type().enclosingTypeOrPackage();
+    FileSpec fileSpec = FileSpec.builder(packageName == null ? "" : packageName, "_")
+        .addType(typeSpec)
+        .build();
+    return fileSpec.toString();
+  }
 }

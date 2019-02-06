@@ -328,6 +328,32 @@ class WireCompilerTest {
   }
 
   @Test
+  fun serviceAreIgnoredForJava(){
+    val sources = arrayOf("service_root.proto")
+    compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService")
+
+    // TheService is not created.
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/roots/TheResponse.java",
+        "com/squareup/wire/protos/roots/TheRequest.java"
+    )
+    assertJavaOutputs(outputs)
+  }
+
+  @Test
+  fun serviceInKotlin() {
+    val sources = arrayOf("service_kotlin.proto")
+    compileToKotlin(sources, "--includes=com.squareup.wire.protos.kotlin.SomeService")
+
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/kotlin/SomeService.kt",
+        "com/squareup/wire/protos/kotlin/SomeResponse.kt",
+        "com/squareup/wire/protos/kotlin/SomeRequest.kt"
+    )
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
   fun noFiles() {
     val sources = arrayOf<String>()
     compileToJava(sources)

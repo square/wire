@@ -24,6 +24,7 @@ import com.squareup.kotlinpoet.DOUBLE
 import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.DATA
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
@@ -48,6 +49,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.WireRpc
 import com.squareup.wire.internal.Internal
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
@@ -56,10 +58,16 @@ import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
+import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import java.util.Locale
+import kotlin.coroutines.CoroutineContext
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -82,6 +90,70 @@ class KotlinGenerator private constructor(
     is EnumType -> generateEnum(type)
     is EnclosingType -> generateEnclosing(type)
     else -> error("Unknown type $type")
+  }
+
+  fun generateService(service: Service): TypeSpec {
+    val interfaceName = service.name()
+    // TODO(oldergod) maybe rename package or something to explicitly say it's grpc service?
+    val superinterface = com.squareup.wire.Service::class.java
+
+    return TypeSpec.interfaceBuilder(interfaceName)
+        .addSuperinterface(superinterface)
+        .addFunctions(service.rpcs().map {
+          generateRpcFunction(it, service.name(), service.type().enclosingTypeOrPackage())
+        })
+        .build()
+  }
+
+  private fun generateRpcFunction(
+    rpc: Rpc,
+    serviceName: String,
+    servicePackageName: String?
+  ): FunSpec {
+    val packageName = if (servicePackageName.isNullOrBlank()) "" else "$servicePackageName."
+
+    val wireRpcAnnotationSpec = AnnotationSpec.builder(WireRpc::class.asClassName())
+        .addMember("path = %S", "/$packageName$serviceName/${rpc.name()}")
+        // TODO(oldergod|jwilson) Lets' use Profile for this.
+        .addMember("requestAdapter = %S", "$packageName${rpc.requestType().simpleName()}#ADAPTER")
+        .addMember("responseAdapter = %S", "$packageName${rpc.responseType().simpleName()}#ADAPTER")
+        .build()
+    val funSpecBuilder = FunSpec.builder(rpc.name())
+        .addModifiers(KModifier.ABSTRACT)
+        .addAnnotation(wireRpcAnnotationSpec)
+        .addParameter("context", CoroutineContext::class.java)
+
+    when {
+      rpc.requestStreaming() && rpc.responseStreaming() -> {
+        val requestChannel =
+            SendChannel::class.asClassName().parameterizedBy(rpc.requestType().typeName)
+        val responseChannel =
+            ReceiveChannel::class.asClassName().parameterizedBy(rpc.responseType().typeName)
+        funSpecBuilder
+            .returns(Pair::class.asClassName().parameterizedBy(requestChannel, responseChannel))
+      }
+      rpc.requestStreaming() -> {
+        val requestChannel =
+            SendChannel::class.asClassName().parameterizedBy(rpc.requestType().typeName)
+        val responseDeferred =
+            Deferred::class.asClassName().parameterizedBy(rpc.responseType().typeName)
+        funSpecBuilder
+            .returns(Pair::class.asClassName().parameterizedBy(requestChannel, responseDeferred))
+      }
+      rpc.responseStreaming() -> {
+        funSpecBuilder
+            .addParameter("request", rpc.requestType().typeName)
+            .returns(
+                ReceiveChannel::class.asClassName().parameterizedBy(rpc.responseType().typeName))
+      }
+      else -> {
+        funSpecBuilder.addModifiers(KModifier.SUSPEND)
+            .addParameter("request", rpc.requestType().typeName)
+            .returns(rpc.responseType().typeName)
+      }
+    }
+
+    return funSpecBuilder.build()
   }
 
   private fun nameAllocator(message: Type): NameAllocator {

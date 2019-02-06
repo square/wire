@@ -16,6 +16,7 @@ jar {
 }
 
 dependencies {
+  testImplementation project(':wire-grpc-client')
   testImplementation project(':wire-runtime')
   testImplementation project(':wire-test-utils')
   testImplementation deps.kotlin.stdlib.jdk6

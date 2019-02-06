@@ -1,0 +1,8 @@
+package com.squareup.wire.protos.kotlin;
+
+message SomeRequest {}
+message SomeResponse {}
+
+service SomeService {
+  rpc SomeMethod (SomeRequest) returns (SomeResponse);
+}

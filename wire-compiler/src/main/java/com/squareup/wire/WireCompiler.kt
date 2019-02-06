@@ -20,6 +20,7 @@ import com.squareup.wire.java.ProfileLoader
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.schema.IdentifierSet
 import com.squareup.wire.schema.SchemaLoader
+import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
 import okio.buffer
 import okio.source
@@ -120,13 +121,15 @@ class WireCompiler internal constructor(
       }
     }
 
-    val types = ConcurrentLinkedQueue<Type>()
+    /** Queue which can contain both [Type]s and [Service]s. */
+    val queue = ConcurrentLinkedQueue<Any>()
     for (protoFile in schema.protoFiles()) {
       // Check if we're skipping files not explicitly named.
       if (!sourceFileNames.isEmpty() && protoFile.location().path() !in sourceFileNames) {
         if (namedFilesOnly || protoFile.location().path() == DESCRIPTOR_PROTO) continue
       }
-      types.addAll(protoFile.types())
+      queue.addAll(protoFile.types())
+      queue.addAll(protoFile.services())
     }
 
     val executor = Executors.newCachedThreadPool()
@@ -145,6 +148,8 @@ class WireCompiler internal constructor(
             .withAndroidAnnotations(emitAndroidAnnotations)
             .withCompact(emitCompact)
 
+        // No services for Java.
+        val types = ConcurrentLinkedQueue<Type>(queue.filterIsInstance<Type>())
         for (i in 0 until MAX_WRITE_CONCURRENCY) {
           val task = JavaFileWriter(javaOut, javaGenerator, types, dryRun, fs, log)
           futures.add(executor.submit(task))
@@ -155,7 +160,7 @@ class WireCompiler internal constructor(
         val kotlinGenerator = KotlinGenerator(schema, emitAndroid, javaInterop)
 
         for (i in 0 until MAX_WRITE_CONCURRENCY) {
-          val task = KotlinFileWriter(kotlinOut, kotlinGenerator, types, fs, log, dryRun)
+          val task = KotlinFileWriter(kotlinOut, kotlinGenerator, queue, fs, log, dryRun)
           futures.add(executor.submit(task))
         }
       }
