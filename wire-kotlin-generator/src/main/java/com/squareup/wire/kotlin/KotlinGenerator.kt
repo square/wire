@@ -230,7 +230,7 @@ class KotlinGenerator private constructor(
 
     addMessageConstructor(type, classBuilder)
 
-    if (type.fields().any { it.isRedacted }) {
+    if (type.fieldsAndOneOfFields().any { it.isRedacted }) {
       classBuilder.addFunction(generateToStringMethod(type))
     }
 
@@ -490,21 +490,30 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateToStringMethod(type: MessageType): FunSpec {
+    val nameAllocator = nameAllocator(type)
+    val className = generatedTypeName(type)
     return FunSpec.builder("toString")
         .addModifiers(OVERRIDE)
         .returns(String::class)
         .addCode("return %L", buildCodeBlock {
           beginControlFlow("buildString")
-          addStatement("append(%S)", "${type.type().simpleName()}(")
-          type.fields().forEachIndexed { index, field ->
+          addStatement("append(%S)", className.simpleName + "(")
+          val redactedFields = if (javaInterOp) {
+            type.fieldsAndOneOfFields().map { field -> nameAllocator[field] to field.isRedacted }
+          } else {
+            type.fields().map { field -> nameAllocator[field] to field.isRedacted } +
+                type.oneOfs().filter { oneOf -> oneOf.fields().any { it.isRedacted } }
+                    .map { oneOf -> nameAllocator[oneOf] to true }
+          }
+          redactedFields.forEachIndexed { index, (name, isRedacted) ->
             addStatement("append(%P)", buildString {
               if (index > 0) append(", ")
-              append(field.name())
-              if (field.isRedacted) {
+              append(name)
+              if (isRedacted) {
                 append("=██")
               } else {
                 append("=\$")
-                append(field.name())
+                append(name)
               }
             })
           }
@@ -779,45 +788,21 @@ class KotlinGenerator private constructor(
           )
       )
       return result.build()
+    } else if (!javaInterOp && message.oneOfs().isNotEmpty()) {
+      result.addStatement(
+          "throw %T(%S)",
+          UnsupportedOperationException::class,
+          "Redacting messages with oneof fields is not supported yet!"
+      )
+      return result.build()
     }
 
     val redactedFields = mutableListOf<CodeBlock>()
-    for (field in message.fieldsAndOneOfFields()) {
+    for (field in message.fieldsWithJavaInteropOneOfs()) {
       val fieldName = nameAllocator[field]
-      if (field.isRedacted) {
-        redactedFields += when {
-          field.isRepeated -> CodeBlock.of("%N = emptyList()", fieldName)
-          field.isMap -> CodeBlock.of("%N = emptyMap()", fieldName)
-          else -> CodeBlock.of("%N = null", fieldName)
-        }
-      } else if (!field.type().isScalar && !field.type().isEnum) {
-        if (field.isRepeated) {
-          val adapterName = field.getAdapterName()
-          redactedFields += CodeBlock.of(
-              "%1N = value.%1N.also { %2T.redactElements(it, %3L) }",
-              fieldName,
-              Internal::class,
-              adapterName
-          )
-        } else if (field.isMap) {
-          // We only need to ask the values to redact themselves if the type is a message.
-          if (!field.valueType.isScalar && !field.valueType.isEnum) {
-            val adapterName = field.valueType.getAdapterName()
-            redactedFields += CodeBlock.of(
-                "%1N = value.%1N.also { %2T.redactElements(it, %3L) }",
-                fieldName,
-                Internal::class,
-                adapterName
-            )
-          }
-        } else {
-          val adapterName = field.getAdapterName()
-          redactedFields += if (field.isRequired) {
-            CodeBlock.of("%1N = %2L.redact(value.%1N)", fieldName, adapterName)
-          } else {
-            CodeBlock.of("%1N = value.%1N?.let(%2L::redact)", fieldName, adapterName)
-          }
-        }
+      val redactedField = field.redact(fieldName)
+      if (redactedField != null) {
+        redactedFields += CodeBlock.of("%N = %L", fieldName, redactedField)
       }
     }
     redactedFields += CodeBlock.of("unknownFields = %T.EMPTY", ByteString::class)
@@ -827,6 +812,44 @@ class KotlinGenerator private constructor(
             redactedFields.joinToCode(separator = ",\n", prefix = "value.copy(\n⇥", suffix = "\n⇤)")
         )
         .build()
+  }
+
+  private fun Field.redact(fieldName: String): CodeBlock? {
+    if (isRedacted) {
+      return when {
+        isRepeated -> CodeBlock.of("emptyList()")
+        isMap -> CodeBlock.of("emptyMap()")
+        else -> CodeBlock.of("null")
+      }
+    } else if (!type().isScalar && !type().isEnum) {
+      if (isRepeated) {
+        return CodeBlock.of(
+            "value.%N.also { %T.redactElements(it, %L) }",
+            fieldName,
+            Internal::class,
+            getAdapterName()
+        )
+      } else if (isMap) {
+        // We only need to ask the values to redact themselves if the type is a message.
+        if (!valueType.isScalar && !valueType.isEnum) {
+          val adapterName = valueType.getAdapterName()
+          return CodeBlock.of(
+              "value.%N.also { %T.redactElements(it, %L) }",
+              fieldName,
+              Internal::class,
+              adapterName
+          )
+        }
+      } else {
+        val adapterName = getAdapterName()
+        return if (isRequired) {
+          CodeBlock.of("%L.redact(value.%N)", adapterName, fieldName)
+        } else {
+          CodeBlock.of("value.%N?.let(%L::redact)", fieldName, adapterName)
+        }
+      }
+    }
+    return null
   }
 
   // TODO add support for custom adapters.

@@ -173,7 +173,8 @@ task generateKotlinTests(type: JavaExec) {
       'one_of.proto',
       'same_name_enum.proto',
       'service_kotlin.proto',
-      'redacted_test.proto'    
+      'redacted_test.proto',
+      'redacted_one_of.proto'
   ]
 }
 
@@ -214,7 +215,8 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
           'deprecated.proto',
           'one_of.proto',
           'percents_in_kdoc.proto',
-          'same_name_enum.proto'
+          'same_name_enum.proto',
+          'redacted_one_of.proto'
   ]
 }
 task copyKotlinJavaInteropFiles(type: Copy) {
