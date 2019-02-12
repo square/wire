@@ -57,6 +57,10 @@ data class Thing(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAda
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: Thing): Thing? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

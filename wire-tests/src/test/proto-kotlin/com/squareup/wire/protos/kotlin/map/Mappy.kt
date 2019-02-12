@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.Internal
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -61,6 +62,11 @@ data class Mappy(@field:WireField(tag = 1, adapter = "thingsAdapter") val things
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: Mappy): Mappy? = value.copy(
+        things = value.things.also { Internal.redactElements(it, Thing.ADAPTER) },
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

@@ -70,6 +70,10 @@ data class Percents(@field:WireField(tag = 1, adapter = "com.squareup.wire.Proto
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: Percents): Percents? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

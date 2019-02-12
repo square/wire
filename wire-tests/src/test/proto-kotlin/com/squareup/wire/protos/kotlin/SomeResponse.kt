@@ -49,6 +49,10 @@ data class SomeResponse(val unknownFields: ByteString = ByteString.EMPTY) : Mess
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: SomeResponse): SomeResponse? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

@@ -84,6 +84,11 @@ data class Person(
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: Person): Person? = value.copy(
+        phone = value.phone.also { Internal.redactElements(it, PhoneNumber.ADAPTER) },
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 
@@ -167,6 +172,10 @@ data class Person(
             unknownFields = unknownFields
           )
         }
+
+        override fun redact(value: PhoneNumber): PhoneNumber? = value.copy(
+          unknownFields = ByteString.EMPTY
+        )
       }
     }
   }

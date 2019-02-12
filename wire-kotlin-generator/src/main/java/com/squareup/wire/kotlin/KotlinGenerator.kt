@@ -39,6 +39,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
+import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
@@ -79,6 +80,8 @@ class KotlinGenerator private constructor(
 
   private val ProtoType.typeName
       get() = nameToKotlinName.getValue(this)
+  private val ProtoType.isEnum
+      get() = schema.getType(this) is EnumType
   private val Type.typeName
       get() = type().typeName
 
@@ -226,6 +229,10 @@ class KotlinGenerator private constructor(
     classBuilder.addType(companionObjBuilder.build())
 
     addMessageConstructor(type, classBuilder)
+
+    if (type.fields().any { it.isRedacted }) {
+      classBuilder.addFunction(generateToStringMethod(type))
+    }
 
     type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
@@ -444,6 +451,7 @@ class KotlinGenerator private constructor(
           .useSiteTarget(FIELD)
           .addMember("tag = %L", field.tag())
           .addMember("adapter = %S", field.getAdapterName(nameDelimiter = '#'))
+          .apply { if (field.isRedacted) addMember("redacted = true") }
           .build())
 
       if (javaInterOp) {
@@ -481,6 +489,31 @@ class KotlinGenerator private constructor(
     classBuilder.primaryConstructor(constructorBuilder.build())
   }
 
+  private fun generateToStringMethod(type: MessageType): FunSpec {
+    return FunSpec.builder("toString")
+        .addModifiers(OVERRIDE)
+        .returns(String::class)
+        .addCode("return %L", buildCodeBlock {
+          beginControlFlow("buildString")
+          addStatement("append(%S)", "${type.type().simpleName()}(")
+          type.fields().forEachIndexed { index, field ->
+            addStatement("append(%P)", buildString {
+              if (index > 0) append(", ")
+              append(field.name())
+              if (field.isRedacted) {
+                append("=██")
+              } else {
+                append("=\$")
+                append(field.name())
+              }
+            })
+          }
+          addStatement("append(%S)", ")")
+          endControlFlow()
+        })
+        .build()
+  }
+
   /**
    * Example
    * ```
@@ -491,6 +524,7 @@ class KotlinGenerator private constructor(
    *    override fun encodedSize(value: Person): Int { .. }
    *    override fun encode(writer: ProtoWriter, value: Person) { .. }
    *    override fun decode(reader: ProtoReader): Person { .. }
+   *    override fun redact(value: Person): Person? { .. }
    *  }
    * }
    * ```
@@ -508,6 +542,7 @@ class KotlinGenerator private constructor(
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
+        .addFunction(redactFun(type))
 
     for (field in type.fields()) {
       if (field.isMap) {
@@ -719,6 +754,78 @@ class KotlinGenerator private constructor(
         .addCode(decodeBlock)
         .addCode(returnBody)
         .addModifiers(OVERRIDE)
+        .build()
+  }
+
+  private fun redactFun(message: MessageType): FunSpec {
+    val className = nameToKotlinName.getValue(message.type())
+    val nameAllocator = nameAllocator(message)
+    val result = FunSpec.builder("redact")
+        .addModifiers(OVERRIDE)
+        .addParameter("value", className)
+        .returns(className.copy(nullable = true))
+
+    val redactedMessageFields = message.fields().filter { it.isRedacted }
+    val requiredRedactedMessageFields = redactedMessageFields.filter { it.isRequired }
+    if (requiredRedactedMessageFields.isNotEmpty()) {
+      result.addStatement(
+          "throw %T(%S)",
+          UnsupportedOperationException::class,
+          requiredRedactedMessageFields.joinToString(
+              prefix = if (requiredRedactedMessageFields.size > 1) "Fields [" else "Field '",
+              postfix = if (requiredRedactedMessageFields.size > 1) "] are " else "' is " +
+                  "required and cannot be redacted.",
+              transform = nameAllocator::get
+          )
+      )
+      return result.build()
+    }
+
+    val redactedFields = mutableListOf<CodeBlock>()
+    for (field in message.fieldsAndOneOfFields()) {
+      val fieldName = nameAllocator[field]
+      if (field.isRedacted) {
+        redactedFields += when {
+          field.isRepeated -> CodeBlock.of("%N = emptyList()", fieldName)
+          field.isMap -> CodeBlock.of("%N = emptyMap()", fieldName)
+          else -> CodeBlock.of("%N = null", fieldName)
+        }
+      } else if (!field.type().isScalar && !field.type().isEnum) {
+        if (field.isRepeated) {
+          val adapterName = field.getAdapterName()
+          redactedFields += CodeBlock.of(
+              "%1N = value.%1N.also { %2T.redactElements(it, %3L) }",
+              fieldName,
+              Internal::class,
+              adapterName
+          )
+        } else if (field.isMap) {
+          // We only need to ask the values to redact themselves if the type is a message.
+          if (!field.valueType.isScalar && !field.valueType.isEnum) {
+            val adapterName = field.valueType.getAdapterName()
+            redactedFields += CodeBlock.of(
+                "%1N = value.%1N.also { %2T.redactElements(it, %3L) }",
+                fieldName,
+                Internal::class,
+                adapterName
+            )
+          }
+        } else {
+          val adapterName = field.getAdapterName()
+          redactedFields += if (field.isRequired) {
+            CodeBlock.of("%1N = %2L.redact(value.%1N)", fieldName, adapterName)
+          } else {
+            CodeBlock.of("%1N = value.%1N?.let(%2L::redact)", fieldName, adapterName)
+          }
+        }
+      }
+    }
+    redactedFields += CodeBlock.of("unknownFields = %T.EMPTY", ByteString::class)
+    return result
+        .addStatement(
+            "return %L",
+            redactedFields.joinToCode(separator = ",\n", prefix = "value.copy(\n⇥", suffix = "\n⇤)")
+        )
         .build()
   }
 

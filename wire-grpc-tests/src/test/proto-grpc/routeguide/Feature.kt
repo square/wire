@@ -65,6 +65,11 @@ data class Feature(
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: Feature): Feature? = value.copy(
+        location = value.location?.let(Point.ADAPTER::redact),
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }

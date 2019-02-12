@@ -61,6 +61,10 @@ data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: OptionalEnumUser): OptionalEnumUser? = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 

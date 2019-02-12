@@ -65,6 +65,11 @@ data class RouteNote(
           unknownFields = unknownFields
         )
       }
+
+      override fun redact(value: RouteNote): RouteNote? = value.copy(
+        location = value.location?.let(Point.ADAPTER::redact),
+        unknownFields = ByteString.EMPTY
+      )
     }
   }
 }
