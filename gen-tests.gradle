@@ -3,11 +3,11 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 def PROTOS = Files.find(
-      Paths.get("${rootProject.rootDir}/wire-tests/src/test/proto"),
+      Paths.get("${rootProject.rootDir}/wire-tests/src/test/proto/java"),
       Integer.MAX_VALUE,
       { path, attrs -> attrs.isRegularFile() }
     )
-    .map { path -> Paths.get("${rootProject.rootDir}/wire-tests/src/test/proto").relativize(path) }
+    .map { path -> Paths.get("${rootProject.rootDir}/wire-tests/src/test/proto/java").relativize(path) }
     .filter { path -> !path.startsWith("kotlin") }
     .map { path -> path.toString() }
     .filter { path -> path.endsWith(".proto") }
@@ -30,7 +30,7 @@ task generateJavaTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/test/proto',
+      '--proto_path=wire-tests/src/test/proto/java',
       '--java_out=wire-tests/src/test/proto-java',
       'google/protobuf/descriptor.proto'
   ] + PROTOS
@@ -44,7 +44,7 @@ task generateNoOptionsTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/test/proto',
+      '--proto_path=wire-tests/src/test/proto/java',
       '--java_out=wire-tests/src/test/proto-java.noOptions',
       '--excludes=google.protobuf.*'
   ] + PROTOS
@@ -64,7 +64,7 @@ task generateCompactTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/test/proto',
+      '--proto_path=wire-tests/src/test/proto/java',
       '--java_out=wire-tests/src/test/proto-java.compact',
       '--compact',
       'all_types.proto'
@@ -100,7 +100,7 @@ task generateIncludesExcludesTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/test/proto',
+      '--proto_path=wire-tests/src/test/proto/java',
       '--java_out=wire-tests/src/test/proto-java.pruned',
       '--includes=squareup.protos.roots.A,squareup.protos.roots.H',
       '--excludes=squareup.protos.roots.B',
@@ -122,7 +122,7 @@ task generateAndroidTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/test/proto',
+      '--proto_path=wire-tests/src/test/proto/java',
       '--java_out=wire-tests/src/test/proto-java.android',
       '--android',
       'person.proto'
@@ -143,7 +143,7 @@ task generateAndroidCompactTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/test/proto',
+      '--proto_path=wire-tests/src/test/proto/java',
       '--java_out=wire-tests/src/test/proto-java.android.compact',
       '--android',
       '--compact',
