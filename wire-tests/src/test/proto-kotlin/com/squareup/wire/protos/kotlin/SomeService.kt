@@ -4,7 +4,6 @@ package com.squareup.wire.protos.kotlin
 
 import com.squareup.wire.Service
 import com.squareup.wire.WireRpc
-import kotlin.coroutines.CoroutineContext
 
 interface SomeService : Service {
   @WireRpc(
@@ -12,5 +11,5 @@ interface SomeService : Service {
       requestAdapter = "com.squareup.wire.protos.kotlin.SomeRequest#ADAPTER",
       responseAdapter = "com.squareup.wire.protos.kotlin.SomeResponse#ADAPTER"
   )
-  suspend fun SomeMethod(context: CoroutineContext, request: SomeRequest): SomeResponse
+  suspend fun SomeMethod(request: SomeRequest): SomeResponse
 }

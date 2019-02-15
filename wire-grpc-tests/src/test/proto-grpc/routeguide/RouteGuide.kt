@@ -5,7 +5,6 @@ package routeguide
 import com.squareup.wire.Service
 import com.squareup.wire.WireRpc
 import kotlin.Pair
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -16,26 +15,26 @@ interface RouteGuide : Service {
       requestAdapter = "routeguide.Point#ADAPTER",
       responseAdapter = "routeguide.Feature#ADAPTER"
   )
-  suspend fun GetFeature(context: CoroutineContext, request: Point): Feature
+  suspend fun GetFeature(request: Point): Feature
 
   @WireRpc(
       path = "/routeguide.RouteGuide/ListFeatures",
       requestAdapter = "routeguide.Rectangle#ADAPTER",
       responseAdapter = "routeguide.Feature#ADAPTER"
   )
-  fun ListFeatures(context: CoroutineContext, request: Rectangle): ReceiveChannel<Feature>
+  suspend fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
 
   @WireRpc(
       path = "/routeguide.RouteGuide/RecordRoute",
       requestAdapter = "routeguide.Point#ADAPTER",
       responseAdapter = "routeguide.RouteSummary#ADAPTER"
   )
-  fun RecordRoute(context: CoroutineContext): Pair<SendChannel<Point>, Deferred<RouteSummary>>
+  suspend fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
 
   @WireRpc(
       path = "/routeguide.RouteGuide/RouteChat",
       requestAdapter = "routeguide.RouteNote#ADAPTER",
       responseAdapter = "routeguide.RouteNote#ADAPTER"
   )
-  fun RouteChat(context: CoroutineContext): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+  suspend fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
 }

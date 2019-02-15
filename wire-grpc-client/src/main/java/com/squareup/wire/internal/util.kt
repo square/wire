@@ -17,32 +17,30 @@ package com.squareup.wire.internal
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
 import kotlin.coroutines.Continuation
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
- * Invokes `block` and returns its result to `continuation`. Useful in reflection code when you
+ * Invokes `block` and returns its result to the continuation. Useful in reflection code when you
  * can't implement a `suspend fun` directly.
  */
-internal fun <T> CoroutineContext.invokeSuspending(
-  continuation: Continuation<T>,
+internal fun <T> Continuation<T>.invokeSuspending(
   block: suspend () -> T
 ): Any {
-  val deferred = CoroutineScope(this).async {
-    block()
-  }
+  val deferred = CoroutineScope(this.context).async { block() }
 
   deferred.invokeOnCompletion { cause: Throwable? ->
     if (cause != null) {
-      continuation.resumeWithException(cause)
+      resumeWithException(cause)
     } else {
-      continuation.resume(deferred.getCompleted())
+      resume(deferred.getCompleted())
     }
+    if (deferred.isCancelled) TODO("Needs a test")
   }
 
   return kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
@@ -66,7 +64,7 @@ internal fun Type.genericParameterType(index: Int = 0): Type {
 internal fun Type.rawType(): Class<*> {
   return when (this) {
     is Class<*> -> this
-    is WildcardType -> lowerBounds[0].rawType()
+    is WildcardType -> upperBounds[0].rawType()
     is ParameterizedType -> rawType.rawType()
     else -> throw IllegalArgumentException("no raw type: $this")
   }

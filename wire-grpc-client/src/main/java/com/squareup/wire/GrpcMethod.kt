@@ -25,6 +25,7 @@ import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.channels.toChannel
 import java.lang.reflect.Method
+import java.lang.reflect.WildcardType
 import kotlin.coroutines.CoroutineContext
 
 internal sealed class GrpcMethod<S, R>(
@@ -38,9 +39,12 @@ internal sealed class GrpcMethod<S, R>(
       val requestAdapter = ProtoAdapter.get(wireRpc.requestAdapter) as ProtoAdapter<S>
       val responseAdapter = ProtoAdapter.get(wireRpc.responseAdapter) as ProtoAdapter<R>
 
+      // TODO(oldergod) Clean up those reflection calls into util methods.
       if (genericParameterTypes.size == 1) {
         // Request is streaming.
-        val pairReturnType = genericReturnType
+        val continuation = genericParameterTypes[0]
+        val pairReturnType =
+            (continuation.genericParameterType() as WildcardType).lowerBounds[0]
 
         val responseStreaming =
             pairReturnType.genericParameterType(1).rawType() == ReceiveChannel::class.java
@@ -50,7 +54,8 @@ internal sealed class GrpcMethod<S, R>(
           StreamingRequest(wireRpc.path, requestAdapter, responseAdapter)
         }
       } else {
-        val responseStreaming = genericReturnType.rawType() == ReceiveChannel::class.java
+        val responseStreaming =
+            (genericParameterTypes.last().genericParameterType() as WildcardType).lowerBounds[0].rawType() == ReceiveChannel::class.java
         return if (responseStreaming) {
           StreamingResponse(wireRpc.path, requestAdapter, responseAdapter)
         } else {
@@ -73,6 +78,7 @@ internal sealed class GrpcMethod<S, R>(
     ): Any {
       val requestChannel = Channel<S>(0)
       val responseChannel = Channel<R>(0)
+
       grpcClient.call(this, context, requestChannel, responseChannel)
 
       requestChannel.send(parameter as S)
@@ -93,6 +99,7 @@ internal sealed class GrpcMethod<S, R>(
     ): Any {
       val requestChannel = Channel<S>(0)
       val responseChannel = Channel<R>(0)
+
       grpcClient.call(this, context, requestChannel, responseChannel)
 
       return Pair(
@@ -115,6 +122,7 @@ internal sealed class GrpcMethod<S, R>(
     ): Any {
       val requestChannel = Channel<S>(0)
       val responseChannel = Channel<R>(0)
+
       grpcClient.call(this, context, requestChannel, responseChannel)
 
       return CoroutineScope(context).produce<Any> {
