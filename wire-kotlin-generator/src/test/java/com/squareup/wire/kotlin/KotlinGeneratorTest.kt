@@ -108,7 +108,6 @@ class KotlinGeneratorTest {
           |
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.coroutines.CoroutineContext
           |
           |interface RouteGuide : Service {
           |    @WireRpc(
@@ -116,7 +115,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.Point#ADAPTER",
           |            responseAdapter = "routeguide.Feature#ADAPTER"
           |    )
-          |    suspend fun GetFeature(context: CoroutineContext, request: Point): Feature
+          |    suspend fun GetFeature(request: Point): Feature
           |}
           |""".trimMargin()
 
@@ -137,7 +136,6 @@ class KotlinGeneratorTest {
     val expected = """
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.coroutines.CoroutineContext
           |
           |interface RouteGuide : Service {
           |    @WireRpc(
@@ -145,7 +143,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "Point#ADAPTER",
           |            responseAdapter = "Feature#ADAPTER"
           |    )
-          |    suspend fun GetFeature(context: CoroutineContext, request: Point): Feature
+          |    suspend fun GetFeature(request: Point): Feature
           |}
           |""".trimMargin()
 
@@ -166,7 +164,6 @@ class KotlinGeneratorTest {
           |
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.coroutines.CoroutineContext
           |
           |interface RouteGuide : Service {
           |    @WireRpc(
@@ -174,7 +171,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.grpc.Point#ADAPTER",
           |            responseAdapter = "routeguide.grpc.Feature#ADAPTER"
           |    )
-          |    suspend fun GetFeature(context: CoroutineContext, request: Point): Feature
+          |    suspend fun GetFeature(request: Point): Feature
           |}
           |""".trimMargin()
 
@@ -198,7 +195,6 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |import kotlin.Pair
-          |import kotlin.coroutines.CoroutineContext
           |import kotlinx.coroutines.Deferred
           |import kotlinx.coroutines.channels.SendChannel
           |
@@ -208,7 +204,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.Point#ADAPTER",
           |            responseAdapter = "routeguide.RouteSummary#ADAPTER"
           |    )
-          |    fun RecordRoute(context: CoroutineContext): Pair<SendChannel<Point>, Deferred<RouteSummary>>
+          |    suspend fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
           |}
           |""".trimMargin()
 
@@ -231,7 +227,6 @@ class KotlinGeneratorTest {
           |
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.coroutines.CoroutineContext
           |import kotlinx.coroutines.channels.ReceiveChannel
           |
           |interface RouteGuide : Service {
@@ -240,7 +235,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.Rectangle#ADAPTER",
           |            responseAdapter = "routeguide.Feature#ADAPTER"
           |    )
-          |    fun ListFeatures(context: CoroutineContext, request: Rectangle): ReceiveChannel<Feature>
+          |    suspend fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
           |}
           |""".trimMargin()
 
@@ -265,7 +260,6 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |import kotlin.Pair
-          |import kotlin.coroutines.CoroutineContext
           |import kotlinx.coroutines.channels.ReceiveChannel
           |import kotlinx.coroutines.channels.SendChannel
           |
@@ -275,8 +269,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.RouteNote#ADAPTER",
           |            responseAdapter = "routeguide.RouteNote#ADAPTER"
           |    )
-          |    fun RouteChat(context: CoroutineContext): Pair<SendChannel<RouteNote>,
-          |            ReceiveChannel<RouteNote>>
+          |    suspend fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
           |}
           |""".trimMargin()
 
@@ -300,7 +293,6 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |import kotlin.Pair
-          |import kotlin.coroutines.CoroutineContext
           |import kotlinx.coroutines.channels.ReceiveChannel
           |import kotlinx.coroutines.channels.SendChannel
           |
@@ -310,15 +302,14 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.Point#ADAPTER",
           |            responseAdapter = "routeguide.Feature#ADAPTER"
           |    )
-          |    suspend fun GetFeature(context: CoroutineContext, request: Point): Feature
+          |    suspend fun GetFeature(request: Point): Feature
           |
           |    @WireRpc(
           |            path = "/routeguide.RouteGuide/RouteChat",
           |            requestAdapter = "routeguide.RouteNote#ADAPTER",
           |            responseAdapter = "routeguide.RouteNote#ADAPTER"
           |    )
-          |    fun RouteChat(context: CoroutineContext): Pair<SendChannel<RouteNote>,
-          |            ReceiveChannel<RouteNote>>
+          |    suspend fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
           |}
           |""".trimMargin()
 

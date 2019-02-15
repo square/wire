@@ -122,9 +122,8 @@ class KotlinGenerator private constructor(
         .addMember("responseAdapter = %S", "$packageName${rpc.responseType().simpleName()}#ADAPTER")
         .build()
     val funSpecBuilder = FunSpec.builder(rpc.name())
-        .addModifiers(KModifier.ABSTRACT)
+        .addModifiers(KModifier.SUSPEND, KModifier.ABSTRACT)
         .addAnnotation(wireRpcAnnotationSpec)
-        .addParameter("context", CoroutineContext::class.java)
 
     when {
       rpc.requestStreaming() && rpc.responseStreaming() -> {
@@ -150,7 +149,7 @@ class KotlinGenerator private constructor(
                 ReceiveChannel::class.asClassName().parameterizedBy(rpc.responseType().typeName))
       }
       else -> {
-        funSpecBuilder.addModifiers(KModifier.SUSPEND)
+        funSpecBuilder
             .addParameter("request", rpc.requestType().typeName)
             .returns(rpc.responseType().typeName)
       }
