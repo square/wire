@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
+import java.lang.UnsupportedOperationException
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -67,9 +68,10 @@ data class OneOfMessage(val choice: Choice? = null, val unknownFields: ByteStrin
         )
       }
 
-      override fun redact(value: OneOfMessage): OneOfMessage? = value.copy(
-        unknownFields = ByteString.EMPTY
-      )
+      override fun redact(value: OneOfMessage): OneOfMessage? {
+        throw
+            UnsupportedOperationException("Redacting messages with oneof fields is not supported yet!")
+      }
     }
   }
 
