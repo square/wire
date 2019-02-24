@@ -57,7 +57,9 @@ import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
+import com.squareup.wire.schema.Options.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
+import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
@@ -68,7 +70,6 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import java.util.Locale
-import kotlin.coroutines.CoroutineContext
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -915,6 +916,11 @@ class KotlinGenerator private constructor(
             if (constant.documentation().isNotBlank()) {
               addKdoc("%L\n", constant.documentation())
             }
+            if (constant.options().get(ENUM_DEPRECATED) == "true") {
+              addAnnotation(AnnotationSpec.builder(Deprecated::class)
+                  .addMember("message = %S", "${constant.name()} is deprecated")
+                  .build())
+            }
           }
           .build())
     }
@@ -1087,6 +1093,8 @@ class KotlinGenerator private constructor(
     )
     private val MESSAGE = Message::class.asClassName()
     private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
+
+    private val ENUM_DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated")
 
     @JvmStatic @JvmName("get")
     operator fun invoke(

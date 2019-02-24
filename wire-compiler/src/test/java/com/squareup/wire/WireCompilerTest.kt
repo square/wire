@@ -460,6 +460,15 @@ class WireCompilerTest {
     assertKotlinOutputs(outputs, ".java.interop")
   }
 
+  @Test
+  fun testDeprecatedEnumConstant() {
+    val sources = arrayOf("deprecated_enum.proto")
+    compileToKotlin(sources)
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/DeprecatedEnum.kt")
+    assertKotlinOutputs(outputs)
+  }
+
   private fun compileToJava(sources: Array<String>, vararg extraArgs: String) =
       invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
 
