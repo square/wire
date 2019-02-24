@@ -16,6 +16,9 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+/**
+ * A RouteNote is a message sent while at a given point.
+ */
 data class RouteNote(
   @field:WireField(tag = 1, adapter = "routeguide.Point#ADAPTER") val location: Point? = null,
   @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val message: String?

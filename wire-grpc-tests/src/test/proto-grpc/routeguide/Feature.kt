@@ -16,6 +16,11 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+/**
+ * A feature names something at a given point.
+ *
+ * If a feature could not be named, the name is empty.
+ */
 data class Feature(
   @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val name: String? =
       null,

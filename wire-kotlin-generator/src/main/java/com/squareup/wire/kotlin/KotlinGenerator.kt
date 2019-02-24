@@ -206,6 +206,7 @@ class KotlinGenerator private constructor(
     addAdapter(type, companionObjBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
+        .addKdoc(type.documentation())
         .addModifiers(DATA)
         .superclass(superclass.parameterizedBy(className, builderClassName))
         .addSuperclassConstructorParameter(adapterName)

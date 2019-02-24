@@ -15,6 +15,13 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+/**
+ * A RouteSummary is received in response to a RecordRoute rpc.
+ *
+ * It contains the number of individual points received, the number of
+ * detected features, and the total distance covered as the cumulative sum of
+ * the distance between each point.
+ */
 data class RouteSummary(
   @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") val point_count: Int?
       = null,
