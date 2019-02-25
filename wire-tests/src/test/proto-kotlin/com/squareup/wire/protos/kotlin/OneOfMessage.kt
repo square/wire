@@ -16,6 +16,9 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+/**
+ * It's a one of message.
+ */
 data class OneOfMessage(val choice: Choice? = null, val unknownFields: ByteString =
     ByteString.EMPTY) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   @Deprecated(

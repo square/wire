@@ -18,6 +18,9 @@ package squareup.protos.kotlin.person;
 option java_package = "com.squareup.wire.protos.kotlin.person";
 option java_outer_classname = "PersonProtos";
 
+/**
+ * Message representing a person, includes their name, unique ID number, email and phone number.
+ */
 message Person {
   // The customer's full name.
   required string name = 1;

@@ -21,6 +21,9 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
+/**
+ * Message representing a person, includes their name, unique ID number, email and phone number.
+ */
 data class Person(
   @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val name: String,
   @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") val id: Int,

@@ -17,6 +17,9 @@ import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+/**
+ * Not used in the RPC.  Instead, this is here for the form serialized to disk.
+ */
 data class FeatureDatabase(@field:WireField(tag = 1, adapter = "routeguide.Feature#ADAPTER") val
     feature: List<Feature> = emptyList(), val unknownFields: ByteString = ByteString.EMPTY) :
     Message<FeatureDatabase, FeatureDatabase.Builder>(ADAPTER, unknownFields) {

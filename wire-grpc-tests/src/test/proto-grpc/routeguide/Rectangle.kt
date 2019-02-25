@@ -15,6 +15,10 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+/**
+ * A latitude-longitude rectangle, represented as two diagonally opposite
+ * points "lo" and "hi".
+ */
 data class Rectangle(
   @field:WireField(tag = 1, adapter = "routeguide.Point#ADAPTER") val lo: Point? = null,
   @field:WireField(tag = 2, adapter = "routeguide.Point#ADAPTER") val hi: Point? = null,

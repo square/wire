@@ -15,6 +15,12 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+/**
+ * Points are represented as latitude-longitude pairs in the E7 representation
+ * (degrees multiplied by 10**7 and rounded to the nearest integer).
+ * Latitudes should be in the range +/- 90 degrees and longitude should be in
+ * the range +/- 180 degrees (inclusive).
+ */
 data class Point(
   @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") val latitude: Int? =
       null,

@@ -15,6 +15,9 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+/**
+ * Enum names must be fully qualified in generated Kotlin
+ */
 data class MessageUsingMultipleEnums(
   @field:WireField(tag = 1, adapter =
       "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER") val a:

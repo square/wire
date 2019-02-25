@@ -17,6 +17,9 @@ package squareup.protos.kotlin.oneof;
 
 option java_package = "com.squareup.wire.protos.kotlin";
 
+/**
+ * It's a one of message.
+ */
 message OneOfMessage {
 
   // Must have a foo or a bar or a baz.
