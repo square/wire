@@ -29,6 +29,9 @@ message Person {
   // Email address for the customer.
   optional string email = 3;
 
+  /**
+   * Represents the type of the phone number: mobile, home or work.
+   */
   enum PhoneType {
     MOBILE = 0;
     HOME = 1;

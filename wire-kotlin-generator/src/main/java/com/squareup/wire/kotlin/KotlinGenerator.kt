@@ -895,6 +895,7 @@ class KotlinGenerator private constructor(
     val valueName = nameAllocator["value"]
 
     val builder = TypeSpec.enumBuilder(type.simpleName())
+        .addKdoc(message.documentation())
         .addSuperinterface(WireEnum::class)
         .primaryConstructor(FunSpec.constructorBuilder()
             .addParameter(valueName, Int::class, PRIVATE)
