@@ -22,8 +22,14 @@ import okio.ByteString
  * If a feature could not be named, the name is empty.
  */
 data class Feature(
+  /**
+   * The name of the feature.
+   */
   @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val name: String? =
       null,
+  /**
+   * The point where the feature is detected.
+   */
   @field:WireField(tag = 2, adapter = "routeguide.Point#ADAPTER") val location: Point? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Feature, Feature.Builder>(ADAPTER, unknownFields) {

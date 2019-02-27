@@ -14,9 +14,14 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Percents(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING")
-    @JvmField val text: String? = null, val unknownFields: ByteString = ByteString.EMPTY) :
-    Message<Percents, Percents.Builder>(ADAPTER, unknownFields) {
+data class Percents(
+  /**
+   * e.g. "No limits, free to send and just 2.75% to receive".
+   */
+  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val text:
+      String? = null,
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<Percents, Percents.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.text = text

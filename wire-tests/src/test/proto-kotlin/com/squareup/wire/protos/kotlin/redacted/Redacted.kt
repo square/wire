@@ -17,8 +17,8 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Redacted(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true) val
-      a: String? = null,
+  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true)
+      val a: String? = null,
   @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val b: String? =
       null,
   @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") val c: String? =
