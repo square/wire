@@ -124,7 +124,7 @@ public final class RepoBuilder {
 
   public String generateGrpcKotlin(String serviceName) {
     Schema schema = schema();
-    KotlinGenerator grpcGenerator = KotlinGenerator.get(schema, false, false);
+    KotlinGenerator grpcGenerator = KotlinGenerator.get(schema, false, false, false);
     Service service = schema.getService(serviceName);
     com.squareup.kotlinpoet.TypeSpec typeSpec = grpcGenerator.generateService(service);
     String packageName = service.type().enclosingTypeOrPackage();

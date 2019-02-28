@@ -26,6 +26,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.DATA
+import com.squareup.kotlinpoet.KModifier.INTERNAL
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.KModifier.SEALED
@@ -209,16 +210,16 @@ class KotlinGenerator private constructor(
 
     val classBuilder = TypeSpec.classBuilder(className)
         .addKdoc(type.documentation())
-        .addModifiers(DATA)
+        .addModifiers(DATA).apply {
+          if (kotlinInternal) {
+            addModifiers(INTERNAL)
+          }
+        }
         .superclass(superclass.parameterizedBy(className, builderClassName))
         .addSuperclassConstructorParameter(adapterName)
         .addSuperclassConstructorParameter(unknownFields)
         .addFunction(generateNewBuilderMethod(type, builderClassName))
         .addType(generateBuilderClass(type, className, builderClassName))
-
-    if (kotlinInternal) {
-      classBuilder.addModifiers(INTERNAL)
-    }
 
     if (emitAndroid) {
       addAndroidCreator(type, companionObjBuilder)
@@ -261,11 +262,7 @@ class KotlinGenerator private constructor(
       val fieldClass = oneOfField.type().typeName
 
       builder.addType(TypeSpec.classBuilder(className)
-          .addModifiers(DATA).apply {
-            if (kotlinInternal) {
-              addModifiers(INTERNAL)
-            }
-          }
+          .addModifiers(DATA)
           .primaryConstructor(FunSpec.constructorBuilder()
               .addParameter(ParameterSpec.builder(name, fieldClass)
                   .build())
@@ -906,7 +903,11 @@ class KotlinGenerator private constructor(
 
     val builder = TypeSpec.enumBuilder(type.simpleName())
         .addKdoc(message.documentation())
-        .addSuperinterface(WireEnum::class)
+        .addSuperinterface(WireEnum::class).apply {
+          if (kotlinInternal) {
+            addModifiers(INTERNAL)
+          }
+        }
         .primaryConstructor(FunSpec.constructorBuilder()
             .addParameter(valueName, Int::class, PRIVATE)
             .build())
