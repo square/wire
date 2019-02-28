@@ -96,7 +96,8 @@ class WireCompiler internal constructor(
   val emitAndroid: Boolean,
   val emitAndroidAnnotations: Boolean,
   val emitCompact: Boolean,
-  val javaInterop: Boolean
+  val javaInterop: Boolean,
+  val kotlinInternal: Boolean
 ) {
 
   @Throws(IOException::class)
@@ -157,7 +158,7 @@ class WireCompiler internal constructor(
       }
 
       kotlinOut != null -> {
-        val kotlinGenerator = KotlinGenerator(schema, emitAndroid, javaInterop)
+        val kotlinGenerator = KotlinGenerator(schema, emitAndroid, javaInterop, kotlinInternal)
 
         for (i in 0 until MAX_WRITE_CONCURRENCY) {
           val task = KotlinFileWriter(kotlinOut, kotlinGenerator, queue, fs, log, dryRun)
@@ -198,6 +199,7 @@ class WireCompiler internal constructor(
     private const val ANDROID_ANNOTATIONS = "--android-annotations"
     private const val COMPACT = "--compact"
     private const val JAVA_INTEROP = "--java_interop"
+    private const val KOTLIN_INTERNAL = "--kotlin_internal"
     private const val MAX_WRITE_CONCURRENCY = 8
     private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
 
@@ -233,6 +235,7 @@ class WireCompiler internal constructor(
       var emitAndroidAnnotations = false
       var emitCompact = false
       var javaInterop = false
+      var kotlinInternal = false
 
       for (arg in args) {
         when {
@@ -281,6 +284,7 @@ class WireCompiler internal constructor(
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
           arg == COMPACT -> emitCompact = true
           arg == JAVA_INTEROP -> javaInterop = true
+          arg == KOTLIN_INTERNAL -> kotlinInternal = true
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
           else -> sourceFileNames.add(arg)
         }
@@ -294,7 +298,7 @@ class WireCompiler internal constructor(
 
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, sourceFileNames,
           identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitAndroidAnnotations,
-          emitCompact, javaInterop)
+          emitCompact, javaInterop, kotlinInternal)
     }
   }
 }

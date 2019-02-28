@@ -75,7 +75,8 @@ class KotlinGenerator private constructor(
   val schema: Schema,
   private val nameToKotlinName: Map<ProtoType, ClassName>,
   private val emitAndroid: Boolean,
-  private val javaInterOp: Boolean
+  private val javaInterOp: Boolean,
+  private val kotlinInternal: Boolean
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -215,6 +216,10 @@ class KotlinGenerator private constructor(
         .addFunction(generateNewBuilderMethod(type, builderClassName))
         .addType(generateBuilderClass(type, className, builderClassName))
 
+    if (kotlinInternal) {
+      classBuilder.addModifiers(INTERNAL)
+    }
+
     if (emitAndroid) {
       addAndroidCreator(type, companionObjBuilder)
     }
@@ -256,7 +261,11 @@ class KotlinGenerator private constructor(
       val fieldClass = oneOfField.type().typeName
 
       builder.addType(TypeSpec.classBuilder(className)
-          .addModifiers(DATA)
+          .addModifiers(DATA).apply {
+            if (kotlinInternal) {
+              addModifiers(INTERNAL)
+            }
+          }
           .primaryConstructor(FunSpec.constructorBuilder()
               .addParameter(ParameterSpec.builder(name, fieldClass)
                   .build())
@@ -1102,7 +1111,8 @@ class KotlinGenerator private constructor(
     operator fun invoke(
       schema: Schema,
       emitAndroid: Boolean = false,
-      javaInterop: Boolean = false
+      javaInterop: Boolean = false,
+      kotlinInternal: Boolean = false
     ): KotlinGenerator {
       val map = BUILT_IN_TYPES.toMutableMap()
 
@@ -1125,7 +1135,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map, emitAndroid, javaInterop)
+      return KotlinGenerator(schema, map, emitAndroid, javaInterop, kotlinInternal)
     }
   }
 }
