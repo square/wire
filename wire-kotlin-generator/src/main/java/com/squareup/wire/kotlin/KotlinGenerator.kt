@@ -448,6 +448,12 @@ class KotlinGenerator private constructor(
         parameterSpec.defaultValue(defaultValue)
       }
 
+      if (field.isDeprecated) {
+        parameterSpec.addAnnotation(AnnotationSpec.builder(Deprecated::class)
+            .addMember("message = %S", "$fieldName is deprecated")
+            .build())
+      }
+
       parameterSpec.addAnnotation(AnnotationSpec.builder(WireField::class)
           .useSiteTarget(FIELD)
           .addMember("tag = %L", field.tag())

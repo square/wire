@@ -407,6 +407,15 @@ class WireCompilerTest {
   }
 
   @Test
+  fun testDeprecatedKotlin() {
+    val sources = arrayOf("deprecated.proto")
+    compileToKotlin(sources)
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/DeprecatedProto.kt")
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
   fun testDeprecatedJavaInteropKotlin() {
     val sources = arrayOf("deprecated.proto")
     compileToKotlin(sources, "--java_interop")
