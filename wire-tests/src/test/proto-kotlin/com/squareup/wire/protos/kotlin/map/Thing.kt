@@ -16,8 +16,8 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Thing(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val
-    name: String? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<Thing,
+data class Thing(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING")
+    val name: String? = null, val unknownFields: ByteString = ByteString.EMPTY) : Message<Thing,
     Thing.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
       message = "Shouldn't be used in Kotlin",

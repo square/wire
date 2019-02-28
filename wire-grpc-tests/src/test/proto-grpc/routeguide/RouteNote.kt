@@ -20,7 +20,13 @@ import okio.ByteString
  * A RouteNote is a message sent while at a given point.
  */
 data class RouteNote(
+  /**
+   * The location from which the message is sent.
+   */
   @field:WireField(tag = 1, adapter = "routeguide.Point#ADAPTER") val location: Point? = null,
+  /**
+   * The message to be sent.
+   */
   @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val message: String?
       = null,
   val unknownFields: ByteString = ByteString.EMPTY

@@ -462,6 +462,11 @@ class KotlinGenerator private constructor(
       constructorBuilder.addParameter(parameterSpec.build())
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
           .initializer(fieldName)
+          .apply {
+            if (field.documentation().isNotBlank()) {
+              addKdoc("%L\n", field.documentation())
+            }
+          }
           .build())
     }
 

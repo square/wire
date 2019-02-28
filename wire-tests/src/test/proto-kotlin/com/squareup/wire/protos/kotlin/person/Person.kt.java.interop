@@ -23,11 +23,23 @@ import okio.ByteString
  * Message representing a person, includes their name, unique ID number, email and phone number.
  */
 data class Person(
+  /**
+   * The customer's full name.
+   */
   @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val name:
       String,
+  /**
+   * The customer's ID number.
+   */
   @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") @JvmField val id: Int,
+  /**
+   * Email address for the customer.
+   */
   @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val email:
       String? = null,
+  /**
+   * A list of the customer's phone numbers.
+   */
   @field:WireField(tag = 4, adapter =
       "com.squareup.wire.protos.kotlin.person.Person.PhoneNumber#ADAPTER") @JvmField val phone:
       List<PhoneNumber> = emptyList(),
@@ -183,8 +195,14 @@ data class Person(
   }
 
   data class PhoneNumber(
-    @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val
-        number: String,
+    /**
+     * The customer's phone number.
+     */
+    @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField
+        val number: String,
+    /**
+     * The type of phone stored here.
+     */
     @field:WireField(tag = 2, adapter =
         "com.squareup.wire.protos.kotlin.person.Person.PhoneType#ADAPTER") @JvmField val type:
         PhoneType? = PhoneType.HOME,

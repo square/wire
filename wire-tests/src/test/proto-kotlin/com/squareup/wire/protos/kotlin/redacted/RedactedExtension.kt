@@ -17,8 +17,8 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RedactedExtension(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true) val
-      d: String? = null,
+  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true)
+      val d: String? = null,
   @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val e: String? =
       null,
   val unknownFields: ByteString = ByteString.EMPTY

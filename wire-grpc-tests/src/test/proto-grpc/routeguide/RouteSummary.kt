@@ -23,12 +23,24 @@ import okio.ByteString
  * the distance between each point.
  */
 data class RouteSummary(
+  /**
+   * The number of points received.
+   */
   @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") val point_count: Int?
       = null,
+  /**
+   * The number of known features passed while traversing the route.
+   */
   @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") val feature_count:
       Int? = null,
+  /**
+   * The distance covered in metres.
+   */
   @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#INT32") val distance: Int? =
       null,
+  /**
+   * The duration of the traversal in seconds.
+   */
   @field:WireField(tag = 4, adapter = "com.squareup.wire.ProtoAdapter#INT32") val elapsed_time: Int?
       = null,
   val unknownFields: ByteString = ByteString.EMPTY

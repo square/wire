@@ -19,8 +19,11 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RedactedRepeated(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true) val
-      a: List<String> = emptyList(),
+  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true)
+      val a: List<String> = emptyList(),
+  /**
+   * Values in the repeated type need redacting.
+   */
   @field:WireField(tag = 2, adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER")
       val b: List<Redacted> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY

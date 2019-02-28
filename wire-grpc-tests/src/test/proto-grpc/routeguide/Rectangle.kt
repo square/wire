@@ -20,7 +20,13 @@ import okio.ByteString
  * points "lo" and "hi".
  */
 data class Rectangle(
+  /**
+   * One corner of the rectangle.
+   */
   @field:WireField(tag = 1, adapter = "routeguide.Point#ADAPTER") val lo: Point? = null,
+  /**
+   * The other corner of the rectangle.
+   */
   @field:WireField(tag = 2, adapter = "routeguide.Point#ADAPTER") val hi: Point? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Rectangle, Rectangle.Builder>(ADAPTER, unknownFields) {
