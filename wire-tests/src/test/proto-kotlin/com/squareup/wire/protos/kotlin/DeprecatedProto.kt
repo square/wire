@@ -10,36 +10,25 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import kotlin.Deprecated
+import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class DeprecatedProto(@Deprecated(message = "foo is deprecated") @field:WireField(tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val foo: String? = null,
-    val unknownFields: ByteString = ByteString.EMPTY) : Message<DeprecatedProto,
-    DeprecatedProto.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
-    val builder = Builder()
-    builder.foo = foo
-    builder.addUnknownFields(unknownFields())
-    return builder
-  }
+    adapter = "com.squareup.wire.ProtoAdapter#STRING") val foo: String? = null, val unknownFields:
+    ByteString = ByteString.EMPTY) : Message<DeprecatedProto, DeprecatedProto.Builder>(ADAPTER,
+    unknownFields) {
+  @Deprecated(
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
+  )
+  override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder : Message.Builder<DeprecatedProto, Builder>() {
-    @JvmField
-    var foo: String? = null
-
-    @Deprecated(message = "foo is deprecated")
-    fun foo(foo: String?): Builder {
-      this.foo = foo
-      return this
-    }
-
-    override fun build(): DeprecatedProto = DeprecatedProto(
-      foo = foo,
-      unknownFields = buildUnknownFields()
-    )
+  class Builder(private val message: DeprecatedProto) : Message.Builder<DeprecatedProto, Builder>()
+      {
+    override fun build(): DeprecatedProto = message
   }
 
   companion object {
