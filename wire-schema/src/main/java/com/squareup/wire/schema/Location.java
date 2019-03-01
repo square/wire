@@ -31,7 +31,6 @@ public abstract class Location {
 
   public static Location get(String base, String path) {
     base = CharMatcher.is('/').trimTrailingFrom(base);
-    path = CharMatcher.is('/').trimLeadingFrom(path);
     return new AutoValue_Location(base, path, -1, -1);
   }
 
