@@ -94,7 +94,7 @@ class WireCompilerErrorTest {
   }
 
   @Test
-  fun testEnumNamespace() {
+  fun testEnumNamespaceType() {
     val e = assertFailsWith<SchemaException> {
       compile("""
           |package com.squareup.protos.test;
@@ -116,6 +116,30 @@ class WireCompilerErrorTest {
           |  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test.proto at 4:5)
           |  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test.proto at 10:5)
           |  for message com.squareup.protos.test.Foo (/source/test.proto at 2:1)
+          """.trimMargin())
+  }
+
+  @Test
+  fun testEnumNamespaceFile() {
+    val e = assertFailsWith<SchemaException> {
+      compile("""
+          |package com.squareup.protos.test;
+          |
+          |enum Bar {
+          |  QUIX = 0;
+          |  FOO = 1;
+          |}
+          |
+          |enum Bar2 {
+          |  BAZ = 0;
+          |  QUIX = 1;
+          |}
+          """.trimMargin())
+    }
+    assertThat(e).hasMessage("""
+          |multiple enums share constant QUIX:
+          |  1. com.squareup.protos.test.Bar.QUIX (/source/test.proto at 4:3)
+          |  2. com.squareup.protos.test.Bar2.QUIX (/source/test.proto at 10:3)
           """.trimMargin())
   }
 

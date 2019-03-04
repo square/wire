@@ -173,6 +173,10 @@ public final class ProtoFile {
     return toElement().toSchema();
   }
 
+  void validate(Linker linker) {
+    linker.validateEnumConstantNameUniqueness(types);
+  }
+
   /** Syntax version. */
   public enum Syntax {
     PROTO_2("proto2"),

@@ -104,6 +104,8 @@ final class Linker {
     // Validate the linked schema.
     for (ProtoFile protoFile : protoFiles) {
       Linker linker = withContext(protoFile);
+      protoFile.validate(linker);
+
       for (Type type : protoFile.types()) {
         type.validate(linker);
       }
