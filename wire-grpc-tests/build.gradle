@@ -67,3 +67,10 @@ dependencies {
   testImplementation deps.grpc.protobuf
   testImplementation deps.grpc.stub
 }
+
+test {
+  testLogging {
+    events "passed", "skipped", "failed"
+    exceptionFormat "full"
+  }
+}

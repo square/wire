@@ -17,7 +17,6 @@ package com.squareup.wire.internal
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
@@ -40,7 +39,6 @@ internal fun <T> Continuation<T>.invokeSuspending(
     } else {
       resume(deferred.getCompleted())
     }
-    if (deferred.isCancelled) TODO("Needs a test")
   }
 
   return kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
