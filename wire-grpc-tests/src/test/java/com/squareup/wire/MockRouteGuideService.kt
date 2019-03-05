@@ -18,6 +18,11 @@ package com.squareup.wire
 import io.grpc.Server
 import io.grpc.ServerBuilder
 import io.grpc.stub.StreamObserver
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import okhttp3.HttpUrl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.rules.TestRule
@@ -30,6 +35,7 @@ import routeguide.RouteGuideProto.Rectangle
 import routeguide.RouteGuideProto.RouteNote
 import routeguide.RouteGuideProto.RouteSummary
 import java.util.ArrayDeque
+import java.util.concurrent.TimeUnit
 
 /**
  * An assertive scriptable implementation of the [RouteGuideGrpc] gRPC service. Receiving and
@@ -39,12 +45,25 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
   private lateinit var server: Server
   private lateinit var streamObserver: StreamObserver<Any>
   private val script = ArrayDeque<Action>()
+  private val scriptEmpty = Throwable("script is empty")
+  private val scriptResults = Channel<Throwable>(capacity = UNLIMITED)
 
   val url: HttpUrl
     get() = HttpUrl.Builder().scheme("http").host("127.0.0.1").port(server.port).build()
 
   fun enqueue(action: Action) {
     script.add(action)
+  }
+
+  suspend fun awaitSuccess() {
+    try {
+      withTimeout(2000L) {
+        val result = scriptResults.receive()
+        if (result != scriptEmpty) throw result
+      }
+    } catch (e: TimeoutCancellationException) {
+      throw AssertionError("script had stuff left over: $script")
+    }
   }
 
   override fun apply(base: Statement, description: Description): Statement {
@@ -65,81 +84,107 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
   }
 
   override fun getFeature(point: Point, responseObserver: StreamObserver<Feature>) {
-    assertThat(script.removeFirst())
-        .isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/GetFeature"))
-    assertThat(script.removeFirst()).isEqualTo(Action.ReceiveMessage(point))
-    assertThat(script.removeFirst()).isEqualTo(Action.ReceiveComplete)
     streamObserver = responseObserver as StreamObserver<Any>
-    processScript()
+    processScript {
+      assertThat(it).isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    }
+    processScript {
+      assertThat(it).isEqualTo(Action.ReceiveMessage(point))
+    }
+    processScript {
+      assertThat(it).isEqualTo(Action.ReceiveComplete)
+    }
   }
 
   override fun recordRoute(responseObserver: StreamObserver<RouteSummary>): StreamObserver<Point> {
-    assertThat(script.removeFirst())
-        .isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
-
     streamObserver = responseObserver as StreamObserver<Any>
-    processScript()
-
+    processScript {
+      assertThat(it).isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
+    }
     return createAssertingStreamObserver()
   }
 
   override fun listFeatures(rectangle: Rectangle, responseObserver: StreamObserver<Feature>) {
-    assertThat(script.removeFirst())
-        .isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
-    assertThat(script.removeFirst()).isEqualTo(Action.ReceiveMessage(rectangle))
-    assertThat(script.removeFirst()).isEqualTo(Action.ReceiveComplete)
-
     streamObserver = responseObserver as StreamObserver<Any>
-    processScript()
+    processScript {
+      assertThat(it).isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
+    }
+    processScript {
+      assertThat(it).isEqualTo(Action.ReceiveMessage(rectangle))
+    }
+    processScript {
+      assertThat(it).isEqualTo(Action.ReceiveComplete)
+    }
   }
 
   override fun routeChat(responseObserver: StreamObserver<RouteNote>): StreamObserver<RouteNote> {
-    assertThat(script.removeFirst())
-        .isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     streamObserver = responseObserver as StreamObserver<Any>
-    processScript()
-
-
+    processScript {
+      assertThat(it).isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    }
     return createAssertingStreamObserver()
   }
 
   private fun <T : com.google.protobuf.Message> createAssertingStreamObserver(): StreamObserver<T> {
     return object : StreamObserver<T> {
       override fun onNext(value: T) {
-        assertThat(script.removeFirst()).isEqualTo(Action.ReceiveMessage(value))
-        processScript()
+        processScript {
+          assertThat(it).isEqualTo(Action.ReceiveMessage(value))
+        }
       }
 
       override fun onError(t: Throwable?) {
-        assertThat(script.removeFirst()).isEqualTo(Action.ReceiveError)
-        processScript()
+        processScript {
+          assertThat(it).isEqualTo(Action.ReceiveError)
+        }
       }
 
       override fun onCompleted() {
-        assertThat(script.removeFirst()).isEqualTo(Action.ReceiveComplete)
-        processScript()
+        processScript {
+          assertThat(it).isEqualTo(Action.ReceiveComplete)
+        }
       }
     }
   }
 
   /** Execute actions that are immediately ready. */
-  private fun processScript() {
-    while (true) {
-      val action = script.peek() ?: return
-      when (action) {
-        is Action.SendMessage -> {
-          script.removeFirst()
-          streamObserver.onNext(action.message)
+  private fun processScript(nextActionAssert: (Action) -> Unit) {
+    try {
+      val poll = script.poll()
+      nextActionAssert(poll)
+
+      // If other actions are executable, execute 'em immediately.
+      while (true) {
+        val action = script.peek()
+        if (action == null) {
+          runBlocking {
+            scriptResults.send(scriptEmpty)
+          }
+          return
         }
-        is Action.SendError -> {
-          script.removeFirst()
-          streamObserver.onError(action.throwable)
+        when (action) {
+          is Action.SendMessage -> {
+            script.removeFirst()
+            streamObserver.onNext(action.message)
+          }
+          is Action.SendError -> {
+            script.removeFirst()
+            streamObserver.onError(action.throwable)
+          }
+          is Action.SendCompleted -> {
+            script.removeFirst()
+            streamObserver.onCompleted()
+          }
+          is Action.Delay -> {
+            script.removeFirst()
+            Thread.sleep(action.timeUnit.toMillis(action.duration))
+          }
+          else -> return
         }
-        is Action.SendCompleted -> {
-          script.removeFirst()
-          streamObserver.onCompleted()
-        }
-        else -> return
+      }
+    } catch (e: Exception) {
+      runBlocking {
+        scriptResults.send(e)
       }
     }
   }
@@ -152,5 +197,6 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
     data class SendMessage(val message: com.google.protobuf.Message) : Action()
     data class SendError(val throwable: Throwable) : Action()
     object SendCompleted : Action()
+    data class Delay(val duration: Long, val timeUnit: TimeUnit) : Action()
   }
 }

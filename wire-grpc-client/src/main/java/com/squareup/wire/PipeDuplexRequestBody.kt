@@ -2,7 +2,6 @@ package com.squareup.wire
 
 import okhttp3.MediaType
 import okhttp3.RequestBody
-import okhttp3.internal.duplex.DuplexRequestBody
 import okio.BufferedSink
 import okio.Pipe
 import okio.buffer
@@ -13,7 +12,7 @@ import okio.buffer
 class PipeDuplexRequestBody(
   private val contentType: MediaType?,
   pipeMaxBufferSize: Long
-) : RequestBody(), DuplexRequestBody {
+) : RequestBody() {
   private val pipe = Pipe(pipeMaxBufferSize)
 
   fun createSink() = pipe.sink.buffer()
@@ -23,4 +22,6 @@ class PipeDuplexRequestBody(
   override fun writeTo(sink: BufferedSink) {
     pipe.fold(sink)
   }
+
+  override fun isDuplex() = true
 }

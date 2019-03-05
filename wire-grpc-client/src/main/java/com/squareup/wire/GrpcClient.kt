@@ -20,12 +20,10 @@ import com.squareup.wire.GrpcMethod.Companion.toGrpc
 import com.squareup.wire.internal.invokeSuspending
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl
@@ -38,7 +36,6 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import kotlin.coroutines.Continuation
-import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
 internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = MediaType.get("application/grpc")
@@ -59,17 +56,17 @@ class GrpcClient private constructor(
             return when (val grpcMethod = methodToService[method] as GrpcMethod<*, *>) {
               is GrpcMethod.RequestResponse -> {
                 continuation.invokeSuspending {
-                  grpcMethod.invoke(continuation.context, this@GrpcClient, parameter = args[0])
+                  grpcMethod.invoke(continuation, this@GrpcClient, parameter = args[0])
                 }
               }
               is GrpcMethod.StreamingResponse -> {
-                grpcMethod.invoke(continuation.context, this@GrpcClient, parameter = args[0])
+                grpcMethod.invoke(continuation, this@GrpcClient, parameter = args[0])
               }
               is GrpcMethod.StreamingRequest -> {
-                grpcMethod.invoke(continuation.context, this@GrpcClient)
+                grpcMethod.invoke(continuation, this@GrpcClient)
               }
               is GrpcMethod.FullDuplex -> {
-                grpcMethod.invoke(continuation.context, this@GrpcClient)
+                grpcMethod.invoke(continuation, this@GrpcClient)
               }
             }
           }
@@ -98,11 +95,9 @@ class GrpcClient private constructor(
 
   internal fun <S, R> call(
     grpcMethod: GrpcMethod<S, R>,
-    context: CoroutineContext,
     requestChannel: ReceiveChannel<S>,
     responseChannel: SendChannel<R>
-  ) {
-    val scope = CoroutineScope(context)
+  ): Call {
     // Create a duplex request body. It allows us to write request messages even after the response
     // status, headers, and body have been received.
     val requestBody =
@@ -121,16 +116,14 @@ class GrpcClient private constructor(
     // 1. read a message (non blocking, suspending code)
     // 2. write it to the stream (blocking)
     // 3. repeat. We also have to wait for all 2s to end before closing the writer
-    scope.launch {
+    CoroutineScope(Dispatchers.IO).launch {
       val requestWriter = GrpcWriter.get(requestBody.createSink(), grpcMethod.requestAdapter)
       requestWriter.use {
         for (message in requestChannel) {
           // TODO(oldergod): if withContext is blocking, maybe we could aggregate all writing into
           // a List<Job> and join all of them?
-          withContext(Dispatchers.IO) {
-            requestWriter.writeMessage(message)
-            requestWriter.flush()
-          }
+          requestWriter.writeMessage(message)
+          requestWriter.flush()
         }
       }
     }
@@ -142,24 +135,21 @@ class GrpcClient private constructor(
       }
 
       override fun onResponse(call: Call, response: Response) {
-        response.use {
-          // Stream messages from the response body to the response channel.
-          val grpcEncoding = response.header("grpc-encoding")
-          val responseSource = response.body()!!.source()
-          val responseReader =
-              GrpcReader(responseSource, grpcMethod.responseAdapter, grpcEncoding?.toGrpcEncoding())
-          responseReader.use {
-            while (true) {
-              val message = it.readMessage() ?: break
-              // TODO(oldergod) confirm these won’t be interleaved
-              scope.launch {
+        runBlocking {
+          response.use {
+            // Stream messages from the response body to the response channel.
+            val grpcEncoding = response.header("grpc-encoding")
+            val responseSource = response.body()!!.source()
+            val responseReader = GrpcReader(
+                responseSource, grpcMethod.responseAdapter, grpcEncoding?.toGrpcEncoding())
+            responseReader.use {
+              while (true) {
+                val message = it.readMessage() ?: break
                 responseChannel.send(message)
               }
-            }
 
-            val grpcStatus =
-                response.trailers().get("grpc-status") ?: response.header("grpc-status")
-            scope.launch {
+              val grpcStatus =
+                  response.trailers().get("grpc-status") ?: response.header("grpc-status")
               when (grpcStatus) {
                 "0" -> responseChannel.close()
                 else -> {
@@ -173,5 +163,6 @@ class GrpcClient private constructor(
         }
       }
     })
+    return call
   }
 }

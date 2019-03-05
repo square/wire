@@ -17,7 +17,9 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.genericParameterType
 import com.squareup.wire.internal.rawType
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -26,8 +28,9 @@ import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.channels.toChannel
 import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
-import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.Continuation
 
+// TODO(oldergod) move that into GrpcClient
 internal sealed class GrpcMethod<S, R>(
   val path: String,
   val requestAdapter: ProtoAdapter<S>,
@@ -72,14 +75,22 @@ internal sealed class GrpcMethod<S, R>(
     responseAdapter: ProtoAdapter<R>
   ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
     suspend fun invoke(
-      context: CoroutineContext,
+      continuation: Continuation<Any>,
       grpcClient: GrpcClient,
       parameter: Any
     ): Any {
       val requestChannel = Channel<S>(0)
       val responseChannel = Channel<R>(0)
 
-      grpcClient.call(this, context, requestChannel, responseChannel)
+      val call = grpcClient.call(this, requestChannel, responseChannel)
+
+      continuation.context[Job]!!.invokeOnCompletion { cause: Throwable? ->
+        if (cause is CancellationException) {
+          call.cancel()
+          requestChannel.cancel()
+          responseChannel.cancel()
+        }
+      }
 
       requestChannel.send(parameter as S)
       requestChannel.close()
@@ -94,17 +105,28 @@ internal sealed class GrpcMethod<S, R>(
     responseAdapter: ProtoAdapter<R>
   ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
     fun invoke(
-      context: CoroutineContext,
+      continuation: Continuation<Any>,
       grpcClient: GrpcClient
     ): Any {
       val requestChannel = Channel<S>(0)
       val responseChannel = Channel<R>(0)
 
-      grpcClient.call(this, context, requestChannel, responseChannel)
+      val call = grpcClient.call(this, requestChannel, responseChannel)
 
+      continuation.context[Job]!!.invokeOnCompletion { cause: Throwable? ->
+        if (cause is CancellationException) {
+          call.cancel()
+          requestChannel.cancel()
+          responseChannel.cancel()
+        }
+      }
+
+      val coroutineScope = CoroutineScope(continuation.context)
       return Pair(
           requestChannel,
-          CoroutineScope(context).async { responseChannel.consume { responseChannel.receive() } }
+          coroutineScope.async {
+            responseChannel.consume { responseChannel.receive() }
+          }
       )
     }
   }
@@ -116,16 +138,25 @@ internal sealed class GrpcMethod<S, R>(
     responseAdapter: ProtoAdapter<R>
   ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
     fun invoke(
-      context: CoroutineContext,
+      continuation: Continuation<Any>,
       grpcClient: GrpcClient,
       parameter: Any
     ): Any {
       val requestChannel = Channel<S>(0)
       val responseChannel = Channel<R>(0)
 
-      grpcClient.call(this, context, requestChannel, responseChannel)
+      val call = grpcClient.call(this, requestChannel, responseChannel)
 
-      return CoroutineScope(context).produce<Any> {
+      continuation.context[Job]!!.invokeOnCompletion { cause: Throwable? ->
+        if (cause is CancellationException) {
+          call.cancel()
+          requestChannel.cancel()
+          responseChannel.cancel()
+        }
+      }
+
+      val coroutineScope = CoroutineScope(continuation.context)
+      return coroutineScope.produce<Any> {
         requestChannel.consume { requestChannel.send(parameter as S) }
         (responseChannel as Channel<Any>).toChannel(channel)
       }
@@ -139,12 +170,22 @@ internal sealed class GrpcMethod<S, R>(
     responseAdapter: ProtoAdapter<R>
   ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
     fun invoke(
-      context: CoroutineContext,
+      continuation: Continuation<Any>,
       grpcClient: GrpcClient
     ): Any {
       val requestChannel = Channel<S>(0)
       val responseChannel = Channel<R>(0)
-      grpcClient.call(this, context, requestChannel, responseChannel)
+
+      val call = grpcClient.call(this, requestChannel, responseChannel)
+
+      continuation.context[Job]!!.invokeOnCompletion { cause: Throwable? ->
+        if (cause is CancellationException) {
+          call.cancel()
+          requestChannel.cancel()
+          responseChannel.cancel()
+        }
+      }
+
       return requestChannel to responseChannel
     }
   }

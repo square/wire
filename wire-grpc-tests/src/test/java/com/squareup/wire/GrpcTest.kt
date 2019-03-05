@@ -15,16 +15,23 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.MockRouteGuideService.Action.Delay
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
+import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveMessage
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import com.squareup.wire.MockRouteGuideService.Action.SendMessage
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,6 +45,7 @@ import routeguide.RouteNote
 import routeguide.RouteSummary
 import java.time.Duration
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
 class GrpcTest {
   @JvmField @Rule val mockService = MockRouteGuideService()
@@ -45,11 +53,16 @@ class GrpcTest {
 
   private lateinit var grpcClient: GrpcClient
   private lateinit var routeGuideService: RouteGuide
+  private var callReference = AtomicReference<Call>()
 
   @Before
   fun setUp() {
     grpcClient = GrpcClient.Builder()
         .client(OkHttpClient.Builder()
+            .addInterceptor { chain ->
+              callReference.set(chain.call())
+              chain.proceed(chain.request())
+            }
             .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
             .readTimeout(Duration.ofMinutes(60))
             .writeTimeout(Duration.ofMinutes(60))
@@ -143,6 +156,126 @@ class GrpcTest {
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "lacoste"))
       assertThat(responseChannel.receiveOrNull()).isNull()
       requestChannel.close()
+    }
+  }
+
+  @Test
+  fun cancelRequestResponse() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.Point.newBuilder().setLatitude(5).setLongitude(6).build()))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.Feature.newBuilder().setName("tree at 5,6").build()))
+    mockService.enqueue(SendCompleted)
+
+    runBlocking {
+      val deferred = async {
+        routeGuideService.GetFeature(Point(latitude = 5, longitude = 6))
+        fail()
+      }
+      delay(200)
+      deferred.cancel()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelStreamingRequest() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
+    mockService.enqueue(ReceiveError)
+
+    runBlocking {
+      val deferred = async {
+        val (_, result) = routeGuideService.RecordRoute()
+        result.await()
+        fail()
+      }
+      delay(200)
+      deferred.cancel()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelStreamingResponse() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.Rectangle.newBuilder()
+            .setLo(RouteGuideProto.Point.newBuilder().setLatitude(0).setLongitude(0).build())
+            .setHi(RouteGuideProto.Point.newBuilder().setLatitude(4).setLongitude(5).build())
+            .build()))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.Feature.newBuilder().setName("tree").build()))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.Feature.newBuilder().setName("house").build()))
+    mockService.enqueue(SendCompleted)
+
+    runBlocking {
+      val deferred = async {
+        val receiveChannel = routeGuideService.ListFeatures(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+        receiveChannel.receive()
+        fail()
+      }
+      delay(200)
+      deferred.cancel()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelDuplex() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
+    mockService.enqueue(ReceiveError)
+
+    runBlocking {
+      val deferred = async {
+        val (_, receiveChannel) = routeGuideService.RouteChat()
+        receiveChannel.receive()
+        fail()
+      }
+      delay(200)
+      deferred.cancel()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelChannel() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("one").build()))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("two").build()))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("three").build()))
+    mockService.enqueue(ReceiveError)
+
+    val senderChannelReference = AtomicReference<SendChannel<RouteNote>>()
+    val receiveChannelReference = AtomicReference<ReceiveChannel<RouteNote>>()
+
+    runBlocking {
+      val deferred = async {
+        val (sendChannel , receiveChannel) = routeGuideService.RouteChat()
+        senderChannelReference.set(sendChannel)
+        receiveChannelReference.set(receiveChannel)
+        delay(1000)
+      }
+      delay(100)
+      deferred.cancel()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled).isTrue()
+      assertThat(senderChannelReference.get()?.isClosedForSend).isTrue()
+      assertThat(receiveChannelReference.get()?.isClosedForReceive).isTrue()
     }
   }
 }
