@@ -30,7 +30,7 @@ buildscript {
   ext.deps = [
       plugins: [
           kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
-          shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
+          shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
       ],
       'android': "com.google.android:android:${versions.android}",
       'guava': "com.google.guava:guava:${versions.guava}",
