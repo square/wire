@@ -99,7 +99,10 @@ internal class ProtoFilePath(val location: Location, val path: Path) : Root() {
 
   override fun allProtoFiles() = setOf(this)
 
-  override fun resolve(import: String): ProtoFilePath? = null
+  override fun resolve(import: String): ProtoFilePath? {
+    if (import == location.path()) return this
+    return null
+  }
 
   /**
    * Returns the parsed proto file and the path that should be used to import it.

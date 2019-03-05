@@ -131,4 +131,30 @@ class NewSchemaLoaderTest {
     assertThat(exception).hasMessage("expected colors/src/main/proto/squareup/shapes/blue.proto " +
         "to have a path ending with squareup/colors/blue.proto")
   }
+
+  @Test
+  fun protoPathSpecifiedWithBaseAndFile() {
+    fs.add("colors/src/main/proto/squareup/colors/blue.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |import "squareup/curves/circle.proto";
+        |message Blue {
+        |}
+        """.trimMargin())
+    fs.add("curves/src/main/proto/squareup/curves/circle.proto", """
+        |syntax = "proto2";
+        |package squareup.curves;
+        |message Circle {
+        |}
+        """.trimMargin())
+
+    val sourcePath = listOf(Location.get("colors/src/main/proto"))
+    val protoPath = listOf(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
+    val loader = NewSchemaLoader(fs, sourcePath, protoPath)
+    val protoFiles = loader.use { it.load() }
+    assertThat(protoFiles.map { it.location().path() }).containsExactlyInAnyOrder(
+        "squareup/colors/blue.proto",
+        "squareup/curves/circle.proto"
+    )
+  }
 }
