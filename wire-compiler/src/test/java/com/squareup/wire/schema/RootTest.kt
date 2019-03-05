@@ -49,8 +49,8 @@ class RootTest {
     val roots = location.roots(fs, closer)
     assertThat(roots.size == 1)
 
-    // Standalone files don't resolve because we don't know what base directory to use.
-    assertThat(roots[0].resolve("squareup/dinosaurs/dinosaur.proto")).isNull()
+    // Standalone files resolve because we have a base directory.
+    assertThat(roots[0].resolve("squareup/dinosaurs/dinosaur.proto")).isEqualTo(roots[0])
     assertThat(roots[0].resolve("sample/src/main/proto/squareup/dinosaurs/dinosaur.proto")).isNull()
 
     // But we can enumerate their contents.
