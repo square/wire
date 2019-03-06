@@ -1046,10 +1046,16 @@ class KotlinGenerator private constructor(
   private val Field.declarationClass: TypeName
     get() = when {
       isRepeated || default != null -> getClass()
+      isMap -> getClass()
       else -> getClass().copy(nullable = true)
     }
 
-  private fun Field.getClass(baseClass: TypeName = nameToKotlinName.getValue(type())) = when {
+  private fun ProtoType.asTypeName(): TypeName = when {
+    isMap -> Map::class.asTypeName().parameterizedBy(keyType().asTypeName(), valueType().asTypeName())
+    else -> nameToKotlinName.getValue(this)
+  }
+
+  private fun Field.getClass(baseClass: TypeName = type().asTypeName()) = when {
     isRepeated -> List::class.asClassName().parameterizedBy(baseClass)
     isOptional && default == null -> baseClass.copy(nullable = true)
     else -> baseClass.copy(nullable = false)
