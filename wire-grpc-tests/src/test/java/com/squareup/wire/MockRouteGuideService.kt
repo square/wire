@@ -57,7 +57,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
 
   suspend fun awaitSuccess() {
     try {
-      withTimeout(2000L) {
+      withTimeout(3000L) {
         val result = scriptResults.receive()
         if (result != scriptEmpty) throw result
       }

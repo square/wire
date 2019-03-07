@@ -62,7 +62,10 @@ internal fun Type.genericParameterType(index: Int = 0): Type {
 internal fun Type.rawType(): Class<*> {
   return when (this) {
     is Class<*> -> this
-    is WildcardType -> upperBounds[0].rawType()
+    is WildcardType -> {
+      if (lowerBounds.isNotEmpty()) lowerBounds[0].rawType()
+      else upperBounds[0].rawType()
+    }
     is ParameterizedType -> rawType.rawType()
     else -> throw IllegalArgumentException("no raw type: $this")
   }
