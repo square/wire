@@ -1,0 +1,11 @@
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+wire {
+  sourcePath {
+    srcDirs 'src/main/proto', 'src/main/proto2'
+    include 'squareup/**'
+  }
+}

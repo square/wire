@@ -1,0 +1,5 @@
+# This file is a list of proto types that should be included or excluded from code generation.
+#
+# Lines prefixed with '+' denote types which we want to generate.
+#
++squareup.dinosaurs.Dinosaur#name

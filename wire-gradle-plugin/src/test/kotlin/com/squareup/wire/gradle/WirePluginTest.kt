@@ -1,0 +1,313 @@
+package com.squareup.wire.gradle
+
+import org.assertj.core.api.Assertions.assertThat
+import org.gradle.testkit.runner.GradleRunner
+import org.junit.Before
+import org.junit.Test
+import java.io.File
+import kotlin.text.RegexOption.MULTILINE
+
+class WirePluginTest {
+  private lateinit var gradleRunner: GradleRunner
+  @Before
+  fun setUp() {
+    gradleRunner = GradleRunner.create()
+        .withPluginClasspath()
+        .withArguments("generateProtos", "--stacktrace")
+  }
+
+  @Test
+  fun missingPlugin() {
+    val fixtureRoot = File("src/test/projects/missing-plugin")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .buildAndFail()
+
+    assertThat(result.task(":generateProtos")).isNull()
+    assertThat(result.output).contains(
+        """Either the Java or Kotlin plugin must be applied before the Wire Gradle plugin."""
+    )
+  }
+
+  @Test
+  fun sourcePathDirDoesNotExist() {
+    val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-dir")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .buildAndFail()
+
+    assertThat(result.task(":generateProtos")).isNull()
+    assertThat(result.output).contains(
+        """Invalid path string: "src/main/proto". Path does not exist."""
+    )
+  }
+
+  @Test
+  fun useDefaultSourcePath() {
+    val fixtureRoot = File("src/test/projects/sourcepath-default")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/sourcepath-default/build/generated/src/main/java")
+  }
+
+  @Test
+  fun sourcePathWithoutSources() {
+    val fixtureRoot = File("src/test/projects/sourcepath-no-sources")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .buildAndFail()
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output).contains("no sources")
+  }
+
+  @Test
+  fun sourcePathStringShouldNotBeRegularFile() {
+    val fixtureRoot = File("src/test/projects/sourcepath-file")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .buildAndFail()
+
+    assertThat(result.task(":generateProtos")).isNull()
+    assertThat(result.output)
+        .contains(
+            """Invalid path string: "src/main/proto/squareup/geology/period.proto". For individual files, use the closure syntax."""
+        )
+  }
+
+  @Test
+  fun sourcePathStringShouldNotBeUri() {
+    val fixtureRoot = File("src/test/projects/sourcepath-uri")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .buildAndFail()
+
+    assertThat(result.task(":generateProtos")).isNull()
+    assertThat(result.output)
+        .contains(
+            """Invalid path string: "http://www.squareup.com". URL dependencies are not allowed."""
+        )
+  }
+
+  @Test
+  fun sourcePathDir() {
+    val fixtureRoot = File("src/test/projects/sourcepath-dir")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/sourcepath-dir/build/generated/src/main/java")
+  }
+
+  @Test
+  fun sourcePathMavenCoordinates() {
+    val fixtureRoot = File("src/test/projects/sourcepath-maven")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/sourcepath-maven/build/generated/src/main/java")
+  }
+
+  @Test
+  fun sourceTreeOneSrcDirOneFile() {
+    val fixtureRoot = File("src/test/projects/sourcetree-one-srcdir-one-file")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/sourcetree-one-srcdir-one-file/build/generated/src/main/java")
+  }
+
+  @Test
+  fun sourceTreeOneSrcDirMultipleFiles() {
+    val fixtureRoot = File("src/test/projects/sourcetree-one-srcdir-many-files")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains(
+            "src/test/projects/sourcetree-one-srcdir-many-files/build/generated/src/main/java"
+        )
+  }
+
+  @Test
+  fun sourceTreeMultipleSrcDirs() {
+    val fixtureRoot = File("src/test/projects/sourcetree-many-srcdirs")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/sourcetree-many-srcdirs/build/generated/src/main/java")
+  }
+
+  @Test
+  fun differentJavaOutputDir() {
+    val fixtureRoot = File("src/test/projects/different-java-out")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/different-java-out/build/custom")
+  }
+
+  @Test
+  fun differentKotlinOutputDir() {
+    val fixtureRoot = File("src/test/projects/different-kotlin-out")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/different-kotlin-out/build/custom")
+  }
+
+  @Test
+  fun kotlinTargetMissingKotlinPlugin() {
+    val fixtureRoot = File("src/test/projects/missing-kotlin-plugin")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .buildAndFail()
+
+    assertThat(result.task(":generateProtos")).isNull()
+    assertThat(result.output)
+        .contains(
+            "Task with name 'compileKotlin' not found in root project 'missing-kotlin-plugin'"
+        )
+  }
+
+  @Test
+  fun rootKeepsField() {
+    val fixtureRoot = File("src/test/projects/field-root")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .doesNotContain("Writing com.squareup.geology.Period")
+
+    val generatedProto =
+      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(generatedProto).exists()
+
+    val generatedProtoSource = generatedProto.readText()
+    assertThat(fieldsFromProtoSource(generatedProtoSource)).containsOnly("val name")
+  }
+
+  @Test
+  fun pruneRemovesField() {
+    val fixtureRoot = File("src/test/projects/field-prune")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+
+    val generatedProto =
+      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(generatedProto).exists()
+
+    assertThat(generatedProto.readText()).doesNotContain("val name")
+  }
+
+  @Test
+  fun ruleKeepsField() {
+    val fixtureRoot = File("src/test/projects/field-rule-root")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .doesNotContain("Writing com.squareup.geology.Period")
+
+    val generatedProto =
+      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(generatedProto).exists()
+
+    val generatedProtoSource = generatedProto.readText()
+    assertThat(fieldsFromProtoSource(generatedProtoSource)).containsOnly("val name")
+  }
+
+  @Test
+  fun ruleRemovesField() {
+    val fixtureRoot = File("src/test/projects/field-rule-prune")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+
+    val generatedProto =
+      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(generatedProto).exists()
+
+    assertThat(generatedProto.readText()).doesNotContain("val name")
+  }
+
+  private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
+    val protoFieldPattern = "@field:WireField.*(val .*):"
+    val matchedFields = protoFieldPattern.toRegex(MULTILINE)
+        .findAll(generatedProtoSource)
+    return matchedFields
+        .map { it.groupValues[1] }
+        .toList()
+  }
+}
