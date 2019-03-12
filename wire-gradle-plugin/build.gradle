@@ -1,0 +1,58 @@
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'java-gradle-plugin'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+gradlePlugin {
+  plugins {
+    wire {
+      id = 'com.squareup.wire'
+      implementationClass = 'com.squareup.wire.gradle.WirePlugin'
+    }
+  }
+}
+
+dependencies {
+  implementation project(':wire-compiler')
+  implementation deps.kotlin.stdlib.jdk8
+
+  compileOnly gradleApi()
+  implementation deps.plugins.kotlin
+
+  testImplementation deps.junit
+  testImplementation deps.assertj
+}
+
+sourceSets {
+  main.java.srcDir 'src/generated/kotlin'
+}
+
+def generateVersion = tasks.register("pluginVersion") {
+  def outputDir = file('src/generated/kotlin')
+
+  inputs.property 'version', version
+  outputs.dir outputDir
+
+  doLast {
+    def versionFile = file("${outputDir}/com/squareup/wire/Version.kt")
+    versionFile.parentFile.mkdirs()
+    versionFile.text = """// Generated file. Do not edit!
+package com.squareup.wire
+const val VERSION = "${project.version}"
+"""
+  }
+}
+
+tasks.named('compileKotlin').configure {
+  it.dependsOn(generateVersion)
+}
+
+def installProtoJar = tasks.register("installProtoJar", Copy) {
+  from fileTree("${projectDir.path}/src/test/libs")
+  into "${rootDir.path}/build/localMaven/com/squareup/wire/test/dinosaur-protos/1.0"
+}
+
+tasks.withType(Test) {
+  dependsOn(installProtoJar)
+}
