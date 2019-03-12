@@ -53,6 +53,6 @@ def installProtoJar = tasks.register("installProtoJar", Copy) {
   into "${rootDir.path}/build/localMaven/com/squareup/wire/test/dinosaur-protos/1.0"
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
   dependsOn(installProtoJar)
 }
