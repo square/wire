@@ -24,8 +24,10 @@ Version 3.0.0-alpha01 *(2019-03-14)*
    
    ```kotlin
    data class Person(
-     @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val name: String,
-     @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") val id: Int,
+     @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") 
+     val name: String,
+     @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") 
+     val id: Int,
      @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") val email: String? =
          null,
      val unknownFields: ByteString = ByteString.EMPTY
@@ -36,7 +38,7 @@ Version 3.0.0-alpha01 *(2019-03-14)*
    ```
    
    The `copy()` method of a data class replaces most usages of the builder. If your code relies on 
-   the `Builder` you can enable full `Builder` generation by passing the `--java_interop` parameter 
+   the `Builder`, you can enable full `Builder` generation by passing the `--java_interop` parameter 
    to the compiler.
  
  * New: gRPC support
@@ -74,12 +76,12 @@ Version 3.0.0-alpha01 *(2019-03-14)*
    non-blocking asynchronous execution. In streaming modes, `ReceiveChannel` and `SendChannel` are
    used to listen to asynchronous data in a non-blocking fashion.
    
-   This feature works out-of-the-box in Wire 3 compiler as long as the input file contains a gRPC
+   This feature works out of the box in Wire 3 compiler as long as the input file contains a gRPC
    schema.
  
  * New: Gradle plugin
  
-   Here's an example of Gradle configuration:
+   Here's an example Gradle configuration:
    
    ```groovy
    apply plugin: 'com.squareup.wire'
