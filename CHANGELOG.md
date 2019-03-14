@@ -1,6 +1,201 @@
 Change Log
 ==========
 
+Version 3.0.0-alpha01 *(2019-03-14)*
+------------------------------------
+
+ * New: Kotlin Generator
+ 
+   Wire 3 can generate Kotlin data classes. To enable this feature via the command line API, pass in 
+   the `--kotlin_out` parameter that should specify the output directory for the generated `*.kt` 
+   files. 
+   
+   Given the following simple proto:
+   
+   ```proto
+   /**
+    * Message representing a person, includes their name, unique ID number, email and phone number.
+    */
+   message Person {
+     // The customer's full name.
+     required string name = 1;
+     // The customer's ID number.
+     required int32 id = 2;
+     // Email address for the customer.
+     optional string email = 3;
+   }
+   ```
+   
+   the generated Kotlin code will look like the following:
+   
+   ```kotlin
+   /**
+    * Message representing a person, includes their name, unique ID number, email and phone number.
+    */
+   data class Person(
+     /**
+      * The customer's full name.
+      */
+     @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val name: String,
+     /**
+      * The customer's ID number.
+      */
+     @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") val id: Int,
+     /**
+      * Email address for the customer.
+      */
+     @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") val email: String? =
+         null,
+     val unknownFields: ByteString = ByteString.EMPTY
+   ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
+     @Deprecated(
+         message = "Shouldn't be used in Kotlin",
+         level = DeprecationLevel.HIDDEN
+     )
+     override fun newBuilder(): Builder = Builder(this.copy())
+   
+     class Builder(private val message: Person) : Message.Builder<Person, Builder>() {
+       override fun build(): Person = message
+     }
+   
+     companion object {
+       @JvmField
+       val ADAPTER: ProtoAdapter<Person> = ... // code omitted for brevity
+   ```
+   
+   Note that the due to the nature of data classes the `Builder` class becomes redundant and is 
+   preserved for compatibility purposes only. If your code relies on the `Builder` you can enable
+   full `Builder` generation by passing the `--java_interop` parameter to the compiler.
+ 
+ * New: gRPC support
+ 
+   In addition to generating Kotlin code from proto messages, Wire can now generate code for gRPC
+   endpoints. Here's an example schema:
+   
+   ```proto
+   service RouteGuide {
+     // A simple RPC.
+     //
+     // Obtains the feature at a given position.
+     //
+     // A feature with an empty name is returned if there's no feature at the given
+     // position.
+     rpc GetFeature(Point) returns (Feature) {}
+   
+     // A server-to-client streaming RPC.
+     //
+     // Obtains the Features available within the given Rectangle.  Results are
+     // streamed rather than returned at once (e.g. in a response message with a
+     // repeated field), as the rectangle may cover a large area and contain a
+     // huge number of features.
+     rpc ListFeatures(Rectangle) returns (stream Feature) {}
+   
+     // A client-to-server streaming RPC.
+     //
+     // Accepts a stream of Points on a route being traversed, returning a
+     // RouteSummary when traversal is completed.
+     rpc RecordRoute(stream Point) returns (RouteSummary) {}
+   
+     // A Bidirectional streaming RPC.
+     //
+     // Accepts a stream of RouteNotes sent while a route is being traversed,
+     // while receiving other RouteNotes (e.g. from other users).
+     rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
+   }    
+   ```
+   
+   The generated code will look like the following (message protos, referenced by the schema, are
+   omitted):
+   
+   ```kotlin
+   interface RouteGuide : Service {
+     @WireRpc(
+         path = "/routeguide.RouteGuide/GetFeature",
+         requestAdapter = "routeguide.Point#ADAPTER",
+         responseAdapter = "routeguide.Feature#ADAPTER"
+     )
+     suspend fun GetFeature(request: Point): Feature
+   
+     @WireRpc(
+         path = "/routeguide.RouteGuide/ListFeatures",
+         requestAdapter = "routeguide.Rectangle#ADAPTER",
+         responseAdapter = "routeguide.Feature#ADAPTER"
+     )
+     suspend fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
+   
+     @WireRpc(
+         path = "/routeguide.RouteGuide/RecordRoute",
+         requestAdapter = "routeguide.Point#ADAPTER",
+         responseAdapter = "routeguide.RouteSummary#ADAPTER"
+     )
+     suspend fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
+   
+     @WireRpc(
+         path = "/routeguide.RouteGuide/RouteChat",
+         requestAdapter = "routeguide.RouteNote#ADAPTER",
+         responseAdapter = "routeguide.RouteNote#ADAPTER"
+     )
+     suspend fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+   }
+   ```
+   
+   All four gRPC modes are supported: the generated code uses suspendable functions to implement
+   non-blocking asynchronous execution. In streaming modes, `ReceiveChannel` and `SendChannel` are
+   use to listen to asynchronous data in a non-blocking fashion.
+   
+   This feature works out-of-the-box in Wire 3 compiler as long as the input file contains a gRPC
+   schema.
+ 
+ * New: Gradle plugin
+ 
+   Historically Wire only provided command line compiler API and a Maven plugin. As Gradle gained
+   popularity and is a de-facto standard in Android app development, a Wire Gradle plugin became a
+   necessity.
+   
+   Here's an example of Gradle configuration:
+   
+   ```groovy
+   apply plugin: 'com.squareup.wire'
+   
+   wire {
+     // Keeps only 'Dinosaur#name' as the root of the object graph
+     roots 'squareup.dinosaurs.Dinosaur#name'
+   
+     // Keeps all fields, except 'name', in 'Dinosaur'
+     prunes 'squareup.dinosaurs.Dinosaur#name'
+   
+     // Both roots and prunes in an external file
+     rules 'rules.txt'
+   
+     kotlin {
+       javaInterop true
+       out "${buildDir}/generated/custom"
+     }
+   }
+   ```
+   
+   The `wire` extension introduces the concept of compilation targets, such as `kotlin` and `java`,
+   where each target has its own configuration properties.
+   
+  * New: Add support for Android annotations without Parcelable. 
+  * New: Wire Moshi Adapter.
+  * New: Implement support for custom enum types.
+  * New: Use androidx.annotation.Nullable instead of android.support.annotation.Nullable.
+  * New: Import jsr305 and use it to mark @nullable stuff.
+  * New: allow inline multiline comments.
+  * New: Generate an empty message for an enclosing type.
+  * New: Support rendering a ProtoFile to its schema.
+  * New: Support hexadecimal numeric literals.
+  * New: Allow custom types to be constrained with a 'with' clause.
+  * New: Add a constructor which takes in a builder.
+  * New: File options constructor should take in a builder.
+  * New: Add location to the error message about unsupported group elements.
+  * New: Permit single files to be used on the proto path.
+  * Fix: Emit '=' for syntax declaration.
+  * Fix: Don't crash when a comment has a dollar sign.
+  * Fix: Return subclass type instead of abstract parameterized type for newBuilder.
+  * Fix: Validate enum namespace in file context are unique.  
+
 Version 2.2.0 *(2016-06-17)*
 ----------------------------
 
