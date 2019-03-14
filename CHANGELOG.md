@@ -104,14 +104,14 @@ Version 3.0.0-alpha01 *(2019-03-14)*
    The `wire` extension introduces the concept of compilation targets, such as `kotlin` and `java`,
    where each target has its own configuration properties.
    
-  * New: Add support for Android annotations without Parcelable. 
-  * New: Wire Moshi Adapter.
+  * New: Decouple the option of using Android annotations for nullability from the option of having messages implement Parcelable. 
+  * New: Wire Moshi adapter for serializing proto JSON representation using the Moshi library.
   * New: Implement support for custom enum types.
-  * New: Use androidx.annotation.Nullable instead of android.support.annotation.Nullable.
-  * New: Import jsr305 and use it to mark @nullable stuff.
-  * New: allow inline multiline comments.
-  * New: Generate an empty message for an enclosing type.
-  * New: Support rendering a ProtoFile to its schema.
+  * New: Generate AndroidX nullability annotations instead of old support library annotations.
+  * New: Import JSR 305 and use it to mark nullability of public API.
+  * New: Allow inline multiline comments.
+  * New: Generate an empty class when a nested message is retained but its parent was pruned.
+  * New: Support rendering a `ProtoFile` to its schema.
   * New: Support hexadecimal numeric literals.
   * New: Allow custom types to be constrained with a 'with' clause.
   * New: Add a constructor which takes in a builder.
