@@ -28,8 +28,8 @@ Version 3.0.0-alpha01 *(2019-03-14)*
      val name: String,
      @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") 
      val id: Int,
-     @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") val email: String? =
-         null,
+     @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") 
+     val email: String? = null,
      val unknownFields: ByteString = ByteString.EMPTY
    ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
      companion object {
@@ -104,7 +104,8 @@ Version 3.0.0-alpha01 *(2019-03-14)*
    ```
    
    The `wire` extension introduces the concept of compilation targets, such as `kotlin` and `java`,
-   where each target has its own configuration properties.
+   where each target has its own configuration properties. Multiple targets can be supplied, which 
+   benefits use cases such as migrating Java protos to Kotlin.
    
   * New: Decouple the option of using Android annotations for nullability from the option of having messages implement Parcelable. 
   * New: Wire Moshi adapter for serializing proto JSON representation using the Moshi library.
