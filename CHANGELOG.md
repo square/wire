@@ -1,6 +1,130 @@
 Change Log
 ==========
 
+Version 3.0.0-alpha01 *(2019-03-14)*
+------------------------------------
+
+ * New: Kotlin Generator
+ 
+   Wire 3 can generate Kotlin data classes. To enable this feature via the command line API, pass in 
+   the `--kotlin_out` parameter that should specify the output directory for the generated `*.kt` 
+   files. 
+   
+   Given the following simple proto:
+   
+   ```proto
+   message Person {
+     required string name = 1;
+     required int32 id = 2;
+     optional string email = 3;
+   }
+   ```
+   
+   the generated Kotlin code will look like the following:
+   
+   ```kotlin
+   data class Person(
+     @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") 
+     val name: String,
+     @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") 
+     val id: Int,
+     @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") 
+     val email: String? = null,
+     val unknownFields: ByteString = ByteString.EMPTY
+   ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
+     companion object {
+       @JvmField
+       val ADAPTER: ProtoAdapter<Person> = ... // code omitted for brevity
+   ```
+   
+   The `copy()` method of a data class replaces most usages of the builder. If your code relies on 
+   the `Builder`, you can enable full `Builder` generation by passing the `--java_interop` parameter 
+   to the compiler.
+ 
+ * New: gRPC support
+ 
+   In addition to generating Kotlin code from proto messages, Wire can now generate code for gRPC
+   endpoints. Here's an example schema:
+   
+   ```proto
+   service RouteGuide {
+     // A simple RPC.
+     //
+     // Obtains the feature at a given position.
+     //
+     // A feature with an empty name is returned if there's no feature at the given
+     // position.
+     rpc GetFeature(Point) returns (Feature) {}
+   }    
+   ```
+   
+   The generated code will look like the following (message protos, referenced by the schema, are
+   omitted):
+   
+   ```kotlin
+   interface RouteGuide : Service {
+     @WireRpc(
+         path = "/routeguide.RouteGuide/GetFeature",
+         requestAdapter = "routeguide.Point#ADAPTER",
+         responseAdapter = "routeguide.Feature#ADAPTER"
+     )
+     suspend fun GetFeature(request: Point): Feature
+   }
+   ```
+   
+   All four gRPC modes are supported: the generated code uses suspendable functions to implement
+   non-blocking asynchronous execution. In streaming modes, `ReceiveChannel` and `SendChannel` are
+   used to listen to asynchronous data in a non-blocking fashion.
+   
+   This feature works out of the box in Wire 3 compiler as long as the input file contains a gRPC
+   schema.
+ 
+ * New: Gradle plugin
+ 
+   Here's an example Gradle configuration:
+   
+   ```groovy
+   apply plugin: 'com.squareup.wire'
+   
+   wire {
+     // Keeps only 'Dinosaur#name' as the root of the object graph
+     roots 'squareup.dinosaurs.Dinosaur#name'
+   
+     // Keeps all fields, except 'name', in 'Dinosaur'
+     prunes 'squareup.dinosaurs.Dinosaur#name'
+   
+     // Both roots and prunes in an external file
+     rules 'rules.txt'
+   
+     kotlin {
+       javaInterop true
+       out "${buildDir}/generated/custom"
+     }
+   }
+   ```
+   
+   The `wire` extension introduces the concept of compilation targets, such as `kotlin` and `java`,
+   where each target has its own configuration properties. Multiple targets can be supplied, which 
+   benefits use cases such as migrating Java protos to Kotlin.
+   
+  * New: Decouple the option of using Android annotations for nullability from the option of having messages implement Parcelable. 
+  * New: Wire Moshi adapter for serializing proto JSON representation using the Moshi library.
+  * New: Implement support for custom enum types.
+  * New: Generate AndroidX nullability annotations instead of old support library annotations.
+  * New: Import JSR 305 and use it to mark nullability of public API.
+  * New: Allow inline multiline comments.
+  * New: Generate an empty class when a nested message is retained but its parent was pruned.
+  * New: Support rendering a `ProtoFile` to its schema.
+  * New: Support hexadecimal numeric literals.
+  * New: Allow custom types to be constrained with a 'with' clause.
+  * New: Generate a constructor which takes in a `Message.Builder` instead of all fields separately.
+  * New: Add location to the error message about unsupported group elements.
+  * New: Permit single files to be used on the proto path.
+  * Fix: Emit '=' for syntax declaration.
+  * Fix: Don't crash when a comment has a dollar sign.
+  * Fix: Return subclass type instead of abstract parameterized type for newBuilder.
+  * Fix: Validate enum namespace in file context are unique.
+
 Version 2.2.0 *(2016-06-17)*
 ----------------------------
 
