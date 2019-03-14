@@ -92,11 +92,11 @@ final class Linker {
     // Compute public imports so we know that importing a.proto also imports b.proto and c.proto.
     Multimap<String, String> publicImports = LinkedHashMultimap.create();
     for (ProtoFile protoFile : protoFiles) {
-      publicImports.putAll(protoFile.location().path(), protoFile.publicImports());
+      publicImports.putAll(protoFile.location().getPath(), protoFile.publicImports());
     }
     // For each proto, gather its imports and its transitive imports.
     for (ProtoFile protoFile : protoFiles) {
-      Collection<String> sink = imports.get(protoFile.location().path());
+      Collection<String> sink = imports.get(protoFile.location().getPath());
       addImports(sink, protoFile.imports(), publicImports);
       addImports(sink, protoFile.publicImports(), publicImports);
     }
@@ -339,8 +339,8 @@ final class Linker {
 
     if (type.isScalar()) return;
 
-    String path = location.path();
-    String requiredImport = get(type).location().path();
+    String path = location.getPath();
+    String requiredImport = get(type).location().getPath();
     if (!path.equals(requiredImport) && !imports.containsEntry(path, requiredImport)) {
       addError("%s needs to import %s", path, requiredImport);
     }

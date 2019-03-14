@@ -31,7 +31,7 @@ import java.util.Map;
 public final class Schema {
   private static final Ordering<ProtoFile> PATH_ORDER = new Ordering<ProtoFile>() {
     @Override public int compare(ProtoFile left, ProtoFile right) {
-      return left.location().path().compareTo(right.location().path());
+      return left.location().getPath().compareTo(right.location().getPath());
     }
   };
 
@@ -52,7 +52,7 @@ public final class Schema {
   /** Returns the proto file at {@code path}, or null if this schema has no such file. */
   public ProtoFile protoFile(String path) {
     for (ProtoFile protoFile : protoFiles) {
-      if (protoFile.location().path().equals(path)) {
+      if (protoFile.location().getPath().equals(path)) {
         return protoFile;
       }
     }

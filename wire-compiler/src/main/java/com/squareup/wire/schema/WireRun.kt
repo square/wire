@@ -157,7 +157,7 @@ data class WireRun(
     // 5. Call each target.
     val typesToHandle = mutableListOf<Type>()
     for (protoFile in schema.protoFiles()) {
-      if (schemaLoader.sourceLocationPaths.contains(protoFile.location().path())) {
+      if (schemaLoader.sourceLocationPaths.contains(protoFile.location().path)) {
         typesToHandle += protoFile.types()
       }
     }

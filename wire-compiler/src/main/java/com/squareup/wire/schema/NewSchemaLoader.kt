@@ -62,7 +62,7 @@ class NewSchemaLoader(
     for (sourceRoot in sourceRoots) {
       for (locationAndPath in sourceRoot.allProtoFiles()) {
         load(locationAndPath)
-        mutableSourceLocationPaths += locationAndPath.location.path()
+        mutableSourceLocationPaths += locationAndPath.location.path
       }
     }
     if (mutableSourceLocationPaths.isEmpty()) {
@@ -111,10 +111,10 @@ class NewSchemaLoader(
 
     // If the .proto was specified as a full path without a separate base directory that it's
     // relative to, confirm that the import path and file system path agree.
-    if (protoFilePath.location.base().isEmpty()
-        && protoFilePath.location.path() != importPath
-        && !protoFilePath.location.path().endsWith("/$importPath")) {
-      errors += "expected ${protoFilePath.location.path()} to have a path ending with $importPath"
+    if (protoFilePath.location.base.isEmpty()
+        && protoFilePath.location.path != importPath
+        && !protoFilePath.location.path.endsWith("/$importPath")) {
+      errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
     }
 
     loaded[importPath] = protoFile
@@ -143,12 +143,12 @@ class NewSchemaLoader(
 
 internal fun ProtoFile.importPath(location: Location): String {
   return when {
-    location.base().isEmpty() -> canonicalImportPath(location)
-    else -> location.path()
+    location.base.isEmpty() -> canonicalImportPath(location)
+    else -> location.path
   }
 }
 
 internal fun ProtoFile.canonicalImportPath(location: Location): String {
-  val filename = location.path().substringAfterLast('/')
+  val filename = location.path.substringAfterLast('/')
   return packageName().replace('.', '/') + "/" + filename
 }

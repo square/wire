@@ -120,9 +120,9 @@ public final class ProfileLoader {
    * and adds them to {@code result}.
    */
   void pathsToAttempt(Multimap<Path, String> sink, Location location) {
-    Path base = fileSystem.getPath(location.base());
+    Path base = fileSystem.getPath(location.getBase());
 
-    String path = location.path();
+    String path = location.getPath();
     while (!path.isEmpty()) {
       String parent = path.substring(0, path.lastIndexOf('/', path.length() - 2) + 1);
       String profilePath = parent + name + ".wire";
@@ -154,21 +154,21 @@ public final class ProfileLoader {
     List<String> errors = new ArrayList<>();
 
     for (ProfileFileElement profileFile : profileFiles) {
-      for (TypeConfigElement typeConfig : profileFile.typeConfigs()) {
-        ProtoType type = importedType(ProtoType.get(typeConfig.type()));
+      for (TypeConfigElement typeConfig : profileFile.getTypeConfigs()) {
+        ProtoType type = importedType(ProtoType.get(typeConfig.getType()));
         if (type == null) continue;
 
         Type resolvedType = schema.getType(type);
         if (resolvedType == null) {
           errors.add(String.format("unable to resolve %s (%s)",
-              type, typeConfig.location()));
+              type, typeConfig.getLocation()));
           continue;
         }
 
-        String requiredImport = resolvedType.location().path();
-        if (!profileFile.imports().contains(requiredImport)) {
+        String requiredImport = resolvedType.location().getPath();
+        if (!profileFile.getImports().contains(requiredImport)) {
           errors.add(String.format("%s needs to import %s (%s)",
-              typeConfig.location().path(), requiredImport, typeConfig.location()));
+              typeConfig.getLocation().getPath(), requiredImport, typeConfig.getLocation()));
         }
       }
     }

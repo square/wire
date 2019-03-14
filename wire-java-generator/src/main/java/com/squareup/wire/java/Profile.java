@@ -40,19 +40,19 @@ public final class Profile {
 
   public @Nullable TypeName getTarget(ProtoType type) {
     TypeConfigElement typeConfig = typeConfig(type);
-    return typeConfig != null ? ClassName.bestGuess(typeConfig.target()) : null;
+    return typeConfig != null ? ClassName.bestGuess(typeConfig.getTarget()) : null;
   }
 
   public @Nullable AdapterConstant getAdapter(ProtoType type) {
     TypeConfigElement typeConfig = typeConfig(type);
-    return typeConfig != null ? new AdapterConstant(typeConfig.adapter()) : null;
+    return typeConfig != null ? new AdapterConstant(typeConfig.getAdapter()) : null;
   }
 
   /** Returns the config for {@code type}, or null if it is not configured. */
   private @Nullable TypeConfigElement typeConfig(ProtoType type) {
     for (ProfileFileElement element : profileFiles) {
-      for (TypeConfigElement typeConfig : element.typeConfigs()) {
-        if (typeConfig.type().equals(type.toString())) return typeConfig;
+      for (TypeConfigElement typeConfig : element.getTypeConfigs()) {
+        if (typeConfig.getType().equals(type.toString())) return typeConfig;
       }
     }
     return null;

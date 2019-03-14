@@ -80,7 +80,7 @@ class NewSchemaLoaderTest {
     val protoPath = listOf(Location.get("polygons/src/main/proto"), Location.get("lib/curves.zip"))
     val loader = NewSchemaLoader(fs, sourcePath, protoPath)
     val protoFiles = loader.use { it.load() }
-    assertThat(protoFiles.map { it.location().path() }).containsExactlyInAnyOrder(
+    assertThat(protoFiles.map { it.location().path }).containsExactlyInAnyOrder(
         "squareup/colors/blue.proto",
         "squareup/colors/red.proto",
         "squareup/curves/circle.proto",
@@ -152,7 +152,7 @@ class NewSchemaLoaderTest {
     val protoPath = listOf(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
     val loader = NewSchemaLoader(fs, sourcePath, protoPath)
     val protoFiles = loader.use { it.load() }
-    assertThat(protoFiles.map { it.location().path() }).containsExactlyInAnyOrder(
+    assertThat(protoFiles.map { it.location().path }).containsExactlyInAnyOrder(
         "squareup/colors/blue.proto",
         "squareup/curves/circle.proto"
     )

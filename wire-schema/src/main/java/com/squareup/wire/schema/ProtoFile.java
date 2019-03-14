@@ -97,7 +97,7 @@ public final class ProtoFile {
    * squareup/protos/person/simple_message.proto}.
    */
   public String name() {
-    String result = location().path();
+    String result = location().getPath();
 
     int slashIndex = result.lastIndexOf('/');
     if (slashIndex != -1) {
@@ -166,7 +166,7 @@ public final class ProtoFile {
   }
 
   @Override public String toString() {
-    return location().path();
+    return location().getPath();
   }
 
   public String toSchema() {
