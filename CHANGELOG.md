@@ -35,9 +35,9 @@ Version 3.0.0-alpha01 *(2019-03-14)*
        val ADAPTER: ProtoAdapter<Person> = ... // code omitted for brevity
    ```
    
-   Note that, with data classes, the Builder class is redundant and is preserved for compatibility 
-   purposes only. If your code relies on the `Builder` you can enable full `Builder` generation by 
-   passing the `--java_interop` parameter to the compiler.
+   The `copy()` method of a data class replaces most usages of the builder. If your code relies on 
+   the `Builder` you can enable full `Builder` generation by passing the `--java_interop` parameter 
+   to the compiler.
  
  * New: gRPC support
  
@@ -114,14 +114,13 @@ Version 3.0.0-alpha01 *(2019-03-14)*
   * New: Support rendering a `ProtoFile` to its schema.
   * New: Support hexadecimal numeric literals.
   * New: Allow custom types to be constrained with a 'with' clause.
-  * New: Add a constructor which takes in a builder.
-  * New: File options constructor should take in a builder.
+  * New: Generate a constructor which takes in a `Message.Builder` instead of all fields separately.
   * New: Add location to the error message about unsupported group elements.
   * New: Permit single files to be used on the proto path.
   * Fix: Emit '=' for syntax declaration.
   * Fix: Don't crash when a comment has a dollar sign.
   * Fix: Return subclass type instead of abstract parameterized type for newBuilder.
-  * Fix: Validate enum namespace in file context are unique.  
+  * Fix: Validate enum namespace in file context are unique.
 
 Version 2.2.0 *(2016-06-17)*
 ----------------------------
