@@ -48,17 +48,17 @@ internal fun Location.roots(
   closer: Closer,
   baseToRoots: MutableMap<String, List<Root>> = mutableMapOf()
 ): List<Root> {
-  if (base().isNotEmpty()) {
-    val roots = baseToRoots.computeIfAbsent(base()) {
+  if (base.isNotEmpty()) {
+    val roots = baseToRoots.computeIfAbsent(base) {
       Location.get(it).roots(fs, closer)
     }
     for (root in roots) {
-      val resolved = root.resolve(path()) ?: continue
+      val resolved = root.resolve(path) ?: continue
       return listOf(resolved)
     }
     throw IllegalArgumentException("unable to resolve $this")
   } else {
-    val path = fs.getPath(path())
+    val path = fs.getPath(path)
     return path.roots(closer, this)
   }
 }
@@ -67,19 +67,19 @@ internal fun Location.roots(
 private fun Path.roots(closer: Closer, location: Location): List<Root> {
   return when {
     Files.isDirectory(this) -> {
-      check(location.base().isEmpty())
-      listOf(DirectoryRoot(location.path(), this))
+      check(location.base.isEmpty())
+      listOf(DirectoryRoot(location.path, this))
     }
 
     endsWithDotProto() -> listOf(ProtoFilePath(location, this))
 
     // Handle a .zip or .jar file by adding all .proto files within.
     else -> {
-      check(location.base().isEmpty())
+      check(location.base.isEmpty())
       try {
         val sourceFs = FileSystems.newFileSystem(this, javaClass.classLoader)
         closer.register(sourceFs)
-        sourceFs.rootDirectories.map { DirectoryRoot(location.path(), it) }
+        sourceFs.rootDirectories.map { DirectoryRoot(location.path, it) }
       } catch (e: ProviderNotFoundException) {
         throw IllegalArgumentException(
             "expected a directory, archive (.zip / .jar / etc.), or .proto: $this")
@@ -100,7 +100,7 @@ internal class ProtoFilePath(val location: Location, val path: Path) : Root() {
   override fun allProtoFiles() = setOf(this)
 
   override fun resolve(import: String): ProtoFilePath? {
-    if (import == location.path()) return this
+    if (import == location.path) return this
     return null
   }
 
