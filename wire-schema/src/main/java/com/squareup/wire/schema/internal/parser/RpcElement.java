@@ -13,71 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.Util.appendIndented
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
+data class RpcElement(
+  val location: Location,
+  val name: String,
+  val documentation: String = "",
+  val requestType: String,
+  val responseType: String,
+  val requestStreaming: Boolean = false,
+  val responseStreaming: Boolean = false,
+  val options: List<OptionElement> = emptyList()
+) {
+  fun toSchema() = buildString {
+    appendDocumentation(this, documentation)
+    append("rpc $name (")
 
-@AutoValue
-public abstract class RpcElement {
-  public static Builder builder(Location location) {
-    return new AutoValue_RpcElement.Builder()
-        .documentation("")
-        .location(location)
-        .requestStreaming(false)
-        .responseStreaming(false)
-        .options(ImmutableList.<OptionElement>of());
-  }
-
-  public abstract Location location();
-  public abstract String name();
-  public abstract String documentation();
-  public abstract String requestType();
-  public abstract String responseType();
-  public abstract boolean requestStreaming();
-  public abstract boolean responseStreaming();
-  public abstract ImmutableList<OptionElement> options();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("rpc ")
-        .append(name())
-        .append(" (");
-    if (requestStreaming()) {
-      builder.append("stream ");
+    if (requestStreaming) {
+      append("stream ")
     }
-    builder.append(requestType())
-        .append(") returns (");
-    if (responseStreaming()) {
-      builder.append("stream ");
+    append("$requestType) returns (")
+
+    if (responseStreaming) {
+      append("stream ")
     }
-    builder.append(responseType())
-        .append(')');
-    if (!options().isEmpty()) {
-      builder.append(" {\n");
-      for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchemaDeclaration());
+    append("$responseType)")
+
+    if (options.isNotEmpty()) {
+      append(" {\n")
+      for (option in options) {
+        appendIndented(this, option.toSchemaDeclaration())
       }
-      builder.append("}");
+      append('}')
     }
-    return builder.append(";\n").toString();
-  }
 
-  @AutoValue.Builder
-  public interface Builder {
-    Builder location(Location location);
-    Builder name(String name);
-    Builder documentation(String documentation);
-    Builder requestType(String requestType);
-    Builder responseType(String responseType);
-    Builder requestStreaming(boolean requestStreaming);
-    Builder responseStreaming(boolean responseStreaming);
-    Builder options(ImmutableList<OptionElement> options);
-    RpcElement build();
+    append(";\n")
   }
 }

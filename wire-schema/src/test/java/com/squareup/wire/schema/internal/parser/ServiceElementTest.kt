@@ -39,13 +39,13 @@ class ServiceElementTest {
     val service = ServiceElement(
         location = location,
         name = "Service",
-        rpcs =
-        listOf(
-            RpcElement.builder(location)
-                .name("Name")
-                .requestType("RequestType")
-                .responseType("ResponseType")
-                .build()
+        rpcs = listOf(
+            RpcElement(
+                location = location,
+                name = "Name",
+                requestType = "RequestType",
+                responseType = "ResponseType"
+            )
         )
     )
     val expected = """
@@ -58,16 +58,18 @@ class ServiceElementTest {
 
   @Test
   fun addMultipleRpcs() {
-    val firstName = RpcElement.builder(location)
-        .name("FirstName")
-        .requestType("RequestType")
-        .responseType("ResponseType")
-        .build()
-    val lastName = RpcElement.builder(location)
-        .name("LastName")
-        .requestType("RequestType")
-        .responseType("ResponseType")
-        .build()
+    val firstName = RpcElement(
+        location = location,
+        name = "FirstName",
+        requestType = "RequestType",
+        responseType = "ResponseType"
+    )
+    val lastName = RpcElement(
+        location = location,
+        name = "LastName",
+        requestType = "RequestType",
+        responseType = "ResponseType"
+    )
     val service = ServiceElement(
         location = location,
         name = "Service",
@@ -83,11 +85,12 @@ class ServiceElementTest {
         name = "Service",
         options = listOf(OptionElement.create("foo", Kind.STRING, "bar")),
         rpcs = listOf(
-            RpcElement.builder(location)
-                .name("Name")
-                .requestType("RequestType")
-                .responseType("ResponseType")
-                .build()
+            RpcElement(
+                location = location,
+                name = "Name",
+                requestType = "RequestType",
+                responseType = "ResponseType"
+            )
         )
     )
     val expected = """
@@ -109,11 +112,12 @@ class ServiceElementTest {
         name = "Service",
         options = ImmutableList.of(kitKat, fooBar),
         rpcs = listOf(
-            RpcElement.builder(location)
-                .name("Name")
-                .requestType("RequestType")
-                .responseType("ResponseType")
-                .build()
+            RpcElement(
+                location = location,
+                name = "Name",
+                requestType = "RequestType",
+                responseType = "ResponseType"
+            )
         )
     )
     assertThat(service.options).hasSize(2)
@@ -126,11 +130,12 @@ class ServiceElementTest {
         name = "Service",
         documentation = "Hello",
         rpcs = listOf(
-            RpcElement.builder(location)
-                .name("Name")
-                .requestType("RequestType")
-                .responseType("ResponseType")
-                .build()
+            RpcElement(
+                location = location,
+                name = "Name",
+                requestType = "RequestType",
+                responseType = "ResponseType"
+            )
         )
     )
     val expected = """
@@ -144,11 +149,12 @@ class ServiceElementTest {
 
   @Test
   fun multipleToSchema() {
-    val rpc = RpcElement.builder(location)
-        .name("Name")
-        .requestType("RequestType")
-        .responseType("ResponseType")
-        .build()
+    val rpc = RpcElement(
+        location = location,
+        name = "Name",
+        requestType = "RequestType",
+        responseType = "ResponseType"
+    )
     val service = ServiceElement(
         location = location,
         name = "Service",
@@ -166,23 +172,25 @@ class ServiceElementTest {
 
   @Test
   fun rpcToSchema() {
-    val rpc = RpcElement.builder(location)
-        .name("Name")
-        .requestType("RequestType")
-        .responseType("ResponseType")
-        .build()
+    val rpc = RpcElement(
+        location = location,
+        name = "Name",
+        requestType = "RequestType",
+        responseType = "ResponseType"
+    )
     val expected = "rpc Name (RequestType) returns (ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun rpcWithDocumentationToSchema() {
-    val rpc = RpcElement.builder(location)
-        .name("Name")
-        .documentation("Hello")
-        .requestType("RequestType")
-        .responseType("ResponseType")
-        .build()
+    val rpc = RpcElement(
+        location = location,
+        name = "Name",
+        documentation = "Hello",
+        requestType = "RequestType",
+        responseType = "ResponseType"
+    )
     val expected = """
         |// Hello
         |rpc Name (RequestType) returns (ResponseType);
@@ -192,12 +200,13 @@ class ServiceElementTest {
 
   @Test
   fun rpcWithOptionsToSchema() {
-    val rpc = RpcElement.builder(location)
-        .name("Name")
-        .requestType("RequestType")
-        .responseType("ResponseType")
-        .options(ImmutableList.of((OptionElement.create("foo", Kind.STRING, "bar"))))
-        .build()
+    val rpc = RpcElement(
+        location = location,
+        name = "Name",
+        requestType = "RequestType",
+        responseType = "ResponseType",
+        options = listOf(OptionElement.create("foo", Kind.STRING, "bar"))
+    )
 
     val expected = """
         |rpc Name (RequestType) returns (ResponseType) {
@@ -209,24 +218,26 @@ class ServiceElementTest {
 
   @Test
   fun rpcWithRequestStreamingToSchema() {
-    val rpc = RpcElement.builder(location)
-        .name("Name")
-        .requestType("RequestType")
-        .responseType("ResponseType")
-        .requestStreaming(true)
-        .build()
+    val rpc = RpcElement(
+        location = location,
+        name = "Name",
+        requestType = "RequestType",
+        responseType = "ResponseType",
+        requestStreaming = true
+    )
     val expected = "rpc Name (stream RequestType) returns (ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun rpcWithResponseStreamingToSchema() {
-    val rpc = RpcElement.builder(location)
-        .name("Name")
-        .requestType("RequestType")
-        .responseType("ResponseType")
-        .responseStreaming(true)
-        .build()
+    val rpc = RpcElement(
+        location = location,
+        name = "Name",
+        requestType = "RequestType",
+        responseType = "ResponseType",
+        responseStreaming = true
+    )
     val expected = "rpc Name (RequestType) returns (stream ResponseType);\n"
     assertThat(rpc.toSchema()).isEqualTo(expected)
   }
