@@ -17,6 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.RpcElement;
+import java.util.List;
 
 public final class Rpc {
   private final Location location;
@@ -100,7 +101,7 @@ public final class Rpc {
     return result;
   }
 
-  static ImmutableList<Rpc> fromElements(ImmutableList<RpcElement> elements) {
+  static ImmutableList<Rpc> fromElements(List<RpcElement> elements) {
     ImmutableList.Builder<Rpc> rpcs = new ImmutableList.Builder<>();
     for (RpcElement rpcElement : elements) {
       rpcs.add(new Rpc(rpcElement.location(), rpcElement.name(), rpcElement.documentation(),

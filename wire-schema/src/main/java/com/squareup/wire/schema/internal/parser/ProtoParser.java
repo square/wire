@@ -245,9 +245,6 @@ public final class ProtoParser {
   /** Reads a service declaration and returns it. */
   private ServiceElement readService(Location location, String documentation) {
     String name = reader.readName();
-    ServiceElement.Builder builder = ServiceElement.builder(location)
-        .name(name)
-        .documentation(documentation);
 
     reader.require('{');
     ImmutableList.Builder<RpcElement> rpcs = ImmutableList.builder();
@@ -263,9 +260,13 @@ public final class ProtoParser {
         options.add((OptionElement) declared);
       }
     }
-    return builder.options(options.build())
-        .rpcs(rpcs.build())
-        .build();
+    return new ServiceElement(
+        location,
+        name,
+        documentation,
+        rpcs.build(),
+        options.build()
+    );
   }
 
   /** Reads an enumerated type declaration and returns it. */

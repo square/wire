@@ -26,27 +26,28 @@ class ServiceElementTest {
 
   @Test
   fun emptyToSchema() {
-    val service = ServiceElement.builder(location)
-        .name("Service")
-        .build()
+    val service = ServiceElement(
+        location = location,
+        name = "Service"
+    )
     val expected = "service Service {}\n"
     assertThat(service.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun singleToSchema() {
-    val service = ServiceElement.builder(location)
-        .name("Service")
-        .rpcs(
-            ImmutableList.of(
-                RpcElement.builder(location)
-                    .name("Name")
-                    .requestType("RequestType")
-                    .responseType("ResponseType")
-                    .build()
-            )
+    val service = ServiceElement(
+        location = location,
+        name = "Service",
+        rpcs =
+        listOf(
+            RpcElement.builder(location)
+                .name("Name")
+                .requestType("RequestType")
+                .responseType("ResponseType")
+                .build()
         )
-        .build()
+    )
     val expected = """
         |service Service {
         |  rpc Name (RequestType) returns (ResponseType);
@@ -67,32 +68,28 @@ class ServiceElementTest {
         .requestType("RequestType")
         .responseType("ResponseType")
         .build()
-    val service = ServiceElement.builder(location)
-        .name("Service")
-        .rpcs(ImmutableList.of(firstName, lastName))
-        .build()
-    assertThat(service.rpcs()).hasSize(2)
+    val service = ServiceElement(
+        location = location,
+        name = "Service",
+        rpcs = listOf(firstName, lastName)
+    )
+    assertThat(service.rpcs).hasSize(2)
   }
 
   @Test
   fun singleWithOptionsToSchema() {
-    val service = ServiceElement.builder(location)
-        .name("Service")
-        .options(
-            ImmutableList.of(
-                OptionElement.create("foo", Kind.STRING, "bar")
-            )
+    val service = ServiceElement(
+        location = location,
+        name = "Service",
+        options = listOf(OptionElement.create("foo", Kind.STRING, "bar")),
+        rpcs = listOf(
+            RpcElement.builder(location)
+                .name("Name")
+                .requestType("RequestType")
+                .responseType("ResponseType")
+                .build()
         )
-        .rpcs(
-            ImmutableList.of(
-                RpcElement.builder(location)
-                    .name("Name")
-                    .requestType("RequestType")
-                    .responseType("ResponseType")
-                    .build()
-            )
-        )
-        .build()
+    )
     val expected = """
         |service Service {
         |  option foo = "bar";
@@ -107,37 +104,35 @@ class ServiceElementTest {
   fun addMultipleOptions() {
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
-    val service = ServiceElement.builder(location)
-        .name("Service")
-        .options(ImmutableList.of(kitKat, fooBar))
-        .rpcs(
-            ImmutableList.of(
-                RpcElement.builder(location)
-                    .name("Name")
-                    .requestType("RequestType")
-                    .responseType("ResponseType")
-                    .build()
-            )
+    val service = ServiceElement(
+        location = location,
+        name = "Service",
+        options = ImmutableList.of(kitKat, fooBar),
+        rpcs = listOf(
+            RpcElement.builder(location)
+                .name("Name")
+                .requestType("RequestType")
+                .responseType("ResponseType")
+                .build()
         )
-        .build()
-    assertThat(service.options()).hasSize(2)
+    )
+    assertThat(service.options).hasSize(2)
   }
 
   @Test
   fun singleWithDocumentationToSchema() {
-    val service = ServiceElement.builder(location)
-        .name("Service")
-        .documentation("Hello")
-        .rpcs(
-            ImmutableList.of(
-                RpcElement.builder(location)
-                    .name("Name")
-                    .requestType("RequestType")
-                    .responseType("ResponseType")
-                    .build()
-            )
+    val service = ServiceElement(
+        location = location,
+        name = "Service",
+        documentation = "Hello",
+        rpcs = listOf(
+            RpcElement.builder(location)
+                .name("Name")
+                .requestType("RequestType")
+                .responseType("ResponseType")
+                .build()
         )
-        .build()
+    )
     val expected = """
         |// Hello
         |service Service {
@@ -154,16 +149,18 @@ class ServiceElementTest {
         .requestType("RequestType")
         .responseType("ResponseType")
         .build()
-    val service = ServiceElement.builder(location)
-        .name("Service")
-        .rpcs(ImmutableList.of(rpc, rpc))
-        .build()
+    val service = ServiceElement(
+        location = location,
+        name = "Service",
+        rpcs = listOf(rpc, rpc)
+    )
     val expected = """
         |service Service {
         |  rpc Name (RequestType) returns (ResponseType);
         |  rpc Name (RequestType) returns (ResponseType);
         |}
         |""".trimMargin()
+
     assertThat(service.toSchema()).isEqualTo(expected)
   }
 
@@ -199,12 +196,9 @@ class ServiceElementTest {
         .name("Name")
         .requestType("RequestType")
         .responseType("ResponseType")
-        .options(
-            ImmutableList.of(
-                OptionElement.create("foo", Kind.STRING, "bar")
-            )
-        )
+        .options(ImmutableList.of((OptionElement.create("foo", Kind.STRING, "bar"))))
         .build()
+
     val expected = """
         |rpc Name (RequestType) returns (ResponseType) {
         |  option foo = "bar";
