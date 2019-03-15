@@ -13,190 +13,227 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
-import com.squareup.wire.schema.Location;
-import org.junit.Test;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static org.assertj.core.api.Assertions.assertThat;
+class ServiceElementTest {
+  internal var location = Location.get("file.proto")
 
-public final class ServiceElementTest {
-  Location location = Location.get("file.proto");
-
-  @Test public void emptyToSchema() {
-    ServiceElement service = ServiceElement.builder(location).name("Service").build();
-    String expected = "service Service {}\n";
-    assertThat(service.toSchema()).isEqualTo(expected);
-  }
-
-  @Test public void singleToSchema() {
-    ServiceElement service = ServiceElement.builder(location)
+  @Test
+  fun emptyToSchema() {
+    val service = ServiceElement.builder(location)
         .name("Service")
-        .rpcs(ImmutableList.of(
-            RpcElement.builder(location)
-                .name("Name")
-                .requestType("RequestType")
-                .responseType("ResponseType")
-                .build()))
-        .build();
-    String expected = ""
-        + "service Service {\n"
-        + "  rpc Name (RequestType) returns (ResponseType);\n"
-        + "}\n";
-    assertThat(service.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = "service Service {}\n"
+    assertThat(service.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleRpcs() {
-    RpcElement firstName = RpcElement.builder(location)
+  @Test
+  fun singleToSchema() {
+    val service = ServiceElement.builder(location)
+        .name("Service")
+        .rpcs(
+            ImmutableList.of(
+                RpcElement.builder(location)
+                    .name("Name")
+                    .requestType("RequestType")
+                    .responseType("ResponseType")
+                    .build()
+            )
+        )
+        .build()
+    val expected = """
+        |service Service {
+        |  rpc Name (RequestType) returns (ResponseType);
+        |}
+        |""".trimMargin()
+    assertThat(service.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
+  fun addMultipleRpcs() {
+    val firstName = RpcElement.builder(location)
         .name("FirstName")
         .requestType("RequestType")
         .responseType("ResponseType")
-        .build();
-    RpcElement lastName = RpcElement.builder(location)
+        .build()
+    val lastName = RpcElement.builder(location)
         .name("LastName")
         .requestType("RequestType")
         .responseType("ResponseType")
-        .build();
-    ServiceElement service = ServiceElement.builder(location)
+        .build()
+    val service = ServiceElement.builder(location)
         .name("Service")
         .rpcs(ImmutableList.of(firstName, lastName))
-        .build();
-    assertThat(service.rpcs()).hasSize(2);
+        .build()
+    assertThat(service.rpcs()).hasSize(2)
   }
 
-  @Test public void singleWithOptionsToSchema() {
-    ServiceElement service = ServiceElement.builder(location)
+  @Test
+  fun singleWithOptionsToSchema() {
+    val service = ServiceElement.builder(location)
         .name("Service")
-        .options(ImmutableList.of(
-            OptionElement.create("foo", Kind.STRING, "bar")))
-        .rpcs(ImmutableList.of(
-            RpcElement.builder(location)
-                .name("Name")
-                .requestType("RequestType")
-                .responseType("ResponseType")
-                .build()))
-        .build();
-    String expected = ""
-        + "service Service {\n"
-        + "  option foo = \"bar\";\n"
-        + "\n"
-        + "  rpc Name (RequestType) returns (ResponseType);\n"
-        + "}\n";
-    assertThat(service.toSchema()).isEqualTo(expected);
+        .options(
+            ImmutableList.of(
+                OptionElement.create("foo", Kind.STRING, "bar")
+            )
+        )
+        .rpcs(
+            ImmutableList.of(
+                RpcElement.builder(location)
+                    .name("Name")
+                    .requestType("RequestType")
+                    .responseType("ResponseType")
+                    .build()
+            )
+        )
+        .build()
+    val expected = """
+        |service Service {
+        |  option foo = "bar";
+        |
+        |  rpc Name (RequestType) returns (ResponseType);
+        |}
+        |""".trimMargin()
+    assertThat(service.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleOptions() {
-    OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
-    OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
-    ServiceElement service = ServiceElement.builder(location)
+  @Test
+  fun addMultipleOptions() {
+    val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
+    val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
+    val service = ServiceElement.builder(location)
         .name("Service")
         .options(ImmutableList.of(kitKat, fooBar))
-        .rpcs(ImmutableList.of(
-            RpcElement.builder(location)
-                .name("Name")
-                .requestType("RequestType")
-                .responseType("ResponseType")
-                .build()))
-        .build();
-    assertThat(service.options()).hasSize(2);
+        .rpcs(
+            ImmutableList.of(
+                RpcElement.builder(location)
+                    .name("Name")
+                    .requestType("RequestType")
+                    .responseType("ResponseType")
+                    .build()
+            )
+        )
+        .build()
+    assertThat(service.options()).hasSize(2)
   }
 
-  @Test public void singleWithDocumentationToSchema() {
-    ServiceElement service = ServiceElement.builder(location)
+  @Test
+  fun singleWithDocumentationToSchema() {
+    val service = ServiceElement.builder(location)
         .name("Service")
         .documentation("Hello")
-        .rpcs(ImmutableList.of(
-            RpcElement.builder(location)
-                .name("Name")
-                .requestType("RequestType")
-                .responseType("ResponseType")
-                .build()))
-        .build();
-    String expected = ""
-        + "// Hello\n"
-        + "service Service {\n"
-        + "  rpc Name (RequestType) returns (ResponseType);\n"
-        + "}\n";
-    assertThat(service.toSchema()).isEqualTo(expected);
+        .rpcs(
+            ImmutableList.of(
+                RpcElement.builder(location)
+                    .name("Name")
+                    .requestType("RequestType")
+                    .responseType("ResponseType")
+                    .build()
+            )
+        )
+        .build()
+    val expected = """
+        |// Hello
+        |service Service {
+        |  rpc Name (RequestType) returns (ResponseType);
+        |}
+        |""".trimMargin()
+    assertThat(service.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void multipleToSchema() {
-    RpcElement rpc = RpcElement.builder(location)
+  @Test
+  fun multipleToSchema() {
+    val rpc = RpcElement.builder(location)
         .name("Name")
         .requestType("RequestType")
         .responseType("ResponseType")
-        .build();
-    ServiceElement service = ServiceElement.builder(location)
+        .build()
+    val service = ServiceElement.builder(location)
         .name("Service")
         .rpcs(ImmutableList.of(rpc, rpc))
-        .build();
-    String expected = ""
-        + "service Service {\n"
-        + "  rpc Name (RequestType) returns (ResponseType);\n"
-        + "  rpc Name (RequestType) returns (ResponseType);\n"
-        + "}\n";
-    assertThat(service.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |service Service {
+        |  rpc Name (RequestType) returns (ResponseType);
+        |  rpc Name (RequestType) returns (ResponseType);
+        |}
+        |""".trimMargin()
+    assertThat(service.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void rpcToSchema() {
-    RpcElement rpc = RpcElement.builder(location)
+  @Test
+  fun rpcToSchema() {
+    val rpc = RpcElement.builder(location)
         .name("Name")
         .requestType("RequestType")
         .responseType("ResponseType")
-        .build();
-    String expected = "rpc Name (RequestType) returns (ResponseType);\n";
-    assertThat(rpc.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = "rpc Name (RequestType) returns (ResponseType);\n"
+    assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void rpcWithDocumentationToSchema() {
-    RpcElement rpc = RpcElement.builder(location)
+  @Test
+  fun rpcWithDocumentationToSchema() {
+    val rpc = RpcElement.builder(location)
         .name("Name")
         .documentation("Hello")
         .requestType("RequestType")
         .responseType("ResponseType")
-        .build();
-    String expected = ""
-        + "// Hello\n"
-        + "rpc Name (RequestType) returns (ResponseType);\n";
-    assertThat(rpc.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// Hello
+        |rpc Name (RequestType) returns (ResponseType);
+        |""".trimMargin()
+    assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void rpcWithOptionsToSchema() {
-    RpcElement rpc = RpcElement.builder(location)
+  @Test
+  fun rpcWithOptionsToSchema() {
+    val rpc = RpcElement.builder(location)
         .name("Name")
         .requestType("RequestType")
         .responseType("ResponseType")
-        .options(ImmutableList.of(
-            OptionElement.create("foo", Kind.STRING, "bar")))
-        .build();
-    String expected = ""
-        + "rpc Name (RequestType) returns (ResponseType) {\n"
-        + "  option foo = \"bar\";\n"
-        + "};\n";
-    assertThat(rpc.toSchema()).isEqualTo(expected);
+        .options(
+            ImmutableList.of(
+                OptionElement.create("foo", Kind.STRING, "bar")
+            )
+        )
+        .build()
+    val expected = """
+        |rpc Name (RequestType) returns (ResponseType) {
+        |  option foo = "bar";
+        |};
+        |""".trimMargin()
+    assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void rpcWithRequestStreamingToSchema() {
-    RpcElement rpc = RpcElement.builder(location)
-            .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
-            .requestStreaming(true)
-            .build();
-    String expected = "rpc Name (stream RequestType) returns (ResponseType);\n";
-    assertThat(rpc.toSchema()).isEqualTo(expected);
+  @Test
+  fun rpcWithRequestStreamingToSchema() {
+    val rpc = RpcElement.builder(location)
+        .name("Name")
+        .requestType("RequestType")
+        .responseType("ResponseType")
+        .requestStreaming(true)
+        .build()
+    val expected = "rpc Name (stream RequestType) returns (ResponseType);\n"
+    assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void rpcWithResponseStreamingToSchema() {
-    RpcElement rpc = RpcElement.builder(location)
-            .name("Name")
-            .requestType("RequestType")
-            .responseType("ResponseType")
-            .responseStreaming(true)
-            .build();
-    String expected = "rpc Name (RequestType) returns (stream ResponseType);\n";
-    assertThat(rpc.toSchema()).isEqualTo(expected);
+  @Test
+  fun rpcWithResponseStreamingToSchema() {
+    val rpc = RpcElement.builder(location)
+        .name("Name")
+        .requestType("RequestType")
+        .responseType("ResponseType")
+        .responseStreaming(true)
+        .build()
+    val expected = "rpc Name (RequestType) returns (stream ResponseType);\n"
+    assertThat(rpc.toSchema()).isEqualTo(expected)
   }
 }

@@ -13,132 +13,176 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
-import org.junit.Test;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING;
-import static org.assertj.core.api.Assertions.assertThat;
+class EnumElementTest {
+  internal var location = Location.get("file.proto")
 
-public final class EnumElementTest {
-  Location location = Location.get("file.proto");
-
-  @Test public void emptyToSchema() {
-    EnumElement element = EnumElement.builder(location).name("Enum").build();
-    String expected = "enum Enum {}\n";
-    assertThat(element.toSchema()).isEqualTo(expected);
-  }
-
-  @Test public void simpleToSchema() {
-    EnumElement element = EnumElement.builder(location)
+  @Test
+  fun emptyToSchema() {
+    val element = EnumElement.builder(location)
         .name("Enum")
-        .constants(ImmutableList.of(
-            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-            EnumConstantElement.builder(location).name("SIX").tag(6).build()))
-        .build();
-    String expected = ""
-        + "enum Enum {\n"
-        + "  ONE = 1;\n"
-        + "  TWO = 2;\n"
-        + "  SIX = 6;\n"
-        + "}\n";
-    assertThat(element.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = "enum Enum {}\n"
+    assertThat(element.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleConstants() {
-    EnumConstantElement one = EnumConstantElement.builder(location).name("ONE").tag(1).build();
-    EnumConstantElement two = EnumConstantElement.builder(location).name("TWO").tag(2).build();
-    EnumConstantElement six = EnumConstantElement.builder(location).name("SIX").tag(6).build();
-    EnumElement element = EnumElement.builder(location)
+  @Test
+  fun simpleToSchema() {
+    val element = EnumElement.builder(location)
+        .name("Enum")
+        .constants(
+            ImmutableList.of(
+                EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+                EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+                EnumConstantElement.builder(location).name("SIX").tag(6).build()
+            )
+        )
+        .build()
+    val expected = """
+        |enum Enum {
+        |  ONE = 1;
+        |  TWO = 2;
+        |  SIX = 6;
+        |}
+        |""".trimMargin()
+    assertThat(element.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
+  fun addMultipleConstants() {
+    val one = EnumConstantElement.builder(location)
+        .name("ONE")
+        .tag(1)
+        .build()
+    val two = EnumConstantElement.builder(location)
+        .name("TWO")
+        .tag(2)
+        .build()
+    val six = EnumConstantElement.builder(location)
+        .name("SIX")
+        .tag(6)
+        .build()
+    val element = EnumElement.builder(location)
         .name("Enum")
         .constants(ImmutableList.of(one, two, six))
-        .build();
-    assertThat(element.constants()).hasSize(3);
+        .build()
+    assertThat(element.constants()).hasSize(3)
   }
 
-  @Test public void simpleWithOptionsToSchema() {
-    EnumElement element = EnumElement.builder(location)
-        .name("Enum").options(ImmutableList.of(OptionElement.create("kit", STRING, "kat")))
-        .constants(ImmutableList.of(
-            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-            EnumConstantElement.builder(location).name("SIX").tag(6).build()))
-        .build();
-    String expected = ""
-        + "enum Enum {\n"
-        + "  option kit = \"kat\";\n"
-        + "\n"
-        + "  ONE = 1;\n"
-        + "  TWO = 2;\n"
-        + "  SIX = 6;\n"
-        + "}\n";
-    assertThat(element.toSchema()).isEqualTo(expected);
+  @Test
+  fun simpleWithOptionsToSchema() {
+    val element = EnumElement.builder(location)
+        .name("Enum")
+        .options(ImmutableList.of(OptionElement.create("kit", STRING, "kat")))
+        .constants(
+            ImmutableList.of(
+                EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+                EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+                EnumConstantElement.builder(location).name("SIX").tag(6).build()
+            )
+        )
+        .build()
+    val expected = """
+        |enum Enum {
+        |  option kit = "kat";
+        |
+        |  ONE = 1;
+        |  TWO = 2;
+        |  SIX = 6;
+        |}
+        |""".trimMargin()
+    assertThat(element.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleOptions() {
-    OptionElement kitKat = OptionElement.create("kit", STRING, "kat");
-    OptionElement fooBar = OptionElement.create("foo", STRING, "bar");
-    EnumElement element = EnumElement.builder(location)
+  @Test
+  fun addMultipleOptions() {
+    val kitKat = OptionElement.create("kit", STRING, "kat")
+    val fooBar = OptionElement.create("foo", STRING, "bar")
+    val element = EnumElement.builder(location)
         .name("Enum")
         .options(ImmutableList.of(kitKat, fooBar))
-        .constants(ImmutableList.of(
-            EnumConstantElement.builder(location).name("ONE").tag(1).build()))
-        .build();
-    assertThat(element.options()).hasSize(2);
+        .constants(
+            ImmutableList.of(
+                EnumConstantElement.builder(location).name("ONE").tag(1).build()
+            )
+        )
+        .build()
+    assertThat(element.options()).hasSize(2)
   }
 
-  @Test public void simpleWithDocumentationToSchema() {
-    EnumElement element = EnumElement.builder(location)
+  @Test
+  fun simpleWithDocumentationToSchema() {
+    val element = EnumElement.builder(location)
         .name("Enum")
         .documentation("Hello")
-        .constants(ImmutableList.of(
-            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-            EnumConstantElement.builder(location).name("SIX").tag(6).build()))
-        .build();
-    String expected = ""
-        + "// Hello\n"
-        + "enum Enum {\n"
-        + "  ONE = 1;\n"
-        + "  TWO = 2;\n"
-        + "  SIX = 6;\n"
-        + "}\n";
-    assertThat(element.toSchema()).isEqualTo(expected);
+        .constants(
+            ImmutableList.of(
+                EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+                EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+                EnumConstantElement.builder(location).name("SIX").tag(6).build()
+            )
+        )
+        .build()
+    val expected = """
+        |// Hello
+        |enum Enum {
+        |  ONE = 1;
+        |  TWO = 2;
+        |  SIX = 6;
+        |}
+        |""".trimMargin()
+    assertThat(element.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void fieldToSchema() {
-    EnumConstantElement value = EnumConstantElement.builder(location).name("NAME").tag(1).build();
-    String expected = "NAME = 1;\n";
-    assertThat(value.toSchema()).isEqualTo(expected);
+  @Test
+  fun fieldToSchema() {
+    val value = EnumConstantElement.builder(location)
+        .name("NAME")
+        .tag(1)
+        .build()
+    val expected = "NAME = 1;\n"
+    assertThat(value.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void fieldWithDocumentationToSchema() {
-    EnumConstantElement value = EnumConstantElement.builder(location)
+  @Test
+  fun fieldWithDocumentationToSchema() {
+    val value = EnumConstantElement.builder(location)
         .name("NAME")
         .tag(1)
         .documentation("Hello")
-        .build();
-    String expected = ""
-        + "// Hello\n"
-        + "NAME = 1;\n";
-    assertThat(value.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// Hello
+        |NAME = 1;
+        |""".trimMargin()
+    assertThat(value.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void fieldWithOptionsToSchema() {
-    EnumConstantElement value = EnumConstantElement.builder(location)
+  @Test
+  fun fieldWithOptionsToSchema() {
+    val value = EnumConstantElement.builder(location)
         .name("NAME")
         .tag(1)
-        .options(ImmutableList.of(
-            OptionElement.create("kit", STRING, "kat", true),
-            OptionElement.create("tit", STRING, "tat")))
-    .build();
-    String expected = "NAME = 1 [\n"
-        + "  (kit) = \"kat\",\n"
-        + "  tit = \"tat\"\n"
-        + "];\n";
-    assertThat(value.toSchema()).isEqualTo(expected);
+        .options(
+            ImmutableList.of(
+                OptionElement.create("kit", STRING, "kat", true),
+                OptionElement.create("tit", STRING, "tat")
+            )
+        )
+        .build()
+    val expected = """
+        |NAME = 1 [
+        |  (kit) = "kat",
+        |  tit = "tat"
+        |];
+        |""".trimMargin()
+    assertThat(value.toSchema()).isEqualTo(expected)
   }
 }

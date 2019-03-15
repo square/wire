@@ -13,62 +13,74 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.OPTION
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN;
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST;
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP;
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.OPTION;
-import static com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING;
-import static org.assertj.core.api.Assertions.assertThat;
-
-public final class OptionElementTest {
-  @Test public void simpleToSchema() {
-    OptionElement option = OptionElement.create("foo", STRING, "bar");
-    String expected = "foo = \"bar\"";
-    assertThat(option.toSchema()).isEqualTo(expected);
+class OptionElementTest {
+  @Test
+  fun simpleToSchema() {
+    val option = OptionElement.create("foo", STRING, "bar")
+    val expected = """foo = "bar""""
+    assertThat(option.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void nestedToSchema() {
-    OptionElement option =
-        OptionElement.create("foo.boo", OPTION, OptionElement.create("bar", STRING, "baz"), true);
-    String expected = "(foo.boo).bar = \"baz\"";
-    assertThat(option.toSchema()).isEqualTo(expected);
+  @Test
+  fun nestedToSchema() {
+    val option =
+      OptionElement.create("foo.boo", OPTION, OptionElement.create("bar", STRING, "baz"), true)
+    val expected = """(foo.boo).bar = "baz""""
+    assertThat(option.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void listToSchema() {
-    OptionElement option = OptionElement.create("foo", LIST,
-        ImmutableList.of(OptionElement.create("ping", STRING, "pong", true),
-            OptionElement.create("kit", STRING, "kat")), true);
-    String expected = ""
-        + "(foo) = [\n"
-        + "  (ping) = \"pong\",\n"
-        + "  kit = \"kat\"\n"
-        + "]";
-    assertThat(option.toSchema()).isEqualTo(expected);
+  @Test
+  fun listToSchema() {
+    val option = OptionElement.create(
+        "foo", LIST,
+        ImmutableList.of(
+            OptionElement.create("ping", STRING, "pong", true),
+            OptionElement.create("kit", STRING, "kat")
+        ), true
+    )
+    val expected = """
+        |(foo) = [
+        |  (ping) = "pong",
+        |  kit = "kat"
+        |]
+        """.trimMargin()
+    assertThat(option.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void mapToSchema() {
-    OptionElement option = OptionElement.create("foo", MAP,
-        ImmutableMap.of("ping", "pong", "kit", ImmutableList.of("kat", "kot")));
-    String expected = ""
-        + "foo = {\n"
-        + "  ping: \"pong\",\n"
-        + "  kit: [\n"
-        + "    \"kat\",\n"
-        + "    \"kot\"\n"
-        + "  ]\n"
-        + "}";
-    assertThat(option.toSchema()).isEqualTo(expected);
+  @Test
+  fun mapToSchema() {
+    val option = OptionElement.create(
+        "foo", MAP,
+        ImmutableMap.of("ping", "pong", "kit", ImmutableList.of("kat", "kot"))
+    )
+    val expected =
+      """foo = {
+        |  ping: "pong",
+        |  kit: [
+        |    "kat",
+        |    "kot"
+        |  ]
+        |}
+        """.trimMargin()
+    assertThat(option.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void booleanToSchema() {
-    OptionElement option = OptionElement.create("foo", BOOLEAN, "false");
-    String expected = "foo = false";
-    assertThat(option.toSchema()).isEqualTo(expected);
+  @Test
+  fun booleanToSchema() {
+    val option = OptionElement.create("foo", BOOLEAN, "false")
+    val expected = "foo = false"
+    assertThat(option.toSchema()).isEqualTo(expected)
   }
 }

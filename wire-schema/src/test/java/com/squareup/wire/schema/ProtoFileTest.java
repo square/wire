@@ -13,59 +13,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.ExtendElement;
-import com.squareup.wire.schema.internal.parser.FieldElement;
-import com.squareup.wire.schema.internal.parser.MessageElement;
-import com.squareup.wire.schema.internal.parser.OptionElement;
-import com.squareup.wire.schema.internal.parser.ProtoFileElement;
-import com.squareup.wire.schema.internal.parser.RpcElement;
-import com.squareup.wire.schema.internal.parser.ServiceElement;
-import com.squareup.wire.schema.internal.parser.TypeElement;
-import org.junit.Test;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.internal.parser.ExtendElement
+import com.squareup.wire.schema.internal.parser.FieldElement
+import com.squareup.wire.schema.internal.parser.MessageElement
+import com.squareup.wire.schema.internal.parser.OptionElement
+import com.squareup.wire.schema.internal.parser.ProtoFileElement
+import com.squareup.wire.schema.internal.parser.RpcElement
+import com.squareup.wire.schema.internal.parser.ServiceElement
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static org.assertj.core.api.Assertions.assertThat;
+class ProtoFileTest {
+  internal var location = Location.get("file.proto")
 
-public class ProtoFileTest {
-  Location location = Location.get("file.proto");
-
-  @Test public void roundTripToElement() {
-    TypeElement element1 = MessageElement.builder(location.at(11, 1))
+  @Test
+  fun roundTripToElement() {
+    val element1 = MessageElement.builder(location.at(11, 1))
         .name("Message1")
         .documentation("Some comments about Message1")
-        .build();
-    TypeElement element2 = MessageElement.builder(location.at(12, 1))
+        .build()
+    val element2 = MessageElement.builder(location.at(12, 1))
         .name("Message2")
-        .fields(ImmutableList.<FieldElement>of(FieldElement.builder(location.at(13, 3))
+        .fields(ImmutableList.of(FieldElement.builder(location.at(13, 3))
             .type("string")
             .name("field")
             .tag(1)
             .build()))
-        .build();
-    ExtendElement extend1 = ExtendElement.builder(location.at(16, 1))
+        .build()
+    val extend1 = ExtendElement.builder(location.at(16, 1))
         .name("Extend1")
-        .build();
-    ExtendElement extend2 = ExtendElement.builder(location.at(17, 1))
+        .build()
+    val extend2 = ExtendElement.builder(location.at(17, 1))
         .name("Extend2")
-        .build();
-    OptionElement option1 = OptionElement.create("kit", OptionElement.Kind.STRING, "kat");
-    OptionElement option2 = OptionElement.create("foo", OptionElement.Kind.STRING, "bar");
-    ServiceElement service1 = ServiceElement.builder(location.at(19, 1))
+        .build()
+    val option1 = OptionElement.create("kit", OptionElement.Kind.STRING, "kat")
+    val option2 = OptionElement.create("foo", OptionElement.Kind.STRING, "bar")
+    val service1 = ServiceElement.builder(location.at(19, 1))
         .name("Service1")
-        .rpcs(ImmutableList.<RpcElement>of(RpcElement.builder(location.at(20, 3))
+        .rpcs(ImmutableList.of(RpcElement.builder(location.at(20, 3))
             .name("MethodA")
             .requestType("Message2")
             .responseType("Message1")
-            .options(ImmutableList.<OptionElement>of(
+            .options(ImmutableList.of(
                 OptionElement.create("methodoption", OptionElement.Kind.NUMBER, 1)))
             .build()))
-        .build();
-    ServiceElement service2 = ServiceElement.builder(location.at(24, 1))
+        .build()
+    val service2 = ServiceElement.builder(location.at(24, 1))
         .name("Service2")
-        .build();
-    ProtoFileElement fileElement = ProtoFileElement.builder(location)
+        .build()
+    val fileElement = ProtoFileElement.builder(location)
         .packageName("example.simple")
         .imports(ImmutableList.of("example.thing"))
         .publicImports(ImmutableList.of("example.other"))
@@ -73,35 +72,37 @@ public class ProtoFileTest {
         .services(ImmutableList.of(service1, service2))
         .extendDeclarations(ImmutableList.of(extend1, extend2))
         .options(ImmutableList.of(option1, option2))
-        .build();
-    ProtoFile file = ProtoFile.get(fileElement);
+        .build()
+    val file = ProtoFile.get(fileElement)
 
-    String expected = ""
-        + "// file.proto\n"
-        + "package example.simple;\n"
-        + "\n"
-        + "import \"example.thing\";\n"
-        + "import public \"example.other\";\n"
-        + "\n"
-        + "option kit = \"kat\";\n"
-        + "option foo = \"bar\";\n"
-        + "\n"
-        + "// Some comments about Message1\n"
-        + "message Message1 {}\n"
-        + "message Message2 {\n"
-        + "  string field = 1;\n"
-        + "}\n"
-        + "\n"
-        + "extend Extend1 {}\n"
-        + "extend Extend2 {}\n"
-        + "\n"
-        + "service Service1 {\n"
-        + "  rpc MethodA (Message2) returns (Message1) {\n"
-        + "    option methodoption = 1;\n"
-        + "  };\n"
-        + "}\n"
-        + "service Service2 {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
-    assertThat(file.toElement()).isEqualToComparingFieldByField(fileElement);
+    val expected = """
+        |// file.proto
+        |package example.simple;
+        |
+        |import "example.thing";
+        |import public "example.other";
+        |
+        |option kit = "kat";
+        |option foo = "bar";
+        |
+        |// Some comments about Message1
+        |message Message1 {}
+        |message Message2 {
+        |  string field = 1;
+        |}
+        |
+        |extend Extend1 {}
+        |extend Extend2 {}
+        |
+        |service Service1 {
+        |  rpc MethodA (Message2) returns (Message1) {
+        |    option methodoption = 1;
+        |  };
+        |}
+        |service Service2 {}
+        |""".trimMargin()
+
+    assertThat(file.toSchema()).isEqualTo(expected)
+    assertThat(file.toElement()).isEqualToComparingFieldByField(fileElement)
   }
 }

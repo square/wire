@@ -13,1221 +13,1550 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.squareup.wire.schema.internal.Util;
-import org.junit.Ignore;
-import org.junit.Test;
+import com.squareup.wire.schema.Options.FIELD_OPTIONS
+import com.squareup.wire.schema.internal.Util
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.fail
+import org.junit.Ignore
+import org.junit.Test
 
-import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+class SchemaTest {
+  @Test
+  fun linkService() {
+    val schema = RepoBuilder()
+        .add("service.proto",
+            """
+            |import "request.proto";
+            |import "response.proto";
+            |service Service {
+            |  rpc Call (Request) returns (Response);
+            |}
+            """.trimMargin()
+        )
+        .add("request.proto",
+            """
+            |message Request {
+            |}
+            """.trimMargin()
+        )
+        .add("response.proto",
+            """
+            |message Response {
+            |}
+            """.trimMargin()
+        )
+        .schema()
 
-public final class SchemaTest {
-  @Test public void linkService() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"request.proto\";\n"
-            + "import \"response.proto\";\n"
-            + "service Service {\n"
-            + "  rpc Call (Request) returns (Response);\n"
-            + "}\n")
-        .add("request.proto", ""
-            + "message Request {\n"
-            + "}\n")
-        .add("response.proto", ""
-            + "message Response {\n"
-            + "}\n")
-        .schema();
-
-    Service service = schema.getService("Service");
-    Rpc call = service.rpc("Call");
-    assertThat(call.requestType()).isEqualTo(schema.getType("Request").type());
-    assertThat(call.responseType()).isEqualTo(schema.getType("Response").type());
+    val service = schema.getService("Service")
+    val call = service.rpc("Call")!!
+    assertThat(call.requestType()).isEqualTo(schema.getType("Request").type())
+    assertThat(call.responseType()).isEqualTo(schema.getType("Response").type())
   }
 
-  @Test public void linkMessage() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "import \"foo.proto\";\n"
-            + "message Message {\n"
-            + "  optional foo_package.Foo field = 1;\n"
-            + "  map<string, foo_package.Bar> bars = 2;\n"
-            + "}\n")
-        .add("foo.proto", ""
-            + "package foo_package;\n"
-            + "message Foo {\n"
-            + "}\n"
-            + "message Bar {\n"
-            + "}\n")
-        .schema();
+  @Test
+  fun linkMessage() {
+    val schema = RepoBuilder()
+        .add("message.proto",
+            """
+            |import "foo.proto";
+            |message Message {
+            |  optional foo_package.Foo field = 1;
+            |  map<string, foo_package.Bar> bars = 2;
+            |}
+            """.trimMargin()
+        )
+        .add("foo.proto",
+            """
+            |package foo_package;
+            |message Foo {
+            |}
+            |message Bar {
+            |}
+            """.trimMargin()
+        )
+        .schema()
 
-    MessageType message = (MessageType) schema.getType("Message");
-    Field field = message.field("field");
-    assertThat(field.type()).isEqualTo(schema.getType("foo_package.Foo").type());
-    ProtoType bars = message.field("bars").type();
-    assertThat(bars.keyType()).isEqualTo(ProtoType.STRING);
-    assertThat(bars.valueType()).isEqualTo(schema.getType("foo_package.Bar").type());
+    val message = schema.getType("Message") as MessageType
+    val field = message.field("field")
+    assertThat(field!!.type()).isEqualTo(schema.getType("foo_package.Foo").type())
+    val bars = message.field("bars")!!.type()
+    assertThat(bars.keyType()).isEqualTo(ProtoType.STRING)
+    assertThat(bars.valueType()).isEqualTo(schema.getType("foo_package.Bar").type())
   }
 
   @Ignore("Resolution happens from the root not from inside Outer and so this fails.")
-  @Test public void linkExtendTypeInOuterMessage() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("foo.proto", ""
-            + "message Other {\n"
-            + "  extensions 1;\n"
-            + "}\n"
-            + "message Outer {\n"
-            + "  enum Choice {\n"
-            + "    ZERO = 0;\n"
-            + "    ONE = 1;\n"
-            + "  }\n"
-            + "\n"
-            + "  extend Other {\n"
-            + "    optional Choice choice = 1;\n"
-            + "  }\n"
-            + "}")
-        .schema();
+  @Test
+  fun linkExtendTypeInOuterMessage() {
+    val schema = RepoBuilder()
+        .add("foo.proto",
+            """
+            |message Other {
+            |  extensions 1;
+            |}
+            |message Outer {
+            |  enum Choice {
+            |    ZERO = 0;
+            |    ONE = 1;
+            |  }
+            |
+            |  extend Other {
+            |    optional Choice choice = 1;
+            |  }
+            """.trimMargin()
+        )
+        .schema()
 
-    MessageType message = (MessageType) schema.getType("Other");
-    Field field = message.field("choice");
-    assertThat(field.type()).isEqualTo(schema.getType("Outer.Choice").type());
+    val message = schema.getType("Other") as MessageType
+    val field = message.field("choice")
+    assertThat(field!!.type()).isEqualTo(schema.getType("Outer.Choice").type())
   }
 
-  @Test public void isValidTag() {
-    assertThat(Util.isValidTag(0)).isFalse(); // Less than minimum.
-    assertThat(Util.isValidTag(1)).isTrue();
-    assertThat(Util.isValidTag(1234)).isTrue();
-    assertThat(Util.isValidTag(19222)).isFalse(); // Reserved range.
-    assertThat(Util.isValidTag(2319573)).isTrue();
-    assertThat(Util.isValidTag(536870911)).isTrue();
-    assertThat(Util.isValidTag(536870912)).isFalse(); // Greater than maximum.
+  @Test
+  fun isValidTag() {
+    assertThat(Util.isValidTag(0)).isFalse() // Less than minimum.
+    assertThat(Util.isValidTag(1)).isTrue()
+    assertThat(Util.isValidTag(1234)).isTrue()
+    assertThat(Util.isValidTag(19222)).isFalse() // Reserved range.
+    assertThat(Util.isValidTag(2319573)).isTrue()
+    assertThat(Util.isValidTag(536870911)).isTrue()
+    assertThat(Util.isValidTag(536870912)).isFalse() // Greater than maximum.
   }
 
-  @Test public void fieldInvalidTag() throws Exception {
+  @Test
+  fun fieldInvalidTag() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  optional int32 a = 0;\n"
-              + "  optional int32 b = 1;\n"
-              + "  optional int32 c = 18999;\n"
-              + "  optional int32 d = 19000;\n"
-              + "  optional int32 e = 19999;\n"
-              + "  optional int32 f = 20000;\n"
-              + "  optional int32 g = 536870911;\n"
-              + "  optional int32 h = 536870912;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo(""
-          + "tag is out of range: 0\n"
-          + "  for field a (/source/message.proto at 2:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "tag is out of range: 19000\n"
-          + "  for field d (/source/message.proto at 5:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "tag is out of range: 19999\n"
-          + "  for field e (/source/message.proto at 6:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "tag is out of range: 536870912\n"
-          + "  for field h (/source/message.proto at 9:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+            |message Message {
+            |  optional int32 a = 0;
+            |  optional int32 b = 1;
+            |  optional int32 c = 18999;
+            |  optional int32 d = 19000;
+            |  optional int32 e = 19999;
+            |  optional int32 f = 20000;
+            |  optional int32 g = 536870911;
+            |  optional int32 h = 536870912;
+            |}
+            """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected.message).isEqualTo("""
+            |tag is out of range: 0
+            |  for field a (/source/message.proto at 2:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |tag is out of range: 19000
+            |  for field d (/source/message.proto at 5:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |tag is out of range: 19999
+            |  for field e (/source/message.proto at 6:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |tag is out of range: 536870912
+            |  for field h (/source/message.proto at 9:3)
+            |  in message Message (/source/message.proto at 1:1)
+            """.trimMargin())
     }
   }
 
-  @Test public void extensionsInvalidTag() throws Exception {
+  @Test
+  fun extensionsInvalidTag() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  extensions 0;\n"
-              + "  extensions 1;\n"
-              + "  extensions 18999;\n"
-              + "  extensions 19000;\n"
-              + "  extensions 19999;\n"
-              + "  extensions 20000;\n"
-              + "  extensions 536870911;\n"
-              + "  extensions 536870912;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage(""
-          + "tags are out of range: 0 to 0\n"
-          + "  for extensions (/source/message.proto at 2:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "tags are out of range: 19000 to 19000\n"
-          + "  for extensions (/source/message.proto at 5:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "tags are out of range: 19999 to 19999\n"
-          + "  for extensions (/source/message.proto at 6:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "tags are out of range: 536870912 to 536870912\n"
-          + "  for extensions (/source/message.proto at 9:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  extensions 0;
+               |  extensions 1;
+               |  extensions 18999;
+               |  extensions 19000;
+               |  extensions 19999;
+               |  extensions 20000;
+               |  extensions 536870911;
+               |  extensions 536870912;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |tags are out of range: 0 to 0
+            |  for extensions (/source/message.proto at 2:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |tags are out of range: 19000 to 19000
+            |  for extensions (/source/message.proto at 5:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |tags are out of range: 19999 to 19999
+            |  for extensions (/source/message.proto at 6:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |tags are out of range: 536870912 to 536870912
+            |  for extensions (/source/message.proto at 9:3)
+            |  in message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void scalarFieldIsPacked() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "message Message {\n"
-            + "  repeated int32 a = 1;\n"
-            + "  repeated int32 b = 2 [packed=false];\n"
-            + "  repeated int32 c = 3 [packed=true];\n"
-            + "}\n")
-        .schema();
+  @Test
+  fun scalarFieldIsPacked() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |message Message {
+             |  repeated int32 a = 1;
+             |  repeated int32 b = 2 [packed=false];
+             |  repeated int32 c = 3 [packed=true];
+             |}
+             """.trimMargin()
+        )
+        .schema()
 
-    MessageType message = (MessageType) schema.getType("Message");
-    assertThat(message.field("a").isPacked()).isFalse();
-    assertThat(message.field("b").isPacked()).isFalse();
-    assertThat(message.field("c").isPacked()).isTrue();
+    val message = schema.getType("Message") as MessageType
+    assertThat(message.field("a")!!.isPacked).isFalse()
+    assertThat(message.field("b")!!.isPacked).isFalse()
+    assertThat(message.field("c")!!.isPacked).isTrue()
   }
 
-  @Test public void enumFieldIsPacked() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "message Message {\n"
-            + "  repeated HabitablePlanet home_planet = 1 [packed=true];\n"
-            + "  enum HabitablePlanet {\n"
-            + "    EARTH = 1;\n"
-            + "  }\n"
-            + "}\n")
-        .schema();
-    MessageType message = (MessageType) schema.getType("Message");
-    assertThat(message.field("home_planet").isPacked()).isTrue();
+  @Test
+  fun enumFieldIsPacked() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |message Message {
+             |  repeated HabitablePlanet home_planet = 1 [packed=true];
+             |  enum HabitablePlanet {
+             |    EARTH = 1;
+             |  }
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val message = schema.getType("Message") as MessageType
+    assertThat(message.field("home_planet")!!.isPacked).isTrue()
   }
 
-  @Test public void fieldIsPackedButShouldntBe() throws Exception {
+  @Test
+  fun fieldIsPackedButShouldntBe() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  repeated bytes a = 1 [packed=false];\n"
-              + "  repeated bytes b = 2 [packed=true];\n"
-              + "  repeated string c = 3 [packed=false];\n"
-              + "  repeated string d = 4 [packed=true];\n"
-              + "  repeated Message e = 5 [packed=false];\n"
-              + "  repeated Message f = 6 [packed=true];\n"
-              + "}\n"
-              + "extend Message {\n"
-              + "  repeated bytes g = 7 [packed=false];\n"
-              + "  repeated bytes h = 8 [packed=true];\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage(""
-          + "packed=true not permitted on bytes\n"
-          + "  for field b (/source/message.proto at 3:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "packed=true not permitted on string\n"
-          + "  for field d (/source/message.proto at 5:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "packed=true not permitted on Message\n"
-          + "  for field f (/source/message.proto at 7:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "packed=true not permitted on bytes\n"
-          + "  for field h (/source/message.proto at 11:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  repeated bytes a = 1 [packed=false];
+               |  repeated bytes b = 2 [packed=true];
+               |  repeated string c = 3 [packed=false];
+               |  repeated string d = 4 [packed=true];
+               |  repeated Message e = 5 [packed=false];
+               |  repeated Message f = 6 [packed=true];
+               |}
+               |extend Message {
+               |  repeated bytes g = 7 [packed=false];
+               |  repeated bytes h = 8 [packed=true];
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |packed=true not permitted on bytes
+            |  for field b (/source/message.proto at 3:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |packed=true not permitted on string
+            |  for field d (/source/message.proto at 5:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |packed=true not permitted on Message
+            |  for field f (/source/message.proto at 7:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |packed=true not permitted on bytes
+            |  for field h (/source/message.proto at 11:3)
+            |  in message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void fieldIsDeprecated() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "message Message {\n"
-            + "  optional int32 a = 1;\n"
-            + "  optional int32 b = 2 [deprecated=false];\n"
-            + "  optional int32 c = 3 [deprecated=true];\n"
-            + "}\n")
-        .schema();
+  @Test
+  fun fieldIsDeprecated() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |message Message {
+             |  optional int32 a = 1;
+             |  optional int32 b = 2 [deprecated=false];
+             |  optional int32 c = 3 [deprecated=true];
+             |}
+             """.trimMargin()
+        )
+        .schema()
 
-    MessageType message = (MessageType) schema.getType("Message");
-    assertThat(message.field("a").isDeprecated()).isFalse();
-    assertThat(message.field("b").isDeprecated()).isFalse();
-    assertThat(message.field("c").isDeprecated()).isTrue();
+    val message = schema.getType("Message") as MessageType
+    assertThat(message.field("a")!!.isDeprecated).isFalse()
+    assertThat(message.field("b")!!.isDeprecated).isFalse()
+    assertThat(message.field("c")!!.isDeprecated).isTrue()
   }
 
-  @Test public void fieldDefault() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "message Message {\n"
-            + "  optional int32 a = 1;\n"
-            + "  optional int32 b = 2 [default = 5];\n"
-            + "  optional bool c = 3 [default = true];\n"
-            + "  optional string d = 4 [default = \"foo\"];\n"
-            + "  optional Roshambo e = 5 [default = PAPER];\n"
-            + "  enum Roshambo {\n"
-            + "    ROCK = 0;\n"
-            + "    SCISSORS = 1;\n"
-            + "    PAPER = 2;\n"
-            + "  }\n"
-            + "}\n")
-        .schema();
+  @Test
+  fun fieldDefault() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |message Message {
+             |  optional int32 a = 1;
+             |  optional int32 b = 2 [default = 5];
+             |  optional bool c = 3 [default = true];
+             |  optional string d = 4 [default = "foo"];
+             |  optional Roshambo e = 5 [default = PAPER];
+             |  enum Roshambo {
+             |    ROCK = 0;
+             |    SCISSORS = 1;
+             |    PAPER = 2;
+             |  }
+             |}
+             """.trimMargin()
+        )
+        .schema()
 
-    MessageType message = (MessageType) schema.getType("Message");
-    assertThat(message.field("a").getDefault()).isNull();
-    assertThat(message.field("b").getDefault()).isEqualTo("5");
-    assertThat(message.field("c").getDefault()).isEqualTo("true");
-    assertThat(message.field("d").getDefault()).isEqualTo("foo");
-    assertThat(message.field("e").getDefault()).isEqualTo("PAPER");
+    val message = schema.getType("Message") as MessageType
+    assertThat(message.field("a")!!.default).isNull()
+    assertThat(message.field("b")!!.default).isEqualTo("5")
+    assertThat(message.field("c")!!.default).isEqualTo("true")
+    assertThat(message.field("d")!!.default).isEqualTo("foo")
+    assertThat(message.field("e")!!.default).isEqualTo("PAPER")
   }
 
-  @Test public void fieldOptions() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "message Message {\n"
-            + "  optional int32 a = 1;\n"
-            + "  optional int32 b = 2 [color=red, deprecated=true, packed=true];\n"
-            + "}\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional string color = 60001;\n"
-            + "}\n")
-        .schema();
-    MessageType message = (MessageType) schema.getType("Message");
+  @Test
+  fun fieldOptions() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |message Message {
+             |  optional int32 a = 1;
+             |  optional int32 b = 2 [color=red, deprecated=true, packed=true];
+             |}
+             |extend google.protobuf.FieldOptions {
+             |  optional string color = 60001;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val message = schema.getType("Message") as MessageType
 
-    Options aOptions = message.field("a").options();
-    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isNull();
-    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isNull();
-    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isNull();
+    val aOptions = message.field("a")!!.options()
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isNull()
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isNull()
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isNull()
 
-    Options bOptions = message.field("b").options();
-    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isEqualTo("red");
-    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isEqualTo("true");
-    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isEqualTo("true");
+    val bOptions = message.field("b")!!.options()
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isEqualTo("red")
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isEqualTo("true")
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isEqualTo("true")
   }
 
-  @Test public void duplicateOption() throws Exception {
+  @Test
+  fun duplicateOption() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "import \"google/protobuf/descriptor.proto\";\n"
-              + "message Message {\n"
-              + "  optional int32 a = 1 [color=red, color=blue];\n"
-              + "}\n"
-              + "extend google.protobuf.FieldOptions {\n"
-              + "  optional string color = 60001;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("conflicting options: red, blue\n"
-          + "  for field a (/source/message.proto at 3:3)\n"
-          + "  in message Message (/source/message.proto at 2:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |import "google/protobuf/descriptor.proto";
+               |message Message {
+               |  optional int32 a = 1 [color=red, color=blue];
+               |}
+               |extend google.protobuf.FieldOptions {
+               |  optional string color = 60001;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |conflicting options: red, blue
+            |  for field a (/source/message.proto at 3:3)
+            |  in message Message (/source/message.proto at 2:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void messageFieldTypeUnknown() throws Exception {
+  @Test
+  fun messageFieldTypeUnknown() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  optional foo_package.Foo unknown = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("unable to resolve foo_package.Foo\n"
-          + "  for field unknown (/source/message.proto at 2:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  optional foo_package.Foo unknown = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve foo_package.Foo
+            |  for field unknown (/source/message.proto at 2:3)
+            |  in message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void oneofFieldTypeUnknown() throws Exception {
+  @Test
+  fun oneofFieldTypeUnknown() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  oneof selection {\n"
-              + "    int32 known = 1;\n"
-              + "    foo_package.Foo unknown = 2;\n"
-              + "  }\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("unable to resolve foo_package.Foo\n"
-          + "  for field unknown (/source/message.proto at 4:5)\n"
-          + "  in message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  oneof selection {
+               |    int32 known = 1;
+               |    foo_package.Foo unknown = 2;
+               |  }
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve foo_package.Foo
+            |  for field unknown (/source/message.proto at 4:5)
+            |  in message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void serviceTypesMustBeNamed() throws Exception {
+  @Test
+  fun serviceTypesMustBeNamed() {
     try {
-      new RepoBuilder()
-          .add("service.proto", ""
-              + "service Service {\n"
-              + "  rpc Call (string) returns (Response);\n"
-              + "}\n"
-              + "message Response {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("expected a message but was string\n"
-          + "  for rpc Call (/source/service.proto at 2:3)\n"
-          + "  in service Service (/source/service.proto at 1:1)");
+      RepoBuilder()
+          .add("service.proto", """
+               |service Service {
+               |  rpc Call (string) returns (Response);
+               |}
+               |message Response {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |expected a message but was string
+            |  for rpc Call (/source/service.proto at 2:3)
+            |  in service Service (/source/service.proto at 1:1)
+            """.trimMargin()
+      )
     }
-    try {
-      new RepoBuilder()
-          .add("service.proto", ""
-              + "service Service {\n"
-              + "  rpc Call (Request) returns (string);\n"
-              + "}\n"
-              + "message Request {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("expected a message but was string\n"
-          + "  for rpc Call (/source/service.proto at 2:3)\n"
-          + "  in service Service (/source/service.proto at 1:1)");
-    }
-  }
 
-  @Test public void serviceTypesUnknown() throws Exception {
     try {
-      new RepoBuilder()
-          .add("service.proto", ""
-              + "service Service {\n"
-              + "  rpc Call (foo_package.Foo) returns (Response);\n"
-              + "}\n"
-              + "message Response {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("unable to resolve foo_package.Foo\n"
-          + "  for rpc Call (/source/service.proto at 2:3)\n"
-          + "  in service Service (/source/service.proto at 1:1)");
-    }
-    try {
-      new RepoBuilder()
-          .add("service.proto", ""
-              + "service Service {\n"
-              + "  rpc Call (Request) returns (foo_package.Foo);\n"
-              + "}\n"
-              + "message Request {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("unable to resolve foo_package.Foo\n"
-          + "  for rpc Call (/source/service.proto at 2:3)\n"
-          + "  in service Service (/source/service.proto at 1:1)");
+      RepoBuilder()
+          .add("service.proto", """
+               |service Service {
+               |  rpc Call (Request) returns (string);
+               |}
+               |message Request {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |expected a message but was string
+            |  for rpc Call (/source/service.proto at 2:3)
+            |  in service Service (/source/service.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void extendedTypeUnknown() throws Exception {
+  @Test
+  fun serviceTypesUnknown() {
     try {
-      new RepoBuilder()
-          .add("extend.proto", ""
-              + "extend foo_package.Foo {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("unable to resolve foo_package.Foo\n"
-          + "  for extend (/source/extend.proto at 1:1)");
+      RepoBuilder()
+          .add("service.proto", """
+               |service Service {
+               |  rpc Call (foo_package.Foo) returns (Response);
+               |}
+               |message Response {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve foo_package.Foo
+            |  for rpc Call (/source/service.proto at 2:3)
+            |  in service Service (/source/service.proto at 1:1)
+            """.trimMargin()
+      )
+    }
+
+    try {
+      RepoBuilder()
+          .add("service.proto", """
+               |service Service {
+               |  rpc Call (Request) returns (foo_package.Foo);
+               |}
+               |message Request {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve foo_package.Foo
+            |  for rpc Call (/source/service.proto at 2:3)
+            |  in service Service (/source/service.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void extendedTypeMustBeNamed() throws Exception {
+  @Test
+  fun extendedTypeUnknown() {
     try {
-      new RepoBuilder()
-          .add("extend.proto", ""
-              + "extend string {\n"
-              + "  optional Value value = 1000;\n"
-              + "}\n"
-              + "message Value {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("expected a message but was string\n"
-          + "  for extend (/source/extend.proto at 1:1)");
+      RepoBuilder()
+          .add("extend.proto", """
+               |extend foo_package.Foo {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve foo_package.Foo
+            |  for extend (/source/extend.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void extendFieldTypeUnknown() throws Exception {
+  @Test
+  fun extendedTypeMustBeNamed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "}\n"
-              + "extend Message {\n"
-              + "  optional foo_package.Foo unknown = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("unable to resolve foo_package.Foo\n"
-          + "  for field unknown (/source/message.proto at 4:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("extend.proto", """
+               |extend string {
+               |  optional Value value = 1000;
+               |}
+               |message Value {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |expected a message but was string
+            |  for extend (/source/extend.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void multipleErrors() throws Exception {
+  @Test
+  fun extendFieldTypeUnknown() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  optional foo_package.Foo unknown = 1;\n"
-              + "  optional foo_package.Foo also_unknown = 2;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage(""
-          + "unable to resolve foo_package.Foo\n"
-          + "  for field unknown (/source/message.proto at 2:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)\n"
-          + "unable to resolve foo_package.Foo\n"
-          + "  for field also_unknown (/source/message.proto at 3:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |}
+               |extend Message {
+               |  optional foo_package.Foo unknown = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve foo_package.Foo
+            |  for field unknown (/source/message.proto at 4:3)
+            |  in message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void duplicateMessageTagDisallowed() throws Exception {
+  @Test
+  fun multipleErrors() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  required string name1 = 1;\n"
-              + "  required string name2 = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple fields share tag 1:\n"
-          + "  1. name1 (/source/message.proto at 2:3)\n"
-          + "  2. name2 (/source/message.proto at 3:3)\n"
-          + "  for message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  optional foo_package.Foo unknown = 1;
+               |  optional foo_package.Foo also_unknown = 2;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve foo_package.Foo
+            |  for field unknown (/source/message.proto at 2:3)
+            |  in message Message (/source/message.proto at 1:1)
+            |unable to resolve foo_package.Foo
+            |  for field also_unknown (/source/message.proto at 3:3)
+            |  in message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void duplicateTagValueDisallowedInOneOf() throws Exception {
+  @Test
+  fun duplicateMessageTagDisallowed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  required string name1 = 1;\n"
-              + "  oneof selection {\n"
-              + "    string name2 = 1;\n"
-              + "  }\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple fields share tag 1:\n"
-          + "  1. name1 (/source/message.proto at 2:3)\n"
-          + "  2. name2 (/source/message.proto at 4:5)\n"
-          + "  for message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  required string name1 = 1;
+               |  required string name2 = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple fields share tag 1:
+            |  1. name1 (/source/message.proto at 2:3)
+            |  2. name2 (/source/message.proto at 3:3)
+            |  for message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void duplicateExtendTagDisallowed() throws Exception {
+  @Test
+  fun duplicateTagValueDisallowedInOneOf() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "}\n"
-              + "extend Message {\n"
-              + "  optional string name1 = 1;\n"
-              + "  optional string name2 = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple fields share tag 1:\n"
-          + "  1. name1 (/source/message.proto at 4:3)\n"
-          + "  2. name2 (/source/message.proto at 5:3)\n"
-          + "  for message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  required string name1 = 1;
+               |  oneof selection {
+               |    string name2 = 1;
+               |  }
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple fields share tag 1:
+            |  1. name1 (/source/message.proto at 2:3)
+            |  2. name2 (/source/message.proto at 4:5)
+            |  for message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void messageNameCollisionDisallowed() throws Exception {
+  @Test
+  fun duplicateExtendTagDisallowed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  optional string a = 1;\n"
-              + "  optional string a = 2;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple fields share name a:\n"
-          + "  1. a (/source/message.proto at 2:3)\n"
-          + "  2. a (/source/message.proto at 3:3)\n"
-          + "  for message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |}
+               |extend Message {
+               |  optional string name1 = 1;
+               |  optional string name2 = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple fields share tag 1:
+            |  1. name1 (/source/message.proto at 4:3)
+            |  2. name2 (/source/message.proto at 5:3)
+            |  for message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void messsageAndExtensionNameCollision() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "message Message {\n"
-            + "  optional string a = 1;\n"
-            + "}\n")
-        .add("extend.proto", ""
-            + "package p;\n"
-            + "import \"message.proto\";\n"
-            + "extend Message {\n"
-            + "  optional string a = 2;\n"
-            + "}\n")
-        .schema();
-    MessageType messageType = (MessageType) schema.getType("Message");
-
-    assertThat(messageType.field("a").tag()).isEqualTo(1);
-    assertThat(messageType.extensionField("p.a").tag()).isEqualTo(2);
-  }
-
-  @Test public void extendNameCollisionInSamePackageDisallowed() throws Exception {
+  @Test
+  fun messageNameCollisionDisallowed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "}\n")
-          .add("extend1.proto", ""
-              + "import \"message.proto\";\n"
-              + "extend Message {\n"
-              + "  optional string a = 1;\n"
-              + "}\n")
-          .add("extend2.proto", ""
-              + "import \"message.proto\";\n"
-              + "extend Message {\n"
-              + "  optional string a = 2;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple fields share name a:\n"
-          + "  1. a (/source/extend1.proto at 3:3)\n"
-          + "  2. a (/source/extend2.proto at 3:3)\n"
-          + "  for message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  optional string a = 1;
+               |  optional string a = 2;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple fields share name a:
+            |  1. a (/source/message.proto at 2:3)
+            |  2. a (/source/message.proto at 3:3)
+            |  for message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void extendNameCollisionInDifferentPackagesAllowed() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "message Message {\n"
-            + "}\n")
-        .add("extend1.proto", ""
-            + "package p1;\n"
-            + "import \"message.proto\";\n"
-            + "extend Message {\n"
-            + "  optional string a = 1;\n"
-            + "}\n")
-        .add("extend2.proto", ""
-            + "package p2;\n"
-            + "import \"message.proto\";\n"
-            + "extend Message {\n"
-            + "  optional string a = 2;\n"
-            + "}\n")
-        .schema();
-    MessageType messageType = (MessageType) schema.getType("Message");
+  @Test
+  fun messsageAndExtensionNameCollision() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |message Message {
+             |  optional string a = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("extend.proto", """
+             |package p;
+             |import "message.proto";
+             |extend Message {
+             |  optional string a = 2;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val messageType = schema.getType("Message") as MessageType
 
-    assertThat(messageType.field("a")).isNull();
-    assertThat(messageType.extensionField("p1.a").packageName()).isEqualTo("p1");
-    assertThat(messageType.extensionField("p2.a").packageName()).isEqualTo("p2");
+    assertThat(messageType.field("a")!!.tag()).isEqualTo(1)
+    assertThat(messageType.extensionField("p.a")!!.tag()).isEqualTo(2)
   }
 
-  @Test public void extendEnumDisallowed() throws Exception {
+  @Test
+  fun extendNameCollisionInSamePackageDisallowed() {
     try {
-      new RepoBuilder()
-          .add("enum.proto", ""
-              + "enum Enum {\n"
-              + "  A = 1;\n"
-              + "  B = 2;\n"
-              + "}\n")
-          .add("extend.proto", ""
-              + "import \"enum.proto\";\n"
-              + "extend Enum {\n"
-              + "  optional string a = 2;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("expected a message but was Enum\n"
-          + "  for extend (/source/extend.proto at 2:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |}
+               """.trimMargin())
+          .add("extend1.proto", """
+               |import "message.proto";
+               |extend Message {
+               |  optional string a = 1;
+               |}
+               """.trimMargin())
+          .add("extend2.proto", """
+               |import "message.proto";
+               |extend Message {
+               |  optional string a = 2;
+               |}
+               """.trimMargin())
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple fields share name a:
+            |  1. a (/source/extend1.proto at 3:3)
+            |  2. a (/source/extend2.proto at 3:3)
+            |  for message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void requiredExtendFieldDisallowed() throws Exception {
+  @Test
+  fun extendNameCollisionInDifferentPackagesAllowed() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |message Message {
+             |}
+             """.trimMargin()
+        )
+        .add("extend1.proto", """
+             |package p1;
+             |import "message.proto";
+             |extend Message {
+             |  optional string a = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("extend2.proto", """
+             |package p2;
+             |import "message.proto";
+             |extend Message {
+             |  optional string a = 2;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val messageType = schema.getType("Message") as MessageType
+
+    assertThat(messageType.field("a")).isNull()
+    assertThat(messageType.extensionField("p1.a")!!.packageName()).isEqualTo("p1")
+    assertThat(messageType.extensionField("p2.a")!!.packageName()).isEqualTo("p2")
+  }
+
+  @Test
+  fun extendEnumDisallowed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "}\n"
-              + "extend Message {\n"
-              + "  required string a = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("extension fields cannot be required\n"
-          + "  for field a (/source/message.proto at 4:3)\n"
-          + "  in message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("enum.proto", """
+               |enum Enum {
+               |  A = 1;
+               |  B = 2;
+               |}
+               """.trimMargin()
+          )
+          .add("extend.proto", """
+               |import "enum.proto";
+               |extend Enum {
+               |  optional string a = 2;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |expected a message but was Enum
+            |  for extend (/source/extend.proto at 2:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void oneofLabelDisallowed() throws Exception {
+  @Test
+  fun requiredExtendFieldDisallowed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  oneof string s = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage(
-          "Syntax error in /source/message.proto at 2:17: expected '{'");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |}
+               |extend Message {
+               |  required string a = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |extension fields cannot be required
+            |  for field a (/source/message.proto at 4:3)
+            |  in message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void duplicateEnumValueTagInScopeDisallowed() throws Exception {
+  @Test
+  fun oneofLabelDisallowed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "message Message {\n"
-              + "  enum Enum1 {\n"
-              + "    VALUE = 1;\n"
-              + "  }\n"
-              + "  enum Enum2 {\n"
-              + "    VALUE = 2;\n"
-              + "  }\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple enums share constant VALUE:\n"
-          + "  1. Message.Enum1.VALUE (/source/message.proto at 3:5)\n"
-          + "  2. Message.Enum2.VALUE (/source/message.proto at 6:5)\n"
-          + "  for message Message (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  oneof string s = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected).hasMessage("Syntax error in /source/message.proto at 2:17: expected '{'")
     }
   }
 
-  @Test public void duplicateEnumConstantTagWithoutAllowAliasDisallowed() throws Exception {
+  @Test
+  fun duplicateEnumValueTagInScopeDisallowed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "enum Enum {\n"
-              + "  A = 1;\n"
-              + "  B = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple enum constants share tag 1:\n"
-          + "  1. A (/source/message.proto at 2:3)\n"
-          + "  2. B (/source/message.proto at 3:3)\n"
-          + "  for enum Enum (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  enum Enum1 {
+               |    VALUE = 1;
+               |  }
+               |  enum Enum2 {
+               |    VALUE = 2;
+               |  }
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple enums share constant VALUE:
+            |  1. Message.Enum1.VALUE (/source/message.proto at 3:5)
+            |  2. Message.Enum2.VALUE (/source/message.proto at 6:5)
+            |  for message Message (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void duplicateEnumConstantTagWithAllowAliasFalseDisallowed() throws Exception {
+  @Test
+  fun duplicateEnumConstantTagWithoutAllowAliasDisallowed() {
     try {
-      new RepoBuilder()
-          .add("message.proto", ""
-              + "enum Enum {\n"
-              + "  option allow_alias = false;\n"
-              + "  A = 1;\n"
-              + "  B = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("multiple enum constants share tag 1:\n"
-          + "  1. A (/source/message.proto at 3:3)\n"
-          + "  2. B (/source/message.proto at 4:3)\n"
-          + "  for enum Enum (/source/message.proto at 1:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |enum Enum {
+               |  A = 1;
+               |  B = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple enum constants share tag 1:
+            |  1. A (/source/message.proto at 2:3)
+            |  2. B (/source/message.proto at 3:3)
+            |  for enum Enum (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void duplicateEnumConstantTagWithAllowAliasTrueAllowed() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "enum Enum {\n"
-            + "  option allow_alias = true;\n"
-            + "  A = 1;\n"
-            + "  B = 1;\n"
-            + "}\n")
-        .schema();
-    EnumType enumType = (EnumType) schema.getType("Enum");
-    assertThat(enumType.constant("A").tag()).isEqualTo(1);
-    assertThat(enumType.constant("B").tag()).isEqualTo(1);
-  }
-
-  @Test public void fieldTypeImported() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a.proto", ""
-            + "package pa;\n"
-            + "import \"b.proto\";\n"
-            + "message A {\n"
-            + "  optional pb.B b = 1;\n"
-            + "}\n")
-        .add("b.proto", ""
-            + "package pb;\n"
-            + "message B {\n"
-            + "}\n")
-        .schema();
-    MessageType a = (MessageType) schema.getType("pa.A");
-    MessageType b = (MessageType) schema.getType("pb.B");
-    assertThat(a.field("b").type()).isEqualTo(b.type());
-  }
-
-  @Test public void fieldMapTypeImported() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a.proto", ""
-            + "package pa;\n"
-            + "import \"b.proto\";\n"
-            + "message A {\n"
-            + "  map<string, pb.B> b = 1;\n"
-            + "}\n")
-        .add("b.proto", ""
-            + "package pb;\n"
-            + "message B {\n"
-            + "}\n")
-        .schema();
-    MessageType a = (MessageType) schema.getType("pa.A");
-    MessageType b = (MessageType) schema.getType("pb.B");
-    assertThat(a.field("b").type().valueType()).isEqualTo(b.type());
-  }
-
-  @Test public void fieldTypeNotImported() throws Exception {
+  @Test
+  fun duplicateEnumConstantTagWithAllowAliasFalseDisallowed() {
     try {
-      new RepoBuilder()
-          .add("a.proto", ""
-              + "package pa;\n"
-              + "message A {\n"
-              + "  optional pb.B b = 1;\n"
-              + "}\n")
-          .add("b.proto", ""
-              + "package pb;\n"
-              + "message B {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import b.proto\n"
-          + "  for field b (/source/a.proto at 3:3)\n"
-          + "  in message pa.A (/source/a.proto at 2:1)");
+      RepoBuilder()
+          .add("message.proto", """
+               |enum Enum {
+               |  option allow_alias = false;
+               |  A = 1;
+               |  B = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple enum constants share tag 1:
+            |  1. A (/source/message.proto at 3:3)
+            |  2. B (/source/message.proto at 4:3)
+            |  for enum Enum (/source/message.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void fieldMapTypeNotImported() throws Exception {
+  @Test
+  fun duplicateEnumConstantTagWithAllowAliasTrueAllowed() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |enum Enum {
+             |  option allow_alias = true;
+             |  A = 1;
+             |  B = 1;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val enumType = schema.getType("Enum") as EnumType
+    assertThat(enumType.constant("A")!!.tag()).isEqualTo(1)
+    assertThat(enumType.constant("B")!!.tag()).isEqualTo(1)
+  }
+
+  @Test
+  fun fieldTypeImported() {
+    val schema = RepoBuilder()
+        .add("a.proto", """
+             |package pa;
+             |import "b.proto";
+             |message A {
+             |  optional pb.B b = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("b.proto", """
+             |package pb;
+             |message B {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val a = schema.getType("pa.A") as MessageType
+    val b = schema.getType("pb.B") as MessageType
+    assertThat(a.field("b")!!.type()).isEqualTo(b.type())
+  }
+
+  @Test
+  fun fieldMapTypeImported() {
+    val schema = RepoBuilder()
+        .add("a.proto", """
+             |package pa;
+             |import "b.proto";
+             |message A {
+             |  map<string, pb.B> b = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("b.proto", """
+             |package pb;
+             |message B {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val a = schema.getType("pa.A") as MessageType
+    val b = schema.getType("pb.B") as MessageType
+    assertThat(a.field("b")!!.type().valueType()).isEqualTo(b.type())
+  }
+
+  @Test
+  fun fieldTypeNotImported() {
     try {
-      new RepoBuilder()
-          .add("a.proto", ""
-              + "package pa;\n"
-              + "message A {\n"
-              + "  map<string, pb.B> b = 1;\n"
-              + "}\n")
-          .add("b.proto", ""
-              + "package pb;\n"
-              + "message B {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import b.proto\n"
-          + "  for field b (/source/a.proto at 3:3)\n"
-          + "  in message pa.A (/source/a.proto at 2:1)");
+      RepoBuilder()
+          .add("a.proto", """
+               |package pa;
+               |message A {
+               |  optional pb.B b = 1;
+               |}
+               """.trimMargin()
+          )
+          .add("b.proto", """
+               |package pb;
+               |message B {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected.message).isEqualTo("""
+            |a.proto needs to import b.proto
+            |  for field b (/source/a.proto at 3:3)
+            |  in message pa.A (/source/a.proto at 2:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void rpcTypeImported() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a.proto", ""
-            + "package pa;\n"
-            + "import \"b.proto\";\n"
-            + "service Service {\n"
-            + "  rpc Call (pb.B) returns (pb.B);\n"
-            + "}\n")
-        .add("b.proto", ""
-            + "package pb;\n"
-            + "message B {\n"
-            + "}\n")
-        .schema();
-    Service service = schema.getService("pa.Service");
-    MessageType b = (MessageType) schema.getType("pb.B");
-    assertThat(service.rpcs().get(0).requestType()).isEqualTo(b.type());
-    assertThat(service.rpcs().get(0).responseType()).isEqualTo(b.type());
-  }
-
-  @Test public void rpcTypeNotImported() throws Exception {
+  @Test
+  fun fieldMapTypeNotImported() {
     try {
-      new RepoBuilder()
-          .add("a.proto", ""
-              + "package pa;\n"
-              + "service Service {\n"
-              + "  rpc Call (pb.B) returns (pb.B);\n"
-              + "}\n")
-          .add("b.proto", ""
-              + "package pb;\n"
-              + "message B {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo(""
-          + "a.proto needs to import b.proto\n"
-          + "  for rpc Call (/source/a.proto at 3:3)\n"
-          + "  in service pa.Service (/source/a.proto at 2:1)\n"
-          + "a.proto needs to import b.proto\n"
-          + "  for rpc Call (/source/a.proto at 3:3)\n"
-          + "  in service pa.Service (/source/a.proto at 2:1)");
+      RepoBuilder()
+          .add("a.proto", """
+               |package pa;
+               |message A {
+               |  map<string, pb.B> b = 1;
+               |}
+               """.trimMargin()
+          )
+          .add("b.proto", """
+               |package pb;
+               |message B {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected.message).isEqualTo("""
+            |a.proto needs to import b.proto
+            |  for field b (/source/a.proto at 3:3)
+            |  in message pa.A (/source/a.proto at 2:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void extendTypeImported() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a.proto", ""
-            + "package pa;\n"
-            + "import \"b.proto\";\n"
-            + "extend pb.B {\n"
-            + "  optional string a = 1;\n"
-            + "}\n")
-        .add("b.proto", ""
-            + "package pb;\n"
-            + "message B {\n"
-            + "  extensions 1;\n"
-            + "}\n")
-        .schema();
-    Extend extendB = schema.protoFiles().get(0).extendList().get(0);
-    MessageType b = (MessageType) schema.getType("pb.B");
-    assertThat(extendB.type()).isEqualTo(b.type());
+  @Test
+  fun rpcTypeImported() {
+    val schema = RepoBuilder()
+        .add("a.proto", """
+             |package pa;
+             |import "b.proto";
+             |service Service {
+             |  rpc Call (pb.B) returns (pb.B);
+             |}
+             """.trimMargin()
+        )
+        .add("b.proto", """
+             |package pb;
+             |message B {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val service = schema.getService("pa.Service")
+    val b = schema.getType("pb.B") as MessageType
+    assertThat(service.rpcs()[0].requestType()).isEqualTo(b.type())
+    assertThat(service.rpcs()[0].responseType()).isEqualTo(b.type())
   }
 
-  @Test public void extendTypeNotImported() throws Exception {
+  @Test
+  fun rpcTypeNotImported() {
     try {
-      new RepoBuilder()
-          .add("a.proto", ""
-              + "package pa;\n"
-              + "extend pb.B {\n"
-              + "  optional string a = 1;\n"
-              + "}\n")
-          .add("b.proto", ""
-              + "package pb;\n"
-              + "message B {\n"
-              + "  extensions 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import b.proto\n"
-          + "  for extend pb.B (/source/a.proto at 2:1)");
+      RepoBuilder()
+          .add("a.proto", """
+               |package pa;
+               |service Service {
+               |  rpc Call (pb.B) returns (pb.B);
+               |}
+               """.trimMargin()
+          )
+          .add("b.proto", """
+               |package pb;
+               |message B {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected.message).isEqualTo("""
+            |a.proto needs to import b.proto
+            |  for rpc Call (/source/a.proto at 3:3)
+            |  in service pa.Service (/source/a.proto at 2:1)
+            |a.proto needs to import b.proto
+            |  for rpc Call (/source/a.proto at 3:3)
+            |  in service pa.Service (/source/a.proto at 2:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void transitiveImportNotFollowed() throws Exception {
+  @Test
+  fun extendTypeImported() {
+    val schema = RepoBuilder()
+        .add("a.proto", """
+             |package pa;
+             |import "b.proto";
+             |extend pb.B {
+             |  optional string a = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("b.proto", """
+             |package pb;
+             |message B {
+             |  extensions 1;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val extendB = schema.protoFiles()[0].extendList()[0]
+    val b = schema.getType("pb.B") as MessageType
+    assertThat(extendB.type()).isEqualTo(b.type())
+  }
+
+  @Test
+  fun extendTypeNotImported() {
     try {
-      new RepoBuilder()
-          .add("a.proto", ""
-              + "package pa;\n"
-              + "import \"b.proto\";\n"
-              + "message A {\n"
-              + "  optional pc.C c = 1;\n"
-              + "}\n")
-          .add("b.proto", ""
-              + "package pb;\n"
-              + "import \"c.proto\";\n"
-              + "message B {\n"
-              + "}\n")
-          .add("c.proto", ""
-              + "package pc;\n"
-              + "message C {\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected.getMessage()).isEqualTo("a.proto needs to import c.proto\n"
-          + "  for field c (/source/a.proto at 4:3)\n"
-          + "  in message pa.A (/source/a.proto at 3:1)");
+      RepoBuilder()
+          .add("a.proto", """
+               |package pa;
+               |extend pb.B {
+               |  optional string a = 1;
+               |}
+               """.trimMargin()
+          )
+          .add("b.proto", """
+               |package pb;
+               |message B {
+               |  extensions 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected.message).isEqualTo("""
+            |a.proto needs to import b.proto
+            |  for extend pb.B (/source/a.proto at 2:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void transitivePublicImportFollowed() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a.proto", ""
-            + "package pa;\n"
-            + "import \"b.proto\";\n"
-            + "message A {\n"
-            + "  optional pc.C c = 1;\n"
-            + "}\n")
-        .add("b.proto", ""
-            + "package pb;\n"
-            + "import public \"c.proto\";\n"
-            + "message B {\n"
-            + "}\n")
-        .add("c.proto", ""
-            + "package pc;\n"
-            + "message C {\n"
-            + "}\n")
-        .schema();
-    MessageType a = (MessageType) schema.getType("pa.A");
-    MessageType c = (MessageType) schema.getType("pc.C");
-    assertThat(a.field("c").type()).isEqualTo(c.type());
-  }
-
-  @Test public void importSamePackageDifferentFile() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a_b_1.proto", ""
-            + "package a.b;\n"
-            + "\n"
-            + "import \"a_b_2.proto\";\n"
-            + "\n"
-            + "message MessageB {\n"
-            + "  optional .a.b.MessageC c1 = 1;\n"
-            + "  optional a.b.MessageC c2 = 2;\n"
-            + "  optional b.MessageC c3 = 3;\n"
-            + "  optional MessageC c4 = 4;\n"
-            + "}\n")
-        .add("a_b_2.proto", ""
-            + "package a.b;\n"
-            + "\n"
-            + "message MessageC {\n"
-            + "}\n")
-        .schema();
-    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("c1").type()).isEqualTo(ProtoType.get("a.b.MessageC"));
-    assertThat(messageC.field("c2").type()).isEqualTo(ProtoType.get("a.b.MessageC"));
-    assertThat(messageC.field("c3").type()).isEqualTo(ProtoType.get("a.b.MessageC"));
-    assertThat(messageC.field("c4").type()).isEqualTo(ProtoType.get("a.b.MessageC"));
-  }
-
-  @Test public void importResolvesEnclosingPackageSuffix() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a_b.proto", ""
-            + "package a.b;\n"
-            + "\n"
-            + "message MessageB {\n"
-            + "}\n")
-        .add("a_b_c.proto", ""
-            + "package a.b.c;\n"
-            + "\n"
-            + "import \"a_b.proto\";\n"
-            + "\n"
-            + "message MessageC {\n"
-            + "  optional b.MessageB message_b = 1;\n"
-            + "}\n")
-        .schema();
-    MessageType messageC = (MessageType) schema.getType("a.b.c.MessageC");
-    assertThat(messageC.field("message_b").type()).isEqualTo(ProtoType.get("a.b.MessageB"));
-  }
-
-  @Test public void importResolvesNestedPackageSuffix() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a_b.proto", ""
-            + "package a.b;\n"
-            + "\n"
-            + "import \"a_b_c.proto\";\n"
-            + "\n"
-            + "message MessageB {\n"
-            + "  optional c.MessageC message_c = 1;\n"
-            + "}\n")
-        .add("a_b_c.proto", ""
-            + "package a.b.c;\n"
-            + "\n"
-            + "message MessageC {\n"
-            + "}\n")
-        .schema();
-    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("message_c").type()).isEqualTo(ProtoType.get("a.b.c.MessageC"));
-  }
-
-  @Test public void nestedPackagePreferredOverEnclosingPackage() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a.proto", ""
-            + "package a;\n"
-            + "\n"
-            + "message MessageA {\n"
-            + "}\n")
-        .add("a_b.proto", ""
-            + "package a.b;\n"
-            + "\n"
-            + "import \"a.proto\";\n"
-            + "import \"a_b_a.proto\";\n"
-            + "\n"
-            + "message MessageB {\n"
-            + "  optional a.MessageA message_a = 1;\n"
-            + "}\n")
-        .add("a_b_a.proto", ""
-            + "package a.b.a;\n"
-            + "\n"
-            + "message MessageA {\n"
-            + "}\n")
-        .schema();
-    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("message_a").type()).isEqualTo(ProtoType.get("a.b.a.MessageA"));
-  }
-
-  @Test public void dotPrefixRefersToRootPackage() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a.proto", ""
-            + "package a;\n"
-            + "\n"
-            + "message MessageA {\n"
-            + "}\n")
-        .add("a_b.proto", ""
-            + "package a.b;\n"
-            + "\n"
-            + "import \"a.proto\";\n"
-            + "import \"a_b_a.proto\";\n"
-            + "\n"
-            + "message MessageB {\n"
-            + "  optional .a.MessageA message_a = 1;\n"
-            + "}\n")
-        .add("a_b_a.proto", ""
-            + "package a.b.a;\n"
-            + "\n"
-            + "message MessageA {\n"
-            + "}\n")
-        .schema();
-    MessageType messageC = (MessageType) schema.getType("a.b.MessageB");
-    assertThat(messageC.field("message_a").type()).isEqualTo(ProtoType.get("a.MessageA"));
-  }
-
-  @Test public void dotPrefixMustBeRoot() throws Exception {
+  @Test
+  fun transitiveImportNotFollowed() {
     try {
-      new RepoBuilder()
-          .add("a_b.proto", ""
-              + "package a.b;\n"
-              + "\n"
-              + "message MessageB {\n"
-              + "}\n")
-          .add("a_b_c.proto", ""
-              + "package a.b.c;\n"
-              + "\n"
-              + "import \"a_b.proto\";\n"
-              + "\n"
-              + "message MessageC {\n"
-              + "  optional .b.MessageB message_b = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("unable to resolve .b.MessageB\n"
-          + "  for field message_b (/source/a_b_c.proto at 6:3)\n"
-          + "  in message a.b.c.MessageC (/source/a_b_c.proto at 5:1)");
+      RepoBuilder()
+          .add("a.proto", """
+               |package pa;
+               |import "b.proto";
+               |message A {
+               |  optional pc.C c = 1;
+               |}
+               """.trimMargin()
+          )
+          .add("b.proto", """
+               |package pb;
+               |import "c.proto";
+               |message B {
+               |}
+               """.trimMargin()
+          )
+          .add("c.proto", """
+               |package pc;
+               |message C {
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected.message).isEqualTo("""
+            |a.proto needs to import c.proto
+            |  for field c (/source/a.proto at 4:3)
+            |  in message pa.A (/source/a.proto at 3:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void groupsThrow() throws Exception {
+  @Test
+  fun transitivePublicImportFollowed() {
+    val schema = RepoBuilder()
+        .add("a.proto", """
+             |package pa;
+             |import "b.proto";
+             |message A {
+             |  optional pc.C c = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("b.proto", """
+             |package pb;
+             |import public "c.proto";
+             |message B {
+             |}
+             """.trimMargin()
+        )
+        .add("c.proto", """
+             |package pc;
+             |message C {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val a = schema.getType("pa.A") as MessageType
+    val c = schema.getType("pc.C") as MessageType
+    assertThat(a.field("c")!!.type()).isEqualTo(c.type())
+  }
+
+  @Test
+  fun importSamePackageDifferentFile() {
+    val schema = RepoBuilder()
+        .add("a_b_1.proto", """
+             |package a.b;
+             |
+             |import "a_b_2.proto";
+             |
+             |message MessageB {
+             |  optional .a.b.MessageC c1 = 1;
+             |  optional a.b.MessageC c2 = 2;
+             |  optional b.MessageC c3 = 3;
+             |  optional MessageC c4 = 4;
+             |}
+             """.trimMargin()
+        )
+        .add("a_b_2.proto", """
+             |package a.b;
+             |
+             |message MessageC {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val messageC = schema.getType("a.b.MessageB") as MessageType
+    assertThat(messageC.field("c1")!!.type()).isEqualTo(ProtoType.get("a.b.MessageC"))
+    assertThat(messageC.field("c2")!!.type()).isEqualTo(ProtoType.get("a.b.MessageC"))
+    assertThat(messageC.field("c3")!!.type()).isEqualTo(ProtoType.get("a.b.MessageC"))
+    assertThat(messageC.field("c4")!!.type()).isEqualTo(ProtoType.get("a.b.MessageC"))
+  }
+
+  @Test
+  fun importResolvesEnclosingPackageSuffix() {
+    val schema = RepoBuilder()
+        .add("a_b.proto", """
+             |package a.b;
+             |
+             |message MessageB {
+             |}
+             """.trimMargin()
+        )
+        .add("a_b_c.proto", """
+             |package a.b.c;
+             |
+             |import "a_b.proto";
+             |
+             |message MessageC {
+             |  optional b.MessageB message_b = 1;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val messageC = schema.getType("a.b.c.MessageC") as MessageType
+    assertThat(messageC.field("message_b")!!.type()).isEqualTo(ProtoType.get("a.b.MessageB"))
+  }
+
+  @Test
+  fun importResolvesNestedPackageSuffix() {
+    val schema = RepoBuilder()
+        .add("a_b.proto", """
+             |package a.b;
+             |
+             |import "a_b_c.proto";
+             |
+             |message MessageB {
+             |  optional c.MessageC message_c = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("a_b_c.proto", """
+             |package a.b.c;
+             |
+             |message MessageC {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val messageC = schema.getType("a.b.MessageB") as MessageType
+    assertThat(messageC.field("message_c")!!.type()).isEqualTo(ProtoType.get("a.b.c.MessageC"))
+  }
+
+  @Test
+  fun nestedPackagePreferredOverEnclosingPackage() {
+    val schema = RepoBuilder()
+        .add("a.proto", """
+             |package a;
+             |
+             |message MessageA {
+             |}
+             """.trimMargin()
+        )
+        .add("a_b.proto", """
+             |package a.b;
+             |
+             |import "a.proto";
+             |import "a_b_a.proto";
+             |
+             |message MessageB {
+             |  optional a.MessageA message_a = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("a_b_a.proto", """
+             |package a.b.a;
+             |
+             |message MessageA {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val messageC = schema.getType("a.b.MessageB") as MessageType
+    assertThat(messageC.field("message_a")!!.type()).isEqualTo(ProtoType.get("a.b.a.MessageA"))
+  }
+
+  @Test
+  fun dotPrefixRefersToRootPackage() {
+    val schema = RepoBuilder()
+        .add("a.proto", """
+             |package a;
+             |
+             |message MessageA {
+             |}
+             """.trimMargin()
+        )
+        .add("a_b.proto", """
+             |package a.b;
+             |
+             |import "a.proto";
+             |import "a_b_a.proto";
+             |
+             |message MessageB {
+             |  optional .a.MessageA message_a = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("a_b_a.proto", """
+             |package a.b.a;
+             |
+             |message MessageA {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val messageC = schema.getType("a.b.MessageB") as MessageType
+    assertThat(messageC.field("message_a")!!.type()).isEqualTo(ProtoType.get("a.MessageA"))
+  }
+
+  @Test
+  fun dotPrefixMustBeRoot() {
     try {
-      new RepoBuilder()
-          .add("test.proto", ""
-              + "message SearchResponse {\n"
-              + "  repeated group Result = 1 {\n"
-              + "    required string url = 2;\n"
-              + "    optional string title = 3;\n"
-              + "    repeated string snippets = 4;\n"
-              + "  }\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("/source/test.proto at 2:3: 'group' is not supported");
+      RepoBuilder()
+          .add("a_b.proto", """
+               |package a.b;
+               |
+               |message MessageB {
+               |}
+               """.trimMargin()
+          )
+          .add("a_b_c.proto", """
+               |package a.b.c;
+               |
+               |import "a_b.proto";
+               |
+               |message MessageC {
+               |  optional .b.MessageB message_b = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve .b.MessageB
+            |  for field message_b (/source/a_b_c.proto at 6:3)
+            |  in message a.b.c.MessageC (/source/a_b_c.proto at 5:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void oneOfGroupsThrow() throws Exception {
+  @Test
+  fun groupsThrow() {
     try {
-      new RepoBuilder()
-          .add("test.proto", ""
-              + "message Message {\n"
-              + "  oneof hi {\n"
-              + "    string name = 1;\n"
-              + "  \n"
-              + "    group Stuff = 3 {\n"
-              + "      optional int32 result_per_page = 4;\n"
-              + "      optional int32 page_count = 5;\n"
-              + "    }\n"
-              + "  }\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage("/source/test.proto at 5:5: 'group' is not supported");
+      RepoBuilder()
+          .add("test.proto", """
+               |message SearchResponse {
+               |  repeated group Result = 1 {
+               |    required string url = 2;
+               |    optional string title = 3;
+               |    repeated string snippets = 4;
+               |  }
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected).hasMessage("/source/test.proto at 2:3: 'group' is not supported")
     }
   }
 
-  @Test public void reservedTagThrowsWhenUsed() throws Exception {
+  @Test
+  fun oneOfGroupsThrow() {
     try {
-      new RepoBuilder()
-          .add("test.proto", ""
-              + "message Message {\n"
-              + "  reserved 1;\n"
-              + "  optional string name = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("tag 1 is reserved (/source/test.proto at 2:3)\n"
-          + "  for field name (/source/test.proto at 3:3)\n"
-          + "  in message Message (/source/test.proto at 1:1)");
+      RepoBuilder()
+          .add("test.proto", """
+               |message Message {
+               |  oneof hi {
+               |    string name = 1;
+               |
+               |    group Stuff = 3 {
+               |      optional int32 result_per_page = 4;
+               |      optional int32 page_count = 5;
+               |    }
+               |  }
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected).hasMessage("/source/test.proto at 5:5: 'group' is not supported")
     }
   }
 
-  @Test public void reservedTagRangeThrowsWhenUsed() throws Exception {
+  @Test
+  fun reservedTagThrowsWhenUsed() {
     try {
-      new RepoBuilder()
-          .add("test.proto", ""
-              + "message Message {\n"
-              + "  reserved 1 to 3;\n"
-              + "  optional string name = 2;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("tag 2 is reserved (/source/test.proto at 2:3)\n"
-          + "  for field name (/source/test.proto at 3:3)\n"
-          + "  in message Message (/source/test.proto at 1:1)");
+      RepoBuilder()
+          .add("test.proto", """
+               |message Message {
+               |  reserved 1;
+               |  optional string name = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |tag 1 is reserved (/source/test.proto at 2:3)
+            |  for field name (/source/test.proto at 3:3)
+            |  in message Message (/source/test.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void reservedNameThrowsWhenUsed() throws Exception {
+  @Test
+  fun reservedTagRangeThrowsWhenUsed() {
     try {
-      new RepoBuilder()
-          .add("test.proto", ""
-              + "message Message {\n"
-              + "  reserved 'foo';\n"
-              + "  optional string foo = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("name 'foo' is reserved (/source/test.proto at 2:3)\n"
-          + "  for field foo (/source/test.proto at 3:3)\n"
-          + "  in message Message (/source/test.proto at 1:1)");
+      RepoBuilder()
+          .add("test.proto", """
+               |message Message {
+               |  reserved 1 to 3;
+               |  optional string name = 2;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |tag 2 is reserved (/source/test.proto at 2:3)
+            |  for field name (/source/test.proto at 3:3)
+            |  in message Message (/source/test.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 
-  @Test public void reservedTagAndNameBothReported() throws Exception {
+  @Test
+  fun reservedNameThrowsWhenUsed() {
     try {
-      new RepoBuilder()
-          .add("test.proto", ""
-              + "message Message {\n"
-              + "  reserved 'foo';\n"
-              + "  reserved 1;\n"
-              + "  optional string foo = 1;\n"
-              + "}\n")
-          .schema();
-      fail();
-    } catch (SchemaException expected) {
-      assertThat(expected).hasMessage("name 'foo' is reserved (/source/test.proto at 2:3)\n"
-          + "  for field foo (/source/test.proto at 4:3)\n"
-          + "  in message Message (/source/test.proto at 1:1)\n"
-          + "tag 1 is reserved (/source/test.proto at 3:3)\n"
-          + "  for field foo (/source/test.proto at 4:3)\n"
-          + "  in message Message (/source/test.proto at 1:1)");
+      RepoBuilder()
+          .add("test.proto", """
+               |message Message {
+               |  reserved 'foo';
+               |  optional string foo = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |name 'foo' is reserved (/source/test.proto at 2:3)
+            |  for field foo (/source/test.proto at 3:3)
+            |  in message Message (/source/test.proto at 1:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun reservedTagAndNameBothReported() {
+    try {
+      RepoBuilder()
+          .add("test.proto", """
+               |message Message {
+               |  reserved 'foo';
+               |  reserved 1;
+               |  optional string foo = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |name 'foo' is reserved (/source/test.proto at 2:3)
+            |  for field foo (/source/test.proto at 4:3)
+            |  in message Message (/source/test.proto at 1:1)
+            |tag 1 is reserved (/source/test.proto at 3:3)
+            |  for field foo (/source/test.proto at 4:3)
+            |  in message Message (/source/test.proto at 1:1)
+            """.trimMargin()
+      )
     }
   }
 }

@@ -13,45 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.squareup.wire.schema.Location;
-import java.io.File;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
-import okio.BufferedSource;
-import okio.Okio;
+import com.squareup.wire.schema.Location
+import okio.buffer
+import okio.source
+import java.io.File
+import java.util.ArrayDeque
+import java.util.Collections
 
-/** Recursively traverse a directory and attempt to parse all of its proto files. */
-public class ParsingTester {
-  /** Directory under which to search for protos. Change as needed. */
-  private static final File ROOT = new File("/path/to/protos");
+/** Recursively traverse a directory and attempt to parse all of its proto files.  */
+object ParsingTester {
+  /** Directory under which to search for protos. Change as needed.  */
+  private val ROOT = File("/path/to/protos")
 
-  public static void main(String... args) {
-    int total = 0;
-    int failed = 0;
+  @JvmStatic
+  fun main() {
+    var total = 0
+    var failed = 0
 
-    Deque<File> fileQueue = new ArrayDeque<>();
-    fileQueue.add(ROOT);
-    while (!fileQueue.isEmpty()) {
-      File file = fileQueue.removeFirst();
-      if (file.isDirectory()) {
-        Collections.addAll(fileQueue, file.listFiles());
-      } else if (file.getName().endsWith(".proto")) {
-        System.out.println("Parsing " + file.getPath());
-        total += 1;
+    val fileQueue = ArrayDeque<File>()
+    fileQueue.add(ROOT)
+    while (fileQueue.isNotEmpty()) {
+      val file = fileQueue.removeFirst()
+      if (file.isDirectory) {
+        Collections.addAll(fileQueue, *file.listFiles()!!)
+      } else if (file.name.endsWith(".proto")) {
+        println("Parsing ${file.path}")
+        total += 1
 
-        try (BufferedSource in = Okio.buffer(Okio.source(file))) {
-          String data = in.readUtf8();
-          ProtoParser.parse(Location.get(file.getPath()), data);
-        } catch (Exception e) {
-          e.printStackTrace();
-          failed += 1;
+        try {
+          file.source()
+              .buffer()
+              .use { `in` ->
+                val data = `in`.readUtf8()
+                ProtoParser.parse(Location.get(file.path), data)
+              }
+        } catch (e: Exception) {
+          e.printStackTrace()
+          failed += 1
         }
       }
     }
 
-    System.out.println("\nTotal: " + total + "  Failed: " + failed);
+    println("\nTotal: $total  Failed: $failed")
   }
 }

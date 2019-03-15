@@ -13,79 +13,92 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
-import org.junit.Test;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.Field.Label.REQUIRED
+import com.squareup.wire.schema.Location
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static com.squareup.wire.schema.Field.Label.REQUIRED;
-import static org.assertj.core.api.Assertions.assertThat;
+class ExtendElementTest {
+  internal var location = Location.get("file.proto")
 
-public final class ExtendElementTest {
-  Location location = Location.get("file.proto");
-
-  @Test public void emptyToSchema() {
-    ExtendElement extend = ExtendElement.builder(location).name("Name").build();
-    String expected = "extend Name {}\n";
-    assertThat(extend.toSchema()).isEqualTo(expected);
-  }
-
-  @Test public void simpleToSchema() {
-    ExtendElement extend = ExtendElement.builder(location)
+  @Test
+  fun emptyToSchema() {
+    val extend = ExtendElement.builder(location)
         .name("Name")
-        .fields(ImmutableList.of(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()))
-        .build();
-    String expected = ""
-        + "extend Name {\n"
-        + "  required string name = 1;\n"
-        + "}\n";
-    assertThat(extend.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = "extend Name {}\n"
+    assertThat(extend.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleFields() {
-    FieldElement firstName = FieldElement.builder(location)
+  @Test
+  fun simpleToSchema() {
+    val extend = ExtendElement.builder(location)
+        .name("Name")
+        .fields(
+            ImmutableList.of(
+                FieldElement.builder(location)
+                    .label(REQUIRED)
+                    .type("string")
+                    .name("name")
+                    .tag(1)
+                    .build()
+            )
+        )
+        .build()
+    val expected = """
+        |extend Name {
+        |  required string name = 1;
+        |}
+        |""".trimMargin()
+    assertThat(extend.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
+  fun addMultipleFields() {
+    val firstName = FieldElement.builder(location)
         .label(REQUIRED)
         .type("string")
         .name("first_name")
         .tag(1)
-        .build();
-    FieldElement lastName = FieldElement.builder(location)
+        .build()
+    val lastName = FieldElement.builder(location)
         .label(REQUIRED)
         .type("string")
         .name("last_name")
         .tag(2)
-        .build();
-    ExtendElement extend = ExtendElement.builder(location)
+        .build()
+    val extend = ExtendElement.builder(location)
         .name("Name")
         .fields(ImmutableList.of(firstName, lastName))
-        .build();
-    assertThat(extend.fields()).hasSize(2);
+        .build()
+    assertThat(extend.fields()).hasSize(2)
   }
 
-  @Test public void simpleWithDocumentationToSchema() {
-    ExtendElement extend = ExtendElement.builder(location)
+  @Test
+  fun simpleWithDocumentationToSchema() {
+    val extend = ExtendElement.builder(location)
         .name("Name")
         .documentation("Hello")
-        .fields(ImmutableList.of(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()))
-        .build();
-    String expected = ""
-        + "// Hello\n"
-        + "extend Name {\n"
-        + "  required string name = 1;\n"
-        + "}\n";
-    assertThat(extend.toSchema()).isEqualTo(expected);
+        .fields(
+            ImmutableList.of(
+                FieldElement.builder(location)
+                    .label(REQUIRED)
+                    .type("string")
+                    .name("name")
+                    .tag(1)
+                    .build()
+            )
+        )
+        .build()
+    val expected = """
+        |// Hello
+        |extend Name {
+        |  required string name = 1;
+        |}
+        |""".trimMargin()
+    assertThat(extend.toSchema()).isEqualTo(expected)
   }
 }

@@ -13,213 +13,269 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
-import com.squareup.wire.schema.Location;
-import org.junit.Test;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2;
-import static org.assertj.core.api.Assertions.assertThat;
-
-public final class ProtoFileElementTest {
-  Location location = Location.get("file.proto");
-
-  @Test public void emptyToSchema() {
-    ProtoFileElement file = ProtoFileElement.builder(location).build();
-    String expected = "// file.proto\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+class ProtoFileElementTest {
+  internal var location = Location.get("file.proto")
+  @Test
+  fun emptyToSchema() {
+    val file = ProtoFileElement.builder(location)
+        .build()
+    val expected = "// file.proto\n"
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void emptyWithPackageToSchema() {
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun emptyWithPackageToSchema() {
+    val file = ProtoFileElement.builder(location)
         .packageName("example.simple")
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "package example.simple;\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |package example.simple;
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void simpleToSchema() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun simpleToSchema() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .types(ImmutableList.of(element))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |
+        |message Message {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void simpleWithImportsToSchema() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun simpleWithImportsToSchema() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .imports(ImmutableList.of("example.other"))
         .types(ImmutableList.of(element))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "import \"example.other\";\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |
+        |import "example.other";
+        |
+        |message Message {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleDependencies() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun addMultipleDependencies() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .imports(ImmutableList.of("example.other", "example.another"))
         .types(ImmutableList.of(element))
-        .build();
-    assertThat(file.imports()).hasSize(2);
+        .build()
+    assertThat(file.imports()).hasSize(2)
   }
 
-  @Test public void simpleWithPublicImportsToSchema() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun simpleWithPublicImportsToSchema() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .publicImports(ImmutableList.of("example.other"))
         .types(ImmutableList.of(element))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "import public \"example.other\";\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |
+        |import public "example.other";
+        |
+        |message Message {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultiplePublicDependencies() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun addMultiplePublicDependencies() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .publicImports(ImmutableList.of("example.other", "example.another"))
         .types(ImmutableList.of(element))
-        .build();
-    assertThat(file.publicImports()).hasSize(2);
+        .build()
+    assertThat(file.publicImports()).hasSize(2)
   }
 
-  @Test public void simpleWithBothImportsToSchema() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun simpleWithBothImportsToSchema() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .imports(ImmutableList.of("example.thing"))
         .publicImports(ImmutableList.of("example.other"))
         .types(ImmutableList.of(element))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "import \"example.thing\";\n"
-        + "import public \"example.other\";\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |
+        |import "example.thing";
+        |import public "example.other";
+        |
+        |message Message {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void simpleWithServicesToSchema() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    ServiceElement service = ServiceElement.builder(location).name("Service").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun simpleWithServicesToSchema() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val service = ServiceElement.builder(location)
+        .name("Service")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .types(ImmutableList.of(element))
         .services(ImmutableList.of(service))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "message Message {}\n"
-        + "\n"
-        + "service Service {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |
+        |message Message {}
+        |
+        |service Service {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleServices() {
-    ServiceElement service1 = ServiceElement.builder(location).name("Service1").build();
-    ServiceElement service2 = ServiceElement.builder(location).name("Service2").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun addMultipleServices() {
+    val service1 = ServiceElement.builder(location)
+        .name("Service1")
+        .build()
+    val service2 = ServiceElement.builder(location)
+        .name("Service2")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .services(ImmutableList.of(service1, service2))
-        .build();
-    assertThat(file.services()).hasSize(2);
+        .build()
+    assertThat(file.services()).hasSize(2)
   }
 
-  @Test public void simpleWithOptionsToSchema() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    OptionElement option = OptionElement.create("kit", Kind.STRING, "kat");
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun simpleWithOptionsToSchema() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val option = OptionElement.create("kit", Kind.STRING, "kat")
+    val file = ProtoFileElement.builder(location)
         .options(ImmutableList.of(option))
         .types(ImmutableList.of(element))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "option kit = \"kat\";\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |
+        |option kit = "kat";
+        |
+        |message Message {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleOptions() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
-    OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun addMultipleOptions() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
+    val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
+    val file = ProtoFileElement.builder(location)
         .options(ImmutableList.of(kitKat, fooBar))
         .types(ImmutableList.of(element))
-        .build();
-    assertThat(file.options()).hasSize(2);
+        .build()
+    assertThat(file.options()).hasSize(2)
   }
 
-  @Test public void simpleWithExtendsToSchema() {
-    ProtoFileElement file = ProtoFileElement.builder(location)
-        .extendDeclarations(ImmutableList.of(
-            ExtendElement.builder(location.at(5, 1)).name("Extend").build()))
-        .types(ImmutableList.<TypeElement>of(
-            MessageElement.builder(location)
-                .name("Message")
-                .build()))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "\n"
-        + "message Message {}\n"
-        + "\n"
-        + "extend Extend {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+  @Test
+  fun simpleWithExtendsToSchema() {
+    val file = ProtoFileElement.builder(location)
+        .extendDeclarations(
+            ImmutableList.of(
+                ExtendElement.builder(location.at(5, 1)).name("Extend").build()
+            )
+        )
+        .types(
+            ImmutableList.of(
+                MessageElement.builder(location)
+                    .name("Message")
+                    .build()
+            )
+        )
+        .build()
+    val expected = """
+        |// file.proto
+        |
+        |message Message {}
+        |
+        |extend Extend {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void addMultipleExtends() {
-    ExtendElement extend1 = ExtendElement.builder(location).name("Extend1").build();
-    ExtendElement extend2 = ExtendElement.builder(location).name("Extend2").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
-        .extendDeclarations(ImmutableList.of(extend1, extend2))
-        .build();
-    assertThat(file.extendDeclarations()).hasSize(2);
-  }
-
-  @Test public void multipleEverythingToSchema() {
-    TypeElement element1 = MessageElement.builder(location.at(10, 1))
-        .name("Message1")
-        .build();
-    TypeElement element2 = MessageElement.builder(location.at(11, 1))
-        .name("Message2")
-        .build();
-    ExtendElement extend1 = ExtendElement.builder(location.at(13, 1))
+  @Test
+  fun addMultipleExtends() {
+    val extend1 = ExtendElement.builder(location)
         .name("Extend1")
-        .build();
-    ExtendElement extend2 = ExtendElement.builder(location.at(14, 1))
+        .build()
+    val extend2 = ExtendElement.builder(location)
         .name("Extend2")
-        .build();
-    OptionElement option1 = OptionElement.create("kit", Kind.STRING, "kat");
-    OptionElement option2 = OptionElement.create("foo", Kind.STRING, "bar");
-    ServiceElement service1 = ServiceElement.builder(location.at(16, 1))
+        .build()
+    val file = ProtoFileElement.builder(location)
+        .extendDeclarations(ImmutableList.of(extend1, extend2))
+        .build()
+    assertThat(file.extendDeclarations()).hasSize(2)
+  }
+
+  @Test
+  fun multipleEverythingToSchema() {
+    val element1 = MessageElement.builder(location.at(10, 1))
+        .name("Message1")
+        .build()
+    val element2 = MessageElement.builder(location.at(11, 1))
+        .name("Message2")
+        .build()
+    val extend1 = ExtendElement.builder(location.at(13, 1))
+        .name("Extend1")
+        .build()
+    val extend2 = ExtendElement.builder(location.at(14, 1))
+        .name("Extend2")
+        .build()
+    val option1 = OptionElement.create("kit", Kind.STRING, "kat")
+    val option2 = OptionElement.create("foo", Kind.STRING, "bar")
+    val service1 = ServiceElement.builder(location.at(16, 1))
         .name("Service1")
-        .build();
-    ServiceElement service2 = ServiceElement.builder(location.at(17, 1))
+        .build()
+    val service2 = ServiceElement.builder(location.at(17, 1))
         .name("Service2")
-        .build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+        .build()
+    val file = ProtoFileElement.builder(location)
         .packageName("example.simple")
         .imports(ImmutableList.of("example.thing"))
         .publicImports(ImmutableList.of("example.other"))
@@ -227,43 +283,48 @@ public final class ProtoFileElementTest {
         .services(ImmutableList.of(service1, service2))
         .extendDeclarations(ImmutableList.of(extend1, extend2))
         .options(ImmutableList.of(option1, option2))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "package example.simple;\n"
-        + "\n"
-        + "import \"example.thing\";\n"
-        + "import public \"example.other\";\n"
-        + "\n"
-        + "option kit = \"kat\";\n"
-        + "option foo = \"bar\";\n"
-        + "\n"
-        + "message Message1 {}\n"
-        + "message Message2 {}\n"
-        + "\n"
-        + "extend Extend1 {}\n"
-        + "extend Extend2 {}\n"
-        + "\n"
-        + "service Service1 {}\n"
-        + "service Service2 {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |package example.simple;
+        |
+        |import "example.thing";
+        |import public "example.other";
+        |
+        |option kit = "kat";
+        |option foo = "bar";
+        |
+        |message Message1 {}
+        |message Message2 {}
+        |
+        |extend Extend1 {}
+        |extend Extend2 {}
+        |
+        |service Service1 {}
+        |service Service2 {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
 
     // Re-parse the expected string into a ProtoFile and ensure they're equal.
-    ProtoFileElement parsed = ProtoParser.parse(location, expected);
-    assertThat(parsed).isEqualTo(file);
+    val parsed = ProtoParser.parse(location, expected)
+    assertThat(parsed).isEqualTo(file)
   }
 
-  @Test public void syntaxToSchema() {
-    TypeElement element = MessageElement.builder(location).name("Message").build();
-    ProtoFileElement file = ProtoFileElement.builder(location)
+  @Test
+  fun syntaxToSchema() {
+    val element = MessageElement.builder(location)
+        .name("Message")
+        .build()
+    val file = ProtoFileElement.builder(location)
         .syntax(PROTO_2)
         .types(ImmutableList.of(element))
-        .build();
-    String expected = ""
-        + "// file.proto\n"
-        + "syntax = \"proto2\";\n"
-        + "\n"
-        + "message Message {}\n";
-    assertThat(file.toSchema()).isEqualTo(expected);
+        .build()
+    val expected = """
+        |// file.proto
+        |syntax = "proto2";
+        |
+        |message Message {}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
   }
 }

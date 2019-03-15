@@ -13,40 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.squareup.wire.schema.internal.Util;
-import com.squareup.wire.schema.Location;
-import org.junit.Test;
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static org.assertj.core.api.Assertions.assertThat;
+class ExtensionsElementTest {
+  internal var location = Location.get("file.proto")
 
-public final class ExtensionsElementTest {
-  Location location = Location.get("file.proto");
-
-  @Test public void singleValueToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(location, 500, 500, "");
-    String expected = "extensions 500;\n";
-    assertThat(actual.toSchema()).isEqualTo(expected);
+  @Test
+  fun singleValueToSchema() {
+    val actual = ExtensionsElement.create(location, 500, 500, "")
+    val expected = "extensions 500;\n"
+    assertThat(actual.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void rangeToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(location, 500, 505, "");
-    String expected = "extensions 500 to 505;\n";
-    assertThat(actual.toSchema()).isEqualTo(expected);
+  @Test
+  fun rangeToSchema() {
+    val actual = ExtensionsElement.create(location, 500, 505, "")
+    val expected = "extensions 500 to 505;\n"
+    assertThat(actual.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void maxRangeToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(location, 500, Util.MAX_TAG_VALUE, "");
-    String expected = "extensions 500 to max;\n";
-    assertThat(actual.toSchema()).isEqualTo(expected);
+  @Test
+  fun maxRangeToSchema() {
+    val actual = ExtensionsElement.create(location, 500, Util.MAX_TAG_VALUE, "")
+    val expected = "extensions 500 to max;\n"
+    assertThat(actual.toSchema()).isEqualTo(expected)
   }
 
-  @Test public void withDocumentationToSchema() {
-    ExtensionsElement actual = ExtensionsElement.create(location, 500, 500, "Hello");
-    String expected = ""
-        + "// Hello\n"
-        + "extensions 500;\n";
-    assertThat(actual.toSchema()).isEqualTo(expected);
+  @Test
+  fun withDocumentationToSchema() {
+    val actual = ExtensionsElement.create(location, 500, 500, "Hello")
+    val expected = """
+        |// Hello
+        |extensions 500;
+        |""".trimMargin()
+    assertThat(actual.toSchema()).isEqualTo(expected)
   }
 }

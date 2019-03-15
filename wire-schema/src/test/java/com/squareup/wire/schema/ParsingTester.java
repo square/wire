@@ -13,53 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.squareup.wire.schema.internal.parser.ProtoParser;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.concurrent.atomic.AtomicLong;
+import com.squareup.wire.schema.internal.parser.ProtoParser
+import java.io.File
+import java.io.IOException
+import java.nio.charset.StandardCharsets.UTF_8
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
+import java.util.concurrent.atomic.AtomicLong
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+/** Recursively traverse a directory and attempt to parse all of its proto files.  */
+object ParsingTester {
+  /** Directory under which to search for protos. Change as needed.  */
+  private val ROOT = Paths.get("/path/to/protos")
 
-/** Recursively traverse a directory and attempt to parse all of its proto files. */
-public final class ParsingTester {
-  /** Directory under which to search for protos. Change as needed. */
-  private static final Path ROOT = Paths.get("/path/to/protos");
+  @Throws(IOException::class)
+  @JvmStatic
+  fun main(args: Array<String>) {
+    var total = 0L
+    var failed = 0L
 
-  public static void main(String... args) throws IOException {
-    final AtomicLong total = new AtomicLong();
-    final AtomicLong failed = new AtomicLong();
+    Files.walkFileTree(ROOT, object : SimpleFileVisitor<Path>() {
+      @Throws(IOException::class)
+      override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+        if (file.fileName.toString().endsWith(".proto")) {
+          total++
 
-    Files.walkFileTree(ROOT, new SimpleFileVisitor<Path>() {
-      @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-          throws IOException {
-        if (file.getFileName().toString().endsWith(".proto")) {
-          total.incrementAndGet();
-
-          String data = new String(Files.readAllBytes(file), UTF_8);
-          Location location = Location.get(ROOT.toString(), file.toString());
+          val data = file.toFile().readText()
+          val location = Location.get(ROOT.toString(), file.toString())
           try {
-            ProtoParser.parse(location, data);
-          } catch (Exception e) {
-            e.printStackTrace();
-            failed.incrementAndGet();
+            ProtoParser.parse(location, data)
+          } catch (e: Exception) {
+            e.printStackTrace()
+            failed++
           }
         }
-        return FileVisitResult.CONTINUE;
+        return FileVisitResult.CONTINUE
       }
-    });
+    })
 
-    System.out.println("\nTotal: " + total.get() + "  Failed: " + failed.get());
+    println("\nTotal: $total  Failed: $failed")
 
-    if (failed.get() == 0) {
-      new SchemaLoader().addSource(ROOT).load();
-      System.out.println("All files linked successfully.");
+    if (failed == 0L) {
+      SchemaLoader().addSource(ROOT).load()
+      println("All files linked successfully.")
     }
   }
 }

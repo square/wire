@@ -13,777 +13,871 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import java.util.Map;
-import org.junit.Test;
+import com.google.common.collect.ImmutableList
+import com.google.common.collect.Iterables.getOnlyElement
+import com.squareup.wire.schema.Options.FIELD_OPTIONS
+import com.squareup.wire.schema.Options.MESSAGE_OPTIONS
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static com.google.common.collect.Iterables.getOnlyElement;
-import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
-import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
-import static org.assertj.core.api.Assertions.assertThat;
-
-public final class PrunerTest {
-  @Test public void retainType() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+class PrunerTest {
+  @Test
+  fun retainType() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |message MessageA {
+             |}
+             |message MessageB {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA")
-        .build());
-    assertThat(pruned.getType("MessageA")).isNotNull();
-    assertThat(pruned.getType("MessageB")).isNull();
+        .build())
+    assertThat(pruned.getType("MessageA")).isNotNull
+    assertThat(pruned.getType("MessageB")).isNull()
   }
 
-  @Test public void retainMap() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  map<string, MessageB> maps = 1;\n"
-            + "  message MessageB {\n"
-            + "  }\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainMap() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MessageA {
+            |  map<string, MessageB> maps = 1;
+            |  message MessageB {
+            |  }
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA")
-        .build());
-    assertThat(pruned.getType("MessageA")).isNotNull();
-    assertThat(pruned.getField(ProtoMember.get("MessageA#maps"))).isNotNull();
+        .build())
+    assertThat(pruned.getType("MessageA")).isNotNull
+    assertThat(pruned.getField(ProtoMember.get("MessageA#maps"))).isNotNull
   }
 
-  @Test public void excludeMap() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  map<string, MessageB> maps = 1;\n"
-            + "  message MessageB {\n"
-            + "  }\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeMap() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MessageA {
+            |  map<string, MessageB> maps = 1;
+            |  message MessageB {
+            |  }
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA")
         .exclude("MessageA#maps")
-        .build());
-    assertThat(pruned.getType("MessageA")).isNotNull();
-    assertThat(pruned.getField(ProtoMember.get("MessageA#maps"))).isNull();
+        .build())
+    assertThat(pruned.getType("MessageA")).isNotNull
+    assertThat(pruned.getField(ProtoMember.get("MessageA#maps"))).isNull()
   }
 
-  @Test public void retainTypeRetainsEnclosingButNotNested() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message A {\n"
-            + "  message B {\n"
-            + "    message C {\n"
-            + "    }\n"
-            + "  }\n"
-            + "  message D {\n"
-            + "  }\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainTypeRetainsEnclosingButNotNested() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message A {
+            |  message B {
+            |    message C {
+            |    }
+            |  }
+            |  message D {
+            |  }
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("A.B")
-        .build());
-    assertThat(pruned.getType("A")).isInstanceOf(EnclosingType.class);
-    assertThat(pruned.getType("A.B")).isInstanceOf(MessageType.class);
-    assertThat(pruned.getType("A.B.C")).isNull();
-    assertThat(pruned.getType("A.D")).isNull();
+        .build())
+    assertThat(pruned.getType("A")).isInstanceOf(EnclosingType::class.java)
+    assertThat(pruned.getType("A.B")).isInstanceOf(MessageType::class.java)
+    assertThat(pruned.getType("A.B.C")).isNull()
+    assertThat(pruned.getType("A.D")).isNull()
   }
 
-  @Test public void retainTypeRetainsFieldTypesTransitively() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  optional MessageB b = 1;\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "  map<string, MessageC> c = 1;\n"
-            + "}\n"
-            + "message MessageC {\n"
-            + "}\n"
-            + "message MessageD {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainTypeRetainsFieldTypesTransitively() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MessageA {
+            |  optional MessageB b = 1;
+            |}
+            |message MessageB {
+            |  map<string, MessageC> c = 1;
+            |}
+            |message MessageC {
+            |}
+            |message MessageD {
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA")
-        .build());
-    assertThat(pruned.getType("MessageA")).isNotNull();
-    assertThat(pruned.getType("MessageB")).isNotNull();
-    assertThat(pruned.getType("MessageC")).isNotNull();
-    assertThat(pruned.getType("MessageD")).isNull();
+        .build())
+    assertThat(pruned.getType("MessageA")).isNotNull
+    assertThat(pruned.getType("MessageB")).isNotNull
+    assertThat(pruned.getType("MessageC")).isNotNull
+    assertThat(pruned.getType("MessageD")).isNull()
   }
 
-  @Test public void retainRpcRetainsRequestAndResponseTypes() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message RequestA {\n"
-            + "}\n"
-            + "message ResponseA {\n"
-            + "}\n"
-            + "message RequestB {\n"
-            + "}\n"
-            + "message ResponseB {\n"
-            + "}\n"
-            + "service Service {\n"
-            + "  rpc CallA (RequestA) returns (ResponseA);\n"
-            + "  rpc CallB (RequestB) returns (ResponseB);\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainRpcRetainsRequestAndResponseTypes() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message RequestA {
+            |}
+            |message ResponseA {
+            |}
+            |message RequestB {
+            |}
+            |message ResponseB {
+            |}
+            |service Service {
+            |  rpc CallA (RequestA) returns (ResponseA);
+            |  rpc CallB (RequestB) returns (ResponseB);
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Service#CallA")
-        .build());
-    assertThat(pruned.getService("Service").rpc("CallA")).isNotNull();
-    assertThat(pruned.getType("RequestA")).isNotNull();
-    assertThat(pruned.getType("ResponseA")).isNotNull();
-    assertThat(pruned.getService("Service").rpc("CallB")).isNull();
-    assertThat(pruned.getType("RequestB")).isNull();
-    assertThat(pruned.getType("ResponseB")).isNull();
+        .build())
+    assertThat(pruned.getService("Service").rpc("CallA")).isNotNull
+    assertThat(pruned.getType("RequestA")).isNotNull
+    assertThat(pruned.getType("ResponseA")).isNotNull
+    assertThat(pruned.getService("Service").rpc("CallB")).isNull()
+    assertThat(pruned.getType("RequestB")).isNull()
+    assertThat(pruned.getType("ResponseB")).isNull()
   }
 
-  @Test public void retainField() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  optional string b = 1;\n"
-            + "  map<string, string> c = 2;\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainField() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MessageA {
+            |  optional string b = 1;
+            |  map<string, string> c = 2;
+            |}
+            |message MessageB {
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA#b")
-        .build());
-    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
-    assertThat(pruned.getType("MessageB")).isNull();
+        .build())
+    assertThat((pruned.getType("MessageA") as MessageType).field("b")).isNotNull
+    assertThat((pruned.getType("MessageA") as MessageType).field("c")).isNull()
+    assertThat(pruned.getType("MessageB")).isNull()
   }
 
-  @Test public void retainFieldRetainsFieldTypesTransitively() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  optional MessageB b = 1;\n"
-            + "  optional MessageD d = 2;\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "  optional MessageC c = 1;\n"
-            + "}\n"
-            + "message MessageC {\n"
-            + "}\n"
-            + "message MessageD {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainFieldRetainsFieldTypesTransitively() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MessageA {
+            |  optional MessageB b = 1;
+            |  optional MessageD d = 2;
+            |}
+            |message MessageB {
+            |  optional MessageC c = 1;
+            |}
+            |message MessageC {
+            |}
+            |message MessageD {
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA#b")
-        .build());
-    assertThat(pruned.getType("MessageA")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("d")).isNull();
-    assertThat(pruned.getType("MessageB")).isNotNull();
-    assertThat(pruned.getType("MessageC")).isNotNull();
-    assertThat(pruned.getType("MessageD")).isNull();
+        .build())
+    assertThat(pruned.getType("MessageA")).isNotNull
+    assertThat((pruned.getType("MessageA") as MessageType).field("b")).isNotNull
+    assertThat((pruned.getType("MessageA") as MessageType).field("d")).isNull()
+    assertThat(pruned.getType("MessageB")).isNotNull
+    assertThat(pruned.getType("MessageC")).isNotNull
+    assertThat(pruned.getType("MessageD")).isNull()
   }
 
-  @Test public void retainFieldPrunesOneOf() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message Message {\n"
-            + "  oneof selection {\n"
-            + "    string a = 1;\n"
-            + "    string b = 2;\n"
-            + "  }\n"
-            + "  optional string c = 3;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainFieldPrunesOneOf() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message Message {
+            |  oneof selection {
+            |    string a = 1;
+            |    string b = 2;
+            |  }
+            |  optional string c = 3;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message#c")
-        .build());
-    assertThat(((MessageType) pruned.getType("Message")).oneOfs()).isEmpty();
+        .build())
+    assertThat((pruned.getType("Message") as MessageType).oneOfs()).isEmpty()
   }
 
-  @Test public void retainFieldRetainsOneOf() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message Message {\n"
-            + "  oneof selection {\n"
-            + "    string a = 1;\n"
-            + "    string b = 2;\n"
-            + "  }\n"
-            + "  optional string c = 3;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainFieldRetainsOneOf() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message Message {
+            |  oneof selection {
+            |    string a = 1;
+            |    string b = 2;
+            |  }
+            |  optional string c = 3;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message#b")
-        .build());
-    MessageType message = (MessageType) pruned.getType("Message");
-    OneOf onlyOneOf = getOnlyElement(message.oneOfs());
-    assertThat(onlyOneOf.name()).isEqualTo("selection");
-    assertThat(getOnlyElement(onlyOneOf.fields()).name()).isEqualTo("b");
-    assertThat(message.field("a")).isNull();
-    assertThat(message.field("c")).isNull();
+        .build())
+    val message = pruned.getType("Message") as MessageType
+    val onlyOneOf = getOnlyElement(message.oneOfs())
+    assertThat(onlyOneOf.name()).isEqualTo("selection")
+    assertThat(getOnlyElement(onlyOneOf.fields()).name()).isEqualTo("b")
+    assertThat(message.field("a")).isNull()
+    assertThat(message.field("c")).isNull()
   }
 
-  @Test public void typeWithRetainedMembersOnlyHasThoseMembersRetained() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  optional MessageB b = 1;\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "  optional MessageC c = 1;\n"
-            + "  optional MessageD d = 2;\n"
-            + "}\n"
-            + "message MessageC {\n"
-            + "}\n"
-            + "message MessageD {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun typeWithRetainedMembersOnlyHasThoseMembersRetained() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MessageA {
+            |  optional MessageB b = 1;
+            |}
+            |message MessageB {
+            |  optional MessageC c = 1;
+            |  optional MessageD d = 2;
+            |}
+            |message MessageC {
+            |}
+            |message MessageD {
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA#b")
         .include("MessageB#c")
-        .build());
-    assertThat(pruned.getType("MessageA")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
-    assertThat(pruned.getType("MessageB")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageB")).field("c")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageB")).field("d")).isNull();
-    assertThat(pruned.getType("MessageC")).isNotNull();
-    assertThat(pruned.getType("MessageD")).isNull();
+        .build())
+    assertThat(pruned.getType("MessageA")).isNotNull
+    assertThat((pruned.getType("MessageA") as MessageType).field("b")).isNotNull
+    assertThat(pruned.getType("MessageB")).isNotNull
+    assertThat((pruned.getType("MessageB") as MessageType).field("c")).isNotNull
+    assertThat((pruned.getType("MessageB") as MessageType).field("d")).isNull()
+    assertThat(pruned.getType("MessageC")).isNotNull
+    assertThat(pruned.getType("MessageD")).isNull()
   }
 
-  @Test public void retainEnumConstant() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "enum Roshambo {\n"
-            + "  ROCK = 0;\n"
-            + "  SCISSORS = 1;\n"
-            + "  PAPER = 2;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainEnumConstant() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |enum Roshambo {
+            |  ROCK = 0;
+            |  SCISSORS = 1;
+            |  PAPER = 2;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Roshambo#SCISSORS")
-        .build());
-    assertThat(((EnumType) pruned.getType("Roshambo")).constant("ROCK")).isNull();
-    assertThat(((EnumType) pruned.getType("Roshambo")).constant("SCISSORS")).isNotNull();
-    assertThat(((EnumType) pruned.getType("Roshambo")).constant("PAPER")).isNull();
+        .build())
+    assertThat((pruned.getType("Roshambo") as EnumType).constant("ROCK")).isNull()
+    assertThat((pruned.getType("Roshambo") as EnumType).constant("SCISSORS")).isNotNull
+    assertThat((pruned.getType("Roshambo") as EnumType).constant("PAPER")).isNull()
   }
 
-  @Test public void enumWithRetainedConstantHasThatConstantRetained() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message Message {\n"
-            + "  optional Roshambo roshambo = 1;\n"
-            + "}\n"
-            + "enum Roshambo {\n"
-            + "  ROCK = 0;\n"
-            + "  SCISSORS = 1;\n"
-            + "  PAPER = 2;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun enumWithRetainedConstantHasThatConstantRetained() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message Message {
+            |  optional Roshambo roshambo = 1;
+            |}
+            |enum Roshambo {
+            |  ROCK = 0;
+            |  SCISSORS = 1;
+            |  PAPER = 2;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message")
         .include("Roshambo#SCISSORS")
-        .build());
-    assertThat(pruned.getType("Message")).isNotNull();
-    assertThat(((MessageType) pruned.getType("Message")).field("roshambo")).isNotNull();
-    assertThat(pruned.getType("Roshambo")).isNotNull();
-    assertThat(((EnumType) pruned.getType("Roshambo")).constant("ROCK")).isNull();
-    assertThat(((EnumType) pruned.getType("Roshambo")).constant("SCISSORS")).isNotNull();
-    assertThat(((EnumType) pruned.getType("Roshambo")).constant("PAPER")).isNull();
+        .build())
+    assertThat(pruned.getType("Message")).isNotNull
+    assertThat((pruned.getType("Message") as MessageType).field("roshambo")).isNotNull
+    assertThat(pruned.getType("Roshambo")).isNotNull
+    assertThat((pruned.getType("Roshambo") as EnumType).constant("ROCK")).isNull()
+    assertThat((pruned.getType("Roshambo") as EnumType).constant("SCISSORS")).isNotNull
+    assertThat((pruned.getType("Roshambo") as EnumType).constant("PAPER")).isNull()
   }
 
-  @Test public void retainedOptionRetainsOptionsType() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional string a = 22001;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [a = \"a\"];\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainedOptionRetainsOptionsType() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |import "google/protobuf/descriptor.proto";
+            |extend google.protobuf.FieldOptions {
+            |  optional string a = 22001;
+            |}
+            |message Message {
+            |  optional string f = 1 [a = "a"];
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message#f")
-        .build());
-    assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
-    assertThat(((MessageType) pruned.getType("google.protobuf.FieldOptions"))).isNotNull();
+        .build())
+    assertThat((pruned.getType("Message") as MessageType).field("f")).isNotNull
+    assertThat(pruned.getType("google.protobuf.FieldOptions") as MessageType).isNotNull
   }
 
-  @Test public void prunedOptionDoesNotRetainOptionsType() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional string a = 22001;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [a = \"a\"];\n"
-            + "  optional string g = 2;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun prunedOptionDoesNotRetainOptionsType() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+              |import "google/protobuf/descriptor.proto";
+              |extend google.protobuf.FieldOptions {
+              |  optional string a = 22001;
+              |}
+              |message Message {
+              |  optional string f = 1 [a = "a"];
+              |  optional string g = 2;
+              |}
+              """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message#g")
-        .build());
-    assertThat(((MessageType) pruned.getType("google.protobuf.FieldOptions"))).isNull();
+        .build())
+    assertThat(pruned.getType("google.protobuf.FieldOptions") as MessageType?).isNull()
   }
 
-  @Test public void optionRetainsField() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "message SomeFieldOptions {\n"
-            + "  optional string a = 1;\n" // Retained via option use.
-            + "  optional string b = 2;\n" // Retained explicitly.
-            + "  optional string c = 3;\n" // Should be pruned.
-            + "}\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional SomeFieldOptions some_field_options = 22001;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [some_field_options.a = \"a\"];\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun optionRetainsField() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |message SomeFieldOptions {
+             |  optional string a = 1; // Retained via option use.
+             |  optional string b = 2; // Retained explicitly.
+             |  optional string c = 3; // Should be pruned.
+             |}
+             |extend google.protobuf.FieldOptions {
+             |  optional SomeFieldOptions some_field_options = 22001;
+             |}
+             |message Message {
+             |  optional string f = 1 [some_field_options.a = "a"];
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message")
         .include("SomeFieldOptions#b")
-        .build());
-    assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
-    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("a")).isNotNull();
-    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("b")).isNotNull();
-    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("c")).isNull();
+        .build())
+    assertThat((pruned.getType("Message") as MessageType).field("f")).isNotNull
+    assertThat((pruned.getType("SomeFieldOptions") as MessageType).field("a")).isNotNull
+    assertThat((pruned.getType("SomeFieldOptions") as MessageType).field("b")).isNotNull
+    assertThat((pruned.getType("SomeFieldOptions") as MessageType).field("c")).isNull()
   }
 
-  @Test public void optionRetainsType() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "message SomeFieldOptions {\n"
-            + "  optional string a = 1;\n" // Retained via option use.
-            + "  optional string b = 2;\n" // Retained because 'a' is retained.
-            + "  optional string c = 3;\n" // Retained because 'a' is retained.
-            + "}\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional SomeFieldOptions some_field_options = 22001;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [some_field_options.a = \"a\"];\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun optionRetainsType() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |message SomeFieldOptions {
+             |  optional string a = 1; // Retained via option use.
+             |  optional string b = 2; // Retained because 'a' is retained.
+             |  optional string c = 3; // Retained because 'a' is retained.
+             |}
+             |extend google.protobuf.FieldOptions {
+             |  optional SomeFieldOptions some_field_options = 22001;
+             |}
+             |message Message {
+             |  optional string f = 1 [some_field_options.a = "a"];
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message")
-        .build());
-    assertThat(((MessageType) pruned.getType("Message")).field("f")).isNotNull();
-    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("a")).isNotNull();
-    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("b")).isNotNull();
-    assertThat(((MessageType) pruned.getType("SomeFieldOptions")).field("c")).isNotNull();
+        .build())
+    assertThat((pruned.getType("Message") as MessageType).field("f")).isNotNull
+    assertThat((pruned.getType("SomeFieldOptions") as MessageType).field("a")).isNotNull
+    assertThat((pruned.getType("SomeFieldOptions") as MessageType).field("b")).isNotNull
+    assertThat((pruned.getType("SomeFieldOptions") as MessageType).field("c")).isNotNull
   }
 
-  @Test public void retainExtension() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message Message {\n"
-            + "  optional string a = 1;\n"
-            + "}\n"
-            + "extend Message {\n"
-            + "  optional string b = 2;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainExtension() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |message Message {
+             |  optional string a = 1;
+             |}
+             |extend Message {
+             |  optional string b = 2;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message")
-        .build());
-    assertThat(((MessageType) pruned.getType("Message")).field("a")).isNotNull();
-    assertThat(((MessageType) pruned.getType("Message")).extensionField("b")).isNotNull();
+        .build())
+    assertThat((pruned.getType("Message") as MessageType).field("a")).isNotNull
+    assertThat((pruned.getType("Message") as MessageType).extensionField("b")).isNotNull
   }
 
-  @Test public void retainExtensionMembers() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message Message {\n"
-            + "  optional string a = 1;\n"
-            + "  optional string b = 2;\n"
-            + "}\n"
-            + "extend Message {\n"
-            + "  optional string c = 3;\n"
-            + "  optional string d = 4;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun retainExtensionMembers() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |message Message {
+             |  optional string a = 1;
+             |  optional string b = 2;
+             |}
+             |extend Message {
+             |  optional string c = 3;
+             |  optional string d = 4;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Message#a")
         .include("Message#c")
-        .build());
-    assertThat(((MessageType) pruned.getType("Message")).field("a")).isNotNull();
-    assertThat(((MessageType) pruned.getType("Message")).field("b")).isNull();
-    assertThat(((MessageType) pruned.getType("Message")).extensionField("c")).isNotNull();
-    assertThat(((MessageType) pruned.getType("Message")).extensionField("d")).isNull();
+        .build())
+    assertThat((pruned.getType("Message") as MessageType).field("a")).isNotNull
+    assertThat((pruned.getType("Message") as MessageType).field("b")).isNull()
+    assertThat((pruned.getType("Message") as MessageType).extensionField("c")).isNotNull
+    assertThat((pruned.getType("Message") as MessageType).extensionField("d")).isNull()
   }
 
-  /** When we include excludes only, the mark phase is skipped. */
-  @Test public void excludeWithoutInclude() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  optional string b = 1;\n"
-            + "  optional string c = 2;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  /** When we include excludes only, the mark phase is skipped.  */
+  @Test
+  fun excludeWithoutInclude() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |message MessageA {
+             |  optional string b = 1;
+             |  optional string c = 2;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("MessageA#c")
-        .build());
-    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+        .build())
+    assertThat((pruned.getType("MessageA") as MessageType).field("b")).isNotNull
+    assertThat((pruned.getType("MessageA") as MessageType).field("c")).isNull()
   }
 
-  @Test public void excludeField() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  optional string b = 1;\n"
-            + "  optional string c = 2;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeField() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |message MessageA {
+             |  optional string b = 1;
+             |  optional string c = 2;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA")
         .exclude("MessageA#c")
-        .build());
-    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+        .build())
+    assertThat((pruned.getType("MessageA") as MessageType).field("b")).isNotNull
+    assertThat((pruned.getType("MessageA") as MessageType).field("c")).isNull()
   }
 
-  @Test public void excludeTypeExcludesField() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "message MessageA {\n"
-            + "  optional MessageB b = 1;\n"
-            + "  map<string, MessageC> c = 2;\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "}\n"
-            + "message MessageC {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeTypeExcludesField() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |message MessageA {
+             |  optional MessageB b = 1;
+             |  map<string, MessageC> c = 2;
+             |}
+             |message MessageB {
+             |}
+             |message MessageC {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA")
         .exclude("MessageC")
-        .build());
-    assertThat(pruned.getType("MessageB")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
-    assertThat(pruned.getType("MessageC")).isNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
+        .build())
+    assertThat(pruned.getType("MessageB")).isNotNull
+    assertThat((pruned.getType("MessageA") as MessageType).field("b")).isNotNull
+    assertThat(pruned.getType("MessageC")).isNull()
+    assertThat((pruned.getType("MessageA") as MessageType).field("c")).isNull()
   }
 
-  @Test public void excludeTypeExcludesRpc() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "service ServiceA {\n"
-            + "  rpc CallB (MessageB) returns (MessageB);\n"
-            + "  rpc CallC (MessageC) returns (MessageC);\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "}\n"
-            + "message MessageC {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeTypeExcludesRpc() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |service ServiceA {
+             |  rpc CallB (MessageB) returns (MessageB);
+             |  rpc CallC (MessageC) returns (MessageC);
+             |}
+             |message MessageB {
+             |}
+             |message MessageC {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("ServiceA")
         .exclude("MessageC")
-        .build());
-    assertThat(pruned.getType("MessageB")).isNotNull();
-    assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull();
-    assertThat(pruned.getType("MessageC")).isNull();
-    assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull();
+        .build())
+    assertThat(pruned.getType("MessageB")).isNotNull
+    assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull
+    assertThat(pruned.getType("MessageC")).isNull()
+    assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull()
   }
 
-  @Test public void excludeRpcExcludesTypes() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "service ServiceA {\n"
-            + "  rpc CallB (MessageB) returns (MessageB);\n"
-            + "  rpc CallC (MessageC) returns (MessageC);\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "}\n"
-            + "message MessageC {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeRpcExcludesTypes() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |service ServiceA {
+             |  rpc CallB (MessageB) returns (MessageB);
+             |  rpc CallC (MessageC) returns (MessageC);
+             |}
+             |message MessageB {
+             |}
+             |message MessageC {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("ServiceA")
         .exclude("ServiceA#CallC")
-        .build());
-    assertThat(pruned.getType("MessageB")).isNotNull();
-    assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull();
-    assertThat(pruned.getType("MessageC")).isNull();
-    assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull();
+        .build())
+    assertThat(pruned.getType("MessageB")).isNotNull
+    assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull
+    assertThat(pruned.getType("MessageC")).isNull()
+    assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull()
   }
 
-  @Test public void excludeFieldExcludesTypes() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "message MessageA {\n"
-            + "  optional MessageB b = 1;\n"
-            + "  optional MessageC c = 2;\n"
-            + "  map<string, MessageD> d = 3;\n"
-            + "}\n"
-            + "message MessageB {\n"
-            + "}\n"
-            + "message MessageC {\n"
-            + "}\n"
-            + "message MessageD {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeFieldExcludesTypes() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |message MessageA {
+             |  optional MessageB b = 1;
+             |  optional MessageC c = 2;
+             |  map<string, MessageD> d = 3;
+             |}
+             |message MessageB {
+             |}
+             |message MessageC {
+             |}
+             |message MessageD {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("MessageA")
         .exclude("MessageA#c")
         .exclude("MessageA#d")
-        .build());
-    assertThat(((MessageType) pruned.getType("MessageA")).field("b")).isNotNull();
-    assertThat(pruned.getType("MessageB")).isNotNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("c")).isNull();
-    assertThat(pruned.getType("MessageC")).isNull();
-    assertThat(((MessageType) pruned.getType("MessageA")).field("d")).isNull();
-    assertThat(pruned.getType("MessageD")).isNull();
+        .build())
+    assertThat((pruned.getType("MessageA") as MessageType).field("b")).isNotNull
+    assertThat(pruned.getType("MessageB")).isNotNull
+    assertThat((pruned.getType("MessageA") as MessageType).field("c")).isNull()
+    assertThat(pruned.getType("MessageC")).isNull()
+    assertThat((pruned.getType("MessageA") as MessageType).field("d")).isNull()
+    assertThat(pruned.getType("MessageD")).isNull()
   }
 
-  @Test public void excludeEnumExcludesOptions() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "enum Enum {\n"
-            + "  A = 0;\n"
-            + "  B = 1  [message.c = 1];\n"
-            + "}\n"
-            + "extend google.protobuf.EnumValueOptions {\n"
-            + "  optional Message message = 70000;\n"
-            + "};\n"
-            + "message Message {\n"
-            + "  optional int32 c = 1;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeEnumExcludesOptions() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+              |import "google/protobuf/descriptor.proto";
+              |enum Enum {
+              |  A = 0;
+              |  B = 1  [message.c = 1];
+              |}
+              |extend google.protobuf.EnumValueOptions {
+              |  optional Message message = 70000;
+              |};
+              |message Message {
+              |  optional int32 c = 1;
+              |}
+              """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("Enum")
         .exclude("Enum#B")
-        .build());
-    assertThat(((EnumType) pruned.getType("Enum")).constant("A")).isNotNull();
-    assertThat(((EnumType) pruned.getType("Enum")).constant("B")).isNull();
-    assertThat(pruned.getType("Message")).isNull();
+        .build())
+    assertThat((pruned.getType("Enum") as EnumType).constant("A")).isNotNull
+    assertThat((pruned.getType("Enum") as EnumType).constant("B")).isNull()
+    assertThat(pruned.getType("Message")).isNull()
   }
 
-  @Test public void excludedFieldPrunesTopLevelOption() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional string a = 22001;\n"
-            + "  optional string b = 22002;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [a = \"a\", b = \"b\"];\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludedFieldPrunesTopLevelOption() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+              |import "google/protobuf/descriptor.proto";
+              |extend google.protobuf.FieldOptions {
+              |  optional string a = 22001;
+              |  optional string b = 22002;
+              |}
+              |message Message {
+              |  optional string f = 1 [a = "a", b = "b"];
+              |}
+              """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("google.protobuf.FieldOptions#b")
-        .build());
-    Field field = ((MessageType) pruned.getType("Message")).field("f");
-    assertThat(field.options().get(ProtoMember.get(FIELD_OPTIONS, "a"))).isEqualTo("a");
-    assertThat(field.options().get(ProtoMember.get(FIELD_OPTIONS, "b"))).isNull();
+        .build())
+    val field = (pruned.getType("Message") as MessageType).field("f")!!
+    assertThat(field.options().get(ProtoMember.get(FIELD_OPTIONS, "a"))).isEqualTo("a")
+    assertThat(field.options().get(ProtoMember.get(FIELD_OPTIONS, "b"))).isNull()
   }
 
-  @Test public void excludedTypePrunesTopLevelOption() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "message SomeFieldOptions {\n"
-            + "  optional string a = 1;\n"
-            + "}\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional SomeFieldOptions some_field_options = 22001;\n"
-            + "  optional string b = 22002;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [some_field_options.a = \"a\", b = \"b\"];\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludedTypePrunesTopLevelOption() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+              |import "google/protobuf/descriptor.proto";
+              |message SomeFieldOptions {
+              |  optional string a = 1;
+              |}
+              |extend google.protobuf.FieldOptions {
+              |  optional SomeFieldOptions some_field_options = 22001;
+              |  optional string b = 22002;
+              |}
+              |message Message {
+              |  optional string f = 1 [some_field_options.a = "a", b = "b"];
+              |}
+              """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("SomeFieldOptions")
-        .build());
-    Field field = ((MessageType) pruned.getType("Message")).field("f");
-    Map<ProtoMember, Object> map = field.options().map();
-    Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
-    assertThat(((ProtoMember) onlyOption.getKey()).member()).isEqualTo("b");
-    assertThat(onlyOption.getValue()).isEqualTo("b");
+        .build())
+    val field = (pruned.getType("Message") as MessageType).field("f")
+    val map = field!!.options().map()
+    val onlyOption = getOnlyElement(map.entries)
+    assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("b")
+    assertThat(onlyOption.value).isEqualTo("b")
   }
 
-  @Test public void excludedFieldPrunesNestedOption() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "message SomeFieldOptions {\n"
-            + "  optional string a = 1;\n"
-            + "  optional string b = 2;\n"
-            + "}\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional SomeFieldOptions some_field_options = 22001;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [some_field_options = { a: \"a\", b: \"b\" }];\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludedFieldPrunesNestedOption() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |message SomeFieldOptions {
+             |  optional string a = 1;
+             |  optional string b = 2;
+             |}
+             |extend google.protobuf.FieldOptions {
+             |  optional SomeFieldOptions some_field_options = 22001;
+             |}
+             |message Message {
+             |  optional string f = 1 [some_field_options = { a: "a", b: "b" }];
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("SomeFieldOptions#b")
-        .build());
-    Field field = ((MessageType) pruned.getType("Message")).field("f");
-    Map<?, ?> map = (Map<?, ?>) field.options().get(
-        ProtoMember.get(FIELD_OPTIONS, "some_field_options"));
-    Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
-    assertThat(((ProtoMember) onlyOption.getKey()).member()).isEqualTo("a");
-    assertThat(onlyOption.getValue()).isEqualTo("a");
+        .build())
+    val field = (pruned.getType("Message") as MessageType).field("f")
+    val map = field!!.options().get(
+        ProtoMember.get(FIELD_OPTIONS, "some_field_options")) as Map<*, *>
+    val onlyOption = getOnlyElement(map.entries)
+    assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("a")
+    assertThat(onlyOption.value).isEqualTo("a")
   }
 
-  @Test public void excludedTypePrunesNestedOption() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "message SomeFieldOptions {\n"
-            + "  optional Dimensions dimensions = 1;\n"
-            + "}\n"
-            + "message Dimensions {\n"
-            + "  optional string length = 1;\n"
-            + "  optional string width = 2;\n"
-            + "}\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional SomeFieldOptions some_field_options = 22001;\n"
-            + "  optional string b = 22002;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [\n"
-            + "      some_field_options = {\n"
-            + "          dimensions: { length: \"100\" }\n"
-            + "      },\n"
-            + "      b = \"b\"\n"
-            + "  ];\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludedTypePrunesNestedOption() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |message SomeFieldOptions {
+             |  optional Dimensions dimensions = 1;
+             |}
+             |message Dimensions {
+             |  optional string length = 1;
+             |  optional string width = 2;
+             |}
+             |extend google.protobuf.FieldOptions {
+             |  optional SomeFieldOptions some_field_options = 22001;
+             |  optional string b = 22002;
+             |}
+             |message Message {
+             |  optional string f = 1 [
+             |      some_field_options = {
+             |          dimensions: { length: "100" }
+             |      },
+             |      b = "b"
+             |  ];
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("Dimensions")
-        .build());
-    Field field = ((MessageType) pruned.getType("Message")).field("f");
-    Map<ProtoMember, Object> map = field.options().map();
-    Map.Entry<?, ?> onlyOption = getOnlyElement(map.entrySet());
-    assertThat(((ProtoMember) onlyOption.getKey()).member()).isEqualTo("b");
-    assertThat(onlyOption.getValue()).isEqualTo("b");
+        .build())
+    val field = (pruned.getType("Message") as MessageType).field("f")
+    val map = field!!.options().map()
+    val onlyOption = getOnlyElement(map.entries)
+    assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("b")
+    assertThat(onlyOption.value).isEqualTo("b")
   }
 
-  @Test public void excludeOptions() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "extend google.protobuf.FieldOptions {\n"
-            + "  optional string a = 22001;\n"
-            + "  optional string b = 22002;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  optional string f = 1 [ a = \"a\", b = \"b\" ];\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeOptions() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |extend google.protobuf.FieldOptions {
+             |  optional string a = 22001;
+             |  optional string b = 22002;
+             |}
+             |message Message {
+             |  optional string f = 1 [ a = "a", b = "b" ];
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("google.protobuf.FieldOptions")
-        .build());
-    Field field = ((MessageType) pruned.getType("Message")).field("f");
-    assertThat(field.options().map()).isEmpty();
+        .build())
+    val field = (pruned.getType("Message") as MessageType).field("f")
+    assertThat(field!!.options().map()).isEmpty()
   }
 
-  @Test public void excludeRepeatedOptions() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("service.proto", ""
-            + "import \"google/protobuf/descriptor.proto\";\n"
-            + "extend google.protobuf.MessageOptions {\n"
-            + "  repeated string a = 22001;\n"
-            + "  repeated string b = 22002;\n"
-            + "}\n"
-            + "message Message {\n"
-            + "  option (a) = \"a1\";\n"
-            + "  option (a) = \"a2\";\n"
-            + "  option (b) = \"b1\";\n"
-            + "  option (b) = \"b2\";\n"
-            + "  optional string f = 1;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludeRepeatedOptions() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |extend google.protobuf.MessageOptions {
+             |  repeated string a = 22001;
+             |  repeated string b = 22002;
+             |}
+             |message Message {
+             |  option (a) = "a1";
+             |  option (a) = "a2";
+             |  option (b) = "b1";
+             |  option (b) = "b2";
+             |  optional string f = 1;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("google.protobuf.MessageOptions#a")
-        .build());
-    MessageType message = (MessageType) pruned.getType("Message");
-    assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "a"))).isNull();
+        .build())
+    val message = pruned.getType("Message") as MessageType
+    assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "a"))).isNull()
     assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "b")))
-        .isEqualTo(ImmutableList.of("b1", "b2"));
+        .isEqualTo(ImmutableList.of("b1", "b2"))
   }
 
-  @Test public void includePackage() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a/b/messages.proto", ""
-            + "package a.b;\n"
-            + "message MessageAB {\n"
-            + "}\n")
-        .add("a/c/messages.proto", ""
-            + "package a.c;\n"
-            + "message MessageAC {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun includePackage() {
+    val schema = RepoBuilder()
+        .add("a/b/messages.proto", """
+             |package a.b;
+             |message MessageAB {
+             |}
+             """.trimMargin()
+        )
+        .add("a/c/messages.proto", """
+             |package a.c;
+             |message MessageAC {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .include("a.b.*")
-        .build());
-    assertThat(pruned.getType("a.b.MessageAB")).isNotNull();
-    assertThat(pruned.getType("a.c.MessageAC")).isNull();
+        .build())
+    assertThat(pruned.getType("a.b.MessageAB")).isNotNull
+    assertThat(pruned.getType("a.c.MessageAC")).isNull()
   }
 
-  @Test public void excludePackage() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("a/b/messages.proto", ""
-            + "package a.b;\n"
-            + "message MessageAB {\n"
-            + "}\n")
-        .add("a/c/messages.proto", ""
-            + "package a.c;\n"
-            + "message MessageAC {\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun excludePackage() {
+    val schema = RepoBuilder()
+        .add("a/b/messages.proto", """
+             |package a.b;
+             |message MessageAB {
+             |}
+             """.trimMargin()
+        )
+        .add("a/c/messages.proto", """
+             |package a.c;
+             |message MessageAC {
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("a.c.*")
-        .build());
-    assertThat(pruned.getType("a.b.MessageAB")).isNotNull();
-    assertThat(pruned.getType("a.c.MessageAC")).isNull();
+        .build())
+    assertThat(pruned.getType("a.b.MessageAB")).isNotNull
+    assertThat(pruned.getType("a.c.MessageAC")).isNull()
   }
 
-  @Test public void specialOptionsNotPruned() throws Exception {
-    Schema schema = new RepoBuilder()
-        .add("message.proto", ""
-            + "option java_package = \"p\";\n"
-            + "\n"
-            + "message Message {\n"
-            + "  optional int32 a = 1 [packed = true, deprecated = true, default = 5];\n"
-            + "}\n"
-            + "enum Enum {\n"
-            + "  option allow_alias = true;\n"
-            + "  A = 1;\n"
-            + "  B = 1;\n"
-            + "}\n")
-        .schema();
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+  @Test
+  fun specialOptionsNotPruned() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |option java_package = "p";
+             |
+             |message Message {
+             |  optional int32 a = 1 [packed = true, deprecated = true, default = 5];
+             |}
+             |enum Enum {
+             |  option allow_alias = true;
+             |  A = 1;
+             |  B = 1;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
         .exclude("google.protobuf.*")
-        .build());
-    ProtoFile protoFile = pruned.protoFile("message.proto");
-    assertThat(protoFile.javaPackage()).isEqualTo("p");
+        .build())
+    val protoFile = pruned.protoFile("message.proto")
+    assertThat(protoFile!!.javaPackage()).isEqualTo("p")
 
-    MessageType message = (MessageType) pruned.getType("Message");
-    Field field = message.field("a");
-    assertThat(field.getDefault()).isEqualTo("5");
-    assertThat(field.isDeprecated()).isTrue();
-    assertThat(field.isPacked()).isTrue();
+    val message = pruned.getType("Message") as MessageType
+    val field = message.field("a")
+    assertThat(field!!.default).isEqualTo("5")
+    assertThat(field.isDeprecated).isTrue()
+    assertThat(field.isPacked).isTrue()
 
-    EnumType enumType = (EnumType) pruned.getType("Enum");
-    assertThat(enumType.allowAlias()).isTrue();
+    val enumType = pruned.getType("Enum") as EnumType
+    assertThat(enumType.allowAlias()).isTrue()
   }
 }

@@ -13,31 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal;
+package com.squareup.wire.schema.internal
 
-import org.junit.Test;
+import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.Util.appendIndented
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
-import static org.assertj.core.api.Assertions.assertThat;
-
-public final class UtilTest {
-  @Test public void indentationTest() {
-    String input = "Foo\nBar\nBaz";
-    String expected = "  Foo\n  Bar\n  Baz\n";
-    StringBuilder builder = new StringBuilder();
-    appendIndented(builder, input);
-    assertThat(builder.toString()).isEqualTo(expected);
+class UtilTest {
+  @Test
+  fun indentationTest() {
+    val input = """
+        |Foo
+        |Bar
+        |Baz""".trimMargin()
+    val expected = """
+        |  Foo
+        |  Bar
+        |  Baz
+        |""".trimMargin()
+    val actual = buildString {
+      appendIndented(this, input)
+    }
+    assertThat(actual).isEqualTo(expected)
   }
 
-  @Test public void documentationTest() {
-    String input = "Foo\nBar\nBaz";
-    String expected = ""
-        + "// Foo\n"
-        + "// Bar\n"
-        + "// Baz\n";
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, input);
-    assertThat(builder.toString()).isEqualTo(expected);
+  @Test
+  fun documentationTest() {
+    val input = "Foo\nBar\nBaz"
+    val expected = """
+        |// Foo
+        |// Bar
+        |// Baz
+        |""".trimMargin()
+    val actual = buildString {
+      appendDocumentation(this, input)
+    }
+    assertThat(actual).isEqualTo(expected)
   }
 }

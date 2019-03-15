@@ -13,107 +13,120 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import org.junit.Test;
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.fail
+import org.junit.Test
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-
-public final class ProtoTypeTest {
-  @Test public void get() throws Exception {
-    assertThat(ProtoType.get("int32")).isSameAs(ProtoType.INT32);
-    assertThat(ProtoType.get("Person")).isEqualTo(ProtoType.get("Person"));
+class ProtoTypeTest {
+  @Test
+  fun get() {
+    assertThat(ProtoType.get("int32")).isSameAs(ProtoType.INT32)
+    assertThat(ProtoType.get("Person")).isEqualTo(ProtoType.get("Person"))
     assertThat(ProtoType.get("squareup.protos.person", "Person"))
-        .isEqualTo(ProtoType.get("squareup.protos.person.Person"));
+        .isEqualTo(ProtoType.get("squareup.protos.person.Person"))
   }
 
-  @Test public void simpleName() throws Exception {
-    ProtoType person = ProtoType.get("squareup.protos.person.Person");
-    assertThat(person.simpleName()).isEqualTo("Person");
+  @Test
+  fun simpleName() {
+    val person = ProtoType.get("squareup.protos.person.Person")
+    assertThat(person.simpleName()).isEqualTo("Person")
   }
 
-  @Test public void scalarToString() throws Exception {
-    assertThat(ProtoType.INT32.toString()).isEqualTo("int32");
-    assertThat(ProtoType.STRING.toString()).isEqualTo("string");
-    assertThat(ProtoType.BYTES.toString()).isEqualTo("bytes");
+  @Test
+  fun scalarToString() {
+    assertThat(ProtoType.INT32.toString()).isEqualTo("int32")
+    assertThat(ProtoType.STRING.toString()).isEqualTo("string")
+    assertThat(ProtoType.BYTES.toString()).isEqualTo("bytes")
   }
 
-  @Test public void nestedType() throws Exception {
+  @Test
+  fun nestedType() {
     assertThat(ProtoType.get("squareup.protos.person.Person").nestedType("PhoneType"))
-        .isEqualTo(ProtoType.get("squareup.protos.person.Person.PhoneType"));
+        .isEqualTo(ProtoType.get("squareup.protos.person.Person.PhoneType"))
   }
 
-  @Test public void primitivesCannotNest() throws Exception {
+  @Test
+  fun primitivesCannotNest() {
     try {
-      ProtoType.INT32.nestedType("PhoneType");
-      fail();
-    } catch (UnsupportedOperationException expected) {
+      ProtoType.INT32.nestedType("PhoneType")
+      fail()
+    } catch (expected: UnsupportedOperationException) {
     }
   }
 
-  @Test public void mapsCannotNest() throws Exception {
+  @Test
+  fun mapsCannotNest() {
     try {
-      ProtoType.get("map<string, string>").nestedType("PhoneType");
-      fail();
-    } catch (UnsupportedOperationException expected) {
+      ProtoType.get("map<string, string>").nestedType("PhoneType")
+      fail()
+    } catch (expected: UnsupportedOperationException) {
     }
   }
 
-  @Test public void mapFormat() throws Exception {
+  @Test
+  fun mapFormat() {
     try {
-      ProtoType.get("map<string>");
-      fail();
-    } catch (IllegalArgumentException e) {
-      assertThat(e).hasMessage("expected ',' in map type: map<string>");
+      ProtoType.get("map<string>")
+      fail()
+    } catch (e: IllegalArgumentException) {
+      assertThat(e).hasMessage("expected ',' in map type: map<string>")
     }
   }
 
-  @Test public void mapKeyScalarType() throws Exception {
+  @Test
+  fun mapKeyScalarType() {
     try {
-      ProtoType.get("map<bytes, string>");
-      fail();
-    } catch (IllegalArgumentException expected) {
+      ProtoType.get("map<bytes, string>")
+      fail()
+    } catch (expected: IllegalArgumentException) {
     }
+
     try {
-      ProtoType.get("map<double, string>");
-      fail();
-    } catch (IllegalArgumentException expected) {
+      ProtoType.get("map<double, string>")
+      fail()
+    } catch (expected: IllegalArgumentException) {
     }
+
     try {
-      ProtoType.get("map<float, string>");
-      fail();
-    } catch (IllegalArgumentException expected) {
+      ProtoType.get("map<float, string>")
+      fail()
+    } catch (expected: IllegalArgumentException) {
     }
+
     try {
-      ProtoType.get("map<some.Message, string>");
-      fail();
-    } catch (IllegalArgumentException expected) {
+      ProtoType.get("map<some.Message, string>")
+      fail()
+    } catch (expected: IllegalArgumentException) {
     }
   }
 
-  @Test public void messageToString() throws Exception {
-    ProtoType person = ProtoType.get("squareup.protos.person.Person");
-    assertThat(person.toString()).isEqualTo("squareup.protos.person.Person");
+  @Test
+  fun messageToString() {
+    val person = ProtoType.get("squareup.protos.person.Person")
+    assertThat(person.toString()).isEqualTo("squareup.protos.person.Person")
 
-    ProtoType phoneType = person.nestedType("PhoneType");
-    assertThat(phoneType.toString()).isEqualTo("squareup.protos.person.Person.PhoneType");
+    val phoneType = person.nestedType("PhoneType")
+    assertThat(phoneType.toString()).isEqualTo("squareup.protos.person.Person.PhoneType")
   }
 
-  @Test public void enclosingTypeOrPackage() throws Exception {
-    assertThat(ProtoType.STRING.enclosingTypeOrPackage()).isNull();
+  @Test
+  fun enclosingTypeOrPackage() {
+    assertThat(ProtoType.STRING.enclosingTypeOrPackage()).isNull()
 
-    ProtoType person = ProtoType.get("squareup.protos.person.Person");
-    assertThat(person.enclosingTypeOrPackage()).isEqualTo("squareup.protos.person");
+    val person = ProtoType.get("squareup.protos.person.Person")
+    assertThat(person.enclosingTypeOrPackage()).isEqualTo("squareup.protos.person")
 
-    ProtoType phoneType = person.nestedType("PhoneType");
-    assertThat(phoneType.enclosingTypeOrPackage()).isEqualTo("squareup.protos.person.Person");
+    val phoneType = person.nestedType("PhoneType")
+    assertThat(phoneType.enclosingTypeOrPackage()).isEqualTo("squareup.protos.person.Person")
   }
 
-  @Test public void isScalar() throws Exception {
-    assertThat(ProtoType.INT32.isScalar()).isTrue();
-    assertThat(ProtoType.STRING.isScalar()).isTrue();
-    assertThat(ProtoType.BYTES.isScalar()).isTrue();
-    assertThat(ProtoType.get("squareup.protos.person.Person").isScalar()).isFalse();
+  @Test
+  fun isScalar() {
+    assertThat(ProtoType.INT32.isScalar).isTrue()
+    assertThat(ProtoType.STRING.isScalar).isTrue()
+    assertThat(ProtoType.BYTES.isScalar).isTrue()
+    assertThat(ProtoType.get("squareup.protos.person.Person").isScalar).isFalse()
   }
 }

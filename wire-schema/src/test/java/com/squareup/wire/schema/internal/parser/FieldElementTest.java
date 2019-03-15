@@ -13,45 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.OptionElement.Kind;
-import com.squareup.wire.schema.Location;
-import org.junit.Test;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.Field.Label.OPTIONAL
+import com.squareup.wire.schema.Field.Label.REQUIRED
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static com.squareup.wire.schema.Field.Label.OPTIONAL;
-import static com.squareup.wire.schema.Field.Label.REQUIRED;
-import static org.assertj.core.api.Assertions.assertThat;
+class FieldElementTest {
+  internal var location = Location.get("file.proto")
 
-public final class FieldElementTest {
-  Location location = Location.get("file.proto");
-
-  @Test public void field() {
-    FieldElement field = FieldElement.builder(location)
+  @Test
+  fun field() {
+    val field = FieldElement.builder(location)
         .label(OPTIONAL)
         .type("CType")
         .name("ctype")
         .tag(1)
-        .options(ImmutableList.of(
-            OptionElement.create("default", Kind.ENUM, "TEST"),
-            OptionElement.create("deprecated", Kind.BOOLEAN, "true")))
-        .build();
-    assertThat(field.options()).containsOnly( //
-        OptionElement.create("default", Kind.ENUM, "TEST"), //
-        OptionElement.create("deprecated", Kind.BOOLEAN, "true"));
+        .options(
+            ImmutableList.of(
+                OptionElement.create("default", Kind.ENUM, "TEST"),
+                OptionElement.create("deprecated", Kind.BOOLEAN, "true")
+            )
+        )
+        .build()
+
+    assertThat(field.options()).containsOnly(
+        OptionElement.create("default", Kind.ENUM, "TEST"),
+        OptionElement.create("deprecated", Kind.BOOLEAN, "true")
+    )
   }
 
-  @Test public void addMultipleOptions() {
-    OptionElement kitKat = OptionElement.create("kit", Kind.STRING, "kat");
-    OptionElement fooBar = OptionElement.create("foo", Kind.STRING, "bar");
-    FieldElement field = FieldElement.builder(location)
+  @Test
+  fun addMultipleOptions() {
+    val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
+    val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
+    val field = FieldElement.builder(location)
         .label(REQUIRED)
         .type("string")
         .name("name")
         .tag(1)
         .options(ImmutableList.of(kitKat, fooBar))
-        .build();
-    assertThat(field.options()).hasSize(2);
+        .build()
+
+    assertThat(field.options()).hasSize(2)
   }
 }
