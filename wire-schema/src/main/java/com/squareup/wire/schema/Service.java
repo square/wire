@@ -17,6 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.ServiceElement;
+import java.util.List;
 
 public final class Service {
   private final ProtoType protoType;
@@ -118,8 +119,7 @@ public final class Service {
         options.retainAll(schema, markSet));
   }
 
-  static ImmutableList<Service> fromElements(String packageName,
-      ImmutableList<ServiceElement> elements) {
+  static ImmutableList<Service> fromElements(String packageName, List<ServiceElement> elements) {
     ImmutableList.Builder<Service> services = ImmutableList.builder();
     for (ServiceElement service : elements) {
       ProtoType protoType = ProtoType.get(packageName, service.name());
@@ -128,7 +128,7 @@ public final class Service {
     return services.build();
   }
 
-  static ImmutableList<ServiceElement> toElements(ImmutableList<Service> services) {
+  static ImmutableList<ServiceElement> toElements(List<Service> services) {
     ImmutableList.Builder<ServiceElement> elements = new ImmutableList.Builder<>();
     for (Service service : services) {
       elements.add(ServiceElement.builder(service.location)

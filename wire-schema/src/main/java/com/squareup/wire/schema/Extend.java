@@ -17,6 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.ExtendElement;
+import java.util.List;
 
 final class Extend {
   private final Location location;
@@ -34,7 +35,7 @@ final class Extend {
   }
 
   static ImmutableList<Extend> fromElements(String packageName,
-      ImmutableList<ExtendElement> extendElements) {
+      List<ExtendElement> extendElements) {
     ImmutableList.Builder<Extend> extendBuilder = new ImmutableList.Builder<>();
     for (ExtendElement extendElement : extendElements) {
       extendBuilder.add(new Extend(extendElement.location(), extendElement.documentation(),
@@ -43,7 +44,7 @@ final class Extend {
     return extendBuilder.build();
   }
 
-  static ImmutableList<ExtendElement> toElements(ImmutableList<Extend> extendList) {
+  static ImmutableList<ExtendElement> toElements(List<Extend> extendList) {
     ImmutableList.Builder<ExtendElement> elements = new ImmutableList.Builder<>();
     for (Extend extend : extendList) {
       elements.add(ExtendElement.builder(extend.location)

@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.EnumElement;
 import com.squareup.wire.schema.internal.parser.MessageElement;
 import com.squareup.wire.schema.internal.parser.TypeElement;
+import java.util.List;
 
 public abstract class Type {
   public abstract Location location();
@@ -43,7 +44,7 @@ public abstract class Type {
     }
   }
 
-  static ImmutableList<Type> fromElements(String packageName, ImmutableList<TypeElement> elements) {
+  static ImmutableList<Type> fromElements(String packageName, List<TypeElement> elements) {
     ImmutableList.Builder<Type> types = new ImmutableList.Builder<>();
     for (TypeElement element : elements) {
       ProtoType protoType = ProtoType.get(packageName, element.name());
@@ -67,7 +68,7 @@ public abstract class Type {
     }
   }
 
-  static ImmutableList<TypeElement> toElements(ImmutableList<Type> types) {
+  static ImmutableList<TypeElement> toElements(List<Type> types) {
     ImmutableList.Builder<TypeElement> elements = new ImmutableList.Builder<>();
     for (Type type : types) {
       elements.add(Type.toElement(type));
