@@ -95,7 +95,7 @@ public final class Rpc {
   Rpc retainAll(Schema schema, MarkSet markSet) {
     if (!markSet.contains(requestType) || !markSet.contains(responseType)) return null;
     Rpc result = new Rpc(location, name, documentation, requestTypeElement, responseTypeElement,
-            requestStreaming, responseStreaming, options.retainAll(schema, markSet));
+        requestStreaming, responseStreaming, options.retainAll(schema, markSet));
     result.requestType = requestType;
     result.responseType = responseType;
     return result;
@@ -104,10 +104,11 @@ public final class Rpc {
   static ImmutableList<Rpc> fromElements(List<RpcElement> elements) {
     ImmutableList.Builder<Rpc> rpcs = new ImmutableList.Builder<>();
     for (RpcElement rpcElement : elements) {
-      rpcs.add(new Rpc(rpcElement.location(), rpcElement.name(), rpcElement.documentation(),
-          rpcElement.requestType(), rpcElement.responseType(),
-          rpcElement.requestStreaming(), rpcElement.responseStreaming(),
-          new Options(Options.METHOD_OPTIONS, rpcElement.options())));
+      rpcs.add(new Rpc(rpcElement.getLocation(), rpcElement.getName(),
+          rpcElement.getDocumentation(),
+          rpcElement.getRequestType(), rpcElement.getResponseType(),
+          rpcElement.getRequestStreaming(), rpcElement.getResponseStreaming(),
+          new Options(Options.METHOD_OPTIONS, rpcElement.getOptions())));
     }
     return rpcs.build();
   }
@@ -115,15 +116,18 @@ public final class Rpc {
   static ImmutableList<RpcElement> toElements(ImmutableList<Rpc> rpcs) {
     ImmutableList.Builder<RpcElement> elements = new ImmutableList.Builder<>();
     for (Rpc rpc : rpcs) {
-      elements.add(RpcElement.builder(rpc.location)
-          .documentation(rpc.documentation)
-          .name(rpc.name)
-          .requestType(rpc.requestTypeElement)
-          .responseType(rpc.responseTypeElement)
-          .requestStreaming(rpc.requestStreaming)
-          .responseStreaming(rpc.responseStreaming)
-          .options(rpc.options.toElements())
-          .build());
+      elements.add(
+          new RpcElement(
+              rpc.location,
+              rpc.name,
+              rpc.documentation,
+              rpc.requestTypeElement,
+              rpc.responseTypeElement,
+              rpc.requestStreaming,
+              rpc.responseStreaming,
+              rpc.options.toElements()
+          )
+      );
     }
     return elements.build();
   }

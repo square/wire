@@ -511,37 +511,39 @@ public final class ProtoParser {
 
   /** Reads an rpc and returns it. */
   private RpcElement readRpc(Location location, String documentation) {
-    RpcElement.Builder builder = RpcElement.builder(location)
-        .name(reader.readName())
-        .documentation(documentation);
+    String name = reader.readName();
 
     reader.require('(');
-    String type;
+
+    boolean requestStreaming = false;
+    String requestType;
     String word = reader.readWord();
     if (word.equals("stream")) {
-      builder.requestStreaming(true);
-      type = reader.readDataType();
+      requestStreaming = true;
+      requestType = reader.readDataType();
     } else {
-      type = reader.readDataType(word);
+      requestType = reader.readDataType(word);
     }
-    builder.requestType(type);
     reader.require(')');
 
     if (!reader.readWord().equals("returns")) throw reader.unexpected("expected 'returns'");
 
     reader.require('(');
+
+    boolean responseStreaming = false;
+    String responseType;
     word = reader.readWord();
     if (word.equals("stream")) {
-      builder.responseStreaming(true);
-      type = reader.readDataType();
+      responseStreaming = true;
+      responseType = reader.readDataType();
     } else {
-      type = reader.readDataType(word);
+      responseType = reader.readDataType(word);
     }
-    builder.responseType(type);
     reader.require(')');
 
+
+    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
     if (reader.peekChar('{')) {
-      ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
       while (true) {
         String rpcDocumentation = reader.readDocumentation();
         if (reader.peekChar('}')) {
@@ -552,12 +554,20 @@ public final class ProtoParser {
           options.add((OptionElement) declared);
         }
       }
-      builder.options(options.build());
     } else {
       reader.require(';');
     }
 
-    return builder.build();
+    return new RpcElement(
+        location,
+        name,
+        documentation,
+        requestType,
+        responseType,
+        requestStreaming,
+        responseStreaming,
+        options.build()
+    );
   }
 
   enum Context {
