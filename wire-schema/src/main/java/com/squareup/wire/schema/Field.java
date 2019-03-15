@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.FieldElement;
 import java.util.Collection;
+import java.util.List;
 
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
 
@@ -55,8 +56,8 @@ public final class Field {
     this.options = options;
   }
 
-  static ImmutableList<Field> fromElements(String packageName,
-      ImmutableList<FieldElement> fieldElements, boolean extension) {
+  static ImmutableList<Field> fromElements(String packageName, List<FieldElement> fieldElements,
+      boolean extension) {
     ImmutableList.Builder<Field> fields = ImmutableList.builder();
     for (FieldElement field : fieldElements) {
       fields.add(new Field(packageName, field.location(), field.label(), field.name(),
@@ -66,7 +67,7 @@ public final class Field {
     return fields.build();
   }
 
-  static ImmutableList<FieldElement> toElements(ImmutableList<Field> fields) {
+  static ImmutableList<FieldElement> toElements(List<Field> fields) {
     ImmutableList.Builder<FieldElement> elements = new ImmutableList.Builder<>();
     for (Field field : fields) {
       elements.add(FieldElement.builder(field.location)

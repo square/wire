@@ -23,11 +23,11 @@ final class Extend {
   private final Location location;
   private final String documentation;
   private final String name;
-  private final ImmutableList<Field> fields;
+  private final List<Field> fields;
   private ProtoType protoType;
 
   private Extend(Location location, String documentation, String name,
-      ImmutableList<Field> fields) {
+      List<Field> fields) {
     this.location = location;
     this.documentation = documentation;
     this.name = name;
@@ -38,8 +38,9 @@ final class Extend {
       List<ExtendElement> extendElements) {
     ImmutableList.Builder<Extend> extendBuilder = new ImmutableList.Builder<>();
     for (ExtendElement extendElement : extendElements) {
-      extendBuilder.add(new Extend(extendElement.location(), extendElement.documentation(),
-          extendElement.name(), Field.fromElements(packageName, extendElement.fields(), true)));
+      extendBuilder.add(new Extend(extendElement.getLocation(), extendElement.getDocumentation(),
+          extendElement.getName(),
+          Field.fromElements(packageName, extendElement.getFields(), true)));
     }
     return extendBuilder.build();
   }
@@ -47,11 +48,11 @@ final class Extend {
   static ImmutableList<ExtendElement> toElements(List<Extend> extendList) {
     ImmutableList.Builder<ExtendElement> elements = new ImmutableList.Builder<>();
     for (Extend extend : extendList) {
-      elements.add(ExtendElement.builder(extend.location)
-          .documentation(extend.documentation)
-          .name(extend.name)
-          .fields(Field.toElements(extend.fields))
-          .build());
+      elements.add(new ExtendElement(
+          extend.location,
+          extend.name,
+          extend.documentation,
+          Field.toElements(extend.fields)));
     }
     return elements.build();
   }
@@ -68,7 +69,7 @@ final class Extend {
     return documentation;
   }
 
-  public ImmutableList<Field> fields() {
+  public List<Field> fields() {
     return fields;
   }
 

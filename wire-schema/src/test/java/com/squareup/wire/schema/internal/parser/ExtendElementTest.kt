@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
 import org.assertj.core.api.Assertions.assertThat
@@ -26,28 +25,27 @@ class ExtendElementTest {
 
   @Test
   fun emptyToSchema() {
-    val extend = ExtendElement.builder(location)
-        .name("Name")
-        .build()
+    val extend = ExtendElement(
+        location = location,
+        name = "Name"
+    )
     val expected = "extend Name {}\n"
     assertThat(extend.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun simpleToSchema() {
-    val extend = ExtendElement.builder(location)
-        .name("Name")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
-            )
-        )
-        .build()
+    val extend = ExtendElement(
+        location = location,
+        name = "Name",
+        fields = listOf(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()
+        ))
     val expected = """
         |extend Name {
         |  required string name = 1;
@@ -70,29 +68,29 @@ class ExtendElementTest {
         .name("last_name")
         .tag(2)
         .build()
-    val extend = ExtendElement.builder(location)
-        .name("Name")
-        .fields(ImmutableList.of(firstName, lastName))
-        .build()
-    assertThat(extend.fields()).hasSize(2)
+    val extend = ExtendElement(
+        location = location,
+        name = "Name",
+        fields = listOf(firstName, lastName)
+    )
+    assertThat(extend.fields).hasSize(2)
   }
 
   @Test
   fun simpleWithDocumentationToSchema() {
-    val extend = ExtendElement.builder(location)
-        .name("Name")
-        .documentation("Hello")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
-            )
+    val extend = ExtendElement(
+        location = location,
+        name = "Name",
+        documentation = "Hello",
+        fields = listOf(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()
         )
-        .build()
+    )
     val expected = """
         |// Hello
         |extend Name {

@@ -670,30 +670,29 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-                MessageElement.builder(location.at(2, 1))
-                    .name("Message")
-                    .build()
+            MessageElement.builder(location.at(2, 1))
+                .name("Message")
+                .build()
         ),
         extendDeclarations = listOf(
-                ExtendElement.builder(location.at(4, 1))
-                    .name("Message")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(5, 3))
-                                .type("string")
-                                .name("a")
-                                .tag(1)
-                                .build(),
-                            FieldElement.builder(location.at(6, 3))
-                                .type("int32")
-                                .name("b")
-                                .tag(2)
-                                .build()
-                        )
-                    )
-                    .build()
+            ExtendElement(
+                location = location.at(4, 1),
+                name = "Message",
+                fields = listOf(
+                    FieldElement.builder(location.at(5, 3))
+                        .type("string")
+                        .name("a")
+                        .tag(1)
+                        .build(),
+                    FieldElement.builder(location.at(6, 3))
+                        .type("int32")
+                        .name("b")
+                        .tag(2)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -818,26 +817,25 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-                MessageElement.builder(location.at(2, 1))
-                    .name("Message")
-                    .build()
+            MessageElement.builder(location.at(2, 1))
+                .name("Message")
+                .build()
         ),
         extendDeclarations = listOf(
-                ExtendElement.builder(location.at(4, 1))
-                    .name("Message")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(5, 3))
-                                .label(REPEATED)
-                                .type("string")
-                                .name("a")
-                                .tag(1)
-                                .build()
-                        )
-                    )
-                    .build()
+            ExtendElement(
+                location = location.at(4, 1),
+                name = "Message",
+                fields = listOf(
+                    FieldElement.builder(location.at(5, 3))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("a")
+                        .tag(1)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1362,22 +1360,21 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         extendDeclarations = listOf(
-                ExtendElement.builder(location.at(2, 1))
-                    .name("Foo")
-                    .documentation("Extends Foo")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(3, 3))
-                                .label(OPTIONAL)
-                                .type("int32")
-                                .name("bar")
-                                .tag(126)
-                                .build()
-                        )
-                    )
-                    .build()
+            ExtendElement(
+                location = location.at(2, 1),
+                name = "Foo",
+                documentation = "Extends Foo",
+                fields = listOf(
+                    FieldElement.builder(location.at(3, 3))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("bar")
+                        .tag(126)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1394,21 +1391,20 @@ class ProtoParserTest {
         location = location,
         types = listOf(MessageElement.builder(location.at(1, 1)).name("Bar").build()),
         extendDeclarations = listOf(
-                ExtendElement.builder(location.at(2, 3))
-                    .name("Foo")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(3, 5))
-                                .label(OPTIONAL)
-                                .type("Bar")
-                                .name("bar")
-                                .tag(126)
-                                .build()
-                        )
-                    )
-                    .build()
+            ExtendElement(
+                location = location.at(2, 3),
+                name = "Foo",
+                fields = listOf(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(OPTIONAL)
+                        .type("Bar")
+                        .name("bar")
+                        .tag(126)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1427,26 +1423,25 @@ class ProtoParserTest {
         location = location,
         packageName = "kit.kat",
         types = listOf(
-                MessageElement.builder(location.at(3, 1))
-                    .name("Bar")
-                    .build()
+            MessageElement.builder(location.at(3, 1))
+                .name("Bar")
+                .build()
         ),
         extendDeclarations = listOf(
-                ExtendElement.builder(location.at(4, 3))
-                    .name("Foo")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(5, 5))
-                                .label(OPTIONAL)
-                                .type("Bar")
-                                .name("bar")
-                                .tag(126)
-                                .build()
-                        )
-                    )
-                    .build()
+            ExtendElement(
+                location = location.at(4, 3),
+                name = "Foo",
+                fields = listOf(
+                    FieldElement.builder(location.at(5, 5))
+                        .label(OPTIONAL)
+                        .type("Bar")
+                        .name("bar")
+                        .tag(126)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1463,21 +1458,20 @@ class ProtoParserTest {
         location = location,
         types = listOf(MessageElement.builder(location.at(1, 1)).name("Bar").build()),
         extendDeclarations = listOf(
-                ExtendElement.builder(location.at(2, 3))
-                    .name("example.Foo")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(3, 5))
-                                .label(OPTIONAL)
-                                .type("Bar")
-                                .name("bar")
-                                .tag(126)
-                                .build()
-                        )
-                    )
-                    .build()
+            ExtendElement(
+                location = location.at(2, 3),
+                name = "example.Foo",
+                fields = listOf(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(OPTIONAL)
+                        .type("Bar")
+                        .name("bar")
+                        .tag(126)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1497,25 +1491,24 @@ class ProtoParserTest {
         packageName = "kit.kat",
         types = listOf(
             MessageElement.builder(location.at(3, 1))
-                    .name("Bar")
-                    .build()
+                .name("Bar")
+                .build()
         ),
         extendDeclarations = listOf(
-                ExtendElement.builder(location.at(4, 3))
-                    .name("example.Foo")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(5, 5))
-                                .label(OPTIONAL)
-                                .type("Bar")
-                                .name("bar")
-                                .tag(126)
-                                .build()
-                        )
-                    )
-                    .build()
+            ExtendElement(
+                location = location.at(4, 3),
+                name = "example.Foo",
+                fields = listOf(
+                    FieldElement.builder(location.at(5, 5))
+                        .label(OPTIONAL)
+                        .type("Bar")
+                        .name("bar")
+                        .tag(126)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 

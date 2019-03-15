@@ -13,50 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.Util.appendIndented
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
+data class ExtendElement(
+  val location: Location,
+  val name: String,
+  val documentation: String = "",
+  val fields: List<FieldElement> = emptyList()
+) {
+  fun toSchema() = buildString {
+    appendDocumentation(this, documentation)
+    append("extend $name {")
 
-@AutoValue
-public abstract class ExtendElement {
-  public static Builder builder(Location location) {
-    return new AutoValue_ExtendElement.Builder()
-        .documentation("")
-        .fields(ImmutableList.<FieldElement>of())
-        .location(location);
-  }
-
-  public abstract Location location();
-  public abstract String name();
-  public abstract String documentation();
-  public abstract ImmutableList<FieldElement> fields();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("extend ")
-        .append(name())
-        .append(" {");
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
+    if (fields.isNotEmpty()) {
+      append('\n')
+      for (field in fields) {
+        appendIndented(this, field.toSchema())
       }
     }
-    return builder.append("}\n").toString();
-  }
 
-  @AutoValue.Builder
-  public interface Builder {
-    Builder location(Location location);
-    Builder name(String name);
-    Builder documentation(String documentation);
-    Builder fields(ImmutableList<FieldElement> fields);
-    ExtendElement build();
+    append("}\n")
   }
 }

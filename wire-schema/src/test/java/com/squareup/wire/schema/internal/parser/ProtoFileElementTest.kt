@@ -228,9 +228,7 @@ class ProtoFileElementTest {
   fun simpleWithExtendsToSchema() {
     val file = ProtoFileElement(
         location = location,
-        extendDeclarations = listOf(
-            ExtendElement.builder(location.at(5, 1)).name("Extend").build()
-        ),
+        extendDeclarations = listOf(ExtendElement(location = location.at(5, 1), name = "Extend")),
         types = listOf(MessageElement.builder(location).name("Message").build())
     )
     val expected = """
@@ -245,12 +243,8 @@ class ProtoFileElementTest {
 
   @Test
   fun addMultipleExtends() {
-    val extend1 = ExtendElement.builder(location)
-        .name("Extend1")
-        .build()
-    val extend2 = ExtendElement.builder(location)
-        .name("Extend2")
-        .build()
+    val extend1 = ExtendElement(location = location, name = "Extend1")
+    val extend2 = ExtendElement(location = location, name = "Extend2")
     val file = ProtoFileElement(
         location = location,
         extendDeclarations = listOf(extend1, extend2)
@@ -266,12 +260,8 @@ class ProtoFileElementTest {
     val element2 = MessageElement.builder(location.at(11, 1))
         .name("Message2")
         .build()
-    val extend1 = ExtendElement.builder(location.at(13, 1))
-        .name("Extend1")
-        .build()
-    val extend2 = ExtendElement.builder(location.at(14, 1))
-        .name("Extend2")
-        .build()
+    val extend1 = ExtendElement(location = location.at(13, 1), name = "Extend1")
+    val extend2 = ExtendElement(location = location.at(14, 1), name = "Extend2")
     val option1 = OptionElement.create("kit", Kind.STRING, "kat")
     val option2 = OptionElement.create("foo", Kind.STRING, "bar")
     val service1 = ServiceElement(

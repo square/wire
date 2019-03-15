@@ -223,9 +223,6 @@ public final class ProtoParser {
   /** Reads an extend declaration. */
   private ExtendElement readExtend(Location location, String documentation) {
     String name = reader.readName();
-    ExtendElement.Builder builder = ExtendElement.builder(location)
-        .name(name)
-        .documentation(documentation);
 
     reader.require('{');
     ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
@@ -238,8 +235,7 @@ public final class ProtoParser {
         fields.add((FieldElement) declared);
       }
     }
-    return builder.fields(fields.build())
-        .build();
+    return new ExtendElement(location, name, documentation, fields.build());
   }
 
   /** Reads a service declaration and returns it. */

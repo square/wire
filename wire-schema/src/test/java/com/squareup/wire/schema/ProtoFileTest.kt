@@ -43,12 +43,14 @@ class ProtoFileTest {
             .tag(1)
             .build()))
         .build()
-    val extend1 = ExtendElement.builder(location.at(16, 1))
-        .name("Extend1")
-        .build()
-    val extend2 = ExtendElement.builder(location.at(17, 1))
-        .name("Extend2")
-        .build()
+    val extend1 = ExtendElement(
+        location = location.at(16, 1),
+        name = "Extend1"
+    )
+    val extend2 = ExtendElement(
+        location = location.at(17, 1),
+        name = "Extend2"
+    )
     val option1 = OptionElement.create("kit", OptionElement.Kind.STRING, "kat")
     val option2 = OptionElement.create("foo", OptionElement.Kind.STRING, "bar")
     val service1 = ServiceElement(
