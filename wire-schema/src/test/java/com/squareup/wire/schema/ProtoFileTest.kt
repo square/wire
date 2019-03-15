@@ -51,19 +51,21 @@ class ProtoFileTest {
         .build()
     val option1 = OptionElement.create("kit", OptionElement.Kind.STRING, "kat")
     val option2 = OptionElement.create("foo", OptionElement.Kind.STRING, "bar")
-    val service1 = ServiceElement.builder(location.at(19, 1))
-        .name("Service1")
-        .rpcs(ImmutableList.of(RpcElement.builder(location.at(20, 3))
+    val service1 = ServiceElement(
+        location = location.at(19, 1),
+        name = "Service1",
+        rpcs = listOf(RpcElement.builder(location.at(20, 3))
             .name("MethodA")
             .requestType("Message2")
             .responseType("Message1")
             .options(ImmutableList.of(
                 OptionElement.create("methodoption", OptionElement.Kind.NUMBER, 1)))
-            .build()))
-        .build()
-    val service2 = ServiceElement.builder(location.at(24, 1))
-        .name("Service2")
-        .build()
+            .build())
+    )
+    val service2 = ServiceElement(
+        location = location.at(24, 1),
+        name = "Service2"
+    )
     val fileElement = ProtoFileElement(
         location = location,
         packageName = "example.simple",

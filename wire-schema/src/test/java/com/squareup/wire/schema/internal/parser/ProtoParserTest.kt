@@ -1687,43 +1687,40 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         services = listOf(
-                ServiceElement.builder(location.at(1, 1))
-                    .name("SearchService")
-                    .options(
-                        ImmutableList.of(
-                            OptionElement.create("default_timeout", Kind.NUMBER, "30", true)
-                        )
-                    )
-                    .rpcs(
-                        ImmutableList.of(
-                            RpcElement.builder(location.at(4, 3))
-                                .name("Search")
-                                .requestType("SearchRequest")
-                                .responseType("SearchResponse")
-                                .build(),
-                            RpcElement.builder(location.at(5, 3))
-                                .name("Purchase")
-                                .requestType("PurchaseRequest")
-                                .responseType("PurchaseResponse")
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create(
-                                            "squareup.sake.timeout", Kind.NUMBER, "15", true
-                                        ),
-                                        OptionElement.create(
-                                            "squareup.a.b", Kind.MAP, ImmutableMap.of(
-                                            "value",
-                                            ImmutableList.of("FOO", "BAR")
-                                        ), true
-                                        )
-                                    )
+            ServiceElement(
+                location = location.at(1, 1),
+                name = "SearchService",
+                options = listOf(
+                    OptionElement.create("default_timeout", Kind.NUMBER, "30", true)
+                ),
+                rpcs = listOf(
+                    RpcElement.builder(location.at(4, 3))
+                        .name("Search")
+                        .requestType("SearchRequest")
+                        .responseType("SearchResponse")
+                        .build(),
+                    RpcElement.builder(location.at(5, 3))
+                        .name("Purchase")
+                        .requestType("PurchaseRequest")
+                        .responseType("PurchaseResponse")
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create(
+                                    "squareup.sake.timeout", Kind.NUMBER, "15", true
+                                ),
+                                OptionElement.create(
+                                    "squareup.a.b", Kind.MAP, ImmutableMap.of(
+                                    "value",
+                                    ImmutableList.of("FOO", "BAR")
+                                ), true
                                 )
-                                .build()
+                            )
                         )
-                    )
-                    .build()
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1740,39 +1737,38 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         services = listOf(
-                ServiceElement.builder(location.at(1, 1))
-                    .name("RouteGuide")
-                    .rpcs(
-                        ImmutableList.of(
-                            RpcElement.builder(location.at(2, 3))
-                                .name("GetFeature")
-                                .requestType("Point")
-                                .responseType("Feature")
-                                .build(),
-                            RpcElement.builder(location.at(3, 3))
-                                .name("ListFeatures")
-                                .requestType("Rectangle")
-                                .responseType("Feature")
-                                .responseStreaming(true)
-                                .build(),
-                            RpcElement.builder(location.at(4, 3))
-                                .name("RecordRoute")
-                                .requestType("Point")
-                                .responseType("RouteSummary")
-                                .requestStreaming(true)
-                                .build(),
-                            RpcElement.builder(location.at(5, 3))
-                                .name("RouteChat")
-                                .requestType("RouteNote")
-                                .responseType("RouteNote")
-                                .requestStreaming(true)
-                                .responseStreaming(true)
-                                .build()
-                        )
-                    )
-                    .build()
+            ServiceElement(
+                location = location.at(1, 1),
+                name = "RouteGuide",
+                rpcs = listOf(
+                    RpcElement.builder(location.at(2, 3))
+                        .name("GetFeature")
+                        .requestType("Point")
+                        .responseType("Feature")
+                        .build(),
+                    RpcElement.builder(location.at(3, 3))
+                        .name("ListFeatures")
+                        .requestType("Rectangle")
+                        .responseType("Feature")
+                        .responseStreaming(true)
+                        .build(),
+                    RpcElement.builder(location.at(4, 3))
+                        .name("RecordRoute")
+                        .requestType("Point")
+                        .responseType("RouteSummary")
+                        .requestStreaming(true)
+                        .build(),
+                    RpcElement.builder(location.at(5, 3))
+                        .name("RouteChat")
+                        .requestType("RouteNote")
+                        .responseType("RouteNote")
+                        .requestStreaming(true)
+                        .responseStreaming(true)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 

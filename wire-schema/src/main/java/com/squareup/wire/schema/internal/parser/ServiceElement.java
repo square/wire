@@ -13,59 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.Util.appendIndented
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
-
-@AutoValue
-public abstract class ServiceElement {
-  public static Builder builder(Location location) {
-    return new AutoValue_ServiceElement.Builder()
-        .location(location)
-        .documentation("")
-        .rpcs(ImmutableList.<RpcElement>of())
-        .options(ImmutableList.<OptionElement>of());
-  }
-
-  public abstract Location location();
-  public abstract String name();
-  public abstract String documentation();
-  public abstract ImmutableList<RpcElement> rpcs();
-  public abstract ImmutableList<OptionElement> options();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("service ")
-        .append(name())
-        .append(" {");
-    if (!options().isEmpty()) {
-      builder.append('\n');
-      for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchemaDeclaration());
+data class ServiceElement(
+  val location: Location,
+  val name: String,
+  val documentation: String = "",
+  val rpcs: List<RpcElement> = emptyList(),
+  val options: List<OptionElement> = emptyList()
+) {
+  fun toSchema() = buildString{
+    appendDocumentation(this, documentation)
+    append("service $name {")
+    if (options.isNotEmpty()) {
+      append('\n')
+      for (option in options) {
+        appendIndented(this, option.toSchemaDeclaration())
       }
     }
-    if (!rpcs().isEmpty()) {
-      builder.append('\n');
-      for (RpcElement rpc : rpcs()) {
-        appendIndented(builder, rpc.toSchema());
+    if (rpcs.isNotEmpty()) {
+      append('\n')
+      for (rpc in rpcs) {
+        appendIndented(this, rpc.toSchema())
       }
     }
-    return builder.append("}\n").toString();
-  }
-
-  @AutoValue.Builder
-  public interface Builder {
-    Builder location(Location location);
-    Builder name(String name);
-    Builder documentation(String documentation);
-    Builder rpcs(ImmutableList<RpcElement> rpcs);
-    Builder options(ImmutableList<OptionElement> options);
-    ServiceElement build();
+    append("}\n")
   }
 }

@@ -38,11 +38,11 @@ public final class Service {
   }
 
   static Service fromElement(ProtoType protoType, ServiceElement element) {
-    ImmutableList<Rpc> rpcs = Rpc.fromElements(element.rpcs());
-    Options options = new Options(Options.SERVICE_OPTIONS, element.options());
+    ImmutableList<Rpc> rpcs = Rpc.fromElements(element.getRpcs());
+    Options options = new Options(Options.SERVICE_OPTIONS, element.getOptions());
 
-    return new Service(protoType, element.location(), element.documentation(), element.name(), rpcs,
-        options);
+    return new Service(protoType, element.getLocation(), element.getDocumentation(),
+        element.getName(), rpcs, options);
   }
 
   public Location location() {
@@ -122,7 +122,7 @@ public final class Service {
   static ImmutableList<Service> fromElements(String packageName, List<ServiceElement> elements) {
     ImmutableList.Builder<Service> services = ImmutableList.builder();
     for (ServiceElement service : elements) {
-      ProtoType protoType = ProtoType.get(packageName, service.name());
+      ProtoType protoType = ProtoType.get(packageName, service.getName());
       services.add(Service.fromElement(protoType, service));
     }
     return services.build();
@@ -131,12 +131,15 @@ public final class Service {
   static ImmutableList<ServiceElement> toElements(List<Service> services) {
     ImmutableList.Builder<ServiceElement> elements = new ImmutableList.Builder<>();
     for (Service service : services) {
-      elements.add(ServiceElement.builder(service.location)
-          .documentation(service.documentation)
-          .name(service.name)
-          .rpcs(Rpc.toElements(service.rpcs))
-          .options(service.options.toElements())
-          .build());
+      elements.add(
+          new ServiceElement(
+              service.location,
+              service.name,
+              service.documentation,
+              Rpc.toElements(service.rpcs),
+              service.options.toElements()
+          )
+      );
     }
     return elements.build();
   }

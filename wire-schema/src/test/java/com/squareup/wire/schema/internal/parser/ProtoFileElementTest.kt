@@ -152,9 +152,10 @@ class ProtoFileElementTest {
     val element = MessageElement.builder(location)
         .name("Message")
         .build()
-    val service = ServiceElement.builder(location)
-        .name("Service")
-        .build()
+    val service = ServiceElement(
+        location = location,
+        name = "Service"
+    )
     val file = ProtoFileElement(
         location = location,
         types = listOf(element),
@@ -172,12 +173,14 @@ class ProtoFileElementTest {
 
   @Test
   fun addMultipleServices() {
-    val service1 = ServiceElement.builder(location)
-        .name("Service1")
-        .build()
-    val service2 = ServiceElement.builder(location)
-        .name("Service2")
-        .build()
+    val service1 = ServiceElement(
+        location = location,
+        name = "Service1"
+    )
+    val service2 = ServiceElement(
+        location = location,
+        name = "Service2"
+    )
     val file = ProtoFileElement(
         location = location,
         services = listOf(service1, service2)
@@ -271,12 +274,14 @@ class ProtoFileElementTest {
         .build()
     val option1 = OptionElement.create("kit", Kind.STRING, "kat")
     val option2 = OptionElement.create("foo", Kind.STRING, "bar")
-    val service1 = ServiceElement.builder(location.at(16, 1))
-        .name("Service1")
-        .build()
-    val service2 = ServiceElement.builder(location.at(17, 1))
-        .name("Service2")
-        .build()
+    val service1 = ServiceElement(
+        location = location.at(16, 1),
+        name = "Service1"
+    )
+    val service2 = ServiceElement(
+        location = location.at(17, 1),
+        name = "Service2"
+    )
     val file = ProtoFileElement(
         location = location,
         packageName = "example.simple",
