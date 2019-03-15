@@ -13,94 +13,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
-import com.squareup.wire.schema.ProtoFile;
-import java.util.Collection;
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.ProtoFile
 
-/** A single {@code .proto} file. */
-@AutoValue
-public abstract class ProtoFileElement {
-  public static Builder builder(Location location) {
-    return new AutoValue_ProtoFileElement.Builder()
-        .location(location)
-        .imports(ImmutableList.<String>of())
-        .publicImports(ImmutableList.<String>of())
-        .types(ImmutableList.<TypeElement>of())
-        .services(ImmutableList.<ServiceElement>of())
-        .extendDeclarations(ImmutableList.<ExtendElement>of())
-        .options(ImmutableList.<OptionElement>of());
-  }
+/** A single `.proto` file.  */
+data class ProtoFileElement(
+  val location: Location,
+  val packageName: String? = null,
+  val syntax: ProtoFile.Syntax? = null,
+  val imports: List<String> = emptyList(),
+  val publicImports: List<String> = emptyList(),
+  val types: List<TypeElement> = emptyList(),
+  val services: List<ServiceElement> = emptyList(),
+  val extendDeclarations: List<ExtendElement> = emptyList(),
+  val options: List<OptionElement> = emptyList()
+) {
+  fun toSchema() = buildString {
+    append("// ")
+    append(location)
+    append('\n')
 
-  public abstract Location location();
-  @Nullable public abstract String packageName();
-  @Nullable public abstract ProtoFile.Syntax syntax();
-  public abstract ImmutableList<String> imports();
-  public abstract ImmutableList<String> publicImports();
-  public abstract ImmutableList<TypeElement> types();
-  public abstract ImmutableList<ServiceElement> services();
-  public abstract ImmutableList<ExtendElement> extendDeclarations();
-  public abstract ImmutableList<OptionElement> options();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("// ").append(location()).append('\n');
-    if (syntax() != null) {
-      builder.append("syntax = \"").append(syntax()).append("\";\n");
+    if (syntax != null) {
+       append("syntax = \"$syntax\";\n")
     }
-    if (packageName() != null) {
-      builder.append("package ").append(packageName()).append(";\n");
+    if (packageName != null) {
+       append("package $packageName;\n")
     }
-    if (!imports().isEmpty() || !publicImports().isEmpty()) {
-      builder.append('\n');
-      for (String file : imports()) {
-        builder.append("import \"").append(file).append("\";\n");
+    if (imports.isNotEmpty() || publicImports.isNotEmpty()) {
+      append('\n')
+      for (file in imports) {
+        append("import \"$file\";\n")
       }
-      for (String file : publicImports()) {
-        builder.append("import public \"").append(file).append("\";\n");
+      for (file in publicImports) {
+        append("import public \"$file\";\n")
       }
     }
-    if (!options().isEmpty()) {
-      builder.append('\n');
-      for (OptionElement option : options()) {
-        builder.append(option.toSchemaDeclaration());
+    if (options.isNotEmpty()) {
+      append('\n')
+      for (option in options) {
+        append(option.toSchemaDeclaration())
       }
     }
-    if (!types().isEmpty()) {
-      builder.append('\n');
-      for (TypeElement typeElement : types()) {
-        builder.append(typeElement.toSchema());
+    if (types.isNotEmpty()) {
+      append('\n')
+      for (typeElement in types) {
+        append(typeElement.toSchema())
       }
     }
-    if (!extendDeclarations().isEmpty()) {
-      builder.append('\n');
-      for (ExtendElement extendDeclaration : extendDeclarations()) {
-        builder.append(extendDeclaration.toSchema());
+    if (extendDeclarations.isNotEmpty()) {
+      append('\n')
+      for (extendDeclaration in extendDeclarations) {
+        append(extendDeclaration.toSchema())
       }
     }
-    if (!services().isEmpty()) {
-      builder.append('\n');
-      for (ServiceElement service : services()) {
-        builder.append(service.toSchema());
+    if (services.isNotEmpty()) {
+      append('\n')
+      for (service in services) {
+        append(service.toSchema())
       }
     }
-    return builder.toString();
-  }
-
-  @AutoValue.Builder
-  public interface Builder {
-    Builder location(Location location);
-    Builder packageName(@Nullable String packageName);
-    Builder syntax(@Nullable ProtoFile.Syntax syntax);
-    Builder imports(ImmutableList<String> imports);
-    Builder publicImports(ImmutableList<String> publicImports);
-    Builder types(ImmutableList<TypeElement> types);
-    Builder services(ImmutableList<ServiceElement> services);
-    Builder extendDeclarations(ImmutableList<ExtendElement> extendDeclarations);
-    Builder options(Collection<OptionElement> options);
-    ProtoFileElement build();
   }
 }

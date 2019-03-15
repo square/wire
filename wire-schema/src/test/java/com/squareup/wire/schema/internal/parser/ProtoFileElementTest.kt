@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
@@ -24,19 +23,20 @@ import org.junit.Test
 
 class ProtoFileElementTest {
   internal var location = Location.get("file.proto")
+
   @Test
   fun emptyToSchema() {
-    val file = ProtoFileElement.builder(location)
-        .build()
+    val file = ProtoFileElement(location = location)
     val expected = "// file.proto\n"
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun emptyWithPackageToSchema() {
-    val file = ProtoFileElement.builder(location)
-        .packageName("example.simple")
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        packageName = "example.simple"
+    )
     val expected = """
         |// file.proto
         |package example.simple;
@@ -49,9 +49,10 @@ class ProtoFileElementTest {
     val element = MessageElement.builder(location)
         .name("Message")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(element))
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        types = listOf(element)
+    )
     val expected = """
         |// file.proto
         |
@@ -65,10 +66,11 @@ class ProtoFileElementTest {
     val element = MessageElement.builder(location)
         .name("Message")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .imports(ImmutableList.of("example.other"))
-        .types(ImmutableList.of(element))
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        imports = listOf("example.other"),
+        types = listOf(element)
+    )
     val expected = """
         |// file.proto
         |
@@ -84,11 +86,12 @@ class ProtoFileElementTest {
     val element = MessageElement.builder(location)
         .name("Message")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .imports(ImmutableList.of("example.other", "example.another"))
-        .types(ImmutableList.of(element))
-        .build()
-    assertThat(file.imports()).hasSize(2)
+    val file = ProtoFileElement(
+        location = location,
+        imports = listOf("example.other", "example.another"),
+        types = listOf(element)
+    )
+    assertThat(file.imports).hasSize(2)
   }
 
   @Test
@@ -96,10 +99,11 @@ class ProtoFileElementTest {
     val element = MessageElement.builder(location)
         .name("Message")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .publicImports(ImmutableList.of("example.other"))
-        .types(ImmutableList.of(element))
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        publicImports = listOf("example.other"),
+        types = listOf(element)
+    )
     val expected = """
         |// file.proto
         |
@@ -115,11 +119,11 @@ class ProtoFileElementTest {
     val element = MessageElement.builder(location)
         .name("Message")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .publicImports(ImmutableList.of("example.other", "example.another"))
-        .types(ImmutableList.of(element))
-        .build()
-    assertThat(file.publicImports()).hasSize(2)
+    val file = ProtoFileElement(location = location,
+        publicImports = listOf("example.other", "example.another"),
+        types = listOf(element)
+    )
+    assertThat(file.publicImports).hasSize(2)
   }
 
   @Test
@@ -127,11 +131,11 @@ class ProtoFileElementTest {
     val element = MessageElement.builder(location)
         .name("Message")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .imports(ImmutableList.of("example.thing"))
-        .publicImports(ImmutableList.of("example.other"))
-        .types(ImmutableList.of(element))
-        .build()
+    val file = ProtoFileElement(location = location,
+        imports = listOf("example.thing"),
+        publicImports = listOf("example.other"),
+        types = listOf(element)
+    )
     val expected = """
         |// file.proto
         |
@@ -151,10 +155,11 @@ class ProtoFileElementTest {
     val service = ServiceElement.builder(location)
         .name("Service")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(element))
-        .services(ImmutableList.of(service))
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        types = listOf(element),
+        services = listOf(service)
+    )
     val expected = """
         |// file.proto
         |
@@ -173,10 +178,11 @@ class ProtoFileElementTest {
     val service2 = ServiceElement.builder(location)
         .name("Service2")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .services(ImmutableList.of(service1, service2))
-        .build()
-    assertThat(file.services()).hasSize(2)
+    val file = ProtoFileElement(
+        location = location,
+        services = listOf(service1, service2)
+    )
+    assertThat(file.services).hasSize(2)
   }
 
   @Test
@@ -185,10 +191,11 @@ class ProtoFileElementTest {
         .name("Message")
         .build()
     val option = OptionElement.create("kit", Kind.STRING, "kat")
-    val file = ProtoFileElement.builder(location)
-        .options(ImmutableList.of(option))
-        .types(ImmutableList.of(element))
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        options = listOf(option),
+        types = listOf(element)
+    )
     val expected = """
         |// file.proto
         |
@@ -206,29 +213,23 @@ class ProtoFileElementTest {
         .build()
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
-    val file = ProtoFileElement.builder(location)
-        .options(ImmutableList.of(kitKat, fooBar))
-        .types(ImmutableList.of(element))
-        .build()
-    assertThat(file.options()).hasSize(2)
+    val file = ProtoFileElement(
+        location = location,
+        options = listOf(kitKat, fooBar),
+        types = listOf(element)
+    )
+    assertThat(file.options).hasSize(2)
   }
 
   @Test
   fun simpleWithExtendsToSchema() {
-    val file = ProtoFileElement.builder(location)
-        .extendDeclarations(
-            ImmutableList.of(
-                ExtendElement.builder(location.at(5, 1)).name("Extend").build()
-            )
-        )
-        .types(
-            ImmutableList.of(
-                MessageElement.builder(location)
-                    .name("Message")
-                    .build()
-            )
-        )
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        extendDeclarations = listOf(
+            ExtendElement.builder(location.at(5, 1)).name("Extend").build()
+        ),
+        types = listOf(MessageElement.builder(location).name("Message").build())
+    )
     val expected = """
         |// file.proto
         |
@@ -247,10 +248,11 @@ class ProtoFileElementTest {
     val extend2 = ExtendElement.builder(location)
         .name("Extend2")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .extendDeclarations(ImmutableList.of(extend1, extend2))
-        .build()
-    assertThat(file.extendDeclarations()).hasSize(2)
+    val file = ProtoFileElement(
+        location = location,
+        extendDeclarations = listOf(extend1, extend2)
+    )
+    assertThat(file.extendDeclarations).hasSize(2)
   }
 
   @Test
@@ -275,15 +277,16 @@ class ProtoFileElementTest {
     val service2 = ServiceElement.builder(location.at(17, 1))
         .name("Service2")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .packageName("example.simple")
-        .imports(ImmutableList.of("example.thing"))
-        .publicImports(ImmutableList.of("example.other"))
-        .types(ImmutableList.of(element1, element2))
-        .services(ImmutableList.of(service1, service2))
-        .extendDeclarations(ImmutableList.of(extend1, extend2))
-        .options(ImmutableList.of(option1, option2))
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        packageName = "example.simple",
+        imports = listOf("example.thing"),
+        publicImports = listOf("example.other"),
+        types = listOf(element1, element2),
+        services = listOf(service1, service2),
+        extendDeclarations = listOf(extend1, extend2),
+        options = listOf(option1, option2)
+    )
     val expected = """
         |// file.proto
         |package example.simple;
@@ -315,10 +318,11 @@ class ProtoFileElementTest {
     val element = MessageElement.builder(location)
         .name("Message")
         .build()
-    val file = ProtoFileElement.builder(location)
-        .syntax(PROTO_2)
-        .types(ImmutableList.of(element))
-        .build()
+    val file = ProtoFileElement(
+        location = location,
+        syntax = PROTO_2,
+        types = listOf(element)
+    )
     val expected = """
         |// file.proto
         |syntax = "proto2";

@@ -61,9 +61,9 @@ class ProtoParserTest {
         |}
         """.trimMargin()
 
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
                     .name("Types")
                     .fields(
@@ -191,7 +191,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
 
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
@@ -235,9 +234,9 @@ class ProtoParserTest {
         |}
         |""".trimMargin()
 
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
                     .name("Message")
                     .fields(
@@ -259,7 +258,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -270,7 +268,7 @@ class ProtoParserTest {
         |message Test {}
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val type = parsed.types()[0]
+    val type = parsed.types[0]
     assertThat(type.documentation()).isEqualTo("Test all the things!")
   }
 
@@ -287,7 +285,7 @@ class ProtoParserTest {
         """.trimMargin()
 
     val parsed = ProtoParser.parse(location, proto)
-    val type = parsed.types()[0]
+    val type = parsed.types[0]
     assertThat(type.documentation()).isEqualTo(expected)
   }
 
@@ -298,7 +296,7 @@ class ProtoParserTest {
         |message Test {}
         |""".trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val type = parsed.types()[0]
+    val type = parsed.types[0]
     assertThat(type.documentation()).isEqualTo("Test")
   }
 
@@ -318,7 +316,7 @@ class ProtoParserTest {
         |Foo
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val type = parsed.types()[0]
+    val type = parsed.types[0]
     assertThat(type.documentation()).isEqualTo(expected)
   }
 
@@ -338,7 +336,7 @@ class ProtoParserTest {
         |      Things!
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val type = parsed.types()[0]
+    val type = parsed.types[0]
     assertThat(type.documentation()).isEqualTo(expected)
   }
 
@@ -360,7 +358,7 @@ class ProtoParserTest {
         |      Things!
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val type = parsed.types()[0]
+    val type = parsed.types[0]
     assertThat(type.documentation()).isEqualTo(expected)
   }
 
@@ -383,7 +381,7 @@ class ProtoParserTest {
         |Things!
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val type = parsed.types()[0]
+    val type = parsed.types[0]
     assertThat(type.documentation()).isEqualTo(expected)
   }
 
@@ -396,7 +394,7 @@ class ProtoParserTest {
         |}
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val message = parsed.types()[0] as MessageElement
+    val message = parsed.types[0] as MessageElement
     val field = message.fields()[0]
     assertThat(field.documentation()).isEqualTo("Test all the things!")
   }
@@ -410,7 +408,7 @@ class ProtoParserTest {
         |}
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val message = parsed.types()[0] as MessageElement
+    val message = parsed.types[0] as MessageElement
     val field = message.fields()[0]
     assertThat(field.documentation()).isEqualTo("Test all...\n...the things!")
   }
@@ -424,7 +422,7 @@ class ProtoParserTest {
         |}
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val message = parsed.types()[0] as MessageElement
+    val message = parsed.types[0] as MessageElement
     val field1 = message.fields()[0]
     assertThat(field1.documentation()).isEqualTo("Testing!")
     val field2 = message.fields()[1]
@@ -439,7 +437,7 @@ class ProtoParserTest {
         |}
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val enumElement = parsed.types()[0] as EnumElement
+    val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants()[0]
     assertThat(value.documentation()).isEqualTo("Test all the things!")
   }
@@ -453,7 +451,7 @@ class ProtoParserTest {
         |}
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val enumElement = parsed.types()[0] as EnumElement
+    val enumElement = parsed.types[0] as EnumElement
     val foo = enumElement.constants()[0]
     assertThat(foo.documentation()).isEqualTo("Test all the things!")
     val bar = enumElement.constants()[1]
@@ -469,7 +467,7 @@ class ProtoParserTest {
         |}
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val enumElement = parsed.types()[0] as EnumElement
+    val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants()[0]
     assertThat(value.documentation()).isEqualTo("Test all the\nthings!")
   }
@@ -515,7 +513,7 @@ class ProtoParserTest {
         |}
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
-    val enumElement = parsed.types()[0] as EnumElement
+    val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants()[0]
     assertThat(value.documentation()).isEqualTo("Test all...\n...the things!")
   }
@@ -528,7 +526,7 @@ class ProtoParserTest {
         "  FOO = 1; //       \n" +
         "}"
     val parsed = ProtoParser.parse(location, proto)
-    val enumElement = parsed.types()[0] as EnumElement
+    val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants()[0]
     assertThat(value.documentation()).isEqualTo("Test all...")
   }
@@ -537,7 +535,7 @@ class ProtoParserTest {
   fun syntaxNotRequired() {
     val proto = "message Foo {}"
     val parsed = ProtoParser.parse(location, proto)
-    assertThat(parsed.syntax()).isNull()
+    assertThat(parsed.syntax).isNull()
   }
 
   @Test
@@ -546,16 +544,15 @@ class ProtoParserTest {
         |syntax = "proto3";
         |message Foo {}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .syntax(ProtoFile.Syntax.PROTO_3)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        syntax = ProtoFile.Syntax.PROTO_3,
+        types = listOf(
                 MessageElement.builder(location.at(2, 1))
                     .name("Foo")
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -611,16 +608,15 @@ class ProtoParserTest {
         |syntax = "proto3";
         |message Foo {}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .syntax(ProtoFile.Syntax.PROTO_3)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        syntax = ProtoFile.Syntax.PROTO_3,
+        types = listOf(
                 MessageElement.builder(location.at(5, 1))
                     .name("Foo")
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -633,10 +629,10 @@ class ProtoParserTest {
         |  int32 b = 2;
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .syntax(ProtoFile.Syntax.PROTO_3)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        syntax = ProtoFile.Syntax.PROTO_3,
+        types = listOf(
                 MessageElement.builder(location.at(2, 1))
                     .name("Message")
                     .fields(
@@ -656,7 +652,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -671,17 +666,15 @@ class ProtoParserTest {
         |  int32 b = 2;
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .syntax(ProtoFile.Syntax.PROTO_3)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        syntax = ProtoFile.Syntax.PROTO_3,
+        types = listOf(
                 MessageElement.builder(location.at(2, 1))
                     .name("Message")
                     .build()
-            )
-        )
-        .extendDeclarations(
-            ImmutableList.of(
+        ),
+        extendDeclarations = listOf(
                 ExtendElement.builder(location.at(4, 1))
                     .name("Message")
                     .fields(
@@ -701,7 +694,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -790,10 +782,10 @@ class ProtoParserTest {
         |}
         """.trimMargin()
 
-    val expected = ProtoFileElement.builder(location)
-        .syntax(ProtoFile.Syntax.PROTO_3)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        syntax = ProtoFile.Syntax.PROTO_3,
+        types = listOf(
                 MessageElement.builder(location.at(2, 1))
                     .name("Message")
                     .fields(
@@ -809,7 +801,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -823,17 +814,15 @@ class ProtoParserTest {
         |  repeated string a = 1;
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .syntax(ProtoFile.Syntax.PROTO_3)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        syntax = ProtoFile.Syntax.PROTO_3,
+        types = listOf(
                 MessageElement.builder(location.at(2, 1))
                     .name("Message")
                     .build()
-            )
-        )
-        .extendDeclarations(
-            ImmutableList.of(
+        ),
+        extendDeclarations = listOf(
                 ExtendElement.builder(location.at(4, 1))
                     .name("Message")
                     .fields(
@@ -849,7 +838,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -862,9 +850,9 @@ class ProtoParserTest {
         |  optional int32 result_per_page = 3;
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
                     .name("SearchRequest")
                     .fields(
@@ -892,7 +880,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -941,9 +928,10 @@ class ProtoParserTest {
             )
         )
         .build()
-    val expected = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(message))
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(message)
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -958,8 +946,9 @@ class ProtoParserTest {
         |  }
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
+    val expected = ProtoFileElement(
+        location = location,
+        types =
             ImmutableList.of(
                 MessageElement.builder(location.at(1, 1))
                     .name("SearchRequest")
@@ -997,7 +986,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1015,9 +1003,9 @@ class ProtoParserTest {
         |  }
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
                     .name("SearchRequest")
                     .fields(
@@ -1073,7 +1061,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1093,9 +1080,9 @@ class ProtoParserTest {
         |  SYRUP = 3;
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 EnumElement.builder(location.at(5, 1))
                     .name("Topping")
                     .documentation("What's on my waffles.\nAlso works on pancakes.")
@@ -1120,7 +1107,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1142,9 +1128,9 @@ class ProtoParserTest {
         |  SYRUP = 3;
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 EnumElement.builder(location.at(5, 1))
                     .name("Topping")
                     .documentation("What's on my waffles.\nAlso works on pancakes.")
@@ -1179,7 +1165,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1194,24 +1179,19 @@ class ProtoParserTest {
         |message FileDescriptorSet {
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .packageName("google.protobuf")
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        packageName = "google.protobuf",
+        types = listOf(
                 MessageElement.builder(location.at(6, 1))
                     .name("FileDescriptorSet")
                     .documentation(
                         "The protocol compiler can output a FileDescriptorSet containing the .proto\nfiles it parses."
                     )
                     .build()
-            )
-        )
-        .options(
-            ImmutableList.of(
-                OptionElement.create("java_package", Kind.STRING, "com.google.protobuf")
-            )
-        )
-        .build()
+        ),
+        options = listOf(OptionElement.create("java_package", Kind.STRING, "com.google.protobuf"))
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1276,9 +1256,10 @@ class ProtoParserTest {
             )
         )
         .build()
-    val expected = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(messageElement))
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(messageElement)
+    )
     val actual = ProtoParser.parse(location, proto)
     assertThat(actual).isEqualTo(expected)
   }
@@ -1294,9 +1275,9 @@ class ProtoParserTest {
         |}
         """.trimMargin()
 
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
                     .name("Chickens")
                     .fields(
@@ -1347,29 +1328,26 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
   @Test
   fun imports() {
     val proto = "import \"src/test/resources/unittest_import.proto\";\n"
-    val expected = ProtoFileElement.builder(location)
-        .imports(
-            ImmutableList.of(
-                "src/test/resources/unittest_import.proto"
-            )
-        )
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        imports = listOf("src/test/resources/unittest_import.proto")
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
   @Test
   fun publicImports() {
     val proto = "import public \"src/test/resources/unittest_import.proto\";\n"
-    val expected = ProtoFileElement.builder(location)
-        .publicImports(ImmutableList.of("src/test/resources/unittest_import.proto"))
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        publicImports = listOf("src/test/resources/unittest_import.proto")
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1381,9 +1359,9 @@ class ProtoParserTest {
         |  optional int32 bar = 126;
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .extendDeclarations(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        extendDeclarations = listOf(
                 ExtendElement.builder(location.at(2, 1))
                     .name("Foo")
                     .documentation("Extends Foo")
@@ -1400,7 +1378,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1413,14 +1390,10 @@ class ProtoParserTest {
         |  }
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
-                MessageElement.builder(location.at(1, 1)).name("Bar").build()
-            )
-        )
-        .extendDeclarations(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(MessageElement.builder(location.at(1, 1)).name("Bar").build()),
+        extendDeclarations = listOf(
                 ExtendElement.builder(location.at(2, 3))
                     .name("Foo")
                     .fields(
@@ -1436,7 +1409,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1451,17 +1423,15 @@ class ProtoParserTest {
         |  }
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .packageName("kit.kat")
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        packageName = "kit.kat",
+        types = listOf(
                 MessageElement.builder(location.at(3, 1))
                     .name("Bar")
                     .build()
-            )
-        )
-        .extendDeclarations(
-            ImmutableList.of(
+        ),
+        extendDeclarations = listOf(
                 ExtendElement.builder(location.at(4, 3))
                     .name("Foo")
                     .fields(
@@ -1477,7 +1447,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1490,14 +1459,10 @@ class ProtoParserTest {
         |  }
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
-                MessageElement.builder(location.at(1, 1)).name("Bar").build()
-            )
-        )
-        .extendDeclarations(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(MessageElement.builder(location.at(1, 1)).name("Bar").build()),
+        extendDeclarations = listOf(
                 ExtendElement.builder(location.at(2, 3))
                     .name("example.Foo")
                     .fields(
@@ -1513,7 +1478,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1528,17 +1492,15 @@ class ProtoParserTest {
         |  }
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .packageName("kit.kat")
-        .types(
-            ImmutableList.of(
-                MessageElement.builder(location.at(3, 1))
+    val expected = ProtoFileElement(
+        location = location,
+        packageName = "kit.kat",
+        types = listOf(
+            MessageElement.builder(location.at(3, 1))
                     .name("Bar")
                     .build()
-            )
-        )
-        .extendDeclarations(
-            ImmutableList.of(
+        ),
+        extendDeclarations = listOf(
                 ExtendElement.builder(location.at(4, 3))
                     .name("example.Foo")
                     .fields(
@@ -1554,7 +1516,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1584,9 +1545,10 @@ class ProtoParserTest {
         .name("Foo")
         .fields(ImmutableList.of(field))
         .build()
-    val expected = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(messageElement))
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(messageElement)
+    )
     assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(expected)
   }
@@ -1626,9 +1588,10 @@ class ProtoParserTest {
         .name("Foo")
         .fields(ImmutableList.of(field))
         .build()
-    val expected = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(messageElement))
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(messageElement)
+    )
     assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(expected)
   }
@@ -1652,9 +1615,10 @@ class ProtoParserTest {
         .name("Foo")
         .fields(ImmutableList.of(field))
         .build()
-    val expected = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(messageElement))
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(messageElement)
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1681,9 +1645,9 @@ class ProtoParserTest {
         .name("Foo")
         .fields(ImmutableList.of(field))
         .build()
-    val expected = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(messageElement))
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(messageElement))
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1720,9 +1684,9 @@ class ProtoParserTest {
         |  }
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .services(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        services = listOf(
                 ServiceElement.builder(location.at(1, 1))
                     .name("SearchService")
                     .options(
@@ -1760,7 +1724,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1774,9 +1737,9 @@ class ProtoParserTest {
         |  rpc RouteChat (stream RouteNote) returns (stream RouteNote) {}
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .services(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        services = listOf(
                 ServiceElement.builder(location.at(1, 1))
                     .name("RouteGuide")
                     .rpcs(
@@ -1810,7 +1773,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1822,9 +1784,9 @@ class ProtoParserTest {
         |  required string uppercase_x_hex = 0X11;
         |}
         """.trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
                     .name("HexTag")
                     .fields(
@@ -1846,7 +1808,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1884,9 +1845,9 @@ class ProtoParserTest {
         Arrays.asList<Map<String, Any>>(option_four_map_2_a, option_four_map_2_b)
     option_four_map["x"] = option_four_map_1
 
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
                     .name("ExoticOptions")
                     .options(
@@ -1907,7 +1868,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1970,9 +1930,10 @@ class ProtoParserTest {
         .name("StructuredOption")
         .fields(ImmutableList.of(field))
         .build()
-    val protoFile = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(expected))
-        .build()
+    val protoFile = ProtoFileElement(
+        location = location,
+        types = listOf(expected)
+    )
     assertThat(ProtoParser.parse(location, proto))
         .isEqualTo(protoFile)
   }
@@ -1998,9 +1959,9 @@ class ProtoParserTest {
         |  optional bytes default_bytes = 415 [x = "çok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11güzel" ];
         |  optional NestedEnum default_nested_enum = 416 [x = A ];
         |}""".trimMargin()
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
                     .name("Test")
                     .fields(
@@ -2202,7 +2163,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -2252,9 +2212,10 @@ class ProtoParserTest {
         .name("Foo")
         .fields(ImmutableList.of(field))
         .build()
-    val protoFile = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(expected))
-        .build()
+    val protoFile = ProtoFileElement(
+        location = location,
+        types = listOf(expected)
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(protoFile)
   }
 
@@ -2276,33 +2237,31 @@ class ProtoParserTest {
             )
         )
         .build()
-    val expected = ProtoFileElement.builder(location)
-        .types(ImmutableList.of(message))
-        .build()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(message)
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
   @Test
   fun noWhitespace() {
     val proto = "message C {optional A.B ab = 1;}"
-    val expected = ProtoFileElement.builder(location)
-        .types(
-            ImmutableList.of(
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
                 MessageElement.builder(location.at(1, 1))
-                    .name("C").fields(
-                    ImmutableList.of(
+                    .name("C")
+                    .fields(ImmutableList.of(
                         FieldElement.builder(location.at(1, 12))
                             .label(OPTIONAL)
                             .type("A.B")
                             .name("ab")
                             .tag(1)
-                            .build()
-                    )
-                )
-                    .build()
-            )
+                            .build())
+                    ).build()
         )
-        .build()
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 }

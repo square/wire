@@ -28,13 +28,13 @@ import java.util.List;
 /** Basic parser for {@code .proto} schema declarations. */
 public final class ProtoParser {
   private final SyntaxReader reader;
+  private final Location location;
 
   /** Parse a named {@code .proto} schema. */
   public static ProtoFileElement parse(Location location, String data) {
     return new ProtoParser(location, data.toCharArray()).readProtoFile();
   }
 
-  private final ProtoFileElement.Builder fileBuilder;
   private final ImmutableList.Builder<String> publicImports = ImmutableList.builder();
   private final ImmutableList.Builder<String> imports = ImmutableList.builder();
   private final ImmutableList.Builder<TypeElement> nestedTypes = ImmutableList.builder();
@@ -56,21 +56,24 @@ public final class ProtoParser {
 
   ProtoParser(Location location, char[] data) {
     this.reader = new SyntaxReader(data, location);
-    this.fileBuilder = ProtoFileElement.builder(location);
+    this.location = location;
   }
 
   ProtoFileElement readProtoFile() {
     while (true) {
       String documentation = reader.readDocumentation();
       if (reader.exhausted()) {
-        return fileBuilder.syntax(syntax)
-            .publicImports(publicImports.build())
-            .imports(imports.build())
-            .types(nestedTypes.build())
-            .services(services.build())
-            .extendDeclarations(extendsList.build())
-            .options(options.build())
-            .build();
+        return new ProtoFileElement(
+            location,
+            packageName,
+            syntax,
+            imports.build(),
+            publicImports.build(),
+            nestedTypes.build(),
+            services.build(),
+            extendsList.build(),
+            options.build()
+        );
       }
       Object declaration = readDeclaration(documentation, Context.FILE);
       if (declaration instanceof TypeElement) {
@@ -98,7 +101,6 @@ public final class ProtoParser {
       if (!context.permitsPackage()) throw reader.unexpected(location, "'package' in " + context);
       if (packageName != null) throw reader.unexpected(location, "too many package names");
       packageName = reader.readName();
-      fileBuilder.packageName(packageName);
       prefix = packageName + ".";
       reader.require(';');
       return null;

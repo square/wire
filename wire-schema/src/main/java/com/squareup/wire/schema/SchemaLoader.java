@@ -159,7 +159,7 @@ public final class SchemaLoader {
       loaded.put(proto, protoFile);
 
       // Queue dependencies to be loaded.
-      for (String importPath : element.imports()) {
+      for (String importPath : element.getImports()) {
         protos.addLast(importPath);
       }
     }

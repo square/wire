@@ -17,6 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
+import java.util.List;
 
 import static com.squareup.wire.schema.Options.FILE_OPTIONS;
 
@@ -24,19 +25,19 @@ public final class ProtoFile {
   static final ProtoMember JAVA_PACKAGE = ProtoMember.get(FILE_OPTIONS, "java_package");
 
   private final Location location;
-  private final ImmutableList<String> imports;
-  private final ImmutableList<String> publicImports;
+  private final List<String> imports;
+  private final List<String> publicImports;
   private final String packageName;
-  private final ImmutableList<Type> types;
-  private final ImmutableList<Service> services;
-  private final ImmutableList<Extend> extendList;
+  private final List<Type> types;
+  private final List<Service> services;
+  private final List<Extend> extendList;
   private final Options options;
   private final Syntax syntax;
   private Object javaPackage;
 
-  private ProtoFile(Location location, ImmutableList<String> imports,
-      ImmutableList<String> publicImports, String packageName, ImmutableList<Type> types,
-      ImmutableList<Service> services, ImmutableList<Extend> extendList, Options options,
+  private ProtoFile(Location location, List<String> imports,
+      List<String> publicImports, String packageName, List<Type> types,
+      List<Service> services, List<Extend> extendList, Options options,
       Syntax syntax) {
     this.location = location;
     this.imports = imports;
@@ -50,45 +51,46 @@ public final class ProtoFile {
   }
 
   static ProtoFile get(ProtoFileElement protoFileElement) {
-    String packageName = protoFileElement.packageName();
+    String packageName = protoFileElement.getPackageName();
 
-    ImmutableList<Type> types = Type.fromElements(packageName, protoFileElement.types());
+    ImmutableList<Type> types = Type.fromElements(packageName, protoFileElement.getTypes());
 
     ImmutableList<Service> services =
-        Service.fromElements(packageName, protoFileElement.services());
+        Service.fromElements(packageName, protoFileElement.getServices());
 
     ImmutableList<Extend> wireExtends =
-        Extend.fromElements(packageName, protoFileElement.extendDeclarations());
+        Extend.fromElements(packageName, protoFileElement.getExtendDeclarations());
 
-    Options options = new Options(Options.FILE_OPTIONS, protoFileElement.options());
+    Options options = new Options(Options.FILE_OPTIONS, protoFileElement.getOptions());
 
-    return new ProtoFile(protoFileElement.location(), protoFileElement.imports(),
-        protoFileElement.publicImports(), packageName, types, services, wireExtends, options,
-        protoFileElement.syntax());
+    return new ProtoFile(protoFileElement.getLocation(), protoFileElement.getImports(),
+        protoFileElement.getPublicImports(), packageName, types, services, wireExtends, options,
+        protoFileElement.getSyntax());
   }
 
   ProtoFileElement toElement() {
-    return ProtoFileElement.builder(location)
-        .imports(imports)
-        .publicImports(publicImports)
-        .packageName(packageName)
-        .types(Type.toElements(types))
-        .services(Service.toElements(services))
-        .extendDeclarations(Extend.toElements(extendList))
-        .options(options.toElements())
-        .syntax(syntax)
-        .build();
+    return new ProtoFileElement(
+        location,
+        packageName,
+        syntax,
+        imports,
+        publicImports,
+        Type.toElements(types),
+        Service.toElements(services),
+        Extend.toElements(extendList),
+        options.toElements()
+    );
   }
 
   public Location location() {
     return location;
   }
 
-  ImmutableList<String> imports() {
+  List<String> imports() {
     return imports;
   }
 
-  ImmutableList<String> publicImports() {
+  List<String> publicImports() {
     return publicImports;
   }
 
@@ -119,15 +121,15 @@ public final class ProtoFile {
     return javaPackage != null ? String.valueOf(javaPackage) : null;
   }
 
-  public ImmutableList<Type> types() {
+  public List<Type> types() {
     return types;
   }
 
-  public ImmutableList<Service> services() {
+  public List<Service> services() {
     return services;
   }
 
-  ImmutableList<Extend> extendList() {
+  List<Extend> extendList() {
     return extendList;
   }
 

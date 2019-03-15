@@ -64,15 +64,16 @@ class ProtoFileTest {
     val service2 = ServiceElement.builder(location.at(24, 1))
         .name("Service2")
         .build()
-    val fileElement = ProtoFileElement.builder(location)
-        .packageName("example.simple")
-        .imports(ImmutableList.of("example.thing"))
-        .publicImports(ImmutableList.of("example.other"))
-        .types(ImmutableList.of(element1, element2))
-        .services(ImmutableList.of(service1, service2))
-        .extendDeclarations(ImmutableList.of(extend1, extend2))
-        .options(ImmutableList.of(option1, option2))
-        .build()
+    val fileElement = ProtoFileElement(
+        location = location,
+        packageName = "example.simple",
+        imports = ImmutableList.of("example.thing"),
+        publicImports = ImmutableList.of("example.other"),
+        types = ImmutableList.of(element1, element2),
+        services = ImmutableList.of(service1, service2),
+        extendDeclarations = ImmutableList.of(extend1, extend2),
+        options = ImmutableList.of(option1, option2)
+    )
     val file = ProtoFile.get(fileElement)
 
     val expected = """
