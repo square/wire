@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.squareup.wire.schema.internal.Util;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.ENUM
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.NUMBER
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.OPTION
+import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
-
-@AutoValue
-public abstract class OptionElement {
-  public enum Kind {
+data class OptionElement(
+  val name: String,
+  val kind: Kind,
+  val value: Any,
+  private val isParenthesized: Boolean
+) {
+  enum class Kind {
     STRING,
     BOOLEAN,
     NUMBER,
@@ -35,100 +40,76 @@ public abstract class OptionElement {
     LIST,
     OPTION
   }
+  private val formattedName = if (isParenthesized) "($name)" else name
 
-  public static OptionElement create(String name, Kind kind, Object value) {
-    return create(name, kind, value, false);
-  }
-
-  public static OptionElement create(String name, Kind kind, Object value,
-      boolean isParenthesized) {
-    return new AutoValue_OptionElement(name, kind, value, isParenthesized);
-  }
-
-  public abstract String name();
-  public abstract Kind kind();
-  public abstract Object value();
-  public abstract boolean isParenthesized();
-
-  public final String toSchema() {
-    Object value = value();
-    switch (kind()) {
-      case STRING:
-        return formatName() + " = \"" + value + '"';
-      case BOOLEAN:
-      case NUMBER:
-      case ENUM:
-        return formatName() + " = " + value;
-      case OPTION: {
-        StringBuilder builder = new StringBuilder();
-        OptionElement optionValue = (OptionElement) value;
+  fun toSchema(): String = buildString {
+    when (kind) {
+      STRING -> append("""$formattedName = "$value"""")
+      BOOLEAN,
+      NUMBER,
+      ENUM -> append("$formattedName = $value")
+      OPTION -> {
         // Treat nested options as non-parenthesized always, prevents double parentheses.
-        optionValue =
-            OptionElement.create(optionValue.name(), optionValue.kind(), optionValue.value());
-        builder.append(formatName()).append('.').append(optionValue.toSchema());
-        return builder.toString();
+        val optionValue = (value as OptionElement).copy()
+        append("$formattedName.${optionValue.toSchema()}")
       }
-      case MAP: {
-        StringBuilder builder = new StringBuilder();
-        builder.append(formatName()).append(" = {\n");
-        //noinspection unchecked
-        Map<String, ?> valueMap = (Map<String, ?>) value;
-        formatOptionMap(builder, valueMap);
-        builder.append('}');
-        return builder.toString();
+      MAP -> {
+        append("$formattedName = {\n")
+        formatOptionMap(this, value as Map<String, *>)
+        append('}')
       }
-      case LIST: {
-        StringBuilder builder = new StringBuilder();
-        builder.append(formatName()).append(" = ");
-        //noinspection unchecked
-        List<OptionElement> optionList = (List<OptionElement>) value;
-        Util.appendOptions(builder, optionList);
-        return builder.toString();
+      LIST -> {
+        append("$formattedName = ")
+        Util.appendOptions(this, value as List<OptionElement>)
       }
-      default:
-        throw new AssertionError();
     }
   }
 
-  public final String toSchemaDeclaration() {
-    return "option " + toSchema() + ";\n";
+  fun toSchemaDeclaration() = "option ${toSchema()};\n"
+
+  private fun formatOptionMap(
+    builder: StringBuilder,
+    valueMap: Map<String, *>
+  ) {
+    val lastIndex = valueMap.size - 1
+    valueMap.entries.forEachIndexed { index, entry ->
+      val endl = if (index != lastIndex) "," else ""
+      appendIndented(builder, "${entry.key}: ${formatOptionMapValue(entry.value!!)}$endl")
+    }
   }
 
-  static void formatOptionMap(StringBuilder builder, Map<String, ?> valueMap) {
-    List<? extends Map.Entry<String, ?>> entries = new ArrayList<>(valueMap.entrySet());
-    for (int i = 0, count = entries.size(); i < count; i++) {
-      Map.Entry<String, ?> entry = entries.get(i);
-      String endl = (i < count - 1) ? "," : "";
-      appendIndented(builder,
-          entry.getKey() + ": " + formatOptionMapValue(entry.getValue()) + endl);
-    }
-  }
-
-  static String formatOptionMapValue(Object value) {
-    checkNotNull(value, "value == null");
-    if (value instanceof String) {
-      return "\"" + value + '"';
-    }
-    if (value instanceof Map) {
-      StringBuilder builder = new StringBuilder().append("{\n");
-      //noinspection unchecked
-      Map<String, ?> map = (Map<String, ?>) value;
-      formatOptionMap(builder, map);
-      return builder.append('}').toString();
-    }
-    if (value instanceof List) {
-      StringBuilder builder = new StringBuilder().append("[\n");
-      List<?> list = (List<?>) value;
-      for (int i = 0, count = list.size(); i < count; i++) {
-        String endl = (i < count - 1) ? "," : "";
-        appendIndented(builder, formatOptionMapValue(list.get(i)) + endl);
+  private fun formatOptionMapValue(value: Any): String = buildString {
+    when (value) {
+      is String -> {
+        append(""""$value"""")
       }
-      return builder.append("]").toString();
+      is Map<*, *> -> {
+        append("{\n")
+        formatOptionMap(this, value as Map<String, *>)
+        append('}')
+      }
+      is List<*> -> {
+        append("[\n")
+        val lastIndex = value.size - 1
+        value.forEachIndexed { index, item ->
+          val endl = if (index != lastIndex) "," else ""
+          appendIndented(this, "${formatOptionMapValue(value[index]!!)}$endl")
+        }
+        append("]")
+      }
+      else -> {
+        append(value)
+      }
     }
-    return value.toString();
   }
 
-  private String formatName() {
-    return isParenthesized() ? '(' + name() + ')' : name();
+  companion object {
+    @JvmOverloads
+    fun create(
+      name: String,
+      kind: Kind,
+      value: Any,
+      isParenthesized: Boolean = false
+    ) = OptionElement(name, kind, value, isParenthesized)
   }
 }

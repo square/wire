@@ -112,19 +112,19 @@ public final class Options {
     MessageType messageType = (MessageType) type;
 
     String[] path;
-    Field field = messageType.field(option.name());
+    Field field = messageType.field(option.getName());
     if (field != null) {
       // This is an option declared by descriptor.proto.
-      path = new String[] {option.name()};
+      path = new String[] {option.getName()};
     } else {
       // This is an option declared by an extension.
       Map<String, Field> extensionsForType = messageType.extensionFieldsMap();
 
-      path = resolveFieldPath(option.name(), extensionsForType.keySet());
+      path = resolveFieldPath(option.getName(), extensionsForType.keySet());
       String packageName = linker.packageName();
       if (path == null && packageName != null) {
         // If the path couldn't be resolved, attempt again by prefixing it with the package name.
-        path = resolveFieldPath(packageName + "." + option.name(), extensionsForType.keySet());
+        path = resolveFieldPath(packageName + "." + option.getName(), extensionsForType.keySet());
       }
       if (path == null) {
         return null; // Unable to find the root of this field path.
@@ -148,7 +148,7 @@ public final class Options {
     }
 
     last.put(ProtoMember.get(lastProtoType, field),
-        canonicalizeValue(linker, field, option.value()));
+        canonicalizeValue(linker, field, option.getValue()));
     return result;
   }
 
@@ -186,12 +186,12 @@ public final class Options {
     if (value instanceof OptionElement) {
       ImmutableMap.Builder<ProtoMember, Object> result = ImmutableMap.builder();
       OptionElement option = (OptionElement) value;
-      Field field = linker.dereference(context, option.name());
+      Field field = linker.dereference(context, option.getName());
       if (field == null) {
-        linker.addError("unable to resolve option %s on %s", option.name(), context.type());
+        linker.addError("unable to resolve option %s on %s", option.getName(), context.type());
       } else {
         ProtoMember protoMember = ProtoMember.get(context.type(), field);
-        result.put(protoMember, canonicalizeValue(linker, field, option.value()));
+        result.put(protoMember, canonicalizeValue(linker, field, option.getValue()));
       }
       return coerceValueForField(context, result.build());
     }

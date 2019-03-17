@@ -368,9 +368,9 @@ public final class ProtoParser {
     String result = null;
     for (Iterator<OptionElement> i = options.iterator(); i.hasNext();) {
       OptionElement option = i.next();
-      if (option.name().equals("default")) {
+      if (option.getName().equals("default")) {
         i.remove();
-        result = String.valueOf(option.value()); // Defaults aren't options!
+        result = String.valueOf(option.getValue()); // Defaults aren't options!
       }
     }
     return result;
