@@ -15,8 +15,6 @@ dependencies {
   api deps.kotlin.stdlib.jdk8
   implementation deps.okio
   api deps.guava
-  annotationProcessor deps.autovalue.compiler
-  compileOnly deps.autovalue.annotations
   testImplementation project(':wire-test-utils')
   testImplementation deps.junit
   testImplementation deps.kotlin.test.junit

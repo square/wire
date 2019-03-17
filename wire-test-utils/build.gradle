@@ -16,7 +16,5 @@ dependencies {
   implementation project(':wire-kotlin-generator')
   implementation deps.okio
   implementation deps.guava
-  annotationProcessor deps.autovalue.compiler
-  compileOnly deps.autovalue.annotations
   implementation deps.jimfs
 }
