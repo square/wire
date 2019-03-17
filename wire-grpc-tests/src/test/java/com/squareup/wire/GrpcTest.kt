@@ -33,6 +33,7 @@ import okhttp3.Protocol
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
@@ -250,6 +251,7 @@ class GrpcTest {
   }
 
   @Test
+  @Ignore("https://github.com/square/wire/issues/876")
   fun cancelChannel() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueue(
