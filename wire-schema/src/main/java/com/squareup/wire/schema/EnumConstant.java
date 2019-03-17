@@ -56,17 +56,12 @@ public final class EnumConstant {
   }
 
   static EnumConstant fromElement(EnumConstantElement element) {
-    return new EnumConstant(element.location(), element.name(), element.tag(),
-        element.documentation(), new Options(Options.ENUM_VALUE_OPTIONS, element.options()));
+    return new EnumConstant(element.getLocation(), element.getName(), element.getTag(),
+        element.getDocumentation(), new Options(Options.ENUM_VALUE_OPTIONS, element.getOptions()));
   }
 
   EnumConstantElement toElement() {
-    return EnumConstantElement.builder(location)
-        .documentation(documentation)
-        .name(name)
-        .tag(tag)
-        .options(options.toElements())
-        .build();
+    return new EnumConstantElement(location, name, tag, documentation, options.toElements());
   }
 
   void linkOptions(Linker linker) {

@@ -491,16 +491,16 @@ public final class ProtoParser {
 
     int tag = reader.readInt();
 
-    ImmutableList<OptionElement> options = new OptionReader(reader).readOptions();
+    List<OptionElement> options = new OptionReader(reader).readOptions();
     reader.require(';');
     documentation = reader.tryAppendTrailingDocumentation(documentation);
 
-    return EnumConstantElement.builder(location)
-        .name(label)
-        .tag(tag)
-        .documentation(documentation)
-        .options(options)
-        .build();
+    return new EnumConstantElement(
+        location,
+        label,
+        tag,
+        documentation,
+        options);
   }
 
   /** Reads an rpc and returns it. */

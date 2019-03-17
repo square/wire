@@ -437,7 +437,7 @@ class ProtoParserTest {
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants[0]
-    assertThat(value.documentation()).isEqualTo("Test all the things!")
+    assertThat(value.documentation).isEqualTo("Test all the things!")
   }
 
   @Test
@@ -451,9 +451,9 @@ class ProtoParserTest {
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
     val foo = enumElement.constants[0]
-    assertThat(foo.documentation()).isEqualTo("Test all the things!")
+    assertThat(foo.documentation).isEqualTo("Test all the things!")
     val bar = enumElement.constants[1]
-    assertThat(bar.documentation()).isEqualTo("Test all the things!")
+    assertThat(bar.documentation).isEqualTo("Test all the things!")
   }
 
   @Test
@@ -467,7 +467,7 @@ class ProtoParserTest {
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants[0]
-    assertThat(value.documentation()).isEqualTo("Test all the\nthings!")
+    assertThat(value.documentation).isEqualTo("Test all the\nthings!")
   }
 
   @Test
@@ -513,7 +513,7 @@ class ProtoParserTest {
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants[0]
-    assertThat(value.documentation()).isEqualTo("Test all...\n...the things!")
+    assertThat(value.documentation).isEqualTo("Test all...\n...the things!")
   }
 
   @Test
@@ -526,7 +526,7 @@ class ProtoParserTest {
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
     val value = enumElement.constants[0]
-    assertThat(value.documentation()).isEqualTo("Test all...")
+    assertThat(value.documentation).isEqualTo("Test all...")
   }
 
   @Test
@@ -1069,20 +1069,23 @@ class ProtoParserTest {
                 name = "Topping",
                 documentation = "What's on my waffles.\nAlso works on pancakes.",
                 constants = listOf(
-                    EnumConstantElement.builder(location.at(6, 3))
-                        .name("FRUIT")
-                        .tag(1)
-                        .build(),
-                    EnumConstantElement.builder(location.at(8, 3))
-                        .name("CREAM")
-                        .tag(2)
-                        .documentation("Yummy, yummy cream.")
-                        .build(),
-                    EnumConstantElement.builder(location.at(11, 3))
-                        .name("SYRUP")
-                        .tag(3)
-                        .documentation("Quebec Maple syrup")
-                        .build()
+                    EnumConstantElement(
+                        location = location.at(6, 3),
+                        name = "FRUIT",
+                        tag = 1
+                    ),
+                    EnumConstantElement(
+                        location = location.at(8, 3),
+                        name = "CREAM",
+                        tag = 2,
+                        documentation = "Yummy, yummy cream."
+                    ),
+                    EnumConstantElement(
+                        location = location.at(11, 3),
+                        name = "SYRUP",
+                        tag = 3,
+                        documentation = "Quebec Maple syrup"
+                    )
                 )
             )
         )
@@ -1117,25 +1120,26 @@ class ProtoParserTest {
                 documentation = "What's on my waffles.\nAlso works on pancakes.",
                 options = listOf(OptionElement.create("max_choices", Kind.NUMBER, "2", true)),
                 constants = listOf(
-                    EnumConstantElement.builder(location.at(8, 3))
-                        .name("FRUIT")
-                        .tag(1)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("healthy", Kind.BOOLEAN, "true", true)
-                            )
+                    EnumConstantElement(
+                        location = location.at(8, 3),
+                        name = "FRUIT",
+                        tag = 1,
+                        options = listOf(
+                            OptionElement.create("healthy", Kind.BOOLEAN, "true", true)
                         )
-                        .build(),
-                    EnumConstantElement.builder(location.at(10, 3))
-                        .name("CREAM")
-                        .tag(2)
-                        .documentation("Yummy, yummy cream.")
-                        .build(),
-                    EnumConstantElement.builder(location.at(13, 3))
-                        .name("SYRUP")
-                        .tag(3)
-                        .documentation("Quebec Maple syrup")
-                        .build()
+                    ),
+                    EnumConstantElement(
+                        location = location.at(10, 3),
+                        name = "CREAM",
+                        tag = 2,
+                        documentation = "Yummy, yummy cream."
+                    ),
+                    EnumConstantElement(
+                        location = location.at(13, 3),
+                        name = "SYRUP",
+                        tag = 3,
+                        documentation = "Quebec Maple syrup"
+                    )
                 )
             )
         )
@@ -1185,18 +1189,17 @@ class ProtoParserTest {
         location = location.at(3, 3),
         name = "CType",
         constants = listOf(
-                EnumConstantElement.builder(location.at(4, 5))
-                    .name("STRING")
-                    .tag(0)
-                    .options(
-                        ImmutableList.of(
-                            OptionElement.create("opt_a", Kind.NUMBER, "1", true),
-                            OptionElement.create("opt_b", Kind.NUMBER, "2", true)
-                        )
-                    )
-                    .build()
+            EnumConstantElement(
+                location = location.at(4, 5),
+                name = "STRING",
+                tag = 0,
+                options = listOf(
+                    OptionElement.create("opt_a", Kind.NUMBER, "1", true),
+                    OptionElement.create("opt_b", Kind.NUMBER, "2", true)
+                )
             )
         )
+    )
     val field = FieldElement.builder(location.at(2, 3))
         .label(OPTIONAL)
         .type("CType")
