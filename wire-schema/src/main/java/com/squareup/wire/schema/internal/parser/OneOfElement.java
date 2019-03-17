@@ -13,53 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
+import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.Util.appendIndented
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
+data class OneOfElement(
+  val name: String,
+  val documentation: String = "",
+  val fields: List<FieldElement> = emptyList(),
+  val groups: List<GroupElement> = emptyList()
+) {
+  fun toSchema() = buildString {
+    appendDocumentation(this, documentation)
+    append("oneof $name {")
 
-@AutoValue
-public abstract class OneOfElement {
-  public static Builder builder() {
-    return new AutoValue_OneOfElement.Builder()
-        .documentation("")
-        .fields(ImmutableList.<FieldElement>of())
-        .groups(ImmutableList.<GroupElement>of());
-  }
-
-  public abstract String name();
-  public abstract String documentation();
-  public abstract ImmutableList<FieldElement> fields();
-  public abstract ImmutableList<GroupElement> groups();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("oneof ").append(name()).append(" {");
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
+    if (fields.isNotEmpty()) {
+      append('\n')
+      for (field in fields) {
+        appendIndented(this, field.toSchema())
       }
     }
-    if (!groups().isEmpty()) {
-      builder.append('\n');
-      for (GroupElement group : groups()) {
-        appendIndented(builder, group.toSchema());
+    if (groups.isNotEmpty()) {
+      append('\n')
+      for (group in groups) {
+        appendIndented(this, group.toSchema())
       }
     }
-    return builder.append("}\n").toString();
-  }
-
-  @AutoValue.Builder
-  public interface Builder {
-    Builder name(String name);
-    Builder documentation(String documentation);
-    Builder fields(ImmutableList<FieldElement> fields);
-    Builder groups(ImmutableList<GroupElement> groups);
-    OneOfElement build();
+    append("}\n")
   }
 }
