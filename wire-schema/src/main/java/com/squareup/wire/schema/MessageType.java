@@ -260,7 +260,7 @@ public final class MessageType extends Type {
       MessageElement messageElement) {
     if (!messageElement.getGroups().isEmpty()) {
       GroupElement group = messageElement.getGroups().get(0);
-      throw new IllegalStateException(group.location() + ": 'group' is not supported");
+      throw new IllegalStateException(group.getLocation() + ": 'group' is not supported");
     }
 
     ImmutableList<Field> declaredFields =

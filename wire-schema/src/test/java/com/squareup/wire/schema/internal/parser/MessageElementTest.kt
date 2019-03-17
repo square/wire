@@ -301,26 +301,25 @@ class MessageElementTest {
                         .build()
                 ),
                 groups = listOf(
-                    GroupElement.builder(location.at(5, 5))
-                        .name("Stuff")
-                        .tag(3)
-                        .fields(
-                            ImmutableList.of(
-                                FieldElement.builder(location.at(6, 7))
-                                    .label(OPTIONAL)
-                                    .type("int32")
-                                    .name("result_per_page")
-                                    .tag(4)
-                                    .build(),
-                                FieldElement.builder(location.at(7, 7))
-                                    .label(OPTIONAL)
-                                    .type("int32")
-                                    .name("page_count")
-                                    .tag(5)
-                                    .build()
-                            )
+                    GroupElement(
+                        location = location.at(5, 5),
+                        name = "Stuff",
+                        tag = 3,
+                        fields = listOf(
+                            FieldElement.builder(location.at(6, 7))
+                                .label(OPTIONAL)
+                                .type("int32")
+                                .name("result_per_page")
+                                .tag(4)
+                                .build(),
+                            FieldElement.builder(location.at(7, 7))
+                                .label(OPTIONAL)
+                                .type("int32")
+                                .name("page_count")
+                                .tag(5)
+                                .build()
                         )
-                        .build()
+                    )
                 )
             )
         )
@@ -399,33 +398,32 @@ class MessageElementTest {
         location = location.at(1, 1),
         name = "SearchResponse",
         groups = listOf(
-            GroupElement.builder(location.at(2, 3))
-                .label(REPEATED)
-                .name("Result")
-                .tag(1)
-                .fields(
-                    ImmutableList.of(
-                        FieldElement.builder(location.at(3, 5))
-                            .label(REQUIRED)
-                            .type("string")
-                            .name("url")
-                            .tag(2)
-                            .build(),
-                        FieldElement.builder(location.at(4, 5))
-                            .label(OPTIONAL)
-                            .type("string")
-                            .name("title")
-                            .tag(3)
-                            .build(),
-                        FieldElement.builder(location.at(5, 5))
-                            .label(REPEATED)
-                            .type("string")
-                            .name("snippets")
-                            .tag(4)
-                            .build()
-                    )
+            GroupElement(
+                location = location.at(2, 3),
+                label = REPEATED,
+                name = "Result",
+                tag = 1,
+                fields = listOf(
+                    FieldElement.builder(location.at(3, 5))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("url")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 5))
+                        .label(OPTIONAL)
+                        .type("string")
+                        .name("title")
+                        .tag(3)
+                        .build(),
+                    FieldElement.builder(location.at(5, 5))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("snippets")
+                        .tag(4)
+                        .build()
                 )
-                .build()
+            )
         )
     )
     val expected = """

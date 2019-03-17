@@ -68,7 +68,7 @@ public final class OneOf {
     for (OneOfElement oneOf : elements) {
       if (!oneOf.getGroups().isEmpty()) {
         GroupElement group = oneOf.getGroups().get(0);
-        throw new IllegalStateException(group.location() + ": 'group' is not supported");
+        throw new IllegalStateException(group.getLocation() + ": 'group' is not supported");
       }
       oneOfs.add(new OneOf(oneOf.getName(), oneOf.getDocumentation(),
           Field.fromElements(packageName, oneOf.getFields(), extension)));

@@ -13,61 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Field;
-import com.squareup.wire.schema.Location;
-import java.util.Locale;
+import com.squareup.wire.schema.Field
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.Util.appendIndented
+import java.util.Locale
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
-
-@AutoValue
-public abstract class GroupElement {
-  public static Builder builder(Location location) {
-    return new AutoValue_GroupElement.Builder()
-        .location(location)
-        .documentation("")
-        .fields(ImmutableList.<FieldElement>of());
-  }
-
-  @Nullable public abstract Field.Label label();
-  public abstract Location location();
-  public abstract String name();
-  public abstract int tag();
-  public abstract String documentation();
-  public abstract ImmutableList<FieldElement> fields();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    if (label() != null) {
-      builder.append(label().name().toLowerCase(Locale.US)).append(' ');
+data class GroupElement(
+  val label: Field.Label? = null,
+  val location: Location,
+  val name: String,
+  val tag: Int,
+  val documentation: String = "",
+  val fields: List<FieldElement> = emptyList()
+) {
+  fun toSchema() = buildString {
+    appendDocumentation(this, documentation)
+    if (label != null) {
+      append("${label.name.toLowerCase(Locale.US)} ")
     }
-    builder.append("group ")
-        .append(name())
-        .append(" = ")
-        .append(tag())
-        .append(" {");
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
+    append("group $name = $tag {")
+    if (fields.isNotEmpty()) {
+      append('\n')
+      for (field in fields) {
+        appendIndented(this, field.toSchema())
       }
     }
-    return builder.append("}\n").toString();
-  }
-
-  @AutoValue.Builder
-  public interface Builder {
-    Builder location(Location location);
-    Builder label(Field.Label label);
-    Builder name(String name);
-    Builder tag(int value);
-    Builder documentation(String documentation);
-    Builder fields(ImmutableList<FieldElement> fields);
-    GroupElement build();
+    append("}\n")
   }
 }

@@ -408,11 +408,6 @@ public final class ProtoParser {
     reader.require('=');
     int tag = reader.readInt();
 
-    GroupElement.Builder builder = GroupElement.builder(location)
-        .label(label)
-        .name(name)
-        .tag(tag)
-        .documentation(documentation);
     ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
 
     reader.require('{');
@@ -429,8 +424,14 @@ public final class ProtoParser {
       fields.add((FieldElement) field);
     }
 
-    return builder.fields(fields.build())
-        .build();
+    return new GroupElement(
+        label,
+        location,
+        name,
+        tag,
+        documentation,
+        fields.build()
+    );
   }
 
   /** Reads a reserved tags and names list like "reserved 10, 12 to 14, 'foo';". */
