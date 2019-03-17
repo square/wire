@@ -376,12 +376,10 @@ class MessageElementTest {
         location = location,
         name = "Message",
         reserveds = listOf(
-            ReservedElement.create(
-                location, "", ImmutableList.of(10, Range.closed(12, 14), "foo")
-            ),
-            ReservedElement.create(location, "", ImmutableList.of(10)),
-            ReservedElement.create(location, "", ImmutableList.of(Range.closed(12, 14))),
-            ReservedElement.create(location, "", ImmutableList.of("foo"))
+            ReservedElement(location = location, values = listOf(10, Range.closed(12, 14), "foo")),
+            ReservedElement(location = location, values = listOf(10)),
+            ReservedElement(location = location, values = listOf(Range.closed(12, 14))),
+            ReservedElement(location = location, values = listOf("foo"))
         )
     )
     val expected = """

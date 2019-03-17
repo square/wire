@@ -464,7 +464,7 @@ public final class ProtoParser {
     if (values.isEmpty()) {
       throw reader.unexpected("'reserved' must have at least one field name or tag");
     }
-    return ReservedElement.create(location, documentation, values);
+    return new ReservedElement(location, documentation, values);
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */

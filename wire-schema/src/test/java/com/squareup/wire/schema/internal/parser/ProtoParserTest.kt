@@ -2198,9 +2198,9 @@ class ProtoParserTest {
         location = location.at(1, 1),
         name = "Foo",
         reserveds = listOf(
-            ReservedElement.create(
-                location.at(2, 3), "",
-                ImmutableList.of(10, Range.closed(12, 14), "foo")
+            ReservedElement(
+                location = location.at(2, 3),
+                values = listOf(10, Range.closed(12, 14), "foo")
             )
         )
     )
