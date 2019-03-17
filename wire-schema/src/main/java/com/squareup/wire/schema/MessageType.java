@@ -169,7 +169,7 @@ public final class MessageType extends Type {
     return extensionsForType;
   }
 
-  void addExtensionFields(ImmutableList<Field> fields) {
+  void addExtensionFields(List<Field> fields) {
     extensionFields.addAll(fields);
   }
 
