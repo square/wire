@@ -60,9 +60,9 @@ public final class Field {
       boolean extension) {
     ImmutableList.Builder<Field> fields = ImmutableList.builder();
     for (FieldElement field : fieldElements) {
-      fields.add(new Field(packageName, field.location(), field.label(), field.name(),
-          field.documentation(), field.tag(), field.defaultValue(), field.type(),
-          new Options(Options.FIELD_OPTIONS, field.options()), extension));
+      fields.add(new Field(packageName, field.getLocation(), field.getLabel(), field.getName(),
+          field.getDocumentation(), field.getTag(), field.getDefaultValue(), field.getType(),
+          new Options(Options.FIELD_OPTIONS, field.getOptions()), extension));
     }
     return fields.build();
   }
@@ -70,15 +70,16 @@ public final class Field {
   static ImmutableList<FieldElement> toElements(List<Field> fields) {
     ImmutableList.Builder<FieldElement> elements = new ImmutableList.Builder<>();
     for (Field field : fields) {
-      elements.add(FieldElement.builder(field.location)
-          .label(field.label)
-          .name(field.name)
-          .documentation(field.documentation)
-          .tag(field.tag)
-          .defaultValue(field.defaultValue)
-          .options(field.options.toElements())
-          .type(field.elementType)
-          .build());
+      elements.add(new FieldElement(
+          field.location,
+          field.label,
+          field.elementType,
+          field.name,
+          field.defaultValue,
+          field.tag,
+          field.documentation,
+          field.options.toElements()
+      ));
     }
     return elements.build();
   }

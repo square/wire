@@ -341,12 +341,6 @@ public final class ProtoParser {
     reader.require('=');
     int tag = reader.readInt();
 
-    FieldElement.Builder builder = FieldElement.builder(location)
-        .label(label)
-        .type(type)
-        .name(name)
-        .tag(tag);
-
     List<OptionElement> options = new OptionReader(reader).readOptions();
     reader.require(';');
 
@@ -354,10 +348,15 @@ public final class ProtoParser {
     String defaultValue = stripDefault(options);
 
     documentation = reader.tryAppendTrailingDocumentation(documentation);
-    return builder.documentation(documentation)
-        .defaultValue(defaultValue)
-        .options(ImmutableList.copyOf(options))
-        .build();
+    return new FieldElement(
+        location,
+        label,
+        type,
+        name,
+        defaultValue,
+        tag,
+        documentation,
+        new ArrayList<>(options));
   }
 
   /**

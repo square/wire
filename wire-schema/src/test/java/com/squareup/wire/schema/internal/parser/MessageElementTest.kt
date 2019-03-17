@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
 import com.google.common.collect.Range
 import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REPEATED
@@ -43,14 +42,15 @@ class MessageElementTest {
         location = location,
         name = "Message",
         fields = listOf(
-                FieldElement.builder(location)
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                tag = 1
             )
         )
+    )
     val expected = """
         |message Message {
         |  required string name = 1;
@@ -61,18 +61,20 @@ class MessageElementTest {
 
   @Test
   fun addMultipleFields() {
-    val firstName = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("first_name")
-        .tag(1)
-        .build()
-    val lastName = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("last_name")
-        .tag(2)
-        .build()
+    val firstName = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "first_name",
+        tag = 1
+    )
+    val lastName = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "last_name",
+        tag = 2
+    )
     val element = MessageElement(
         location = location,
         name = "Message",
@@ -88,12 +90,13 @@ class MessageElementTest {
         name = "Message",
         documentation = "Hello",
         fields = listOf(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                tag = 1
+            )
         )
     )
     val expected = """
@@ -107,12 +110,13 @@ class MessageElementTest {
 
   @Test
   fun simpleWithOptionsToSchema() {
-    val field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .build()
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1
+    )
     val element = MessageElement(
         location = location,
         name = "Message",
@@ -131,12 +135,13 @@ class MessageElementTest {
 
   @Test
   fun addMultipleOptions() {
-    val field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .build()
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1
+    )
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
     val element = MessageElement(
@@ -154,24 +159,26 @@ class MessageElementTest {
         location = location,
         name = "Message",
         fields = listOf(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                tag = 1
+            )
         ),
         nestedTypes = listOf(
             MessageElement(
                 location = location,
                 name = "Nested",
                 fields = listOf(
-                    FieldElement.builder(location)
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("name")
-                        .tag(1)
-                        .build()
+                    FieldElement(
+                        location = location,
+                        label = REQUIRED,
+                        type = "string",
+                        name = "name",
+                        tag = 1
+                    )
                 )
             )
         )
@@ -200,12 +207,13 @@ class MessageElementTest {
         location = location,
         name = "Message",
         fields = listOf(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                tag = 1
+            )
         ),
         nestedTypes = listOf(nested1, nested2)
     )
@@ -218,12 +226,13 @@ class MessageElementTest {
         location = location,
         name = "Message",
         fields = listOf(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                tag = 1
+            )
         ),
         extensions = listOf(ExtensionsElement(location = location, start = 500, end = 501))
     )
@@ -245,12 +254,13 @@ class MessageElementTest {
         location = location,
         name = "Message",
         fields = listOf(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                tag = 1
+            )
         ),
         extensions = listOf(fives, sixes)
     )
@@ -266,11 +276,12 @@ class MessageElementTest {
             OneOfElement(
                 name = "hi",
                 fields = listOf(
-                    FieldElement.builder(location)
-                        .type("string")
-                        .name("name")
-                        .tag(1)
-                        .build()
+                    FieldElement(
+                        location = location,
+                        type = "string",
+                        name = "name",
+                        tag = 1
+                    )
                 )
             )
         )
@@ -294,11 +305,12 @@ class MessageElementTest {
             OneOfElement(
                 name = "hi",
                 fields = listOf(
-                    FieldElement.builder(location)
-                        .type("string")
-                        .name("name")
-                        .tag(1)
-                        .build()
+                    FieldElement(
+                        location = location,
+                        type = "string",
+                        name = "name",
+                        tag = 1
+                    )
                 ),
                 groups = listOf(
                     GroupElement(
@@ -306,18 +318,20 @@ class MessageElementTest {
                         name = "Stuff",
                         tag = 3,
                         fields = listOf(
-                            FieldElement.builder(location.at(6, 7))
-                                .label(OPTIONAL)
-                                .type("int32")
-                                .name("result_per_page")
-                                .tag(4)
-                                .build(),
-                            FieldElement.builder(location.at(7, 7))
-                                .label(OPTIONAL)
-                                .type("int32")
-                                .name("page_count")
-                                .tag(5)
-                                .build()
+                            FieldElement(
+                                location = location.at(6, 7),
+                                label = OPTIONAL,
+                                type = "int32",
+                                name = "result_per_page",
+                                tag = 4
+                            ),
+                            FieldElement(
+                                location = location.at(7, 7),
+                                label = OPTIONAL,
+                                type = "int32",
+                                name = "page_count",
+                                tag = 5
+                            )
                         )
                     )
                 )
@@ -344,21 +358,23 @@ class MessageElementTest {
     val hi = OneOfElement(
         name = "hi",
         fields = listOf(
-            FieldElement.builder(location)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()
+            FieldElement(
+                location = location,
+                type = "string",
+                name = "name",
+                tag = 1
+            )
         )
     )
     val hey = OneOfElement(
         name = "hey",
         fields = listOf(
-            FieldElement.builder(location)
-                .type("string")
-                .name("city")
-                .tag(2)
-                .build()
+            FieldElement(
+                location = location,
+                type = "string",
+                name = "city",
+                tag = 2
+            )
         )
     )
     val element = MessageElement(
@@ -404,24 +420,27 @@ class MessageElementTest {
                 name = "Result",
                 tag = 1,
                 fields = listOf(
-                    FieldElement.builder(location.at(3, 5))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("url")
-                        .tag(2)
-                        .build(),
-                    FieldElement.builder(location.at(4, 5))
-                        .label(OPTIONAL)
-                        .type("string")
-                        .name("title")
-                        .tag(3)
-                        .build(),
-                    FieldElement.builder(location.at(5, 5))
-                        .label(REPEATED)
-                        .type("string")
-                        .name("snippets")
-                        .tag(4)
-                        .build()
+                    FieldElement(
+                        location = location.at(3, 5),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "url",
+                        tag = 2
+                    ),
+                    FieldElement(
+                        location = location.at(4, 5),
+                        label = OPTIONAL,
+                        type = "string",
+                        name = "title",
+                        tag = 3
+                    ),
+                    FieldElement(
+                        location = location.at(5, 5),
+                        label = REPEATED,
+                        type = "string",
+                        name = "snippets",
+                        tag = 4
+                    )
                 )
             )
         )
@@ -440,32 +459,36 @@ class MessageElementTest {
 
   @Test
   fun multipleEverythingToSchema() {
-    val field1 = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .build()
-    val field2 = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("bool")
-        .name("other_name")
-        .tag(2)
-        .build()
-    val oneOf1Field = FieldElement.builder(location)
-        .type("string")
-        .name("namey")
-        .tag(3)
-        .build()
+    val field1 = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1
+    )
+    val field2 = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "bool",
+        name = "other_name",
+        tag = 2
+    )
+    val oneOf1Field = FieldElement(
+        location = location,
+        type = "string",
+        name = "namey",
+        tag = 3
+    )
     val oneOf1 = OneOfElement(
         name = "thingy",
         fields = listOf(oneOf1Field)
     )
-    val oneOf2Field = FieldElement.builder(location)
-        .type("string")
-        .name("namer")
-        .tag(4)
-        .build()
+    val oneOf2Field = FieldElement(
+        location = location,
+        type = "string",
+        name = "namer",
+        tag = 4
+    )
     val oneOf2 = OneOfElement(
         name = "thinger",
         fields = listOf(oneOf2Field)
@@ -514,36 +537,39 @@ class MessageElementTest {
 
   @Test
   fun fieldToSchema() {
-    val field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .build()
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1
+    )
     val expected = "required string name = 1;\n"
     assertThat(field.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun oneOfFieldToSchema() {
-    val field = FieldElement.builder(location)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .build()
+    val field = FieldElement(
+        location = location,
+        type = "string",
+        name = "name",
+        tag = 1
+    )
     val expected = "string name = 1;\n"
     assertThat(field.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun fieldWithDocumentationToSchema() {
-    val field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .documentation("Hello")
-        .build()
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1,
+        documentation = "Hello"
+    )
     val expected =
         """// Hello
         |required string name = 1;
@@ -553,13 +579,14 @@ class MessageElementTest {
 
   @Test
   fun fieldWithOptionsToSchema() {
-    val field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .options(ImmutableList.of(OptionElement.create("kit", Kind.STRING, "kat")))
-        .build()
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1,
+        options = listOf(OptionElement.create("kit", Kind.STRING, "kat"))
+    )
     val expected =
         """required string name = 1 [
         |  kit = "kat"

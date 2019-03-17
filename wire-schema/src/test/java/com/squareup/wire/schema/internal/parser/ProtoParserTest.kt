@@ -68,124 +68,144 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "Types",
                 fields = listOf(
-                    FieldElement.builder(location.at(2, 3))
-                        .label(REQUIRED)
-                        .type("any")
-                        .name("f1")
-                        .tag(1)
-                        .build(),
-                    FieldElement.builder(location.at(3, 3))
-                        .label(REQUIRED)
-                        .type("bool")
-                        .name("f2")
-                        .tag(2)
-                        .build(),
-                    FieldElement.builder(location.at(4, 3))
-                        .label(REQUIRED)
-                        .type("bytes")
-                        .name("f3")
-                        .tag(3)
-                        .build(),
-                    FieldElement.builder(location.at(5, 3))
-                        .label(REQUIRED)
-                        .type("double")
-                        .name("f4")
-                        .tag(4)
-                        .build(),
-                    FieldElement.builder(location.at(6, 3))
-                        .label(REQUIRED)
-                        .type("float")
-                        .name("f5")
-                        .tag(5)
-                        .build(),
-                    FieldElement.builder(location.at(7, 3))
-                        .label(REQUIRED)
-                        .type("fixed32")
-                        .name("f6")
-                        .tag(6)
-                        .build(),
-                    FieldElement.builder(location.at(8, 3))
-                        .label(REQUIRED)
-                        .type("fixed64")
-                        .name("f7")
-                        .tag(7)
-                        .build(),
-                    FieldElement.builder(location.at(9, 3))
-                        .label(REQUIRED)
-                        .type("int32")
-                        .name("f8")
-                        .tag(8)
-                        .build(),
-                    FieldElement.builder(location.at(10, 3))
-                        .label(REQUIRED)
-                        .type("int64")
-                        .name("f9")
-                        .tag(9)
-                        .build(),
-                    FieldElement.builder(location.at(11, 3))
-                        .label(REQUIRED)
-                        .type("sfixed32")
-                        .name("f10")
-                        .tag(10)
-                        .build(),
-                    FieldElement.builder(location.at(12, 3))
-                        .label(REQUIRED)
-                        .type("sfixed64")
-                        .name("f11")
-                        .tag(11)
-                        .build(),
-                    FieldElement.builder(location.at(13, 3))
-                        .label(REQUIRED)
-                        .type("sint32")
-                        .name("f12")
-                        .tag(12)
-                        .build(),
-                    FieldElement.builder(location.at(14, 3))
-                        .label(REQUIRED)
-                        .type("sint64")
-                        .name("f13")
-                        .tag(13)
-                        .build(),
-                    FieldElement.builder(location.at(15, 3))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("f14")
-                        .tag(14)
-                        .build(),
-                    FieldElement.builder(location.at(16, 3))
-                        .label(REQUIRED)
-                        .type("uint32")
-                        .name("f15")
-                        .tag(15)
-                        .build(),
-                    FieldElement.builder(location.at(17, 3))
-                        .label(REQUIRED)
-                        .type("uint64")
-                        .name("f16")
-                        .tag(16)
-                        .build(),
-                    FieldElement.builder(location.at(18, 3))
-                        .type("map<string, bool>")
-                        .name("f17")
-                        .tag(17)
-                        .build(),
-                    FieldElement.builder(location.at(19, 3))
-                        .type("map<arbitrary, nested.nested>")
-                        .name("f18")
-                        .tag(18)
-                        .build(),
-                    FieldElement.builder(location.at(20, 3))
-                        .label(REQUIRED)
-                        .type("arbitrary")
-                        .name("f19")
-                        .tag(19)
-                        .build(),
-                    FieldElement.builder(location.at(21, 3))
-                        .label(REQUIRED)
-                        .type("nested.nested")
-                        .name("f20")
-                        .tag(20)
-                        .build()
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = REQUIRED,
+                        type = "any",
+                        name = "f1",
+                        tag = 1
+                    ),
+                    FieldElement(
+                        location = location.at(3, 3),
+                        label = REQUIRED,
+                        type = "bool",
+                        name = "f2",
+                        tag = 2
+                    ),
+                    FieldElement(
+                        location = location.at(4, 3),
+                        label = REQUIRED,
+                        type = "bytes",
+                        name = "f3",
+                        tag = 3
+                    ),
+                    FieldElement(
+                        location = location.at(5, 3),
+                        label = REQUIRED,
+                        type = "double",
+                        name = "f4",
+                        tag = 4
+                    ),
+                    FieldElement(
+                        location = location.at(6, 3),
+                        label = REQUIRED,
+                        type = "float",
+                        name = "f5",
+                        tag = 5
+                    ),
+                    FieldElement(
+                        location = location.at(7, 3),
+                        label = REQUIRED,
+                        type = "fixed32",
+                        name = "f6",
+                        tag = 6
+                    ),
+                    FieldElement(
+                        location = location.at(8, 3),
+                        label = REQUIRED,
+                        type = "fixed64",
+                        name = "f7",
+                        tag = 7
+                    ),
+                    FieldElement(
+                        location = location.at(9, 3),
+                        label = REQUIRED,
+                        type = "int32",
+                        name = "f8",
+                        tag = 8
+                    ),
+                    FieldElement(
+                        location = location.at(10, 3),
+                        label = REQUIRED,
+                        type = "int64",
+                        name = "f9",
+                        tag = 9
+                    ),
+                    FieldElement(
+                        location = location.at(11, 3),
+                        label = REQUIRED,
+                        type = "sfixed32",
+                        name = "f10",
+                        tag = 10
+                    ),
+                    FieldElement(
+                        location = location.at(12, 3),
+                        label = REQUIRED,
+                        type = "sfixed64",
+                        name = "f11",
+                        tag = 11
+                    ),
+                    FieldElement(
+                        location = location.at(13, 3),
+                        label = REQUIRED,
+                        type = "sint32",
+                        name = "f12",
+                        tag = 12
+                    ),
+                    FieldElement(
+                        location = location.at(14, 3),
+                        label = REQUIRED,
+                        type = "sint64",
+                        name = "f13",
+                        tag = 13
+                    ),
+                    FieldElement(
+                        location = location.at(15, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "f14",
+                        tag = 14
+                    ),
+                    FieldElement(
+                        location = location.at(16, 3),
+                        label = REQUIRED,
+                        type = "uint32",
+                        name = "f15",
+                        tag = 15
+                    ),
+                    FieldElement(
+                        location = location.at(17, 3),
+                        label = REQUIRED,
+                        type = "uint64",
+                        name = "f16",
+                        tag = 16
+                    ),
+                    FieldElement(
+                        location = location.at(18, 3),
+                        type = "map<string, bool>",
+                        name = "f17",
+                        tag = 17
+                    ),
+                    FieldElement(
+                        location = location.at(19, 3),
+                        type = "map<arbitrary, nested.nested>",
+                        name = "f18",
+                        tag = 18
+                    ),
+                    FieldElement(
+                        location = location.at(20, 3),
+                        label = REQUIRED,
+                        type = "arbitrary",
+                        name = "f19",
+                        tag = 19
+                    ),
+                    FieldElement(
+                        location = location.at(21, 3),
+                        label = REQUIRED,
+                        type = "nested.nested",
+                        name = "f20",
+                        tag = 20
+                    )
                 )
             )
         )
@@ -240,18 +260,15 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "Message",
                 fields = listOf(
-                    FieldElement.builder(location.at(2, 3))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("a")
-                        .defaultValue("b")
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("faulted", Kind.STRING, "c")
-                            )
-                        )
-                        .tag(1)
-                        .build()
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "a",
+                        defaultValue = "b",
+                        options = listOf(OptionElement.create("faulted", Kind.STRING, "c")),
+                        tag = 1
+                    )
                 )
             )
         )
@@ -394,7 +411,7 @@ class ProtoParserTest {
     val parsed = ProtoParser.parse(location, proto)
     val message = parsed.types[0] as MessageElement
     val field = message.fields[0]
-    assertThat(field.documentation()).isEqualTo("Test all the things!")
+    assertThat(field.documentation).isEqualTo("Test all the things!")
   }
 
   @Test
@@ -408,7 +425,7 @@ class ProtoParserTest {
     val parsed = ProtoParser.parse(location, proto)
     val message = parsed.types[0] as MessageElement
     val field = message.fields[0]
-    assertThat(field.documentation()).isEqualTo("Test all...\n...the things!")
+    assertThat(field.documentation).isEqualTo("Test all...\n...the things!")
   }
 
   @Test
@@ -422,9 +439,9 @@ class ProtoParserTest {
     val parsed = ProtoParser.parse(location, proto)
     val message = parsed.types[0] as MessageElement
     val field1 = message.fields[0]
-    assertThat(field1.documentation()).isEqualTo("Testing!")
+    assertThat(field1.documentation).isEqualTo("Testing!")
     val field2 = message.fields[1]
-    assertThat(field2.documentation()).isEqualTo("")
+    assertThat(field2.documentation).isEqualTo("")
   }
 
   @Test
@@ -637,16 +654,18 @@ class ProtoParserTest {
                 location = location.at(2, 1),
                 name = "Message",
                 fields = listOf(
-                    FieldElement.builder(location.at(3, 3))
-                        .type("string")
-                        .name("a")
-                        .tag(1)
-                        .build(),
-                    FieldElement.builder(location.at(4, 3))
-                        .type("int32")
-                        .name("b")
-                        .tag(2)
-                        .build()
+                    FieldElement(
+                        location = location.at(3, 3),
+                        type = "string",
+                        name = "a",
+                        tag = 1
+                    ),
+                    FieldElement(
+                        location = location.at(4, 3),
+                        type = "int32",
+                        name = "b",
+                        tag = 2
+                    )
                 )
             )
         )
@@ -679,16 +698,18 @@ class ProtoParserTest {
                 location = location.at(4, 1),
                 name = "Message",
                 fields = listOf(
-                    FieldElement.builder(location.at(5, 3))
-                        .type("string")
-                        .name("a")
-                        .tag(1)
-                        .build(),
-                    FieldElement.builder(location.at(6, 3))
-                        .type("int32")
-                        .name("b")
-                        .tag(2)
-                        .build()
+                    FieldElement(
+                        location = location.at(5, 3),
+                        type = "string",
+                        name = "a",
+                        tag = 1
+                    ),
+                    FieldElement(
+                        location = location.at(6, 3),
+                        type = "int32",
+                        name = "b",
+                        tag = 2
+                    )
                 )
             )
         )
@@ -789,12 +810,13 @@ class ProtoParserTest {
                 location = location.at(2, 1),
                 name = "Message",
                 fields = listOf(
-                    FieldElement.builder(location.at(3, 3))
-                        .label(REPEATED)
-                        .type("string")
-                        .name("a")
-                        .tag(1)
-                        .build()
+                    FieldElement(
+                        location = location.at(3, 3),
+                        label = REPEATED,
+                        type = "string",
+                        name = "a",
+                        tag = 1
+                    )
                 )
             )
         )
@@ -826,12 +848,13 @@ class ProtoParserTest {
                 location = location.at(4, 1),
                 name = "Message",
                 fields = listOf(
-                    FieldElement.builder(location.at(5, 3))
-                        .label(REPEATED)
-                        .type("string")
-                        .name("a")
-                        .tag(1)
-                        .build()
+                    FieldElement(
+                        location = location.at(5, 3),
+                        label = REPEATED,
+                        type = "string",
+                        name = "a",
+                        tag = 1
+                    )
                 )
             )
         )
@@ -855,24 +878,27 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "SearchRequest",
                 fields = listOf(
-                    FieldElement.builder(location.at(2, 3))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("query")
-                        .tag(1)
-                        .build(),
-                    FieldElement.builder(location.at(3, 3))
-                        .label(OPTIONAL)
-                        .type("int32")
-                        .name("page_number")
-                        .tag(2)
-                        .build(),
-                    FieldElement.builder(location.at(4, 3))
-                        .label(OPTIONAL)
-                        .type("int32")
-                        .name("result_per_page")
-                        .tag(3)
-                        .build()
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "query",
+                        tag = 1
+                    ),
+                    FieldElement(
+                        location = location.at(3, 3),
+                        label = OPTIONAL,
+                        type = "int32",
+                        name = "page_number",
+                        tag = 2
+                    ),
+                    FieldElement(
+                        location = location.at(4, 3),
+                        label = OPTIONAL,
+                        type = "int32",
+                        name = "result_per_page",
+                        tag = 3
+                    )
                 )
             )
         )
@@ -901,24 +927,27 @@ class ProtoParserTest {
                 name = "Result",
                 tag = 1,
                 fields = listOf(
-                    FieldElement.builder(location.at(3, 5))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("url")
-                        .tag(2)
-                        .build(),
-                    FieldElement.builder(location.at(4, 5))
-                        .label(OPTIONAL)
-                        .type("string")
-                        .name("title")
-                        .tag(3)
-                        .build(),
-                    FieldElement.builder(location.at(5, 5))
-                        .label(REPEATED)
-                        .type("string")
-                        .name("snippets")
-                        .tag(4)
-                        .build()
+                    FieldElement(
+                        location = location.at(3, 5),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "url",
+                        tag = 2
+                    ),
+                    FieldElement(
+                        location = location.at(4, 5),
+                        label = OPTIONAL,
+                        type = "string",
+                        name = "title",
+                        tag = 3
+                    ),
+                    FieldElement(
+                        location = location.at(5, 5),
+                        label = REPEATED,
+                        type = "string",
+                        name = "snippets",
+                        tag = 4
+                    )
                 )
             )
         )
@@ -948,27 +977,30 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "SearchRequest",
                 fields = listOf(
-                    FieldElement.builder(location.at(2, 3))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("query")
-                        .tag(1)
-                        .build()
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "query",
+                        tag = 1
+                    )
                 ),
                 oneOfs = listOf(
                     OneOfElement(
                         name = "page_info",
                         fields = listOf(
-                            FieldElement.builder(location.at(4, 5))
-                                .type("int32")
-                                .name("page_number")
-                                .tag(2)
-                                .build(),
-                            FieldElement.builder(location.at(5, 5))
-                                .type("int32")
-                                .name("result_per_page")
-                                .tag(3)
-                                .build()
+                            FieldElement(
+                                location = location.at(4, 5),
+                                type = "int32",
+                                name = "page_number",
+                                tag = 2
+                            ),
+                            FieldElement(
+                                location = location.at(5, 5),
+                                type = "int32",
+                                name = "result_per_page",
+                                tag = 3
+                            )
                         )
                     )
                 )
@@ -999,22 +1031,24 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "SearchRequest",
                 fields = listOf(
-                    FieldElement.builder(location.at(2, 3))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("query")
-                        .tag(1)
-                        .build()
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "query",
+                        tag = 1
+                    )
                 ),
                 oneOfs = listOf(
                     OneOfElement(
                         name = "page_info",
                         fields = listOf(
-                            FieldElement.builder(location.at(4, 5))
-                                .type("int32")
-                                .name("page_number")
-                                .tag(2)
-                                .build()
+                            FieldElement(
+                                location = location.at(4, 5),
+                                type = "int32",
+                                name = "page_number",
+                                tag = 2
+                            )
                         ),
                         groups = listOf(
                             GroupElement(
@@ -1022,18 +1056,20 @@ class ProtoParserTest {
                                 name = "Stuff",
                                 tag = 3,
                                 fields = listOf(
-                                    FieldElement.builder(location.at(6, 7))
-                                        .label(OPTIONAL)
-                                        .type("int32")
-                                        .name("result_per_page")
-                                        .tag(4)
-                                        .build(),
-                                    FieldElement.builder(location.at(7, 7))
-                                        .label(OPTIONAL)
-                                        .type("int32")
-                                        .name("page_count")
-                                        .tag(5)
-                                        .build()
+                                    FieldElement(
+                                        location = location.at(6, 7),
+                                        label = OPTIONAL,
+                                        type = "int32",
+                                        name = "result_per_page",
+                                        tag = 4
+                                    ),
+                                    FieldElement(
+                                        location = location.at(7, 7),
+                                        label = OPTIONAL,
+                                        type = "int32",
+                                        name = "page_count",
+                                        tag = 5
+                                    )
                                 )
                             )
                         )
@@ -1199,22 +1235,22 @@ class ProtoParserTest {
             )
         )
     )
-    val field = FieldElement.builder(location.at(2, 3))
-        .label(OPTIONAL)
-        .type("CType")
-        .name("ctype")
-        .tag(1)
-        .options(
-            ImmutableList.of(
-                OptionElement.create("old_default", Kind.ENUM, "STRING"),
-                OptionElement.create("deprecated", Kind.BOOLEAN, "true")
-            )
+    val field = FieldElement(
+        location = location.at(2, 3),
+        label = OPTIONAL,
+        type = "CType",
+        name = "ctype",
+        tag = 1,
+        options = listOf(
+            OptionElement.create("old_default", Kind.ENUM, "STRING"),
+            OptionElement.create("deprecated", Kind.BOOLEAN, "true")
         )
-        .build()
-    assertThat(field.options()).containsOnly(
-        OptionElement.create("old_default", Kind.ENUM, "STRING"),
-        OptionElement.create("deprecated", Kind.BOOLEAN, "true")
     )
+    assertThat(field.options)
+        .containsOnly(
+            OptionElement.create("old_default", Kind.ENUM, "STRING"),
+            OptionElement.create("deprecated", Kind.BOOLEAN, "true")
+        )
 
     val messageElement = MessageElement(
         location = location.at(1, 1),
@@ -1257,47 +1293,45 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "Chickens",
                 fields = listOf(
-                    FieldElement.builder(location.at(2, 3))
-                        .label(OPTIONAL)
-                        .type("bool")
-                        .name("koka_ko_koka_ko")
-                        .tag(1)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("old_default", Kind.BOOLEAN, "true")
-                            )
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = OPTIONAL,
+                        type = "bool",
+                        name = "koka_ko_koka_ko",
+                        tag = 1,
+                        options = listOf(
+                            OptionElement.create("old_default", Kind.BOOLEAN, "true")
                         )
-                        .build(),
-                    FieldElement.builder(location.at(3, 3))
-                        .label(OPTIONAL)
-                        .type("bool")
-                        .name("coodle_doodle_do")
-                        .tag(2)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("delay", Kind.NUMBER, "100", true),
-                                OptionElement.create("old_default", Kind.BOOLEAN, "false")
-                            )
+                    ),
+                    FieldElement(
+                        location = location.at(3, 3),
+                        label = OPTIONAL,
+                        type = "bool",
+                        name = "coodle_doodle_do",
+                        tag = 2,
+                        options = listOf(
+                            OptionElement.create("delay", Kind.NUMBER, "100", true),
+                            OptionElement.create("old_default", Kind.BOOLEAN, "false")
                         )
-                        .build(),
-                    FieldElement.builder(location.at(4, 3))
-                        .label(OPTIONAL)
-                        .type("bool")
-                        .name("coo_coo_ca_cha")
-                        .tag(3)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("old_default", Kind.BOOLEAN, "true"),
-                                OptionElement.create("delay", Kind.NUMBER, "200", true)
-                            )
+                    ),
+                    FieldElement(
+                        location = location.at(4, 3),
+                        label = OPTIONAL,
+                        type = "bool",
+                        name = "coo_coo_ca_cha",
+                        tag = 3,
+                        options = listOf(
+                            OptionElement.create("old_default", Kind.BOOLEAN, "true"),
+                            OptionElement.create("delay", Kind.NUMBER, "200", true)
                         )
-                        .build(),
-                    FieldElement.builder(location.at(5, 3))
-                        .label(OPTIONAL)
-                        .type("bool")
-                        .name("cha_chee_cha")
-                        .tag(4)
-                        .build()
+                    ),
+                    FieldElement(
+                        location = location.at(5, 3),
+                        label = OPTIONAL,
+                        type = "bool",
+                        name = "cha_chee_cha",
+                        tag = 4
+                    )
                 )
             )
         )
@@ -1341,12 +1375,13 @@ class ProtoParserTest {
                 name = "Foo",
                 documentation = "Extends Foo",
                 fields = listOf(
-                    FieldElement.builder(location.at(3, 3))
-                        .label(OPTIONAL)
-                        .type("int32")
-                        .name("bar")
-                        .tag(126)
-                        .build()
+                    FieldElement(
+                        location = location.at(3, 3),
+                        label = OPTIONAL,
+                        type = "int32",
+                        name = "bar",
+                        tag = 126
+                    )
                 )
             )
         )
@@ -1371,12 +1406,13 @@ class ProtoParserTest {
                 location = location.at(2, 3),
                 name = "Foo",
                 fields = listOf(
-                    FieldElement.builder(location.at(3, 5))
-                        .label(OPTIONAL)
-                        .type("Bar")
-                        .name("bar")
-                        .tag(126)
-                        .build()
+                    FieldElement(
+                        location = location.at(3, 5),
+                        label = OPTIONAL,
+                        type = "Bar",
+                        name = "bar",
+                        tag = 126
+                    )
                 )
             )
         )
@@ -1407,12 +1443,13 @@ class ProtoParserTest {
                 location = location.at(4, 3),
                 name = "Foo",
                 fields = listOf(
-                    FieldElement.builder(location.at(5, 5))
-                        .label(OPTIONAL)
-                        .type("Bar")
-                        .name("bar")
-                        .tag(126)
-                        .build()
+                    FieldElement(
+                        location = location.at(5, 5),
+                        label = OPTIONAL,
+                        type = "Bar",
+                        name = "bar",
+                        tag = 126
+                    )
                 )
             )
         )
@@ -1437,12 +1474,13 @@ class ProtoParserTest {
                 location = location.at(2, 3),
                 name = "example.Foo",
                 fields = listOf(
-                    FieldElement.builder(location.at(3, 5))
-                        .label(OPTIONAL)
-                        .type("Bar")
-                        .name("bar")
-                        .tag(126)
-                        .build()
+                    FieldElement(
+                        location = location.at(3, 5),
+                        label = OPTIONAL,
+                        type = "Bar",
+                        name = "bar",
+                        tag = 126
+                    )
                 )
             )
         )
@@ -1473,12 +1511,13 @@ class ProtoParserTest {
                 location = location.at(4, 3),
                 name = "example.Foo",
                 fields = listOf(
-                    FieldElement.builder(location.at(5, 5))
-                        .label(OPTIONAL)
-                        .type("Bar")
-                        .name("bar")
-                        .tag(126)
-                        .build()
+                    FieldElement(
+                        location = location.at(5, 5),
+                        label = OPTIONAL,
+                        type = "Bar",
+                        name = "bar",
+                        tag = 126
+                    )
                 )
             )
         )
@@ -1493,20 +1532,16 @@ class ProtoParserTest {
         |  optional string claim_token = 2[(squareup.redacted) = true];
         |}
         """.trimMargin()
-    val field = FieldElement.builder(location.at(2, 3))
-        .label(OPTIONAL)
-        .type("string")
-        .name("claim_token")
-        .tag(2)
-        .options(
-            ImmutableList.of(
-                OptionElement.create("squareup.redacted", Kind.BOOLEAN, "true", true)
-            )
-        )
-        .build()
-    assertThat(field.options()).containsOnly(
-        OptionElement.create("squareup.redacted", Kind.BOOLEAN, "true", true)
+    val field = FieldElement(
+        location = location.at(2, 3),
+        label = OPTIONAL,
+        type = "string",
+        name = "claim_token",
+        tag = 2,
+        options = listOf(OptionElement.create("squareup.redacted", Kind.BOOLEAN, "true", true))
     )
+    assertThat(field.options)
+        .containsOnly(OptionElement.create("squareup.redacted", Kind.BOOLEAN, "true", true))
 
     val messageElement = MessageElement(
         location = location.at(1, 1),
@@ -1531,26 +1566,26 @@ class ProtoParserTest {
         |  ];
         |}
         """.trimMargin()
-    val field = FieldElement.builder(location.at(2, 3))
-        .label(OPTIONAL)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .options(
-            ImmutableList.of(
-                OptionElement.create(
-                    "x", Kind.STRING,
-                    "\u0007\b\u000C\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"
-                )
+    val field = FieldElement(
+        location = location.at(2, 3),
+        label = OPTIONAL,
+        type = "string",
+        name = "name",
+        tag = 1,
+        options = listOf(
+            OptionElement.create(
+                "x", Kind.STRING,
+                "\u0007\b\u000C\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"
             )
         )
-        .build()
-    assertThat(field.options()).containsOnly(
-        OptionElement.create(
-            "x", Kind.STRING,
-            "\u0007\b\u000C\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"
-        )
     )
+    assertThat(field.options)
+        .containsOnly(
+            OptionElement.create(
+                "x", Kind.STRING,
+                "\u0007\b\u000C\n\r\t\u000b\u0001f\u0001\u0001\u0009\u0009I\u000e\u000e\u000e\u000eAA"
+            )
+        )
 
     val messageElement = MessageElement(
         location = location.at(1, 1),
@@ -1573,13 +1608,14 @@ class ProtoParserTest {
         |}
         """.trimMargin()
 
-    val field = FieldElement.builder(location.at(2, 3))
-        .label(OPTIONAL)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .defaultValue("single\"quotes")
-        .build()
+    val field = FieldElement(
+        location = location.at(2, 3),
+        label = OPTIONAL,
+        type = "string",
+        name = "name",
+        tag = 1,
+        defaultValue = "single\"quotes"
+    )
     val messageElement = MessageElement(
         location = location.at(1, 1),
         name = "Foo",
@@ -1604,13 +1640,14 @@ class ProtoParserTest {
         |}
         """.trimMargin()
 
-    val field = FieldElement.builder(location.at(2, 3))
-        .label(OPTIONAL)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .defaultValue("concat these please")
-        .build()
+    val field = FieldElement(
+        location = location.at(2, 3),
+        label = OPTIONAL,
+        type = "string",
+        name = "name",
+        tag = 1,
+        defaultValue = "concat these please"
+    )
     val messageElement = MessageElement(
         location = location.at(1, 1),
         name = "Foo",
@@ -1618,7 +1655,8 @@ class ProtoParserTest {
     )
     val expected = ProtoFileElement(
         location = location,
-        types = listOf(messageElement))
+        types = listOf(messageElement)
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1762,18 +1800,20 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "HexTag",
                 fields = listOf(
-                    FieldElement.builder(location.at(2, 3))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("hex")
-                        .tag(16)
-                        .build(),
-                    FieldElement.builder(location.at(3, 3))
-                        .label(REQUIRED)
-                        .type("string")
-                        .name("uppercase_x_hex")
-                        .tag(17)
-                        .build()
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "hex",
+                        tag = 16
+                    ),
+                    FieldElement(
+                        location = location.at(3, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "uppercase_x_hex",
+                        tag = 17
+                    )
                 )
             )
         )
@@ -1852,31 +1892,30 @@ class ProtoParserTest {
         |    ];
         |}
         """.trimMargin()
-    val field = FieldElement.builder(location.at(2, 5))
-        .label(OPTIONAL)
-        .type("field.type")
-        .name("has_options")
-        .tag(3)
-        .options(
-            ImmutableList.of(
-                OptionElement.create(
-                    "option_map",
-                    Kind.MAP,
-                    ImmutableMap.of(
-                        "nested_map",
-                        ImmutableMap.of("key", "value", "key2",
-                            ImmutableList.of("value2a", "value2b"))
-                    ),
-                    true
+    val field = FieldElement(
+        location = location.at(2, 5),
+        label = OPTIONAL,
+        type = "field.type",
+        name = "has_options",
+        tag = 3,
+        options = listOf(
+            OptionElement.create(
+                "option_map",
+                Kind.MAP,
+                ImmutableMap.of(
+                    "nested_map",
+                    ImmutableMap.of("key", "value", "key2",
+                        ImmutableList.of("value2a", "value2b"))
                 ),
-                OptionElement.create(
-                    "option_string", Kind.LIST,
-                    ImmutableList.of("string1", "string2"), true
-                )
+                true
+            ),
+            OptionElement.create(
+                "option_string", Kind.LIST,
+                ImmutableList.of("string1", "string2"), true
             )
         )
-        .build()
-    assertThat(field.options())
+    )
+    assertThat(field.options)
         .containsOnly(
             OptionElement.create(
                 "option_map",
@@ -1936,198 +1975,156 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "Test",
                 fields = listOf(
-                    FieldElement.builder(location.at(2, 3))
-                        .label(OPTIONAL)
-                        .type("int32")
-                        .name("default_int32")
-                        .tag(401)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("x", Kind.NUMBER, "2147483647")
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = OPTIONAL,
+                        type = "int32",
+                        name = "default_int32",
+                        tag = 401,
+                        options = listOf(OptionElement.create("x", Kind.NUMBER, "2147483647"))
+                    ),
+                    FieldElement(
+                        location = location.at(3, 3),
+                        label = OPTIONAL,
+                        type = "uint32",
+                        name = "default_uint32",
+                        tag = 402,
+                        options = listOf(OptionElement.create("x", Kind.NUMBER, "4294967295"))
+                    ),
+                    FieldElement(
+                        location = location.at(4, 3),
+                        label = OPTIONAL,
+                        type = "sint32",
+                        name = "default_sint32",
+                        tag = 403,
+                        options = listOf(OptionElement.create("x", Kind.NUMBER, "-2147483648"))
+                    ),
+                    FieldElement(
+                        location = location.at(5, 3),
+                        label = OPTIONAL,
+                        type = "fixed32",
+                        name = "default_fixed32",
+                        tag = 404,
+                        options = listOf(OptionElement.create("x", Kind.NUMBER, "4294967295"))
+                    ),
+                    FieldElement(
+                        location = location.at(6, 3),
+                        label = OPTIONAL,
+                        type = "sfixed32",
+                        name = "default_sfixed32",
+                        tag = 405,
+                        options = listOf(OptionElement.create("x", Kind.NUMBER, "-2147483648"))
+                    ),
+                    FieldElement(
+                        location = location.at(7, 3),
+                        label = OPTIONAL,
+                        type = "int64",
+                        name = "default_int64",
+                        tag = 406,
+                        options = listOf(
+                            OptionElement.create("x", Kind.NUMBER, "9223372036854775807")
+                        )
+                    ),
+                    FieldElement(
+                        location = location.at(8, 3),
+                        label = OPTIONAL,
+                        type = "uint64",
+                        name = "default_uint64",
+                        tag = 407,
+                        options = listOf(
+                            OptionElement.create("x", Kind.NUMBER, "18446744073709551615")
+                        )
+                    ),
+                    FieldElement(
+                        location = location.at(9, 3),
+                        label = OPTIONAL,
+                        type = "sint64",
+                        name = "default_sint64",
+                        tag = 408,
+                        options = listOf(
+                            OptionElement.create("x", Kind.NUMBER, "-9223372036854775808")
+                        )
+                    ),
+                    FieldElement(
+                        location = location.at(10, 3),
+                        label = OPTIONAL,
+                        type = "fixed64",
+                        name = "default_fixed64",
+                        tag = 409,
+                        options = listOf(
+                            OptionElement.create("x", Kind.NUMBER, "18446744073709551615")
+                        )
+                    ),
+                    FieldElement(
+                        location = location.at(11, 3),
+                        label = OPTIONAL,
+                        type = "sfixed64",
+                        name = "default_sfixed64",
+                        tag = 410,
+                        options = listOf(
+                            OptionElement.create("x", Kind.NUMBER, "-9223372036854775808")
+                        )
+                    ),
+                    FieldElement(
+                        location = location.at(12, 3),
+                        label = OPTIONAL,
+                        type = "bool",
+                        name = "default_bool",
+                        tag = 411,
+                        options = listOf(OptionElement.create("x", Kind.BOOLEAN, "true"))
+                    ),
+                    FieldElement(
+                        location = location.at(13, 3),
+                        label = OPTIONAL,
+                        type = "float",
+                        name = "default_float",
+                        tag = 412,
+                        options = listOf(OptionElement.create("x", Kind.NUMBER, "123.456e7"))
+                    ),
+                    FieldElement(
+                        location = location.at(14, 3),
+                        label = OPTIONAL,
+                        type = "double",
+                        name = "default_double",
+                        tag = 413,
+                        options = listOf(OptionElement.create("x", Kind.NUMBER, "123.456e78"))
+                    ),
+                    FieldElement(
+                        location = location.at(15, 3),
+                        label = OPTIONAL,
+                        type = "string",
+                        name = "default_string",
+                        tag = 414,
+                        options = listOf(
+                            OptionElement.create(
+                                "x",
+                                Kind.STRING,
+                                "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
                             )
                         )
-                        .build(),
-                    FieldElement.builder(location.at(3, 3))
-                        .label(OPTIONAL)
-                        .type("uint32")
-                        .name("default_uint32")
-                        .tag(402)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("x", Kind.NUMBER, "4294967295")
+                    ),
+                    FieldElement(
+                        location = location.at(17, 3),
+                        label = OPTIONAL,
+                        type = "bytes",
+                        name = "default_bytes",
+                        tag = 415,
+                        options = listOf(
+                            OptionElement.create(
+                                "x",
+                                Kind.STRING,
+                                "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
                             )
                         )
-                        .build(),
-                    FieldElement.builder(location.at(4, 3))
-                        .label(OPTIONAL)
-                        .type("sint32")
-                        .name("default_sint32")
-                        .tag(403)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("x", Kind.NUMBER, "-2147483648")
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(5, 3))
-                        .label(OPTIONAL)
-                        .type("fixed32")
-                        .name("default_fixed32")
-                        .tag(404)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("x", Kind.NUMBER, "4294967295")
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(6, 3))
-                        .label(OPTIONAL)
-                        .type("sfixed32")
-                        .name("default_sfixed32")
-                        .tag(405)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("x", Kind.NUMBER, "-2147483648")
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(7, 3))
-                        .label(OPTIONAL)
-                        .type("int64")
-                        .name("default_int64")
-                        .tag(406)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create(
-                                    "x", Kind.NUMBER, "9223372036854775807"
-                                )
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(8, 3))
-                        .label(OPTIONAL)
-                        .type("uint64")
-                        .name("default_uint64")
-                        .tag(407)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create(
-                                    "x", Kind.NUMBER, "18446744073709551615"
-                                )
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(9, 3))
-                        .label(OPTIONAL)
-                        .type("sint64")
-                        .name("default_sint64")
-                        .tag(408)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create(
-                                    "x", Kind.NUMBER, "-9223372036854775808"
-                                )
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(10, 3))
-                        .label(OPTIONAL)
-                        .type("fixed64")
-                        .name("default_fixed64")
-                        .tag(409)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create(
-                                    "x", Kind.NUMBER, "18446744073709551615"
-                                )
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(11, 3))
-                        .label(OPTIONAL)
-                        .type("sfixed64")
-                        .name("default_sfixed64")
-                        .tag(410)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create(
-                                    "x", Kind.NUMBER, "-9223372036854775808"
-                                )
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(12, 3))
-                        .label(OPTIONAL)
-                        .type("bool")
-                        .name("default_bool")
-                        .tag(411)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("x", Kind.BOOLEAN, "true")
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(13, 3))
-                        .label(OPTIONAL)
-                        .type("float")
-                        .name("default_float")
-                        .tag(412)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("x", Kind.NUMBER, "123.456e7")
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(14, 3))
-                        .label(OPTIONAL)
-                        .type("double")
-                        .name("default_double")
-                        .tag(413)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create("x", Kind.NUMBER, "123.456e78")
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(15, 3))
-                        .label(OPTIONAL)
-                        .type("string")
-                        .name("default_string")
-                        .tag(414)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create(
-                                    "x",
-                                    Kind.STRING,
-                                    "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
-                                )
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(17, 3))
-                        .label(OPTIONAL)
-                        .type("bytes")
-                        .name("default_bytes")
-                        .tag(415)
-                        .options(
-                            ImmutableList.of(
-                                OptionElement.create(
-                                    "x",
-                                    Kind.STRING,
-                                    "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
-                                )
-                            )
-                        )
-                        .build(),
-                    FieldElement.builder(location.at(19, 3))
-                        .label(OPTIONAL)
-                        .type("NestedEnum")
-                        .name("default_nested_enum")
-                        .tag(416)
-                        .options(
-                            ImmutableList.of(OptionElement.create("x", Kind.ENUM, "A"))
-                        )
-                        .build()
+                    ),
+                    FieldElement(
+                        location = location.at(19, 3),
+                        label = OPTIONAL,
+                        type = "NestedEnum",
+                        name = "default_nested_enum",
+                        tag = 416,
+                        options = listOf(OptionElement.create("x", Kind.ENUM, "A"))
+                    )
                 )
             )
         )
@@ -2146,36 +2143,44 @@ class ProtoParserTest {
         |  ];
         |}
         """.trimMargin()
-    val field = FieldElement.builder(location.at(2, 3))
-        .label(OPTIONAL)
-        .type("int32")
-        .name("bar")
-        .tag(1)
-        .options(
-            ImmutableList.of(
-                OptionElement.create(
-                    "validation.range", Kind.OPTION,
-                    OptionElement.create("min", Kind.NUMBER, "1"), true
-                ),
-                OptionElement.create(
-                    "validation.range", Kind.OPTION,
-                    OptionElement.create("max", Kind.NUMBER, "100"), true
-                ),
-                OptionElement.create("old_default", Kind.NUMBER, "20")
-            )
+    val field = FieldElement(
+        location = location.at(2, 3),
+        label = OPTIONAL,
+        type = "int32",
+        name = "bar",
+        tag = 1,
+        options = listOf(
+            OptionElement.create(
+                "validation.range",
+                Kind.OPTION,
+                OptionElement.create("min", Kind.NUMBER, "1"),
+                true
+            ),
+            OptionElement.create(
+                "validation.range",
+                Kind.OPTION,
+                OptionElement.create("max", Kind.NUMBER, "100"),
+                true
+            ),
+            OptionElement.create("old_default", Kind.NUMBER, "20")
         )
-        .build()
-    assertThat(field.options()).containsOnly(
-        OptionElement.create(
-            "validation.range", Kind.OPTION,
-            OptionElement.create("min", Kind.NUMBER, "1"), true
-        ),
-        OptionElement.create(
-            "validation.range", Kind.OPTION,
-            OptionElement.create("max", Kind.NUMBER, "100"), true
-        ),
-        OptionElement.create("old_default", Kind.NUMBER, "20")
     )
+    assertThat(field.options)
+        .containsOnly(
+            OptionElement.create(
+                "validation.range",
+                Kind.OPTION,
+                OptionElement.create("min", Kind.NUMBER, "1"),
+                true
+            ),
+            OptionElement.create(
+                "validation.range",
+                Kind.OPTION,
+                OptionElement.create("max", Kind.NUMBER, "100"),
+                true
+            ),
+            OptionElement.create("old_default", Kind.NUMBER, "20")
+        )
 
     val expected = MessageElement(
         location = location.at(1, 1),
@@ -2222,12 +2227,14 @@ class ProtoParserTest {
             MessageElement(location = location.at(1, 1),
                 name = "C",
                 fields = listOf(
-                    FieldElement.builder(location.at(1, 12))
-                        .label(OPTIONAL)
-                        .type("A.B")
-                        .name("ab")
-                        .tag(1)
-                        .build())
+                    FieldElement(
+                        location = location.at(1, 12),
+                        label = OPTIONAL,
+                        type = "A.B",
+                        name = "ab",
+                        tag = 1
+                    )
+                )
             )
         )
     )
