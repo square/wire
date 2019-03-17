@@ -1227,11 +1227,13 @@ class ProtoParserTest {
         fields = listOf(field),
         nestedTypes = listOf(enumElement),
         extensions = listOf(
-            ExtensionsElement.create(
-                location.at(7, 3), 500, 500,
-                "Clients can define custom options in extensions of this message. See above."
+            ExtensionsElement(
+                location = location.at(7, 3),
+                documentation = "Clients can define custom options in extensions of this message. See above.",
+                start = 500,
+                end = 500
             ),
-            ExtensionsElement.create(location.at(8, 3), 1000, Util.MAX_TAG_VALUE, "")
+            ExtensionsElement(location.at(8, 3), "", 1000, Util.MAX_TAG_VALUE)
         )
     )
     val expected = ProtoFileElement(

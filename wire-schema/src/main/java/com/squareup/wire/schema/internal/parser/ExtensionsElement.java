@@ -13,39 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.squareup.wire.schema.Location;
-import com.squareup.wire.schema.internal.Util;
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.Util.appendDocumentation
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+data class ExtensionsElement(
+  val location: Location,
+  val documentation: String = "",
+  val start: Int,
+  val end: Int
+) {
+  fun toSchema() = buildString {
+    appendDocumentation(this, documentation)
+    append("extensions $start")
 
-@AutoValue
-public abstract class ExtensionsElement {
-  public static ExtensionsElement create(
-      Location location, int start, int end, String documentation) {
-    return new AutoValue_ExtensionsElement(location, documentation, start, end);
-  }
-
-  public abstract Location location();
-  public abstract String documentation();
-  public abstract int start();
-  public abstract int end();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("extensions ")
-        .append(start());
-    if (start() != end()) {
-      builder.append(" to ");
-      if (end() < Util.MAX_TAG_VALUE) {
-        builder.append(end());
+    if (start != end) {
+      append(" to ")
+      if (end < Util.MAX_TAG_VALUE) {
+        append(end)
       } else {
-        builder.append("max");
+        append("max")
       }
     }
-    return builder.append(";\n").toString();
+    append(";\n")
   }
 }

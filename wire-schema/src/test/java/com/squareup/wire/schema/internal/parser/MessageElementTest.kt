@@ -225,9 +225,7 @@ class MessageElementTest {
                 .tag(1)
                 .build()
         ),
-        extensions = listOf(
-            ExtensionsElement.create(location, 500, 501, "")
-        )
+        extensions = listOf(ExtensionsElement(location = location, start = 500, end = 501))
     )
     val expected = """
         |message Message {
@@ -241,8 +239,8 @@ class MessageElementTest {
 
   @Test
   fun addMultipleExtensions() {
-    val fives = ExtensionsElement.create(location, 500, 501, "")
-    val sixes = ExtensionsElement.create(location, 600, 601, "")
+    val fives = ExtensionsElement(location = location, start = 500, end = 501)
+    val sixes = ExtensionsElement(location = location, start = 600, end = 601)
     val element = MessageElement(
         location = location,
         name = "Message",
@@ -486,8 +484,8 @@ class MessageElementTest {
         .name("thinger")
         .fields(ImmutableList.of(oneOf2Field))
         .build()
-    val extensions1 = ExtensionsElement.create(location, 500, 501, "")
-    val extensions2 = ExtensionsElement.create(location, 503, 503, "")
+    val extensions1 = ExtensionsElement(location = location, start = 500, end = 501)
+    val extensions2 = ExtensionsElement(location = location, start = 503, end = 503)
     val nested = MessageElement(
         location = location,
         name = "Nested",
