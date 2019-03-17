@@ -13,104 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.Util.appendIndented
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
+data class MessageElement(
+  override val location: Location,
+  override val name: String,
+  override val documentation: String = "",
+  override val nestedTypes: List<TypeElement> = emptyList(),
+  override val options: List<OptionElement> = emptyList(),
+  val reserveds: List<ReservedElement> = emptyList(),
+  val fields: List<FieldElement> = emptyList(),
+  val oneOfs: List<OneOfElement> = emptyList(),
+  val extensions: List<ExtensionsElement> = emptyList(),
+  val groups: List<GroupElement> = emptyList()
+) : TypeElement {
+  override fun toSchema() = buildString {
+    appendDocumentation(this, documentation)
+    append("message $name {")
 
-@AutoValue
-public abstract class MessageElement implements TypeElement {
-  public static Builder builder(Location location) {
-    return new AutoValue_MessageElement.Builder()
-        .location(location)
-        .documentation("")
-        .fields(ImmutableList.<FieldElement>of())
-        .oneOfs(ImmutableList.<OneOfElement>of())
-        .nestedTypes(ImmutableList.<TypeElement>of())
-        .extensions(ImmutableList.<ExtensionsElement>of())
-        .options(ImmutableList.<OptionElement>of())
-        .reserveds(ImmutableList.<ReservedElement>of())
-        .groups(ImmutableList.<GroupElement>of());
-  }
-
-  @Override public abstract Location location();
-  @Override public abstract String name();
-  @Override public abstract String documentation();
-  @Override public abstract ImmutableList<TypeElement> nestedTypes();
-  @Override public abstract ImmutableList<OptionElement> options();
-  public abstract ImmutableList<ReservedElement> reserveds();
-  public abstract ImmutableList<FieldElement> fields();
-  public abstract ImmutableList<OneOfElement> oneOfs();
-  public abstract ImmutableList<ExtensionsElement> extensions();
-  public abstract ImmutableList<GroupElement> groups();
-
-  @Override public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("message ")
-        .append(name())
-        .append(" {");
-    if (!reserveds().isEmpty()) {
-      builder.append('\n');
-      for (ReservedElement reserved : reserveds()) {
-        appendIndented(builder, reserved.toSchema());
+    if (reserveds.isNotEmpty()) {
+      append('\n')
+      for (reserved in reserveds) {
+        appendIndented(this, reserved.toSchema())
       }
     }
-    if (!options().isEmpty()) {
-      builder.append('\n');
-      for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchemaDeclaration());
+    if (options.isNotEmpty()) {
+      append('\n')
+      for (option in options) {
+        appendIndented(this, option.toSchemaDeclaration())
       }
     }
-    if (!fields().isEmpty()) {
-      builder.append('\n');
-      for (FieldElement field : fields()) {
-        appendIndented(builder, field.toSchema());
+    if (fields.isNotEmpty()) {
+      append('\n')
+      for (field in fields) {
+        appendIndented(this, field.toSchema())
       }
     }
-    if (!oneOfs().isEmpty()) {
-      builder.append('\n');
-      for (OneOfElement oneOf : oneOfs()) {
-        appendIndented(builder, oneOf.toSchema());
+    if (oneOfs.isNotEmpty()) {
+      append('\n')
+      for (oneOf in oneOfs) {
+        appendIndented(this, oneOf.toSchema())
       }
     }
-    if (!groups().isEmpty()) {
-      builder.append('\n');
-      for (GroupElement group : groups()) {
-        appendIndented(builder, group.toSchema());
+    if (groups.isNotEmpty()) {
+      append('\n')
+      for (group in groups) {
+        appendIndented(this, group.toSchema())
       }
     }
-    if (!extensions().isEmpty()) {
-      builder.append('\n');
-      for (ExtensionsElement extension : extensions()) {
-        appendIndented(builder, extension.toSchema());
+    if (extensions.isNotEmpty()) {
+      append('\n')
+      for (extension in extensions) {
+        appendIndented(this, extension.toSchema())
       }
     }
-    if (!nestedTypes().isEmpty()) {
-      builder.append('\n');
-      for (TypeElement type : nestedTypes()) {
-        appendIndented(builder, type.toSchema());
+    if (nestedTypes.isNotEmpty()) {
+      append('\n')
+      for (type in nestedTypes) {
+        appendIndented(this, type.toSchema())
       }
     }
-    return builder.append("}\n").toString();
-  }
-
-  @AutoValue.Builder
-  public interface Builder {
-    Builder location(Location location);
-    Builder name(String name);
-    Builder documentation(String documentation);
-    Builder fields(ImmutableList<FieldElement> fields);
-    Builder oneOfs(ImmutableList<OneOfElement> oneOfs);
-    Builder nestedTypes(ImmutableList<TypeElement> types);
-    Builder extensions(ImmutableList<ExtensionsElement> extensions);
-    Builder options(ImmutableList<OptionElement> options);
-    Builder reserveds(ImmutableList<ReservedElement> reserveds);
-    Builder groups(ImmutableList<GroupElement> groups);
-    MessageElement build();
+    append("}\n")
   }
 }

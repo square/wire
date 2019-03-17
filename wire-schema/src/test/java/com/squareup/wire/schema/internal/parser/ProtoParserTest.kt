@@ -64,133 +64,132 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("Types")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(2, 3))
-                                .label(REQUIRED)
-                                .type("any")
-                                .name("f1")
-                                .tag(1)
-                                .build(),
-                            FieldElement.builder(location.at(3, 3))
-                                .label(REQUIRED)
-                                .type("bool")
-                                .name("f2")
-                                .tag(2)
-                                .build(),
-                            FieldElement.builder(location.at(4, 3))
-                                .label(REQUIRED)
-                                .type("bytes")
-                                .name("f3")
-                                .tag(3)
-                                .build(),
-                            FieldElement.builder(location.at(5, 3))
-                                .label(REQUIRED)
-                                .type("double")
-                                .name("f4")
-                                .tag(4)
-                                .build(),
-                            FieldElement.builder(location.at(6, 3))
-                                .label(REQUIRED)
-                                .type("float")
-                                .name("f5")
-                                .tag(5)
-                                .build(),
-                            FieldElement.builder(location.at(7, 3))
-                                .label(REQUIRED)
-                                .type("fixed32")
-                                .name("f6")
-                                .tag(6)
-                                .build(),
-                            FieldElement.builder(location.at(8, 3))
-                                .label(REQUIRED)
-                                .type("fixed64")
-                                .name("f7")
-                                .tag(7)
-                                .build(),
-                            FieldElement.builder(location.at(9, 3))
-                                .label(REQUIRED)
-                                .type("int32")
-                                .name("f8")
-                                .tag(8)
-                                .build(),
-                            FieldElement.builder(location.at(10, 3))
-                                .label(REQUIRED)
-                                .type("int64")
-                                .name("f9")
-                                .tag(9)
-                                .build(),
-                            FieldElement.builder(location.at(11, 3))
-                                .label(REQUIRED)
-                                .type("sfixed32")
-                                .name("f10")
-                                .tag(10)
-                                .build(),
-                            FieldElement.builder(location.at(12, 3))
-                                .label(REQUIRED)
-                                .type("sfixed64")
-                                .name("f11")
-                                .tag(11)
-                                .build(),
-                            FieldElement.builder(location.at(13, 3))
-                                .label(REQUIRED)
-                                .type("sint32")
-                                .name("f12")
-                                .tag(12)
-                                .build(),
-                            FieldElement.builder(location.at(14, 3))
-                                .label(REQUIRED)
-                                .type("sint64")
-                                .name("f13")
-                                .tag(13)
-                                .build(),
-                            FieldElement.builder(location.at(15, 3))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("f14")
-                                .tag(14)
-                                .build(),
-                            FieldElement.builder(location.at(16, 3))
-                                .label(REQUIRED)
-                                .type("uint32")
-                                .name("f15")
-                                .tag(15)
-                                .build(),
-                            FieldElement.builder(location.at(17, 3))
-                                .label(REQUIRED)
-                                .type("uint64")
-                                .name("f16")
-                                .tag(16)
-                                .build(),
-                            FieldElement.builder(location.at(18, 3))
-                                .type("map<string, bool>")
-                                .name("f17")
-                                .tag(17)
-                                .build(),
-                            FieldElement.builder(location.at(19, 3))
-                                .type("map<arbitrary, nested.nested>")
-                                .name("f18")
-                                .tag(18)
-                                .build(),
-                            FieldElement.builder(location.at(20, 3))
-                                .label(REQUIRED)
-                                .type("arbitrary")
-                                .name("f19")
-                                .tag(19)
-                                .build(),
-                            FieldElement.builder(location.at(21, 3))
-                                .label(REQUIRED)
-                                .type("nested.nested")
-                                .name("f20")
-                                .tag(20)
-                                .build()
-                        )
-                    )
-                    .build()
+            MessageElement(
+                location = location.at(1, 1),
+                name = "Types",
+                fields = listOf(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("any")
+                        .name("f1")
+                        .tag(1)
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(REQUIRED)
+                        .type("bool")
+                        .name("f2")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .label(REQUIRED)
+                        .type("bytes")
+                        .name("f3")
+                        .tag(3)
+                        .build(),
+                    FieldElement.builder(location.at(5, 3))
+                        .label(REQUIRED)
+                        .type("double")
+                        .name("f4")
+                        .tag(4)
+                        .build(),
+                    FieldElement.builder(location.at(6, 3))
+                        .label(REQUIRED)
+                        .type("float")
+                        .name("f5")
+                        .tag(5)
+                        .build(),
+                    FieldElement.builder(location.at(7, 3))
+                        .label(REQUIRED)
+                        .type("fixed32")
+                        .name("f6")
+                        .tag(6)
+                        .build(),
+                    FieldElement.builder(location.at(8, 3))
+                        .label(REQUIRED)
+                        .type("fixed64")
+                        .name("f7")
+                        .tag(7)
+                        .build(),
+                    FieldElement.builder(location.at(9, 3))
+                        .label(REQUIRED)
+                        .type("int32")
+                        .name("f8")
+                        .tag(8)
+                        .build(),
+                    FieldElement.builder(location.at(10, 3))
+                        .label(REQUIRED)
+                        .type("int64")
+                        .name("f9")
+                        .tag(9)
+                        .build(),
+                    FieldElement.builder(location.at(11, 3))
+                        .label(REQUIRED)
+                        .type("sfixed32")
+                        .name("f10")
+                        .tag(10)
+                        .build(),
+                    FieldElement.builder(location.at(12, 3))
+                        .label(REQUIRED)
+                        .type("sfixed64")
+                        .name("f11")
+                        .tag(11)
+                        .build(),
+                    FieldElement.builder(location.at(13, 3))
+                        .label(REQUIRED)
+                        .type("sint32")
+                        .name("f12")
+                        .tag(12)
+                        .build(),
+                    FieldElement.builder(location.at(14, 3))
+                        .label(REQUIRED)
+                        .type("sint64")
+                        .name("f13")
+                        .tag(13)
+                        .build(),
+                    FieldElement.builder(location.at(15, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("f14")
+                        .tag(14)
+                        .build(),
+                    FieldElement.builder(location.at(16, 3))
+                        .label(REQUIRED)
+                        .type("uint32")
+                        .name("f15")
+                        .tag(15)
+                        .build(),
+                    FieldElement.builder(location.at(17, 3))
+                        .label(REQUIRED)
+                        .type("uint64")
+                        .name("f16")
+                        .tag(16)
+                        .build(),
+                    FieldElement.builder(location.at(18, 3))
+                        .type("map<string, bool>")
+                        .name("f17")
+                        .tag(17)
+                        .build(),
+                    FieldElement.builder(location.at(19, 3))
+                        .type("map<arbitrary, nested.nested>")
+                        .name("f18")
+                        .tag(18)
+                        .build(),
+                    FieldElement.builder(location.at(20, 3))
+                        .label(REQUIRED)
+                        .type("arbitrary")
+                        .name("f19")
+                        .tag(19)
+                        .build(),
+                    FieldElement.builder(location.at(21, 3))
+                        .label(REQUIRED)
+                        .type("nested.nested")
+                        .name("f20")
+                        .tag(20)
+                        .build()
+                )
             )
         )
+    )
 
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
@@ -237,27 +236,26 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("Message")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(2, 3))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("a")
-                                .defaultValue("b")
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("faulted", Kind.STRING, "c")
-                                    )
-                                )
-                                .tag(1)
-                                .build()
+            MessageElement(
+                location = location.at(1, 1),
+                name = "Message",
+                fields = listOf(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("a")
+                        .defaultValue("b")
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("faulted", Kind.STRING, "c")
+                            )
                         )
-                    )
-                    .build()
+                        .tag(1)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -269,7 +267,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val type = parsed.types[0]
-    assertThat(type.documentation()).isEqualTo("Test all the things!")
+    assertThat(type.documentation).isEqualTo("Test all the things!")
   }
 
   @Test
@@ -286,7 +284,7 @@ class ProtoParserTest {
 
     val parsed = ProtoParser.parse(location, proto)
     val type = parsed.types[0]
-    assertThat(type.documentation()).isEqualTo(expected)
+    assertThat(type.documentation).isEqualTo(expected)
   }
 
   @Test
@@ -297,7 +295,7 @@ class ProtoParserTest {
         |""".trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val type = parsed.types[0]
-    assertThat(type.documentation()).isEqualTo("Test")
+    assertThat(type.documentation).isEqualTo("Test")
   }
 
   @Test
@@ -317,7 +315,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val type = parsed.types[0]
-    assertThat(type.documentation()).isEqualTo(expected)
+    assertThat(type.documentation).isEqualTo(expected)
   }
 
   @Test
@@ -337,7 +335,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val type = parsed.types[0]
-    assertThat(type.documentation()).isEqualTo(expected)
+    assertThat(type.documentation).isEqualTo(expected)
   }
 
   @Test
@@ -359,7 +357,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val type = parsed.types[0]
-    assertThat(type.documentation()).isEqualTo(expected)
+    assertThat(type.documentation).isEqualTo(expected)
   }
 
   @Test
@@ -382,7 +380,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val type = parsed.types[0]
-    assertThat(type.documentation()).isEqualTo(expected)
+    assertThat(type.documentation).isEqualTo(expected)
   }
 
   @Test
@@ -395,7 +393,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val message = parsed.types[0] as MessageElement
-    val field = message.fields()[0]
+    val field = message.fields[0]
     assertThat(field.documentation()).isEqualTo("Test all the things!")
   }
 
@@ -409,7 +407,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val message = parsed.types[0] as MessageElement
-    val field = message.fields()[0]
+    val field = message.fields[0]
     assertThat(field.documentation()).isEqualTo("Test all...\n...the things!")
   }
 
@@ -423,9 +421,9 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val message = parsed.types[0] as MessageElement
-    val field1 = message.fields()[0]
+    val field1 = message.fields[0]
     assertThat(field1.documentation()).isEqualTo("Testing!")
-    val field2 = message.fields()[1]
+    val field2 = message.fields[1]
     assertThat(field2.documentation()).isEqualTo("")
   }
 
@@ -438,7 +436,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
-    val value = enumElement.constants()[0]
+    val value = enumElement.constants[0]
     assertThat(value.documentation()).isEqualTo("Test all the things!")
   }
 
@@ -452,9 +450,9 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
-    val foo = enumElement.constants()[0]
+    val foo = enumElement.constants[0]
     assertThat(foo.documentation()).isEqualTo("Test all the things!")
-    val bar = enumElement.constants()[1]
+    val bar = enumElement.constants[1]
     assertThat(bar.documentation()).isEqualTo("Test all the things!")
   }
 
@@ -468,7 +466,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
-    val value = enumElement.constants()[0]
+    val value = enumElement.constants[0]
     assertThat(value.documentation()).isEqualTo("Test all the\nthings!")
   }
 
@@ -514,7 +512,7 @@ class ProtoParserTest {
         """.trimMargin()
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
-    val value = enumElement.constants()[0]
+    val value = enumElement.constants[0]
     assertThat(value.documentation()).isEqualTo("Test all...\n...the things!")
   }
 
@@ -527,7 +525,7 @@ class ProtoParserTest {
         "}"
     val parsed = ProtoParser.parse(location, proto)
     val enumElement = parsed.types[0] as EnumElement
-    val value = enumElement.constants()[0]
+    val value = enumElement.constants[0]
     assertThat(value.documentation()).isEqualTo("Test all...")
   }
 
@@ -548,11 +546,12 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-                MessageElement.builder(location.at(2, 1))
-                    .name("Foo")
-                    .build()
+            MessageElement(
+                location = location.at(2, 1),
+                name = "Foo"
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -612,11 +611,12 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-                MessageElement.builder(location.at(5, 1))
-                    .name("Foo")
-                    .build()
+            MessageElement(
+                location = location.at(5, 1),
+                name = "Foo"
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -633,25 +633,24 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-                MessageElement.builder(location.at(2, 1))
-                    .name("Message")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(3, 3))
-                                .type("string")
-                                .name("a")
-                                .tag(1)
-                                .build(),
-                            FieldElement.builder(location.at(4, 3))
-                                .type("int32")
-                                .name("b")
-                                .tag(2)
-                                .build()
-                        )
-                    )
-                    .build()
+            MessageElement(
+                location = location.at(2, 1),
+                name = "Message",
+                fields = listOf(
+                    FieldElement.builder(location.at(3, 3))
+                        .type("string")
+                        .name("a")
+                        .tag(1)
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .type("int32")
+                        .name("b")
+                        .tag(2)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -670,9 +669,10 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-            MessageElement.builder(location.at(2, 1))
-                .name("Message")
-                .build()
+                MessageElement(
+                location =location.at(2, 1),
+                    name="Message"
+                    )
         ),
         extendDeclarations = listOf(
             ExtendElement(
@@ -785,21 +785,20 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-                MessageElement.builder(location.at(2, 1))
-                    .name("Message")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(3, 3))
-                                .label(REPEATED)
-                                .type("string")
-                                .name("a")
-                                .tag(1)
-                                .build()
-                        )
-                    )
-                    .build()
+            MessageElement(
+                location = location.at(2, 1),
+                name = "Message",
+                fields = listOf(
+                    FieldElement.builder(location.at(3, 3))
+                        .label(REPEATED)
+                        .type("string")
+                        .name("a")
+                        .tag(1)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -817,9 +816,10 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-            MessageElement.builder(location.at(2, 1))
-                .name("Message")
-                .build()
+                MessageElement(
+                location =location.at(2, 1),
+                    name="Message"
+                    )
         ),
         extendDeclarations = listOf(
             ExtendElement(
@@ -851,33 +851,32 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("SearchRequest")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(2, 3))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("query")
-                                .tag(1)
-                                .build(),
-                            FieldElement.builder(location.at(3, 3))
-                                .label(OPTIONAL)
-                                .type("int32")
-                                .name("page_number")
-                                .tag(2)
-                                .build(),
-                            FieldElement.builder(location.at(4, 3))
-                                .label(OPTIONAL)
-                                .type("int32")
-                                .name("result_per_page")
-                                .tag(3)
-                                .build()
-                        )
-                    )
-                    .build()
+            MessageElement(
+                location = location.at(1, 1),
+                name = "SearchRequest",
+                fields = listOf(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("query")
+                        .tag(1)
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("page_number")
+                        .tag(2)
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("result_per_page")
+                        .tag(3)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -892,40 +891,39 @@ class ProtoParserTest {
         |  }
         |}
         """.trimMargin()
-    val message = MessageElement.builder(location.at(1, 1))
-        .name("SearchResponse")
-        .groups(
-            ImmutableList.of(
-                GroupElement.builder(location.at(2, 3))
-                    .label(REPEATED)
-                    .name("Result")
-                    .tag(1)
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(3, 5))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("url")
-                                .tag(2)
-                                .build(),
-                            FieldElement.builder(location.at(4, 5))
-                                .label(OPTIONAL)
-                                .type("string")
-                                .name("title")
-                                .tag(3)
-                                .build(),
-                            FieldElement.builder(location.at(5, 5))
-                                .label(REPEATED)
-                                .type("string")
-                                .name("snippets")
-                                .tag(4)
-                                .build()
-                        )
+    val message = MessageElement(
+        location = location.at(1, 1),
+        name = "SearchResponse",
+        groups = listOf(
+            GroupElement.builder(location.at(2, 3))
+                .label(REPEATED)
+                .name("Result")
+                .tag(1)
+                .fields(
+                    ImmutableList.of(
+                        FieldElement.builder(location.at(3, 5))
+                            .label(REQUIRED)
+                            .type("string")
+                            .name("url")
+                            .tag(2)
+                            .build(),
+                        FieldElement.builder(location.at(4, 5))
+                            .label(OPTIONAL)
+                            .type("string")
+                            .name("title")
+                            .tag(3)
+                            .build(),
+                        FieldElement.builder(location.at(5, 5))
+                            .label(REPEATED)
+                            .type("string")
+                            .name("snippets")
+                            .tag(4)
+                            .build()
                     )
-                    .build()
-            )
+                )
+                .build()
         )
-        .build()
+    )
     val expected = ProtoFileElement(
         location = location,
         types = listOf(message)
@@ -946,44 +944,40 @@ class ProtoParserTest {
         """.trimMargin()
     val expected = ProtoFileElement(
         location = location,
-        types =
-            ImmutableList.of(
-                MessageElement.builder(location.at(1, 1))
-                    .name("SearchRequest")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(2, 3))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("query")
-                                .tag(1)
-                                .build()
+        types = listOf(
+            MessageElement(
+                location = location.at(1, 1),
+                name = "SearchRequest",
+                fields = listOf(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("query")
+                        .tag(1)
+                        .build()
+                ),
+                oneOfs = listOf(
+                    OneOfElement.builder()
+                        .name("page_info")
+                        .fields(
+                            ImmutableList.of(
+                                FieldElement.builder(location.at(4, 5))
+                                    .type("int32")
+                                    .name("page_number")
+                                    .tag(2)
+                                    .build(),
+                                FieldElement.builder(location.at(5, 5))
+                                    .type("int32")
+                                    .name("result_per_page")
+                                    .tag(3)
+                                    .build()
+                            )
                         )
-                    )
-                    .oneOfs(
-                        ImmutableList.of(
-                            OneOfElement.builder()
-                                .name("page_info")
-                                .fields(
-                                    ImmutableList.of(
-                                        FieldElement.builder(location.at(4, 5))
-                                            .type("int32")
-                                            .name("page_number")
-                                            .tag(2)
-                                            .build(),
-                                        FieldElement.builder(location.at(5, 5))
-                                            .type("int32")
-                                            .name("result_per_page")
-                                            .tag(3)
-                                            .build()
-                                    )
-                                )
-                                .build()
-                        )
-                    )
-                    .build()
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1004,61 +998,58 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("SearchRequest")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(2, 3))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("query")
-                                .tag(1)
-                                .build()
+            MessageElement(
+                location = location.at(1, 1),
+                name = "SearchRequest",
+                fields = listOf(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("query")
+                        .tag(1)
+                        .build()
+                ),
+                oneOfs = listOf(
+                    OneOfElement.builder()
+                        .name("page_info")
+                        .fields(
+                            ImmutableList.of(
+                                FieldElement.builder(location.at(4, 5))
+                                    .type("int32")
+                                    .name("page_number")
+                                    .tag(2)
+                                    .build()
+                            )
                         )
-                    )
-                    .oneOfs(
-                        ImmutableList.of(
-                            OneOfElement.builder()
-                                .name("page_info")
-                                .fields(
-                                    ImmutableList.of(
-                                        FieldElement.builder(location.at(4, 5))
-                                            .type("int32")
-                                            .name("page_number")
-                                            .tag(2)
-                                            .build()
+                        .groups(
+                            ImmutableList.of(
+                                GroupElement.builder(location.at(5, 5))
+                                    .name("Stuff")
+                                    .tag(3)
+                                    .fields(
+                                        ImmutableList.of(
+                                            FieldElement.builder(location.at(6, 7))
+                                                .label(OPTIONAL)
+                                                .type("int32")
+                                                .name("result_per_page")
+                                                .tag(4)
+                                                .build(),
+                                            FieldElement.builder(location.at(7, 7))
+                                                .label(OPTIONAL)
+                                                .type("int32")
+                                                .name("page_count")
+                                                .tag(5)
+                                                .build()
+                                        )
                                     )
-                                )
-                                .groups(
-                                    ImmutableList.of(
-                                        GroupElement.builder(location.at(5, 5))
-                                            .name("Stuff")
-                                            .tag(3)
-                                            .fields(
-                                                ImmutableList.of(
-                                                    FieldElement.builder(location.at(6, 7))
-                                                        .label(OPTIONAL)
-                                                        .type("int32")
-                                                        .name("result_per_page")
-                                                        .tag(4)
-                                                        .build(),
-                                                    FieldElement.builder(location.at(7, 7))
-                                                        .label(OPTIONAL)
-                                                        .type("int32")
-                                                        .name("page_count")
-                                                        .tag(5)
-                                                        .build()
-                                                )
-                                            )
-                                            .build()
-                                    )
-                                )
-                                .build()
+                                    .build()
+                            )
                         )
-                    )
-                    .build()
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1081,30 +1072,28 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                EnumElement.builder(location.at(5, 1))
-                    .name("Topping")
-                    .documentation("What's on my waffles.\nAlso works on pancakes.")
-                    .constants(
-                        ImmutableList.of(
-                            EnumConstantElement.builder(location.at(6, 3))
-                                .name("FRUIT")
-                                .tag(1)
-                                .build(),
-                            EnumConstantElement.builder(location.at(8, 3))
-                                .name("CREAM")
-                                .tag(2)
-                                .documentation("Yummy, yummy cream.")
-                                .build(),
-                            EnumConstantElement.builder(location.at(11, 3))
-                                .name("SYRUP")
-                                .tag(3)
-                                .documentation("Quebec Maple syrup")
-                                .build()
-                        )
-                    )
-                    .build()
+            EnumElement(location = location.at(5, 1),
+                name = "Topping",
+                documentation = "What's on my waffles.\nAlso works on pancakes.",
+                constants = listOf(
+                    EnumConstantElement.builder(location.at(6, 3))
+                        .name("FRUIT")
+                        .tag(1)
+                        .build(),
+                    EnumConstantElement.builder(location.at(8, 3))
+                        .name("CREAM")
+                        .tag(2)
+                        .documentation("Yummy, yummy cream.")
+                        .build(),
+                    EnumConstantElement.builder(location.at(11, 3))
+                        .name("SYRUP")
+                        .tag(3)
+                        .documentation("Quebec Maple syrup")
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1129,40 +1118,35 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                EnumElement.builder(location.at(5, 1))
-                    .name("Topping")
-                    .documentation("What's on my waffles.\nAlso works on pancakes.")
-                    .options(
-                        ImmutableList.of(
-                            OptionElement.create("max_choices", Kind.NUMBER, "2", true)
+            EnumElement(
+                location = location.at(5, 1),
+                name = "Topping",
+                documentation = "What's on my waffles.\nAlso works on pancakes.",
+                options = listOf(OptionElement.create("max_choices", Kind.NUMBER, "2", true)),
+                constants = listOf(
+                    EnumConstantElement.builder(location.at(8, 3))
+                        .name("FRUIT")
+                        .tag(1)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("healthy", Kind.BOOLEAN, "true", true)
+                            )
                         )
-                    )
-                    .constants(
-                        ImmutableList.of(
-                            EnumConstantElement.builder(location.at(8, 3))
-                                .name("FRUIT")
-                                .tag(1)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("healthy", Kind.BOOLEAN, "true", true)
-                                    )
-                                )
-                                .build(),
-                            EnumConstantElement.builder(location.at(10, 3))
-                                .name("CREAM")
-                                .tag(2)
-                                .documentation("Yummy, yummy cream.")
-                                .build(),
-                            EnumConstantElement.builder(location.at(13, 3))
-                                .name("SYRUP")
-                                .tag(3)
-                                .documentation("Quebec Maple syrup")
-                                .build()
-                        )
-                    )
-                    .build()
+                        .build(),
+                    EnumConstantElement.builder(location.at(10, 3))
+                        .name("CREAM")
+                        .tag(2)
+                        .documentation("Yummy, yummy cream.")
+                        .build(),
+                    EnumConstantElement.builder(location.at(13, 3))
+                        .name("SYRUP")
+                        .tag(3)
+                        .documentation("Quebec Maple syrup")
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1181,12 +1165,10 @@ class ProtoParserTest {
         location = location,
         packageName = "google.protobuf",
         types = listOf(
-                MessageElement.builder(location.at(6, 1))
-                    .name("FileDescriptorSet")
-                    .documentation(
-                        "The protocol compiler can output a FileDescriptorSet containing the .proto\nfiles it parses."
-                    )
-                    .build()
+            MessageElement(location = location.at(6, 1),
+                name = "FileDescriptorSet",
+                documentation = "The protocol compiler can output a FileDescriptorSet containing the .proto\nfiles it parses."
+            )
         ),
         options = listOf(OptionElement.create("java_package", Kind.STRING, "com.google.protobuf"))
     )
@@ -1206,10 +1188,10 @@ class ProtoParserTest {
         |  extensions 1000 to max;
         |}
         """.trimMargin()
-    val enumElement = EnumElement.builder(location.at(3, 3))
-        .name("CType")
-        .constants(
-            ImmutableList.of(
+    val enumElement = EnumElement(
+        location = location.at(3, 3),
+        name = "CType",
+        constants = listOf(
                 EnumConstantElement.builder(location.at(4, 5))
                     .name("STRING")
                     .tag(0)
@@ -1222,7 +1204,6 @@ class ProtoParserTest {
                     .build()
             )
         )
-        .build()
     val field = FieldElement.builder(location.at(2, 3))
         .label(OPTIONAL)
         .type("CType")
@@ -1240,20 +1221,19 @@ class ProtoParserTest {
         OptionElement.create("deprecated", Kind.BOOLEAN, "true")
     )
 
-    val messageElement = MessageElement.builder(location.at(1, 1))
-        .name("FieldOptions")
-        .fields(ImmutableList.of(field))
-        .nestedTypes(ImmutableList.of(enumElement))
-        .extensions(
-            ImmutableList.of(
-                ExtensionsElement.create(
-                    location.at(7, 3), 500, 500,
-                    "Clients can define custom options in extensions of this message. See above."
-                ),
-                ExtensionsElement.create(location.at(8, 3), 1000, Util.MAX_TAG_VALUE, "")
-            )
+    val messageElement = MessageElement(
+        location = location.at(1, 1),
+        name = "FieldOptions",
+        fields = listOf(field),
+        nestedTypes = listOf(enumElement),
+        extensions = listOf(
+            ExtensionsElement.create(
+                location.at(7, 3), 500, 500,
+                "Clients can define custom options in extensions of this message. See above."
+            ),
+            ExtensionsElement.create(location.at(8, 3), 1000, Util.MAX_TAG_VALUE, "")
         )
-        .build()
+    )
     val expected = ProtoFileElement(
         location = location,
         types = listOf(messageElement)
@@ -1276,56 +1256,55 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("Chickens")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(2, 3))
-                                .label(OPTIONAL)
-                                .type("bool")
-                                .name("koka_ko_koka_ko")
-                                .tag(1)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("old_default", Kind.BOOLEAN, "true")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(3, 3))
-                                .label(OPTIONAL)
-                                .type("bool")
-                                .name("coodle_doodle_do")
-                                .tag(2)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("delay", Kind.NUMBER, "100", true),
-                                        OptionElement.create("old_default", Kind.BOOLEAN, "false")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(4, 3))
-                                .label(OPTIONAL)
-                                .type("bool")
-                                .name("coo_coo_ca_cha")
-                                .tag(3)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("old_default", Kind.BOOLEAN, "true"),
-                                        OptionElement.create("delay", Kind.NUMBER, "200", true)
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(5, 3))
-                                .label(OPTIONAL)
-                                .type("bool")
-                                .name("cha_chee_cha")
-                                .tag(4)
-                                .build()
+            MessageElement(
+                location = location.at(1, 1),
+                name = "Chickens",
+                fields = listOf(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("koka_ko_koka_ko")
+                        .tag(1)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("old_default", Kind.BOOLEAN, "true")
+                            )
                         )
-                    )
-                    .build()
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("coodle_doodle_do")
+                        .tag(2)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("delay", Kind.NUMBER, "100", true),
+                                OptionElement.create("old_default", Kind.BOOLEAN, "false")
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("coo_coo_ca_cha")
+                        .tag(3)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("old_default", Kind.BOOLEAN, "true"),
+                                OptionElement.create("delay", Kind.NUMBER, "200", true)
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(5, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("cha_chee_cha")
+                        .tag(4)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1389,7 +1368,7 @@ class ProtoParserTest {
         """.trimMargin()
     val expected = ProtoFileElement(
         location = location,
-        types = listOf(MessageElement.builder(location.at(1, 1)).name("Bar").build()),
+        types = listOf(MessageElement(location = location.at(1, 1), name = "Bar")),
         extendDeclarations = listOf(
             ExtendElement(
                 location = location.at(2, 3),
@@ -1423,9 +1402,8 @@ class ProtoParserTest {
         location = location,
         packageName = "kit.kat",
         types = listOf(
-            MessageElement.builder(location.at(3, 1))
-                .name("Bar")
-                .build()
+                MessageElement(location =location.at(3, 1),name="Bar")
+
         ),
         extendDeclarations = listOf(
             ExtendElement(
@@ -1456,7 +1434,7 @@ class ProtoParserTest {
         """.trimMargin()
     val expected = ProtoFileElement(
         location = location,
-        types = listOf(MessageElement.builder(location.at(1, 1)).name("Bar").build()),
+        types = listOf(MessageElement(location = location.at(1, 1), name = "Bar")),
         extendDeclarations = listOf(
             ExtendElement(
                 location = location.at(2, 3),
@@ -1490,9 +1468,8 @@ class ProtoParserTest {
         location = location,
         packageName = "kit.kat",
         types = listOf(
-            MessageElement.builder(location.at(3, 1))
-                .name("Bar")
-                .build()
+            MessageElement(location =location.at(3, 1),name="Bar")
+
         ),
         extendDeclarations = listOf(
             ExtendElement(
@@ -1534,10 +1511,11 @@ class ProtoParserTest {
         OptionElement.create("squareup.redacted", Kind.BOOLEAN, "true", true)
     )
 
-    val messageElement = MessageElement.builder(location.at(1, 1))
-        .name("Foo")
-        .fields(ImmutableList.of(field))
-        .build()
+    val messageElement = MessageElement(
+        location = location.at(1, 1),
+        name = "Foo",
+        fields = listOf(field)
+    )
     val expected = ProtoFileElement(
         location = location,
         types = listOf(messageElement)
@@ -1577,10 +1555,11 @@ class ProtoParserTest {
         )
     )
 
-    val messageElement = MessageElement.builder(location.at(1, 1))
-        .name("Foo")
-        .fields(ImmutableList.of(field))
-        .build()
+    val messageElement = MessageElement(
+        location = location.at(1, 1),
+        name = "Foo",
+        fields = listOf(field)
+    )
     val expected = ProtoFileElement(
         location = location,
         types = listOf(messageElement)
@@ -1604,10 +1583,11 @@ class ProtoParserTest {
         .tag(1)
         .defaultValue("single\"quotes")
         .build()
-    val messageElement = MessageElement.builder(location.at(1, 1))
-        .name("Foo")
-        .fields(ImmutableList.of(field))
-        .build()
+    val messageElement = MessageElement(
+        location = location.at(1, 1),
+        name = "Foo",
+        fields = listOf(field)
+    )
     val expected = ProtoFileElement(
         location = location,
         types = listOf(messageElement)
@@ -1634,10 +1614,11 @@ class ProtoParserTest {
         .tag(1)
         .defaultValue("concat these please")
         .build()
-    val messageElement = MessageElement.builder(location.at(1, 1))
-        .name("Foo")
-        .fields(ImmutableList.of(field))
-        .build()
+    val messageElement = MessageElement(
+        location = location.at(1, 1),
+        name = "Foo",
+        fields = listOf(field)
+    )
     val expected = ProtoFileElement(
         location = location,
         types = listOf(messageElement))
@@ -1780,27 +1761,26 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("HexTag")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(2, 3))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("hex")
-                                .tag(16)
-                                .build(),
-                            FieldElement.builder(location.at(3, 3))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("uppercase_x_hex")
-                                .tag(17)
-                                .build()
-                        )
-                    )
-                    .build()
+            MessageElement(
+                location = location.at(1, 1),
+                name = "HexTag",
+                fields = listOf(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("hex")
+                        .tag(16)
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("uppercase_x_hex")
+                        .tag(17)
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1841,26 +1821,25 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("ExoticOptions")
-                    .options(
-                        ImmutableList.of(
-                            OptionElement.create("squareup.one", Kind.MAP, option_one_map, true),
-                            OptionElement.create(
-                                "squareup.two.a", Kind.MAP, option_two_a_map, true
-                            ),
-                            OptionElement.create(
-                                "squareup.two.b", Kind.MAP, option_two_b_map, true
-                            ),
-                            OptionElement.create(
-                                "squareup.three", Kind.MAP, option_three_map, true
-                            ),
-                            OptionElement.create("squareup.four", Kind.MAP, option_four_map, true)
-                        )
-                    )
-                    .build()
+            MessageElement(
+                location = location.at(1, 1),
+                name = "ExoticOptions",
+                options = listOf(
+                    OptionElement.create("squareup.one", Kind.MAP, option_one_map, true),
+                    OptionElement.create(
+                        "squareup.two.a", Kind.MAP, option_two_a_map, true
+                    ),
+                    OptionElement.create(
+                        "squareup.two.b", Kind.MAP, option_two_b_map, true
+                    ),
+                    OptionElement.create(
+                        "squareup.three", Kind.MAP, option_three_map, true
+                    ),
+                    OptionElement.create("squareup.four", Kind.MAP, option_four_map, true)
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -1919,10 +1898,11 @@ class ProtoParserTest {
             )
         )
 
-    val expected = MessageElement.builder(location.at(1, 1))
-        .name("StructuredOption")
-        .fields(ImmutableList.of(field))
-        .build()
+    val expected = MessageElement(
+        location = location.at(1, 1),
+        name = "StructuredOption",
+        fields = listOf(field)
+    )
     val protoFile = ProtoFileElement(
         location = location,
         types = listOf(expected)
@@ -1955,207 +1935,206 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("Test")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(2, 3))
-                                .label(OPTIONAL)
-                                .type("int32")
-                                .name("default_int32")
-                                .tag(401)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("x", Kind.NUMBER, "2147483647")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(3, 3))
-                                .label(OPTIONAL)
-                                .type("uint32")
-                                .name("default_uint32")
-                                .tag(402)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("x", Kind.NUMBER, "4294967295")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(4, 3))
-                                .label(OPTIONAL)
-                                .type("sint32")
-                                .name("default_sint32")
-                                .tag(403)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("x", Kind.NUMBER, "-2147483648")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(5, 3))
-                                .label(OPTIONAL)
-                                .type("fixed32")
-                                .name("default_fixed32")
-                                .tag(404)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("x", Kind.NUMBER, "4294967295")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(6, 3))
-                                .label(OPTIONAL)
-                                .type("sfixed32")
-                                .name("default_sfixed32")
-                                .tag(405)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("x", Kind.NUMBER, "-2147483648")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(7, 3))
-                                .label(OPTIONAL)
-                                .type("int64")
-                                .name("default_int64")
-                                .tag(406)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create(
-                                            "x", Kind.NUMBER, "9223372036854775807"
-                                        )
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(8, 3))
-                                .label(OPTIONAL)
-                                .type("uint64")
-                                .name("default_uint64")
-                                .tag(407)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create(
-                                            "x", Kind.NUMBER, "18446744073709551615"
-                                        )
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(9, 3))
-                                .label(OPTIONAL)
-                                .type("sint64")
-                                .name("default_sint64")
-                                .tag(408)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create(
-                                            "x", Kind.NUMBER, "-9223372036854775808"
-                                        )
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(10, 3))
-                                .label(OPTIONAL)
-                                .type("fixed64")
-                                .name("default_fixed64")
-                                .tag(409)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create(
-                                            "x", Kind.NUMBER, "18446744073709551615"
-                                        )
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(11, 3))
-                                .label(OPTIONAL)
-                                .type("sfixed64")
-                                .name("default_sfixed64")
-                                .tag(410)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create(
-                                            "x", Kind.NUMBER, "-9223372036854775808"
-                                        )
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(12, 3))
-                                .label(OPTIONAL)
-                                .type("bool")
-                                .name("default_bool")
-                                .tag(411)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("x", Kind.BOOLEAN, "true")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(13, 3))
-                                .label(OPTIONAL)
-                                .type("float")
-                                .name("default_float")
-                                .tag(412)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("x", Kind.NUMBER, "123.456e7")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(14, 3))
-                                .label(OPTIONAL)
-                                .type("double")
-                                .name("default_double")
-                                .tag(413)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create("x", Kind.NUMBER, "123.456e78")
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(15, 3))
-                                .label(OPTIONAL)
-                                .type("string")
-                                .name("default_string")
-                                .tag(414)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create(
-                                            "x",
-                                            Kind.STRING,
-                                            "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
-                                        )
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(17, 3))
-                                .label(OPTIONAL)
-                                .type("bytes")
-                                .name("default_bytes")
-                                .tag(415)
-                                .options(
-                                    ImmutableList.of(
-                                        OptionElement.create(
-                                            "x",
-                                            Kind.STRING,
-                                            "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
-                                        )
-                                    )
-                                )
-                                .build(),
-                            FieldElement.builder(location.at(19, 3))
-                                .label(OPTIONAL)
-                                .type("NestedEnum")
-                                .name("default_nested_enum")
-                                .tag(416)
-                                .options(
-                                    ImmutableList.of(OptionElement.create("x", Kind.ENUM, "A"))
-                                )
-                                .build()
+            MessageElement(
+                location = location.at(1, 1),
+                name = "Test",
+                fields = listOf(
+                    FieldElement.builder(location.at(2, 3))
+                        .label(OPTIONAL)
+                        .type("int32")
+                        .name("default_int32")
+                        .tag(401)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("x", Kind.NUMBER, "2147483647")
+                            )
                         )
-                    )
-                    .build()
+                        .build(),
+                    FieldElement.builder(location.at(3, 3))
+                        .label(OPTIONAL)
+                        .type("uint32")
+                        .name("default_uint32")
+                        .tag(402)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("x", Kind.NUMBER, "4294967295")
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(4, 3))
+                        .label(OPTIONAL)
+                        .type("sint32")
+                        .name("default_sint32")
+                        .tag(403)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("x", Kind.NUMBER, "-2147483648")
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(5, 3))
+                        .label(OPTIONAL)
+                        .type("fixed32")
+                        .name("default_fixed32")
+                        .tag(404)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("x", Kind.NUMBER, "4294967295")
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(6, 3))
+                        .label(OPTIONAL)
+                        .type("sfixed32")
+                        .name("default_sfixed32")
+                        .tag(405)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("x", Kind.NUMBER, "-2147483648")
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(7, 3))
+                        .label(OPTIONAL)
+                        .type("int64")
+                        .name("default_int64")
+                        .tag(406)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create(
+                                    "x", Kind.NUMBER, "9223372036854775807"
+                                )
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(8, 3))
+                        .label(OPTIONAL)
+                        .type("uint64")
+                        .name("default_uint64")
+                        .tag(407)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create(
+                                    "x", Kind.NUMBER, "18446744073709551615"
+                                )
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(9, 3))
+                        .label(OPTIONAL)
+                        .type("sint64")
+                        .name("default_sint64")
+                        .tag(408)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create(
+                                    "x", Kind.NUMBER, "-9223372036854775808"
+                                )
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(10, 3))
+                        .label(OPTIONAL)
+                        .type("fixed64")
+                        .name("default_fixed64")
+                        .tag(409)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create(
+                                    "x", Kind.NUMBER, "18446744073709551615"
+                                )
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(11, 3))
+                        .label(OPTIONAL)
+                        .type("sfixed64")
+                        .name("default_sfixed64")
+                        .tag(410)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create(
+                                    "x", Kind.NUMBER, "-9223372036854775808"
+                                )
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(12, 3))
+                        .label(OPTIONAL)
+                        .type("bool")
+                        .name("default_bool")
+                        .tag(411)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("x", Kind.BOOLEAN, "true")
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(13, 3))
+                        .label(OPTIONAL)
+                        .type("float")
+                        .name("default_float")
+                        .tag(412)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("x", Kind.NUMBER, "123.456e7")
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(14, 3))
+                        .label(OPTIONAL)
+                        .type("double")
+                        .name("default_double")
+                        .tag(413)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create("x", Kind.NUMBER, "123.456e78")
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(15, 3))
+                        .label(OPTIONAL)
+                        .type("string")
+                        .name("default_string")
+                        .tag(414)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create(
+                                    "x",
+                                    Kind.STRING,
+                                    "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
+                                )
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(17, 3))
+                        .label(OPTIONAL)
+                        .type("bytes")
+                        .name("default_bytes")
+                        .tag(415)
+                        .options(
+                            ImmutableList.of(
+                                OptionElement.create(
+                                    "x",
+                                    Kind.STRING,
+                                    "çok\u0007\b\u000C\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
+                                )
+                            )
+                        )
+                        .build(),
+                    FieldElement.builder(location.at(19, 3))
+                        .label(OPTIONAL)
+                        .type("NestedEnum")
+                        .name("default_nested_enum")
+                        .tag(416)
+                        .options(
+                            ImmutableList.of(OptionElement.create("x", Kind.ENUM, "A"))
+                        )
+                        .build()
+                )
             )
         )
+    )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
@@ -2201,10 +2180,11 @@ class ProtoParserTest {
         OptionElement.create("old_default", Kind.NUMBER, "20")
     )
 
-    val expected = MessageElement.builder(location.at(1, 1))
-        .name("Foo")
-        .fields(ImmutableList.of(field))
-        .build()
+    val expected = MessageElement(
+        location = location.at(1, 1),
+        name = "Foo",
+        fields = listOf(field)
+    )
     val protoFile = ProtoFileElement(
         location = location,
         types = listOf(expected)
@@ -2219,17 +2199,16 @@ class ProtoParserTest {
         |  reserved 10, 12 to 14, 'foo';
         |}
         """.trimMargin()
-    val message = MessageElement.builder(location.at(1, 1))
-        .name("Foo")
-        .reserveds(
-            ImmutableList.of(
-                ReservedElement.create(
-                    location.at(2, 3), "",
-                    ImmutableList.of(10, Range.closed(12, 14), "foo")
-                )
+    val message = MessageElement(
+        location = location.at(1, 1),
+        name = "Foo",
+        reserveds = listOf(
+            ReservedElement.create(
+                location.at(2, 3), "",
+                ImmutableList.of(10, Range.closed(12, 14), "foo")
             )
         )
-        .build()
+    )
     val expected = ProtoFileElement(
         location = location,
         types = listOf(message)
@@ -2243,16 +2222,16 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-                MessageElement.builder(location.at(1, 1))
-                    .name("C")
-                    .fields(ImmutableList.of(
-                        FieldElement.builder(location.at(1, 12))
-                            .label(OPTIONAL)
-                            .type("A.B")
-                            .name("ab")
-                            .tag(1)
-                            .build())
-                    ).build()
+            MessageElement(location = location.at(1, 1),
+                name = "C",
+                fields = listOf(
+                    FieldElement.builder(location.at(1, 12))
+                        .label(OPTIONAL)
+                        .type("A.B")
+                        .name("ab")
+                        .tag(1)
+                        .build())
+            )
         )
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)

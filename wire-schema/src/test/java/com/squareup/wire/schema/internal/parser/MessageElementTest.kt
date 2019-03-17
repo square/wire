@@ -29,19 +29,20 @@ class MessageElementTest {
   internal var location = Location.get("file.proto")
   @Test
   fun emptyToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val expected = "message Message {}\n"
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun simpleToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(
-            ImmutableList.of(
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(
                 FieldElement.builder(location)
                     .label(REQUIRED)
                     .type("string")
@@ -50,7 +51,6 @@ class MessageElementTest {
                     .build()
             )
         )
-        .build()
     val expected = """
         |message Message {
         |  required string name = 1;
@@ -73,29 +73,29 @@ class MessageElementTest {
         .name("last_name")
         .tag(2)
         .build()
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(ImmutableList.of(firstName, lastName))
-        .build()
-    assertThat(element.fields()).hasSize(2)
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(firstName, lastName)
+    )
+    assertThat(element.fields).hasSize(2)
   }
 
   @Test
   fun simpleWithDocumentationToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .documentation("Hello")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
-            )
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        documentation = "Hello",
+        fields = listOf(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()
         )
-        .build()
+    )
     val expected = """
         |// Hello
         |message Message {
@@ -113,15 +113,12 @@ class MessageElementTest {
         .name("name")
         .tag(1)
         .build()
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(ImmutableList.of(field))
-        .options(
-            ImmutableList.of(
-                OptionElement.create("kit", Kind.STRING, "kat")
-            )
-        )
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(field),
+        options = listOf(OptionElement.create("kit", Kind.STRING, "kat"))
+    )
     val expected =
         """message Message {
         |  option kit = "kat";
@@ -142,46 +139,43 @@ class MessageElementTest {
         .build()
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(ImmutableList.of(field))
-        .options(ImmutableList.of(kitKat, fooBar))
-        .build()
-    assertThat(element.options()).hasSize(2)
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(field),
+        options = listOf(kitKat, fooBar)
+    )
+    assertThat(element.options).hasSize(2)
   }
 
   @Test
   fun simpleWithNestedElementsToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()
+        ),
+        nestedTypes = listOf(
+            MessageElement(
+                location = location,
+                name = "Nested",
+                fields = listOf(
+                    FieldElement.builder(location)
+                        .label(REQUIRED)
+                        .type("string")
+                        .name("name")
+                        .tag(1)
+                        .build()
+                )
             )
         )
-        .nestedTypes(
-            ImmutableList.of(
-                MessageElement.builder(location)
-                    .name("Nested")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location)
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("name")
-                                .tag(1)
-                                .build()
-                        )
-                    )
-                    .build()
-            )
-        )
-        .build()
+    )
     val expected = """
         |message Message {
         |  required string name = 1;
@@ -196,49 +190,45 @@ class MessageElementTest {
 
   @Test
   fun addMultipleTypes() {
-    val nested1 = MessageElement.builder(location)
-        .name("Nested1")
-        .build()
-    val nested2 = MessageElement.builder(location)
-        .name("Nested2")
-        .build()
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
-            )
-        )
-        .nestedTypes(ImmutableList.of(nested1, nested2))
-        .build()
-    assertThat(element.nestedTypes()).hasSize(2)
+    val nested1 = MessageElement(
+        location = location,
+        name = "Nested1")
+    val nested2 = MessageElement(
+        location = location,
+        name = "Nested2")
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()
+        ),
+        nestedTypes = listOf(nested1, nested2)
+    )
+    assertThat(element.nestedTypes).hasSize(2)
   }
 
   @Test
   fun simpleWithExtensionsToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
-            )
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()
+        ),
+        extensions = listOf(
+            ExtensionsElement.create(location, 500, 501, "")
         )
-        .extensions(
-            ImmutableList.of(
-                ExtensionsElement.create(location, 500, 501, "")
-            )
-        )
-        .build()
+    )
     val expected = """
         |message Message {
         |  required string name = 1;
@@ -253,44 +243,42 @@ class MessageElementTest {
   fun addMultipleExtensions() {
     val fives = ExtensionsElement.create(location, 500, 501, "")
     val sixes = ExtensionsElement.create(location, 600, 601, "")
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .label(REQUIRED)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
-            )
-        )
-        .extensions(ImmutableList.of(fives, sixes))
-        .build()
-    assertThat(element.extensions()).hasSize(2)
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(
+            FieldElement.builder(location)
+                .label(REQUIRED)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()
+        ),
+        extensions = listOf(fives, sixes)
+    )
+    assertThat(element.extensions).hasSize(2)
   }
 
   @Test
   fun oneOfToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .oneOfs(
-            ImmutableList.of(
-                OneOfElement.builder()
-                    .name("hi")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location)
-                                .type("string")
-                                .name("name")
-                                .tag(1)
-                                .build()
-                        )
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        oneOfs = listOf(
+            OneOfElement.builder()
+                .name("hi")
+                .fields(
+                    ImmutableList.of(
+                        FieldElement.builder(location)
+                            .type("string")
+                            .name("name")
+                            .tag(1)
+                            .build()
                     )
-                    .build()
-            )
+                )
+                .build()
         )
-        .build()
+    )
     val expected = """
         |message Message {
         |  oneof hi {
@@ -303,49 +291,48 @@ class MessageElementTest {
 
   @Test
   fun oneOfWithGroupToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .oneOfs(
-            ImmutableList.of(
-                OneOfElement.builder()
-                    .name("hi")
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location)
-                                .type("string")
-                                .name("name")
-                                .tag(1)
-                                .build()
-                        )
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        oneOfs = listOf(
+            OneOfElement.builder()
+                .name("hi")
+                .fields(
+                    ImmutableList.of(
+                        FieldElement.builder(location)
+                            .type("string")
+                            .name("name")
+                            .tag(1)
+                            .build()
                     )
-                    .groups(
-                        ImmutableList.of(
-                            GroupElement.builder(location.at(5, 5))
-                                .name("Stuff")
-                                .tag(3)
-                                .fields(
-                                    ImmutableList.of(
-                                        FieldElement.builder(location.at(6, 7))
-                                            .label(OPTIONAL)
-                                            .type("int32")
-                                            .name("result_per_page")
-                                            .tag(4)
-                                            .build(),
-                                        FieldElement.builder(location.at(7, 7))
-                                            .label(OPTIONAL)
-                                            .type("int32")
-                                            .name("page_count")
-                                            .tag(5)
-                                            .build()
-                                    )
+                )
+                .groups(
+                    ImmutableList.of(
+                        GroupElement.builder(location.at(5, 5))
+                            .name("Stuff")
+                            .tag(3)
+                            .fields(
+                                ImmutableList.of(
+                                    FieldElement.builder(location.at(6, 7))
+                                        .label(OPTIONAL)
+                                        .type("int32")
+                                        .name("result_per_page")
+                                        .tag(4)
+                                        .build(),
+                                    FieldElement.builder(location.at(7, 7))
+                                        .label(OPTIONAL)
+                                        .type("int32")
+                                        .name("page_count")
+                                        .tag(5)
+                                        .build()
                                 )
-                                .build()
-                        )
+                            )
+                            .build()
                     )
-                    .build()
-            )
+                )
+                .build()
         )
-        .build()
+    )
     val expected = """
         |message Message {
         |  oneof hi {
@@ -387,28 +374,28 @@ class MessageElementTest {
             )
         )
         .build()
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .oneOfs(ImmutableList.of(hi, hey))
-        .build()
-    assertThat(element.oneOfs()).hasSize(2)
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        oneOfs = listOf(hi, hey)
+    )
+    assertThat(element.oneOfs).hasSize(2)
   }
 
   @Test
   fun reservedToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .reserveds(
-            ImmutableList.of(
-                ReservedElement.create(
-                    location, "", ImmutableList.of(10, Range.closed(12, 14), "foo")
-                ),
-                ReservedElement.create(location, "", ImmutableList.of(10)),
-                ReservedElement.create(location, "", ImmutableList.of(Range.closed(12, 14))),
-                ReservedElement.create(location, "", ImmutableList.of("foo"))
-            )
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        reserveds = listOf(
+            ReservedElement.create(
+                location, "", ImmutableList.of(10, Range.closed(12, 14), "foo")
+            ),
+            ReservedElement.create(location, "", ImmutableList.of(10)),
+            ReservedElement.create(location, "", ImmutableList.of(Range.closed(12, 14))),
+            ReservedElement.create(location, "", ImmutableList.of("foo"))
         )
-        .build()
+    )
     val expected = """
         |message Message {
         |  reserved 10, 12 to 14, "foo";
@@ -422,40 +409,39 @@ class MessageElementTest {
 
   @Test
   fun groupToSchema() {
-    val element = MessageElement.builder(location.at(1, 1))
-        .name("SearchResponse")
-        .groups(
-            ImmutableList.of(
-                GroupElement.builder(location.at(2, 3))
-                    .label(REPEATED)
-                    .name("Result")
-                    .tag(1)
-                    .fields(
-                        ImmutableList.of(
-                            FieldElement.builder(location.at(3, 5))
-                                .label(REQUIRED)
-                                .type("string")
-                                .name("url")
-                                .tag(2)
-                                .build(),
-                            FieldElement.builder(location.at(4, 5))
-                                .label(OPTIONAL)
-                                .type("string")
-                                .name("title")
-                                .tag(3)
-                                .build(),
-                            FieldElement.builder(location.at(5, 5))
-                                .label(REPEATED)
-                                .type("string")
-                                .name("snippets")
-                                .tag(4)
-                                .build()
-                        )
+    val element = MessageElement(
+        location = location.at(1, 1),
+        name = "SearchResponse",
+        groups = listOf(
+            GroupElement.builder(location.at(2, 3))
+                .label(REPEATED)
+                .name("Result")
+                .tag(1)
+                .fields(
+                    ImmutableList.of(
+                        FieldElement.builder(location.at(3, 5))
+                            .label(REQUIRED)
+                            .type("string")
+                            .name("url")
+                            .tag(2)
+                            .build(),
+                        FieldElement.builder(location.at(4, 5))
+                            .label(OPTIONAL)
+                            .type("string")
+                            .name("title")
+                            .tag(3)
+                            .build(),
+                        FieldElement.builder(location.at(5, 5))
+                            .label(REPEATED)
+                            .type("string")
+                            .name("snippets")
+                            .tag(4)
+                            .build()
                     )
-                    .build()
-            )
+                )
+                .build()
         )
-        .build()
+    )
     val expected = """
         |message SearchResponse {
         |  repeated group Result = 1 {
@@ -502,19 +488,21 @@ class MessageElementTest {
         .build()
     val extensions1 = ExtensionsElement.create(location, 500, 501, "")
     val extensions2 = ExtensionsElement.create(location, 503, 503, "")
-    val nested = MessageElement.builder(location)
-        .name("Nested")
-        .fields(ImmutableList.of(field1))
-        .build()
+    val nested = MessageElement(
+        location = location,
+        name = "Nested",
+        fields = listOf(field1)
+    )
     val option = OptionElement.create("kit", Kind.STRING, "kat")
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .fields(ImmutableList.of(field1, field2))
-        .oneOfs(ImmutableList.of(oneOf1, oneOf2))
-        .nestedTypes(ImmutableList.of(nested))
-        .extensions(ImmutableList.of(extensions1, extensions2))
-        .options(ImmutableList.of(option))
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message",
+        fields = listOf(field1, field2),
+        oneOfs = listOf(oneOf1, oneOf2),
+        nestedTypes = listOf(nested),
+        extensions = listOf(extensions1, extensions2),
+        options = listOf(option)
+    )
     val expected = """
         |message Message {
         |  option kit = "kat";

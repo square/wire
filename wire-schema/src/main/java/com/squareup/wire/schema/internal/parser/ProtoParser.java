@@ -168,9 +168,6 @@ public final class ProtoParser {
   /** Reads a message declaration. */
   private MessageElement readMessage(Location location, String documentation) {
     String name = reader.readName();
-    MessageElement.Builder builder = MessageElement.builder(location)
-        .name(name)
-        .documentation(documentation);
 
     String previousPrefix = prefix;
     prefix = prefix + name + ".";
@@ -210,14 +207,18 @@ public final class ProtoParser {
     }
     prefix = previousPrefix;
 
-    return builder.fields(fields.build())
-        .oneOfs(oneOfs.build())
-        .nestedTypes(nestedTypes.build())
-        .extensions(extensions.build())
-        .options(options.build())
-        .reserveds(reserveds.build())
-        .groups(groups.build())
-        .build();
+    return new MessageElement(
+        location,
+        name,
+        documentation,
+        nestedTypes.build(),
+        options.build(),
+        reserveds.build(),
+        fields.build(),
+        oneOfs.build(),
+        extensions.build(),
+        groups.build()
+    );
   }
 
   /** Reads an extend declaration. */
@@ -268,9 +269,6 @@ public final class ProtoParser {
   /** Reads an enumerated type declaration and returns it. */
   private EnumElement readEnumElement(Location location, String documentation) {
     String name = reader.readName();
-    EnumElement.Builder builder = EnumElement.builder(location)
-        .name(name)
-        .documentation(documentation);
 
     ImmutableList.Builder<EnumConstantElement> constants = ImmutableList.builder();
     ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
@@ -286,9 +284,7 @@ public final class ProtoParser {
         options.add((OptionElement) declared);
       }
     }
-    return builder.options(options.build())
-        .constants(constants.build())
-        .build();
+    return new EnumElement(location, name, documentation, options.build(), constants.build());
   }
 
   private Object readField(String documentation, Location location, String word) {

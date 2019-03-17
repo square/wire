@@ -13,63 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.Util.appendIndented
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
-import static com.squareup.wire.schema.internal.Util.appendIndented;
+data class EnumElement(
+  override val location: Location,
+  override val name: String,
+  override val documentation: String = "",
+  override val options: List<OptionElement> = emptyList(),
+  val constants: List<EnumConstantElement> = emptyList()
+) : TypeElement {
+  // Enums do not allow nested type declarations.
+  override val nestedTypes: List<TypeElement> = emptyList()
 
-@AutoValue
-public abstract class EnumElement implements TypeElement {
-  public static Builder builder(Location location) {
-    return new AutoValue_EnumElement.Builder()
-        .location(location)
-        .documentation("")
-        .constants(ImmutableList.<EnumConstantElement>of())
-        .options(ImmutableList.<OptionElement>of());
-  }
+  override fun toSchema() = buildString {
+    appendDocumentation(this, documentation)
+    append("enum $name {")
 
-  @Override public abstract Location location();
-  @Override public abstract String name();
-  @Override public abstract String documentation();
-  @Override public abstract ImmutableList<OptionElement> options();
-  @Override public final ImmutableList<TypeElement> nestedTypes() {
-    return ImmutableList.of(); // Enums do not allow nested type declarations.
-  }
-
-  public abstract ImmutableList<EnumConstantElement> constants();
-
-  @Override public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("enum ")
-        .append(name())
-        .append(" {");
-    if (!options().isEmpty()) {
-      builder.append('\n');
-      for (OptionElement option : options()) {
-        appendIndented(builder, option.toSchemaDeclaration());
+    if (options.isNotEmpty()) {
+      append('\n')
+      for (option in options) {
+        appendIndented(this, option.toSchemaDeclaration())
       }
     }
-    if (!constants().isEmpty()) {
-      builder.append('\n');
-      for (EnumConstantElement constant : constants()) {
-        appendIndented(builder, constant.toSchema());
+    if (constants.isNotEmpty()) {
+      append('\n')
+      for (constant in constants) {
+        appendIndented(this, constant.toSchema())
       }
     }
-    return builder.append("}\n").toString();
-  }
-
-  @AutoValue.Builder
-  public interface  Builder {
-    Builder location(Location location);
-    Builder name(String name);
-    Builder documentation(String documentation);
-    Builder constants(ImmutableList<EnumConstantElement> constants);
-    Builder options(ImmutableList<OptionElement> options);
-    EnumElement build();
+    append("}\n")
   }
 }

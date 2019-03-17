@@ -26,25 +26,25 @@ class EnumElementTest {
 
   @Test
   fun emptyToSchema() {
-    val element = EnumElement.builder(location)
-        .name("Enum")
-        .build()
+    val element = EnumElement(
+        location = location,
+        name = "Enum"
+    )
     val expected = "enum Enum {}\n"
     assertThat(element.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun simpleToSchema() {
-    val element = EnumElement.builder(location)
-        .name("Enum")
-        .constants(
-            ImmutableList.of(
-                EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-                EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-                EnumConstantElement.builder(location).name("SIX").tag(6).build()
-            )
+    val element = EnumElement(
+        location = location,
+        name = "Enum",
+        constants = listOf(
+            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+            EnumConstantElement.builder(location).name("SIX").tag(6).build()
         )
-        .build()
+    )
     val expected = """
         |enum Enum {
         |  ONE = 1;
@@ -69,26 +69,26 @@ class EnumElementTest {
         .name("SIX")
         .tag(6)
         .build()
-    val element = EnumElement.builder(location)
-        .name("Enum")
-        .constants(ImmutableList.of(one, two, six))
-        .build()
-    assertThat(element.constants()).hasSize(3)
+    val element = EnumElement(
+        location = location,
+        name = "Enum",
+        constants = listOf(one, two, six)
+    )
+    assertThat(element.constants).hasSize(3)
   }
 
   @Test
   fun simpleWithOptionsToSchema() {
-    val element = EnumElement.builder(location)
-        .name("Enum")
-        .options(ImmutableList.of(OptionElement.create("kit", STRING, "kat")))
-        .constants(
-            ImmutableList.of(
-                EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-                EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-                EnumConstantElement.builder(location).name("SIX").tag(6).build()
-            )
+    val element = EnumElement(
+        location = location,
+        name = "Enum",
+        options = listOf(OptionElement.create("kit", STRING, "kat")),
+        constants = listOf(
+            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+            EnumConstantElement.builder(location).name("SIX").tag(6).build()
         )
-        .build()
+    )
     val expected = """
         |enum Enum {
         |  option kit = "kat";
@@ -105,31 +105,30 @@ class EnumElementTest {
   fun addMultipleOptions() {
     val kitKat = OptionElement.create("kit", STRING, "kat")
     val fooBar = OptionElement.create("foo", STRING, "bar")
-    val element = EnumElement.builder(location)
-        .name("Enum")
-        .options(ImmutableList.of(kitKat, fooBar))
-        .constants(
-            ImmutableList.of(
-                EnumConstantElement.builder(location).name("ONE").tag(1).build()
-            )
+    val element = EnumElement(
+        location = location,
+        name = "Enum",
+        options = listOf(kitKat, fooBar),
+        constants = listOf(
+            EnumConstantElement.builder(location).name("ONE").tag(1).build()
         )
-        .build()
-    assertThat(element.options()).hasSize(2)
+    )
+    assertThat(element.options).hasSize(2)
   }
 
   @Test
   fun simpleWithDocumentationToSchema() {
-    val element = EnumElement.builder(location)
-        .name("Enum")
-        .documentation("Hello")
-        .constants(
-            ImmutableList.of(
-                EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-                EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-                EnumConstantElement.builder(location).name("SIX").tag(6).build()
-            )
+    val element = EnumElement(
+        location = location,
+        name = "Enum",
+        documentation = "Hello",
+        constants =
+        listOf(
+            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
+            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
+            EnumConstantElement.builder(location).name("SIX").tag(6).build()
         )
-        .build()
+    )
     val expected = """
         |// Hello
         |enum Enum {

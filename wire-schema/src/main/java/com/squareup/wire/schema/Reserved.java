@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.squareup.wire.schema.internal.parser.ReservedElement;
+import java.util.List;
 
 final class Reserved {
   private final Location location;
@@ -63,7 +64,7 @@ final class Reserved {
     return false;
   }
 
-  static ImmutableList<Reserved> fromElements(ImmutableList<ReservedElement> reserveds) {
+  static ImmutableList<Reserved> fromElements(List<ReservedElement> reserveds) {
     ImmutableList.Builder<Reserved> builder = ImmutableList.builder();
     for (ReservedElement reserved : reserveds) {
       builder.add(new Reserved(reserved.location(), reserved.documentation(), reserved.values()));

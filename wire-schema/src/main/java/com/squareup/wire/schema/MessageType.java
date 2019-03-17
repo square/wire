@@ -20,6 +20,7 @@ import com.squareup.wire.schema.internal.parser.GroupElement;
 import com.squareup.wire.schema.internal.parser.MessageElement;
 import com.squareup.wire.schema.internal.parser.TypeElement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -257,46 +258,50 @@ public final class MessageType extends Type {
 
   static MessageType fromElement(String packageName, ProtoType protoType,
       MessageElement messageElement) {
-    if (!messageElement.groups().isEmpty()) {
-      GroupElement group = messageElement.groups().get(0);
+    if (!messageElement.getGroups().isEmpty()) {
+      GroupElement group = messageElement.getGroups().get(0);
       throw new IllegalStateException(group.location() + ": 'group' is not supported");
     }
 
     ImmutableList<Field> declaredFields =
-        Field.fromElements(packageName, messageElement.fields(), false);
+        Field.fromElements(packageName, messageElement.getFields(), false);
 
     // Extension fields be populated during linking.
     List<Field> extensionFields = new ArrayList<>();
 
-    ImmutableList<OneOf> oneOfs = OneOf.fromElements(packageName, messageElement.oneOfs(), false);
+    ImmutableList<OneOf> oneOfs =
+        OneOf.fromElements(packageName, messageElement.getOneOfs(), false);
 
     ImmutableList.Builder<Type> nestedTypes = ImmutableList.builder();
-    for (TypeElement nestedType : messageElement.nestedTypes()) {
-      nestedTypes.add(Type.get(packageName, protoType.nestedType(nestedType.name()), nestedType));
+    for (TypeElement nestedType : messageElement.getNestedTypes()) {
+      nestedTypes.add(
+          Type.get(packageName, protoType.nestedType(nestedType.getName()), nestedType));
     }
 
     ImmutableList<Extensions> extensionsList =
-        Extensions.fromElements(messageElement.extensions());
+        Extensions.fromElements(messageElement.getExtensions());
 
-    ImmutableList<Reserved> reserveds = Reserved.fromElements(messageElement.reserveds());
+    ImmutableList<Reserved> reserveds = Reserved.fromElements(messageElement.getReserveds());
 
-    Options options = new Options(Options.MESSAGE_OPTIONS, messageElement.options());
+    Options options = new Options(Options.MESSAGE_OPTIONS, messageElement.getOptions());
 
-    return new MessageType(protoType, messageElement.location(), messageElement.documentation(),
-        messageElement.name(), declaredFields, extensionFields, oneOfs, nestedTypes.build(),
+    return new MessageType(protoType, messageElement.getLocation(),
+        messageElement.getDocumentation(),
+        messageElement.getName(), declaredFields, extensionFields, oneOfs, nestedTypes.build(),
         extensionsList, reserveds, options);
   }
 
   MessageElement toElement() {
-    return MessageElement.builder(location)
-        .documentation(documentation)
-        .name(name)
-        .options(options.toElements())
-        .fields(Field.toElements(declaredFields))
-        .nestedTypes(Type.toElements(nestedTypes))
-        .oneOfs(OneOf.toElements(oneOfs))
-        .extensions(Extensions.toElements(extensionsList))
-        .reserveds(Reserved.toElements(reserveds))
-        .build();
+    return new MessageElement(location,
+        name,
+        documentation,
+        Type.toElements(nestedTypes),
+        options.toElements(),
+        Reserved.toElements(reserveds),
+        Field.toElements(declaredFields),
+        OneOf.toElements(oneOfs),
+        Extensions.toElements(extensionsList),
+        Collections.emptyList() // groups
+    );
   }
 }

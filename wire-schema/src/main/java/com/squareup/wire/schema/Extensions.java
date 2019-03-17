@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.Util;
 import com.squareup.wire.schema.internal.parser.ExtensionsElement;
+import java.util.List;
 
 final class Extensions {
   private final Location location;
@@ -48,7 +49,7 @@ final class Extensions {
     return end;
   }
 
-  static ImmutableList<Extensions> fromElements(ImmutableList<ExtensionsElement> elements) {
+  static ImmutableList<Extensions> fromElements(List<ExtensionsElement> elements) {
     ImmutableList.Builder<Extensions> extensions = ImmutableList.builder();
     for (ExtensionsElement element : elements) {
       extensions.add(new Extensions(element.location(), element.documentation(),

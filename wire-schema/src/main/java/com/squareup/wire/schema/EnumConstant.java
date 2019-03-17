@@ -17,6 +17,7 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.EnumConstantElement;
+import java.util.List;
 
 public final class EnumConstant {
   private final Location location;
@@ -76,7 +77,7 @@ public final class EnumConstant {
     return new EnumConstant(location, name, tag, documentation, options.retainAll(schema, markSet));
   }
 
-  static ImmutableList<EnumConstant> fromElements(ImmutableList<EnumConstantElement> elements) {
+  static ImmutableList<EnumConstant> fromElements(List<EnumConstantElement> elements) {
     ImmutableList.Builder<EnumConstant> constants = ImmutableList.builder();
     for (EnumConstantElement element : elements) {
       constants.add(fromElement(element));

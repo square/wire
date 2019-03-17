@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.GroupElement;
 import com.squareup.wire.schema.internal.parser.OneOfElement;
+import java.util.List;
 
 public final class OneOf {
   private final String name;
@@ -60,8 +61,8 @@ public final class OneOf {
     return new OneOf(name, documentation, retainedFields);
   }
 
-  static ImmutableList<OneOf> fromElements(String packageName,
-      ImmutableList<OneOfElement> elements, boolean extension) {
+  static ImmutableList<OneOf> fromElements(String packageName, List<OneOfElement> elements,
+      boolean extension) {
     ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();
     for (OneOfElement oneOf : elements) {
       if (!oneOf.groups().isEmpty()) {

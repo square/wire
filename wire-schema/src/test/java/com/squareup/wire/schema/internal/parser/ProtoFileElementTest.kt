@@ -46,9 +46,10 @@ class ProtoFileElementTest {
 
   @Test
   fun simpleToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val file = ProtoFileElement(
         location = location,
         types = listOf(element)
@@ -63,9 +64,10 @@ class ProtoFileElementTest {
 
   @Test
   fun simpleWithImportsToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val file = ProtoFileElement(
         location = location,
         imports = listOf("example.other"),
@@ -83,9 +85,10 @@ class ProtoFileElementTest {
 
   @Test
   fun addMultipleDependencies() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val file = ProtoFileElement(
         location = location,
         imports = listOf("example.other", "example.another"),
@@ -96,9 +99,10 @@ class ProtoFileElementTest {
 
   @Test
   fun simpleWithPublicImportsToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val file = ProtoFileElement(
         location = location,
         publicImports = listOf("example.other"),
@@ -116,9 +120,10 @@ class ProtoFileElementTest {
 
   @Test
   fun addMultiplePublicDependencies() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val file = ProtoFileElement(location = location,
         publicImports = listOf("example.other", "example.another"),
         types = listOf(element)
@@ -128,9 +133,10 @@ class ProtoFileElementTest {
 
   @Test
   fun simpleWithBothImportsToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val file = ProtoFileElement(location = location,
         imports = listOf("example.thing"),
         publicImports = listOf("example.other"),
@@ -149,9 +155,10 @@ class ProtoFileElementTest {
 
   @Test
   fun simpleWithServicesToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val service = ServiceElement(
         location = location,
         name = "Service"
@@ -190,9 +197,10 @@ class ProtoFileElementTest {
 
   @Test
   fun simpleWithOptionsToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val option = OptionElement.create("kit", Kind.STRING, "kat")
     val file = ProtoFileElement(
         location = location,
@@ -211,9 +219,10 @@ class ProtoFileElementTest {
 
   @Test
   fun addMultipleOptions() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(
+        location = location,
+        name = "Message"
+    )
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
     val file = ProtoFileElement(
@@ -229,7 +238,7 @@ class ProtoFileElementTest {
     val file = ProtoFileElement(
         location = location,
         extendDeclarations = listOf(ExtendElement(location = location.at(5, 1), name = "Extend")),
-        types = listOf(MessageElement.builder(location).name("Message").build())
+        types = listOf(MessageElement(location = location, name = "Message"))
     )
     val expected = """
         |// file.proto
@@ -254,12 +263,8 @@ class ProtoFileElementTest {
 
   @Test
   fun multipleEverythingToSchema() {
-    val element1 = MessageElement.builder(location.at(10, 1))
-        .name("Message1")
-        .build()
-    val element2 = MessageElement.builder(location.at(11, 1))
-        .name("Message2")
-        .build()
+    val element1 = MessageElement(location = location.at(10, 1), name = "Message1")
+    val element2 = MessageElement(location = location.at(11, 1), name = "Message2")
     val extend1 = ExtendElement(location = location.at(13, 1), name = "Extend1")
     val extend2 = ExtendElement(location = location.at(14, 1), name = "Extend2")
     val option1 = OptionElement.create("kit", Kind.STRING, "kat")
@@ -310,9 +315,7 @@ class ProtoFileElementTest {
 
   @Test
   fun syntaxToSchema() {
-    val element = MessageElement.builder(location)
-        .name("Message")
-        .build()
+    val element = MessageElement(location = location, name = "Message")
     val file = ProtoFileElement(
         location = location,
         syntax = PROTO_2,
