@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.Location
 
-/** A message type or enum type declaration. */
-public interface TypeElement {
-  Location location();
-  String name();
-  String documentation();
-  ImmutableList<OptionElement> options();
-  ImmutableList<TypeElement> nestedTypes();
-  String toSchema();
+/** A message type or enum type declaration.  */
+interface TypeElement {
+  val location: Location
+  val name: String
+  val documentation: String
+  val options: List<OptionElement>
+  val nestedTypes: List<TypeElement>
+  fun toSchema(): String
 }

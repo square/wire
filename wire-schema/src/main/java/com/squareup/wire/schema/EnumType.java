@@ -150,19 +150,19 @@ public final class EnumType extends Type {
   }
 
   static EnumType fromElement(ProtoType protoType, EnumElement enumElement) {
-    ImmutableList<EnumConstant> constants = EnumConstant.fromElements(enumElement.constants());
-    Options options = new Options(Options.ENUM_OPTIONS, enumElement.options());
+    ImmutableList<EnumConstant> constants = EnumConstant.fromElements(enumElement.getConstants());
+    Options options = new Options(Options.ENUM_OPTIONS, enumElement.getOptions());
 
-    return new EnumType(protoType, enumElement.location(), enumElement.documentation(),
-        enumElement.name(), constants, options);
+    return new EnumType(protoType, enumElement.getLocation(), enumElement.getDocumentation(),
+        enumElement.getName(), constants, options);
   }
 
   EnumElement toElement() {
-    return EnumElement.builder(location)
-        .name(name)
-        .documentation(documentation)
-        .constants(EnumConstant.toElements(constants))
-        .options(options.toElements())
-        .build();
+    return new EnumElement(location,
+        name,
+        documentation,
+        options.toElements(),
+        EnumConstant.toElements(constants)
+    );
   }
 }

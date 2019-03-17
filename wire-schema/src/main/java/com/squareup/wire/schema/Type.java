@@ -35,10 +35,8 @@ public abstract class Type {
   public static Type get(String packageName, ProtoType protoType, TypeElement type) {
     if (type instanceof EnumElement) {
       return EnumType.fromElement(protoType, (EnumElement) type);
-
     } else if (type instanceof MessageElement) {
       return MessageType.fromElement(packageName, protoType, (MessageElement) type);
-
     } else {
       throw new IllegalArgumentException("unexpected type: " + type.getClass());
     }
@@ -47,7 +45,7 @@ public abstract class Type {
   static ImmutableList<Type> fromElements(String packageName, List<TypeElement> elements) {
     ImmutableList.Builder<Type> types = new ImmutableList.Builder<>();
     for (TypeElement element : elements) {
-      ProtoType protoType = ProtoType.get(packageName, element.name());
+      ProtoType protoType = ProtoType.get(packageName, element.getName());
       types.add(Type.get(packageName, protoType, element));
     }
     return types.build();
@@ -56,13 +54,10 @@ public abstract class Type {
   static TypeElement toElement(Type type) {
     if (type instanceof EnumType) {
       return ((EnumType) type).toElement();
-
     } else if (type instanceof MessageType) {
       return ((MessageType) type).toElement();
-
     } else if (type instanceof EnclosingType) {
       return ((EnclosingType) type).toElement();
-
     } else {
       throw new IllegalArgumentException("unexpected type: " + type.getClass());
     }

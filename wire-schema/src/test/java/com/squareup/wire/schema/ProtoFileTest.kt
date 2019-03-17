@@ -31,18 +31,22 @@ class ProtoFileTest {
 
   @Test
   fun roundTripToElement() {
-    val element1 = MessageElement.builder(location.at(11, 1))
-        .name("Message1")
-        .documentation("Some comments about Message1")
-        .build()
-    val element2 = MessageElement.builder(location.at(12, 1))
-        .name("Message2")
-        .fields(ImmutableList.of(FieldElement.builder(location.at(13, 3))
+    val element1 = MessageElement(
+        location = location.at(11, 1),
+        name = "Message1",
+        documentation = "Some comments about Message1"
+    )
+    val element2 = MessageElement(
+        location = location.at(12, 1),
+        name = "Message2",
+        fields = listOf(FieldElement.builder(location.at(13, 3))
             .type("string")
             .name("field")
             .tag(1)
-            .build()))
-        .build()
+            .build()
+        )
+    )
+
     val extend1 = ExtendElement(
         location = location.at(16, 1),
         name = "Extend1"
