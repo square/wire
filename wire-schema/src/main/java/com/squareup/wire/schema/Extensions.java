@@ -52,8 +52,8 @@ final class Extensions {
   static ImmutableList<Extensions> fromElements(List<ExtensionsElement> elements) {
     ImmutableList.Builder<Extensions> extensions = ImmutableList.builder();
     for (ExtensionsElement element : elements) {
-      extensions.add(new Extensions(element.location(), element.documentation(),
-          element.start(), element.end()));
+      extensions.add(new Extensions(element.getLocation(), element.getDocumentation(),
+          element.getStart(), element.getEnd()));
     }
     return extensions.build();
   }
@@ -61,8 +61,11 @@ final class Extensions {
   static ImmutableList<ExtensionsElement> toElements(ImmutableList<Extensions> extensions) {
     ImmutableList.Builder<ExtensionsElement> elements = new ImmutableList.Builder<>();
     for (Extensions extension : extensions) {
-      elements.add(ExtensionsElement.create(extension.location, extension.start, extension.end,
-          extension.documentation));
+      elements.add(
+          new ExtensionsElement(
+              extension.location, extension.documentation, extension.start, extension.end
+          )
+      );
     }
     return elements.build();
   }

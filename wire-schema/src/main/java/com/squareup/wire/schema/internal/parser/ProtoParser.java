@@ -479,7 +479,7 @@ public final class ProtoParser {
       }
     }
     reader.require(';');
-    return ExtensionsElement.create(location, start, end, documentation);
+    return new ExtensionsElement(location, documentation, start, end);
   }
 
   /** Reads an enum constant like "ROCK = 0;". The label is the constant name. */
