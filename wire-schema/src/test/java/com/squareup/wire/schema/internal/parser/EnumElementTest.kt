@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
 import org.assertj.core.api.Assertions.assertThat
@@ -40,9 +39,9 @@ class EnumElementTest {
         location = location,
         name = "Enum",
         constants = listOf(
-            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-            EnumConstantElement.builder(location).name("SIX").tag(6).build()
+            EnumConstantElement(location = location, name = "ONE", tag = 1),
+            EnumConstantElement(location = location, name = "TWO", tag = 2),
+            EnumConstantElement(location = location, name = "SIX", tag = 6)
         )
     )
     val expected = """
@@ -57,18 +56,9 @@ class EnumElementTest {
 
   @Test
   fun addMultipleConstants() {
-    val one = EnumConstantElement.builder(location)
-        .name("ONE")
-        .tag(1)
-        .build()
-    val two = EnumConstantElement.builder(location)
-        .name("TWO")
-        .tag(2)
-        .build()
-    val six = EnumConstantElement.builder(location)
-        .name("SIX")
-        .tag(6)
-        .build()
+    val one = EnumConstantElement(location = location, name = "ONE", tag = 1)
+    val two = EnumConstantElement(location = location, name = "TWO", tag = 2)
+    val six = EnumConstantElement(location = location, name = "SIX", tag = 6)
     val element = EnumElement(
         location = location,
         name = "Enum",
@@ -84,9 +74,9 @@ class EnumElementTest {
         name = "Enum",
         options = listOf(OptionElement.create("kit", STRING, "kat")),
         constants = listOf(
-            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-            EnumConstantElement.builder(location).name("SIX").tag(6).build()
+            EnumConstantElement(location = location, name = "ONE", tag = 1),
+            EnumConstantElement(location = location, name = "TWO", tag = 2),
+            EnumConstantElement(location = location, name = "SIX", tag = 6)
         )
     )
     val expected = """
@@ -109,9 +99,7 @@ class EnumElementTest {
         location = location,
         name = "Enum",
         options = listOf(kitKat, fooBar),
-        constants = listOf(
-            EnumConstantElement.builder(location).name("ONE").tag(1).build()
-        )
+        constants = listOf(EnumConstantElement(location = location, name = "ONE", tag = 1))
     )
     assertThat(element.options).hasSize(2)
   }
@@ -124,9 +112,9 @@ class EnumElementTest {
         documentation = "Hello",
         constants =
         listOf(
-            EnumConstantElement.builder(location).name("ONE").tag(1).build(),
-            EnumConstantElement.builder(location).name("TWO").tag(2).build(),
-            EnumConstantElement.builder(location).name("SIX").tag(6).build()
+            EnumConstantElement(location = location, name = "ONE", tag = 1),
+            EnumConstantElement(location = location, name = "TWO", tag = 2),
+            EnumConstantElement(location = location, name = "SIX", tag = 6)
         )
     )
     val expected = """
@@ -142,21 +130,19 @@ class EnumElementTest {
 
   @Test
   fun fieldToSchema() {
-    val value = EnumConstantElement.builder(location)
-        .name("NAME")
-        .tag(1)
-        .build()
+    val value = EnumConstantElement(location = location, name = "NAME", tag = 1)
     val expected = "NAME = 1;\n"
     assertThat(value.toSchema()).isEqualTo(expected)
   }
 
   @Test
   fun fieldWithDocumentationToSchema() {
-    val value = EnumConstantElement.builder(location)
-        .name("NAME")
-        .tag(1)
-        .documentation("Hello")
-        .build()
+    val value = EnumConstantElement(
+        location = location,
+        name = "NAME",
+        tag = 1,
+        documentation = "Hello"
+    )
     val expected = """
         |// Hello
         |NAME = 1;
@@ -166,16 +152,15 @@ class EnumElementTest {
 
   @Test
   fun fieldWithOptionsToSchema() {
-    val value = EnumConstantElement.builder(location)
-        .name("NAME")
-        .tag(1)
-        .options(
-            ImmutableList.of(
-                OptionElement.create("kit", STRING, "kat", true),
-                OptionElement.create("tit", STRING, "tat")
-            )
+    val value = EnumConstantElement(
+        location = location,
+        name = "NAME",
+        tag = 1,
+        options = listOf(
+            OptionElement.create("kit", STRING, "kat", true),
+            OptionElement.create("tit", STRING, "tat")
         )
-        .build()
+    )
     val expected = """
         |NAME = 1 [
         |  (kit) = "kat",
