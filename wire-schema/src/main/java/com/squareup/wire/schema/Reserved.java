@@ -23,9 +23,9 @@ import java.util.List;
 final class Reserved {
   private final Location location;
   private final String documentation;
-  private final ImmutableList<Object> values;
+  private final List<Object> values;
 
-  private Reserved(Location location, String documentation, ImmutableList<Object> values) {
+  private Reserved(Location location, String documentation, List<Object> values) {
     this.location = location;
     this.documentation = documentation;
     this.values = values;
@@ -39,7 +39,7 @@ final class Reserved {
     return documentation;
   }
 
-  public ImmutableList<Object> values() {
+  public List<Object> values() {
     return values;
   }
 
@@ -67,7 +67,9 @@ final class Reserved {
   static ImmutableList<Reserved> fromElements(List<ReservedElement> reserveds) {
     ImmutableList.Builder<Reserved> builder = ImmutableList.builder();
     for (ReservedElement reserved : reserveds) {
-      builder.add(new Reserved(reserved.location(), reserved.documentation(), reserved.values()));
+      builder.add(
+          new Reserved(reserved.getLocation(), reserved.getDocumentation(), reserved.getValues())
+      );
     }
     return builder.build();
   }
@@ -76,7 +78,8 @@ final class Reserved {
     ImmutableList.Builder<ReservedElement> builder = ImmutableList.builder();
     for (Reserved reserved : reserveds) {
       builder.add(
-          ReservedElement.create(reserved.location(), reserved.documentation(), reserved.values()));
+          new ReservedElement(reserved.location(), reserved.documentation(), reserved.values())
+      );
     }
     return builder.build();
   }

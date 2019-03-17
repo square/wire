@@ -13,47 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Range;
-import com.squareup.wire.schema.Location;
+import com.google.common.collect.Range
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.internal.Util.appendDocumentation
 
-import static com.squareup.wire.schema.internal.Util.appendDocumentation;
+data class ReservedElement(
+  val location: Location,
+  val documentation: String = "",
+  /** A [String] name or [Integer] or [Range<Int>][Range] tag. */
+  val values: List<Any>
+) {
+  fun toSchema() = buildString {
+    appendDocumentation(this, documentation)
+    append("reserved ")
 
-@AutoValue
-public abstract class ReservedElement {
-  public static ReservedElement create(Location location, String documentation,
-      ImmutableList<Object> values) {
-    return new AutoValue_ReservedElement(location, documentation, values);
-  }
+    val value = values
+    for (i in value.indices) {
+      if (i > 0) append(", ")
 
-  public abstract Location location();
-  public abstract String documentation();
-  /** A {@link String} name or {@link Integer} or {@link Range Range&lt;Integer>} tag. */
-  public abstract ImmutableList<Object> values();
-
-  public final String toSchema() {
-    StringBuilder builder = new StringBuilder();
-    appendDocumentation(builder, documentation());
-    builder.append("reserved ");
-    ImmutableList<Object> value = values();
-    for (int i = 0; i < value.size(); i++) {
-      if (i > 0) builder.append(", ");
-
-      Object reservation = value.get(i);
-      if (reservation instanceof String) {
-        builder.append('"').append(reservation).append('"');
-      } else if (reservation instanceof Integer) {
-        builder.append(reservation);
-      } else if (reservation instanceof Range) {
-        Range<Integer> range = (Range<Integer>) reservation;
-        builder.append(range.lowerEndpoint()).append(" to ").append(range.upperEndpoint());
-      } else {
-        throw new AssertionError();
+      val reservation = value[i]
+      when (reservation) {
+        is String -> append("\"$reservation\"")
+        is Int -> append(reservation)
+        is Range<*> -> {
+          val range = reservation as Range<Int>
+          append("${range.lowerEndpoint()} to ${range.upperEndpoint()}")
+        }
+        else -> throw AssertionError()
       }
     }
-    return builder.append(";\n").toString();
+    append(";\n")
   }
 }
