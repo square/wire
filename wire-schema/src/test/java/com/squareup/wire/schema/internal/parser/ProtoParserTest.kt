@@ -957,23 +957,21 @@ class ProtoParserTest {
                         .build()
                 ),
                 oneOfs = listOf(
-                    OneOfElement.builder()
-                        .name("page_info")
-                        .fields(
-                            ImmutableList.of(
-                                FieldElement.builder(location.at(4, 5))
-                                    .type("int32")
-                                    .name("page_number")
-                                    .tag(2)
-                                    .build(),
-                                FieldElement.builder(location.at(5, 5))
-                                    .type("int32")
-                                    .name("result_per_page")
-                                    .tag(3)
-                                    .build()
-                            )
+                    OneOfElement(
+                        name = "page_info",
+                        fields = listOf(
+                            FieldElement.builder(location.at(4, 5))
+                                .type("int32")
+                                .name("page_number")
+                                .tag(2)
+                                .build(),
+                            FieldElement.builder(location.at(5, 5))
+                                .type("int32")
+                                .name("result_per_page")
+                                .tag(3)
+                                .build()
                         )
-                        .build()
+                    )
                 )
             )
         )
@@ -1010,42 +1008,37 @@ class ProtoParserTest {
                         .build()
                 ),
                 oneOfs = listOf(
-                    OneOfElement.builder()
-                        .name("page_info")
-                        .fields(
-                            ImmutableList.of(
-                                FieldElement.builder(location.at(4, 5))
-                                    .type("int32")
-                                    .name("page_number")
-                                    .tag(2)
-                                    .build()
-                            )
-                        )
-                        .groups(
-                            ImmutableList.of(
-                                GroupElement.builder(location.at(5, 5))
-                                    .name("Stuff")
-                                    .tag(3)
-                                    .fields(
-                                        ImmutableList.of(
-                                            FieldElement.builder(location.at(6, 7))
-                                                .label(OPTIONAL)
-                                                .type("int32")
-                                                .name("result_per_page")
-                                                .tag(4)
-                                                .build(),
-                                            FieldElement.builder(location.at(7, 7))
-                                                .label(OPTIONAL)
-                                                .type("int32")
-                                                .name("page_count")
-                                                .tag(5)
-                                                .build()
-                                        )
+                    OneOfElement(
+                        name = "page_info",
+                        fields = listOf(
+                            FieldElement.builder(location.at(4, 5))
+                                .type("int32")
+                                .name("page_number")
+                                .tag(2)
+                                .build()
+                        ),
+                        groups = listOf(
+                            GroupElement.builder(location.at(5, 5))
+                                .name("Stuff")
+                                .tag(3)
+                                .fields(
+                                    ImmutableList.of(
+                                        FieldElement.builder(location.at(6, 7))
+                                            .label(OPTIONAL)
+                                            .type("int32")
+                                            .name("result_per_page")
+                                            .tag(4)
+                                            .build(),
+                                        FieldElement.builder(location.at(7, 7))
+                                            .label(OPTIONAL)
+                                            .type("int32")
+                                            .name("page_count")
+                                            .tag(5)
+                                            .build()
                                     )
-                                    .build()
-                            )
-                        )
-                        .build()
+                                )
+                                .build()
+                        ))
                 )
             )
         )

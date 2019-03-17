@@ -263,18 +263,16 @@ class MessageElementTest {
         location = location,
         name = "Message",
         oneOfs = listOf(
-            OneOfElement.builder()
-                .name("hi")
-                .fields(
-                    ImmutableList.of(
-                        FieldElement.builder(location)
-                            .type("string")
-                            .name("name")
-                            .tag(1)
-                            .build()
-                    )
+            OneOfElement(
+                name = "hi",
+                fields = listOf(
+                    FieldElement.builder(location)
+                        .type("string")
+                        .name("name")
+                        .tag(1)
+                        .build()
                 )
-                .build()
+            )
         )
     )
     val expected = """
@@ -293,42 +291,38 @@ class MessageElementTest {
         location = location,
         name = "Message",
         oneOfs = listOf(
-            OneOfElement.builder()
-                .name("hi")
-                .fields(
-                    ImmutableList.of(
-                        FieldElement.builder(location)
-                            .type("string")
-                            .name("name")
-                            .tag(1)
-                            .build()
-                    )
-                )
-                .groups(
-                    ImmutableList.of(
-                        GroupElement.builder(location.at(5, 5))
-                            .name("Stuff")
-                            .tag(3)
-                            .fields(
-                                ImmutableList.of(
-                                    FieldElement.builder(location.at(6, 7))
-                                        .label(OPTIONAL)
-                                        .type("int32")
-                                        .name("result_per_page")
-                                        .tag(4)
-                                        .build(),
-                                    FieldElement.builder(location.at(7, 7))
-                                        .label(OPTIONAL)
-                                        .type("int32")
-                                        .name("page_count")
-                                        .tag(5)
-                                        .build()
-                                )
+            OneOfElement(
+                name = "hi",
+                fields = listOf(
+                    FieldElement.builder(location)
+                        .type("string")
+                        .name("name")
+                        .tag(1)
+                        .build()
+                ),
+                groups = listOf(
+                    GroupElement.builder(location.at(5, 5))
+                        .name("Stuff")
+                        .tag(3)
+                        .fields(
+                            ImmutableList.of(
+                                FieldElement.builder(location.at(6, 7))
+                                    .label(OPTIONAL)
+                                    .type("int32")
+                                    .name("result_per_page")
+                                    .tag(4)
+                                    .build(),
+                                FieldElement.builder(location.at(7, 7))
+                                    .label(OPTIONAL)
+                                    .type("int32")
+                                    .name("page_count")
+                                    .tag(5)
+                                    .build()
                             )
-                            .build()
-                    )
+                        )
+                        .build()
                 )
-                .build()
+            )
         )
     )
     val expected = """
@@ -348,30 +342,26 @@ class MessageElementTest {
 
   @Test
   fun addMultipleOneOfs() {
-    val hi = OneOfElement.builder()
-        .name("hi")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .type("string")
-                    .name("name")
-                    .tag(1)
-                    .build()
-            )
+    val hi = OneOfElement(
+        name = "hi",
+        fields = listOf(
+            FieldElement.builder(location)
+                .type("string")
+                .name("name")
+                .tag(1)
+                .build()
         )
-        .build()
-    val hey = OneOfElement.builder()
-        .name("hey")
-        .fields(
-            ImmutableList.of(
-                FieldElement.builder(location)
-                    .type("string")
-                    .name("city")
-                    .tag(2)
-                    .build()
-            )
+    )
+    val hey = OneOfElement(
+        name = "hey",
+        fields = listOf(
+            FieldElement.builder(location)
+                .type("string")
+                .name("city")
+                .tag(2)
+                .build()
         )
-        .build()
+    )
     val element = MessageElement(
         location = location,
         name = "Message",
@@ -471,19 +461,19 @@ class MessageElementTest {
         .name("namey")
         .tag(3)
         .build()
-    val oneOf1 = OneOfElement.builder()
-        .name("thingy")
-        .fields(ImmutableList.of(oneOf1Field))
-        .build()
+    val oneOf1 = OneOfElement(
+        name = "thingy",
+        fields = listOf(oneOf1Field)
+    )
     val oneOf2Field = FieldElement.builder(location)
         .type("string")
         .name("namer")
         .tag(4)
         .build()
-    val oneOf2 = OneOfElement.builder()
-        .name("thinger")
-        .fields(ImmutableList.of(oneOf2Field))
-        .build()
+    val oneOf2 = OneOfElement(
+        name = "thinger",
+        fields = listOf(oneOf2Field)
+    )
     val extensions1 = ExtensionsElement(location = location, start = 500, end = 501)
     val extensions2 = ExtensionsElement(location = location, start = 503, end = 503)
     val nested = MessageElement(

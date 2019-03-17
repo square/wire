@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.GroupElement;
 import com.squareup.wire.schema.internal.parser.OneOfElement;
+import java.util.Collections;
 import java.util.List;
 
 public final class OneOf {
@@ -65,12 +66,12 @@ public final class OneOf {
       boolean extension) {
     ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();
     for (OneOfElement oneOf : elements) {
-      if (!oneOf.groups().isEmpty()) {
-        GroupElement group = oneOf.groups().get(0);
+      if (!oneOf.getGroups().isEmpty()) {
+        GroupElement group = oneOf.getGroups().get(0);
         throw new IllegalStateException(group.location() + ": 'group' is not supported");
       }
-      oneOfs.add(new OneOf(oneOf.name(), oneOf.documentation(),
-          Field.fromElements(packageName, oneOf.fields(), extension)));
+      oneOfs.add(new OneOf(oneOf.getName(), oneOf.getDocumentation(),
+          Field.fromElements(packageName, oneOf.getFields(), extension)));
     }
     return oneOfs.build();
   }
@@ -78,11 +79,12 @@ public final class OneOf {
   static ImmutableList<OneOfElement> toElements(ImmutableList<OneOf> oneOfs) {
     ImmutableList.Builder<OneOfElement> elements = new ImmutableList.Builder<>();
     for (OneOf oneOf : oneOfs) {
-      elements.add(OneOfElement.builder()
-          .documentation(oneOf.documentation)
-          .name(oneOf.name)
-          .fields(Field.toElements(oneOf.fields))
-          .build());
+      elements.add(new OneOfElement(
+          oneOf.name,
+          oneOf.documentation,
+          Field.toElements(oneOf.fields),
+          Collections.emptyList() // groups
+      ));
     }
     return elements.build();
   }

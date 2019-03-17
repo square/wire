@@ -377,9 +377,8 @@ public final class ProtoParser {
   }
 
   private OneOfElement readOneOf(String documentation) {
-    OneOfElement.Builder builder = OneOfElement.builder()
-        .name(reader.readName())
-        .documentation(documentation);
+    String name = reader.readName();
+
     ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
     ImmutableList.Builder<GroupElement> groups = ImmutableList.builder();
 
@@ -396,9 +395,12 @@ public final class ProtoParser {
         fields.add(readField(location, nestedDocumentation, null, type));
       }
     }
-    return builder.fields(fields.build())
-        .groups(groups.build())
-        .build();
+    return new OneOfElement(
+        name,
+        documentation,
+        fields.build(),
+        groups.build()
+    );
   }
 
   private GroupElement readGroup(Location location, String documentation, Field.Label label) {
@@ -532,7 +534,6 @@ public final class ProtoParser {
       responseType = reader.readDataType(word);
     }
     reader.require(')');
-
 
     ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
     if (reader.peekChar('{')) {
