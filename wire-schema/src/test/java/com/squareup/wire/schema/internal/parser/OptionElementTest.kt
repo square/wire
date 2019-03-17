@@ -65,8 +65,8 @@ class OptionElementTest {
         "foo", MAP,
         ImmutableMap.of("ping", "pong", "kit", ImmutableList.of("kat", "kot"))
     )
-    val expected =
-      """foo = {
+    val expected = """
+        |foo = {
         |  ping: "pong",
         |  kit: [
         |    "kat",
