@@ -39,11 +39,13 @@ class ProtoFileTest {
     val element2 = MessageElement(
         location = location.at(12, 1),
         name = "Message2",
-        fields = listOf(FieldElement.builder(location.at(13, 3))
-            .type("string")
-            .name("field")
-            .tag(1)
-            .build()
+        fields = listOf(
+            FieldElement(
+                location = location.at(13, 3),
+                type = "string",
+                name = "field",
+                tag = 1
+            )
         )
     )
 

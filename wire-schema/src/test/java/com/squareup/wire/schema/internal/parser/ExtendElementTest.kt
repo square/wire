@@ -39,13 +39,15 @@ class ExtendElementTest {
         location = location,
         name = "Name",
         fields = listOf(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()
-        ))
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                tag = 1
+            )
+        )
+    )
     val expected = """
         |extend Name {
         |  required string name = 1;
@@ -56,18 +58,20 @@ class ExtendElementTest {
 
   @Test
   fun addMultipleFields() {
-    val firstName = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("first_name")
-        .tag(1)
-        .build()
-    val lastName = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("last_name")
-        .tag(2)
-        .build()
+    val firstName = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "first_name",
+        tag = 1
+    )
+    val lastName = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "last_name",
+        tag = 2
+    )
     val extend = ExtendElement(
         location = location,
         name = "Name",
@@ -83,12 +87,13 @@ class ExtendElementTest {
         name = "Name",
         documentation = "Hello",
         fields = listOf(
-            FieldElement.builder(location)
-                .label(REQUIRED)
-                .type("string")
-                .name("name")
-                .tag(1)
-                .build()
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                tag = 1
+            )
         )
     )
     val expected = """

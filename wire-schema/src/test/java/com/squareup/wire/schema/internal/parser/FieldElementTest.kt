@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
@@ -28,37 +27,38 @@ class FieldElementTest {
 
   @Test
   fun field() {
-    val field = FieldElement.builder(location)
-        .label(OPTIONAL)
-        .type("CType")
-        .name("ctype")
-        .tag(1)
-        .options(
-            ImmutableList.of(
-                OptionElement.create("default", Kind.ENUM, "TEST"),
-                OptionElement.create("deprecated", Kind.BOOLEAN, "true")
-            )
+    val field = FieldElement(
+        location = location,
+        label = OPTIONAL,
+        type = "CType",
+        name = "ctype",
+        tag = 1,
+        options = listOf(
+            OptionElement.create("default", Kind.ENUM, "TEST"),
+            OptionElement.create("deprecated", Kind.BOOLEAN, "true")
         )
-        .build()
-
-    assertThat(field.options()).containsOnly(
-        OptionElement.create("default", Kind.ENUM, "TEST"),
-        OptionElement.create("deprecated", Kind.BOOLEAN, "true")
     )
+
+    assertThat(field.options)
+        .containsOnly(
+            OptionElement.create("default", Kind.ENUM, "TEST"),
+            OptionElement.create("deprecated", Kind.BOOLEAN, "true")
+        )
   }
 
   @Test
   fun addMultipleOptions() {
     val kitKat = OptionElement.create("kit", Kind.STRING, "kat")
     val fooBar = OptionElement.create("foo", Kind.STRING, "bar")
-    val field = FieldElement.builder(location)
-        .label(REQUIRED)
-        .type("string")
-        .name("name")
-        .tag(1)
-        .options(ImmutableList.of(kitKat, fooBar))
-        .build()
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1,
+        options = listOf(kitKat, fooBar)
+    )
 
-    assertThat(field.options()).hasSize(2)
+    assertThat(field.options).hasSize(2)
   }
 }
