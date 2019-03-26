@@ -1,0 +1,15 @@
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+mainClassName = 'com.squareup.dinosaurs.Sample'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'com.squareup.wire:wire-runtime:+'
+  implementation 'com.squareup.okio:okio:+'
+}
