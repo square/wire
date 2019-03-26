@@ -217,9 +217,7 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
-        .contains(
-            "Task with name 'compileKotlin' not found in root project 'missing-kotlin-plugin'"
-        )
+        .contains("To generate Kotlin protos, please apply a Kotlin plugin.")
   }
 
   @Test
@@ -300,6 +298,99 @@ class WirePluginTest {
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
+  }
+
+  @Test
+  fun javaProjectJavaProtos() {
+    val fixtureRoot = File("src/test/projects/java-project-java-protos")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .withArguments("run", "--stacktrace")
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/java-project-java-protos/build/generated/src/main/java")
+
+    val generatedProto1 =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.java")
+    val generatedProto2 =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.java")
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
+  }
+
+  @Test
+  fun javaProjectKotlinProtos() {
+    val fixtureRoot = File("src/test/projects/java-project-kotlin-protos")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .withArguments("run", "--stacktrace")
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/java-project-kotlin-protos/build/generated/src/main/java")
+
+    val generatedProto1 =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+    val generatedProto2 =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.kt")
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
+  }
+
+  @Test
+  fun kotlinProjectJavaProtos() {
+    val fixtureRoot = File("src/test/projects/kotlin-project-java-protos")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .withArguments("run", "--stacktrace")
+        .withDebug(true)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/kotlin-project-java-protos/build/generated/src/main/java")
+
+    val generatedProto1 =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.java")
+    val generatedProto2 =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.java")
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
+  }
+
+  @Test
+  fun kotlinProjectKotlinProtos() {
+    val fixtureRoot = File("src/test/projects/kotlin-project-kotlin-protos")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .withArguments("run", "--stacktrace")
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/kotlin-project-kotlin-protos/build/generated/src/main/java")
+
+    val generatedProto1 =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+    val generatedProto2 =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.kt")
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
   }
 
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {

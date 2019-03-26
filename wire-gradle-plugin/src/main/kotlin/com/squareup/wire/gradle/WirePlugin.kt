@@ -19,14 +19,20 @@ import com.squareup.wire.gradle.WireExtension.JavaTarget
 import com.squareup.wire.schema.Target
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.UnknownDomainObjectException
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.internal.HasConvention
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.internal.file.SourceDirectorySetFactory
 import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
+import org.jetbrains.kotlin.gradle.plugin.KOTLIN_DSL_NAME
+import org.jetbrains.kotlin.gradle.plugin.KOTLIN_JS_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 import java.net.URI
@@ -37,6 +43,8 @@ class WirePlugin @Inject constructor(
 ) : Plugin<Project> {
   private var kotlin = false
   private var java = false
+  private lateinit var sourceSetContainer: SourceSetContainer
+
   override fun apply(project: Project) {
     val logger = project.logger
 
@@ -58,8 +66,8 @@ class WirePlugin @Inject constructor(
 
     project.afterEvaluate {
       if (logger.isDebugEnabled) {
-        val ssc = it.property("sourceSets") as SourceSetContainer
-        ssc.forEach {
+        sourceSetContainer = project.property("sourceSets") as SourceSetContainer
+        sourceSetContainer.forEach {
           logger.debug("source set: ${it.name}")
         }
       }
@@ -146,18 +154,32 @@ class WirePlugin @Inject constructor(
     }
 
     javaTarget?.let {
-      val compileTask = project.tasks.named("compileJava") as TaskProvider<JavaCompile>
-      compileTask.configure {
+      val compileJavaTask = project.tasks.named("compileJava") as TaskProvider<JavaCompile>
+      compileJavaTask.configure {
         it.source(javaOutDirs)
         it.dependsOn(wireTask)
+      }
+      if (kotlin) {
+        sourceSetContainer = project.property("sourceSets") as SourceSetContainer
+        val mainSourceSet = sourceSetContainer.getByName("main") as SourceSet
+        mainSourceSet.java.srcDirs(javaOutDirs)
+
+        val compileKotlinTask = project.tasks.named("compileKotlin") as TaskProvider<KotlinCompile>
+        compileKotlinTask.configure {
+          it.dependsOn(wireTask)
+        }
       }
     }
 
     kotlinTarget?.let {
-      val compileTask = project.tasks.named("compileKotlin") as TaskProvider<KotlinCompile>
-      compileTask.configure {
-        it.source(kotlinOutDirs)
-        it.dependsOn(wireTask)
+      try {
+        val compileKotlinTask = project.tasks.named("compileKotlin") as TaskProvider<KotlinCompile>
+        compileKotlinTask.configure {
+          it.source(kotlinOutDirs)
+          it.dependsOn(wireTask)
+        }
+      } catch (e: UnknownDomainObjectException) {
+        throw IllegalStateException("To generate Kotlin protos, please apply a Kotlin plugin.", e)
       }
     }
   }
