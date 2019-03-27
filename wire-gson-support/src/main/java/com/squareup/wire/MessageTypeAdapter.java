@@ -13,161 +13,149 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.TypeAdapter
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
+import com.google.gson.stream.JsonWriter
+import com.squareup.wire.WireField.Label
+import java.io.IOException
+import java.math.BigInteger
+import java.util.ArrayList
+import java.util.Collections.unmodifiableMap
+import java.util.LinkedHashMap
 
-import static com.squareup.wire.WireField.Label;
-import static java.util.Collections.unmodifiableMap;
+internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
+  private val gson: Gson,
+  type: TypeToken<M>
+) : TypeAdapter<M>() {
+  private val messageAdapter: RuntimeMessageAdapter<M, B> =
+      RuntimeMessageAdapter.create(type.rawType as Class<M>)
+  private val fieldBindings: Map<String, FieldBinding<M, B>>
 
-class MessageTypeAdapter<M extends Message<M, B>, B extends Message.Builder<M, B>>
-    extends TypeAdapter<M> {
-
-  // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
-  private static final BigInteger POWER_64 = new BigInteger("18446744073709551616");
-
-  private final Gson gson;
-  private final RuntimeMessageAdapter<M, B> messageAdapter;
-  private final Map<String, FieldBinding<M, B>> fieldBindings;
-
-  @SuppressWarnings("unchecked")
-  MessageTypeAdapter(Gson gson, TypeToken<M> type) {
-    this.gson = gson;
-    this.messageAdapter = RuntimeMessageAdapter.create((Class<M>) type.getRawType());
-
-    Map<String, FieldBinding<M, B>> fieldBindings = new LinkedHashMap<>();
-    for (FieldBinding<M, B> binding : messageAdapter.fieldBindings().values()) {
-      fieldBindings.put(binding.name, binding);
+  init {
+    val fieldBindings = LinkedHashMap<String, FieldBinding<M, B>>()
+    for (binding in messageAdapter.fieldBindings().values) {
+      fieldBindings[binding.name] = binding
     }
-    this.fieldBindings = unmodifiableMap(fieldBindings);
+    this.fieldBindings = unmodifiableMap(fieldBindings)
   }
 
-  @SuppressWarnings("unchecked")
-  @Override public void write(JsonWriter out, @Nullable M message) throws IOException {
+  @Throws(IOException::class)
+  override fun write(out: JsonWriter, message: M?) {
     if (message == null) {
-      out.nullValue();
-      return;
+      out.nullValue()
+      return
     }
 
-    out.beginObject();
-    for (FieldBinding<M, B> tagBinding : messageAdapter.fieldBindings().values()) {
-      Object value = tagBinding.get(message);
-      if (value == null) {
-        continue;
-      }
-      out.name(tagBinding.name);
-      emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label);
+    out.beginObject()
+    for (tagBinding in messageAdapter.fieldBindings().values) {
+      val value = tagBinding.get(message) ?: continue
+      out.name(tagBinding.name)
+      emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label)
     }
-    out.endObject();
+    out.endObject()
   }
 
-  @SuppressWarnings("unchecked")
-  private void emitJson(JsonWriter out, Object value, ProtoAdapter<?> adapter, Label label)
-      throws IOException {
-    if (adapter == ProtoAdapter.UINT64) {
-      if (label.isRepeated()) {
-        List<Long> longs = (List<Long>) value;
-        out.beginArray();
-        for (int i = 0, count = longs.size(); i < count; i++) {
-          emitUint64(longs.get(i), out);
+  private fun emitJson(out: JsonWriter, value: Any, adapter: ProtoAdapter<*>, label: Label) {
+    if (adapter === ProtoAdapter.UINT64) {
+      if (label.isRepeated) {
+        val longs = value as List<Long>
+        out.beginArray()
+        val count = longs.size
+        for (i in 0 until count) {
+          emitUint64(longs[i], out)
         }
-        out.endArray();
+        out.endArray()
       } else {
-        emitUint64((Long) value, out);
+        emitUint64(value as Long, out)
       }
     } else {
-      gson.toJson(value, value.getClass(), out);
+      gson.toJson(value, value.javaClass, out)
     }
   }
 
-  private void emitUint64(Long value, JsonWriter out) throws IOException {
+  private fun emitUint64(value: Long, out: JsonWriter) {
     if (value < 0) {
-      BigInteger unsigned = POWER_64.add(BigInteger.valueOf(value));
-      out.value(unsigned);
+      val unsigned = POWER_64.add(BigInteger.valueOf(value))
+      out.value(unsigned)
     } else {
-      out.value(value);
+      out.value(value)
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Override public @Nullable M read(JsonReader in) throws IOException {
-    if (in.peek() == JsonToken.NULL) {
-      in.nextNull();
-      return null;
+  @Throws(IOException::class)
+  override fun read(`in`: JsonReader): M? {
+    if (`in`.peek() == JsonToken.NULL) {
+      `in`.nextNull()
+      return null
     }
 
-    TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-    B builder = messageAdapter.newBuilder();
+    val elementAdapter = gson.getAdapter(JsonElement::class.java)
+    val builder = messageAdapter.newBuilder()
 
-    in.beginObject();
-    while (in.peek() != JsonToken.END_OBJECT) {
-      String name = in.nextName();
+    `in`.beginObject()
+    while (`in`.peek() != JsonToken.END_OBJECT) {
+      val name = `in`.nextName()
 
-      FieldBinding<M, B> fieldBinding = fieldBindings.get(name);
+      val fieldBinding = fieldBindings[name]
       if (fieldBinding == null) {
-        in.skipValue();
+        `in`.skipValue()
       } else {
-        JsonElement element = elementAdapter.read(in);
-        Object value = parseValue(fieldBinding, element);
-        fieldBinding.set(builder, value);
+        val element = elementAdapter.read(`in`)
+        val value = parseValue(fieldBinding, element)
+        fieldBinding.set(builder, value)
       }
     }
 
-    in.endObject();
-    return builder.build();
+    `in`.endObject()
+    return builder.build()
   }
 
-  private Object parseValue(FieldBinding<?, ?> fieldBinding, JsonElement element) {
-    if (fieldBinding.label.isRepeated()) {
-      if (element.isJsonNull()) {
-        return Collections.emptyList();
+  private fun parseValue(fieldBinding: FieldBinding<*, *>, element: JsonElement): Any {
+    if (fieldBinding.label.isRepeated) {
+      if (element.isJsonNull) {
+        return emptyList<Any>()
       }
 
-      Class<?> itemType = fieldBinding.singleAdapter().javaType;
+      val itemType = fieldBinding.singleAdapter().javaType
 
-      JsonArray array = element.getAsJsonArray();
-      List<Object> result = new ArrayList<>(array.size());
-      for (JsonElement item : array) {
-        result.add(gson.fromJson(item, itemType));
+      val array = element.asJsonArray
+      val result = ArrayList<Any>(array.size())
+      for (item in array) {
+        result.add(gson.fromJson(item, itemType))
       }
-      return result;
+      return result
     }
 
     if (fieldBinding.isMap()) {
-      if (element.isJsonNull()) {
-        return Collections.emptyMap();
+      if (element.isJsonNull) {
+        return emptyMap<Any, Any>()
       }
 
-      Class<?> keyType = fieldBinding.keyAdapter().javaType;
-      Class<?> valueType = fieldBinding.singleAdapter().javaType;
+      val keyType = fieldBinding.keyAdapter().javaType
+      val valueType = fieldBinding.singleAdapter().javaType
 
-      JsonObject object = element.getAsJsonObject();
-      Map<Object, Object> result = new LinkedHashMap<>(object.size());
-      for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
-        Object key = gson.fromJson(entry.getKey(), keyType);
-        Object value = gson.fromJson(entry.getValue(), valueType);
-        result.put(key, value);
+      val `object` = element.asJsonObject
+      val result = LinkedHashMap<Any, Any>(`object`.size())
+      for (entry in `object`.entrySet()) {
+        val key = gson.fromJson(entry.key, keyType)
+        val value = gson.fromJson(entry.value, valueType)
+        result[key] = value
       }
-      return result;
+      return result
     }
 
-    Class<?> elementType = fieldBinding.singleAdapter().javaType;
-    return gson.fromJson(element, elementType);
+    val elementType = fieldBinding.singleAdapter().javaType
+    return gson.fromJson(element, elementType)
+  }
+
+  companion object {
+    // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
+    private val POWER_64 = BigInteger("18446744073709551616")
   }
 }

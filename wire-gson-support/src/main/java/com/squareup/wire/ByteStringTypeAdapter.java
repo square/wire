@@ -13,36 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-import javax.annotation.Nullable;
-import okio.ByteString;
+import com.google.gson.TypeAdapter
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
+import com.google.gson.stream.JsonWriter
+import okio.ByteString
+import okio.ByteString.Companion.decodeBase64
+import java.io.IOException
 
 /**
- * A {@link com.google.gson.TypeAdapter} that may be used to serialize and deserialize
- * {@link ByteString} values using the GSON Json library. The byte data is serialized
- * in Base64 format.
+ * A [TypeAdapter] that may be used to serialize and deserialize [ByteString] values using the GSON
+ * Json library. The byte data is serialized in Base64 format.
  */
-class ByteStringTypeAdapter extends TypeAdapter<ByteString> {
+internal class ByteStringTypeAdapter : TypeAdapter<ByteString>() {
 
-  @Override public void write(JsonWriter out, @Nullable ByteString value) throws IOException {
+  @Throws(IOException::class)
+  override fun write(out: JsonWriter, value: ByteString?) {
     if (value == null) {
-      out.nullValue();
+      out.nullValue()
     } else {
-      out.value(value.base64());
+      out.value(value.base64())
     }
   }
 
-  @Override public @Nullable ByteString read(JsonReader in) throws IOException {
-    if (in.peek() == JsonToken.NULL) {
-      in.nextNull();
-      return null;
+  @Throws(IOException::class)
+  override fun read(`in`: JsonReader): ByteString? {
+    if (`in`.peek() == JsonToken.NULL) {
+      `in`.nextNull()
+      return null
     }
-    return ByteString.decodeBase64(in.nextString());
+    return `in`.nextString().decodeBase64()
   }
 }
