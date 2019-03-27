@@ -42,11 +42,11 @@ import okio.ByteString
  */
 class WireTypeAdapterFactory : TypeAdapterFactory {
   override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
-    if (type.rawType == ByteString::class.java) {
-      return ByteStringTypeAdapter() as TypeAdapter<T>
+    return when {
+      type.rawType == ByteString::class.java -> ByteStringTypeAdapter() as TypeAdapter<T>
+      Message::class.java.isAssignableFrom(type.rawType) ->
+        MessageTypeAdapter<Nothing, Nothing>(gson, type as TypeToken<Nothing>) as TypeAdapter<T>
+      else -> null
     }
-    return if (Message::class.java.isAssignableFrom(type.rawType)) {
-      MessageTypeAdapter<Nothing, Nothing>(gson, type as TypeToken<Nothing>) as TypeAdapter<T>
-    } else null
   }
 }

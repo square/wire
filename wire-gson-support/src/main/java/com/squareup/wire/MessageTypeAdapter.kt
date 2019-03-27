@@ -25,9 +25,9 @@ import com.google.gson.stream.JsonWriter
 import com.squareup.wire.WireField.Label
 import java.io.IOException
 import java.math.BigInteger
-import java.util.ArrayList
-import java.util.Collections.unmodifiableMap
-import java.util.LinkedHashMap
+
+// 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
+private val POWER_64 = BigInteger("18446744073709551616")
 
 internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val gson: Gson,
@@ -35,15 +35,8 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 ) : TypeAdapter<M>() {
   private val messageAdapter: RuntimeMessageAdapter<M, B> =
       RuntimeMessageAdapter.create(type.rawType as Class<M>)
-  private val fieldBindings: Map<String, FieldBinding<M, B>>
-
-  init {
-    val fieldBindings = LinkedHashMap<String, FieldBinding<M, B>>()
-    for (binding in messageAdapter.fieldBindings().values) {
-      fieldBindings[binding.name] = binding
-    }
-    this.fieldBindings = unmodifiableMap(fieldBindings)
-  }
+  private val fieldBindings: Map<String, FieldBinding<M, B>> =
+      messageAdapter.fieldBindings().values.associateBy { it.name }
 
   @Throws(IOException::class)
   override fun write(out: JsonWriter, message: M?) {
@@ -66,8 +59,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       if (label.isRepeated) {
         val longs = value as List<Long>
         out.beginArray()
-        val count = longs.size
-        for (i in 0 until count) {
+        for (i in 0 until longs.size) {
           emitUint64(longs[i], out)
         }
         out.endArray()
@@ -89,30 +81,30 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   }
 
   @Throws(IOException::class)
-  override fun read(`in`: JsonReader): M? {
-    if (`in`.peek() == JsonToken.NULL) {
-      `in`.nextNull()
+  override fun read(input: JsonReader): M? {
+    if (input.peek() == JsonToken.NULL) {
+      input.nextNull()
       return null
     }
 
     val elementAdapter = gson.getAdapter(JsonElement::class.java)
     val builder = messageAdapter.newBuilder()
 
-    `in`.beginObject()
-    while (`in`.peek() != JsonToken.END_OBJECT) {
-      val name = `in`.nextName()
+    input.beginObject()
+    while (input.peek() != JsonToken.END_OBJECT) {
+      val name = input.nextName()
 
       val fieldBinding = fieldBindings[name]
       if (fieldBinding == null) {
-        `in`.skipValue()
+        input.skipValue()
       } else {
-        val element = elementAdapter.read(`in`)
+        val element = elementAdapter.read(input)
         val value = parseValue(fieldBinding, element)
         fieldBinding.set(builder, value)
       }
     }
 
-    `in`.endObject()
+    input.endObject()
     return builder.build()
   }
 
@@ -121,15 +113,8 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       if (element.isJsonNull) {
         return emptyList<Any>()
       }
-
       val itemType = fieldBinding.singleAdapter().javaType
-
-      val array = element.asJsonArray
-      val result = ArrayList<Any>(array.size())
-      for (item in array) {
-        result.add(gson.fromJson(item, itemType))
-      }
-      return result
+      return element.asJsonArray.map { gson.fromJson(it, itemType) }
     }
 
     if (fieldBinding.isMap()) {
@@ -140,22 +125,14 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       val keyType = fieldBinding.keyAdapter().javaType
       val valueType = fieldBinding.singleAdapter().javaType
 
-      val `object` = element.asJsonObject
-      val result = LinkedHashMap<Any, Any>(`object`.size())
-      for (entry in `object`.entrySet()) {
-        val key = gson.fromJson(entry.key, keyType)
-        val value = gson.fromJson(entry.value, valueType)
-        result[key] = value
-      }
-      return result
+      val jsonObject = element.asJsonObject
+      return jsonObject.entrySet().associateBy(
+          { gson.fromJson(it.key, keyType) },
+          { gson.fromJson(it.value, valueType) }
+      )
     }
 
     val elementType = fieldBinding.singleAdapter().javaType
     return gson.fromJson(element, elementType)
-  }
-
-  companion object {
-    // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
-    private val POWER_64 = BigInteger("18446744073709551616")
   }
 }

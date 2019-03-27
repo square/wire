@@ -39,11 +39,11 @@ internal class ByteStringTypeAdapter : TypeAdapter<ByteString>() {
   }
 
   @Throws(IOException::class)
-  override fun read(`in`: JsonReader): ByteString? {
-    if (`in`.peek() == JsonToken.NULL) {
-      `in`.nextNull()
+  override fun read(input: JsonReader): ByteString? {
+    if (input.peek() == JsonToken.NULL) {
+      input.nextNull()
       return null
     }
-    return `in`.nextString().decodeBase64()
+    return input.nextString().decodeBase64()
   }
 }
