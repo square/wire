@@ -37,20 +37,30 @@ open class WireExtension(
   internal val protoPaths = mutableSetOf<String>()
   internal val sourceTrees = mutableSetOf<SourceDirectorySet>()
   internal val protoTrees = mutableSetOf<SourceDirectorySet>()
+  internal val roots = mutableSetOf<String>()
+  internal val prunes = mutableSetOf<String>()
+
+  @Input
+  @Optional
+  fun roots() = roots.toSet()
 
   /**
    * See [com.squareup.wire.schema.WireRun.treeShakingRoots]
    */
-  @get:Input
-  @get:Optional
-  var roots: Array<String>? = null
+  fun root(vararg roots: String) {
+    this.roots.addAll(Arrays.asList(*roots))
+  }
+
+  @Input
+  @Optional
+  fun prunes() = prunes.toSet()
 
   /**
    * See [com.squareup.wire.schema.WireRun.treeShakingRubbish]
    */
-  @get:Input
-  @get:Optional
-  var prunes: Array<String>? = null
+  fun prune(vararg prunes: String) {
+    this.prunes.addAll(Arrays.asList(*prunes))
+  }
 
   /**
    * A user-provided file listing [roots] and [prunes]

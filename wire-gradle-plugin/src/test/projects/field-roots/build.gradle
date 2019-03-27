@@ -5,8 +5,9 @@ plugins {
 }
 
 wire {
-  // Keeps only 'Dinosaur#name' as the root of the object graph
+  // Keeps 'Dinosaur#name' and 'squareup.geology.Period' as roots of the object graph
   root 'squareup.dinosaurs.Dinosaur#name'
+  root 'squareup.dinosaurs.Dinosaur#length_meters'
 
   kotlin {}
 }

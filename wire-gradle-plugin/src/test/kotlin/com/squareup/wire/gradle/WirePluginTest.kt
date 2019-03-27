@@ -241,6 +241,27 @@ class WirePluginTest {
   }
 
   @Test
+  fun multipleRoots() {
+    val fixtureRoot = File("src/test/projects/field-roots")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .doesNotContain("Writing com.squareup.geology.Period")
+
+    val generatedProto =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(generatedProto).exists()
+
+    val generatedProtoSource = generatedProto.readText()
+    assertThat(fieldsFromProtoSource(generatedProtoSource))
+        .containsOnly("val name", "val length_meters")
+  }
+
+  @Test
   fun pruneRemovesField() {
     val fixtureRoot = File("src/test/projects/field-prune")
 
@@ -258,6 +279,26 @@ class WirePluginTest {
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
+  }
+
+  @Test
+  fun multiplePrunes() {
+    val fixtureRoot = File("src/test/projects/field-prunes")
+
+    val result = gradleRunner
+        .withProjectDir(fixtureRoot)
+        .build()
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+
+    val generatedProto =
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+    assertThat(generatedProto).exists()
+
+    assertThat(generatedProto.readText()).doesNotContain("val name", "val length_meters")
   }
 
   @Test
