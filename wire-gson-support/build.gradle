@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 apply plugin: 'java-library'
 apply plugin: 'ru.vyarus.animalsniffer'
 apply plugin: 'org.jetbrains.kotlin.jvm'
@@ -22,4 +24,10 @@ dependencies {
   api deps.okio
   testImplementation deps.junit
   testImplementation deps.assertj
+}
+
+tasks.withType(KotlinCompile).all {
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
 }
