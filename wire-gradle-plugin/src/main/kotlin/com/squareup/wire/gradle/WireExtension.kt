@@ -24,7 +24,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.util.ConfigureUtil
-import java.util.Arrays
 import javax.inject.Inject
 
 open class WireExtension(
@@ -48,7 +47,7 @@ open class WireExtension(
    * See [com.squareup.wire.schema.WireRun.treeShakingRoots]
    */
   fun root(vararg roots: String) {
-    this.roots.addAll(Arrays.asList(*roots))
+    this.roots.addAll(roots)
   }
 
   @Input
@@ -59,7 +58,7 @@ open class WireExtension(
    * See [com.squareup.wire.schema.WireRun.treeShakingRubbish]
    */
   fun prune(vararg prunes: String) {
-    this.prunes.addAll(Arrays.asList(*prunes))
+    this.prunes.addAll(prunes)
   }
 
   /**
@@ -97,7 +96,7 @@ open class WireExtension(
    * Source paths for local jars and directories, as well as remote binary dependencies
    */
   fun sourcePath(vararg sourcePaths: String) {
-    this.sourcePaths.addAll(Arrays.asList(*sourcePaths))
+    this.sourcePaths.addAll(sourcePaths)
   }
 
   /**
@@ -127,7 +126,7 @@ open class WireExtension(
    * Proto paths for local jars and directories, as well as remote binary dependencies
    */
   fun protoPath(vararg protoPaths: String) {
-    this.protoPaths.addAll(Arrays.asList(*protoPaths))
+    this.protoPaths.addAll(protoPaths)
   }
 
   /**
