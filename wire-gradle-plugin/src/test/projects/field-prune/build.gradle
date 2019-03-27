@@ -5,8 +5,8 @@ plugins {
 }
 
 wire {
-  kotlin {
-    // Keeps 'name' as the only field in 'Dinosaur'
-    prunes 'squareup.dinosaurs.Dinosaur#name'
-  }
+  // Keeps 'name' as the only field in 'Dinosaur'
+  prunes 'squareup.dinosaurs.Dinosaur#name'
+
+  kotlin {}
 }

@@ -5,8 +5,8 @@ plugins {
 }
 
 wire {
-  kotlin {
-    // Keeps only 'Dinosaur#name' as the root of the object graph
-    roots 'squareup.dinosaurs.Dinosaur#name'
-  }
+  // Keeps only 'Dinosaur#name' as the root of the object graph
+  roots 'squareup.dinosaurs.Dinosaur#name'
+
+  kotlin {}
 }

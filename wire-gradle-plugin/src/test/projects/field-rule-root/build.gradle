@@ -5,7 +5,7 @@ plugins {
 }
 
 wire {
-  kotlin {
-    rules 'rules.txt'
-  }
+  rules 'rules.txt'
+
+  kotlin {}
 }
