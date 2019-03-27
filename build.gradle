@@ -23,13 +23,15 @@ buildscript {
       'maven': '3.5.0',
       'mavenAnnotations': '3.5',
       'mavenPluginBuilder': '1.2.1',
-      'mavenPublish': '0.8.0'
+      'mavenPublish': '0.8.0',
+      'releasedWire': '3.0.0-alpha01'
   ]
 
   ext.deps = [
       plugins: [
           kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
-          shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
+          shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
+          releasedWire: "com.squareup.wire:wire-gradle-plugin:${versions.releasedWire}",
       ],
       'android': "com.google.android:android:${versions.android}",
       'guava': "com.google.guava:guava:${versions.guava}",
@@ -75,12 +77,16 @@ buildscript {
           ]
       ],
       'protoc': "com.google.protobuf:protoc:${versions.protoc}",
-      'protobufGradlePlugin': "com.google.protobuf:protobuf-gradle-plugin:${versions.protobuf}"
+      'protobufGradlePlugin': "com.google.protobuf:protobuf-gradle-plugin:${versions.protobuf}",
+      'releasedWire': [
+          'runtime': "com.squareup.wire:wire-runtime:${versions.releasedWire}",
+      ],
   ]
 
   dependencies {
     classpath deps.plugins.kotlin
     classpath deps.plugins.shadow
+    classpath deps.plugins.releasedWire
     classpath deps.animalSniffer.gradle
     classpath deps.maven.plugin.builder
     classpath deps.maven.plugin.publish

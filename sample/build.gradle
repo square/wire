@@ -1,8 +1,5 @@
-ext {
-  generatedSourcesDir = "${buildDir}/generated/src/java"
-}
-
 apply plugin: 'application'
+apply plugin: 'com.squareup.wire'
 
 mainClassName = 'com.squareup.dinosaurs.Sample'
 
@@ -15,26 +12,29 @@ jar {
   }
 }
 
-configurations {
-  wire
-}
-
 dependencies {
-  wire project(':wire-compiler')
-  implementation project(':wire-runtime')
-  implementation deps.okio
+  implementation deps.releasedWire.runtime
 }
 
-task generateProtos(type: JavaExec) {
-  classpath = configurations.wire
-  main = 'com.squareup.wire.WireCompiler'
-  args = [
-      '--proto_path=src/main/proto',
-      "--java_out=$generatedSourcesDir"
-  ]
-}
-
-compileJava {
-  dependsOn generateProtos
-  source generatedSourcesDir
-}
+/**
+ * Default settings:
+ * 1) all proto definitions located in "${projectDir}/src/main/proto"
+ * 2) all protos generated in Java
+ * 3) all generated protos written to "${projectDir}/build/generated/src/main/java"
+ *
+ * If all of the above suffice, no additional configuration is needed!
+ */
+//wire {
+//  // Keeps 'name' as the only field in 'Dinosaur'
+//  // roots = ['squareup.dinosaurs.Dinosaur#name']
+//
+//  // Keeps all fields, except 'name', in 'Dinosaur'
+//  // prunes = ['squareup.dinosaurs.Dinosaur#name']
+//
+//  // Both roots and prunes in an external file
+//  // rules file("rules.txt")
+//
+//  // java {
+//  //  out "${buildDir}/custom/src/main/java"
+//  // }
+//}
