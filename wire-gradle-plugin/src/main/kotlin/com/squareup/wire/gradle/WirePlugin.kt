@@ -145,8 +145,8 @@ class WirePlugin @Inject constructor(
       task.source(sourceConfiguration)
       task.sourceConfiguration = sourceConfiguration
       task.protoConfiguration = protoConfiguration
-      task.roots = extension.roots?.asList() ?: emptyList()
-      task.prunes = extension.prunes?.asList() ?: emptyList()
+      task.roots = extension.roots.toList()
+      task.prunes = extension.prunes.toList()
       task.rules = extension.rules
       task.targets = targets
       task.group = "wire"
