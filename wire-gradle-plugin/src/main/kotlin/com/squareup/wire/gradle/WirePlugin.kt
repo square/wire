@@ -172,14 +172,13 @@ class WirePlugin @Inject constructor(
     }
 
     kotlinTarget?.let {
-      try {
-        val compileKotlinTask = project.tasks.named("compileKotlin") as TaskProvider<KotlinCompile>
-        compileKotlinTask.configure {
-          it.source(kotlinOutDirs)
-          it.dependsOn(wireTask)
-        }
-      } catch (e: UnknownDomainObjectException) {
-        throw IllegalStateException("To generate Kotlin protos, please apply a Kotlin plugin.", e)
+      val compileKotlinTasks = project.tasks.withType(KotlinCompile::class.java)
+      if (compileKotlinTasks.isEmpty()) {
+        throw IllegalStateException("To generate Kotlin protos, please apply a Kotlin plugin.")
+      }
+      compileKotlinTasks.configureEach {
+        it.source(kotlinOutDirs)
+        it.dependsOn(wireTask)
       }
     }
   }
