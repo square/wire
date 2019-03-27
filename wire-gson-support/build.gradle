@@ -1,8 +1,9 @@
 apply plugin: 'java-library'
 apply plugin: 'ru.vyarus.animalsniffer'
+apply plugin: 'org.jetbrains.kotlin.jvm'
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 jar {
   manifest {
@@ -16,9 +17,9 @@ animalsniffer {
 
 dependencies {
   api project(':wire-runtime')
+  api deps.kotlin.stdlib.jdk8
   api deps.gson
   api deps.okio
-  compileOnly deps.jsr305
   testImplementation deps.junit
   testImplementation deps.assertj
 }
