@@ -1,0 +1,49 @@
+/*
+ * Copyright 2013 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.squareup.wire
+
+import com.google.gson.TypeAdapter
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
+import com.google.gson.stream.JsonWriter
+import okio.ByteString
+import okio.ByteString.Companion.decodeBase64
+import java.io.IOException
+
+/**
+ * A [TypeAdapter] that may be used to serialize and deserialize [ByteString] values using the GSON
+ * Json library. The byte data is serialized in Base64 format.
+ */
+internal class ByteStringTypeAdapter : TypeAdapter<ByteString>() {
+
+  @Throws(IOException::class)
+  override fun write(out: JsonWriter, value: ByteString?) {
+    if (value == null) {
+      out.nullValue()
+    } else {
+      out.value(value.base64())
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun read(input: JsonReader): ByteString? {
+    if (input.peek() == JsonToken.NULL) {
+      input.nextNull()
+      return null
+    }
+    return input.nextString().decodeBase64()
+  }
+}
