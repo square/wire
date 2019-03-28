@@ -114,7 +114,8 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
         return emptyList<Any>()
       }
       val itemType = fieldBinding.singleAdapter().javaType
-      return element.asJsonArray.map { gson.fromJson(it, itemType) }
+      val adapter = gson.getAdapter(itemType)
+      return element.asJsonArray.map(adapter::fromJsonTree)
     }
 
     if (fieldBinding.isMap()) {
@@ -124,11 +125,12 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
       val keyType = fieldBinding.keyAdapter().javaType
       val valueType = fieldBinding.singleAdapter().javaType
+      val valueAdapter = gson.getAdapter(valueType)
 
       val jsonObject = element.asJsonObject
       return jsonObject.entrySet().associateBy(
           { gson.fromJson(it.key, keyType) },
-          { gson.fromJson(it.value, valueType) }
+          { valueAdapter.fromJsonTree(it.value) }
       )
     }
 
