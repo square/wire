@@ -392,7 +392,7 @@ final class Linker {
       } else if (context instanceof Extensions) {
         Extensions extensions = (Extensions) context;
         error.append(String.format("%s extensions (%s)",
-            prefix, extensions.location()));
+            prefix, extensions.getLocation()));
       }
     }
 
