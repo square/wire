@@ -256,7 +256,7 @@ final class Linker {
   }
 
   /** Validate that the tags of {@code fields} are unique and in range. */
-  void validateFields(Iterable<Field> fields, ImmutableList<Reserved> reserveds) {
+  void validateFields(Iterable<Field> fields, List<Reserved> reserveds) {
     Multimap<Integer, Field> tagToField = LinkedHashMultimap.create();
     Multimap<String, Field> nameToField = LinkedHashMultimap.create();
     for (Field field : fields) {
@@ -267,11 +267,11 @@ final class Linker {
 
       for (Reserved reserved : reserveds) {
         if (reserved.matchesTag(tag)) {
-          withContext(field).addError("tag %s is reserved (%s)", tag, reserved.location());
+          withContext(field).addError("tag %s is reserved (%s)", tag, reserved.getLocation());
         }
         if (reserved.matchesName(field.name())) {
           withContext(field).addError("name '%s' is reserved (%s)", field.name(),
-              reserved.location());
+              reserved.getLocation());
         }
       }
 

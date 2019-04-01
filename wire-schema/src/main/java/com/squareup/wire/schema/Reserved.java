@@ -13,74 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Range;
-import com.squareup.wire.schema.internal.parser.ReservedElement;
-import java.util.List;
+import com.google.common.collect.Range
+import com.squareup.wire.schema.internal.parser.ReservedElement
 
-final class Reserved {
-  private final Location location;
-  private final String documentation;
-  private final List<Object> values;
-
-  private Reserved(Location location, String documentation, List<Object> values) {
-    this.location = location;
-    this.documentation = documentation;
-    this.values = values;
+class Reserved(
+  val location: Location,
+  val documentation: String,
+  val values: List<Any>
+) {
+  fun matchesTag(tag: Int) = values.any {
+    it is Int && tag == it || (it as? Range<Int>)?.contains(tag) == true
   }
 
-  public Location location() {
-    return location;
-  }
+  fun matchesName(name: String) = values.any { it is String && name == it }
 
-  public String documentation() {
-    return documentation;
-  }
+  companion object {
+    @JvmStatic
+    fun fromElements(elements: List<ReservedElement>) =
+      elements.map { Reserved(it.location, it.documentation, it.values) }
 
-  public List<Object> values() {
-    return values;
-  }
-
-  public boolean matchesTag(int tag) {
-    for (Object value : values) {
-      if (value instanceof Integer && tag == (Integer) value) {
-        return true;
-      }
-      if (value instanceof Range && ((Range<Integer>) value).contains(tag)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public boolean matchesName(String name) {
-    for (Object value : values) {
-      if (value instanceof String && name.equals(value)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  static ImmutableList<Reserved> fromElements(List<ReservedElement> reserveds) {
-    ImmutableList.Builder<Reserved> builder = ImmutableList.builder();
-    for (ReservedElement reserved : reserveds) {
-      builder.add(
-          new Reserved(reserved.getLocation(), reserved.getDocumentation(), reserved.getValues())
-      );
-    }
-    return builder.build();
-  }
-
-  static ImmutableList<ReservedElement> toElements(ImmutableList<Reserved> reserveds) {
-    ImmutableList.Builder<ReservedElement> builder = ImmutableList.builder();
-    for (Reserved reserved : reserveds) {
-      builder.add(
-          new ReservedElement(reserved.location(), reserved.documentation(), reserved.values())
-      );
-    }
-    return builder.build();
+    @JvmStatic
+    fun toElements(reserveds: List<Reserved>) =
+      reserveds.map { ReservedElement(it.location, it.documentation, it.values) }
   }
 }
