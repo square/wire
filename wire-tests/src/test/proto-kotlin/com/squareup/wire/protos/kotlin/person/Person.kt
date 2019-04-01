@@ -47,8 +47,8 @@ data class Person(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
@@ -154,8 +154,8 @@ data class Person(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
-        message = "Shouldn't be used in Kotlin",
-        level = DeprecationLevel.HIDDEN
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
     )
     override fun newBuilder(): Builder = Builder(this.copy())
 

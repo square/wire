@@ -24,8 +24,8 @@ data class FeatureDatabase(@field:WireField(tag = 1, adapter = "routeguide.Featu
     val feature: List<Feature> = emptyList(), val unknownFields: ByteString = ByteString.EMPTY) :
     Message<FeatureDatabase, FeatureDatabase.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 

@@ -22,8 +22,8 @@ import okio.ByteString
 data class OneOfMessage(val choice: Choice? = null, val unknownFields: ByteString =
     ByteString.EMPTY) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 

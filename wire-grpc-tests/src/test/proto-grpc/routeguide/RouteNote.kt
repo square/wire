@@ -32,8 +32,8 @@ data class RouteNote(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteNote, RouteNote.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 

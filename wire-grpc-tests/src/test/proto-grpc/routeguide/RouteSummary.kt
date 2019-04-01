@@ -46,8 +46,8 @@ data class RouteSummary(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteSummary, RouteSummary.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 

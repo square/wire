@@ -20,8 +20,8 @@ data class RedactedCycleB(@field:WireField(tag = 1, adapter =
     null, val unknownFields: ByteString = ByteString.EMPTY) : Message<RedactedCycleB,
     RedactedCycleB.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
