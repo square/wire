@@ -13,94 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.MessageElement;
-import java.util.Collections;
+import com.squareup.wire.schema.internal.parser.MessageElement
 
-/** An empty type which only holds nested types. */
-public final class EnclosingType extends Type {
-  private final Location location;
-  private final ProtoType type;
-  private final String documentation;
-  private final ImmutableList<Type> nestedTypes;
+/** An empty type which only holds nested types.  */
+class EnclosingType internal constructor(
+  private val location: Location,
+  private val type: ProtoType,
+  private val documentation: String,
+  private val nestedTypes: List<Type>
+) : Type() {
+  // TODO(jrodbx): Konvert to overridden vals, once Type is konverted
+  override fun location() = location
+  override fun type() = type
+  override fun documentation() = documentation
+  override fun options() = throw UnsupportedOperationException()
+  override fun nestedTypes() = nestedTypes
 
-  EnclosingType(Location location, ProtoType type, String documentation,
-      ImmutableList<Type> nestedTypes) {
-    this.location = location;
-    this.type = type;
-    this.documentation = documentation;
-    this.nestedTypes = nestedTypes;
+  internal override fun link(linker: Linker) = nestedTypes.forEach { it.link(linker) }
+  internal override fun linkOptions(linker: Linker) = nestedTypes.forEach { it.linkOptions(linker) }
+  internal override fun validate(linker: Linker) = nestedTypes.forEach { it.validate(linker) }
+
+  internal override fun retainAll(
+    schema: Schema,
+    markSet: MarkSet
+  ): Type? {
+    val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
+    return if (retainedNestedTypes.isEmpty()) null
+    else EnclosingType(location, type, documentation, retainedNestedTypes)
   }
 
-  @Override public Location location() {
-    return location;
-  }
-
-  @Override public ProtoType type() {
-    return type;
-  }
-
-  @Override public String documentation() {
-    return documentation;
-  }
-
-  @Override public Options options() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override public ImmutableList<Type> nestedTypes() {
-    return nestedTypes;
-  }
-
-  @Override void link(Linker linker) {
-    for (Type nestedType : nestedTypes) {
-      nestedType.link(linker);
-    }
-  }
-
-  @Override void linkOptions(Linker linker) {
-    for (Type nestedType : nestedTypes) {
-      nestedType.linkOptions(linker);
-    }
-  }
-
-  @Override void validate(Linker linker) {
-    for (Type nestedType : nestedTypes) {
-      nestedType.validate(linker);
-    }
-  }
-
-  @Override Type retainAll(Schema schema, MarkSet markSet) {
-    ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
-    for (Type nestedType : nestedTypes) {
-      Type retainedNestedType = nestedType.retainAll(schema, markSet);
-      if (retainedNestedType != null) {
-        retainedNestedTypesBuilder.add(retainedNestedType);
-      }
-    }
-
-    ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (retainedNestedTypes.isEmpty()) {
-      return null;
-    }
-    return new EnclosingType(location, type, documentation, retainedNestedTypes);
-  }
-
-  MessageElement toElement() {
-    // TODO(jrod): use default args when this file is konverted
-    return new MessageElement(
-        location,
-        type.simpleName(),
-        "", // documentation
-        Type.toElements(nestedTypes),
-        Collections.emptyList(), // options
-        Collections.emptyList(), // reserveds
-        Collections.emptyList(), // fields
-        Collections.emptyList(), // oneOfs
-        Collections.emptyList(), // extensions
-        Collections.emptyList()  // groups
-    );
-  }
+  fun toElement() = MessageElement(
+      location = location,
+      name = type.simpleName(),
+      nestedTypes = Type.toElements(nestedTypes)
+  )
 }

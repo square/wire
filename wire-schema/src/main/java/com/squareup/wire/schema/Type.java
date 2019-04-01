@@ -26,7 +26,7 @@ public abstract class Type {
   public abstract ProtoType type();
   public abstract String documentation();
   public abstract Options options();
-  public abstract ImmutableList<Type> nestedTypes();
+  public abstract List<Type> nestedTypes();
   abstract void link(Linker linker);
   abstract void linkOptions(Linker linker);
   abstract void validate(Linker linker);
