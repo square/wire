@@ -13,66 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.Util;
-import com.squareup.wire.schema.internal.parser.ExtensionsElement;
-import java.util.List;
+import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.parser.ExtensionsElement
 
-final class Extensions {
-  private final Location location;
-  private final String documentation;
-  private final int start;
-  private final int end;
-
-  private Extensions(Location location, String documentation, int start, int end) {
-    this.location = location;
-    this.documentation = documentation;
-    this.start = start;
-    this.end = end;
-  }
-
-  public Location location() {
-    return location;
-  }
-
-  public String documentation() {
-    return documentation;
-  }
-
-  public int start() {
-    return start;
-  }
-
-  public int end() {
-    return end;
-  }
-
-  static ImmutableList<Extensions> fromElements(List<ExtensionsElement> elements) {
-    ImmutableList.Builder<Extensions> extensions = ImmutableList.builder();
-    for (ExtensionsElement element : elements) {
-      extensions.add(new Extensions(element.getLocation(), element.getDocumentation(),
-          element.getStart(), element.getEnd()));
+internal class Extensions private constructor(
+  val location: Location,
+  val documentation: String,
+  val start: Int,
+  val end: Int
+) {
+  fun validate(linker: Linker) {
+    if (!Util.isValidTag(start) || !Util.isValidTag(end)) {
+      linker.withContext(this)
+          .addError("tags are out of range: %s to %s", start, end)
     }
-    return extensions.build();
   }
 
-  static ImmutableList<ExtensionsElement> toElements(ImmutableList<Extensions> extensions) {
-    ImmutableList.Builder<ExtensionsElement> elements = new ImmutableList.Builder<>();
-    for (Extensions extension : extensions) {
-      elements.add(
-          new ExtensionsElement(
-              extension.location, extension.documentation, extension.start, extension.end
-          )
-      );
-    }
-    return elements.build();
-  }
+  companion object {
+    @JvmStatic
+    fun fromElements(elements: List<ExtensionsElement>) =
+      elements.map { Extensions(it.location, it.documentation, it.start, it.end) }
 
-  void validate(Linker linker) {
-    if (!Util.isValidTag(start()) || !Util.isValidTag(end())) {
-      linker.withContext(this).addError("tags are out of range: %s to %s", start(), end());
-    }
+    @JvmStatic
+    fun toElements(extensions: List<Extensions>) =
+      extensions.map { ExtensionsElement(it.location, it.documentation, it.start, it.end) }
   }
 }

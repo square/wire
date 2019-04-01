@@ -36,13 +36,13 @@ public final class MessageType extends Type {
   private final List<Field> extensionFields;
   private final ImmutableList<OneOf> oneOfs;
   private final ImmutableList<Type> nestedTypes;
-  private final ImmutableList<Extensions> extensionsList;
+  private final List<Extensions> extensionsList;
   private final ImmutableList<Reserved> reserveds;
   private final Options options;
 
   private MessageType(ProtoType protoType, Location location, String documentation, String name,
       ImmutableList<Field> declaredFields, List<Field> extensionFields, ImmutableList<OneOf> oneOfs,
-      ImmutableList<Type> nestedTypes, ImmutableList<Extensions> extensionsList,
+      ImmutableList<Type> nestedTypes, List<Extensions> extensionsList,
       ImmutableList<Reserved> reserveds, Options options) {
     this.protoType = protoType;
     this.location = location;
@@ -157,7 +157,7 @@ public final class MessageType extends Type {
     return oneOfs;
   }
 
-  public ImmutableList<Extensions> extensions() {
+  public List<Extensions> extensions() {
     return extensionsList;
   }
 
@@ -278,8 +278,7 @@ public final class MessageType extends Type {
           Type.get(packageName, protoType.nestedType(nestedType.getName()), nestedType));
     }
 
-    ImmutableList<Extensions> extensionsList =
-        Extensions.fromElements(messageElement.getExtensions());
+    List<Extensions> extensionsList = Extensions.fromElements(messageElement.getExtensions());
 
     ImmutableList<Reserved> reserveds = Reserved.fromElements(messageElement.getReserveds());
 
