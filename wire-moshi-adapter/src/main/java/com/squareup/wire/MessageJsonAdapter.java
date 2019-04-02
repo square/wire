@@ -13,111 +13,82 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.JsonReader;
-import com.squareup.moshi.JsonWriter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import java.io.IOException
+import java.lang.reflect.Type
 
-class MessageJsonAdapter<M extends Message<M, B>, B extends Message.Builder<M, B>>
-    extends JsonAdapter<M> {
-  private final RuntimeMessageAdapter<M, B> messageAdapter;
-  private final FieldBinding<M, B>[] fieldBindings;
-  private final JsonReader.Options options;
-  private final JsonAdapter<?>[] jsonAdapters;
+internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
+  moshi: Moshi,
+  type: Type
+) : JsonAdapter<M>() {
+  private val messageAdapter = RuntimeMessageAdapter.create(type as Class<M>)
+  private val fieldBindings = messageAdapter.fieldBindings().values.toTypedArray()
+  private val options = JsonReader.Options.of(*fieldBindings.map { it.name }.toTypedArray())
 
-  @SuppressWarnings("unchecked") MessageJsonAdapter(Moshi moshi, Type type) {
-    this.messageAdapter = RuntimeMessageAdapter.create((Class<M>) type);
-
-    this.fieldBindings = messageAdapter.fieldBindings()
-        .values()
-        .toArray(new FieldBinding[messageAdapter.fieldBindings().size()]);
-
-    String[] names = new String[fieldBindings.length];
-    for (int i = 0; i < fieldBindings.length; i++) {
-      names[i] = fieldBindings[i].name;
+  private val jsonAdapters = fieldBindings.map { fieldBinding ->
+    var fieldType: Type = fieldBinding.singleAdapter().javaType
+    if (fieldBinding.isMap) {
+      val keyType = fieldBinding.keyAdapter().javaType
+      fieldType = Types.newParameterizedType(Map::class.java, keyType, fieldType)
+    } else if (fieldBinding.label.isRepeated) {
+      fieldType = Types.newParameterizedType(List::class.java, fieldType)
     }
-    this.options = JsonReader.Options.of(names);
-
-    jsonAdapters = new JsonAdapter[fieldBindings.length];
-    for (int i = 0; i < fieldBindings.length; i++) {
-      FieldBinding<M, B> fieldBinding = fieldBindings[i];
-
-      Type fieldType = fieldBinding.singleAdapter().javaType;
-      if (fieldBinding.isMap()) {
-        Class<?> keyType = fieldBinding.keyAdapter().javaType;
-        fieldType = Types.newParameterizedType(Map.class, keyType, fieldType);
-      } else if (fieldBinding.label.isRepeated()) {
-        fieldType = Types.newParameterizedType(List.class, fieldType);
-      }
-
-      Class<? extends Annotation>[] qualifiers = new Class[0];
-      if (fieldBinding.singleAdapter() == ProtoAdapter.UINT64) {
-        qualifiers = new Class[] {Uint64.class};
-      }
-
-      jsonAdapters[i] = moshi.adapter(fieldType, qualifiers);
+    var qualifiers: Array<Class<out Annotation>> = emptyArray()
+    if (fieldBinding.singleAdapter() === ProtoAdapter.UINT64) {
+      qualifiers = arrayOf(Uint64::class.java)
     }
+    return@map moshi.adapter<Any>(fieldType, *qualifiers)
   }
 
-  @Override public void toJson(JsonWriter out, @Nullable M message) throws IOException {
+  @Throws(IOException::class)
+  override fun toJson(out: JsonWriter, message: M?) {
     if (message == null) {
-      out.nullValue();
-      return;
+      out.nullValue()
+      return
     }
-
-    out.beginObject();
-    for (int i = 0; i < fieldBindings.length; i++) {
-      FieldBinding<M, B> fieldBinding = fieldBindings[i];
-      out.name(fieldBinding.name);
-      Object value = fieldBinding.get(message);
-      ((JsonAdapter) jsonAdapters[i]).toJson(out, value);
+    out.beginObject()
+    fieldBindings.forEachIndexed { index, fieldBinding ->
+      out.name(fieldBinding.name)
+      val value = fieldBinding.get(message)
+      jsonAdapters[index]?.toJson(out, value)
     }
-    out.endObject();
+    out.endObject()
   }
 
-  @Override public @Nullable M fromJson(JsonReader in) throws IOException {
-    if (in.peek() == JsonReader.Token.NULL) {
-      in.nextNull();
-      return null;
+  @Throws(IOException::class)
+  override fun fromJson(input: JsonReader): M? {
+    if (input.peek() == JsonReader.Token.NULL) {
+      input.nextNull<Any>()
+      return null
     }
-
-    B builder = messageAdapter.newBuilder();
-
-    in.beginObject();
-    while (in.hasNext()) {
-      int index = in.selectName(options);
+    val builder = messageAdapter.newBuilder()
+    input.beginObject()
+    while (input.hasNext()) {
+      val index = input.selectName(options)
       if (index == -1) {
-        in.skipName();
-        in.skipValue();
-        continue;
+        input.skipName()
+        input.skipValue()
+        continue
       }
-
-      FieldBinding<M, B> fieldBinding = fieldBindings[index];
+      val fieldBinding = fieldBindings[index]
       if (fieldBinding == null) {
-        in.skipValue();
-        continue;
+        input.skipValue()
+        continue
       }
-
-      Object value = jsonAdapters[index].fromJson(in);
+      val value = jsonAdapters[index]?.fromJson(input) ?: continue
 
       // If the value was explicitly null we ignore it rather than forcing null into the field.
       // Otherwise malformed JSON that sets a list to null will create a malformed message, and
       // we'd rather just ignore that problem.
-      if (value == null) continue;
-
-      fieldBinding.set(builder, value);
+      fieldBinding.set(builder, value)
     }
-
-    in.endObject();
-    return builder.build();
+    input.endObject()
+    return builder.build()
   }
 }
