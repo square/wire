@@ -29,18 +29,18 @@ import java.math.BigInteger
 import java.util.ArrayList
 
 /**
- * A [JsonAdapter.Factory] that allows Wire messages to be serialized and deserialized using
- * the Moshi Json library.
+ * A [JsonAdapter.Factory] that allows Wire messages to be serialized and deserialized using the
+ * Moshi Json library.
  *
- * <pre>
+ * ```
  * Moshi moshi = new Moshi.Builder()
- * .add(new WireJsonAdapterFactory())
- * .build();
-</pre> *
+ *     .add(new WireJsonAdapterFactory())
+ *     .build();
+ * ```
  *
- * The resulting [Moshi] instance will be able to serialize and deserialize Wire [ ] types, including extensions. It ignores unknown field values.
- * The JSON encoding is intended to be compatible with the
- * [protobuf-java-format](https://code.google.com/p/protobuf-java-format/)
+ * The resulting [Moshi] instance will be able to serialize and deserialize Wire [Message] types,
+ * including extensions. It ignores unknown field values. The JSON encoding is intended to be
+ * compatible with the [protobuf-java-format](https://code.google.com/p/protobuf-java-format/)
  * library.
  */
 class WireJsonAdapterFactory : JsonAdapter.Factory {
