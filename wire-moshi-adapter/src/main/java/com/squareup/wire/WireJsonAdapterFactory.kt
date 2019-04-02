@@ -49,13 +49,13 @@ class WireJsonAdapterFactory : JsonAdapter.Factory {
     annotations: Set<Annotation>,
     moshi: Moshi
   ): JsonAdapter<*>? {
-    if ((type === Long::class.java || type === Long::class.javaPrimitiveType) &&
+    if ((type === Long::class.javaObjectType || type === Long::class.javaPrimitiveType) &&
         Types.nextAnnotations(annotations, Uint64::class.java) != null) {
       return UINT64_JSON_ADAPTER
     }
     val rawType = Types.getRawType(type)
     if (rawType == List::class.java &&
-        (type as ParameterizedType).actualTypeArguments[0] === Long::class.java &&
+        (type as ParameterizedType).actualTypeArguments[0] === Long::class.javaObjectType &&
         Types.nextAnnotations(annotations, Uint64::class.java) != null) {
       return LIST_OF_UINT64_JSON_ADAPTER
     }
