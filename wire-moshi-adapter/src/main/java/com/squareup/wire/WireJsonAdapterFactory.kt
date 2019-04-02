@@ -59,7 +59,7 @@ class WireJsonAdapterFactory : JsonAdapter.Factory {
         Types.nextAnnotations(annotations, Uint64::class.java) != null) {
       return LIST_OF_UINT64_JSON_ADAPTER
     }
-    if (!annotations.isEmpty()) {
+    if (annotations.isNotEmpty()) {
       return null
     }
     if (rawType == ByteString::class.java) {
