@@ -13,53 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import javax.annotation.Nullable;
+import java.lang.reflect.Method
 
 /**
  * Converts values of an enum to and from integers using reflection.
  */
-final class RuntimeEnumAdapter<E extends WireEnum> extends EnumAdapter<E> {
-  private final Class<E> type;
-  private @Nullable Method fromValueMethod; // Lazy to avoid reflection during class loading.
+internal class RuntimeEnumAdapter<E : WireEnum>(private val type: Class<E>) : EnumAdapter<E>(type) {
+  private var fromValueMethod: Method? = null // Lazy to avoid reflection during class loading.
 
-  RuntimeEnumAdapter(Class<E> type) {
-    super(type);
-    this.type = type;
-  }
-
-  private Method getFromValueMethod() {
-    Method method = this.fromValueMethod;
+  private fun getFromValueMethod(): Method {
+    val method = this.fromValueMethod
     if (method != null) {
-      return method;
+      return method
     }
-    try {
-      return fromValueMethod = type.getMethod("fromValue", int.class);
-    } catch (NoSuchMethodException e) {
-      throw new AssertionError(e);
+    return type.getMethod("fromValue", Int::class.javaPrimitiveType).also {
+      fromValueMethod = it
     }
   }
 
-  @Override protected E fromValue(int value) {
-    E constant;
-    try {
-      //noinspection unchecked
-      constant = (E) getFromValueMethod().invoke(null, value);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new AssertionError(e);
-    }
-    return constant;
-  }
+  override fun fromValue(value: Int): E? = getFromValueMethod().invoke(null, value) as E
 
-  @Override public boolean equals(Object o) {
-    return o instanceof RuntimeEnumAdapter
-        && ((RuntimeEnumAdapter) o).type == type;
-  }
+  override fun equals(other: Any?) = other is RuntimeEnumAdapter<*> && other.type == type
 
-  @Override public int hashCode() {
-    return type.hashCode();
-  }
+  override fun hashCode() = type.hashCode()
 }
