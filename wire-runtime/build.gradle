@@ -53,5 +53,11 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
   packageExcludes = [
       'com.squareup.wire.internal',
   ]
+  methodExcludes = [
+      // package protected -> public
+      'com.squareup.wire.WireField$Label#isOneOf()',
+      'com.squareup.wire.WireField$Label#isPacked()',
+      'com.squareup.wire.WireField$Label#isRepeated()',
+  ]
 }
 check.dependsOn japicmp
