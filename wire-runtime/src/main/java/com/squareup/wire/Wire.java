@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+@file:JvmName("Wire")
 
-import javax.annotation.Nullable;
+package com.squareup.wire
 
-public final class Wire {
-  private Wire() {
-  }
-
-  /**
-   * Returns {@code value} if it is not null; {@code defaultValue} otherwise.
-   * This is used to conveniently return a default value when a value is null.
-   * For example,
-   *
-   * <pre>
-   * MyProto myProto = ...
-   * MyField field = Wire.get(myProto.f, MyProto.f_default);
-   * </pre>
-   *
-   * will attempt to retrieve the value of the field 'f' defined by MyProto.
-   * If the field is null (i.e., unset), <code>get</code> will return its
-   * second argument, which in this case is the default value for the field
-   * 'f'.
-   */
-  public static <T> T get(@Nullable T value, T defaultValue) {
-    return value != null ? value : defaultValue;
-  }
-}
+/**
+ * Returns `value` if it is not null; `defaultValue` otherwise. This is used to conveniently return
+ * a default value when a value is null. For example,
+ *
+ * ```
+ * MyProto myProto = ...
+ * MyField field = Wire.get(myProto.f, MyProto.f_default);
+ * ```
+ *
+ * will attempt to retrieve the value of the field 'f' defined by MyProto. If the field is null
+ * (i.e., unset), `get` will return its second argument, which in this case is the default value for
+ * the field 'f'.
+ */
+fun <T> get(value: T?, defaultValue: T): T = value ?: defaultValue
