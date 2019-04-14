@@ -13,32 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import java.io.IOException;
-import java.io.ObjectStreamException;
-import java.io.Serializable;
-import java.io.StreamCorruptedException;
+import java.io.IOException
+import java.io.ObjectStreamException
+import java.io.Serializable
+import java.io.StreamCorruptedException
 
-final class MessageSerializedForm<M extends Message<M, B>, B extends Message.Builder<M, B>>
-    implements Serializable {
-  private static final long serialVersionUID = 0L;
+internal class MessageSerializedForm<M : Message<M, B>, B : Message.Builder<M, B>>(
+  private val bytes: ByteArray,
+  private val messageClass: Class<M>
+) : Serializable {
 
-  private final byte[] bytes;
-  private final Class<M> messageClass;
-
-  MessageSerializedForm(byte[] bytes, Class<M> messageClass) {
-    this.bytes = bytes;
-    this.messageClass = messageClass;
-  }
-
-  Object readResolve() throws ObjectStreamException {
-    ProtoAdapter<? extends Message> adapter = ProtoAdapter.get(messageClass);
+  @Throws(ObjectStreamException::class)
+  fun readResolve(): Any {
+    val adapter = ProtoAdapter.get(messageClass)
     try {
       // Extensions will be decoded as unknown values.
-      return adapter.decode(bytes);
-    } catch (IOException e) {
-      throw new StreamCorruptedException(e.getMessage());
+      return adapter.decode(bytes)
+    } catch (e: IOException) {
+      throw StreamCorruptedException(e.message)
     }
+  }
+
+  companion object {
+    private const val serialVersionUID = 0L
   }
 }
