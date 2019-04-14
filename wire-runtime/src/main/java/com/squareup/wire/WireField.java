@@ -13,66 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.squareup.wire
 
 /**
- * Annotates generated {@link Message} fields with metadata for serialization and
- * deserialization.
+ * Annotates generated [Message] fields with metadata for serialization and deserialization.
  */
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface WireField {
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class WireField(
   /** The tag number used to store the field's value. */
-  int tag();
-
+  val tag: Int,
   /**
-   * Reference to the static field that holds a {@link ProtoAdapter} that can encode and decode
-   * this field's keys. This only applies to maps. See {@link #adapter()} for a description
-   * of the value format.
+   * Reference to the static field that holds a [ProtoAdapter] that can encode and decode this
+   * field's keys. This only applies to maps. See [.adapter] for a description of the value format.
    */
-  String keyAdapter() default "";
-
+  val keyAdapter: String = "",
   /**
-   * Reference to the static field that holds a {@link ProtoAdapter} that can encode and decode
-   * this field's values. The reference is a string like
-   * {@code com.squareup.wire.protos.person.Person#ADAPTER} and contains a fully-qualified class
-   * name followed by a hash symbol and a field name.
+   * Reference to the static field that holds a [ProtoAdapter] that can encode and decode this
+   * field's values. The reference is a string like `com.squareup.wire.protos.person.Person#ADAPTER`
+   * and contains a fully-qualified class name followed by a hash symbol and a field name.
    */
-  String adapter();
-
+  val adapter: String,
   /**
-   * The field's protocol buffer label, one of {@link Label#OPTIONAL},
-   * {@link Label#REQUIRED}, {@link Label#REPEATED}, or {@link Label#PACKED}.
-   * Defaults to {@link Label#OPTIONAL}.
+   * The field's protocol buffer label, one of [Label.OPTIONAL], [Label.REQUIRED], [Label.REPEATED],
+   * or [Label.PACKED]. Defaults to [Label.OPTIONAL].
    */
-  Label label() default Label.OPTIONAL;
-
+  val label: Label = Label.OPTIONAL,
   /**
    * Redacted fields are omitted from toString() to protect sensitive data. Defaults to false.
    */
-  boolean redacted() default false;
+  val redacted: Boolean = false
+) {
 
-  /** A protocol buffer label. */
-  enum Label {
-    REQUIRED, OPTIONAL, REPEATED, ONE_OF,
-    /** Implies {@link #REPEATED}. */
+  /** A protocol buffer label.  */
+  enum class Label {
+    REQUIRED,
+    OPTIONAL,
+    REPEATED,
+    ONE_OF,
+    /** Implies [REPEATED]. */
     PACKED;
 
-    boolean isRepeated() {
-      return this == REPEATED || this == PACKED;
-    }
+    internal val isRepeated: Boolean
+      @JvmName("isRepeated") get() = this == REPEATED || this == PACKED
 
-    boolean isPacked() {
-      return this == PACKED;
-    }
+    internal val isPacked: Boolean
+      @JvmName("isPacked") get() = this == PACKED
 
-    boolean isOneOf() {
-      return this == ONE_OF;
-    }
+    internal val isOneOf: Boolean
+      @JvmName("isOneOf") get() = this == ONE_OF
   }
 }
