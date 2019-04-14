@@ -58,6 +58,8 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
       'com.squareup.wire.WireField$Label#isOneOf()',
       'com.squareup.wire.WireField$Label#isPacked()',
       'com.squareup.wire.WireField$Label#isRepeated()',
+      // non-final -> final
+      'com.squareup.wire.FieldEncoding#rawProtoAdapter()',   
   ]
 }
 check.dependsOn japicmp
