@@ -23,6 +23,7 @@ animalsniffer {
 
 dependencies {
   api deps.okio
+  api deps.kotlin.stdlib.jdk6
   compileOnly deps.android
   compileOnly deps.jsr305
   testImplementation deps.junit
