@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
 /**
- * Interface for generated {@link Enum} values to help serialization and
- * deserialization.
+ * Interface for generated [Enum] values to help serialization and deserialization.
  */
-public interface WireEnum {
+interface WireEnum {
   /**
    * The tag value of an enum constant.
    */
-  int getValue();
+  val value: Int
 }
