@@ -18,7 +18,8 @@ package com.squareup.wire
 import java.io.IOException
 import java.net.ProtocolException
 
-enum class FieldEncoding(internal val value: Int) {
+// TODO(egor): Remove JvmField once ProtoWriter is in Kotlin
+enum class FieldEncoding(@JvmField internal val value: Int) {
   VARINT(0), FIXED64(1), LENGTH_DELIMITED(2), FIXED32(5);
 
   /**
