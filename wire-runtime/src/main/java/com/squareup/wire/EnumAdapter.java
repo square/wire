@@ -13,39 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import java.io.IOException;
-import javax.annotation.Nullable;
+import java.io.IOException
 
 /**
- * An abstract {@link ProtoAdapter} that converts values of an enum to and from integers.
+ * An abstract [ProtoAdapter] that converts values of an enum to and from integers.
  */
-public abstract class EnumAdapter<E extends WireEnum> extends ProtoAdapter<E> {
-  protected EnumAdapter(Class<E> type) {
-    super(FieldEncoding.VARINT, type);
+abstract class EnumAdapter<E : WireEnum> protected constructor(
+  type: Class<E>
+) : ProtoAdapter<E>(FieldEncoding.VARINT, type) {
+
+  override fun encodedSize(value: E): Int = ProtoWriter.varint32Size(value.value)
+
+  @Throws(IOException::class)
+  override fun encode(writer: ProtoWriter, value: E) {
+    writer.writeVarint32(value.value)
   }
 
-  @Override public final int encodedSize(E value) {
-    return ProtoWriter.varint32Size(value.getValue());
-  }
-
-  @Override public final void encode(ProtoWriter writer, E value) throws IOException {
-    writer.writeVarint32(value.getValue());
-  }
-
-  @Override public final E decode(ProtoReader reader) throws IOException {
-    int value = reader.readVarint32();
-    E constant = fromValue(value);
-    if (constant == null) {
-      throw new EnumConstantNotFoundException(value, javaType);
-    }
-    return constant;
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader): E {
+    val value = reader.readVarint32()
+    return fromValue(value) ?: throw EnumConstantNotFoundException(value, javaType)
   }
 
   /**
    * Converts an integer to an enum.
    * Returns null if there is no corresponding enum.
    */
-  protected abstract @Nullable E fromValue(int value);
+  protected abstract fun fromValue(value: Int): E?
 }
