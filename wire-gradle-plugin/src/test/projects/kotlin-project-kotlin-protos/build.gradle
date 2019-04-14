@@ -13,6 +13,8 @@ repositories {
 dependencies {
   implementation 'com.squareup.wire:wire-runtime:+'
   implementation 'com.squareup.okio:okio:+'
+  // TODO(egorand): remove once wire-runtime with a stdlib dependency is published
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.20'
 }
 
 wire {
