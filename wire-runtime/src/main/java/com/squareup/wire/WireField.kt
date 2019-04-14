@@ -54,13 +54,13 @@ annotation class WireField(
     /** Implies [REPEATED]. */
     PACKED;
 
-    internal val isRepeated: Boolean
+    val isRepeated: Boolean
       @JvmName("isRepeated") get() = this == REPEATED || this == PACKED
 
-    internal val isPacked: Boolean
+    val isPacked: Boolean
       @JvmName("isPacked") get() = this == PACKED
 
-    internal val isOneOf: Boolean
+    val isOneOf: Boolean
       @JvmName("isOneOf") get() = this == ONE_OF
   }
 }
