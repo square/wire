@@ -61,10 +61,8 @@ data class OtherMessageWithStatus(val unknownFields: ByteString = ByteString.EMP
     }
   }
 
-  enum class Status(private val value: Int) : WireEnum {
+  enum class Status(override val value: Int) : WireEnum {
     A(1);
-
-    override fun getValue(): Int = value
 
     companion object {
       @JvmField
