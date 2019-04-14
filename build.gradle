@@ -32,6 +32,7 @@ buildscript {
           kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
           shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
           releasedWire: "com.squareup.wire:wire-gradle-plugin:${versions.releasedWire}",
+          japicmp: 'me.champeau.gradle:japicmp-gradle-plugin:0.2.8',
       ],
       'android': "com.google.android:android:${versions.android}",
       'guava': "com.google.guava:guava:${versions.guava}",
@@ -87,6 +88,7 @@ buildscript {
     classpath deps.plugins.kotlin
     classpath deps.plugins.shadow
     classpath deps.plugins.releasedWire
+    classpath deps.plugins.japicmp
     classpath deps.animalSniffer.gradle
     classpath deps.maven.plugin.builder
     classpath deps.maven.plugin.publish
