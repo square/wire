@@ -1,6 +1,9 @@
+import me.champeau.gradle.japicmp.JapicmpTask
+
 apply plugin: 'java-library'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'ru.vyarus.animalsniffer'
+apply plugin: 'me.champeau.gradle.japicmp'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
@@ -21,6 +24,10 @@ animalsniffer {
   ignore 'com.squareup.wire.internal'
 }
 
+configurations {
+  baseline
+}
+
 dependencies {
   api deps.okio
   api deps.kotlin.stdlib.jdk6
@@ -28,4 +35,23 @@ dependencies {
   compileOnly deps.jsr305
   testImplementation deps.junit
   testImplementation deps.assertj
+
+  baseline('com.squareup.wire:wire-runtime:3.0.0-alpha01') {
+    transitive = false
+    force = true
+  }
 }
+
+task japicmp(type: JapicmpTask, dependsOn: 'jar') {
+  oldClasspath = configurations.baseline
+  newClasspath = files(jar.archivePath)
+  onlyBinaryIncompatibleModified = true
+  failOnModification = true
+  txtOutputFile = file("$buildDir/reports/japi.txt")
+  ignoreMissingClasses = true
+  includeSynthetic = true
+  packageExcludes = [
+      'com.squareup.wire.internal',
+  ]
+}
+check.dependsOn japicmp
