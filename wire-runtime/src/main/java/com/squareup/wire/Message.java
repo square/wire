@@ -13,177 +13,144 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import java.io.IOException;
-import java.io.ObjectStreamException;
-import java.io.OutputStream;
-import java.io.Serializable;
-import javax.annotation.Nullable;
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.ByteString;
+import okio.Buffer
+import okio.BufferedSink
+import okio.ByteString
+import java.io.IOException
+import java.io.ObjectStreamException
+import java.io.OutputStream
+import java.io.Serializable
 
-/** A protocol buffer message. */
-public abstract class Message<M extends Message<M, B>, B extends Message.Builder<M, B>>
-    implements Serializable {
-  private static final long serialVersionUID = 0L;
+/** A protocol buffer message.  */
+abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected constructor(
+  @field:Transient private val adapter: ProtoAdapter<M>,
+  /** Unknown fields, proto-encoded. We permit null to support magic deserialization.  */
+  @field:Transient private val unknownFields: ByteString?
+) : Serializable {
+  /** If not `0` then the serialized size of this message.  */
+  // TODO(egorand): Remove JvmField once RuntimeMessageAdapter is in Kotlin
+  @Transient @JvmField internal var cachedSerializedSize = 0
 
-  private final transient ProtoAdapter<M> adapter;
+  /** If non-zero, the hash code of this message. Accessed by generated code.  */
+  @Transient @JvmField protected var hashCode = 0
 
-  /** Unknown fields, proto-encoded. We permit null to support magic deserialization. */
-  private final transient ByteString unknownFields;
-
-  /** If not {@code 0} then the serialized size of this message. */
-  transient int cachedSerializedSize = 0;
-
-  /** If non-zero, the hash code of this message. Accessed by generated code. */
-  protected transient int hashCode = 0;
-
-  protected Message(ProtoAdapter<M> adapter, ByteString unknownFields) {
-    if (adapter == null) throw new NullPointerException("adapter == null");
-    if (unknownFields == null) throw new NullPointerException("unknownFields == null");
-    this.adapter = adapter;
-    this.unknownFields = unknownFields;
+  init {
+    if (unknownFields == null) throw NullPointerException("unknownFields == null")
   }
 
   /**
    * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
    * an empty byte string if this message has no unknown fields.
    */
-  public final ByteString unknownFields() {
-    ByteString result = this.unknownFields;
-    return result != null ? result : ByteString.EMPTY;
-  }
+  fun unknownFields(): ByteString = unknownFields ?: ByteString.EMPTY
 
   /**
    * Returns a new builder initialized with the data in this message.
    */
-  public abstract B newBuilder();
+  abstract fun newBuilder(): B
 
-  /** Returns this message with any unknown fields removed. */
-  public final M withoutUnknownFields() {
-    return newBuilder().clearUnknownFields().build();
+  /** Returns this message with any unknown fields removed.  */
+  fun withoutUnknownFields(): M = newBuilder().clearUnknownFields().build()
+
+  override fun toString(): String = adapter.toString(this as M)
+
+  @Throws(ObjectStreamException::class)
+  protected fun writeReplace(): Any = MessageSerializedForm(encode(), javaClass as Class<M>)
+
+  /** The [ProtoAdapter] for encoding and decoding messages of this type. */
+  fun adapter(): ProtoAdapter<M> = adapter
+
+  /** Encode this message and write it to `stream`.  */
+  @Throws(IOException::class)
+  fun encode(sink: BufferedSink) {
+    adapter.encode(sink, this as M)
   }
 
-  @Override public String toString() {
-    //noinspection unchecked
-    return adapter.toString((M) this);
-  }
+  /** Encode this message as a `byte[]`.  */
+  fun encode(): ByteArray = adapter.encode(this as M)
 
-  protected final Object writeReplace() throws ObjectStreamException {
-    //noinspection unchecked
-    return new MessageSerializedForm(encode(), getClass());
-  }
-
-  /** The {@link ProtoAdapter} for encoding and decoding messages of this type. */
-  public final ProtoAdapter<M> adapter() {
-    return adapter;
-  }
-
-  /** Encode this message and write it to {@code stream}. */
-  public final void encode(BufferedSink sink) throws IOException {
-    //noinspection unchecked
-    adapter.encode(sink, (M) this);
-  }
-
-  /** Encode this message as a {@code byte[]}. */
-  public final byte[] encode() {
-    //noinspection unchecked
-    return adapter.encode((M) this);
-  }
-
-  /** Encode this message and write it to {@code stream}. */
-  public final void encode(OutputStream stream) throws IOException {
-    //noinspection unchecked
-    adapter.encode(stream, (M) this);
+  /** Encode this message and write it to `stream`.  */
+  @Throws(IOException::class)
+  fun encode(stream: OutputStream) {
+    adapter.encode(stream, this as M)
   }
 
   /**
    * Superclass for protocol buffer message builders.
    */
-  public abstract static class Builder<M extends Message<M, B>, B extends Builder<M, B>> {
+  abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected constructor() {
     /**
-     * Caches unknown fields as a {@link ByteString} when {@link #buildUnknownFields()} is called.
+     * Caches unknown fields as a [ByteString] when [buildUnknownFields] is called.
      * When the caller adds an additional unknown field after that, it will be written to the new
-     * {@link #unknownFieldsBuffer} to ensure that all unknown fields are retained between calls to
-     * {@link #buildUnknownFields()}.
+     * [unknownFieldsBuffer] to ensure that all unknown fields are retained between calls to
+     * [buildUnknownFields].
      */
-    transient ByteString unknownFieldsByteString = ByteString.EMPTY;
+    @Transient internal var unknownFieldsByteString = ByteString.EMPTY
     /**
-     * {@link Buffer} of the message's unknown fields that is lazily instantiated between calls to
-     * {@link #buildUnknownFields()}. It's automatically cleared in {@link #buildUnknownFields()},
-     * and can also be manually cleared by calling {@link #clearUnknownFields()}.
+     * [Buffer] of the message's unknown fields that is lazily instantiated between calls to
+     * [buildUnknownFields]. It's automatically cleared in [buildUnknownFields], and can also be
+     * manually cleared by calling [clearUnknownFields].
      */
-    transient @Nullable Buffer unknownFieldsBuffer;
-    transient ProtoWriter unknownFieldsWriter;
+    @Transient internal var unknownFieldsBuffer: Buffer? = null
+    @Transient internal var unknownFieldsWriter: ProtoWriter? = null
 
-    protected Builder() {
-    }
-
-    public final Builder<M, B> addUnknownFields(ByteString unknownFields) {
-      if (unknownFields.size() > 0) {
-        prepareForNewUnknownFields();
-        try {
-          unknownFieldsWriter.writeBytes(unknownFields);
-        } catch (IOException e) {
-          throw new AssertionError();
-        }
+    fun addUnknownFields(unknownFields: ByteString): Builder<M, B> = apply {
+      if (unknownFields.size > 0) {
+        prepareForNewUnknownFields()
+        unknownFieldsWriter!!.writeBytes(unknownFields)
       }
-      return this;
     }
 
-    public final Builder<M, B> addUnknownField(
-        int tag, FieldEncoding fieldEncoding, @Nullable Object value) {
-      prepareForNewUnknownFields();
-      try {
-        ProtoAdapter<Object> protoAdapter = (ProtoAdapter<Object>) fieldEncoding.rawProtoAdapter();
-        protoAdapter.encodeWithTag(unknownFieldsWriter, tag, value);
-      } catch (IOException e) {
-        throw new AssertionError();
-      }
-      return this;
+    fun addUnknownField(
+      tag: Int,
+      fieldEncoding: FieldEncoding,
+      value: Any?
+    ): Builder<M, B> = apply {
+      prepareForNewUnknownFields()
+      val protoAdapter = fieldEncoding.rawProtoAdapter() as ProtoAdapter<Any>
+      protoAdapter.encodeWithTag(unknownFieldsWriter!!, tag, value)
     }
 
-    public final Builder<M, B> clearUnknownFields() {
-      unknownFieldsByteString = ByteString.EMPTY;
+    fun clearUnknownFields(): Builder<M, B> = apply {
+      unknownFieldsByteString = ByteString.EMPTY
       if (unknownFieldsBuffer != null) {
-        unknownFieldsBuffer.clear();
-        unknownFieldsBuffer = null;
+        unknownFieldsBuffer!!.clear()
+        unknownFieldsBuffer = null
       }
-      unknownFieldsWriter = null;
-      return this;
+      unknownFieldsWriter = null
     }
 
     /**
      * Returns a byte string with this message's unknown fields. Returns an empty byte string if
      * this message has no unknown fields.
      */
-    public final ByteString buildUnknownFields() {
+    fun buildUnknownFields(): ByteString {
       if (unknownFieldsBuffer != null) {
         // Reads and caches the unknown fields from the buffer.
-        unknownFieldsByteString = unknownFieldsBuffer.readByteString();
-        unknownFieldsBuffer = null;
-        unknownFieldsWriter = null;
+        unknownFieldsByteString = unknownFieldsBuffer!!.readByteString()
+        unknownFieldsBuffer = null
+        unknownFieldsWriter = null
       }
-      return unknownFieldsByteString;
+      return unknownFieldsByteString
     }
 
-    /** Returns an immutable {@link Message} based on the fields that set in this builder. */
-    public abstract M build();
+    /** Returns an immutable [Message] based on the fields that set in this builder. */
+    abstract fun build(): M
 
-    private void prepareForNewUnknownFields() {
+    private fun prepareForNewUnknownFields() {
       if (unknownFieldsBuffer == null) {
-        unknownFieldsBuffer = new Buffer();
-        unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
-        try {
-          // Writes the cached unknown fields to the buffer.
-          unknownFieldsWriter.writeBytes(unknownFieldsByteString);
-        } catch (IOException e) {
-          throw new AssertionError();
-        }
-        unknownFieldsByteString = ByteString.EMPTY;
+        unknownFieldsBuffer = Buffer()
+        unknownFieldsWriter = ProtoWriter(unknownFieldsBuffer!!)
+        // Writes the cached unknown fields to the buffer.
+        unknownFieldsWriter!!.writeBytes(unknownFieldsByteString)
+        unknownFieldsByteString = ByteString.EMPTY
       }
     }
+  }
+
+  companion object {
+    private const val serialVersionUID = 0L
   }
 }
