@@ -1,6 +1,7 @@
 package com.squareup.wire.gradle
 
 import org.assertj.core.api.Assertions.assertThat
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Before
 import org.junit.Test
@@ -20,9 +21,7 @@ class WirePluginTest {
   fun missingPlugin() {
     val fixtureRoot = File("src/test/projects/missing-plugin")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .buildAndFail()
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output).contains(
@@ -34,9 +33,7 @@ class WirePluginTest {
   fun sourcePathDirDoesNotExist() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-dir")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .buildAndFail()
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output).contains(
@@ -48,9 +45,7 @@ class WirePluginTest {
   fun useDefaultSourcePath() {
     val fixtureRoot = File("src/test/projects/sourcepath-default")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
@@ -64,9 +59,7 @@ class WirePluginTest {
   fun sourcePathWithoutSources() {
     val fixtureRoot = File("src/test/projects/sourcepath-no-sources")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .buildAndFail()
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
@@ -77,9 +70,7 @@ class WirePluginTest {
   fun sourcePathStringShouldNotBeRegularFile() {
     val fixtureRoot = File("src/test/projects/sourcepath-file")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .buildAndFail()
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
@@ -92,9 +83,7 @@ class WirePluginTest {
   fun sourcePathStringShouldNotBeUri() {
     val fixtureRoot = File("src/test/projects/sourcepath-uri")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .buildAndFail()
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
@@ -107,9 +96,7 @@ class WirePluginTest {
   fun sourcePathDir() {
     val fixtureRoot = File("src/test/projects/sourcepath-dir")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -122,9 +109,7 @@ class WirePluginTest {
   fun sourcePathMavenCoordinates() {
     val fixtureRoot = File("src/test/projects/sourcepath-maven")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -137,9 +122,7 @@ class WirePluginTest {
   fun sourceTreeOneSrcDirOneFile() {
     val fixtureRoot = File("src/test/projects/sourcetree-one-srcdir-one-file")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -151,9 +134,7 @@ class WirePluginTest {
   fun sourceTreeOneSrcDirMultipleFiles() {
     val fixtureRoot = File("src/test/projects/sourcetree-one-srcdir-many-files")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -168,9 +149,7 @@ class WirePluginTest {
   fun sourceTreeMultipleSrcDirs() {
     val fixtureRoot = File("src/test/projects/sourcetree-many-srcdirs")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -183,9 +162,7 @@ class WirePluginTest {
   fun differentJavaOutputDir() {
     val fixtureRoot = File("src/test/projects/different-java-out")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -197,9 +174,7 @@ class WirePluginTest {
   fun differentKotlinOutputDir() {
     val fixtureRoot = File("src/test/projects/different-kotlin-out")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -211,9 +186,7 @@ class WirePluginTest {
   fun kotlinTargetMissingKotlinPlugin() {
     val fixtureRoot = File("src/test/projects/missing-kotlin-plugin")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .buildAndFail()
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
@@ -224,9 +197,7 @@ class WirePluginTest {
   fun rootKeepsField() {
     val fixtureRoot = File("src/test/projects/field-root")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -244,9 +215,7 @@ class WirePluginTest {
   fun multipleRoots() {
     val fixtureRoot = File("src/test/projects/field-roots")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -265,9 +234,7 @@ class WirePluginTest {
   fun pruneRemovesField() {
     val fixtureRoot = File("src/test/projects/field-prune")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -285,9 +252,7 @@ class WirePluginTest {
   fun multiplePrunes() {
     val fixtureRoot = File("src/test/projects/field-prunes")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -305,9 +270,7 @@ class WirePluginTest {
   fun ruleKeepsField() {
     val fixtureRoot = File("src/test/projects/field-rule-root")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -325,9 +288,7 @@ class WirePluginTest {
   fun ruleRemovesField() {
     val fixtureRoot = File("src/test/projects/field-rule-prune")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -345,10 +306,9 @@ class WirePluginTest {
   fun javaProjectJavaProtos() {
     val fixtureRoot = File("src/test/projects/java-project-java-protos")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .withArguments("run", "--stacktrace")
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("run", "--stacktrace").build()
+    }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -368,10 +328,9 @@ class WirePluginTest {
   fun javaProjectKotlinProtos() {
     val fixtureRoot = File("src/test/projects/java-project-kotlin-protos")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .withArguments("run", "--stacktrace")
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("run", "--stacktrace").build()
+    }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -391,11 +350,9 @@ class WirePluginTest {
   fun kotlinProjectJavaProtos() {
     val fixtureRoot = File("src/test/projects/kotlin-project-java-protos")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .withArguments("run", "--stacktrace")
-        .withDebug(true)
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("run", "--stacktrace").withDebug(true).build()
+    }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -415,10 +372,9 @@ class WirePluginTest {
   fun kotlinProjectKotlinProtos() {
     val fixtureRoot = File("src/test/projects/kotlin-project-kotlin-protos")
 
-    val result = gradleRunner
-        .withProjectDir(fixtureRoot)
-        .withArguments("run", "--stacktrace")
-        .build()
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("run", "--stacktrace").build()
+    }
 
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
@@ -441,5 +397,22 @@ class WirePluginTest {
     return matchedFields
         .map { it.groupValues[1] }
         .toList()
+  }
+
+  private fun GradleRunner.runFixture(
+    root: File,
+    action: GradleRunner.() -> BuildResult
+  ): BuildResult {
+    val settings = File(root, "settings.gradle")
+    var generatedSettings = false
+    if (!settings.exists()) {
+      settings.createNewFile()
+      generatedSettings = true
+    }
+    return try {
+      withProjectDir(root).action()
+    } finally {
+      if (generatedSettings) settings.delete()
+    }
   }
 }
