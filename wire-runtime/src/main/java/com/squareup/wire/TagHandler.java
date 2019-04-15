@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-public interface TagHandler {
-  Object UNKNOWN_TAG = new Object();
+interface TagHandler {
 
   /**
-   * Reads a value from the calling reader. Returns {@link #UNKNOWN_TAG} if
-   * no value was read, or any other value otherwise.
+   * Reads a value from the calling reader. Returns [UNKNOWN_TAG] if no value was read, or any other
+   * value otherwise.
    */
-  Object decodeMessage(int tag);
+  fun decodeMessage(tag: Int): Any
+
+  companion object {
+    @JvmField val UNKNOWN_TAG = Any()
+  }
 }
