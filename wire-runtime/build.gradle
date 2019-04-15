@@ -73,6 +73,15 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
       'com.squareup.wire.ProtoReader#readVarint32()',
       'com.squareup.wire.ProtoReader#readVarint64()',
       'com.squareup.wire.ProtoReader#skip()',
+      'com.squareup.wire.ProtoWriter#writeBytes(okio.ByteString)',
+      'com.squareup.wire.ProtoWriter#writeFixed32(int)',
+      'com.squareup.wire.ProtoWriter#writeFixed64(long)',
+      'com.squareup.wire.ProtoWriter#writeString(java.lang.String)',
+      'com.squareup.wire.ProtoWriter#writeTag(int, com.squareup.wire.FieldEncoding)',
+      'com.squareup.wire.ProtoWriter#writeVarint32(int)',
+      'com.squareup.wire.ProtoWriter#writeVarint64(long)',
+      // TODO(egorand): Remove once ProtoReader is in Kotlin
+      'com.squareup.wire.ProtoWriter#writeSignedVarint32(int)',    
   ]
 }
 check.dependsOn japicmp
