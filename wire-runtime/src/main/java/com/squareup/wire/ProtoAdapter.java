@@ -13,584 +13,571 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import com.squareup.wire.Message.Builder;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.BufferedSource;
-import okio.ByteString;
-import okio.Okio;
-import okio.Utf8;
+import com.squareup.wire.Message.Builder
+import com.squareup.wire.ProtoWriter.Companion.decodeZigZag32
+import com.squareup.wire.ProtoWriter.Companion.decodeZigZag64
+import com.squareup.wire.ProtoWriter.Companion.encodeZigZag32
+import com.squareup.wire.ProtoWriter.Companion.encodeZigZag64
+import com.squareup.wire.ProtoWriter.Companion.int32Size
+import com.squareup.wire.ProtoWriter.Companion.varint32Size
+import com.squareup.wire.ProtoWriter.Companion.varint64Size
+import okio.Buffer
+import okio.BufferedSink
+import okio.BufferedSource
+import okio.ByteString
+import okio.buffer
+import okio.sink
+import okio.source
+import okio.utf8Size
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import java.lang.Double.doubleToLongBits
+import java.lang.Float.floatToIntBits
 
-import static com.squareup.wire.Preconditions.checkNotNull;
-import static com.squareup.wire.ProtoWriter.decodeZigZag32;
-import static com.squareup.wire.ProtoWriter.decodeZigZag64;
-import static com.squareup.wire.ProtoWriter.encodeZigZag32;
-import static com.squareup.wire.ProtoWriter.encodeZigZag64;
-import static com.squareup.wire.ProtoWriter.int32Size;
-import static com.squareup.wire.ProtoWriter.varint32Size;
-import static com.squareup.wire.ProtoWriter.varint64Size;
-import static java.lang.Double.doubleToLongBits;
-import static java.lang.Float.floatToIntBits;
+abstract class ProtoAdapter<E>(
+  private val fieldEncoding: FieldEncoding,
+  // TODO(egorand): Remove JvmField once RuntimeMessageAdapter is in Kotlin
+  @JvmField val javaType: Class<*>?
+) {
+  internal var packedAdapter: ProtoAdapter<List<E>>? = null
+  internal var repeatedAdapter: ProtoAdapter<List<E>>? = null
 
-public abstract class ProtoAdapter<E> {
-  private static final int FIXED_BOOL_SIZE = 1;
-  private static final int FIXED_32_SIZE = 4;
-  private static final int FIXED_64_SIZE = 8;
-
-  private final FieldEncoding fieldEncoding;
-  final Class<?> javaType;
-
-  @Nullable ProtoAdapter<List<E>> packedAdapter;
-  @Nullable ProtoAdapter<List<E>> repeatedAdapter;
-
-  public ProtoAdapter(FieldEncoding fieldEncoding, @Nullable Class<?> javaType) {
-    this.fieldEncoding = fieldEncoding;
-    this.javaType = javaType;
-  }
-
-  /** Creates a new proto adapter for {@code type}. */
-  public static <M extends Message<M, B>, B extends Builder<M, B>> ProtoAdapter<M>
-      newMessageAdapter(Class<M> type) {
-    return RuntimeMessageAdapter.create(type);
-  }
-
-  /** Creates a new proto adapter for {@code type}. */
-  public static <E extends WireEnum> RuntimeEnumAdapter<E> newEnumAdapter(Class<E> type) {
-    return new RuntimeEnumAdapter<>(type);
-  }
+  /** Returns the redacted form of `value`. */
+  open fun redact(value: E): E? = null
 
   /**
-   * Creates a new proto adapter for a map using {@code keyAdapter} and {@code valueAdapter}.
-   * <p>
-   * Note: Map entries are not required to be encoded sequentially. Thus, when decoding using
-   * the returned adapter, only single-element maps will be returned and it is the caller's
-   * responsibility to merge them into the final map.
+   * The size of the non-null data `value`. This does not include the size required for a
+   * length-delimited prefix (should the type require one).
    */
-  public static <K, V> ProtoAdapter<Map<K, V>> newMapAdapter(ProtoAdapter<K> keyAdapter,
-      ProtoAdapter<V> valueAdapter) {
-    return new MapProtoAdapter<>(keyAdapter, valueAdapter);
-  }
-
-  /** Returns the adapter for the type of {@code Message}. */
-  public static <M extends Message> ProtoAdapter<M> get(M message) {
-    return (ProtoAdapter<M>) get(message.getClass());
-  }
-
-  /** Returns the adapter for {@code type}. */
-  public static <M> ProtoAdapter<M> get(Class<M> type) {
-    try {
-      return (ProtoAdapter<M>) type.getField("ADAPTER").get(null);
-    } catch (IllegalAccessException | NoSuchFieldException e) {
-      throw new IllegalArgumentException("failed to access " + type.getName() + "#ADAPTER", e);
-    }
-  }
+  abstract fun encodedSize(value: E): Int
 
   /**
-   * Returns the adapter for a given {@code adapterString}. {@code adapterString} is specified on a
-   * proto message field's {@link WireField} annotation in the form
-   * {@code com.squareup.wire.protos.person.Person#ADAPTER}.
-   */
-  @SuppressWarnings("unchecked")
-  public static ProtoAdapter<?> get(String adapterString) {
-    try {
-      int hash = adapterString.indexOf('#');
-      String className = adapterString.substring(0, hash);
-      String fieldName = adapterString.substring(hash + 1);
-      return (ProtoAdapter<Object>) Class.forName(className).getField(fieldName).get(null);
-    } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
-      throw new IllegalArgumentException("failed to access " + adapterString, e);
-    }
-  }
-
-  /** Returns the redacted form of {@code value}. */
-  public @Nullable E redact(E value) {
-    return null;
-  }
-
-  /**
-   * The size of the non-null data {@code value}. This does not include the size required for
-   * a length-delimited prefix (should the type require one).
-   */
-  public abstract int encodedSize(E value);
-
-  /**
-   * The size of {@code tag} and {@code value} in the wire format. This size includes the tag, type,
-   * length-delimited prefix (should the type require one), and value. Returns 0 if {@code value} is
+   * The size of `tag` and `value` in the wire format. This size includes the tag, type,
+   * length-delimited prefix (should the type require one), and value. Returns 0 if `value` is
    * null.
    */
-  public int encodedSizeWithTag(int tag, @Nullable E value) {
-    if (value == null) return 0;
-    int size = encodedSize(value);
+  open fun encodedSizeWithTag(tag: Int, value: E?): Int {
+    if (value == null) return 0
+    var size = encodedSize(value)
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
-      size += varint32Size(size);
+      size += varint32Size(size)
     }
-    return size + ProtoWriter.tagSize(tag);
+    return size + ProtoWriter.tagSize(tag)
   }
 
-  /** Write non-null {@code value} to {@code writer}. */
-  public abstract void encode(ProtoWriter writer, E value) throws IOException;
+  /** Write non-null `value` to `writer`. */
+  @Throws(IOException::class)
+  abstract fun encode(writer: ProtoWriter, value: E)
 
-  /** Write {@code tag} and {@code value} to {@code writer}. If value is null this does nothing. */
-  public void encodeWithTag(ProtoWriter writer, int tag, @Nullable E value) throws IOException {
-    if (value == null) return;
-    writer.writeTag(tag, fieldEncoding);
+  /** Write `tag` and `value` to `writer`. If value is null this does nothing. */
+  @Throws(IOException::class)
+  open fun encodeWithTag(writer: ProtoWriter, tag: Int, value: E?) {
+    if (value == null) return
+    writer.writeTag(tag, fieldEncoding)
     if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
-      writer.writeVarint32(encodedSize(value));
+      writer.writeVarint32(encodedSize(value))
     }
-    encode(writer, value);
+    encode(writer, value)
   }
 
-  /** Encode {@code value} and write it to {@code stream}. */
-  public final void encode(BufferedSink sink, E value) throws IOException {
-    checkNotNull(value, "value == null");
-    checkNotNull(sink, "sink == null");
-    encode(new ProtoWriter(sink), value);
+  /** Encode `value` and write it to `stream`. */
+  @Throws(IOException::class)
+  fun encode(sink: BufferedSink, value: E) {
+    encode(ProtoWriter(sink), value)
   }
 
-  /** Encode {@code value} as a {@code byte[]}. */
-  public final byte[] encode(E value) {
-    checkNotNull(value, "value == null");
-    Buffer buffer = new Buffer();
-    try {
-      encode(buffer, value);
-    } catch (IOException e) {
-      throw new AssertionError(e); // No I/O writing to Buffer.
-    }
-    return buffer.readByteArray();
+  /** Encode `value` as a `byte[]`. */
+  fun encode(value: E): ByteArray {
+    val buffer = Buffer()
+    encode(buffer, value)
+    return buffer.readByteArray()
   }
 
-  /** Encode {@code value} and write it to {@code stream}. */
-  public final void encode(OutputStream stream, E value) throws IOException {
-    checkNotNull(value, "value == null");
-    checkNotNull(stream, "stream == null");
-    BufferedSink buffer = Okio.buffer(Okio.sink(stream));
-    encode(buffer, value);
-    buffer.emit();
+  /** Encode `value` and write it to `stream`. */
+  @Throws(IOException::class)
+  fun encode(stream: OutputStream, value: E) {
+    val buffer = stream.sink().buffer()
+    encode(buffer, value)
+    buffer.emit()
   }
 
-  /** Read a non-null value from {@code reader}. */
-  public abstract E decode(ProtoReader reader) throws IOException;
+  /** Read a non-null value from `reader`. */
+  @Throws(IOException::class)
+  abstract fun decode(reader: ProtoReader): E
 
-  /** Read an encoded message from {@code bytes}. */
-  public final E decode(byte[] bytes) throws IOException {
-    checkNotNull(bytes, "bytes == null");
-    return decode(new Buffer().write(bytes));
+  /** Read an encoded message from `bytes`. */
+  @Throws(IOException::class)
+  fun decode(bytes: ByteArray): E = decode(Buffer().write(bytes))
+
+  /** Read an encoded message from `bytes`. */
+  @Throws(IOException::class)
+  fun decode(bytes: ByteString): E = decode(Buffer().write(bytes))
+
+  /** Read an encoded message from `stream`. */
+  @Throws(IOException::class)
+  fun decode(stream: InputStream): E = decode(stream.source().buffer())
+
+  /** Read an encoded message from `source`. */
+  @Throws(IOException::class)
+  fun decode(source: BufferedSource): E = decode(ProtoReader(source))
+
+  /** Returns a human-readable version of the given `value`. */
+  open fun toString(value: E): String = value.toString()
+
+  // TODO(egorand): Make internal once FieldBinding is in Kotlin
+  fun withLabel(label: WireField.Label): ProtoAdapter<*> {
+    if (label.isRepeated) {
+      return if (label.isPacked) asPacked() else asRepeated()
+    }
+    return this
   }
 
-  /** Read an encoded message from {@code bytes}. */
-  public final E decode(ByteString bytes) throws IOException {
-    checkNotNull(bytes, "bytes == null");
-    return decode(new Buffer().write(bytes));
-  }
-
-  /** Read an encoded message from {@code stream}. */
-  public final E decode(InputStream stream) throws IOException {
-    checkNotNull(stream, "stream == null");
-    return decode(Okio.buffer(Okio.source(stream)));
-  }
-
-  /** Read an encoded message from {@code source}. */
-  public final E decode(BufferedSource source) throws IOException {
-    checkNotNull(source, "source == null");
-    return decode(new ProtoReader(source));
-  }
-
-  /** Returns a human-readable version of the given {@code value}. */
-  public String toString(E value) {
-    return value.toString();
-  }
-
-  public static final ProtoAdapter<Boolean> BOOL = new ProtoAdapter<Boolean>(
-      FieldEncoding.VARINT, Boolean.class) {
-    @Override public int encodedSize(Boolean value) {
-      return FIXED_BOOL_SIZE;
-    }
-
-    @Override public void encode(ProtoWriter writer, Boolean value) throws IOException {
-      writer.writeVarint32(value ? 1 : 0);
-    }
-
-    @Override public Boolean decode(ProtoReader reader) throws IOException {
-      int value = reader.readVarint32();
-      if (value == 0) return Boolean.FALSE;
-      if (value == 1) return Boolean.TRUE;
-      throw new IOException(String.format("Invalid boolean value 0x%02x", value));
-    }
-  };
-  public static final ProtoAdapter<Integer> INT32 = new ProtoAdapter<Integer>(
-      FieldEncoding.VARINT, Integer.class) {
-    @Override public int encodedSize(Integer value) {
-      return int32Size(value);
-    }
-
-    @Override public void encode(ProtoWriter writer, Integer value) throws IOException {
-      writer.writeSignedVarint32(value);
-    }
-
-    @Override public Integer decode(ProtoReader reader) throws IOException {
-      return reader.readVarint32();
-    }
-  };
-  public static final ProtoAdapter<Integer> UINT32 = new ProtoAdapter<Integer>(
-      FieldEncoding.VARINT, Integer.class) {
-    @Override public int encodedSize(Integer value) {
-      return varint32Size(value);
-    }
-
-    @Override public void encode(ProtoWriter writer, Integer value) throws IOException {
-      writer.writeVarint32(value);
-    }
-
-    @Override public Integer decode(ProtoReader reader) throws IOException {
-      return reader.readVarint32();
-    }
-  };
-  public static final ProtoAdapter<Integer> SINT32 = new ProtoAdapter<Integer>(
-      FieldEncoding.VARINT, Integer.class) {
-    @Override public int encodedSize(Integer value) {
-      return varint32Size(encodeZigZag32(value));
-    }
-
-    @Override public void encode(ProtoWriter writer, Integer value) throws IOException {
-      writer.writeVarint32(encodeZigZag32(value));
-    }
-
-    @Override public Integer decode(ProtoReader reader) throws IOException {
-      return decodeZigZag32(reader.readVarint32());
-    }
-  };
-  public static final ProtoAdapter<Integer> FIXED32 = new ProtoAdapter<Integer>(
-      FieldEncoding.FIXED32, Integer.class) {
-    @Override public int encodedSize(Integer value) {
-      return FIXED_32_SIZE;
-    }
-
-    @Override public void encode(ProtoWriter writer, Integer value) throws IOException {
-      writer.writeFixed32(value);
-    }
-
-    @Override public Integer decode(ProtoReader reader) throws IOException {
-      return reader.readFixed32();
-    }
-  };
-  public static final ProtoAdapter<Integer> SFIXED32 = FIXED32;
-  public static final ProtoAdapter<Long> INT64 = new ProtoAdapter<Long>(
-      FieldEncoding.VARINT, Long.class) {
-    @Override public int encodedSize(Long value) {
-      return varint64Size(value);
-    }
-
-    @Override public void encode(ProtoWriter writer, Long value) throws IOException {
-      writer.writeVarint64(value);
-    }
-
-    @Override public Long decode(ProtoReader reader) throws IOException {
-      return reader.readVarint64();
-    }
-  };
-  /**
-   * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
-   * in JSON.
-   */
-  public static final ProtoAdapter<Long> UINT64 = new ProtoAdapter<Long>(
-      FieldEncoding.VARINT, Long.class) {
-    @Override public int encodedSize(Long value) {
-      return varint64Size(value);
-    }
-
-    @Override public void encode(ProtoWriter writer, Long value) throws IOException {
-      writer.writeVarint64(value);
-    }
-
-    @Override public Long decode(ProtoReader reader) throws IOException {
-      return reader.readVarint64();
-    }
-  };
-  public static final ProtoAdapter<Long> SINT64 = new ProtoAdapter<Long>(
-      FieldEncoding.VARINT, Long.class) {
-    @Override public int encodedSize(Long value) {
-      return varint64Size(encodeZigZag64(value));
-    }
-
-    @Override public void encode(ProtoWriter writer, Long value) throws IOException {
-      writer.writeVarint64(encodeZigZag64(value));
-    }
-
-    @Override public Long decode(ProtoReader reader) throws IOException {
-      return decodeZigZag64(reader.readVarint64());
-    }
-  };
-  public static final ProtoAdapter<Long> FIXED64 = new ProtoAdapter<Long>(
-      FieldEncoding.FIXED64, Long.class) {
-    @Override public int encodedSize(Long value) {
-      return FIXED_64_SIZE;
-    }
-
-    @Override public void encode(ProtoWriter writer, Long value) throws IOException {
-      writer.writeFixed64(value);
-    }
-
-    @Override public Long decode(ProtoReader reader) throws IOException {
-      return reader.readFixed64();
-    }
-  };
-  public static final ProtoAdapter<Long> SFIXED64 = FIXED64;
-  public static final ProtoAdapter<Float> FLOAT = new ProtoAdapter<Float>(
-      FieldEncoding.FIXED32, Float.class) {
-    @Override public int encodedSize(Float value) {
-      return FIXED_32_SIZE;
-    }
-
-    @Override public void encode(ProtoWriter writer, Float value) throws IOException {
-      writer.writeFixed32(floatToIntBits(value));
-    }
-
-    @Override public Float decode(ProtoReader reader) throws IOException {
-      return Float.intBitsToFloat(reader.readFixed32());
-    }
-  };
-  public static final ProtoAdapter<Double> DOUBLE = new ProtoAdapter<Double>(
-      FieldEncoding.FIXED64, Double.class) {
-    @Override public int encodedSize(Double value) {
-      return FIXED_64_SIZE;
-    }
-
-    @Override public void encode(ProtoWriter writer, Double value) throws IOException {
-      writer.writeFixed64(doubleToLongBits(value));
-    }
-
-    @Override public Double decode(ProtoReader reader) throws IOException {
-      return Double.longBitsToDouble(reader.readFixed64());
-    }
-  };
-  public static final ProtoAdapter<String> STRING = new ProtoAdapter<String>(
-      FieldEncoding.LENGTH_DELIMITED, String.class) {
-    @Override public int encodedSize(String value) {
-      return (int) Utf8.size(value);
-    }
-
-    @Override public void encode(ProtoWriter writer, String value) throws IOException {
-      writer.writeString(value);
-    }
-
-    @Override public String decode(ProtoReader reader) throws IOException {
-      return reader.readString();
-    }
-  };
-  public static final ProtoAdapter<ByteString> BYTES = new ProtoAdapter<ByteString>(
-      FieldEncoding.LENGTH_DELIMITED, ByteString.class) {
-    @Override public int encodedSize(ByteString value) {
-      return value.size();
-    }
-
-    @Override public void encode(ProtoWriter writer, ByteString value) throws IOException {
-      writer.writeBytes(value);
-    }
-
-    @Override public ByteString decode(ProtoReader reader) throws IOException {
-      return reader.readBytes();
-    }
-  };
-
-  ProtoAdapter<?> withLabel(WireField.Label label) {
-    if (label.isRepeated()) {
-      return label.isPacked()
-          ? asPacked()
-          : asRepeated();
-    }
-    return this;
-  }
-
-  /** Returns an adapter for {@code E} but as a packed, repeated value. */
-  public final ProtoAdapter<List<E>> asPacked() {
-    ProtoAdapter<List<E>> adapter = packedAdapter;
-    return adapter != null ? adapter : (packedAdapter = createPacked());
+  /** Returns an adapter for `E` but as a packed, repeated value. */
+  fun asPacked(): ProtoAdapter<List<E>> = packedAdapter ?: createPacked().also {
+    packedAdapter = it
   }
 
   /**
-   * Returns an adapter for {@code E} but as a repeated value.
-   * <p>
+   * Returns an adapter for `E` but as a repeated value.
+   *
    * Note: Repeated items are not required to be encoded sequentially. Thus, when decoding using
    * the returned adapter, only single-element lists will be returned and it is the caller's
    * responsibility to merge them into the final list.
    */
-  public final ProtoAdapter<List<E>> asRepeated() {
-    ProtoAdapter<List<E>> adapter = repeatedAdapter;
-    return adapter != null ? adapter : (repeatedAdapter = createRepeated());
+  fun asRepeated(): ProtoAdapter<List<E>> = repeatedAdapter ?: createRepeated().also {
+    repeatedAdapter = it
   }
 
-  private ProtoAdapter<List<E>> createPacked() {
-    if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
-      throw new IllegalArgumentException("Unable to pack a length-delimited type.");
+  private fun createPacked(): ProtoAdapter<List<E>> {
+    require(fieldEncoding != FieldEncoding.LENGTH_DELIMITED) {
+      "Unable to pack a length-delimited type."
     }
-    return new ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List.class) {
-      @Override public void encodeWithTag(ProtoWriter writer, int tag, List<E> value)
-          throws IOException {
-        if (!value.isEmpty()) {
-          super.encodeWithTag(writer, tag, value);
+    return object : ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List::class.java) {
+      @Throws(IOException::class)
+      override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
+        if (value != null && value.isNotEmpty()) {
+          super.encodeWithTag(writer, tag, value)
         }
       }
 
-      @Override public int encodedSize(List<E> value) {
-        int size = 0;
-        for (int i = 0, count = value.size(); i < count; i++) {
-          size += ProtoAdapter.this.encodedSize(value.get(i));
+      override fun encodedSize(value: List<E>): Int {
+        var size = 0
+        var i = 0
+        val count = value.size
+        while (i < count) {
+          size += this@ProtoAdapter.encodedSize(value[i])
+          i++
         }
-        return size;
+        return size
       }
 
-      @Override public int encodedSizeWithTag(int tag, List<E> value) {
-        return value.isEmpty() ? 0 : super.encodedSizeWithTag(tag, value);
+      override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
+        return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
       }
 
-      @Override public void encode(ProtoWriter writer, List<E> value) throws IOException {
-        for (int i = 0, count = value.size(); i < count; i++) {
-          ProtoAdapter.this.encode(writer, value.get(i));
-        }
-      }
-
-      @Override public List<E> decode(ProtoReader reader) throws IOException {
-        E value = ProtoAdapter.this.decode(reader);
-        return Collections.singletonList(value);
-      }
-
-      @Override public List<E> redact(List<E> value) {
-        return Collections.emptyList();
-      }
-    };
-  }
-
-  private ProtoAdapter<List<E>> createRepeated() {
-    return new ProtoAdapter<List<E>>(fieldEncoding, List.class) {
-      @Override public int encodedSize(List<E> value) {
-        throw new UnsupportedOperationException("Repeated values can only be sized with a tag.");
-      }
-
-      @Override public int encodedSizeWithTag(int tag, List<E> value) {
-        int size = 0;
-        for (int i = 0, count = value.size(); i < count; i++) {
-          size += ProtoAdapter.this.encodedSizeWithTag(tag, value.get(i));
-        }
-        return size;
-      }
-
-      @Override public void encode(ProtoWriter writer, List<E> value) {
-        throw new UnsupportedOperationException("Repeated values can only be encoded with a tag.");
-      }
-
-      @Override public void encodeWithTag(ProtoWriter writer, int tag, List<E> value)
-          throws IOException {
-        for (int i = 0, count = value.size(); i < count; i++) {
-          ProtoAdapter.this.encodeWithTag(writer, tag, value.get(i));
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: List<E>) {
+        var i = 0
+        val count = value.size
+        while (i < count) {
+          this@ProtoAdapter.encode(writer, value[i])
+          i++
         }
       }
 
-      @Override public List<E> decode(ProtoReader reader) throws IOException {
-        E value = ProtoAdapter.this.decode(reader);
-        return Collections.singletonList(value);
-      }
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): List<E> = listOf(this@ProtoAdapter.decode(reader))
 
-      @Override public List<E> redact(List<E> value) {
-        return Collections.emptyList();
-      }
-    };
-  }
-
-  public static final class EnumConstantNotFoundException extends IllegalArgumentException {
-    public final int value;
-
-    public EnumConstantNotFoundException(int value, Class<?> type) {
-      super("Unknown enum tag " + value + " for " + type.getCanonicalName());
-      this.value = value;
+      override fun redact(value: List<E>): List<E>? = emptyList()
     }
   }
 
-  private static final class MapProtoAdapter<K, V> extends ProtoAdapter<Map<K, V>> {
-    private final MapEntryProtoAdapter<K, V> entryAdapter;
-
-    MapProtoAdapter(ProtoAdapter<K> keyAdapter, ProtoAdapter<V> valueAdapter) {
-      super(FieldEncoding.LENGTH_DELIMITED, Map.class);
-      entryAdapter = new MapEntryProtoAdapter<>(keyAdapter, valueAdapter);
-    }
-
-    @Override public int encodedSize(Map<K, V> value) {
-      throw new UnsupportedOperationException("Repeated values can only be sized with a tag.");
-    }
-
-    @Override public int encodedSizeWithTag(int tag, Map<K, V> value) {
-      int size = 0;
-      for (Map.Entry<K, V> entry : value.entrySet()) {
-        size += entryAdapter.encodedSizeWithTag(tag, entry);
+  private fun createRepeated(): ProtoAdapter<List<E>> {
+    return object : ProtoAdapter<List<E>>(fieldEncoding, List::class.java) {
+      override fun encodedSize(value: List<E>): Int {
+        throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
       }
-      return size;
-    }
 
-    @Override public void encode(ProtoWriter writer, Map<K, V> value) {
-      throw new UnsupportedOperationException("Repeated values can only be encoded with a tag.");
-    }
-
-    @Override public void encodeWithTag(ProtoWriter writer, int tag, Map<K, V> value)
-        throws IOException {
-      for (Map.Entry<K, V> entry : value.entrySet()) {
-        entryAdapter.encodeWithTag(writer, tag, entry);
+      override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
+        if (value == null) return 0
+        var size = 0
+        var i = 0
+        val count = value.size
+        while (i < count) {
+          size += this@ProtoAdapter.encodedSizeWithTag(tag, value[i])
+          i++
+        }
+        return size
       }
-    }
 
-    @Override public Map<K, V> decode(ProtoReader reader) throws IOException {
-      K key = null;
-      V value = null;
+      override fun encode(writer: ProtoWriter, value: List<E>) {
+        throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
+      }
 
-      long token = reader.beginMessage();
-      for (int tag; (tag = reader.nextTag()) != -1;) {
-        switch (tag) {
-          case 1: key = entryAdapter.keyAdapter.decode(reader); break;
-          case 2: value = entryAdapter.valueAdapter.decode(reader); break;
-          default: // Ignore unknown tags in map entries.
+      @Throws(IOException::class)
+      override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
+        if (value == null) return
+        var i = 0
+        val count = value.size
+        while (i < count) {
+          this@ProtoAdapter.encodeWithTag(writer, tag, value[i])
+          i++
         }
       }
-      reader.endMessage(token);
 
-      if (key == null) throw new IllegalStateException("Map entry with null key");
-      if (value == null) throw new IllegalStateException("Map entry with null value");
-      return Collections.singletonMap(key, value);
-    }
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): List<E> = listOf(this@ProtoAdapter.decode(reader))
 
-    @Override public Map<K, V> redact(Map<K, V> value) {
-      return Collections.emptyMap();
+      override fun redact(value: List<E>): List<E>? = emptyList()
     }
   }
 
-  private static final class MapEntryProtoAdapter<K, V> extends ProtoAdapter<Map.Entry<K, V>> {
-    final ProtoAdapter<K> keyAdapter;
-    final ProtoAdapter<V> valueAdapter;
+  class EnumConstantNotFoundException(
+    @JvmField val value: Int,
+    type: Class<*>?
+  ) : IllegalArgumentException("Unknown enum tag $value for ${type?.canonicalName}")
 
-    MapEntryProtoAdapter(ProtoAdapter<K> keyAdapter, ProtoAdapter<V> valueAdapter) {
-      super(FieldEncoding.LENGTH_DELIMITED, Map.Entry.class);
-      this.keyAdapter = keyAdapter;
-      this.valueAdapter = valueAdapter;
+  private class MapProtoAdapter<K, V> internal constructor(
+    keyAdapter: ProtoAdapter<K>,
+    valueAdapter: ProtoAdapter<V>
+  ) : ProtoAdapter<Map<K, V>>(FieldEncoding.LENGTH_DELIMITED, Map::class.java) {
+    private val entryAdapter = MapEntryProtoAdapter(keyAdapter, valueAdapter)
+
+    override fun encodedSize(value: Map<K, V>): Int {
+      throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
     }
 
-    @Override public int encodedSize(Map.Entry<K, V> value) {
-      return keyAdapter.encodedSizeWithTag(1, value.getKey())
-          + valueAdapter.encodedSizeWithTag(2, value.getValue());
+    override fun encodedSizeWithTag(tag: Int, value: Map<K, V>?): Int {
+      if (value == null) return 0
+      var size = 0
+      for (entry in value.entries) {
+        size += entryAdapter.encodedSizeWithTag(tag, entry)
+      }
+      return size
     }
 
-    @Override public void encode(ProtoWriter writer, Map.Entry<K, V> value) throws IOException {
-      keyAdapter.encodeWithTag(writer, 1, value.getKey());
-      valueAdapter.encodeWithTag(writer, 2, value.getValue());
+    override fun encode(writer: ProtoWriter, value: Map<K, V>) {
+      throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
     }
 
-    @Override public Map.Entry<K, V> decode(ProtoReader reader) {
-      throw new UnsupportedOperationException();
+    @Throws(IOException::class)
+    override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Map<K, V>?) {
+      if (value == null) return
+      for (entry in value.entries) {
+        entryAdapter.encodeWithTag(writer, tag, entry)
+      }
+    }
+
+    @Throws(IOException::class)
+    override fun decode(reader: ProtoReader): Map<K, V> {
+      var key: K? = null
+      var value: V? = null
+
+      val token = reader.beginMessage()
+      var tag: Int
+      while (true) {
+        tag = reader.nextTag()
+        if (tag == -1) break
+        when (tag) {
+          1 -> key = entryAdapter.keyAdapter.decode(reader)
+          2 -> value = entryAdapter.valueAdapter.decode(reader)
+          // Ignore unknown tags in map entries.
+        }
+      }
+      reader.endMessage(token)
+
+      check(key != null) { "Map entry with null key" }
+      check(value != null) { "Map entry with null value" }
+      return mapOf(key to value)
+    }
+
+    override fun redact(value: Map<K, V>): Map<K, V> = emptyMap()
+  }
+
+  private class MapEntryProtoAdapter<K, V> internal constructor(
+    internal val keyAdapter: ProtoAdapter<K>,
+    internal val valueAdapter: ProtoAdapter<V>
+  ) : ProtoAdapter<Map.Entry<K, V>>(FieldEncoding.LENGTH_DELIMITED, Map.Entry::class.java) {
+
+    override fun encodedSize(value: Map.Entry<K, V>): Int {
+      return keyAdapter.encodedSizeWithTag(1, value.key) +
+          valueAdapter.encodedSizeWithTag(2, value.value)
+    }
+
+    @Throws(IOException::class)
+    override fun encode(writer: ProtoWriter, value: Map.Entry<K, V>) {
+      keyAdapter.encodeWithTag(writer, 1, value.key)
+      valueAdapter.encodeWithTag(writer, 2, value.value)
+    }
+
+    override fun decode(reader: ProtoReader): Map.Entry<K, V> {
+      throw UnsupportedOperationException()
+    }
+  }
+
+  companion object {
+    private const val FIXED_BOOL_SIZE = 1
+    private const val FIXED_32_SIZE = 4
+    private const val FIXED_64_SIZE = 8
+
+    /** Creates a new proto adapter for `type`. */
+    @JvmStatic
+    fun <M : Message<M, B>, B : Builder<M, B>> newMessageAdapter(type: Class<M>): ProtoAdapter<M> {
+      return RuntimeMessageAdapter.create(type)
+    }
+
+    /** Creates a new proto adapter for `type`.  */
+    @JvmStatic fun <E : WireEnum> newEnumAdapter(type: Class<E>): EnumAdapter<E> {
+      return RuntimeEnumAdapter(type)
+    }
+
+    /**
+     * Creates a new proto adapter for a map using `keyAdapter` and `valueAdapter`.
+     *
+     * Note: Map entries are not required to be encoded sequentially. Thus, when decoding using
+     * the returned adapter, only single-element maps will be returned and it is the caller's
+     * responsibility to merge them into the final map.
+     */
+    @JvmStatic fun <K, V> newMapAdapter(
+      keyAdapter: ProtoAdapter<K>,
+      valueAdapter: ProtoAdapter<V>
+    ): ProtoAdapter<Map<K, V>> {
+      return MapProtoAdapter(keyAdapter, valueAdapter)
+    }
+
+    /** Returns the adapter for the type of `Message`. */
+    @JvmStatic fun <M : Message<*, *>> get(message: M): ProtoAdapter<M> = get(message.javaClass)
+
+    /** Returns the adapter for `type`. */
+    @JvmStatic fun <M> get(type: Class<M>): ProtoAdapter<M> {
+      try {
+        return type.getField("ADAPTER").get(null) as ProtoAdapter<M>
+      } catch (e: IllegalAccessException) {
+        throw IllegalArgumentException("failed to access ${type.name}#ADAPTER", e)
+      } catch (e: NoSuchFieldException) {
+        throw IllegalArgumentException("failed to access ${type.name}#ADAPTER", e)
+      }
+    }
+
+    /**
+     * Returns the adapter for a given `adapterString`. `adapterString` is specified on a proto
+     * message field's [WireField] annotation in the form
+     * `com.squareup.wire.protos.person.Person#ADAPTER`.
+     */
+    @JvmStatic fun get(adapterString: String): ProtoAdapter<*> {
+      try {
+        val hash = adapterString.indexOf('#')
+        val className = adapterString.substring(0, hash)
+        val fieldName = adapterString.substring(hash + 1)
+        return Class.forName(className).getField(fieldName).get(null) as ProtoAdapter<Any>
+      } catch (e: IllegalAccessException) {
+        throw IllegalArgumentException("failed to access $adapterString", e)
+      } catch (e: NoSuchFieldException) {
+        throw IllegalArgumentException("failed to access $adapterString", e)
+      } catch (e: ClassNotFoundException) {
+        throw IllegalArgumentException("failed to access $adapterString", e)
+      }
+    }
+
+    @JvmField val BOOL: ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean>(
+        FieldEncoding.VARINT,
+        Boolean::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Boolean): Int = FIXED_BOOL_SIZE
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Boolean) {
+        writer.writeVarint32(if (value) 1 else 0)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Boolean {
+        val value = reader.readVarint32()
+        if (value == 0) return false
+        if (value == 1) return true
+        throw IOException(String.format("Invalid boolean value 0x%02x", value))
+      }
+    }
+    @JvmField val INT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
+        FieldEncoding.VARINT,
+        Int::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Int): Int = int32Size(value)
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Int) {
+        writer.writeSignedVarint32(value)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Int = reader.readVarint32()
+    }
+    @JvmField val UINT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
+        FieldEncoding.VARINT,
+        Int::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Int): Int = varint32Size(value)
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Int) {
+        writer.writeVarint32(value)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Int = reader.readVarint32()
+    }
+    @JvmField val SINT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
+        FieldEncoding.VARINT,
+        Int::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Int): Int = varint32Size(encodeZigZag32(value))
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Int) {
+        writer.writeVarint32(encodeZigZag32(value))
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Int = decodeZigZag32(reader.readVarint32())
+    }
+    @JvmField val FIXED32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
+        FieldEncoding.FIXED32,
+        Int::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Int): Int = FIXED_32_SIZE
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Int) {
+        writer.writeFixed32(value)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Int = reader.readFixed32()
+    }
+    @JvmField val SFIXED32 = FIXED32
+    @JvmField val INT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
+        FieldEncoding.VARINT,
+        Long::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Long): Int = varint64Size(value)
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Long) {
+        writer.writeVarint64(value)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Long = reader.readVarint64()
+    }
+    /**
+     * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
+     * in JSON.
+     */
+    @JvmField val UINT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
+        FieldEncoding.VARINT,
+        Long::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Long): Int = varint64Size(value)
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Long) {
+        writer.writeVarint64(value)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Long = reader.readVarint64()
+    }
+    @JvmField val SINT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
+        FieldEncoding.VARINT,
+        Long::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Long): Int = varint64Size(encodeZigZag64(value))
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Long) {
+        writer.writeVarint64(encodeZigZag64(value))
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Long = decodeZigZag64(reader.readVarint64())
+    }
+    @JvmField val FIXED64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
+        FieldEncoding.FIXED64,
+        Long::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Long): Int = FIXED_64_SIZE
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Long) {
+        writer.writeFixed64(value)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Long = reader.readFixed64()
+    }
+    @JvmField val SFIXED64 = FIXED64
+    @JvmField val FLOAT: ProtoAdapter<Float> = object : ProtoAdapter<Float>(
+        FieldEncoding.FIXED32,
+        Float::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Float): Int = FIXED_32_SIZE
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Float) {
+        writer.writeFixed32(floatToIntBits(value))
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Float {
+        return java.lang.Float.intBitsToFloat(reader.readFixed32())
+      }
+    }
+    @JvmField val DOUBLE: ProtoAdapter<Double> = object : ProtoAdapter<Double>(
+        FieldEncoding.FIXED64,
+        Double::class.javaObjectType
+    ) {
+      override fun encodedSize(value: Double): Int = FIXED_64_SIZE
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: Double) {
+        writer.writeFixed64(doubleToLongBits(value))
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): Double {
+        return java.lang.Double.longBitsToDouble(reader.readFixed64())
+      }
+    }
+    @JvmField val STRING: ProtoAdapter<String> = object : ProtoAdapter<String>(
+        FieldEncoding.LENGTH_DELIMITED,
+        String::class.java
+    ) {
+      override fun encodedSize(value: String): Int = value.utf8Size().toInt()
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: String) {
+        writer.writeString(value)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): String = reader.readString()
+    }
+    @JvmField val BYTES: ProtoAdapter<ByteString> = object : ProtoAdapter<ByteString>(
+        FieldEncoding.LENGTH_DELIMITED,
+        ByteString::class.java
+    ) {
+      override fun encodedSize(value: ByteString): Int = value.size
+
+      @Throws(IOException::class)
+      override fun encode(writer: ProtoWriter, value: ByteString) {
+        writer.writeBytes(value)
+      }
+
+      @Throws(IOException::class)
+      override fun decode(reader: ProtoReader): ByteString = reader.readBytes()
     }
   }
 }
