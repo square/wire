@@ -46,7 +46,7 @@ import java.net.ProtocolException
 /**
  * Reads and decodes protocol message fields.
  */
-class ProtoReader(@JvmField private val source: BufferedSource) {
+class ProtoReader(private val source: BufferedSource) {
   /** The current position in the input source, starting at 0 and increasing monotonically. */
   private var pos: Long = 0
   /** The absolute position of the end of the current message. */
