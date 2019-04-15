@@ -31,412 +31,410 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-package com.squareup.wire;
+package com.squareup.wire
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.ProtocolException;
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.ByteString;
-
-import static com.squareup.wire.TagHandler.UNKNOWN_TAG;
+import com.squareup.wire.TagHandler.UNKNOWN_TAG
+import com.squareup.wire.internal.and
+import com.squareup.wire.internal.shl
+import okio.Buffer
+import okio.BufferedSource
+import okio.ByteString
+import java.io.EOFException
+import java.io.IOException
+import java.net.ProtocolException
 
 /**
  * Reads and decodes protocol message fields.
  */
-public final class ProtoReader {
-  /** The standard number of levels of message nesting to allow. */
-  private static final int RECURSION_LIMIT = 65;
-
-  private static final int FIELD_ENCODING_MASK = 0x7;
-  static final int TAG_FIELD_ENCODING_BITS = 3;
-
-  /** Read states. These constants correspond to field encodings where both exist. */
-  private static final int STATE_VARINT = 0;
-  private static final int STATE_FIXED64 = 1;
-  private static final int STATE_LENGTH_DELIMITED = 2;
-  private static final int STATE_START_GROUP = 3;
-  private static final int STATE_END_GROUP = 4;
-  private static final int STATE_FIXED32 = 5;
-  private static final int STATE_TAG = 6; // Note: not a field encoding.
-  private static final int STATE_PACKED_TAG = 7; // Note: not a field encoding.
-
-  private final BufferedSource source;
-
+class ProtoReader(@JvmField private val source: BufferedSource) {
   /** The current position in the input source, starting at 0 and increasing monotonically. */
-  private long pos = 0;
+  private var pos: Long = 0
   /** The absolute position of the end of the current message. */
-  private long limit = Long.MAX_VALUE;
+  private var limit = Long.MAX_VALUE
   /** The current number of levels of message nesting. */
-  private int recursionDepth;
+  private var recursionDepth = 0
   /** How to interpret the next read call. */
-  private int state = STATE_LENGTH_DELIMITED;
+  private var state = STATE_LENGTH_DELIMITED
   /** The most recently read tag. Used to make packed values look like regular values. */
-  private int tag = -1;
+  private var tag = -1
   /** Limit once we complete the current length-delimited value. */
-  private long pushedLimit = -1;
+  private var pushedLimit: Long = -1
   /** The encoding of the next value to be read. */
-  private FieldEncoding nextFieldEncoding;
-
-  public ProtoReader(BufferedSource source) {
-    this.source = source;
-  }
+  private var nextFieldEncoding: FieldEncoding? = null
 
   /**
-   * Begin a nested message. A call to this method will restrict the reader so that {@link
-   * #nextTag()} returns -1 when the message is complete. An accompanying call to {@link
-   * #endMessage(long)} must then occur with the opaque token returned from this method.
+   * Begin a nested message. A call to this method will restrict the reader so that [nextTag]
+   * returns -1 when the message is complete. An accompanying call to [endMessage] must then occur
+   * with the opaque token returned from this method.
    */
-  public long beginMessage() throws IOException {
-    if (state != STATE_LENGTH_DELIMITED) {
-      throw new IllegalStateException("Unexpected call to beginMessage()");
-    }
+  @Throws(IOException::class)
+  fun beginMessage(): Long {
+    check(state == STATE_LENGTH_DELIMITED) { "Unexpected call to beginMessage()" }
     if (++recursionDepth > RECURSION_LIMIT) {
-      throw new IOException("Wire recursion limit exceeded");
+      throw IOException("Wire recursion limit exceeded")
     }
     // Give the pushed limit to the caller to hold. The value is returned in endMessage() where we
     // resume using it as our limit.
-    long token = pushedLimit;
-    pushedLimit = -1L;
-    state = STATE_TAG;
-    return token;
+    val token = pushedLimit
+    pushedLimit = -1L
+    state = STATE_TAG
+    return token
   }
 
   /**
    * End a length-delimited nested message. Calls to this method must be symmetric with calls to
-   * {@link #beginMessage()}.
+   * [beginMessage].
    *
-   * @param token value returned from the corresponding call to {@link #beginMessage()}.
+   * @param token value returned from the corresponding call to [beginMessage].
    */
-  public void endMessage(long token) throws IOException {
-    if (state != STATE_TAG) {
-      throw new IllegalStateException("Unexpected call to endMessage()");
-    }
-    if (--recursionDepth < 0 || pushedLimit != -1L) {
-      throw new IllegalStateException("No corresponding call to beginMessage()");
-    }
+  @Throws(IOException::class)
+  fun endMessage(token: Long) {
+    check(state == STATE_TAG) { "Unexpected call to endMessage()" }
+    check(--recursionDepth >= 0 && pushedLimit == -1L) { "No corresponding call to beginMessage()" }
     if (pos != limit && recursionDepth != 0) {
-      throw new IOException("Expected to end at " + limit + " but was " + pos);
+      throw IOException("Expected to end at $limit but was $pos")
     }
-    limit = token;
+    limit = token
   }
 
   /**
-   * Reads and returns the next tag of the message, or -1 if there are no further tags. Use {@link
-   * #peekFieldEncoding()} after calling this method to query its encoding. This silently skips
+   * Reads and returns the next tag of the message, or -1 if there are no further tags. Use
+   * [peekFieldEncoding] after calling this method to query its encoding. This silently skips
    * groups.
    */
-  public int nextTag() throws IOException {
+  @Throws(IOException::class)
+  fun nextTag(): Int {
     if (state == STATE_PACKED_TAG) {
-      state = STATE_LENGTH_DELIMITED;
-      return tag;
+      state = STATE_LENGTH_DELIMITED
+      return tag
     } else if (state != STATE_TAG) {
-      throw new IllegalStateException("Unexpected call to nextTag()");
+      throw IllegalStateException("Unexpected call to nextTag()")
     }
 
-    while (pos < limit && !source.exhausted()) {
-      int tagAndFieldEncoding = internalReadVarint32();
-      if (tagAndFieldEncoding == 0) throw new ProtocolException("Unexpected tag 0");
+    loop@ while (pos < limit && !source.exhausted()) {
+      val tagAndFieldEncoding = internalReadVarint32()
+      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0")
 
-      tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
-      int groupOrFieldEncoding = tagAndFieldEncoding & FIELD_ENCODING_MASK;
-      switch (groupOrFieldEncoding) {
-        case STATE_START_GROUP:
-          skipGroup(tag);
-          continue;
+      tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
+      when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
+        STATE_START_GROUP -> {
+          skipGroup(tag)
+          continue@loop
+        }
 
-        case STATE_END_GROUP:
-          throw new ProtocolException("Unexpected end group");
+        STATE_END_GROUP -> throw ProtocolException("Unexpected end group")
 
-        case STATE_LENGTH_DELIMITED:
-          nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED;
-          state = STATE_LENGTH_DELIMITED;
-          int length = internalReadVarint32();
-          if (length < 0) throw new ProtocolException("Negative length: " + length);
-          if (pushedLimit != -1) throw new IllegalStateException();
+        STATE_LENGTH_DELIMITED -> {
+          nextFieldEncoding = FieldEncoding.LENGTH_DELIMITED
+          state = STATE_LENGTH_DELIMITED
+          val length = internalReadVarint32()
+          if (length < 0) throw ProtocolException("Negative length: $length")
+          if (pushedLimit != -1L) throw IllegalStateException()
           // Push the current limit, and set a new limit to the length of this value.
-          pushedLimit = limit;
-          limit = pos + length;
-          if (limit > pushedLimit) throw new EOFException();
-          return tag;
+          pushedLimit = limit
+          limit = pos + length
+          if (limit > pushedLimit) throw EOFException()
+          return tag
+        }
 
-        case STATE_VARINT:
-          nextFieldEncoding = FieldEncoding.VARINT;
-          state = STATE_VARINT;
-          return tag;
+        STATE_VARINT -> {
+          nextFieldEncoding = FieldEncoding.VARINT
+          state = STATE_VARINT
+          return tag
+        }
 
-        case STATE_FIXED64:
-          nextFieldEncoding = FieldEncoding.FIXED64;
-          state = STATE_FIXED64;
-          return tag;
+        STATE_FIXED64 -> {
+          nextFieldEncoding = FieldEncoding.FIXED64
+          state = STATE_FIXED64
+          return tag
+        }
 
-        case STATE_FIXED32:
-          nextFieldEncoding = FieldEncoding.FIXED32;
-          state = STATE_FIXED32;
-          return tag;
+        STATE_FIXED32 -> {
+          nextFieldEncoding = FieldEncoding.FIXED32
+          state = STATE_FIXED32
+          return tag
+        }
 
-        default:
-          throw new ProtocolException("Unexpected field encoding: " + groupOrFieldEncoding);
+        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding")
       }
     }
-    return -1;
+    return -1
   }
 
   /**
-   * Returns the encoding of the next field value. {@link #nextTag()} must be called before
-   * this method.
+   * Returns the encoding of the next field value. [nextTag] must be called before this method.
    */
-  public FieldEncoding peekFieldEncoding() {
-    return nextFieldEncoding;
-  }
+  fun peekFieldEncoding(): FieldEncoding? = nextFieldEncoding
 
   /**
    * Skips the current field's value. This is only safe to call immediately following a call to
-   * {@link #nextTag()}.
+   * [nextTag].
    */
-  public void skip() throws IOException {
-    switch (state) {
-      case STATE_LENGTH_DELIMITED:
-        long byteCount = beforeLengthDelimitedScalar();
-        source.skip(byteCount);
-        break;
-      case STATE_VARINT:
-        readVarint64();
-        break;
-      case STATE_FIXED64:
-        readFixed64();
-        break;
-      case STATE_FIXED32:
-        readFixed32();
-        break;
-      default:
-        throw new IllegalStateException("Unexpected call to skip()");
+  @Throws(IOException::class)
+  fun skip() {
+    when (state) {
+      STATE_LENGTH_DELIMITED -> {
+        val byteCount = beforeLengthDelimitedScalar()
+        source.skip(byteCount)
+      }
+      STATE_VARINT -> readVarint64()
+      STATE_FIXED64 -> readFixed64()
+      STATE_FIXED32 -> readFixed32()
+      else -> throw IllegalStateException("Unexpected call to skip()")
     }
   }
 
   /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
-  private void skipGroup(int expectedEndTag) throws IOException {
+  private fun skipGroup(expectedEndTag: Int) {
     while (pos < limit && !source.exhausted()) {
-      int tagAndFieldEncoding = internalReadVarint32();
-      if (tagAndFieldEncoding == 0) throw new ProtocolException("Unexpected tag 0");
-      int tag = tagAndFieldEncoding >> TAG_FIELD_ENCODING_BITS;
-      int groupOrFieldEncoding = tagAndFieldEncoding & FIELD_ENCODING_MASK;
-      switch (groupOrFieldEncoding) {
-        case STATE_START_GROUP:
-          skipGroup(tag); // Nested group.
-          break;
-        case STATE_END_GROUP:
-          if (tag == expectedEndTag) return; // Success!
-          throw new ProtocolException("Unexpected end group");
-        case STATE_LENGTH_DELIMITED:
-          int length = internalReadVarint32();
-          pos += length;
-          source.skip(length);
-          break;
-        case STATE_VARINT:
-          state = STATE_VARINT;
-          readVarint64();
-          break;
-        case STATE_FIXED64:
-          state = STATE_FIXED64;
-          readFixed64();
-          break;
-        case STATE_FIXED32:
-          state = STATE_FIXED32;
-          readFixed32();
-          break;
-        default:
-          throw new ProtocolException("Unexpected field encoding: " + groupOrFieldEncoding);
+      val tagAndFieldEncoding = internalReadVarint32()
+      if (tagAndFieldEncoding == 0) throw ProtocolException("Unexpected tag 0")
+      val tag = tagAndFieldEncoding shr TAG_FIELD_ENCODING_BITS
+      when (val groupOrFieldEncoding = tagAndFieldEncoding and FIELD_ENCODING_MASK) {
+        STATE_START_GROUP -> skipGroup(tag) // Nested group.
+        STATE_END_GROUP -> {
+          if (tag == expectedEndTag) return  // Success!
+          throw ProtocolException("Unexpected end group")
+        }
+        STATE_LENGTH_DELIMITED -> {
+          val length = internalReadVarint32()
+          pos += length.toLong()
+          source.skip(length.toLong())
+        }
+        STATE_VARINT -> {
+          state = STATE_VARINT
+          readVarint64()
+        }
+        STATE_FIXED64 -> {
+          state = STATE_FIXED64
+          readFixed64()
+        }
+        STATE_FIXED32 -> {
+          state = STATE_FIXED32
+          readFixed32()
+        }
+        else -> throw ProtocolException("Unexpected field encoding: $groupOrFieldEncoding")
       }
     }
-    throw new EOFException();
+    throw EOFException()
   }
 
   /**
-   * Reads a {@code bytes} field value from the stream. The length is read from the
-   * stream prior to the actual data.
+   * Reads a `bytes` field value from the stream. The length is read from the stream prior to the
+   * actual data.
    */
-  public ByteString readBytes() throws IOException {
-    long byteCount = beforeLengthDelimitedScalar();
-    source.require(byteCount); // Throws EOFException if insufficient bytes are available.
-    return source.readByteString(byteCount);
+  @Throws(IOException::class)
+  fun readBytes(): ByteString {
+    val byteCount = beforeLengthDelimitedScalar()
+    source.require(byteCount) // Throws EOFException if insufficient bytes are available.
+    return source.readByteString(byteCount)
   }
 
-  /** Reads a {@code string} field value from the stream. */
-  public String readString() throws IOException {
-    long byteCount = beforeLengthDelimitedScalar();
-    source.require(byteCount); // Throws EOFException if insufficient bytes are available.
-    return source.readUtf8(byteCount);
+  /** Reads a `string` field value from the stream. */
+  @Throws(IOException::class)
+  fun readString(): String {
+    val byteCount = beforeLengthDelimitedScalar()
+    source.require(byteCount) // Throws EOFException if insufficient bytes are available.
+    return source.readUtf8(byteCount)
   }
 
   /**
-   * Reads a raw varint from the stream.  If larger than 32 bits, discard the
-   * upper bits.
+   * Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits.
    */
-  public int readVarint32() throws IOException {
+  @Throws(IOException::class)
+  fun readVarint32(): Int {
     if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
-      throw new ProtocolException("Expected VARINT or LENGTH_DELIMITED but was " + state);
+      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state")
     }
-    int result = internalReadVarint32();
-    afterPackableScalar(STATE_VARINT);
-    return result;
+    val result = internalReadVarint32()
+    afterPackableScalar(STATE_VARINT)
+    return result
   }
 
-  private int internalReadVarint32() throws IOException {
-    source.require(1); // Throws EOFException if insufficient bytes are available.
-    pos++;
-    byte tmp = source.readByte();
+  private fun internalReadVarint32(): Int {
+    source.require(1) // Throws EOFException if insufficient bytes are available.
+    pos++
+    var tmp = source.readByte()
     if (tmp >= 0) {
-      return tmp;
+      return tmp.toInt()
     }
-    int result = tmp & 0x7f;
-    source.require(1); // Throws EOFException if insufficient bytes are available.
-    pos++;
-    if ((tmp = source.readByte()) >= 0) {
-      result |= tmp << 7;
+    var result = tmp and 0x7f
+    source.require(1) // Throws EOFException if insufficient bytes are available.
+    pos++
+    tmp = source.readByte()
+    if (tmp >= 0) {
+      result = result or (tmp shl 7)
     } else {
-      result |= (tmp & 0x7f) << 7;
-      source.require(1); // Throws EOFException if insufficient bytes are available.
-      pos++;
-      if ((tmp = source.readByte()) >= 0) {
-        result |= tmp << 14;
+      result = result or (tmp and 0x7f shl 7)
+      source.require(1) // Throws EOFException if insufficient bytes are available.
+      pos++
+      tmp = source.readByte()
+      if (tmp >= 0) {
+        result = result or (tmp shl 14)
       } else {
-        result |= (tmp & 0x7f) << 14;
-        source.require(1); // Throws EOFException if insufficient bytes are available.
-        pos++;
-        if ((tmp = source.readByte()) >= 0) {
-          result |= tmp << 21;
+        result = result or (tmp and 0x7f shl 14)
+        source.require(1) // Throws EOFException if insufficient bytes are available.
+        pos++
+        tmp = source.readByte()
+        if (tmp >= 0) {
+          result = result or (tmp shl 21)
         } else {
-          result |= (tmp & 0x7f) << 21;
-          source.require(1); // Throws EOFException if insufficient bytes are available.
-          pos++;
-          result |= (tmp = source.readByte()) << 28;
+          result = result or (tmp and 0x7f shl 21)
+          source.require(1) // Throws EOFException if insufficient bytes are available.
+          pos++
+          tmp = source.readByte()
+          result = result or (tmp shl 28)
           if (tmp < 0) {
             // Discard upper 32 bits.
-            for (int i = 0; i < 5; i++) {
-              source.require(1); // Throws EOFException if insufficient bytes are available.
-              pos++;
+            for (i in 0..4) {
+              source.require(1) // Throws EOFException if insufficient bytes are available.
+              pos++
               if (source.readByte() >= 0) {
-                return result;
+                return result
               }
             }
-            throw new ProtocolException("Malformed VARINT");
+            throw ProtocolException("Malformed VARINT")
           }
         }
       }
     }
-    return result;
+    return result
   }
 
-  /** Reads a raw varint up to 64 bits in length from the stream. */
-  public long readVarint64() throws IOException {
+  /** Reads a raw varint up to 64 bits in length from the stream.  */
+  @Throws(IOException::class)
+  fun readVarint64(): Long {
     if (state != STATE_VARINT && state != STATE_LENGTH_DELIMITED) {
-      throw new ProtocolException("Expected VARINT or LENGTH_DELIMITED but was " + state);
+      throw ProtocolException("Expected VARINT or LENGTH_DELIMITED but was $state")
     }
-    int shift = 0;
-    long result = 0;
+    var shift = 0
+    var result: Long = 0
     while (shift < 64) {
-      source.require(1); // Throws EOFException if insufficient bytes are available.
-      pos++;
-      byte b = source.readByte();
-      result |= (long) (b & 0x7F) << shift;
-      if ((b & 0x80) == 0) {
-        afterPackableScalar(STATE_VARINT);
-        return result;
+      source.require(1) // Throws EOFException if insufficient bytes are available.
+      pos++
+      val b = source.readByte()
+      result = result or ((b and 0x7F).toLong() shl shift)
+      if (b and 0x80 == 0) {
+        afterPackableScalar(STATE_VARINT)
+        return result
       }
-      shift += 7;
+      shift += 7
     }
-    throw new ProtocolException("WireInput encountered a malformed varint");
+    throw ProtocolException("WireInput encountered a malformed varint")
   }
 
-  /** Reads a 32-bit little-endian integer from the stream. */
-  public int readFixed32() throws IOException {
+  /** Reads a 32-bit little-endian integer from the stream.  */
+  @Throws(IOException::class)
+  fun readFixed32(): Int {
     if (state != STATE_FIXED32 && state != STATE_LENGTH_DELIMITED) {
-      throw new ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was " + state);
+      throw ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was $state")
     }
-    source.require(4); // Throws EOFException if insufficient bytes are available.
-    pos += 4;
-    int result = source.readIntLe();
-    afterPackableScalar(STATE_FIXED32);
-    return result;
+    source.require(4) // Throws EOFException if insufficient bytes are available.
+    pos += 4
+    val result = source.readIntLe()
+    afterPackableScalar(STATE_FIXED32)
+    return result
   }
 
-  /** Reads a 64-bit little-endian integer from the stream. */
-  public long readFixed64() throws IOException {
+  /** Reads a 64-bit little-endian integer from the stream.  */
+  @Throws(IOException::class)
+  fun readFixed64(): Long {
     if (state != STATE_FIXED64 && state != STATE_LENGTH_DELIMITED) {
-      throw new ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was " + state);
+      throw ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was $state")
     }
-    source.require(8); // Throws EOFException if insufficient bytes are available.
-    pos += 8;
-    long result = source.readLongLe();
-    afterPackableScalar(STATE_FIXED64);
-    return result;
+    source.require(8) // Throws EOFException if insufficient bytes are available.
+    pos += 8
+    val result = source.readLongLe()
+    afterPackableScalar(STATE_FIXED64)
+    return result
   }
 
-  private void afterPackableScalar(int fieldEncoding) throws IOException {
+  @Throws(IOException::class)
+  private fun afterPackableScalar(fieldEncoding: Int) {
     if (state == fieldEncoding) {
-      state = STATE_TAG;
+      state = STATE_TAG
     } else {
-      if (pos > limit) {
-        throw new IOException("Expected to end at " + limit + " but was " + pos);
-      } else if (pos == limit) {
-        // We've completed a sequence of packed values. Pop the limit.
-        limit = pushedLimit;
-        pushedLimit = -1;
-        state = STATE_TAG;
-      } else {
-        state = STATE_PACKED_TAG;
+      when {
+        pos > limit -> throw IOException("Expected to end at $limit but was $pos")
+        pos == limit -> {
+          // We've completed a sequence of packed values. Pop the limit.
+          limit = pushedLimit
+          pushedLimit = -1
+          state = STATE_TAG
+        }
+        else -> state = STATE_PACKED_TAG
       }
     }
   }
 
-  private long beforeLengthDelimitedScalar() throws IOException {
+  @Throws(IOException::class)
+  private fun beforeLengthDelimitedScalar(): Long {
     if (state != STATE_LENGTH_DELIMITED) {
-      throw new ProtocolException("Expected LENGTH_DELIMITED but was " + state);
+      throw ProtocolException("Expected LENGTH_DELIMITED but was $state")
     }
-    long byteCount = limit - pos;
-    source.require(byteCount); // Throws EOFException if insufficient bytes are available.
-    state = STATE_TAG;
+    val byteCount = limit - pos
+    source.require(byteCount) // Throws EOFException if insufficient bytes are available.
+    state = STATE_TAG
     // We've completed a length-delimited scalar. Pop the limit.
-    pos = limit;
-    limit = pushedLimit;
-    pushedLimit = -1;
-    return byteCount;
+    pos = limit
+    limit = pushedLimit
+    pushedLimit = -1
+    return byteCount
   }
 
   /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
-  public ByteString forEachTag(TagHandler tagHandler) throws IOException {
+  @Throws(IOException::class)
+  fun forEachTag(tagHandler: TagHandler): ByteString {
     // Lazily created if the current message has unknown fields.
-    Buffer unknownFieldsBuffer = null;
-    ProtoWriter unknownFieldsWriter = null;
+    var unknownFieldsBuffer: Buffer? = null
+    var unknownFieldsWriter: ProtoWriter? = null
 
-    long token = beginMessage();
-    for (int tag; (tag = nextTag()) != -1;) {
-      if (tagHandler.decodeMessage(tag) != UNKNOWN_TAG) continue;
+    val token = beginMessage()
+    var tag: Int
+    while (true) {
+      tag = nextTag()
+      if (tag == -1) break
+      if (tagHandler.decodeMessage(tag) !== UNKNOWN_TAG) continue
       if (unknownFieldsBuffer == null) {
-        unknownFieldsBuffer = new Buffer();
-        unknownFieldsWriter = new ProtoWriter(unknownFieldsBuffer);
+        unknownFieldsBuffer = Buffer()
+        unknownFieldsWriter = ProtoWriter(unknownFieldsBuffer)
       }
-      copyTag(unknownFieldsWriter, tag);
+      copyTag(unknownFieldsWriter!!, tag)
     }
-    endMessage(token);
+    endMessage(token)
 
-    return unknownFieldsBuffer != null
-      ? unknownFieldsBuffer.readByteString()
-      : ByteString.EMPTY;
+    return unknownFieldsBuffer?.readByteString() ?: ByteString.EMPTY
   }
 
-  /** Reads the next value from this and writes it to {@code writer}. */
-  @SuppressWarnings("unchecked") // We encode and decode the same types.
-  private void copyTag(ProtoWriter writer, int tag) throws IOException {
-    FieldEncoding fieldEncoding = peekFieldEncoding();
-    ProtoAdapter<?> protoAdapter = fieldEncoding.rawProtoAdapter();
-    Object value = protoAdapter.decode(this);
-    try {
-      ((ProtoAdapter<Object>) protoAdapter).encodeWithTag(writer, tag, value);
-    } catch (IOException e) {
-      throw new AssertionError(e); // Impossible.
-    }
+  /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
+  @JvmName("-forEachTag") // hide from Java
+  fun forEachTag(tagHandler: (Int) -> Any): ByteString = forEachTag(TagHandler(tagHandler))
+
+  /** Reads the next value from this and writes it to `writer`.  */
+  @Throws(IOException::class)
+  @Suppress("UNCHECKED_CAST") // We encode and decode the same types.
+  private fun copyTag(writer: ProtoWriter, tag: Int) {
+    val fieldEncoding = peekFieldEncoding()
+    val protoAdapter = fieldEncoding!!.rawProtoAdapter()
+    val value = protoAdapter.decode(this)
+    (protoAdapter as ProtoAdapter<Any>).encodeWithTag(writer, tag, value)
+  }
+
+  companion object {
+    /** The standard number of levels of message nesting to allow. */
+    private const val RECURSION_LIMIT = 65
+
+    private const val FIELD_ENCODING_MASK = 0x7
+    internal const val TAG_FIELD_ENCODING_BITS = 3
+
+    /** Read states. These constants correspond to field encodings where both exist. */
+    private const val STATE_VARINT = 0
+    private const val STATE_FIXED64 = 1
+    private const val STATE_LENGTH_DELIMITED = 2
+    private const val STATE_START_GROUP = 3
+    private const val STATE_END_GROUP = 4
+    private const val STATE_FIXED32 = 5
+    private const val STATE_TAG = 6 // Note: not a field encoding.
+    private const val STATE_PACKED_TAG = 7 // Note: not a field encoding.
   }
 }
