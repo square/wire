@@ -24,11 +24,7 @@ internal class RuntimeEnumAdapter<E : WireEnum>(private val type: Class<E>) : En
   private var fromValueMethod: Method? = null // Lazy to avoid reflection during class loading.
 
   private fun getFromValueMethod(): Method {
-    val method = this.fromValueMethod
-    if (method != null) {
-      return method
-    }
-    return type.getMethod("fromValue", Int::class.javaPrimitiveType).also {
+    return fromValueMethod ?: type.getMethod("fromValue", Int::class.javaPrimitiveType).also {
       fromValueMethod = it
     }
   }
