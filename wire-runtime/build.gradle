@@ -60,7 +60,19 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
       'com.squareup.wire.WireField$Label#isRepeated()',
       // non-final -> final
       'com.squareup.wire.FieldEncoding#rawProtoAdapter()',   
-      'com.squareup.wire.MessageSerializedForm#readResolve()',   
+      'com.squareup.wire.MessageSerializedForm#readResolve()',
+      'com.squareup.wire.ProtoReader#beginMessage()',
+      'com.squareup.wire.ProtoReader#endMessage(long)',
+      'com.squareup.wire.ProtoReader#forEachTag(com.squareup.wire.TagHandler)',
+      'com.squareup.wire.ProtoReader#nextTag()',
+      'com.squareup.wire.ProtoReader#peekFieldEncoding()',
+      'com.squareup.wire.ProtoReader#readBytes()',
+      'com.squareup.wire.ProtoReader#readFixed32()',
+      'com.squareup.wire.ProtoReader#readFixed64()',
+      'com.squareup.wire.ProtoReader#readString()',
+      'com.squareup.wire.ProtoReader#readVarint32()',
+      'com.squareup.wire.ProtoReader#readVarint64()',
+      'com.squareup.wire.ProtoReader#skip()',
   ]
 }
 check.dependsOn japicmp
