@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
 // This class is derived from the CodedOutputByteBuffer, and WireFormatNano classes in Google's
 // "Nano" Protocol Buffer implementation. The original copyright notice, list of conditions, and
@@ -49,175 +49,183 @@ package com.squareup.wire;
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import java.io.IOException;
-import okio.BufferedSink;
-import okio.ByteString;
+import java.io.IOException
+import okio.BufferedSink
+import okio.ByteString
 
 /**
  * Utilities for encoding and writing protocol message fields.
  */
-public final class ProtoWriter {
+class ProtoWriter(private val sink: BufferedSink) {
 
-  /** Makes a tag value given a field number and wire type. */
-  private static int makeTag(int fieldNumber, FieldEncoding fieldEncoding) {
-    return (fieldNumber << ProtoReader.TAG_FIELD_ENCODING_BITS) | fieldEncoding.value;
+  @Throws(IOException::class)
+  fun writeBytes(value: ByteString) {
+    sink.write(value)
   }
 
-  /** Compute the number of bytes that would be needed to encode a tag. */
-  static int tagSize(int tag) {
-    return varint32Size(makeTag(tag, FieldEncoding.VARINT));
+  @Throws(IOException::class)
+  fun writeString(value: String) {
+    sink.writeUtf8(value)
   }
 
-  /**
-   * Computes the number of bytes that would be needed to encode a signed variable-length integer
-   * of up to 32 bits.
-   */
-  static int int32Size(int value) {
+  /** Encode and write a tag.  */
+  @Throws(IOException::class)
+  fun writeTag(fieldNumber: Int, fieldEncoding: FieldEncoding) {
+    writeVarint32(makeTag(fieldNumber, fieldEncoding))
+  }
+
+  /** Write an `int32` field to the stream.  */
+  @Throws(IOException::class)
+  // TODO(egorand): Make internal once ProtoAdapter is in Kotlin
+  fun writeSignedVarint32(value: Int) {
     if (value >= 0) {
-      return varint32Size(value);
+      writeVarint32(value)
     } else {
       // Must sign-extend.
-      return 10;
+      writeVarint64(value.toLong())
     }
   }
 
   /**
-   * Compute the number of bytes that would be needed to encode a varint. {@code value} is treated
-   * as unsigned, so it won't be sign-extended if negative.
-   */
-  static int varint32Size(int value) {
-    if ((value & (0xffffffff <<  7)) == 0) return 1;
-    if ((value & (0xffffffff << 14)) == 0) return 2;
-    if ((value & (0xffffffff << 21)) == 0) return 3;
-    if ((value & (0xffffffff << 28)) == 0) return 4;
-    return 5;
-  }
-
-  /** Compute the number of bytes that would be needed to encode a varint. */
-  static int varint64Size(long value) {
-    if ((value & (0xffffffffffffffffL <<  7)) == 0) return 1;
-    if ((value & (0xffffffffffffffffL << 14)) == 0) return 2;
-    if ((value & (0xffffffffffffffffL << 21)) == 0) return 3;
-    if ((value & (0xffffffffffffffffL << 28)) == 0) return 4;
-    if ((value & (0xffffffffffffffffL << 35)) == 0) return 5;
-    if ((value & (0xffffffffffffffffL << 42)) == 0) return 6;
-    if ((value & (0xffffffffffffffffL << 49)) == 0) return 7;
-    if ((value & (0xffffffffffffffffL << 56)) == 0) return 8;
-    if ((value & (0xffffffffffffffffL << 63)) == 0) return 9;
-    return 10;
-  }
-
-  /**
-   * Encode a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n A signed 32-bit integer.
-   * @return An unsigned 32-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   */
-  static int encodeZigZag32(int n) {
-    // Note:  the right-shift must be arithmetic
-    return (n << 1) ^ (n >> 31);
-  }
-
-  /**
-   * Decodes a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n An unsigned 32-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   * @return A signed 32-bit integer.
-   */
-  static int decodeZigZag32(int n) {
-    return (n >>> 1) ^ -(n & 1);
-  }
-
-  /**
-   * Encode a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n A signed 64-bit integer.
-   * @return An unsigned 64-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   */
-  static long encodeZigZag64(long n) {
-    // Note:  the right-shift must be arithmetic
-    return (n << 1) ^ (n >> 63);
-  }
-
-  /**
-   * Decodes a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
-   * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
-   * to be varint encoded, thus always taking 10 bytes on the wire.)
-   *
-   * @param n An unsigned 64-bit integer, stored in a signed int because Java has no explicit
-   * unsigned support.
-   * @return A signed 64-bit integer.
-   */
-  static long decodeZigZag64(long n) {
-    return (n >>> 1) ^ -(n & 1);
-  }
-
-  private final BufferedSink sink;
-
-  public ProtoWriter(BufferedSink sink) {
-    this.sink = sink;
-  }
-
-  public void writeBytes(ByteString value) throws IOException {
-    sink.write(value);
-  }
-
-  public void writeString(String value) throws IOException {
-    sink.writeUtf8(value);
-  }
-
-  /** Encode and write a tag. */
-  public void writeTag(int fieldNumber, FieldEncoding fieldEncoding) throws IOException {
-    writeVarint32(makeTag(fieldNumber, fieldEncoding));
-  }
-
-  /** Write an {@code int32} field to the stream. */
-  void writeSignedVarint32(int value) throws IOException {
-    if (value >= 0) {
-      writeVarint32(value);
-    } else {
-      // Must sign-extend.
-      writeVarint64(value);
-    }
-  }
-
-  /**
-   * Encode and write a varint. {@code value} is treated as unsigned, so it won't be sign-extended
+   * Encode and write a varint. `value` is treated as unsigned, so it won't be sign-extended
    * if negative.
    */
-  public void writeVarint32(int value) throws IOException {
-    while ((value & ~0x7f) != 0) {
-      sink.writeByte((value & 0x7f) | 0x80);
-      value >>>= 7;
+  @Throws(IOException::class)
+  fun writeVarint32(value: Int) {
+    var value = value
+    while (value and 0x7f.inv() != 0) {
+      sink.writeByte((value and 0x7f) or 0x80)
+      value = value ushr 7
     }
-    sink.writeByte(value);
+    sink.writeByte(value)
   }
 
-  /** Encode and write a varint. */
-  public void writeVarint64(long value) throws IOException {
-    while ((value & ~0x7fL) != 0) {
-      sink.writeByte(((int) value & 0x7f) | 0x80);
-      value >>>= 7;
+  /** Encode and write a varint.  */
+  @Throws(IOException::class)
+  fun writeVarint64(value: Long) {
+    var value = value
+    while (value and 0x7fL.inv() != 0L) {
+      sink.writeByte((value.toInt() and 0x7f) or 0x80)
+      value = value ushr 7
     }
-    sink.writeByte((int) value);
+    sink.writeByte(value.toInt())
   }
 
-  /** Write a little-endian 32-bit integer. */
-  public void writeFixed32(int value) throws IOException {
-    sink.writeIntLe(value);
+  /** Write a little-endian 32-bit integer.  */
+  @Throws(IOException::class)
+  fun writeFixed32(value: Int) {
+    sink.writeIntLe(value)
   }
 
-  /** Write a little-endian 64-bit integer. */
-  public void writeFixed64(long value) throws IOException {
-    sink.writeLongLe(value);
+  /** Write a little-endian 64-bit integer.  */
+  @Throws(IOException::class)
+  fun writeFixed64(value: Long) {
+    sink.writeLongLe(value)
+  }
+
+  companion object {
+
+    /** Makes a tag value given a field number and wire type. */
+    private fun makeTag(fieldNumber: Int, fieldEncoding: FieldEncoding): Int {
+      return (fieldNumber shl ProtoReader.TAG_FIELD_ENCODING_BITS) or fieldEncoding.value
+    }
+
+    /** Compute the number of bytes that would be needed to encode a tag. */
+    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
+    @JvmStatic fun tagSize(tag: Int): Int = varint32Size(makeTag(tag, FieldEncoding.VARINT))
+
+    /**
+     * Computes the number of bytes that would be needed to encode a signed variable-length integer
+     * of up to 32 bits.
+     */
+    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
+    @JvmStatic fun int32Size(value: Int): Int {
+      return if (value >= 0) {
+        varint32Size(value)
+      } else {
+        // Must sign-extend.
+        10
+      }
+    }
+
+    /**
+     * Compute the number of bytes that would be needed to encode a varint. `value` is treated
+     * as unsigned, so it won't be sign-extended if negative.
+     */
+    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
+    @JvmStatic fun varint32Size(value: Int): Int {
+      if (value and (-0x1 shl 7) == 0) return 1
+      if (value and (-0x1 shl 14) == 0) return 2
+      if (value and (-0x1 shl 21) == 0) return 3
+      return if (value and (-0x1 shl 28) == 0) 4 else 5
+    }
+
+    /** Compute the number of bytes that would be needed to encode a varint. */
+    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
+    @JvmStatic fun varint64Size(value: Long): Int {
+      if (value and (-0x1L shl 7) == 0L) return 1
+      if (value and (-0x1L shl 14) == 0L) return 2
+      if (value and (-0x1L shl 21) == 0L) return 3
+      if (value and (-0x1L shl 28) == 0L) return 4
+      if (value and (-0x1L shl 35) == 0L) return 5
+      if (value and (-0x1L shl 42) == 0L) return 6
+      if (value and (-0x1L shl 49) == 0L) return 7
+      if (value and (-0x1L shl 56) == 0L) return 8
+      return if (value and (-0x1L shl 63) == 0L) 9 else 10
+    }
+
+    /**
+     * Encode a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
+     * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+     * to be varint encoded, thus always taking 10 bytes on the wire.)
+     *
+     * @param n A signed 32-bit integer.
+     * @return An unsigned 32-bit integer, stored in a signed int because Java has no explicit
+     * unsigned support.
+     */
+    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
+    @JvmStatic fun encodeZigZag32(n: Int): Int {
+      // Note: the right-shift must be arithmetic
+      return (n shl 1) xor (n shr 31)
+    }
+
+    /**
+     * Decodes a ZigZag-encoded 32-bit value. ZigZag encodes signed integers into values that can be
+     * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+     * to be varint encoded, thus always taking 10 bytes on the wire.)
+     *
+     * @param n An unsigned 32-bit integer, stored in a signed int because Java has no explicit
+     * unsigned support.
+     * @return A signed 32-bit integer.
+     */
+    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
+    @JvmStatic fun decodeZigZag32(n: Int): Int = (n.ushr(1)) xor -(n and 1)
+
+    /**
+     * Encode a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
+     * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+     * to be varint encoded, thus always taking 10 bytes on the wire.)
+     *
+     * @param n A signed 64-bit integer.
+     * @return An unsigned 64-bit integer, stored in a signed int because Java has no explicit
+     * unsigned support.
+     */
+    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
+    @JvmStatic fun encodeZigZag64(n: Long): Long {
+      // Note:  the right-shift must be arithmetic
+      return (n shl 1) xor (n shr 63)
+    }
+
+    /**
+     * Decodes a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
+     * efficiently encoded with varint. (Otherwise, negative values must be sign-extended to 64 bits
+     * to be varint encoded, thus always taking 10 bytes on the wire.)
+     *
+     * @param n An unsigned 64-bit integer, stored in a signed int because Java has no explicit
+     * unsigned support.
+     * @return A signed 64-bit integer.
+     */
+    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
+    @JvmStatic fun decodeZigZag64(n: Long): Long = (n.ushr(1)) xor -(n and 1)
   }
 }
