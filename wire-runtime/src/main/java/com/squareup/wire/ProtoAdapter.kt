@@ -39,8 +39,7 @@ import java.lang.Float.floatToIntBits
 
 abstract class ProtoAdapter<E>(
   private val fieldEncoding: FieldEncoding,
-  // TODO(egorand): Remove JvmField once RuntimeMessageAdapter is in Kotlin
-  @JvmField val javaType: Class<*>?
+  val javaType: Class<*>?
 ) {
   internal var packedAdapter: ProtoAdapter<List<E>>? = null
   internal var repeatedAdapter: ProtoAdapter<List<E>>? = null

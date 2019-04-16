@@ -30,8 +30,7 @@ abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected c
   @field:Transient private val unknownFields: ByteString?
 ) : Serializable {
   /** If not `0` then the serialized size of this message.  */
-  // TODO(egorand): Remove JvmField once RuntimeMessageAdapter is in Kotlin
-  @Transient @JvmField internal var cachedSerializedSize = 0
+  @Transient internal var cachedSerializedSize = 0
 
   /** If non-zero, the hash code of this message. Accessed by generated code.  */
   @Transient @JvmField protected var hashCode = 0
