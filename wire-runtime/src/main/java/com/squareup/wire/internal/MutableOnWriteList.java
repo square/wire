@@ -13,55 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal;
+package com.squareup.wire.internal
 
-import java.io.ObjectStreamException;
-import java.io.Serializable;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.RandomAccess;
+import java.io.ObjectStreamException
+import java.io.Serializable
+import java.util.AbstractList
+import java.util.ArrayList
+import java.util.RandomAccess
 
 /** A wrapper around an empty/immutable list which only switches to mutable on first mutation. */
-final class MutableOnWriteList<T> extends AbstractList<T> implements RandomAccess, Serializable {
-  private final List<T> immutableList;
-  List<T> mutableList;
+internal class MutableOnWriteList<T>(
+  private val immutableList: MutableList<T>
+) : AbstractList<T>(), RandomAccess, Serializable {
+  // TODO(egorand): Make internal and remove JvmField once Internal is in Kotlin
+  @JvmField var mutableList: MutableList<T> = immutableList
 
-  MutableOnWriteList(List<T> immutableList) {
-    this.immutableList = immutableList;
-    this.mutableList = immutableList;
-  }
+  override fun get(index: Int): T = mutableList[index]
 
-  @Override public T get(int index) {
-    return mutableList.get(index);
-  }
+  override val size: Int
+    @get:JvmName("size") get() = mutableList.size
 
-  @Override public int size() {
-    return mutableList.size();
-  }
-
-  @Override public T set(int index, T element) {
-    if (mutableList == immutableList) {
-      mutableList = new ArrayList<>(immutableList);
+  override fun set(index: Int, element: T): T {
+    if (mutableList === immutableList) {
+      mutableList = ArrayList(immutableList)
     }
-    return mutableList.set(index, element);
+    return mutableList.set(index, element)
   }
 
-  @Override public void add(int index, T element) {
-    if (mutableList == immutableList) {
-      mutableList = new ArrayList<>(immutableList);
+  override fun add(index: Int, element: T) {
+    if (mutableList === immutableList) {
+      mutableList = ArrayList(immutableList)
     }
-    mutableList.add(index, element);
+    mutableList.add(index, element)
   }
 
-  @Override public T remove(int index) {
-    if (mutableList == immutableList) {
-      mutableList = new ArrayList<>(immutableList);
+  override fun removeAt(index: Int): T {
+    if (mutableList === immutableList) {
+      mutableList = ArrayList(immutableList)
     }
-    return mutableList.remove(index);
+    return mutableList.removeAt(index)
   }
 
-  private Object writeReplace() throws ObjectStreamException {
-    return new ArrayList<>(mutableList);
-  }
+  @Throws(ObjectStreamException::class)
+  private fun writeReplace(): Any = ArrayList(mutableList)
 }

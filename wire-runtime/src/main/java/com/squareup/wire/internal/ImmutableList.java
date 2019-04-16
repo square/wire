@@ -13,36 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal;
+package com.squareup.wire.internal
 
-import java.io.ObjectStreamException;
-import java.io.Serializable;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.RandomAccess;
+import java.io.ObjectStreamException
+import java.io.Serializable
+import java.util.AbstractList
+import java.util.ArrayList
+import java.util.Collections
+import java.util.RandomAccess
 
-final class ImmutableList<T> extends AbstractList<T> implements RandomAccess, Serializable {
-  private final ArrayList<T> list;
+internal class ImmutableList<T>(list: List<T>) : AbstractList<T>(), RandomAccess, Serializable {
+  private val list = ArrayList(list)
 
-  ImmutableList(List<T> list) {
-    this.list = new ArrayList<>(list);
+  override val size: Int
+    @get:JvmName("size") get() = list.size
+
+  override fun get(index: Int): T = list[index]
+
+  override fun toArray(): Array<Any> {
+    return list.toArray() // Optimizing for mutable copy by MutableOnWriteList.
   }
 
-  @Override public int size() {
-    return list.size();
-  }
-
-  @Override public T get(int i) {
-    return list.get(i);
-  }
-
-  @Override public Object[] toArray() {
-    return list.toArray(); // Optimizing for mutable copy by MutableOnWriteList.
-  }
-
-  private Object writeReplace() throws ObjectStreamException {
-    return Collections.unmodifiableList(list);
-  }
+  @Throws(ObjectStreamException::class)
+  private fun writeReplace(): Any = Collections.unmodifiableList(list)
 }
