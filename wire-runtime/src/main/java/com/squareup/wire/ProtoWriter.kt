@@ -76,8 +76,7 @@ class ProtoWriter(private val sink: BufferedSink) {
 
   /** Write an `int32` field to the stream.  */
   @Throws(IOException::class)
-  // TODO(egorand): Make internal once ProtoAdapter is in Kotlin
-  fun writeSignedVarint32(value: Int) {
+  internal fun writeSignedVarint32(value: Int) {
     if (value >= 0) {
       writeVarint32(value)
     } else {
@@ -131,15 +130,13 @@ class ProtoWriter(private val sink: BufferedSink) {
     }
 
     /** Compute the number of bytes that would be needed to encode a tag. */
-    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
-    @JvmStatic fun tagSize(tag: Int): Int = varint32Size(makeTag(tag, FieldEncoding.VARINT))
+    internal fun tagSize(tag: Int): Int = varint32Size(makeTag(tag, FieldEncoding.VARINT))
 
     /**
      * Computes the number of bytes that would be needed to encode a signed variable-length integer
      * of up to 32 bits.
      */
-    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
-    @JvmStatic fun int32Size(value: Int): Int {
+    internal fun int32Size(value: Int): Int {
       return if (value >= 0) {
         varint32Size(value)
       } else {
@@ -152,8 +149,7 @@ class ProtoWriter(private val sink: BufferedSink) {
      * Compute the number of bytes that would be needed to encode a varint. `value` is treated
      * as unsigned, so it won't be sign-extended if negative.
      */
-    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
-    @JvmStatic fun varint32Size(value: Int): Int {
+    internal fun varint32Size(value: Int): Int {
       if (value and (-0x1 shl 7) == 0) return 1
       if (value and (-0x1 shl 14) == 0) return 2
       if (value and (-0x1 shl 21) == 0) return 3
@@ -161,8 +157,7 @@ class ProtoWriter(private val sink: BufferedSink) {
     }
 
     /** Compute the number of bytes that would be needed to encode a varint. */
-    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
-    @JvmStatic fun varint64Size(value: Long): Int {
+    internal fun varint64Size(value: Long): Int {
       if (value and (-0x1L shl 7) == 0L) return 1
       if (value and (-0x1L shl 14) == 0L) return 2
       if (value and (-0x1L shl 21) == 0L) return 3
@@ -183,8 +178,7 @@ class ProtoWriter(private val sink: BufferedSink) {
      * @return An unsigned 32-bit integer, stored in a signed int because Java has no explicit
      * unsigned support.
      */
-    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
-    @JvmStatic fun encodeZigZag32(n: Int): Int {
+    internal fun encodeZigZag32(n: Int): Int {
       // Note: the right-shift must be arithmetic
       return (n shl 1) xor (n shr 31)
     }
@@ -198,8 +192,7 @@ class ProtoWriter(private val sink: BufferedSink) {
      * unsigned support.
      * @return A signed 32-bit integer.
      */
-    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
-    @JvmStatic fun decodeZigZag32(n: Int): Int = (n.ushr(1)) xor -(n and 1)
+    internal fun decodeZigZag32(n: Int): Int = (n.ushr(1)) xor -(n and 1)
 
     /**
      * Encode a ZigZag-encoded 64-bit value. ZigZag encodes signed integers into values that can be
@@ -210,8 +203,7 @@ class ProtoWriter(private val sink: BufferedSink) {
      * @return An unsigned 64-bit integer, stored in a signed int because Java has no explicit
      * unsigned support.
      */
-    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
-    @JvmStatic fun encodeZigZag64(n: Long): Long {
+    internal fun encodeZigZag64(n: Long): Long {
       // Note:  the right-shift must be arithmetic
       return (n shl 1) xor (n shr 63)
     }
@@ -225,7 +217,6 @@ class ProtoWriter(private val sink: BufferedSink) {
      * unsigned support.
      * @return A signed 64-bit integer.
      */
-    // TODO(egorand): Make internal and remove @JvmStatic once ProtoAdapter is in Kotlin
-    @JvmStatic fun decodeZigZag64(n: Long): Long = (n.ushr(1)) xor -(n and 1)
+    internal fun decodeZigZag64(n: Long): Long = (n.ushr(1)) xor -(n and 1)
   }
 }

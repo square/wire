@@ -61,6 +61,7 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
       // non-final -> final
       'com.squareup.wire.FieldEncoding#rawProtoAdapter()',   
       'com.squareup.wire.MessageSerializedForm#readResolve()',
+      'com.squareup.wire.ProtoAdapter#newEnumAdapter(java.lang.Class)',
       'com.squareup.wire.ProtoReader#beginMessage()',
       'com.squareup.wire.ProtoReader#endMessage(long)',
       'com.squareup.wire.ProtoReader#forEachTag(com.squareup.wire.TagHandler)',
@@ -80,8 +81,8 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
       'com.squareup.wire.ProtoWriter#writeTag(int, com.squareup.wire.FieldEncoding)',
       'com.squareup.wire.ProtoWriter#writeVarint32(int)',
       'com.squareup.wire.ProtoWriter#writeVarint64(long)',
-      // TODO(egorand): Remove once ProtoReader is in Kotlin
-      'com.squareup.wire.ProtoWriter#writeSignedVarint32(int)',    
+      // TODO(egorand): Remove once FieldBinding is in Kotlin
+      'com.squareup.wire.ProtoAdapter#withLabel(com.squareup.wire.WireField$Label)'
   ]
 }
 check.dependsOn japicmp
