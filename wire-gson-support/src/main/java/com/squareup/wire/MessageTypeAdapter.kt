@@ -119,7 +119,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       return element.asJsonArray.map(adapter::fromJsonTree)
     }
 
-    if (fieldBinding.isMap()) {
+    if (fieldBinding.isMap) {
       if (element.isJsonNull) {
         return emptyMap<Any, Any>()
       }

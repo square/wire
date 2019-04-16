@@ -13,141 +13,101 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 /**
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
  * builder object, and how to extract values from a message object.
  */
-public final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B>> {
-  private static Field getBuilderField(Class<?> builderType, String name) {
-    try {
-      return builderType.getField(name);
-    } catch (NoSuchFieldException e) {
-      throw new AssertionError("No builder field " + builderType.getName() + "." + name);
-    }
-  }
-
-  private static Method getBuilderMethod(Class<?> builderType, String name, Class<?> type) {
-    try {
-      return builderType.getMethod(name, type);
-    } catch (NoSuchMethodException e) {
-      throw new AssertionError("No builder method " + builderType.getName() + "." + name
-          + "(" + type.getName() + ")");
-    }
-  }
-
-  public final WireField.Label label;
-  public final String name;
-  public final int tag;
-  private final String keyAdapterString;
-  private final String adapterString;
-  public final boolean redacted;
-  private final Field messageField;
-  private final Field builderField;
-  private final Method builderMethod;
+class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constructor(
+  wireField: WireField,
+  private val messageField: Field,
+  builderType: Class<B>
+) {
+  val label: WireField.Label = wireField.label
+  val name: String = messageField.name
+  val tag: Int = wireField.tag
+  private val keyAdapterString = wireField.keyAdapter
+  private val adapterString = wireField.adapter
+  val redacted: Boolean = wireField.redacted
+  private val builderField = getBuilderField(builderType, name)
+  private val builderMethod = getBuilderMethod(builderType, name, messageField.type)
 
   // Delegate adapters are created lazily; otherwise we could stack overflow!
-  private ProtoAdapter<?> singleAdapter;
-  private ProtoAdapter<?> keyAdapter;
-  private ProtoAdapter<Object> adapter;
+  private var singleAdapter: ProtoAdapter<*>? = null
+  private var keyAdapter: ProtoAdapter<*>? = null
+  private var adapter: ProtoAdapter<Any>? = null
 
-  // TODO(egorand): Make internal once in Kotlin
-  public FieldBinding(WireField wireField, Field messageField, Class<B> builderType) {
-    this.label = wireField.label();
-    this.name = messageField.getName();
-    this.tag = wireField.tag();
-    this.keyAdapterString = wireField.keyAdapter();
-    this.adapterString = wireField.adapter();
-    this.redacted = wireField.redacted();
-    this.messageField = messageField;
-    this.builderField = getBuilderField(builderType, name);
-    this.builderMethod = getBuilderMethod(builderType, name, messageField.getType());
-  }
+  val isMap: Boolean
+    get() = keyAdapterString.isNotEmpty()
 
-  // TODO(egorand): Make internal once in Kotlin
-  public boolean isMap() {
-    return !keyAdapterString.isEmpty();
-  }
-
-  // TODO(egorand): Make internal once in Kotlin
-  public ProtoAdapter<?> singleAdapter() {
-    ProtoAdapter<?> result = singleAdapter;
-    if (result != null) return result;
-    return singleAdapter = ProtoAdapter.get(adapterString);
-  }
-
-  ProtoAdapter<?> keyAdapter() {
-    ProtoAdapter<?> result = keyAdapter;
-    if (result != null) return result;
-    return keyAdapter = ProtoAdapter.get(keyAdapterString);
-  }
-
-  // TODO(egorand): Make internal once in Kotlin
-  public ProtoAdapter<Object> adapter() {
-    ProtoAdapter<Object> result = adapter;
-    if (result != null) return result;
-    if (isMap()) {
-      ProtoAdapter<Object> keyAdapter = (ProtoAdapter<Object>) keyAdapter();
-      ProtoAdapter<Object> valueAdapter = (ProtoAdapter<Object>) singleAdapter();
-      return adapter =
-          (ProtoAdapter<Object>) (ProtoAdapter<?>) ProtoAdapter.newMapAdapter(keyAdapter,
-              valueAdapter);
+  private fun getBuilderField(builderType: Class<*>, name: String): Field {
+    try {
+      return builderType.getField(name)
+    } catch (_: NoSuchFieldException) {
+      throw AssertionError("No builder field ${builderType.name}.$name")
     }
-    return adapter = (ProtoAdapter<Object>) singleAdapter().withLabel(label);
+  }
+
+  private fun getBuilderMethod(builderType: Class<*>, name: String, type: Class<*>): Method {
+    try {
+      return builderType.getMethod(name, type)
+    } catch (_: NoSuchMethodException) {
+      throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
+    }
+  }
+
+  fun singleAdapter(): ProtoAdapter<*> {
+    return singleAdapter ?: ProtoAdapter.get(adapterString).also { singleAdapter = it }
+  }
+
+  fun keyAdapter(): ProtoAdapter<*> {
+    return keyAdapter ?: ProtoAdapter.get(keyAdapterString).also { keyAdapter = it }
+  }
+
+  internal fun adapter(): ProtoAdapter<Any> {
+    val result = adapter
+    if (result != null) return result
+    if (isMap) {
+      val keyAdapter = keyAdapter() as ProtoAdapter<Any>
+      val valueAdapter = singleAdapter() as ProtoAdapter<Any>
+      return (ProtoAdapter.newMapAdapter(keyAdapter, valueAdapter) as ProtoAdapter<Any>).also {
+        adapter = it
+      }
+    }
+    return (singleAdapter().withLabel(label) as ProtoAdapter<Any>).also { adapter = it }
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
-  // TODO(egorand): Make internal once in Kotlin
-  public void value(B builder, Object value) {
-    if (label.isRepeated()) {
-      List<Object> list = (List<Object>) getFromBuilder(builder);
-      list.add(value);
-    } else if (!keyAdapterString.isEmpty()) {
-      Map<Object, Object> map = (Map<Object, Object>) getFromBuilder(builder);
-      map.putAll((Map<?, ?>) value);
-    } else {
-      set(builder, value);
+  internal fun value(builder: B, value: Any) {
+    when {
+      label.isRepeated -> {
+        val list = getFromBuilder(builder) as MutableList<Any>
+        list.add(value)
+      }
+      keyAdapterString.isNotEmpty() -> {
+        val map = getFromBuilder(builder) as MutableMap<Any, Any>
+        map.putAll(value as Map<Any, Any>)
+      }
+      else -> set(builder, value)
     }
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  // TODO(egorand): Make internal once in Kotlin
-  public void set(B builder, Object value) {
-    try {
-      if (label.isOneOf()) {
-        // In order to maintain the 'oneof' invariant, call the builder setter method rather
-        // than setting the builder field directly.
-        builderMethod.invoke(builder, value);
-      } else {
-        builderField.set(builder, value);
-      }
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new AssertionError(e);
+  operator fun set(builder: B, value: Any) {
+    if (label.isOneOf) {
+      // In order to maintain the 'oneof' invariant, call the builder setter method rather
+      // than setting the builder field directly.
+      builderMethod.invoke(builder, value)
+    } else {
+      builderField.set(builder, value)
     }
   }
 
-  // TODO(egorand): Make internal once in Kotlin
-  public Object get(M message) {
-    try {
-      return messageField.get(message);
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }
+  operator fun get(message: M): Any? = messageField.get(message)
 
-  // TODO(egorand): Make internal once in Kotlin
-  public Object getFromBuilder(B builder) {
-    try {
-      return builderField.get(builder);
-    } catch (IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }
+  internal fun getFromBuilder(builder: B): Any? = builderField.get(builder)
 }
