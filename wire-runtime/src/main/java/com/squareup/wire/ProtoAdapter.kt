@@ -165,11 +165,8 @@ abstract class ProtoAdapter<E>(
 
       override fun encodedSize(value: List<E>): Int {
         var size = 0
-        var i = 0
-        val count = value.size
-        while (i < count) {
+        for (i in 0 until value.size) {
           size += this@ProtoAdapter.encodedSize(value[i])
-          i++
         }
         return size
       }
@@ -180,11 +177,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun encode(writer: ProtoWriter, value: List<E>) {
-        var i = 0
-        val count = value.size
-        while (i < count) {
+        for (i in 0 until value.size) {
           this@ProtoAdapter.encode(writer, value[i])
-          i++
         }
       }
 
@@ -204,11 +198,8 @@ abstract class ProtoAdapter<E>(
       override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
         if (value == null) return 0
         var size = 0
-        var i = 0
-        val count = value.size
-        while (i < count) {
+        for (i in 0 until value.size) {
           size += this@ProtoAdapter.encodedSizeWithTag(tag, value[i])
-          i++
         }
         return size
       }
@@ -220,11 +211,8 @@ abstract class ProtoAdapter<E>(
       @Throws(IOException::class)
       override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
         if (value == null) return
-        var i = 0
-        val count = value.size
-        while (i < count) {
+        for (i in 0 until value.size) {
           this@ProtoAdapter.encodeWithTag(writer, tag, value[i])
-          i++
         }
       }
 
@@ -277,9 +265,8 @@ abstract class ProtoAdapter<E>(
       var value: V? = null
 
       val token = reader.beginMessage()
-      var tag: Int
       while (true) {
-        tag = reader.nextTag()
+        val tag = reader.nextTag()
         if (tag == -1) break
         when (tag) {
           1 -> key = entryAdapter.keyAdapter.decode(reader)
@@ -394,11 +381,10 @@ abstract class ProtoAdapter<E>(
       }
 
       @Throws(IOException::class)
-      override fun decode(reader: ProtoReader): Boolean {
-        val value = reader.readVarint32()
-        if (value == 0) return false
-        if (value == 1) return true
-        throw IOException(String.format("Invalid boolean value 0x%02x", value))
+      override fun decode(reader: ProtoReader): Boolean = when (val value = reader.readVarint32()) {
+        0 -> false
+        1 -> true
+        else -> throw IOException(String.format("Invalid boolean value 0x%02x", value))
       }
     }
     @JvmField val INT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
