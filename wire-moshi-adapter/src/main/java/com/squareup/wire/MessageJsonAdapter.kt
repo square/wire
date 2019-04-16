@@ -28,7 +28,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   type: Type
 ) : JsonAdapter<M>() {
   private val messageAdapter = RuntimeMessageAdapter.create(type as Class<M>)
-  private val fieldBindings = messageAdapter.fieldBindings().values.toTypedArray()
+  private val fieldBindings = messageAdapter.fieldBindings.values.toTypedArray()
   private val options = JsonReader.Options.of(*fieldBindings.map { it.name }.toTypedArray())
 
   private val jsonAdapters = fieldBindings.map { fieldBinding ->

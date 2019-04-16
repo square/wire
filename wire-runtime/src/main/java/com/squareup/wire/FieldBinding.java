@@ -25,7 +25,7 @@ import java.util.Map;
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
  * builder object, and how to extract values from a message object.
  */
-final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B>> {
+public final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B>> {
   private static Field getBuilderField(Class<?> builderType, String name) {
     try {
       return builderType.getField(name);
