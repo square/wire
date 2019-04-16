@@ -33,7 +33,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.squareup.wire
 
-import com.squareup.wire.TagHandler.UNKNOWN_TAG
+import com.squareup.wire.TagHandler.Companion.UNKNOWN_TAG
 import com.squareup.wire.internal.and
 import com.squareup.wire.internal.shl
 import okio.Buffer
@@ -408,7 +408,9 @@ class ProtoReader(private val source: BufferedSource) {
 
   /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
   @JvmName("-forEachTag") // hide from Java
-  fun forEachTag(tagHandler: (Int) -> Any): ByteString = forEachTag(TagHandler(tagHandler))
+  fun forEachTag(tagHandler: (Int) -> Any): ByteString = forEachTag(object : TagHandler {
+    override fun decodeMessage(tag: Int): Any = tagHandler(tag)
+  })
 
   /** Reads the next value from this and writes it to `writer`.  */
   @Throws(IOException::class)
