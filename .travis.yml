@@ -3,11 +3,6 @@ language: java
 jdk:
   - oraclejdk8
 
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer # Updates JDK 8 to the latest available.
-
 before_script:
   - ./gradlew clean generateTests
   - if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
