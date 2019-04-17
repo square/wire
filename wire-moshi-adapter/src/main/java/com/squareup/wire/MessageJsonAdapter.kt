@@ -20,6 +20,7 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.io.IOException
 import java.lang.reflect.Type
 

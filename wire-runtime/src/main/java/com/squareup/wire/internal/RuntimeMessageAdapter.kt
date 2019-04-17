@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.internal
 
+import com.squareup.wire.FieldBinding
+import com.squareup.wire.FieldEncoding
+import com.squareup.wire.Message
 import com.squareup.wire.Message.Builder
-import com.squareup.wire.internal.Internal
+import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.ProtoReader
+import com.squareup.wire.ProtoWriter
+import com.squareup.wire.WireField
 import java.io.IOException
 import java.util.Collections
 import java.util.LinkedHashMap

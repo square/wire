@@ -23,6 +23,7 @@ import com.squareup.wire.ProtoWriter.Companion.encodeZigZag64
 import com.squareup.wire.ProtoWriter.Companion.int32Size
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
+import com.squareup.wire.internal.RuntimeMessageAdapter
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
