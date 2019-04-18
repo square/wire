@@ -23,6 +23,7 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import com.squareup.wire.WireField.Label
+import com.squareup.wire.internal.FieldBinding
 import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.io.IOException
 import java.math.BigInteger

@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.internal
 
+import com.squareup.wire.Message
+import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.WireField
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 

@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.internal
 
-import com.squareup.wire.FieldBinding
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
 import com.squareup.wire.Message.Builder
