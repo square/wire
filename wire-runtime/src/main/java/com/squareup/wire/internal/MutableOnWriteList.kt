@@ -25,8 +25,7 @@ import java.util.RandomAccess
 internal class MutableOnWriteList<T>(
   private val immutableList: List<T>
 ) : AbstractList<T>(), RandomAccess, Serializable {
-  // TODO(egorand): Make internal and remove JvmField once Internal is in Kotlin
-  @JvmField var mutableList: List<T> = immutableList
+  internal var mutableList: List<T> = immutableList
 
   override fun get(index: Int): T = mutableList[index]
 
