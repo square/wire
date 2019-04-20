@@ -53,11 +53,6 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
   packageExcludes = [
       'com.squareup.wire.internal',
   ]
-  classExcludes = [
-      // package protected -> public, moved to com.squareup.wire.internal    
-      'com.squareup.wire.FieldBinding',
-      'com.squareup.wire.RuntimeMessageAdapter',
-  ]
   methodExcludes = [
       // package protected -> public
       'com.squareup.wire.WireField$Label#isOneOf()',
