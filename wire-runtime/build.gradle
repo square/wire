@@ -81,8 +81,6 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
       'com.squareup.wire.ProtoWriter#writeTag(int, com.squareup.wire.FieldEncoding)',
       'com.squareup.wire.ProtoWriter#writeVarint32(int)',
       'com.squareup.wire.ProtoWriter#writeVarint64(long)',
-      // TODO(egorand): Remove once FieldBinding is in Kotlin
-      'com.squareup.wire.ProtoAdapter#withLabel(com.squareup.wire.WireField$Label)'
   ]
 }
 check.dependsOn japicmp

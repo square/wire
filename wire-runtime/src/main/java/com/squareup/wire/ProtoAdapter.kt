@@ -127,8 +127,7 @@ abstract class ProtoAdapter<E>(
   /** Returns a human-readable version of the given `value`. */
   open fun toString(value: E): String = value.toString()
 
-  // TODO(egorand): Make internal once FieldBinding is in Kotlin
-  fun withLabel(label: WireField.Label): ProtoAdapter<*> {
+  internal fun withLabel(label: WireField.Label): ProtoAdapter<*> {
     if (label.isRepeated) {
       return if (label.isPacked) asPacked() else asRepeated()
     }
