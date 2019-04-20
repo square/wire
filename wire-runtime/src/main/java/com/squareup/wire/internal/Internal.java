@@ -13,156 +13,161 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal;
+package com.squareup.wire.internal
 
-import com.squareup.wire.ProtoAdapter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.squareup.wire.ProtoAdapter
+import java.util.Collections
 
 /** Methods for generated code use only. Not subject to public API rules. */
-public final class Internal {
-  private Internal() {
-  }
+object Internal {
+  @JvmStatic fun <T> newMutableList(): MutableList<T> = MutableOnWriteList(Collections.emptyList())
 
-  public static <T> List<T> newMutableList() {
-    return new MutableOnWriteList<>(Collections.<T>emptyList());
-  }
+  @JvmStatic fun <K, V> newMutableMap(): MutableMap<K, V> = LinkedHashMap()
 
-  public static <K, V> Map<K, V> newMutableMap() {
-    return new LinkedHashMap<>();
-  }
-
-  public static <T> List<T> copyOf(String name, List<T> list) {
-    if (list == null) throw new NullPointerException(name + " == null");
-    if (list == Collections.emptyList() || list instanceof ImmutableList) {
-      return new MutableOnWriteList<>(list);
+  @JvmStatic fun <T> copyOf(name: String, list: List<T>?): MutableList<T> {
+    if (list == null) throw NullPointerException("$name == null")
+    return if (list === Collections.emptyList<T>() || list is ImmutableList<*>) {
+      MutableOnWriteList(list)
+    } else {
+      ArrayList(list)
     }
-    return new ArrayList<>(list);
   }
 
-  public static <K, V> Map<K, V> copyOf(String name, Map<K, V> map) {
-    if (map == null) throw new NullPointerException(name + " == null");
-    return new LinkedHashMap<>(map);
+  @JvmStatic fun <K, V> copyOf(name: String, map: Map<K, V>?): MutableMap<K, V> {
+    if (map == null) throw NullPointerException("$name == null")
+    return LinkedHashMap(map)
   }
 
-  public static <T> List<T> immutableCopyOf(String name, List<T> list) {
-    if (list == null) throw new NullPointerException(name + " == null");
-    if (list instanceof MutableOnWriteList) {
-      list = ((MutableOnWriteList<T>) list).mutableList;
+  @JvmStatic fun <T> immutableCopyOf(name: String, list: List<T>?): List<T> {
+    var list = list ?: throw NullPointerException("$name == null")
+    if (list is MutableOnWriteList<*>) {
+      list = (list as MutableOnWriteList<T>).mutableList
     }
-    if (list == Collections.emptyList() || list instanceof ImmutableList) {
-      return list;
+    if (list === Collections.emptyList<T>() || list is ImmutableList<*>) {
+      return list
     }
-    ImmutableList<T> result = new ImmutableList<>(list);
+    val result = ImmutableList(list)
     // Check after the list has been copied to defend against races.
-    if (result.contains(null)) {
-      throw new IllegalArgumentException(name + ".contains(null)");
-    }
-    return result;
+    require(null !in result) { "$name.contains(null)" }
+    return result
   }
 
-  public static <K, V> Map<K, V> immutableCopyOf(String name, Map<K, V> map) {
-    if (map == null) throw new NullPointerException(name + " == null");
+  @JvmStatic fun <K, V> immutableCopyOf(name: String, map: Map<K, V>?): Map<K, V> {
+    if (map == null) throw NullPointerException("$name == null")
     if (map.isEmpty()) {
-      return Collections.emptyMap();
+      return emptyMap()
     }
-    Map<K, V> result = new LinkedHashMap<>(map);
+    val result = LinkedHashMap(map)
     // Check after the map has been copied to defend against races.
-    if (result.containsKey(null)) {
-      throw new IllegalArgumentException(name + ".containsKey(null)");
-    }
-    if (result.containsValue(null)) {
-      throw new IllegalArgumentException(name + ".containsValue(null)");
-    }
-    return Collections.unmodifiableMap(result);
+    require(null !in result.keys) { "$name.containsKey(null)" }
+    require(null !in result.values) { "$name.containsValue(null)" }
+    return Collections.unmodifiableMap(result)
   }
 
-  public static <T> void redactElements(List<T> list, ProtoAdapter<T> adapter) {
-    for (int i = 0, count = list.size(); i < count; i++) {
-      list.set(i, adapter.redact(list.get(i)));
+  // TODO(egorand)
+  //
+  // Redacting doesn't work as-is in Kotlin, because:
+  // - repeated fields are generated as List<T>
+  // - redactElements() needs a MutableList<T> in order to modify its elements
+  // - ProtoAdapter.redact() returns T?
+  // - repeated fields don't accept nullable values
+  //
+  // Fixing this will require the following changes:
+  // - Change ProtoAdapter.redact() to return T instead of T?
+  // - Default implementation of ProtoAdapter.redact() should throw UnsupportedOperationException
+  // instead of returning null
+  // - Introduce a new version of redactElements() that is an extension function on List<T> and
+  // creates a copy of the list instead of modifying it
+  // - Hide the new redactElements() from Java using JvmName
+
+  @JvmStatic fun <T> redactElements(list: java.util.List<T>, adapter: ProtoAdapter<T>) {
+    for (i in 0 until list.size) {
+      list.set(i, adapter.redact(list[i]))
     }
   }
 
-  public static <T> void redactElements(Map<?, T> map, ProtoAdapter<T> adapter) {
-    for (Map.Entry<?, T> entry : map.entrySet()) {
-      entry.setValue(adapter.redact(entry.getValue()));
+  @JvmName("-redactElements")
+  fun <T> redactElements(list: List<T>, adapter: ProtoAdapter<T>) {
+    redactElements(list as java.util.List<T>, adapter)
+  }
+
+  @JvmStatic fun <T> redactElements(map: java.util.Map<*, T>, adapter: ProtoAdapter<T>) {
+    for (entry in map.entrySet()) {
+      entry.setValue(adapter.redact(entry.value))
     }
   }
 
-  public static boolean equals(Object a, Object b) {
-    return a == b || (a != null && a.equals(b));
+  @JvmName("-redactElements")
+  fun <T> redactElements(map: Map<*, T>, adapter: ProtoAdapter<T>) {
+    redactElements(map as java.util.Map<*, T>, adapter)
   }
+
+  @JvmStatic fun equals(a: Any?, b: Any?): Boolean = a === b || (a != null && a == b)
 
   /**
    * Create an exception for missing required fields.
    *
    * @param args Alternating field value and field name pairs.
    */
-  public static IllegalStateException missingRequiredFields(Object... args) {
-    StringBuilder sb = new StringBuilder();
-    String plural = "";
-    for (int i = 0, size = args.length; i < size; i += 2) {
-      if (args[i] == null) {
-        if (sb.length() > 0) {
-          plural = "s"; // Found more than one missing field
+  @JvmStatic fun missingRequiredFields(vararg args: Any?): IllegalStateException {
+    var plural = ""
+    val fields = buildString {
+      for (i in 0 until args.size step 2) {
+        if (args[i] == null) {
+          if (isNotEmpty()) {
+            plural = "s" // Found more than one missing field
+          }
+          append("\n  ")
+          append(args[i + 1])
         }
-        sb.append("\n  ");
-        sb.append(args[i + 1]);
       }
     }
-    throw new IllegalStateException("Required field" + plural + " not set:" + sb);
+    throw IllegalStateException("Required field$plural not set:$fields")
   }
 
-  /** Throw {@link NullPointerException} if {@code list} or one of its items are null. */
-  public static void checkElementsNotNull(List<?> list) {
-    if (list == null) throw new NullPointerException("list == null");
-    for (int i = 0, size = list.size(); i < size; i++) {
-      Object element = list.get(i);
-      if (element == null) {
-        throw new NullPointerException("Element at index " + i + " is null");
+  /** Throw [NullPointerException] if `list` or one of its items are null. */
+  @JvmStatic fun checkElementsNotNull(list: List<*>?) {
+    if (list == null) throw NullPointerException("list == null")
+    for (i in 0 until list.size) {
+      if (list[i] == null) {
+        throw NullPointerException("Element at index $i is null")
       }
     }
   }
 
-  /** Throw {@link NullPointerException} if {@code map} or one of its keys or values are null. */
-  public static void checkElementsNotNull(Map<?, ?> map) {
-    if (map == null) throw new NullPointerException("map == null");
-    for (Map.Entry<?, ?> entry : map.entrySet()) {
-      if (entry.getKey() == null) {
-        throw new NullPointerException("map.containsKey(null)");
+  /** Throw [NullPointerException] if `map` or one of its keys or values are null. */
+  @JvmStatic fun checkElementsNotNull(map: Map<*, *>?) {
+    if (map == null) throw NullPointerException("map == null")
+    for ((key, value) in map) {
+      if (key == null) {
+        throw NullPointerException("map.containsKey(null)")
       }
-      if (entry.getValue() == null) {
-        throw new NullPointerException("Value for key " + entry.getKey() + " is null");
+      if (value == null) {
+        throw NullPointerException("Value for key $key is null")
       }
     }
   }
 
-  /** Returns the number of non-null values in {@code a, b}. */
-  public static int countNonNull(Object a, Object b) {
-    return (a != null ? 1 : 0)
-        + (b != null ? 1 : 0);
+  /** Returns the number of non-null values in `a, b`. */
+  @JvmStatic fun countNonNull(a: Any?, b: Any?): Int {
+    return (if (a != null) 1 else 0) + (if (b != null) 1 else 0)
   }
 
-  /** Returns the number of non-null values in {@code a, b, c}. */
-  public static int countNonNull(Object a, Object b, Object c) {
-    return (a != null ? 1 : 0)
-        + (b != null ? 1 : 0)
-        + (c != null ? 1 : 0);
+  /** Returns the number of non-null values in `a, b, c`. */
+  @JvmStatic fun countNonNull(a: Any?, b: Any?, c: Any?): Int {
+    return (if (a != null) 1 else 0) + (if (b != null) 1 else 0) + (if (c != null) 1 else 0)
   }
 
-  /** Returns the number of non-null values in {@code a, b, c, d, rest}. */
-  public static int countNonNull(Object a, Object b, Object c, Object d, Object... rest) {
-    int result = 0;
-    if (a != null) result++;
-    if (b != null) result++;
-    if (c != null) result++;
-    if (d != null) result++;
-    for (Object o : rest) {
-      if (o != null) result++;
+  /** Returns the number of non-null values in `a, b, c, d, rest`. */
+  @JvmStatic fun countNonNull(a: Any?, b: Any?, c: Any?, d: Any?, vararg rest: Any?): Int {
+    var result = 0
+    if (a != null) result++
+    if (b != null) result++
+    if (c != null) result++
+    if (d != null) result++
+    for (o in rest) {
+      if (o != null) result++
     }
-    return result;
+    return result
   }
 }
