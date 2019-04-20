@@ -23,6 +23,7 @@ import com.squareup.wire.ProtoWriter.Companion.encodeZigZag64
 import com.squareup.wire.ProtoWriter.Companion.int32Size
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
+import com.squareup.wire.internal.RuntimeMessageAdapter
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -39,8 +40,7 @@ import java.lang.Float.floatToIntBits
 
 abstract class ProtoAdapter<E>(
   private val fieldEncoding: FieldEncoding,
-  // TODO(egorand): Remove JvmField once RuntimeMessageAdapter is in Kotlin
-  @JvmField val javaType: Class<*>?
+  val javaType: Class<*>?
 ) {
   internal var packedAdapter: ProtoAdapter<List<E>>? = null
   internal var repeatedAdapter: ProtoAdapter<List<E>>? = null

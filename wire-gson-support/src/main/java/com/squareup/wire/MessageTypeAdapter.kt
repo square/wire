@@ -23,6 +23,7 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import com.squareup.wire.WireField.Label
+import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.io.IOException
 import java.math.BigInteger
 
@@ -36,7 +37,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val messageAdapter: RuntimeMessageAdapter<M, B> =
       RuntimeMessageAdapter.create(type.rawType as Class<M>)
   private val fieldBindings: Map<String, FieldBinding<M, B>> =
-      messageAdapter.fieldBindings().values.associateBy { it.name }
+      messageAdapter.fieldBindings.values.associateBy { it.name }
 
   @Throws(IOException::class)
   override fun write(out: JsonWriter, message: M?) {
@@ -46,7 +47,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     }
 
     out.beginObject()
-    for (tagBinding in messageAdapter.fieldBindings().values) {
+    for (tagBinding in messageAdapter.fieldBindings.values) {
       val value = tagBinding.get(message) ?: continue
       out.name(tagBinding.name)
       emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label)

@@ -16,6 +16,7 @@
 package com.squareup.wire;
 
 import com.google.common.collect.ImmutableMap;
+import com.squareup.wire.internal.RuntimeMessageAdapter;
 import com.squareup.wire.map.Mappy;
 import com.squareup.wire.map.Thing;
 import java.io.IOException;

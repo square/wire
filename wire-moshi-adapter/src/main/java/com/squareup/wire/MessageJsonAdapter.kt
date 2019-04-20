@@ -20,6 +20,7 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.io.IOException
 import java.lang.reflect.Type
 
@@ -28,7 +29,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   type: Type
 ) : JsonAdapter<M>() {
   private val messageAdapter = RuntimeMessageAdapter.create(type as Class<M>)
-  private val fieldBindings = messageAdapter.fieldBindings().values.toTypedArray()
+  private val fieldBindings = messageAdapter.fieldBindings.values.toTypedArray()
   private val options = JsonReader.Options.of(*fieldBindings.map { it.name }.toTypedArray())
 
   private val jsonAdapters = fieldBindings.map { fieldBinding ->

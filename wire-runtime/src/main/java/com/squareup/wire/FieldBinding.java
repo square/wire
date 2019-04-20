@@ -25,7 +25,7 @@ import java.util.Map;
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
  * builder object, and how to extract values from a message object.
  */
-final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B>> {
+public final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B>> {
   private static Field getBuilderField(Class<?> builderType, String name) {
     try {
       return builderType.getField(name);
@@ -58,7 +58,8 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
   private ProtoAdapter<?> keyAdapter;
   private ProtoAdapter<Object> adapter;
 
-  FieldBinding(WireField wireField, Field messageField, Class<B> builderType) {
+  // TODO(egorand): Make internal once in Kotlin
+  public FieldBinding(WireField wireField, Field messageField, Class<B> builderType) {
     this.label = wireField.label();
     this.name = messageField.getName();
     this.tag = wireField.tag();
@@ -70,11 +71,13 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
     this.builderMethod = getBuilderMethod(builderType, name, messageField.getType());
   }
 
-  boolean isMap() {
+  // TODO(egorand): Make internal once in Kotlin
+  public boolean isMap() {
     return !keyAdapterString.isEmpty();
   }
 
-  ProtoAdapter<?> singleAdapter() {
+  // TODO(egorand): Make internal once in Kotlin
+  public ProtoAdapter<?> singleAdapter() {
     ProtoAdapter<?> result = singleAdapter;
     if (result != null) return result;
     return singleAdapter = ProtoAdapter.get(adapterString);
@@ -86,7 +89,8 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
     return keyAdapter = ProtoAdapter.get(keyAdapterString);
   }
 
-  ProtoAdapter<Object> adapter() {
+  // TODO(egorand): Make internal once in Kotlin
+  public ProtoAdapter<Object> adapter() {
     ProtoAdapter<Object> result = adapter;
     if (result != null) return result;
     if (isMap()) {
@@ -100,7 +104,8 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
-  void value(B builder, Object value) {
+  // TODO(egorand): Make internal once in Kotlin
+  public void value(B builder, Object value) {
     if (label.isRepeated()) {
       List<Object> list = (List<Object>) getFromBuilder(builder);
       list.add(value);
@@ -113,7 +118,8 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  void set(B builder, Object value) {
+  // TODO(egorand): Make internal once in Kotlin
+  public void set(B builder, Object value) {
     try {
       if (label.isOneOf()) {
         // In order to maintain the 'oneof' invariant, call the builder setter method rather
@@ -127,7 +133,8 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
     }
   }
 
-  Object get(M message) {
+  // TODO(egorand): Make internal once in Kotlin
+  public Object get(M message) {
     try {
       return messageField.get(message);
     } catch (IllegalAccessException e) {
@@ -135,7 +142,8 @@ final class FieldBinding<M extends Message<M, B>, B extends Message.Builder<M, B
     }
   }
 
-  Object getFromBuilder(B builder) {
+  // TODO(egorand): Make internal once in Kotlin
+  public Object getFromBuilder(B builder) {
     try {
       return builderField.get(builder);
     } catch (IllegalAccessException e) {
