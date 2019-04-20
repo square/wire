@@ -39,7 +39,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
 
     var size = 0
     for (fieldBinding in fieldBindings.values) {
-      val binding = fieldBinding.get(value) ?: continue
+      val binding = fieldBinding[value] ?: continue
       size += fieldBinding.adapter().encodedSizeWithTag(fieldBinding.tag, binding)
     }
     size += value.unknownFields().size
@@ -51,7 +51,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: M) {
     for (fieldBinding in fieldBindings.values) {
-      val binding = fieldBinding.get(value) ?: continue
+      val binding = fieldBinding[value] ?: continue
       fieldBinding.adapter().encodeWithTag(writer, fieldBinding.tag, binding)
     }
     writer.writeBytes(value.unknownFields())
@@ -69,7 +69,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
         val builderValue = fieldBinding.getFromBuilder(builder)
         if (builderValue != null) {
           val redactedValue = fieldBinding.adapter().redact(builderValue)
-          fieldBinding.set(builder, redactedValue!!)
+          fieldBinding[builder] = redactedValue!!
         }
       } else if (isMessage && fieldBinding.label.isRepeated) {
         @Suppress("UNCHECKED_CAST")
@@ -91,7 +91,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
 
   override fun toString(value: M): String = buildString {
     for (fieldBinding in fieldBindings.values) {
-      val binding = fieldBinding.get(value)
+      val binding = fieldBinding[value]
       if (binding != null) {
         append(", ")
         append(fieldBinding.name)
