@@ -56,7 +56,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     out.beginObject()
     fieldBindings.forEachIndexed { index, fieldBinding ->
       out.name(fieldBinding.name)
-      val value = fieldBinding.get(message)
+      val value = fieldBinding[message]
       jsonAdapters[index]?.toJson(out, value)
     }
     out.endObject()
@@ -87,7 +87,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       // If the value was explicitly null we ignore it rather than forcing null into the field.
       // Otherwise malformed JSON that sets a list to null will create a malformed message, and
       // we'd rather just ignore that problem.
-      fieldBinding.set(builder, value)
+      fieldBinding[builder] = value
     }
     input.endObject()
     return builder.build()

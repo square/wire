@@ -49,7 +49,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
     out.beginObject()
     for (tagBinding in messageAdapter.fieldBindings.values) {
-      val value = tagBinding.get(message) ?: continue
+      val value = tagBinding[message] ?: continue
       out.name(tagBinding.name)
       emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label)
     }
@@ -102,7 +102,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       } else {
         val element = elementAdapter.read(input)
         val value = parseValue(fieldBinding, element)
-        fieldBinding.set(builder, value)
+        fieldBinding[builder] = value
       }
     }
 
