@@ -23,10 +23,9 @@ import java.util.RandomAccess
 
 /** A wrapper around an empty/immutable list which only switches to mutable on first mutation. */
 internal class MutableOnWriteList<T>(
-  private val immutableList: MutableList<T>
+  private val immutableList: List<T>
 ) : AbstractList<T>(), RandomAccess, Serializable {
-  // TODO(egorand): Make internal and remove JvmField once Internal is in Kotlin
-  @JvmField var mutableList: MutableList<T> = immutableList
+  internal var mutableList: List<T> = immutableList
 
   override fun get(index: Int): T = mutableList[index]
 
@@ -37,21 +36,21 @@ internal class MutableOnWriteList<T>(
     if (mutableList === immutableList) {
       mutableList = ArrayList(immutableList)
     }
-    return mutableList.set(index, element)
+    return (mutableList as ArrayList).set(index, element)
   }
 
   override fun add(index: Int, element: T) {
     if (mutableList === immutableList) {
       mutableList = ArrayList(immutableList)
     }
-    mutableList.add(index, element)
+    (mutableList as ArrayList).add(index, element)
   }
 
   override fun removeAt(index: Int): T {
     if (mutableList === immutableList) {
       mutableList = ArrayList(immutableList)
     }
-    return mutableList.removeAt(index)
+    return (mutableList as ArrayList).removeAt(index)
   }
 
   @Throws(ObjectStreamException::class)
