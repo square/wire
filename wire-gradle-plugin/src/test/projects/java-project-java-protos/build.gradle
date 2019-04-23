@@ -6,10 +6,10 @@ plugins {
 mainClassName = 'com.squareup.dinosaurs.Sample'
 
 repositories {
+  mavenLocal()
   mavenCentral()
 }
 
 dependencies {
-  implementation 'com.squareup.wire:wire-runtime:+'
-  implementation 'com.squareup.okio:okio:+'
+  implementation 'com.squareup.wire:wire-runtime:3.0.0-SNAPSHOT'
 }

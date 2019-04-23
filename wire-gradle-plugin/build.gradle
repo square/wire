@@ -56,3 +56,7 @@ def installProtoJar = tasks.register("installProtoJar", Copy) {
 tasks.withType(Test).configureEach {
   dependsOn(installProtoJar)
 }
+
+test {
+  dependsOn(':wire-runtime:installArchives')
+}
