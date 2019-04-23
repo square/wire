@@ -3,6 +3,7 @@ package com.squareup.wire.gradle
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -403,16 +404,42 @@ class WirePluginTest {
     root: File,
     action: GradleRunner.() -> BuildResult
   ): BuildResult {
-    val settings = File(root, "settings.gradle")
     var generatedSettings = false
-    if (!settings.exists()) {
-      settings.createNewFile()
-      generatedSettings = true
-    }
+    val settings = File(root, "settings.gradle")
+    var generatedGradleProperties = false
+    val gradleProperties = File(root, "gradle.properties")
     return try {
+      if (!settings.exists()) {
+        settings.createNewFile()
+        generatedSettings = true
+      }
+
+      if (!gradleProperties.exists()) {
+        val rootGradleProperties = File("../gradle.properties")
+        if (!rootGradleProperties.exists()) {
+          fail("Root gradle.properties doesn't exist at $rootGradleProperties.")
+        }
+        val versionName = rootGradleProperties.useLines { lines ->
+          lines.firstOrNull { it.startsWith("VERSION_NAME") }
+        }
+        if (versionName == null) {
+          fail("Root gradle.properties is missing the VERSION_NAME entry.")
+        }
+        gradleProperties.createNewFile()
+        gradleProperties.writeText(versionName!!)
+        generatedGradleProperties = true
+      } else {
+        gradleProperties.useLines { lines ->
+          if (lines.none { it.startsWith("VERSION_NAME") }) {
+            fail("Fixture's gradle.properties has to include the VERSION_NAME entry.")
+          }
+        }
+      }
+
       withProjectDir(root).action()
     } finally {
       if (generatedSettings) settings.delete()
+      if (generatedGradleProperties) gradleProperties.delete()
     }
   }
 }

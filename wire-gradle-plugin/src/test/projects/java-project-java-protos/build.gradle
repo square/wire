@@ -11,5 +11,5 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.squareup.wire:wire-runtime:3.0.0-SNAPSHOT'
+  implementation "com.squareup.wire:wire-runtime:$VERSION_NAME"
 }
