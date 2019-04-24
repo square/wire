@@ -119,6 +119,10 @@ final class SchemaProtoAdapterFactory {
       EnumConstant constant = enumType.constant(value);
       return constant != null ? constant.name() : value;
     }
+
+    @Override public Object redact(Object value) {
+      throw new UnsupportedOperationException();
+    }
   }
 
   static final class MessageAdapter extends ProtoAdapter<Map<String, Object>> {

@@ -81,6 +81,8 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
       'com.squareup.wire.ProtoWriter#writeTag(int, com.squareup.wire.FieldEncoding)',
       'com.squareup.wire.ProtoWriter#writeVarint32(int)',
       'com.squareup.wire.ProtoWriter#writeVarint64(long)',
+      // non-abstract -> abstract
+      'com.squareup.wire.ProtoAdapter#redact(java.lang.Object)'    
   ]
 }
 check.dependsOn japicmp
