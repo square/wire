@@ -66,42 +66,26 @@ fun <K, V> immutableCopyOf(name: String, map: Map<K, V>?): Map<K, V> {
   return Collections.unmodifiableMap(result)
 }
 
-// TODO(egorand)
-//
-// Redacting doesn't work as-is in Kotlin, because:
-// - repeated fields are generated as List<T>
-// - redactElements() needs a MutableList<T> in order to modify its elements
-// - ProtoAdapter.redact() returns T?
-// - repeated fields don't accept nullable values
-//
-// Fixing this will require the following changes:
-// - Change ProtoAdapter.redact() to return T instead of T?
-// - Default implementation of ProtoAdapter.redact() should throw UnsupportedOperationException
-// instead of returning null
-// - Introduce a new version of redactElements() that is an extension function on List<T> and
-// creates a copy of the list instead of modifying it
-// - Hide the new redactElements() from Java using JvmName
-
+// Java-only
 fun <T> redactElements(list: java.util.List<T>, adapter: ProtoAdapter<T>) {
   for (i in 0 until list.size) {
-    list.set(i, adapter.redact(list[i]))
+    list[i] = adapter.redact(list[i])
   }
 }
 
-@JvmName("-redactElements")
-fun <T> redactElements(list: List<T>, adapter: ProtoAdapter<T>) {
-  redactElements(list as java.util.List<T>, adapter)
-}
+@JvmName("-redactElements") // Hide from Java
+fun <T> List<T>.redactElements(adapter: ProtoAdapter<T>): List<T> = map(adapter::redact)
 
+// Java-only
 fun <T> redactElements(map: java.util.Map<*, T>, adapter: ProtoAdapter<T>) {
   for (entry in map.entrySet()) {
     entry.setValue(adapter.redact(entry.value))
   }
 }
 
-@JvmName("-redactElements")
-fun <T> redactElements(map: Map<*, T>, adapter: ProtoAdapter<T>) {
-  redactElements(map as java.util.Map<*, T>, adapter)
+@JvmName("-redactElements") // Hide from Java
+fun <K, V> Map<K, V>.redactElements(adapter: ProtoAdapter<V>): Map<K, V> {
+  return mapValues { (_, value) -> adapter.redact(value) }
 }
 
 fun equals(a: Any?, b: Any?): Boolean = a === b || (a != null && a == b)

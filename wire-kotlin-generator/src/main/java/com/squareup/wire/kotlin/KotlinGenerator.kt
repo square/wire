@@ -832,22 +832,12 @@ class KotlinGenerator private constructor(
     } else if (!type().isScalar && !type().isEnum) {
       val redactElements = MemberName("com.squareup.wire.internal", "redactElements")
       if (isRepeated) {
-        return CodeBlock.of(
-            "value.%N.also { %M(it, %L) }",
-            fieldName,
-            redactElements,
-            getAdapterName()
-        )
+        return CodeBlock.of("value.%N.%M(%L)", fieldName, redactElements, getAdapterName())
       } else if (isMap) {
         // We only need to ask the values to redact themselves if the type is a message.
         if (!valueType.isScalar && !valueType.isEnum) {
           val adapterName = valueType.getAdapterName()
-          return CodeBlock.of(
-              "value.%N.also { %M(it, %L) }",
-              fieldName,
-              redactElements,
-              adapterName
-          )
+          return CodeBlock.of("value.%N.%M(%L)", fieldName, redactElements, adapterName)
         }
       } else {
         val adapterName = getAdapterName()
