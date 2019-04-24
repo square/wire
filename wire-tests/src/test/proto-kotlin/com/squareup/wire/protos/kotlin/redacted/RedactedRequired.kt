@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.Internal
+import com.squareup.wire.internal.missingRequiredFields
 import java.lang.UnsupportedOperationException
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
@@ -63,7 +63,7 @@ data class RedactedRequired(@field:WireField(tag = 1, adapter =
           }
         }
         return RedactedRequired(
-          a = a ?: throw Internal.missingRequiredFields(a, "a"),
+          a = a ?: throw missingRequiredFields(a, "a"),
           unknownFields = unknownFields
         )
       }

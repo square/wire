@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.Internal
+import com.squareup.wire.internal.redactElements
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
@@ -74,7 +74,7 @@ data class Mappy(@field:WireField(tag = 1, adapter = "thingsAdapter") @JvmField 
       }
 
       override fun redact(value: Mappy): Mappy? = value.copy(
-        things = value.things.also { Internal.redactElements(it, Thing.ADAPTER) },
+        things = value.things.also { redactElements(it, Thing.ADAPTER) },
         unknownFields = ByteString.EMPTY
       )
     }

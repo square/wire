@@ -11,7 +11,9 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.Internal
+import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.missingRequiredFields
+import com.squareup.wire.internal.redactElements
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -96,14 +98,14 @@ data class Person(
      * A list of the customer's phone numbers.
      */
     fun phone(phone: List<PhoneNumber>): Builder {
-      Internal.checkElementsNotNull(phone)
+      checkElementsNotNull(phone)
       this.phone = phone
       return this
     }
 
     override fun build(): Person = Person(
-      name = name ?: throw Internal.missingRequiredFields(name, "name"),
-      id = id ?: throw Internal.missingRequiredFields(id, "id"),
+      name = name ?: throw missingRequiredFields(name, "name"),
+      id = id ?: throw missingRequiredFields(id, "id"),
       email = email,
       phone = phone,
       unknownFields = buildUnknownFields()
@@ -146,8 +148,8 @@ data class Person(
           }
         }
         return Person(
-          name = name ?: throw Internal.missingRequiredFields(name, "name"),
-          id = id ?: throw Internal.missingRequiredFields(id, "id"),
+          name = name ?: throw missingRequiredFields(name, "name"),
+          id = id ?: throw missingRequiredFields(id, "id"),
           email = email,
           phone = phone,
           unknownFields = unknownFields
@@ -155,7 +157,7 @@ data class Person(
       }
 
       override fun redact(value: Person): Person? = value.copy(
-        phone = value.phone.also { Internal.redactElements(it, PhoneNumber.ADAPTER) },
+        phone = value.phone.also { redactElements(it, PhoneNumber.ADAPTER) },
         unknownFields = ByteString.EMPTY
       )
     }
@@ -238,7 +240,7 @@ data class Person(
       }
 
       override fun build(): PhoneNumber = PhoneNumber(
-        number = number ?: throw Internal.missingRequiredFields(number, "number"),
+        number = number ?: throw missingRequiredFields(number, "number"),
         type = type,
         unknownFields = buildUnknownFields()
       )
@@ -272,7 +274,7 @@ data class Person(
             }
           }
           return PhoneNumber(
-            number = number ?: throw Internal.missingRequiredFields(number, "number"),
+            number = number ?: throw missingRequiredFields(number, "number"),
             type = type,
             unknownFields = unknownFields
           )
