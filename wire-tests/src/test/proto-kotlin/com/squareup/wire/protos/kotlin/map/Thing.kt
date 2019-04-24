@@ -58,7 +58,7 @@ data class Thing(@field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAda
         )
       }
 
-      override fun redact(value: Thing): Thing? = value.copy(
+      override fun redact(value: Thing): Thing = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

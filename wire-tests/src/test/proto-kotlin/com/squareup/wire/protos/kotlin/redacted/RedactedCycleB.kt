@@ -58,7 +58,7 @@ data class RedactedCycleB(@field:WireField(tag = 1, adapter =
         )
       }
 
-      override fun redact(value: RedactedCycleB): RedactedCycleB? = value.copy(
+      override fun redact(value: RedactedCycleB): RedactedCycleB = value.copy(
         a = value.a?.let(RedactedCycleA.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

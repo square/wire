@@ -46,7 +46,7 @@ abstract class ProtoAdapter<E>(
   internal var repeatedAdapter: ProtoAdapter<List<E>>? = null
 
   /** Returns the redacted form of `value`. */
-  open fun redact(value: E): E? = null
+  open fun redact(value: E): E = throw UnsupportedOperationException()
 
   /**
    * The size of the non-null data `value`. This does not include the size required for a
@@ -184,7 +184,7 @@ abstract class ProtoAdapter<E>(
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): List<E> = listOf(this@ProtoAdapter.decode(reader))
 
-      override fun redact(value: List<E>): List<E>? = emptyList()
+      override fun redact(value: List<E>): List<E> = emptyList()
     }
   }
 
@@ -218,7 +218,7 @@ abstract class ProtoAdapter<E>(
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): List<E> = listOf(this@ProtoAdapter.decode(reader))
 
-      override fun redact(value: List<E>): List<E>? = emptyList()
+      override fun redact(value: List<E>): List<E> = emptyList()
     }
   }
 

@@ -57,7 +57,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     writer.writeBytes(value.unknownFields())
   }
 
-  override fun redact(value: M): M? {
+  override fun redact(value: M): M {
     val builder = value.newBuilder()
     for (fieldBinding in fieldBindings.values) {
       if (fieldBinding.redacted && fieldBinding.label == WireField.Label.REQUIRED) {
@@ -69,7 +69,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
         val builderValue = fieldBinding.getFromBuilder(builder)
         if (builderValue != null) {
           val redactedValue = fieldBinding.adapter().redact(builderValue)
-          fieldBinding[builder] = redactedValue!!
+          fieldBinding[builder] = redactedValue
         }
       } else if (isMessage && fieldBinding.label.isRepeated) {
         @Suppress("UNCHECKED_CAST")

@@ -80,7 +80,7 @@ data class RedactedRepeated(
         )
       }
 
-      override fun redact(value: RedactedRepeated): RedactedRepeated? = value.copy(
+      override fun redact(value: RedactedRepeated): RedactedRepeated = value.copy(
         a = emptyList(),
         b = value.b.also { redactElements(it, Redacted.ADAPTER) },
         unknownFields = ByteString.EMPTY

@@ -67,7 +67,7 @@ data class NotRedacted(
         )
       }
 
-      override fun redact(value: NotRedacted): NotRedacted? = value.copy(
+      override fun redact(value: NotRedacted): NotRedacted = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

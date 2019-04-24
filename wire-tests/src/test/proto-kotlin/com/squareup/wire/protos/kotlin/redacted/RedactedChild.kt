@@ -74,7 +74,7 @@ data class RedactedChild(
         )
       }
 
-      override fun redact(value: RedactedChild): RedactedChild? = value.copy(
+      override fun redact(value: RedactedChild): RedactedChild = value.copy(
         b = value.b?.let(Redacted.ADAPTER::redact),
         c = value.c?.let(NotRedacted.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

@@ -75,7 +75,7 @@ data class RedactedExtension(
         )
       }
 
-      override fun redact(value: RedactedExtension): RedactedExtension? = value.copy(
+      override fun redact(value: RedactedExtension): RedactedExtension = value.copy(
         d = null,
         unknownFields = ByteString.EMPTY
       )

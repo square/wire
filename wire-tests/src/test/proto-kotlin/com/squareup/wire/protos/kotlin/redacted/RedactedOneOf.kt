@@ -71,7 +71,7 @@ data class RedactedOneOf(val a: A? = null, val unknownFields: ByteString = ByteS
         )
       }
 
-      override fun redact(value: RedactedOneOf): RedactedOneOf? {
+      override fun redact(value: RedactedOneOf): RedactedOneOf {
         throw
             UnsupportedOperationException("Redacting messages with oneof fields is not supported yet!")
       }

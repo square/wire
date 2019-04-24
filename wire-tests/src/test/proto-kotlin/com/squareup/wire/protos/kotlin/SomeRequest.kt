@@ -50,7 +50,7 @@ data class SomeRequest(val unknownFields: ByteString = ByteString.EMPTY) : Messa
         )
       }
 
-      override fun redact(value: SomeRequest): SomeRequest? = value.copy(
+      override fun redact(value: SomeRequest): SomeRequest = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

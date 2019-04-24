@@ -63,7 +63,7 @@ data class FeatureDatabase(@field:WireField(tag = 1, adapter = "routeguide.Featu
         )
       }
 
-      override fun redact(value: FeatureDatabase): FeatureDatabase? = value.copy(
+      override fun redact(value: FeatureDatabase): FeatureDatabase = value.copy(
         feature = value.feature.also { redactElements(it, Feature.ADAPTER) },
         unknownFields = ByteString.EMPTY
       )
