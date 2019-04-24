@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.Internal
+import com.squareup.wire.internal.countNonNull
 import kotlin.Int
 import kotlin.String
 import kotlin.jvm.JvmField
@@ -23,7 +23,7 @@ data class RedactedOneOf(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
   init {
-    require (Internal.countNonNull(b, c) > 1) {
+    require (countNonNull(b, c) > 1) {
       "At most one of b, c may be non-null"
     }
   }

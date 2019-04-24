@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.Internal
+import com.squareup.wire.internal.countNonNull
 import kotlin.Int
 import kotlin.String
 import kotlin.jvm.JvmField
@@ -37,7 +37,7 @@ data class OneOfMessage(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   init {
-    require (Internal.countNonNull(foo, bar, baz) > 1) {
+    require (countNonNull(foo, bar, baz) > 1) {
       "At most one of foo, bar, baz may be non-null"
     }
   }

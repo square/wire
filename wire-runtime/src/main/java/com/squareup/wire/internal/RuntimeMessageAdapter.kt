@@ -76,7 +76,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
         val values = fieldBinding.getFromBuilder(builder) as List<Any>
         @Suppress("UNCHECKED_CAST")
         val adapter = fieldBinding.singleAdapter() as ProtoAdapter<Any>
-        Internal.redactElements(values, adapter)
+        redactElements(values, adapter)
       }
     }
     builder.clearUnknownFields()

@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.Internal
+import com.squareup.wire.internal.redactElements
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -82,7 +82,7 @@ data class RedactedRepeated(
 
       override fun redact(value: RedactedRepeated): RedactedRepeated? = value.copy(
         a = emptyList(),
-        b = value.b.also { Internal.redactElements(it, Redacted.ADAPTER) },
+        b = value.b.also { redactElements(it, Redacted.ADAPTER) },
         unknownFields = ByteString.EMPTY
       )
     }

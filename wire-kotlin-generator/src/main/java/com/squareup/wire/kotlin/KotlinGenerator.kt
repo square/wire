@@ -30,6 +30,7 @@ import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.KModifier.SEALED
 import com.squareup.kotlinpoet.LONG
+import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
@@ -51,7 +52,6 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
-import com.squareup.wire.internal.Internal
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
@@ -276,9 +276,9 @@ class KotlinGenerator private constructor(
       type.oneOfs()
           .filter { oneOf -> oneOf.fields().size >= 2 }
           .forEach { oneOf ->
+            val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
             val fieldNames = oneOf.fields().joinToString(", ", transform = nameAllocator::get)
-            beginControlFlow("require (%T.countNonNull(%L) > 1)",
-                Internal::class, fieldNames)
+            beginControlFlow("require (%M(%L) > 1)", countNonNull, fieldNames)
             addStatement("\"At most one of $fieldNames may be non-null\"")
             endControlFlow()
           }
@@ -343,19 +343,16 @@ class KotlinGenerator private constructor(
 
     val nameAllocator = nameAllocator(type)
     val builderClass = className.nestedClass("Builder")
-    val internalClass = ClassName("com.squareup.wire.internal", "Internal")
 
     val returnBody = buildCodeBlock {
       add("return %T(⇥\n", className)
 
+      val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
       type.fieldsWithJavaInteropOneOfs().forEach { field ->
         val fieldName = nameAllocator[field]
 
         val throwExceptionBlock = if (!field.isRepeated && field.isRequired) {
-          CodeBlock.of(" ?: throw %1T.%2L(%3L, %3S)",
-              internalClass,
-              "missingRequiredFields",
-              field.name())
+          CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, field.name())
         } else {
           CodeBlock.of("")
         }
@@ -410,7 +407,8 @@ class KotlinGenerator private constructor(
           .build())
     }
     if (field.isRepeated) {
-      funBuilder.addStatement("%T.checkElementsNotNull(%L)", Internal::class, fieldName)
+      val checkElementsNotNull = MemberName("com.squareup.wire.internal", "checkElementsNotNull")
+      funBuilder.addStatement("%M(%L)", checkElementsNotNull, fieldName)
     }
 
     return funBuilder
@@ -683,7 +681,6 @@ class KotlinGenerator private constructor(
   private fun decodeFun(message: MessageType): FunSpec {
     val className = nameToKotlinName.getValue(message.type())
     val nameAllocator = nameAllocator(message)
-    val internalClass = ClassName("com.squareup.wire.internal", "Internal")
 
     val declarationBody = buildCodeBlock {
       message.fieldsWithJavaInteropOneOfs().forEach { field ->
@@ -704,13 +701,12 @@ class KotlinGenerator private constructor(
     val returnBody = buildCodeBlock {
       addStatement("return %T(⇥", className)
 
+      val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
       message.fieldsWithJavaInteropOneOfs().forEach { field ->
         val fieldName = nameAllocator[field]
 
         val throwExceptionBlock = if (!field.isRepeated && !field.isMap && field.isRequired) {
-          CodeBlock.of(" ?: throw %1T.missingRequiredFields(%2L, %2S)",
-              internalClass,
-              field.name())
+          CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, field.name())
         } else {
           CodeBlock.of("")
         }
@@ -834,11 +830,12 @@ class KotlinGenerator private constructor(
         else -> CodeBlock.of("null")
       }
     } else if (!type().isScalar && !type().isEnum) {
+      val redactElements = MemberName("com.squareup.wire.internal", "redactElements")
       if (isRepeated) {
         return CodeBlock.of(
-            "value.%N.also { %T.redactElements(it, %L) }",
+            "value.%N.also { %M(it, %L) }",
             fieldName,
-            Internal::class,
+            redactElements,
             getAdapterName()
         )
       } else if (isMap) {
@@ -846,9 +843,9 @@ class KotlinGenerator private constructor(
         if (!valueType.isScalar && !valueType.isEnum) {
           val adapterName = valueType.getAdapterName()
           return CodeBlock.of(
-              "value.%N.also { %T.redactElements(it, %L) }",
+              "value.%N.also { %M(it, %L) }",
               fieldName,
-              Internal::class,
+              redactElements,
               adapterName
           )
         }
