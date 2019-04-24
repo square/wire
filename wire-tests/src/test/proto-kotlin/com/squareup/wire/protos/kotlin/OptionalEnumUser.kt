@@ -68,12 +68,10 @@ data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
     }
   }
 
-  enum class OptionalEnum(private val value: Int) : WireEnum {
+  enum class OptionalEnum(override val value: Int) : WireEnum {
     FOO(1),
 
     BAR(2);
-
-    override fun getValue(): Int = value
 
     companion object {
       @JvmField

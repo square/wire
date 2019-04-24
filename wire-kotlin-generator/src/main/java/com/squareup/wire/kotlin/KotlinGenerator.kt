@@ -887,10 +887,9 @@ class KotlinGenerator private constructor(
   /**
    * Example
    * ```
-   * enum class PhoneType(private val value: Int) : WireEnum {
+   * enum class PhoneType(override val value: Int) : WireEnum {
    *     HOME(0),
    *     ...
-   *     override fun getValue(): Int = value
    *
    *     companion object {
    *       fun fromValue(value: Int): PhoneType = ...
@@ -914,15 +913,10 @@ class KotlinGenerator private constructor(
         }
         .addSuperinterface(WireEnum::class)
         .primaryConstructor(FunSpec.constructorBuilder()
-            .addParameter(valueName, Int::class, PRIVATE)
+            .addParameter(valueName, Int::class, OVERRIDE)
             .build())
-        .addProperty(PropertySpec.builder(valueName, Int::class, PRIVATE)
+        .addProperty(PropertySpec.builder(valueName, Int::class)
             .initializer(valueName)
-            .build())
-        .addFunction(FunSpec.builder("getValue")
-            .returns(Int::class)
-            .addModifiers(OVERRIDE)
-            .addStatement("return $valueName")
             .build())
         .addType(generateEnumCompanion(message))
 

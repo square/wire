@@ -110,7 +110,7 @@ data class Person(
   /**
    * Represents the type of the phone number: mobile, home or work.
    */
-  enum class PhoneType(private val value: Int) : WireEnum {
+  enum class PhoneType(override val value: Int) : WireEnum {
     MOBILE(0),
 
     HOME(1),
@@ -119,8 +119,6 @@ data class Person(
      * Could be phone or fax.
      */
     WORK(2);
-
-    override fun getValue(): Int = value
 
     companion object {
       @JvmField
