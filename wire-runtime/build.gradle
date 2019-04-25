@@ -1,9 +1,6 @@
-import me.champeau.gradle.japicmp.JapicmpTask
-
 apply plugin: 'java-library'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'ru.vyarus.animalsniffer'
-apply plugin: 'me.champeau.gradle.japicmp'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
@@ -24,10 +21,6 @@ animalsniffer {
   ignore 'com.squareup.wire.internal'
 }
 
-configurations {
-  baseline
-}
-
 dependencies {
   api deps.okio
   api deps.kotlin.stdlib.jdk6
@@ -35,54 +28,4 @@ dependencies {
   compileOnly deps.jsr305
   testImplementation deps.junit
   testImplementation deps.assertj
-
-  baseline('com.squareup.wire:wire-runtime:3.0.0-alpha01') {
-    transitive = false
-    force = true
-  }
 }
-
-task japicmp(type: JapicmpTask, dependsOn: 'jar') {
-  oldClasspath = configurations.baseline
-  newClasspath = files(jar.archivePath)
-  onlyBinaryIncompatibleModified = true
-  failOnModification = true
-  txtOutputFile = file("$buildDir/reports/japi.txt")
-  ignoreMissingClasses = true
-  includeSynthetic = true
-  packageExcludes = [
-      'com.squareup.wire.internal',
-  ]
-  methodExcludes = [
-      // package protected -> public
-      'com.squareup.wire.WireField$Label#isOneOf()',
-      'com.squareup.wire.WireField$Label#isPacked()',
-      'com.squareup.wire.WireField$Label#isRepeated()',
-      // non-final -> final
-      'com.squareup.wire.FieldEncoding#rawProtoAdapter()',   
-      'com.squareup.wire.MessageSerializedForm#readResolve()',
-      'com.squareup.wire.ProtoAdapter#newEnumAdapter(java.lang.Class)',
-      'com.squareup.wire.ProtoReader#beginMessage()',
-      'com.squareup.wire.ProtoReader#endMessage(long)',
-      'com.squareup.wire.ProtoReader#forEachTag(com.squareup.wire.TagHandler)',
-      'com.squareup.wire.ProtoReader#nextTag()',
-      'com.squareup.wire.ProtoReader#peekFieldEncoding()',
-      'com.squareup.wire.ProtoReader#readBytes()',
-      'com.squareup.wire.ProtoReader#readFixed32()',
-      'com.squareup.wire.ProtoReader#readFixed64()',
-      'com.squareup.wire.ProtoReader#readString()',
-      'com.squareup.wire.ProtoReader#readVarint32()',
-      'com.squareup.wire.ProtoReader#readVarint64()',
-      'com.squareup.wire.ProtoReader#skip()',
-      'com.squareup.wire.ProtoWriter#writeBytes(okio.ByteString)',
-      'com.squareup.wire.ProtoWriter#writeFixed32(int)',
-      'com.squareup.wire.ProtoWriter#writeFixed64(long)',
-      'com.squareup.wire.ProtoWriter#writeString(java.lang.String)',
-      'com.squareup.wire.ProtoWriter#writeTag(int, com.squareup.wire.FieldEncoding)',
-      'com.squareup.wire.ProtoWriter#writeVarint32(int)',
-      'com.squareup.wire.ProtoWriter#writeVarint64(long)',
-      // non-abstract -> abstract
-      'com.squareup.wire.ProtoAdapter#redact(java.lang.Object)'    
-  ]
-}
-check.dependsOn japicmp
