@@ -104,7 +104,7 @@ data class Person(
       }
 
       override fun redact(value: Person): Person = value.copy(
-        phone = value.phone.also { redactElements(it, PhoneNumber.ADAPTER) },
+        phone = value.phone.redactElements(PhoneNumber.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }
