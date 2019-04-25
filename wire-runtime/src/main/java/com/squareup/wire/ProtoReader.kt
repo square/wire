@@ -384,7 +384,11 @@ class ProtoReader(private val source: BufferedSource) {
 
   /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
   @Throws(IOException::class)
-  fun forEachTag(tagHandler: TagHandler): ByteString {
+  fun forEachTag(tagHandler: TagHandler): ByteString = forEachTag(tagHandler::decodeMessage)
+
+  /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
+  @JvmName("-forEachTag") // hide from Java
+  inline fun forEachTag(tagHandler: (Int) -> Any): ByteString {
     // Lazily created if the current message has unknown fields.
     var unknownFieldsBuffer: Buffer? = null
     var unknownFieldsWriter: ProtoWriter? = null
@@ -394,32 +398,20 @@ class ProtoReader(private val source: BufferedSource) {
     while (true) {
       tag = nextTag()
       if (tag == -1) break
-      if (tagHandler.decodeMessage(tag) !== UNKNOWN_TAG) continue
+      if (tagHandler(tag) !== UNKNOWN_TAG) continue
       if (unknownFieldsBuffer == null) {
         unknownFieldsBuffer = Buffer()
         unknownFieldsWriter = ProtoWriter(unknownFieldsBuffer)
       }
-      copyTag(unknownFieldsWriter!!, tag)
+      val fieldEncoding = peekFieldEncoding()
+      val protoAdapter = fieldEncoding!!.rawProtoAdapter()
+      val value = protoAdapter.decode(this)
+      @Suppress("UNCHECKED_CAST") // We encode and decode the same types.
+      (protoAdapter as ProtoAdapter<Any>).encodeWithTag(unknownFieldsWriter!!, tag, value)
     }
     endMessage(token)
 
     return unknownFieldsBuffer?.readByteString() ?: ByteString.EMPTY
-  }
-
-  /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
-  @JvmName("-forEachTag") // hide from Java
-  fun forEachTag(tagHandler: (Int) -> Any): ByteString = forEachTag(object : TagHandler {
-    override fun decodeMessage(tag: Int): Any = tagHandler(tag)
-  })
-
-  /** Reads the next value from this and writes it to `writer`.  */
-  @Throws(IOException::class)
-  @Suppress("UNCHECKED_CAST") // We encode and decode the same types.
-  private fun copyTag(writer: ProtoWriter, tag: Int) {
-    val fieldEncoding = peekFieldEncoding()
-    val protoAdapter = fieldEncoding!!.rawProtoAdapter()
-    val value = protoAdapter.decode(this)
-    (protoAdapter as ProtoAdapter<Any>).encodeWithTag(writer, tag, value)
   }
 
   companion object {
