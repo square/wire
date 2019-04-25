@@ -1,0 +1,21 @@
+apply plugin: 'java-library'
+apply plugin: 'ru.vyarus.animalsniffer'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+sourceSets {
+  test.java.srcDirs += 'src/test/proto-java'
+  test.kotlin.srcDirs += 'src/test/proto-kotlin'
+}
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-runtime')
+  }
+}
+
+animalsniffer {
+  sourceSets = [sourceSets.main]
+  ignore 'com.squareup.wire.internal'
+}
