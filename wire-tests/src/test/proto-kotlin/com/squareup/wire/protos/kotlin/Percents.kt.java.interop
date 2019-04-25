@@ -76,7 +76,7 @@ data class Percents(
         )
       }
 
-      override fun redact(value: Percents): Percents? = value.copy(
+      override fun redact(value: Percents): Percents = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

@@ -91,7 +91,7 @@ data class Redacted(
         )
       }
 
-      override fun redact(value: Redacted): Redacted? = value.copy(
+      override fun redact(value: Redacted): Redacted = value.copy(
         a = null,
         extension = value.extension?.let(RedactedExtension.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

@@ -63,7 +63,7 @@ data class Mappy(@field:WireField(tag = 1, adapter = "thingsAdapter") val things
         )
       }
 
-      override fun redact(value: Mappy): Mappy? = value.copy(
+      override fun redact(value: Mappy): Mappy = value.copy(
         things = value.things.also { redactElements(it, Thing.ADAPTER) },
         unknownFields = ByteString.EMPTY
       )

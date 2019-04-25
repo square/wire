@@ -780,7 +780,7 @@ class KotlinGenerator private constructor(
     val result = FunSpec.builder("redact")
         .addModifiers(OVERRIDE)
         .addParameter("value", className)
-        .returns(className.copy(nullable = true))
+        .returns(className)
 
     val redactedMessageFields = message.fields().filter { it.isRedacted }
     val requiredRedactedMessageFields = redactedMessageFields.filter { it.isRequired }

@@ -37,6 +37,8 @@ abstract class EnumAdapter<E : WireEnum> protected constructor(
     return fromValue(value) ?: throw EnumConstantNotFoundException(value, javaType)
   }
 
+  override fun redact(value: E): E = throw UnsupportedOperationException()
+
   /**
    * Converts an integer to an enum.
    * Returns null if there is no corresponding enum.

@@ -71,7 +71,7 @@ data class OneOfMessage(val choice: Choice? = null, val unknownFields: ByteStrin
         )
       }
 
-      override fun redact(value: OneOfMessage): OneOfMessage? {
+      override fun redact(value: OneOfMessage): OneOfMessage {
         throw
             UnsupportedOperationException("Redacting messages with oneof fields is not supported yet!")
       }

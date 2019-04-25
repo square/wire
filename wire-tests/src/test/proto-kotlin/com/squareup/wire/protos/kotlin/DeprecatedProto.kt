@@ -60,7 +60,7 @@ data class DeprecatedProto(@Deprecated(message = "foo is deprecated") @field:Wir
         )
       }
 
-      override fun redact(value: DeprecatedProto): DeprecatedProto? = value.copy(
+      override fun redact(value: DeprecatedProto): DeprecatedProto = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

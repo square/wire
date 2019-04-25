@@ -68,7 +68,7 @@ data class RedactedRequired(@field:WireField(tag = 1, adapter =
         )
       }
 
-      override fun redact(value: RedactedRequired): RedactedRequired? {
+      override fun redact(value: RedactedRequired): RedactedRequired {
         throw UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
       }
     }

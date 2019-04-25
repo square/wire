@@ -132,7 +132,7 @@ data class OneOfMessage(
         )
       }
 
-      override fun redact(value: OneOfMessage): OneOfMessage? = value.copy(
+      override fun redact(value: OneOfMessage): OneOfMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

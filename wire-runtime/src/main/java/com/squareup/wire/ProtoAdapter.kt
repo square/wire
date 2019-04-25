@@ -46,7 +46,7 @@ abstract class ProtoAdapter<E>(
   internal var repeatedAdapter: ProtoAdapter<List<E>>? = null
 
   /** Returns the redacted form of `value`. */
-  open fun redact(value: E): E? = null
+  abstract fun redact(value: E): E
 
   /**
    * The size of the non-null data `value`. This does not include the size required for a
@@ -184,7 +184,7 @@ abstract class ProtoAdapter<E>(
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): List<E> = listOf(this@ProtoAdapter.decode(reader))
 
-      override fun redact(value: List<E>): List<E>? = emptyList()
+      override fun redact(value: List<E>): List<E> = emptyList()
     }
   }
 
@@ -218,7 +218,7 @@ abstract class ProtoAdapter<E>(
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): List<E> = listOf(this@ProtoAdapter.decode(reader))
 
-      override fun redact(value: List<E>): List<E>? = emptyList()
+      override fun redact(value: List<E>): List<E> = emptyList()
     }
   }
 
@@ -300,6 +300,10 @@ abstract class ProtoAdapter<E>(
     }
 
     override fun decode(reader: ProtoReader): Map.Entry<K, V> {
+      throw UnsupportedOperationException()
+    }
+
+    override fun redact(value: Map.Entry<K, V>): Map.Entry<K, V> {
       throw UnsupportedOperationException()
     }
   }
@@ -385,6 +389,8 @@ abstract class ProtoAdapter<E>(
         1 -> true
         else -> throw IOException(String.format("Invalid boolean value 0x%02x", value))
       }
+
+      override fun redact(value: Boolean): Boolean = throw UnsupportedOperationException()
     }
     @JvmField val INT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
         FieldEncoding.VARINT,
@@ -399,6 +405,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Int = reader.readVarint32()
+
+      override fun redact(value: Int): Int = throw UnsupportedOperationException()
     }
     @JvmField val UINT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
         FieldEncoding.VARINT,
@@ -413,6 +421,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Int = reader.readVarint32()
+
+      override fun redact(value: Int): Int = throw UnsupportedOperationException()
     }
     @JvmField val SINT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
         FieldEncoding.VARINT,
@@ -427,6 +437,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Int = decodeZigZag32(reader.readVarint32())
+
+      override fun redact(value: Int): Int = throw UnsupportedOperationException()
     }
     @JvmField val FIXED32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
         FieldEncoding.FIXED32,
@@ -441,6 +453,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Int = reader.readFixed32()
+
+      override fun redact(value: Int): Int = throw UnsupportedOperationException()
     }
     @JvmField val SFIXED32 = FIXED32
     @JvmField val INT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
@@ -456,6 +470,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Long = reader.readVarint64()
+
+      override fun redact(value: Long): Long = throw UnsupportedOperationException()
     }
     /**
      * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
@@ -474,6 +490,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Long = reader.readVarint64()
+
+      override fun redact(value: Long): Long = throw UnsupportedOperationException()
     }
     @JvmField val SINT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
         FieldEncoding.VARINT,
@@ -488,6 +506,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Long = decodeZigZag64(reader.readVarint64())
+
+      override fun redact(value: Long): Long = throw UnsupportedOperationException()
     }
     @JvmField val FIXED64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
         FieldEncoding.FIXED64,
@@ -502,6 +522,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Long = reader.readFixed64()
+
+      override fun redact(value: Long): Long = throw UnsupportedOperationException()
     }
     @JvmField val SFIXED64 = FIXED64
     @JvmField val FLOAT: ProtoAdapter<Float> = object : ProtoAdapter<Float>(
@@ -519,6 +541,8 @@ abstract class ProtoAdapter<E>(
       override fun decode(reader: ProtoReader): Float {
         return java.lang.Float.intBitsToFloat(reader.readFixed32())
       }
+
+      override fun redact(value: Float): Float = throw UnsupportedOperationException()
     }
     @JvmField val DOUBLE: ProtoAdapter<Double> = object : ProtoAdapter<Double>(
         FieldEncoding.FIXED64,
@@ -535,6 +559,8 @@ abstract class ProtoAdapter<E>(
       override fun decode(reader: ProtoReader): Double {
         return java.lang.Double.longBitsToDouble(reader.readFixed64())
       }
+
+      override fun redact(value: Double): Double = throw UnsupportedOperationException()
     }
     @JvmField val STRING: ProtoAdapter<String> = object : ProtoAdapter<String>(
         FieldEncoding.LENGTH_DELIMITED,
@@ -549,6 +575,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): String = reader.readString()
+
+      override fun redact(value: String): String = throw UnsupportedOperationException()
     }
     @JvmField val BYTES: ProtoAdapter<ByteString> = object : ProtoAdapter<ByteString>(
         FieldEncoding.LENGTH_DELIMITED,
@@ -563,6 +591,8 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): ByteString = reader.readBytes()
+
+      override fun redact(value: ByteString): ByteString = throw UnsupportedOperationException()
     }
   }
 }

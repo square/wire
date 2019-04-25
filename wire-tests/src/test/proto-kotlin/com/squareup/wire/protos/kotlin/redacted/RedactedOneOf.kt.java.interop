@@ -101,7 +101,7 @@ data class RedactedOneOf(
         )
       }
 
-      override fun redact(value: RedactedOneOf): RedactedOneOf? = value.copy(
+      override fun redact(value: RedactedOneOf): RedactedOneOf = value.copy(
         c = null,
         unknownFields = ByteString.EMPTY
       )
