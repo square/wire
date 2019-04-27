@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal;
+package com.squareup.wire.internal
 
-import org.junit.Test;
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public final class InternalTest {
-  @Test public void countNonNull() throws Exception {
-    assertThat(Internal.countNonNull(null, null)).isEqualTo(0);
-    assertThat(Internal.countNonNull("xx", null)).isEqualTo(1);
-    assertThat(Internal.countNonNull("xx", "xx")).isEqualTo(2);
-    assertThat(Internal.countNonNull("xx", "xx", null)).isEqualTo(2);
-    assertThat(Internal.countNonNull("xx", "xx", "xx")).isEqualTo(3);
-    assertThat(Internal.countNonNull("xx", "xx", "xx", null)).isEqualTo(3);
-    assertThat(Internal.countNonNull("xx", "xx", "xx", "xx")).isEqualTo(4);
-    assertThat(Internal.countNonNull("xx", "xx", "xx", "xx", (Object) null)).isEqualTo(4);
-    assertThat(Internal.countNonNull("xx", "xx", "xx", "xx", "xx")).isEqualTo(5);
+class InternalTest {
+  @Test fun countNonNull() {
+    assertThat(countNonNull(null, null)).isEqualTo(0)
+    assertThat(countNonNull("xx", null)).isEqualTo(1)
+    assertThat(countNonNull("xx", "xx")).isEqualTo(2)
+    assertThat(countNonNull("xx", "xx", null)).isEqualTo(2)
+    assertThat(countNonNull("xx", "xx", "xx")).isEqualTo(3)
+    assertThat(countNonNull("xx", "xx", "xx", null)).isEqualTo(3)
+    assertThat(countNonNull("xx", "xx", "xx", "xx")).isEqualTo(4)
+    assertThat(countNonNull("xx", "xx", "xx", "xx", null)).isEqualTo(4)
+    assertThat(countNonNull("xx", "xx", "xx", "xx", "xx")).isEqualTo(5)
   }
 }
