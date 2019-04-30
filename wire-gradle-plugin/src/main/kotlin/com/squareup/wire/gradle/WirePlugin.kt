@@ -17,6 +17,9 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.WireExtension.JavaTarget
 import com.squareup.wire.gradle.WireExtension.ProtoRootSet
+import com.squareup.wire.gradle.WirePlugin.DependencyType.Directory
+import com.squareup.wire.gradle.WirePlugin.DependencyType.Jar
+import com.squareup.wire.gradle.WirePlugin.DependencyType.Path
 import com.squareup.wire.schema.Target
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -199,12 +202,17 @@ class WirePlugin @Inject constructor(
 
     dependencyJars.forEach { depJar ->
       depJar.srcJar?.let { path ->
-        allPaths += mapDependencyPath(parser, path, project, depJar.includes)
+        val depPath = mapDependencyPath(parser, path, project)
+        if (depPath is Jar && depJar.includes.isNotEmpty()) {
+          jarToIncludes[depPath.path] = depJar.includes
+        }
+        allPaths += depPath.dependency
       }
     }
 
     dependencyPaths.forEach { path ->
-      allPaths += mapDependencyPath(parser, path, project)
+      val depPath = mapDependencyPath(parser, path, project)
+      allPaths += depPath.dependency
     }
 
     return allPaths
@@ -213,24 +221,18 @@ class WirePlugin @Inject constructor(
   private fun mapDependencyPath(
     parser: NotationParser<Any, Any>,
     path: String,
-    project: Project,
-    jarIncludes: List<String> = emptyList()
-  ): Any {
+    project: Project
+  ): DependencyType {
     val converted = parser.parseNotation(path)
 
     if (converted is File) {
-      val file =
-        if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
+      val file = if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
+
       check(file.exists()) { "Invalid path string: \"$path\". Path does not exist." }
 
       return when {
-        file.isDirectory -> project.files(path)
-        file.isJar -> {
-          if (jarIncludes.isNotEmpty()) {
-            jarToIncludes[file.path] = jarIncludes
-          }
-          project.files(file)
-        }
+        file.isDirectory -> Directory(project, path)
+        file.isJar -> Jar(project, file.path)
         else -> throw IllegalArgumentException(
             """
             |Invalid path string: "$path".
@@ -250,7 +252,7 @@ class WirePlugin @Inject constructor(
       )
     } else {
       // assume it's a possible external dependency and let Gradle sort it out later...
-      return path
+      return Path(project, path)
     }
   }
 
@@ -261,6 +263,24 @@ class WirePlugin @Inject constructor(
     } catch (e: Exception) {
       false
     }
+
+  sealed class DependencyType(val project: Project) {
+    abstract val path: String
+    abstract val dependency: Any
+
+    class Directory(project: Project, override val path: String) : DependencyType(project) {
+      override val dependency: Any
+        get() = project.files(path)
+    }
+    class Jar(project: Project, override val path: String) : DependencyType(project) {
+      override val dependency: Any
+        get() = project.files(path)
+    }
+    class Path(project: Project, override val path: String) : DependencyType(project) {
+      override val dependency: Any
+        get() = path
+    }
+  }
 }
 
 private val File.isJar
