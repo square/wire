@@ -51,6 +51,9 @@ open class WireTask : SourceTask() {
   @Input
   lateinit var targets: List<Target>
 
+  @Internal
+  lateinit var jarToIncludes: Map<String, List<String>>
+
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -108,14 +111,19 @@ open class WireTask : SourceTask() {
     return dependencies
         .flatMap { dep ->
           files(dep)
-              .map { file ->
-                if (dep is FileCollectionDependency && dep.files is SourceDirectorySet) {
+              .flatMap { file ->
+                if (dep !is FileCollectionDependency) {
+                  listOf(Location.get(file.path))
+                } else if (dep.files is SourceDirectorySet) {
                   val srcDir = (dep.files as SourceDirectorySet).srcDirs.first {
                     file.path.startsWith(it.path + "/")
                   }
-                  Location.get(srcDir.path, file.path.substring(srcDir.path.length + 1))
+                  listOf(Location.get(srcDir.path, file.path.substring(srcDir.path.length + 1)))
                 } else {
-                  Location.get(file.path)
+                  val includes = jarToIncludes[file.path]
+                  includes?.map {
+                    Location.get(file.path, it)
+                  } ?: listOf(Location.get(file.path))
                 }
               }
         }

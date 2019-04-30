@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.gradle
 
-import groovy.lang.Closure
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -23,7 +22,6 @@ import org.gradle.api.internal.file.SourceDirectorySetFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
-import org.gradle.util.ConfigureUtil
 import javax.inject.Inject
 
 open class WireExtension(
@@ -36,6 +34,8 @@ open class WireExtension(
   internal val protoPaths = mutableSetOf<String>()
   internal val sourceTrees = mutableSetOf<SourceDirectorySet>()
   internal val protoTrees = mutableSetOf<SourceDirectorySet>()
+  internal val sourceJars = mutableSetOf<ProtoRootSet>()
+  internal val protoJars = mutableSetOf<ProtoRootSet>()
   internal val roots = mutableSetOf<String>()
   internal val prunes = mutableSetOf<String>()
 
@@ -92,6 +92,10 @@ open class WireExtension(
   @Optional
   fun getSourceTrees() = sourceTrees.toSet()
 
+  @InputFiles
+  @Optional
+  fun getSourceJars() = sourceJars.toSet()
+
   /**
    * Source paths for local jars and directories, as well as remote binary dependencies
    */
@@ -103,11 +107,8 @@ open class WireExtension(
    * Source paths for local file trees, backed by a [org.gradle.api.file.SourceDirectorySet]
    * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir]
    */
-  fun sourcePath(closure: Closure<SourceDirectorySet>) {
-    val sourceTree = sourceDirectorySetFactory.create("source-tree", "Source path tree")
-    sourceTree.filter.include("**/*.proto")
-    ConfigureUtil.configure<SourceDirectorySet>(closure, sourceTree)
-    sourceTrees.add(sourceTree)
+  fun sourcePath(action: Action<ProtoRootSet>) {
+    populateRootSets(action, sourceTrees, sourceJars, "source-tree")
   }
 
   @InputFiles
@@ -122,6 +123,12 @@ open class WireExtension(
     return protoTrees
   }
 
+  @InputFiles
+  @Optional
+  fun getProtoJars(): Set<ProtoRootSet> {
+    return protoJars
+  }
+
   /**
    * Proto paths for local jars and directories, as well as remote binary dependencies
    */
@@ -133,11 +140,38 @@ open class WireExtension(
    * Proto paths for local file trees, backed by a [org.gradle.api.file.SourceDirectorySet]
    * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir]
    */
-  fun protoPath(closure: Closure<SourceDirectorySet>) {
-    val protoTree = sourceDirectorySetFactory.create("proto-tree", "Proto path tree")
-    protoTree.filter.include("**/*.proto")
-    ConfigureUtil.configure<SourceDirectorySet>(closure, protoTree)
-    protoTrees.add(protoTree)
+  fun protoPath(action: Action<ProtoRootSet>) {
+    populateRootSets(action, protoTrees, protoJars, "proto-tree")
+  }
+
+  private fun populateRootSets(
+    action: Action<ProtoRootSet>,
+    sourceTrees: MutableSet<SourceDirectorySet>,
+    sourceJars: MutableSet<ProtoRootSet>,
+    name: String
+  ) {
+    val protoRootSet = objectFactory.newInstance(ProtoRootSet::class.java)
+    action.execute(protoRootSet)
+
+    val hasSrcDirs = protoRootSet.srcDirs.isNotEmpty()
+    val hasSrcJar = protoRootSet.srcJar != null
+
+    check(!hasSrcDirs || !hasSrcJar) {
+      "Cannot set both srcDirs and srcJars in the same protoPath closure"
+    }
+
+    if (hasSrcDirs) {
+      // map to SourceDirectorySet which does the work for us!
+      val protoTree = sourceDirectorySetFactory.create(name)
+      protoTree.srcDirs(protoRootSet.srcDirs)
+      protoTree.filter.include("**/*.proto")
+      protoTree.filter.include(protoRootSet.includes)
+      sourceTrees.add(protoTree)
+    }
+
+    if (hasSrcJar) {
+      sourceJars.add(protoRootSet)
+    }
   }
 
   fun java(action: Action<JavaTarget>) {
@@ -148,6 +182,28 @@ open class WireExtension(
   fun kotlin(action: Action<KotlinTarget>) {
     kotlinTarget = objectFactory.newInstance(KotlinTarget::class.java)
     action.execute(kotlinTarget!!)
+  }
+
+  open class ProtoRootSet {
+    val srcDirs = mutableListOf<String>()
+    var srcJar: String? = null
+    val includes = mutableListOf<String>()
+
+    fun srcDir(dir: String) {
+      srcDirs += dir
+    }
+
+    fun srcDirs(vararg dirs: String) {
+      srcDirs += dirs
+    }
+
+    fun srcJar(jar: String) {
+      srcJar = jar
+    }
+
+    fun include(vararg includePaths: String) {
+      includes += includePaths
+    }
   }
 
   open class JavaTarget @Inject constructor() {
