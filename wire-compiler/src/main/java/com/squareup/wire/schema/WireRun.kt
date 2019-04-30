@@ -55,7 +55,7 @@ import java.nio.file.FileSystems
  * multiple files, whichever was listed first takes precedence.
  *
  * Although the content and structure of [sourcePath] and [protoPath] are the same, only types
- * defined in [sourcePath] are used to generated sources.
+ * defined in [sourcePath] are used to generate sources.
  *
  *
  * Matching Packages, Types, and Members
