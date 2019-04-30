@@ -232,7 +232,16 @@ class WirePlugin @Inject constructor(
           project.files(file)
         }
         else -> throw IllegalArgumentException(
-            "Invalid path string: \"$path\". For individual files, use the closure syntax."
+            """
+            |Invalid path string: "$path".
+            |For individual files, use the following syntax:
+            |wire {
+            |  sourcePath {
+            |    srcDir 'dirPath'
+            |    include 'relativePath'
+            |  }
+            |}
+            """.trimMargin()
         )
       }
     } else if (converted is URI && isURL(converted)) {
