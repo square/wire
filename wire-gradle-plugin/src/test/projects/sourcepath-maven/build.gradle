@@ -10,5 +10,5 @@ repositories {
 }
 
 wire {
-  sourcePath 'com.squareup.wire.test:dinosaur-protos:+'
+  sourcePath 'com.squareup.wire.dinosaur:all-protos:+'
 }

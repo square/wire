@@ -49,8 +49,11 @@ tasks.named('compileKotlin').configure {
 }
 
 def installProtoJar = tasks.register("installProtoJar", Copy) {
-  from fileTree("${projectDir.path}/src/test/libs")
-  into "${rootDir.path}/build/localMaven/com/squareup/wire/test/dinosaur-protos/1.0"
+  into "${rootDir.path}/build/localMaven"
+
+  into("com/squareup/wire/dinosaur/all-protos/1.0") {
+    from "${projectDir.path}/src/test/libs/all-protos-1.0.jar"
+  }
 }
 
 tasks.withType(Test).configureEach {
