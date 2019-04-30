@@ -16,12 +16,11 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.WireExtension.JavaTarget
+import com.squareup.wire.gradle.WireExtension.ProtoRootSet
 import com.squareup.wire.schema.Target
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.UnknownDomainObjectException
 import org.gradle.api.file.SourceDirectorySet
-import org.gradle.api.internal.HasConvention
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.internal.file.SourceDirectorySetFactory
 import org.gradle.api.plugins.JavaBasePlugin
@@ -29,10 +28,8 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
-import org.jetbrains.kotlin.gradle.plugin.KOTLIN_DSL_NAME
-import org.jetbrains.kotlin.gradle.plugin.KOTLIN_JS_DSL_NAME
+import org.gradle.internal.typeconversion.NotationParser
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 import java.net.URI
@@ -43,6 +40,8 @@ class WirePlugin @Inject constructor(
 ) : Plugin<Project> {
   private var kotlin = false
   private var java = false
+  private val jarToIncludes = mutableMapOf<String, List<String>>()
+
   private lateinit var sourceSetContainer: SourceSetContainer
 
   override fun apply(project: Project) {
@@ -89,8 +88,10 @@ class WirePlugin @Inject constructor(
     val sourceConfiguration = project.configurations.create("wireSourceDependencies")
 
     val sourcePaths =
-      if (extension.sourcePaths.isNotEmpty() || extension.sourceTrees.isNotEmpty()) {
-        mergeDependencyPaths(project, extension.sourcePaths, extension.sourceTrees)
+      if (extension.sourcePaths.isNotEmpty() || extension.sourceTrees.isNotEmpty() || extension.sourceJars.isNotEmpty()) {
+        mergeDependencyPaths(
+            project, extension.sourcePaths, extension.sourceTrees, extension.sourceJars
+        )
       } else {
         mergeDependencyPaths(project, setOf("src/main/proto"))
       }
@@ -100,8 +101,10 @@ class WirePlugin @Inject constructor(
 
     val protoConfiguration = project.configurations.create("wireProtoDependencies")
 
-    if (extension.protoPaths.isNotEmpty() || extension.protoTrees.isNotEmpty()) {
-      val allPaths = mergeDependencyPaths(project, extension.protoPaths, extension.protoTrees)
+    if (extension.protoPaths.isNotEmpty() || extension.protoTrees.isNotEmpty() || extension.protoJars.isNotEmpty()) {
+      val allPaths = mergeDependencyPaths(
+          project, extension.protoPaths, extension.protoTrees, extension.protoJars
+      )
       allPaths.forEach { path ->
         protoConfiguration.dependencies.add(project.dependencies.create(path))
       }
@@ -150,6 +153,7 @@ class WirePlugin @Inject constructor(
       task.rules = extension.rules
       task.targets = targets
       task.group = "wire"
+      task.jarToIncludes = jarToIncludes
       task.description = "Generate Wire protocol buffer implementation for .proto files"
     }
 
@@ -186,40 +190,59 @@ class WirePlugin @Inject constructor(
   private fun mergeDependencyPaths(
     project: Project,
     dependencyPaths: Set<String>,
-    dependencyTrees: Set<SourceDirectorySet> = emptySet()
+    dependencyTrees: Set<SourceDirectorySet> = emptySet(),
+    dependencyJars: Set<ProtoRootSet> = emptySet()
   ): List<Any> {
     val allPaths = dependencyTrees.toMutableList<Any>()
 
     val parser = FileOrUriNotationConverter.parser()
-    dependencyPaths.forEach { path ->
-      val converted = parser.parseNotation(path)
 
-      if (converted is File) {
-        val file =
-          if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
-        if (!file.exists()) {
-          throw IllegalArgumentException(
-              "Invalid path string: \"$path\". Path does not exist."
-          )
-        }
-        if (file.isDirectory) {
-          allPaths += project.files(path) as Any
-        } else {
-          throw IllegalArgumentException(
-              "Invalid path string: \"$path\". For individual files, use the closure syntax."
-          )
-        }
-      } else if (converted is URI && isURL(converted)) {
-        throw IllegalArgumentException(
-            "Invalid path string: \"$path\". URL dependencies are not allowed."
-        )
-      } else {
-        // assume it's a possible external dependency and let Gradle sort it out later...
-        allPaths += path
+    dependencyJars.forEach { depJar ->
+      depJar.srcJar?.let { path ->
+        allPaths += mapDependencyPath(parser, path, project, depJar.includes)
       }
     }
 
+    dependencyPaths.forEach { path ->
+      allPaths += mapDependencyPath(parser, path, project)
+    }
+
     return allPaths
+  }
+
+  private fun mapDependencyPath(
+    parser: NotationParser<Any, Any>,
+    path: String,
+    project: Project,
+    jarIncludes: List<String> = emptyList()
+  ): Any {
+    val converted = parser.parseNotation(path)
+
+    if (converted is File) {
+      val file =
+        if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
+      check(file.exists()) { "Invalid path string: \"$path\". Path does not exist." }
+
+      return when {
+        file.isDirectory -> project.files(path)
+        file.isJar -> {
+          if (jarIncludes.isNotEmpty()) {
+            jarToIncludes[file.path] = jarIncludes
+          }
+          project.files(file)
+        }
+        else -> throw IllegalArgumentException(
+            "Invalid path string: \"$path\". For individual files, use the closure syntax."
+        )
+      }
+    } else if (converted is URI && isURL(converted)) {
+      throw IllegalArgumentException(
+          "Invalid path string: \"$path\". URL dependencies are not allowed."
+      )
+    } else {
+      // assume it's a possible external dependency and let Gradle sort it out later...
+      return path
+    }
   }
 
   private fun isURL(uri: URI) =
@@ -230,3 +253,6 @@ class WirePlugin @Inject constructor(
       false
     }
 }
+
+private val File.isJar
+  get() = path.endsWith(".jar")

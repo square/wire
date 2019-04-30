@@ -160,6 +160,66 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourceJarLocalOneJarMultipleFiles() {
+    val fixtureRoot = File("src/test/projects/sourcejar-local-many-files")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains(
+            "src/test/projects/sourcejar-local-many-files/build/generated/src/main/java"
+        )
+  }
+
+  @Test
+  fun sourceJarLocalOneJarSingleFile() {
+    val fixtureRoot = File("src/test/projects/sourcejar-local-single-file")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains(
+            "src/test/projects/sourcejar-local-single-file/build/generated/src/main/java"
+        )
+  }
+
+  @Test
+  fun sourceJarRemoteOneJarMultipleFiles() {
+    val fixtureRoot = File("src/test/projects/sourcejar-remote-many-files")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains(
+            "src/test/projects/sourcejar-remote-many-files/build/generated/src/main/java"
+        )
+  }
+
+  @Test
+  fun sourceJarRemoteOneJarWithProtoPath() {
+    val fixtureRoot = File("src/test/projects/sourcejar-remote-protopath")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { withDebug(true).build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .doesNotContain("Writing com.squareup.geology.Period")
+        .contains(
+            "src/test/projects/sourcejar-remote-protopath/build/generated/src/main/java"
+        )
+  }
+
+  @Test
   fun differentJavaOutputDir() {
     val fixtureRoot = File("src/test/projects/different-java-out")
 

@@ -1,0 +1,11 @@
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+wire {
+  sourcePath {
+    srcJar 'src/main/proto/protos.jar'
+    include 'squareup/geology/period.proto', 'squareup/dinosaurs/dinosaur.proto'
+  }
+}
