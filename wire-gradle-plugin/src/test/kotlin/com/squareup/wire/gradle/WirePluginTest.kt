@@ -352,7 +352,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/kotlin-project-java-protos")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace").withDebug(true).build()
+      withArguments("run", "--stacktrace").build()
     }
 
     assertThat(result.task(":generateProtos")).isNotNull
