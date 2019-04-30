@@ -76,7 +76,16 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output)
         .contains(
-            """Invalid path string: "src/main/proto/squareup/geology/period.proto". For individual files, use the closure syntax."""
+            """
+            |Invalid path string: "src/main/proto/squareup/geology/period.proto".
+            |For individual files, use the following syntax:
+            |wire {
+            |  sourcePath {
+            |    srcDir 'dirPath'
+            |    include 'relativePath'
+            |  }
+            |}
+            """.trimMargin()
         )
   }
 
