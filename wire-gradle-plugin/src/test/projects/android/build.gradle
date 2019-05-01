@@ -1,0 +1,35 @@
+plugins {
+  id 'com.android.application'
+  id 'com.squareup.wire'
+}
+
+android {
+  compileSdkVersion 28
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  defaultConfig {
+    minSdkVersion 28
+    targetSdkVersion 28
+    applicationId 'com.squareup.dinosaurs'
+  }
+}
+
+repositories {
+  google()
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'com.squareup.wire:wire-runtime:+'
+  implementation 'com.squareup.okio:okio:+'
+}
+
+wire {
+  java {
+    out "${buildDir}/generated/src/main/java"
+  }
+}

@@ -6,6 +6,10 @@ mainClassName = 'com.squareup.dinosaurs.Sample'
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
+//sourceSets {
+//  main.java.srcDirs += "${buildDir}/generated/src/main/java/"
+//}
+
 jar {
   manifest {
     attributes('Automatic-Module-Name': 'wire-sample')

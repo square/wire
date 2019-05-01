@@ -26,7 +26,7 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output).contains(
-        """Either the Java or Kotlin plugin must be applied before the Wire Gradle plugin."""
+        """Either the Java, Kotlin or Android plugin must be applied before the Wire Gradle plugin."""
     )
   }
 
@@ -274,7 +274,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -312,7 +312,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
@@ -347,7 +347,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -366,7 +366,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
@@ -458,6 +458,36 @@ class WirePluginTest {
         File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
+  }
+
+  @Test
+  fun android() {
+    val fixtureRoot = File("src/test/projects/android")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("assembleDebug", "--stacktrace").build()
+    }
+
+    assertThat(result.task(":generateDebugProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/android/build/generated/src/main/java")
+  }
+
+  @Test
+  fun androidVariants() {
+    val fixtureRoot = File("src/test/projects/android-variants")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("assembleDebug", "--stacktrace").build()
+    }
+
+    assertThat(result.task(":generateDebugProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/android-variants/build/generated/src/main/java")
   }
 
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {

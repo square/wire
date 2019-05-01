@@ -29,6 +29,7 @@ buildscript {
 
   ext.deps = [
       plugins: [
+          android: 'com.android.tools.build:gradle:3.2.0',
           kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
           shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
           releasedWire: "com.squareup.wire:wire-gradle-plugin:${versions.releasedWire}",
@@ -105,6 +106,7 @@ allprojects {
   version = VERSION_NAME
 
   repositories {
+    google()
     mavenCentral()
   }
 }

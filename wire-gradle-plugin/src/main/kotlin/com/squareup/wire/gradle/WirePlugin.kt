@@ -15,12 +15,16 @@
  */
 package com.squareup.wire.gradle
 
+import com.android.build.gradle.AppExtension
+import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.api.BaseVariant
 import com.squareup.wire.gradle.WireExtension.JavaTarget
 import com.squareup.wire.gradle.WireExtension.ProtoRootSet
 import com.squareup.wire.gradle.WirePlugin.DependencyType.Directory
 import com.squareup.wire.gradle.WirePlugin.DependencyType.Jar
 import com.squareup.wire.gradle.WirePlugin.DependencyType.Path
 import com.squareup.wire.schema.Target
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -37,12 +41,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 import java.net.URI
 import javax.inject.Inject
+import com.android.build.gradle.BasePlugin as AndroidBasePlugin
 
 class WirePlugin @Inject constructor(
   private val sourceDirectorySetFactory: SourceDirectorySetFactory
 ) : Plugin<Project> {
   private var kotlin = false
   private var java = false
+  private var android = false
   private val jarToIncludes = mutableMapOf<String, List<String>>()
 
   private lateinit var sourceSetContainer: SourceSetContainer
@@ -57,6 +63,9 @@ class WirePlugin @Inject constructor(
     project.plugins.all {
       logger.debug("plugin: $it")
       when (it) {
+        is AndroidBasePlugin<*> -> {
+          android = true
+        }
         is JavaBasePlugin -> {
           java = true
         }
@@ -75,12 +84,119 @@ class WirePlugin @Inject constructor(
       }
 
       when {
+        android -> applyAndroid(project, extension)
         kotlin || java -> applyJvm(it, extension)
         else ->
           throw IllegalArgumentException(
-              "Either the Java or Kotlin plugin must be applied before the Wire Gradle plugin."
+              "Either the Java, Kotlin or Android plugin must be applied before the Wire Gradle plugin."
           )
       }
+    }
+  }
+
+  private fun applyAndroid(
+    project: Project,
+    extension: WireExtension
+  ) {
+    val variants: DomainObjectSet<out BaseVariant> = when {
+      project.plugins.hasPlugin("com.android.application") -> {
+        project.extensions.getByType(AppExtension::class.java)
+            .applicationVariants
+      }
+      project.plugins.hasPlugin("com.android.library") -> {
+        project.extensions.getByType(LibraryExtension::class.java)
+            .libraryVariants
+      }
+      else -> {
+        throw IllegalStateException("Unknown Android plugin in project '${project.path}'")
+      }
+    }
+
+    applyAndroid(project, extension, variants)
+  }
+
+  private fun applyAndroid(
+    project: Project,
+    extension: WireExtension,
+    variants: DomainObjectSet<out BaseVariant>
+  ) {
+    variants.all { variant ->
+      println("variant: ${variant.name}")
+      val variantSlug = variant.name.capitalize()
+
+      val sourceConfiguration =
+        project.configurations.create("wire${variantSlug}SourceDependencies")
+
+      val sourcePaths =
+        if (extension.sourcePaths.isNotEmpty() || extension.sourceTrees.isNotEmpty()) {
+          mergeDependencyPaths(project, extension.sourcePaths, extension.sourceTrees)
+        } else {
+          mergeDependencyPaths(
+              project, variant.sourceSets.map { "src/${it.name}/proto" }.toSet()
+          )
+        }
+      sourcePaths.forEach {
+        sourceConfiguration.dependencies.add(project.dependencies.create(it))
+      }
+
+      val protoConfiguration = project.configurations.create("wire${variantSlug}ProtoDependencies")
+
+      if (extension.protoPaths.isNotEmpty() || extension.protoTrees.isNotEmpty()) {
+        val allPaths = mergeDependencyPaths(project, extension.protoPaths, extension.protoTrees)
+        allPaths.forEach { path ->
+          protoConfiguration.dependencies.add(project.dependencies.create(path))
+        }
+      } else {
+        protoConfiguration.dependencies.addAll(sourceConfiguration.dependencies)
+      }
+
+      // at this point, all source and proto file references should be set up for Gradle to resolve.
+
+      val targets = mutableListOf<Target>()
+      val defaultBuildDirectory = "${project.buildDir}/generated/src/main/java"
+      val javaOutDirs = mutableListOf<String>()
+      val kotlinOutDirs = mutableListOf<String>()
+
+      val kotlinTarget = extension.kotlinTarget
+      val javaTarget = extension.javaTarget ?: if (kotlinTarget != null) null else JavaTarget()
+
+      javaTarget?.let { target ->
+        val javaOut = target.out ?: defaultBuildDirectory
+        javaOutDirs += javaOut
+        targets += Target.JavaTarget(
+            elements = target.elements ?: listOf("*"),
+            outDirectory = javaOut,
+            android = target.android,
+            androidAnnotations = target.androidAnnotations,
+            compact = target.compact
+        )
+      }
+      kotlinTarget?.let { target ->
+        val kotlinOut = target.out ?: defaultBuildDirectory
+        kotlinOutDirs += kotlinOut
+        targets += Target.KotlinTarget(
+            elements = target.elements ?: listOf("*"),
+            outDirectory = kotlinOut,
+            android = target.android,
+            javaInterop = target.javaInterop
+        )
+      }
+
+      val wireTask = project.tasks.register("generate${variantSlug}Protos", WireTask::class.java) {
+        it.source(sourceConfiguration)
+        it.sourceConfiguration = sourceConfiguration
+        it.protoConfiguration = protoConfiguration
+        it.roots = extension.roots.toList()
+        it.prunes = extension.prunes.toList()
+        it.rules = extension.rules
+        it.targets = targets
+        it.group = "wire"
+        it.description = "Generate Wire protocol buffer implementation for .proto files"
+      }
+
+      // TODO Use task configuration avoidance once released. https://issuetracker.google.com/issues/117343589
+      val map = javaOutDirs.map(::File)
+      variant.registerJavaGeneratingTask(wireTask.get(), map)
     }
   }
 
@@ -228,6 +344,11 @@ class WirePlugin @Inject constructor(
     if (converted is File) {
       val file = if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
 
+      // Relax path-existing constraint on Android, since variant source sets will refer to
+      // non-existing paths.
+//      if (android) {
+//        return@forEach
+//      }
       check(file.exists()) { "Invalid path string: \"$path\". Path does not exist." }
 
       return when {
