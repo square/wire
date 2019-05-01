@@ -80,7 +80,7 @@ public final class EnumConstant {
     return constants.build();
   }
 
-  static ImmutableList<EnumConstantElement> toElements(ImmutableList<EnumConstant> constants) {
+  static ImmutableList<EnumConstantElement> toElements(List<EnumConstant> constants) {
     ImmutableList.Builder<EnumConstantElement> elements = new ImmutableList.Builder<>();
     for (EnumConstant constant : constants) {
       elements.add(constant.toElement());

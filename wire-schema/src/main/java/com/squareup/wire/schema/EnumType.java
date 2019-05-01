@@ -13,156 +13,124 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import com.squareup.wire.schema.internal.parser.EnumElement;
-import java.util.Collection;
-import java.util.Map;
+import com.squareup.wire.schema.internal.parser.EnumElement
+import com.squareup.wire.schema.Options.ENUM_OPTIONS
 
-import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
+class EnumType private constructor(
+  private val protoType: ProtoType,
+  private val location: Location,
+  private val documentation: String,
+  private val name: String,
+  private val constants: List<EnumConstant>,
+  private val options: Options
+) : Type() {
+  private var allowAlias: Any? = null
 
-public final class EnumType extends Type {
-  static final ProtoMember ALLOW_ALIAS = ProtoMember.get(ENUM_OPTIONS, "allow_alias");
+  // TODO(jrodbx): Konvert to overridden vals, once Type is konverted
+  override fun location() = location
 
-  private final ProtoType protoType;
-  private final Location location;
-  private final String documentation;
-  private final String name;
-  private final ImmutableList<EnumConstant> constants;
-  private final Options options;
-  private Object allowAlias;
+  override fun type() = protoType
+  override fun documentation() = documentation
+  override fun options() = options
+  override fun nestedTypes() = emptyList<Type>() // Enums do not allow nested type declarations.
 
-  private EnumType(ProtoType protoType, Location location, String documentation, String name,
-      ImmutableList<EnumConstant> constants, Options options) {
-    this.protoType = protoType;
-    this.location = location;
-    this.documentation = documentation;
-    this.name = name;
-    this.constants = constants;
-    this.options = options;
-  }
+  fun allowAlias() = "true" == allowAlias
 
-  @Override public Location location() {
-    return location;
-  }
+  /** Returns the constant named `name`, or null if this enum has no such constant.  */
+  fun constant(name: String) = constants.find { it.name() == name }
 
-  @Override public ProtoType type() {
-    return protoType;
-  }
+  /** Returns the constant tagged `tag`, or null if this enum has no such constant.  */
+  fun constant(tag: Int) = constants.find { it.tag() == tag }
 
-  @Override public String documentation() {
-    return documentation;
-  }
+  fun constants() = constants
 
-  @Override public Options options() {
-    return options;
-  }
+  internal override fun link(linker: Linker) {}
 
-  @Override public ImmutableList<Type> nestedTypes() {
-    return ImmutableList.of(); // Enums do not allow nested type declarations.
-  }
-
-  public boolean allowAlias() {
-    return "true".equals(allowAlias);
-  }
-
-  /** Returns the constant named {@code name}, or null if this enum has no such constant. */
-  public EnumConstant constant(String name) {
-    for (EnumConstant constant : constants()) {
-      if (constant.name().equals(name)) {
-        return constant;
-      }
+  internal override fun linkOptions(linker: Linker) {
+    options.link(linker)
+    for (constant in constants) {
+      constant.linkOptions(linker)
     }
-    return null;
+    allowAlias = options.get(ALLOW_ALIAS)
   }
 
-  /** Returns the constant tagged {@code tag}, or null if this enum has no such constant. */
-  public EnumConstant constant(int tag) {
-    for (EnumConstant constant : constants()) {
-      if (constant.tag() == tag) {
-        return constant;
-      }
-    }
-    return null;
-  }
+  internal override fun validate(linker: Linker) {
+    var linker = linker
+    linker = linker.withContext(this)
 
-  public ImmutableList<EnumConstant> constants() {
-    return constants;
-  }
-
-  @Override void link(Linker linker) {
-  }
-
-  @Override void linkOptions(Linker linker) {
-    options.link(linker);
-    for (EnumConstant constant : constants) {
-      constant.linkOptions(linker);
-    }
-    allowAlias = options.get(ALLOW_ALIAS);
-  }
-
-  @Override void validate(Linker linker) {
-    linker = linker.withContext(this);
-
-    if (!"true".equals(allowAlias)) {
-      validateTagUniqueness(linker);
+    if ("true" != allowAlias) {
+      validateTagUniqueness(linker)
     }
   }
 
-  private void validateTagUniqueness(Linker linker) {
-    Multimap<Integer, EnumConstant> tagToConstant = LinkedHashMultimap.create();
-    for (EnumConstant constant : constants) {
-      tagToConstant.put(constant.tag(), constant);
+  private fun validateTagUniqueness(linker: Linker) {
+    val tagToConstants = linkedMapOf<Int, MutableList<EnumConstant>>()
+    constants.forEach {
+      tagToConstants
+          .getOrPut(it.tag()) { mutableListOf() }
+          .add(it)
     }
 
-    for (Map.Entry<Integer, Collection<EnumConstant>> entry : tagToConstant.asMap().entrySet()) {
-      if (entry.getValue().size() > 1) {
-        StringBuilder error = new StringBuilder();
-        error.append(String.format("multiple enum constants share tag %s:", entry.getKey()));
-        int index = 1;
-        for (EnumConstant constant : entry.getValue()) {
-          error.append(String.format("\n  %s. %s (%s)",
-              index++, constant.name(), constant.location()));
+    for ((tag, constants) in tagToConstants) {
+      if (constants.size > 1) {
+        val error = buildString {
+          append("multiple enum constants share tag $tag:")
+          constants.forEachIndexed { index, it ->
+            append("\n  ${index + 1}. ${it.name()} (${it.location()})")
+          }
         }
-        linker.addError("%s", error);
+        linker.addError("%s", error)
       }
     }
   }
 
-  @Override Type retainAll(Schema schema, MarkSet markSet) {
+  internal override fun retainAll(
+    schema: Schema,
+    markSet: MarkSet
+  ): Type? {
     // If this type is not retained, prune it.
-    if (!markSet.contains(protoType)) return null;
+    if (!markSet.contains(protoType)) return null
 
-    ImmutableList.Builder<EnumConstant> retainedConstants = ImmutableList.builder();
-    for (EnumConstant constant : constants) {
-      if (markSet.contains(ProtoMember.get(protoType, constant.name()))) {
-        retainedConstants.add(constant.retainAll(schema, markSet));
-      }
-    }
+    val retainedConstants = constants
+        .filter { markSet.contains(ProtoMember.get(protoType, it.name())) }
+        .map { it.retainAll(schema, markSet) }
 
-    EnumType result = new EnumType(protoType, location, documentation, name,
-        retainedConstants.build(), options.retainAll(schema, markSet));
-    result.allowAlias = allowAlias;
-    return result;
+    val result = EnumType(
+        protoType, location, documentation, name,
+        retainedConstants,
+        options.retainAll(schema, markSet)
+    )
+    result.allowAlias = allowAlias
+    return result
   }
 
-  static EnumType fromElement(ProtoType protoType, EnumElement enumElement) {
-    ImmutableList<EnumConstant> constants = EnumConstant.fromElements(enumElement.getConstants());
-    Options options = new Options(Options.ENUM_OPTIONS, enumElement.getOptions());
-
-    return new EnumType(protoType, enumElement.getLocation(), enumElement.getDocumentation(),
-        enumElement.getName(), constants, options);
-  }
-
-  EnumElement toElement() {
-    return new EnumElement(location,
+  fun toElement(): EnumElement {
+    return EnumElement(
+        location,
         name,
         documentation,
         options.toElements(),
         EnumConstant.toElements(constants)
-    );
+    )
+  }
+
+  companion object {
+    internal val ALLOW_ALIAS = ProtoMember.get(ENUM_OPTIONS, "allow_alias")
+
+    @JvmStatic
+    fun fromElement(
+      protoType: ProtoType,
+      enumElement: EnumElement
+    ): EnumType {
+      val constants = EnumConstant.fromElements(enumElement.constants)
+      val options = Options(Options.ENUM_OPTIONS, enumElement.options)
+
+      return EnumType(
+          protoType, enumElement.location, enumElement.documentation,
+          enumElement.name, constants, options
+      )
+    }
   }
 }
