@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
-import com.google.common.collect.Iterables.getOnlyElement
 import com.squareup.wire.schema.Options.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.MESSAGE_OPTIONS
 import org.assertj.core.api.Assertions.assertThat
@@ -239,9 +237,9 @@ class PrunerTest {
         .include("Message#b")
         .build())
     val message = pruned.getType("Message") as MessageType
-    val onlyOneOf = getOnlyElement(message.oneOfs())
+    val onlyOneOf = message.oneOfs().single()
     assertThat(onlyOneOf.name()).isEqualTo("selection")
-    assertThat(getOnlyElement(onlyOneOf.fields()).name()).isEqualTo("b")
+    assertThat(onlyOneOf.fields().single().name()).isEqualTo("b")
     assertThat(message.field("a")).isNull()
     assertThat(message.field("c")).isNull()
   }
@@ -681,7 +679,7 @@ class PrunerTest {
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")
     val map = field!!.options().map()
-    val onlyOption = getOnlyElement(map.entries)
+    val onlyOption = map.entries.single()
     assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("b")
     assertThat(onlyOption.value).isEqualTo("b")
   }
@@ -710,7 +708,7 @@ class PrunerTest {
     val field = (pruned.getType("Message") as MessageType).field("f")
     val map = field!!.options().get(
         ProtoMember.get(FIELD_OPTIONS, "some_field_options")) as Map<*, *>
-    val onlyOption = getOnlyElement(map.entries)
+    val onlyOption = map.entries.single()
     assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("a")
     assertThat(onlyOption.value).isEqualTo("a")
   }
@@ -747,7 +745,7 @@ class PrunerTest {
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")
     val map = field!!.options().map()
-    val onlyOption = getOnlyElement(map.entries)
+    val onlyOption = map.entries.single()
     assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("b")
     assertThat(onlyOption.value).isEqualTo("b")
   }
@@ -799,7 +797,7 @@ class PrunerTest {
     val message = pruned.getType("Message") as MessageType
     assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "a"))).isNull()
     assertThat(message.options().get(ProtoMember.get(MESSAGE_OPTIONS, "b")))
-        .isEqualTo(ImmutableList.of("b1", "b2"))
+        .isEqualTo(listOf("b1", "b2"))
   }
 
   @Test

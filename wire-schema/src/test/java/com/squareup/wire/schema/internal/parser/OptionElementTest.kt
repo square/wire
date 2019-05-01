@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
-import com.google.common.collect.ImmutableMap
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP
@@ -44,11 +42,13 @@ class OptionElementTest {
   @Test
   fun listToSchema() {
     val option = OptionElement.create(
-        "foo", LIST,
-        ImmutableList.of(
+        "foo",
+        LIST,
+        listOf(
             OptionElement.create("ping", STRING, "pong", true),
             OptionElement.create("kit", STRING, "kat")
-        ), true
+        ),
+        true
     )
     val expected = """
         |(foo) = [
@@ -62,8 +62,7 @@ class OptionElementTest {
   @Test
   fun mapToSchema() {
     val option = OptionElement.create(
-        "foo", MAP,
-        ImmutableMap.of("ping", "pong", "kit", ImmutableList.of("kat", "kot"))
+        "foo", MAP, mapOf("ping" to "pong", "kit" to listOf("kat", "kot"))
     )
     val expected = """
         |foo = {

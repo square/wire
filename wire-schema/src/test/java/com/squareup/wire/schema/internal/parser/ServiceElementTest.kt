@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
@@ -110,7 +109,7 @@ class ServiceElementTest {
     val service = ServiceElement(
         location = location,
         name = "Service",
-        options = ImmutableList.of(kitKat, fooBar),
+        options = listOf(kitKat, fooBar),
         rpcs = listOf(
             RpcElement(
                 location = location,
