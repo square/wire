@@ -955,8 +955,8 @@ class SchemaTest {
         )
         .schema()
     val enumType = schema.getType("Enum") as EnumType
-    assertThat(enumType.constant("A")!!.tag()).isEqualTo(1)
-    assertThat(enumType.constant("B")!!.tag()).isEqualTo(1)
+    assertThat(enumType.constant("A")!!.tag).isEqualTo(1)
+    assertThat(enumType.constant("B")!!.tag).isEqualTo(1)
   }
 
   @Test

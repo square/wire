@@ -167,7 +167,7 @@ class KotlinGenerator private constructor(
             newName("value", "value")
             newName("ADAPTER", "ADAPTER")
             message.constants().forEach { constant ->
-              newName(constant.name(), constant)
+              newName(constant.name, constant)
             }
           }
           is MessageType -> {
@@ -909,14 +909,14 @@ class KotlinGenerator private constructor(
 
     message.constants().forEach { constant ->
       builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
-          .addSuperclassConstructorParameter("%L", constant.tag())
+          .addSuperclassConstructorParameter("%L", constant.tag)
           .apply {
-            if (constant.documentation().isNotBlank()) {
-              addKdoc("%L\n", constant.documentation())
+            if (constant.documentation.isNotBlank()) {
+              addKdoc("%L\n", constant.documentation)
             }
-            if (constant.options().get(ENUM_DEPRECATED) == "true") {
+            if (constant.options.get(ENUM_DEPRECATED) == "true") {
               addAnnotation(AnnotationSpec.builder(Deprecated::class)
-                  .addMember("message = %S", "${constant.name()} is deprecated")
+                  .addMember("message = %S", "${constant.name} is deprecated")
                   .build())
             }
           }
@@ -937,7 +937,7 @@ class KotlinGenerator private constructor(
         .apply {
           addCode("return when (value) {\n⇥")
           message.constants().forEach { constant ->
-            addCode("%L -> %L\n", constant.tag(), nameAllocator[constant])
+            addCode("%L -> %L\n", constant.tag, nameAllocator[constant])
           }
           addCode("else -> throw IllegalArgumentException(%P)", "Unexpected value: \$value")
           addCode("\n⇤}\n") // close the block

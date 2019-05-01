@@ -313,7 +313,7 @@ final class Linker {
       if (type instanceof EnumType) {
         EnumType enumType = (EnumType) type;
         for (EnumConstant enumConstant : enumType.constants()) {
-          nameToType.put(enumConstant.name(), enumType);
+          nameToType.put(enumConstant.getName(), enumType);
         }
       }
     }
@@ -326,7 +326,7 @@ final class Linker {
         error.append(String.format("multiple enums share constant %s:", constant));
         for (EnumType enumType : entry.getValue()) {
           error.append(String.format("\n  %s. %s.%s (%s)",
-              index++, enumType.type(), constant, enumType.constant(constant).location()));
+              index++, enumType.type(), constant, enumType.constant(constant).getLocation()));
         }
         addError("%s", error);
       }
