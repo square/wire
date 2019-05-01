@@ -106,7 +106,7 @@ final class SchemaProtoAdapterFactory {
     @Override public void encode(ProtoWriter writer, Object value) throws IOException {
       if (value instanceof String) {
         EnumConstant constant = enumType.constant((String) value);
-        writer.writeVarint32(constant.tag());
+        writer.writeVarint32(constant.getTag());
       } else if (value instanceof Integer) {
         writer.writeVarint32((Integer) value);
       } else {
@@ -117,7 +117,7 @@ final class SchemaProtoAdapterFactory {
     @Override public Object decode(ProtoReader reader) throws IOException {
       Integer value = ProtoAdapter.UINT32.decode(reader);
       EnumConstant constant = enumType.constant(value);
-      return constant != null ? constant.name() : value;
+      return constant != null ? constant.getName() : value;
     }
 
     @Override public Object redact(Object value) {

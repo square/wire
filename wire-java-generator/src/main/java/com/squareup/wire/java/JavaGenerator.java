@@ -176,7 +176,7 @@ public final class JavaGenerator {
         nameAllocator.newName("writer", "writer");
 
         for (EnumConstant constant : ((EnumType) type).constants()) {
-          nameAllocator.newName(constant.name(), constant);
+          nameAllocator.newName(constant.getName(), constant);
         }
       }
 
@@ -423,7 +423,7 @@ public final class JavaGenerator {
     // Enum constant options, each of which requires a constructor parameter and a field.
     Set<ProtoMember> allOptionFieldsBuilder = new LinkedHashSet<>();
     for (EnumConstant constant : type.constants()) {
-      for (ProtoMember protoMember : constant.options().map().keySet()) {
+      for (ProtoMember protoMember : constant.getOptions().map().keySet()) {
         Field optionField = schema.getField(protoMember);
         if (allOptionFieldsBuilder.add(protoMember)) {
           TypeName optionJavaType = typeName(optionField.type());
@@ -447,30 +447,30 @@ public final class JavaGenerator {
     Set<Integer> seenTags = new LinkedHashSet<>();
     for (EnumConstant constant : type.constants()) {
       Object[] enumArgs = new Object[allOptionMembers.size() + 1];
-      enumArgs[0] = constant.tag();
+      enumArgs[0] = constant.getTag();
       for (int i = 0; i < allOptionMembers.size(); i++) {
         ProtoMember protoMember = allOptionMembers.get(i);
         Field field = schema.getField(protoMember);
-        Object fieldValue = constant.options().map().get(protoMember);
+        Object fieldValue = constant.getOptions().map().get(protoMember);
         enumArgs[i + 1] = fieldValue != null
             ? fieldInitializer(field.type(), fieldValue)
             : null;
       }
 
       TypeSpec.Builder constantBuilder = TypeSpec.anonymousClassBuilder(enumArgsFormat, enumArgs);
-      if (!constant.documentation().isEmpty()) {
-        constantBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.documentation()));
+      if (!constant.getDocumentation().isEmpty()) {
+        constantBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.getDocumentation()));
       }
 
-      if ("true".equals(constant.options().get(ENUM_DEPRECATED))) {
+      if ("true".equals(constant.getOptions().get(ENUM_DEPRECATED))) {
         constantBuilder.addAnnotation(Deprecated.class);
       }
 
-      builder.addEnumConstant(constant.name(), constantBuilder.build());
+      builder.addEnumConstant(constant.getName(), constantBuilder.build());
 
       // Ensure constant case tags are unique, which might not be the case if allow_alias is true.
-      if (seenTags.add(constant.tag())) {
-        fromValueBuilder.addStatement("case $L: return $L", constant.tag(), constant.name());
+      if (seenTags.add(constant.getTag())) {
+        fromValueBuilder.addStatement("case $L: return $L", constant.getTag(), constant.getName());
       }
     }
 
@@ -742,10 +742,10 @@ public final class JavaGenerator {
       String name = nameAllocator.get(constant);
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(javaType, name)
           .addModifiers(PROTECTED, FINAL);
-      if (!constant.documentation().isEmpty()) {
-        fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.documentation()));
+      if (!constant.getDocumentation().isEmpty()) {
+        fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.getDocumentation()));
       }
-      if ("true".equals(constant.options().get(ENUM_DEPRECATED))) {
+      if ("true".equals(constant.getOptions().get(ENUM_DEPRECATED))) {
         fieldBuilder.addAnnotation(Deprecated.class);
       }
       builder.addField(fieldBuilder.build());
@@ -761,7 +761,7 @@ public final class JavaGenerator {
         .addParameter(javaType, value);
     for (EnumConstant constant : type.constants()) {
       String name = nameAllocator.get(constant);
-      toValueBuilder.addStatement("if ($N.equals($N)) return $L", value, name, constant.tag());
+      toValueBuilder.addStatement("if ($N.equals($N)) return $L", value, name, constant.getTag());
     }
     toValueBuilder.addStatement("return $L", -1);
     builder.addMethod(toValueBuilder.build());
@@ -773,7 +773,7 @@ public final class JavaGenerator {
     fromValueBuilder.beginControlFlow("switch ($N)", value);
     for (EnumConstant constant : type.constants()) {
       String name = nameAllocator.get(constant);
-      fromValueBuilder.addStatement("case $L: return $N", constant.tag(), name);
+      fromValueBuilder.addStatement("case $L: return $N", constant.getTag(), name);
     }
     fromValueBuilder.addStatement("default: throw new $T($N, $T.class)",
         EnumConstantNotFoundException.class, value, javaType);
@@ -1641,7 +1641,7 @@ public final class JavaGenerator {
     Object defaultValue = field.getDefault();
 
     if (defaultValue == null && isEnum(field.type())) {
-      defaultValue = enumDefault(field.type()).name();
+      defaultValue = enumDefault(field.type()).getName();
     }
 
     if (field.type().isScalar() || defaultValue != null) {

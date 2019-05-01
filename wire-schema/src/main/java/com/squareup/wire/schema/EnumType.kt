@@ -39,10 +39,10 @@ class EnumType private constructor(
   fun allowAlias() = "true" == allowAlias
 
   /** Returns the constant named `name`, or null if this enum has no such constant.  */
-  fun constant(name: String) = constants.find { it.name() == name }
+  fun constant(name: String) = constants.find { it.name == name }
 
   /** Returns the constant tagged `tag`, or null if this enum has no such constant.  */
-  fun constant(tag: Int) = constants.find { it.tag() == tag }
+  fun constant(tag: Int) = constants.find { it.tag == tag }
 
   fun constants() = constants
 
@@ -69,7 +69,7 @@ class EnumType private constructor(
     val tagToConstants = linkedMapOf<Int, MutableList<EnumConstant>>()
     constants.forEach {
       tagToConstants
-          .getOrPut(it.tag()) { mutableListOf() }
+          .getOrPut(it.tag) { mutableListOf() }
           .add(it)
     }
 
@@ -78,7 +78,7 @@ class EnumType private constructor(
         val error = buildString {
           append("multiple enum constants share tag $tag:")
           constants.forEachIndexed { index, it ->
-            append("\n  ${index + 1}. ${it.name()} (${it.location()})")
+            append("\n  ${index + 1}. ${it.name} (${it.location})")
           }
         }
         linker.addError("%s", error)
@@ -94,7 +94,7 @@ class EnumType private constructor(
     if (!markSet.contains(protoType)) return null
 
     val retainedConstants = constants
-        .filter { markSet.contains(ProtoMember.get(protoType, it.name())) }
+        .filter { markSet.contains(ProtoMember.get(protoType, it.name)) }
         .map { it.retainAll(schema, markSet) }
 
     val result = EnumType(

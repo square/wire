@@ -81,7 +81,7 @@ final class Pruner {
         }
       } else if (type instanceof EnumType) {
         for (EnumConstant enumConstant : ((EnumType) type).constants()) {
-          markRoots(ProtoMember.get(protoType, enumConstant.name()));
+          markRoots(ProtoMember.get(protoType, enumConstant.getName()));
         }
       } else {
         throw new AssertionError();
@@ -132,7 +132,7 @@ final class Pruner {
         } else if (type instanceof EnumType) {
           EnumConstant constant = ((EnumType) type).constant(member);
           if (constant != null) {
-            markOptions(constant.options());
+            markOptions(constant.getOptions());
             continue;
           }
         }
@@ -216,8 +216,8 @@ final class Pruner {
     markOptions(wireEnum.options());
     if (marks.containsAllMembers(wireEnum.type())) {
       for (EnumConstant constant : wireEnum.constants()) {
-        if (marks.contains(ProtoMember.get(wireEnum.type(), constant.name()))) {
-          markOptions(constant.options());
+        if (marks.contains(ProtoMember.get(wireEnum.type(), constant.getName()))) {
+          markOptions(constant.getOptions());
         }
       }
     }
