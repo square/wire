@@ -15,7 +15,7 @@ jar {
 
 dependencies {
   api deps.kotlin.stdlib.jdk8
-  implementation project(':wire-runtime')
+  implementation project(path: ':wire-runtime', configuration: 'runtimeElements')
   api project(':wire-schema')
   implementation project(':wire-java-generator')
   implementation project(':wire-kotlin-generator')

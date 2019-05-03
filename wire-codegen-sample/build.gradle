@@ -1,5 +1,4 @@
 apply plugin: 'com.liferay.maven.plugin.builder'
-apply plugin: 'org.jetbrains.kotlin.jvm'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -18,7 +17,7 @@ buildPluginDescriptor {
 }
 
 dependencies {
-  implementation project(':wire-runtime')
+  implementation project(path: ':wire-runtime', configuration: 'runtimeElements')
   implementation project(':wire-schema')
   implementation project(':wire-java-generator')
   implementation deps.okio
