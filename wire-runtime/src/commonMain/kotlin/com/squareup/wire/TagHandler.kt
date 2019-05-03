@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import kotlin.jvm.JvmField
+
 interface TagHandler {
 
   /**
