@@ -17,7 +17,7 @@ buildPluginDescriptor {
 }
 
 dependencies {
-  implementation project(':wire-runtime')
+  implementation project(path: ':wire-runtime', configuration: 'runtimeElements')
   implementation project(':wire-schema')
   implementation project(':wire-java-generator')
   implementation deps.okio

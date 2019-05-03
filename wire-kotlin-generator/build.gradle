@@ -12,7 +12,7 @@ jar {
 
 dependencies {
   api project(':wire-schema')
-  implementation project(':wire-runtime')
+  implementation project(path: ':wire-runtime', configuration: 'runtimeElements')
   implementation project(':wire-grpc-client')
   api deps.kotlin.stdlib.jdk8
   implementation deps.okio

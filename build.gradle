@@ -125,7 +125,9 @@ subprojects { project ->
     configurations.archives.artifacts.removeAll { it.file =~ 'tar' || it.file =~ 'zip' }
   }
 
-  apply plugin: 'com.vanniktech.maven.publish'
+  if (project.name != 'wire-runtime') {
+    apply plugin: 'com.vanniktech.maven.publish'
+  }
   apply plugin: 'checkstyle'
 
   afterEvaluate {
