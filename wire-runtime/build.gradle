@@ -83,6 +83,7 @@ kotlin {
 
 afterEvaluate {
   tasks.create('installLocally') {
+    dependsOn 'publishMetadataPublicationToTestRepository'
     dependsOn 'publishJvmPublicationToTestRepository'
   }
 }
