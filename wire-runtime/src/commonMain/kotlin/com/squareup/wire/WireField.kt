@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import kotlin.jvm.JvmName
+
 /**
  * Annotates generated [Message] fields with metadata for serialization and deserialization.
  */
