@@ -50,11 +50,16 @@ buildscript {
       'okhttp': "com.squareup.okhttp3:okhttp:${versions.okhttp}",
       'kotlin': [
           'stdlib': [
+              'common': "org.jetbrains.kotlin:kotlin-stdlib-common",
               'jdk6': "org.jetbrains.kotlin:kotlin-stdlib",
               'jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+              'js': "org.jetbrains.kotlin:kotlin-stdlib-js",
           ],
           'test': [
+              'common': "org.jetbrains.kotlin:kotlin-test-common",
+              'annotations': "org.jetbrains.kotlin:kotlin-test-annotations-common",    
               'junit': "org.jetbrains.kotlin:kotlin-test-junit",
+              'js': "org.jetbrains.kotlin:kotlin-test-js",
           ],
           'coroutines': [
               'core': "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
