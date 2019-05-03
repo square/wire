@@ -13,7 +13,7 @@ dependencies {
     transitive = false
     force = true
   }
-  latest project(':wire-runtime')
+  latest project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
 }
 
 task japicmp(type: JapicmpTask, dependsOn: 'jar') {

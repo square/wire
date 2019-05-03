@@ -1,12 +1,98 @@
-apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
-dependencies {
-  api deps.okio
-  api deps.kotlin.stdlib.jdk6
-  compileOnly deps.android
-  compileOnly deps.jsr305
-  testImplementation deps.junit
-  testImplementation deps.assertj
+kotlin {
+  jvm()
+  js() {
+    configure([compilations.main, compilations.test]) {
+      tasks.getByName(compileKotlinTaskName).kotlinOptions {
+        moduleKind = "commonjs"
+      }
+    }
+  }
+  iosX64() {
+    binaries {
+      framework()
+    }
+  }
+  iosArm64() {
+    binaries {
+      framework()
+    }
+  }
+  // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
+  linuxX64()
+  macosX64()
+  mingwX64('winX64')
+  sourceSets {
+    commonMain {
+      dependencies {
+        api deps.kotlin.stdlib.common
+      }
+    }
+    commonTest {
+      dependencies {
+        implementation deps.kotlin.test.common
+        implementation deps.kotlin.test.annotations
+      }
+    }
+    jvmMain {
+      dependencies {
+        api deps.kotlin.stdlib.jdk6
+        api deps.okio
+        compileOnly deps.android
+      }
+    }
+    jvmTest {
+      dependencies {
+        implementation deps.assertj
+        implementation deps.kotlin.test.junit
+      }
+    }
+    test {
+      // Not required, but helps IntelliJ configure inter-project dependencies:
+      // https://youtrack.jetbrains.com/issue/KT-31179
+      dependsOn jvmTest
+    }
+    jsMain {
+      dependencies {
+        api deps.kotlin.stdlib.js
+      }
+    }
+    jsTest {
+      dependencies {
+        implementation deps.kotlin.test.js
+      }
+    }
+    nativeMain {
+      dependsOn commonMain
+    }
+    nativeTest {
+      dependsOn commonTest
+    }
+
+    configure([iosX64Main, iosArm64Main, linuxX64Main, macosX64Main, winX64Main]) {
+      dependsOn nativeMain
+    }
+    configure([iosX64Test, iosArm64Test, linuxX64Test, macosX64Test, winX64Test]) {
+      dependsOn nativeTest
+    }
+  }
+}
+
+afterEvaluate {
+  tasks.create('installLocally') {
+    dependsOn 'publishJvmPublicationToTestRepository'
+  }
+}
+
+// TODO(egorand): Remove when https://github.com/srs/gradle-node-plugin/issues/301 is fixed
+repositories.whenObjectAdded {
+  if (it instanceof IvyArtifactRepository) {
+    metadataSources {
+      artifact()
+    }
+  }
 }
 
 apply from: 'jvm.gradle'
+apply from: "$rootDir/gradle/gradle-mvn-mpp-push.gradle"
