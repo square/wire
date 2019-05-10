@@ -62,8 +62,5 @@ def installProtoJars = tasks.register("installProtoJars", Copy) {
 
 tasks.withType(Test).configureEach {
   dependsOn(installProtoJars)
-}
-
-test {
   dependsOn(':wire-runtime:installLocally')
 }

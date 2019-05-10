@@ -14,7 +14,7 @@ dependencies {
   api project(path: ':wire-runtime', configuration: 'runtimeElements')
   implementation project(':wire-java-generator')
   implementation project(':wire-kotlin-generator')
-  implementation deps.okio
+  implementation deps.okio.jvm
   implementation deps.guava
   implementation deps.jimfs
 }

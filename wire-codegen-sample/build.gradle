@@ -20,7 +20,7 @@ dependencies {
   implementation project(path: ':wire-runtime', configuration: 'runtimeElements')
   implementation project(':wire-schema')
   implementation project(':wire-java-generator')
-  implementation deps.okio
+  implementation deps.okio.jvm
   implementation deps.guava
   implementation deps.javapoet
   implementation deps.maven.core

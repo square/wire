@@ -21,7 +21,7 @@ dependencies {
   api project(':wire-runtime')
   api deps.kotlin.stdlib.jdk8
   api deps.gson
-  api deps.okio
+  api deps.okio.jvm
   testImplementation deps.junit
   testImplementation deps.assertj
 }

@@ -29,6 +29,7 @@ kotlin {
     commonMain {
       dependencies {
         api deps.kotlin.stdlib.common
+        api deps.okio.multiplatform
       }
     }
     commonTest {
@@ -40,7 +41,6 @@ kotlin {
     jvmMain {
       dependencies {
         api deps.kotlin.stdlib.jdk6
-        api deps.okio
         compileOnly deps.android
       }
     }
@@ -83,6 +83,7 @@ kotlin {
 
 afterEvaluate {
   tasks.create('installLocally') {
+    dependsOn 'publishKotlinMultiplatformPublicationToTestRepository'
     dependsOn 'publishMetadataPublicationToTestRepository'
     dependsOn 'publishJvmPublicationToTestRepository'
   }
