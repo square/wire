@@ -38,7 +38,7 @@ import java.io.OutputStream
 import java.lang.Double.doubleToLongBits
 import java.lang.Float.floatToIntBits
 
-abstract class ProtoAdapter<E>(
+actual abstract class ProtoAdapter<E>(
   private val fieldEncoding: FieldEncoding,
   val javaType: Class<*>?
 ) {
@@ -46,7 +46,7 @@ abstract class ProtoAdapter<E>(
   internal var repeatedAdapter: ProtoAdapter<List<E>>? = null
 
   /** Returns the redacted form of `value`. */
-  abstract fun redact(value: E): E
+  actual abstract fun redact(value: E): E
 
   /**
    * The size of the non-null data `value`. This does not include the size required for a

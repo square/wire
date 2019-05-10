@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright 2015 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmName("Internal")
+package com.squareup.wire
 
-package com.squareup.wire.internal
-
-import com.squareup.wire.ProtoAdapter
-
-// Methods for generated code use only. Not subject to public API rules.
-
-fun <T> redactElements(list: java.util.List<T>, adapter: ProtoAdapter<T>) {
-  for (i in 0 until list.size) {
-    list[i] = adapter.redact(list[i])
-  }
-}
-
-fun <T> redactElements(map: java.util.Map<*, T>, adapter: ProtoAdapter<T>) {
-  for (entry in map.entrySet()) {
-    entry.setValue(adapter.redact(entry.value))
-  }
+expect abstract class ProtoAdapter<E> {
+  abstract fun redact(value: E): E
 }

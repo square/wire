@@ -25,3 +25,5 @@ actual annotation class Throws(actual vararg val exceptionClasses: KClass<out Th
 actual abstract class ObjectStreamException : IOException()
 
 actual fun <T> MutableList<T>.toUnmodifiableList(): List<T> = toList()
+
+actual fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = toMap()

@@ -24,3 +24,6 @@ actual typealias Throws = kotlin.jvm.Throws
 actual typealias ObjectStreamException = java.io.ObjectStreamException
 
 actual fun <T> MutableList<T>.toUnmodifiableList(): List<T> = Collections.unmodifiableList(this)
+
+actual fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
+    Collections.unmodifiableMap(this)
