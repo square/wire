@@ -15,16 +15,12 @@
  */
 package com.squareup.wire.internal
 
-import java.io.ObjectStreamException
-import java.io.Serializable
-import java.util.AbstractList
-import java.util.ArrayList
-import java.util.RandomAccess
+import kotlin.jvm.JvmName
 
 /** A wrapper around an empty/immutable list which only switches to mutable on first mutation. */
 internal class MutableOnWriteList<T>(
   private val immutableList: List<T>
-) : AbstractList<T>(), RandomAccess, Serializable {
+) : AbstractMutableList<T>(), RandomAccess, Serializable {
   internal var mutableList: List<T> = immutableList
 
   override fun get(index: Int): T = mutableList[index]
