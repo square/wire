@@ -23,3 +23,5 @@ expect interface Serializable
 expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable>)
 
 expect abstract class ObjectStreamException : IOException
+
+expect fun <T> MutableList<T>.toUnmodifiableList(): List<T>

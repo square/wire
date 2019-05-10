@@ -23,3 +23,5 @@ actual interface Serializable
 actual annotation class Throws(actual vararg val exceptionClasses: KClass<out Throwable>)
 
 actual abstract class ObjectStreamException : IOException()
+
+actual fun <T> MutableList<T>.toUnmodifiableList(): List<T> = toList()
