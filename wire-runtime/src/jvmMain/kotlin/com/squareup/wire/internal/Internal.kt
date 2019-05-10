@@ -51,7 +51,7 @@ fun <T> immutableCopyOf(name: String, list: List<T>?): List<T> {
   val result = ImmutableList(list)
   // Check after the list has been copied to defend against races.
   require(null !in result) { "$name.contains(null)" }
-  return result
+  return result as List<T>
 }
 
 fun <K, V> immutableCopyOf(name: String, map: Map<K, V>?): Map<K, V> {

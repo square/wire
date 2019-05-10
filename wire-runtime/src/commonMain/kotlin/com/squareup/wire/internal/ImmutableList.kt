@@ -15,14 +15,9 @@
  */
 package com.squareup.wire.internal
 
-import java.io.ObjectStreamException
-import java.io.Serializable
-import java.util.AbstractList
-import java.util.ArrayList
-import java.util.Collections
-import java.util.RandomAccess
+import kotlin.jvm.JvmName
 
-internal class ImmutableList<T>(list: List<T>) : AbstractList<T>(), RandomAccess, Serializable {
+internal class ImmutableList<T>(list: List<T>) : AbstractList<T?>(), RandomAccess, Serializable {
   private val list = ArrayList(list)
 
   override val size: Int
@@ -30,10 +25,10 @@ internal class ImmutableList<T>(list: List<T>) : AbstractList<T>(), RandomAccess
 
   override fun get(index: Int): T = list[index]
 
-  override fun toArray(): Array<Any> {
-    return list.toArray() // Optimizing for mutable copy by MutableOnWriteList.
+  override fun toArray(): Array<Any?> {
+    return list.toTypedArray() // Optimizing for mutable copy by MutableOnWriteList.
   }
 
   @Throws(ObjectStreamException::class)
-  private fun writeReplace(): Any = Collections.unmodifiableList(list)
+  private fun writeReplace(): Any = list.toUnmodifiableList()
 }

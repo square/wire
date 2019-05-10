@@ -15,8 +15,12 @@
  */
 package com.squareup.wire.internal
 
+import java.util.Collections
+
 actual typealias Serializable = java.io.Serializable
 
 actual typealias Throws = kotlin.jvm.Throws
 
 actual typealias ObjectStreamException = java.io.ObjectStreamException
+
+actual fun <T> MutableList<T>.toUnmodifiableList(): List<T> = Collections.unmodifiableList(this)
