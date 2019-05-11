@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:JvmName("Internal")
+@file:JvmMultifileClass
 
 package com.squareup.wire.internal
 

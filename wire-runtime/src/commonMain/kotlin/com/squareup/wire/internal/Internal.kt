@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:JvmName("Internal")
+@file:JvmMultifileClass
+
 package com.squareup.wire.internal
 
 import com.squareup.wire.ProtoAdapter
+import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 // Methods for generated code use only. Not subject to public API rules.
