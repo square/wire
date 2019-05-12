@@ -15,19 +15,19 @@
  */
 package com.squareup.wire.internal
 
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class InternalTest {
   @Test fun countNonNull() {
-    assertThat(countNonNull(null, null)).isEqualTo(0)
-    assertThat(countNonNull("xx", null)).isEqualTo(1)
-    assertThat(countNonNull("xx", "xx")).isEqualTo(2)
-    assertThat(countNonNull("xx", "xx", null)).isEqualTo(2)
-    assertThat(countNonNull("xx", "xx", "xx")).isEqualTo(3)
-    assertThat(countNonNull("xx", "xx", "xx", null)).isEqualTo(3)
-    assertThat(countNonNull("xx", "xx", "xx", "xx")).isEqualTo(4)
-    assertThat(countNonNull("xx", "xx", "xx", "xx", null)).isEqualTo(4)
-    assertThat(countNonNull("xx", "xx", "xx", "xx", "xx")).isEqualTo(5)
+    assertEquals(0, countNonNull(null, null))
+    assertEquals(1, countNonNull("xx", null))
+    assertEquals(2, countNonNull("xx", "xx"))
+    assertEquals(2, countNonNull("xx", "xx", null))
+    assertEquals(3, countNonNull("xx", "xx", "xx"))
+    assertEquals(3, countNonNull("xx", "xx", "xx", null))
+    assertEquals(4, countNonNull("xx", "xx", "xx", "xx"))
+    assertEquals(4, countNonNull("xx", "xx", "xx", "xx", null))
+    assertEquals(5, countNonNull("xx", "xx", "xx", "xx", "xx"))
   }
 }
