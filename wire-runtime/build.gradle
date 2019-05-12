@@ -50,11 +50,6 @@ kotlin {
         implementation deps.kotlin.test.junit
       }
     }
-    test {
-      // Not required, but helps IntelliJ configure inter-project dependencies:
-      // https://youtrack.jetbrains.com/issue/KT-31179
-      dependsOn jvmTest
-    }
     jsMain {
       dependencies {
         api deps.kotlin.stdlib.js
