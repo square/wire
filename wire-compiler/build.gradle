@@ -15,11 +15,11 @@ jar {
 
 dependencies {
   api deps.kotlin.stdlib.jdk8
-  implementation project(':wire-runtime')
+  implementation project(path: ':wire-runtime', configuration: 'runtimeElements')
   api project(':wire-schema')
   implementation project(':wire-java-generator')
   implementation project(':wire-kotlin-generator')
-  implementation deps.okio
+  implementation deps.okio.jvm
   implementation deps.guava
   implementation deps.javapoet
   compileOnly deps.jsr305

@@ -10,7 +10,7 @@ buildscript {
       'kotlinpoet': '1.1.0',
       'jsr305': '3.0.2',
       'kotlin': '1.3.30',
-      'okio': '2.2.2',
+      'okio': '2.3.0-SNAPSHOT',
       'okhttp': '3.14.0',
       'moshi': '1.6.0',
       'protobuf': '0.8.8',
@@ -37,7 +37,10 @@ buildscript {
       ],
       'android': "com.google.android:android:${versions.android}",
       'guava': "com.google.guava:guava:${versions.guava}",
-      'okio': "com.squareup.okio:okio:${versions.okio}",
+      'okio': [
+          'jvm': "com.squareup.okio:okio:${versions.okio}",
+          'multiplatform': "com.squareup.okio:okio-multiplatform:${versions.okio}",
+      ],
       'jsr305': "com.google.code.findbugs:jsr305:${versions.jsr305}",
       'grpc': [
           "genJava": "io.grpc:protoc-gen-grpc-java:${versions.grpc}",
@@ -51,11 +54,16 @@ buildscript {
       'okhttp': "com.squareup.okhttp3:okhttp:${versions.okhttp}",
       'kotlin': [
           'stdlib': [
+              'common': "org.jetbrains.kotlin:kotlin-stdlib-common",
               'jdk6': "org.jetbrains.kotlin:kotlin-stdlib",
               'jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+              'js': "org.jetbrains.kotlin:kotlin-stdlib-js",
           ],
           'test': [
+              'common': "org.jetbrains.kotlin:kotlin-test-common",
+              'annotations': "org.jetbrains.kotlin:kotlin-test-annotations-common",    
               'junit': "org.jetbrains.kotlin:kotlin-test-junit",
+              'js': "org.jetbrains.kotlin:kotlin-test-js",
           ],
           'coroutines': [
               'core': "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
@@ -108,6 +116,7 @@ allprojects {
   repositories {
     google()
     mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
   }
 }
 
@@ -122,7 +131,9 @@ subprojects { project ->
     configurations.archives.artifacts.removeAll { it.file =~ 'tar' || it.file =~ 'zip' }
   }
 
-  apply plugin: 'com.vanniktech.maven.publish'
+  if (project.name != 'wire-runtime') {
+    apply plugin: 'com.vanniktech.maven.publish'
+  }
   apply plugin: 'checkstyle'
 
   afterEvaluate {

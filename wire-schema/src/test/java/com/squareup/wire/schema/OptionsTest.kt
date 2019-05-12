@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableMap
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -50,9 +49,9 @@ class OptionsTest {
 
     val bar = schema.getType("Bar") as MessageType
     assertThat(bar.field("a")!!.options().map())
-        .isEqualTo(ImmutableMap.of(fooOptions, ImmutableMap.of(opt1, "123", opt2, "baz")))
+        .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "123", opt2 to "baz")))
     assertThat(bar.field("b")!!.options().map())
-        .isEqualTo(ImmutableMap.of(fooOptions, ImmutableMap.of(opt1, "456", opt2, "quux")))
+        .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "456", opt2 to "quux")))
   }
 
   @Test
@@ -85,7 +84,7 @@ class OptionsTest {
 
     val message = schema.getType("Message") as MessageType
     assertThat(message.field("b")!!.options().map())
-        .isEqualTo(ImmutableMap.of(foo, ImmutableMap.of(bar, ImmutableMap.of(baz, "123"))))
+        .isEqualTo(mapOf(foo to mapOf(bar to mapOf(baz to "123"))))
   }
 
   @Test
@@ -135,7 +134,8 @@ class OptionsTest {
             |    [a.c.even_more_options]: {string_option: "foo"}
             |  };
             |}
-            """.trimMargin())
+            """.trimMargin()
+        )
         .schema()
     val moreOptionsType = ProtoType.get("a.b.MoreOptions")
     val evenMoreOptionsType = ProtoType.get("a.c.EvenMoreOptions")
@@ -145,9 +145,7 @@ class OptionsTest {
     val message = schema.getType("a.d.Message") as MessageType
 
     assertThat(message.options().map())
-        .isEqualTo(ImmutableMap.of(moreOptions,
-            ImmutableMap.of(evenMoreOptions, ImmutableMap.of(stringOption, "foo")))
-        )
+        .isEqualTo(mapOf(moreOptions to mapOf(evenMoreOptions to mapOf(stringOption to "foo"))))
   }
 
   @Test

@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.internal.parser.ExtendElement
 import com.squareup.wire.schema.internal.parser.FieldElement
 import com.squareup.wire.schema.internal.parser.MessageElement
@@ -72,7 +71,8 @@ class ProtoFileTest {
                     OptionElement.create("methodoption", OptionElement.Kind.NUMBER, 1)
                 )
             )
-        ))
+        )
+    )
     val service2 = ServiceElement(
         location = location.at(24, 1),
         name = "Service2"
@@ -80,12 +80,12 @@ class ProtoFileTest {
     val fileElement = ProtoFileElement(
         location = location,
         packageName = "example.simple",
-        imports = ImmutableList.of("example.thing"),
-        publicImports = ImmutableList.of("example.other"),
-        types = ImmutableList.of(element1, element2),
-        services = ImmutableList.of(service1, service2),
-        extendDeclarations = ImmutableList.of(extend1, extend2),
-        options = ImmutableList.of(option1, option2)
+        imports = listOf("example.thing"),
+        publicImports = listOf("example.other"),
+        types = listOf(element1, element2),
+        services = listOf(service1, service2),
+        extendDeclarations = listOf(extend1, extend2),
+        options = listOf(option1, option2)
     )
     val file = ProtoFile.get(fileElement)
 

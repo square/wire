@@ -15,3 +15,5 @@ include ':wire-runtime:japicmp'
 include ':wire-schema'
 include ':wire-test-utils'
 include ':wire-tests'
+
+enableFeaturePreview('GRADLE_METADATA')

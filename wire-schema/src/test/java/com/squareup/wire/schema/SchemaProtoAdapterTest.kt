@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
-import com.google.common.collect.ImmutableMap
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
@@ -29,7 +27,8 @@ import java.net.ProtocolException
 
 class SchemaProtoAdapterTest {
   private val coffeeSchema = RepoBuilder()
-      .add("coffee.proto",
+      .add(
+          "coffee.proto",
           """
           |message CafeDrink {
           |  optional string customer_name = 1;
@@ -58,23 +57,25 @@ class SchemaProtoAdapterTest {
       .schema()
 
   // Golden data emitted by protoc using the schema above.
-  private val dansCoffee = ImmutableMap.of<String, Any>(
-      "customer_name", "Dan",
-      "shots", ImmutableList.of(ImmutableMap.of("caffeine_level", 0.5)),
-      "size_ounces", 16,
-      "dairy", ImmutableMap.of("count", 1))
+  private val dansCoffee = mapOf(
+      "customer_name" to "Dan",
+      "shots" to listOf(mapOf("caffeine_level" to 0.5)),
+      "size_ounces" to 16,
+      "dairy" to mapOf("count" to 1)
+  )
 
   private val dansCoffeeEncoded = "0a0344616e120911000000000000e03f70107a021001".decodeHex()
 
-  private val jessesCoffee = ImmutableMap.of<String, Any>(
-      "customer_name", "Jesse",
-      "shots",
-      ImmutableList.of(
-          ImmutableMap.of<String, Any>("bean_type", "colombian", "caffeine_level", 1.0),
-          ImmutableMap.of<String, Any>("bean_type", "colombian", "caffeine_level", 1.0)
-      ),
-      "foam", "ZOMG_SO_FOAMY",
-      "size_ounces", 24)
+  private val jessesCoffee = mapOf(
+      "customer_name" to "Jesse",
+      "shots" to
+          listOf(
+              mapOf("bean_type" to "colombian", "caffeine_level" to 1.0),
+              mapOf("bean_type" to "colombian", "caffeine_level" to 1.0)
+          ),
+      "foam" to "ZOMG_SO_FOAMY",
+      "size_ounces" to 24
+  )
 
   private val jessesCoffeeEncoded = ("0a054a6573736512140a09636f6c" +
       "6f6d6269616e11000000000000f03f12140a09636f6c6f6d6269616e11000000000000f03f18037018")
@@ -99,7 +100,8 @@ class SchemaProtoAdapterTest {
   @Throws(IOException::class)
   fun groupsIgnored() {
     val adapter = RepoBuilder()
-        .add("message.proto",
+        .add(
+            "message.proto",
             """
             |message Message {
             |  optional string a = 1;
@@ -117,7 +119,7 @@ class SchemaProtoAdapterTest {
     val encoded = ("0a0161135a02080114135a02100214135a090803720568656c6c" +
         "6f141baa010208011c1baa010210021c1baa01090803720568656c6c6f1c220162")
         .decodeHex()
-    val expected = ImmutableMap.of<String, Any>("a", "a", "b", "b")
+    val expected = mapOf("a" to "a", "b" to "b")
     assertThat(adapter.decode(Buffer().write(encoded))).isEqualTo(expected)
   }
 
@@ -125,7 +127,8 @@ class SchemaProtoAdapterTest {
   @Throws(IOException::class)
   fun startGroupWithoutEndGroup() {
     val adapter = RepoBuilder()
-        .add("message.proto",
+        .add(
+            "message.proto",
             """
             |message Message {
             |  optional string a = 1;
@@ -145,7 +148,8 @@ class SchemaProtoAdapterTest {
   @Throws(IOException::class)
   fun unexpectedEndGroup() {
     val adapter = RepoBuilder()
-        .add("message.proto",
+        .add(
+            "message.proto",
             """
             |message Message {
             |  optional string a = 1;
@@ -166,7 +170,8 @@ class SchemaProtoAdapterTest {
   @Throws(IOException::class)
   fun endGroupDoesntMatchStartGroup() {
     val adapter = RepoBuilder()
-        .add("message.proto",
+        .add(
+            "message.proto",
             """
             |message Message {
             |  optional string a = 1;
@@ -187,7 +192,8 @@ class SchemaProtoAdapterTest {
   @Throws(IOException::class)
   fun decodeToUnpacked() {
     val adapter = RepoBuilder()
-        .add("message.proto",
+        .add(
+            "message.proto",
             """
             |message Message {
             |  repeated int32 a = 90 [packed = false];
@@ -195,8 +201,7 @@ class SchemaProtoAdapterTest {
             """.trimMargin()
         )
         .protoAdapter("Message")
-    val expected = ImmutableMap.of<String, Any>(
-        "a", ImmutableList.of(601, 701))
+    val expected = mapOf("a" to listOf(601, 701))
 
     val packedEncoded = "d20504d904bd05".decodeHex()
     assertThat(adapter.decode(Buffer().write(packedEncoded))).isEqualTo(expected)
@@ -209,7 +214,8 @@ class SchemaProtoAdapterTest {
   @Throws(IOException::class)
   fun decodeToPacked() {
     val adapter = RepoBuilder()
-        .add("message.proto",
+        .add(
+            "message.proto",
             """
             |message Message {
             |  repeated int32 a = 90 [packed = true];
@@ -217,8 +223,7 @@ class SchemaProtoAdapterTest {
             """.trimMargin()
         )
         .protoAdapter("Message")
-    val expected = ImmutableMap.of<String, Any>(
-        "a", ImmutableList.of(601, 701))
+    val expected = mapOf("a" to listOf(601, 701))
 
     val unpackedEncoded = "d005d904d005bd05".decodeHex()
     assertThat(adapter.decode(Buffer().write(unpackedEncoded))).isEqualTo(expected)
@@ -231,7 +236,8 @@ class SchemaProtoAdapterTest {
   @Throws(IOException::class)
   fun recursiveMessage() {
     val adapter = RepoBuilder()
-        .add("tree.proto",
+        .add(
+            "tree.proto",
             """
             |message BinaryTreeNode {
             |  optional BinaryTreeNode left = 1;
@@ -241,16 +247,19 @@ class SchemaProtoAdapterTest {
             """.trimMargin()
         )
         .protoAdapter("BinaryTreeNode")
-    val value = ImmutableMap.of<String, Any>(
-        "value", "D",
-        "left", ImmutableMap.of(
-        "value", "B",
-        "left", ImmutableMap.of("value", "A"),
-        "right", ImmutableMap.of("value", "C")),
-        "right", ImmutableMap.of(
-        "value", "F",
-        "left", ImmutableMap.of("value", "E"),
-        "right", ImmutableMap.of("value", "G")))
+    val value = mapOf(
+        "value" to "D",
+        "left" to mapOf(
+            "value" to "B",
+            "left" to mapOf("value" to "A"),
+            "right" to mapOf("value" to "C")
+        ),
+        "right" to mapOf(
+            "value" to "F",
+            "left" to mapOf("value" to "E"),
+            "right" to mapOf("value" to "G")
+        )
+    )
     val encoded = "1a01440a0d1a01420a031a014112031a0143120d1a01460a031a014512031a0147".decodeHex()
     assertThat(ByteString.of(*adapter.encode(value))).isEqualTo(encoded)
     assertThat(adapter.decode(Buffer().write(encoded))).isEqualTo(value)
@@ -259,7 +268,8 @@ class SchemaProtoAdapterTest {
   @Test
   fun includeUnknowns() {
     val schema = RepoBuilder()
-        .add("coffee.proto", """
+        .add(
+            "coffee.proto", """
              |message CafeDrink {
              |  optional string customer_name = 1;
              |  optional int32 size_ounces = 14;
@@ -268,11 +278,12 @@ class SchemaProtoAdapterTest {
         )
         .schema()
 
-    val dansCoffeeWithUnknowns = ImmutableMap.of<String, Any>(
-        "customer_name", "Dan",
-        "2", ImmutableList.of("11000000000000e03f".decodeHex()),
-        "size_ounces", 16,
-        "15", ImmutableList.of("1001".decodeHex()))
+    val dansCoffeeWithUnknowns = mapOf(
+        "customer_name" to "Dan",
+        "2" to listOf("11000000000000e03f".decodeHex()),
+        "size_ounces" to 16,
+        "15" to listOf("1001".decodeHex())
+    )
 
     val adapter = schema.protoAdapter("CafeDrink", true)
     assertThat(adapter.decode(Buffer().write(dansCoffeeEncoded)))
@@ -282,7 +293,8 @@ class SchemaProtoAdapterTest {
   @Test
   fun omitUnknowns() {
     val schema = RepoBuilder()
-        .add("coffee.proto",
+        .add(
+            "coffee.proto",
             """
             |message CafeDrink {
             |  optional string customer_name = 1;
@@ -292,9 +304,7 @@ class SchemaProtoAdapterTest {
         )
         .schema()
 
-    val dansCoffeeWithoutUnknowns = ImmutableMap.of(
-        "customer_name", "Dan",
-        "size_ounces", 16)
+    val dansCoffeeWithoutUnknowns = mapOf("customer_name" to "Dan", "size_ounces" to 16)
 
     val adapter = schema.protoAdapter("CafeDrink", false)
     assertThat(adapter.decode(Buffer().write(dansCoffeeEncoded)))

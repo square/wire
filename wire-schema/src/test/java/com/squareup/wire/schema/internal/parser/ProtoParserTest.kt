@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
-import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Range
 import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REPEATED
@@ -688,10 +686,10 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-                MessageElement(
-                location =location.at(2, 1),
-                    name="Message"
-                    )
+            MessageElement(
+                location = location.at(2, 1),
+                name = "Message"
+            )
         ),
         extendDeclarations = listOf(
             ExtendElement(
@@ -838,10 +836,10 @@ class ProtoParserTest {
         location = location,
         syntax = ProtoFile.Syntax.PROTO_3,
         types = listOf(
-                MessageElement(
-                location =location.at(2, 1),
-                    name="Message"
-                    )
+            MessageElement(
+                location = location.at(2, 1),
+                name = "Message"
+            )
         ),
         extendDeclarations = listOf(
             ExtendElement(
@@ -1100,7 +1098,8 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-            EnumElement(location = location.at(5, 1),
+            EnumElement(
+                location = location.at(5, 1),
                 name = "Topping",
                 documentation = "What's on my waffles.\nAlso works on pancakes.",
                 constants = listOf(
@@ -1197,7 +1196,8 @@ class ProtoParserTest {
         location = location,
         packageName = "google.protobuf",
         types = listOf(
-            MessageElement(location = location.at(6, 1),
+            MessageElement(
+                location = location.at(6, 1),
                 name = "FileDescriptorSet",
                 documentation = "The protocol compiler can output a FileDescriptorSet containing the .proto\nfiles it parses."
             )
@@ -1435,7 +1435,7 @@ class ProtoParserTest {
         location = location,
         packageName = "kit.kat",
         types = listOf(
-                MessageElement(location =location.at(3, 1),name="Bar")
+            MessageElement(location = location.at(3, 1), name = "Bar")
 
         ),
         extendDeclarations = listOf(
@@ -1503,7 +1503,7 @@ class ProtoParserTest {
         location = location,
         packageName = "kit.kat",
         types = listOf(
-            MessageElement(location =location.at(3, 1),name="Bar")
+            MessageElement(location = location.at(3, 1), name = "Bar")
 
         ),
         extendDeclarations = listOf(
@@ -1715,14 +1715,12 @@ class ProtoParserTest {
                         requestType = "PurchaseRequest",
                         responseType = "PurchaseResponse",
                         options = listOf(
+                            OptionElement.create("squareup.sake.timeout", Kind.NUMBER, "15", true),
                             OptionElement.create(
-                                "squareup.sake.timeout", Kind.NUMBER, "15", true
-                            ),
-                            OptionElement.create(
-                                "squareup.a.b", Kind.MAP, ImmutableMap.of(
-                                "value",
-                                ImmutableList.of("FOO", "BAR")
-                            ), true
+                                "squareup.a.b",
+                                Kind.MAP,
+                                mapOf("value" to listOf("FOO", "BAR")),
+                                true
                             )
                         )
                     )
@@ -1851,8 +1849,7 @@ class ProtoParserTest {
     option_four_map_2_a["z"] = "1"
     val option_four_map_2_b = LinkedHashMap<String, Any>()
     option_four_map_2_b["z"] = "2"
-    option_four_map_1["y"] =
-        Arrays.asList<Map<String, Any>>(option_four_map_2_a, option_four_map_2_b)
+    option_four_map_1["y"] = listOf(option_four_map_2_a, option_four_map_2_b)
     option_four_map["x"] = option_four_map_1
 
     val expected = ProtoFileElement(
@@ -1902,17 +1899,12 @@ class ProtoParserTest {
             OptionElement.create(
                 "option_map",
                 Kind.MAP,
-                ImmutableMap.of(
-                    "nested_map",
-                    ImmutableMap.of("key", "value", "key2",
-                        ImmutableList.of("value2a", "value2b"))
+                mapOf(
+                    "nested_map" to mapOf("key" to "value", "key2" to listOf("value2a", "value2b"))
                 ),
                 true
             ),
-            OptionElement.create(
-                "option_string", Kind.LIST,
-                ImmutableList.of("string1", "string2"), true
-            )
+            OptionElement.create("option_string", Kind.LIST, listOf("string1", "string2"), true)
         )
     )
     assertThat(field.options)
@@ -1920,18 +1912,12 @@ class ProtoParserTest {
             OptionElement.create(
                 "option_map",
                 Kind.MAP,
-                ImmutableMap.of(
-                    "nested_map",
-                    ImmutableMap.of("key", "value", "key2", ImmutableList.of("value2a", "value2b"))
+                mapOf(
+                    "nested_map" to mapOf("key" to "value", "key2" to listOf("value2a", "value2b"))
                 ),
                 true
             ),
-            OptionElement.create(
-                "option_string",
-                Kind.LIST,
-                ImmutableList.of("string1", "string2"),
-                true
-            )
+            OptionElement.create("option_string", Kind.LIST, listOf("string1", "string2"), true)
         )
 
     val expected = MessageElement(
@@ -2224,7 +2210,8 @@ class ProtoParserTest {
     val expected = ProtoFileElement(
         location = location,
         types = listOf(
-            MessageElement(location = location.at(1, 1),
+            MessageElement(
+                location = location.at(1, 1),
                 name = "C",
                 fields = listOf(
                     FieldElement(

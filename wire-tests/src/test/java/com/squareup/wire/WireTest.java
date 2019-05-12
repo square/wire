@@ -24,7 +24,6 @@ import com.squareup.wire.protos.simple.SimpleMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import okio.Buffer;
 import okio.ByteString;
@@ -327,29 +326,6 @@ public class WireTest {
     // Serialize again, value is preserved
     byte[] newData = adapter.encode(result);
     assertThat(data).isEqualTo(newData);
-  }
-
-  @Test public void unmodifiedMutableListReusesImmutableInstance() {
-    PhoneNumber phone = new PhoneNumber.Builder().number("555-1212").type(PhoneType.WORK).build();
-    Person personWithPhone = new Person.Builder()
-        .id(1)
-        .name("Joe Schmoe")
-        .phone(singletonList(phone))
-        .build();
-    Person personNoPhone = new Person.Builder()
-        .id(1)
-        .name("Joe Schmoe")
-        .build();
-    try {
-      personWithPhone.phone.set(0, null);
-      fail();
-    } catch (UnsupportedOperationException expected) {
-    }
-    assertThat(personNoPhone.phone).isSameAs(Collections.emptyList());
-
-    // Round-trip these instances through the builder and ensure the lists are the same instances.
-    assertThat(personWithPhone.newBuilder().build().phone).isSameAs(personWithPhone.phone);
-    assertThat(personNoPhone.newBuilder().build().phone).isSameAs(personNoPhone.phone);
   }
 
   @Test public void listMustBeNonNull() {

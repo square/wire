@@ -11,9 +11,9 @@ jar {
 }
 
 dependencies {
-  api project(':wire-runtime')
+  api project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
   api deps.kotlin.stdlib.jdk8
-  implementation deps.okio
+  implementation deps.okio.jvm
   api deps.guava
   testImplementation project(':wire-test-utils')
   testImplementation deps.junit

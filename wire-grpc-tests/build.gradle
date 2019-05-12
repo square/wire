@@ -58,7 +58,7 @@ animalsniffer {
 
 dependencies {
   api project(':wire-grpc-client')
-  api deps.okio
+  api deps.okio.jvm
   compileOnly deps.android
   compileOnly deps.jsr305
   testImplementation deps.junit
