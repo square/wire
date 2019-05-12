@@ -49,9 +49,10 @@ package com.squareup.wire
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import java.io.IOException
+import com.squareup.wire.internal.Throws
 import okio.BufferedSink
 import okio.ByteString
+import okio.IOException
 
 /**
  * Utilities for encoding and writing protocol message fields.

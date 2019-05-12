@@ -4,6 +4,7 @@ package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.ProtoAdapterJvm;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -20,7 +21,7 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
-  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(AllTypes.class);
+  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapterJvm.newMessageAdapter(AllTypes.class);
 
   private static final long serialVersionUID = 0L;
 
@@ -2942,7 +2943,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public enum NestedEnum implements WireEnum {
     A(1);
 
-    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
+    public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapterJvm.newEnumAdapter(NestedEnum.class);
 
     private final int value;
 
@@ -2967,7 +2968,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage, NestedMessage.Builder> {
-    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class);
+    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapterJvm.newMessageAdapter(NestedMessage.class);
 
     private static final long serialVersionUID = 0L;
 

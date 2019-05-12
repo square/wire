@@ -17,7 +17,9 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.ProtoAdapterJvm
 import com.squareup.wire.WireField
+import com.squareup.wire.get
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
@@ -64,11 +66,11 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   fun singleAdapter(): ProtoAdapter<*> {
-    return singleAdapter ?: ProtoAdapter.get(adapterString).also { singleAdapter = it }
+    return singleAdapter ?: ProtoAdapterJvm.get(adapterString).also { singleAdapter = it }
   }
 
   fun keyAdapter(): ProtoAdapter<*> {
-    return keyAdapter ?: ProtoAdapter.get(keyAdapterString).also { keyAdapter = it }
+    return keyAdapter ?: ProtoAdapterJvm.get(keyAdapterString).also { keyAdapter = it }
   }
 
   internal fun adapter(): ProtoAdapter<Any> {

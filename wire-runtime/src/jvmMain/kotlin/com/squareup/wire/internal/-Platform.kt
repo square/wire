@@ -23,7 +23,19 @@ actual typealias Throws = kotlin.jvm.Throws
 
 actual typealias ObjectStreamException = java.io.ObjectStreamException
 
+actual typealias ProtocolException = java.net.ProtocolException
+
 actual fun <T> MutableList<T>.toUnmodifiableList(): List<T> = Collections.unmodifiableList(this)
 
 actual fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
     Collections.unmodifiableMap(this)
+
+internal actual fun String.format(vararg args: Any?): String = String.format(this, args)
+
+internal actual fun Float.toIntBits(): Int = java.lang.Float.floatToIntBits(this)
+
+internal actual fun Int.intBitsToFloat(): Float = java.lang.Float.intBitsToFloat(this)
+
+internal actual fun Double.toLongBits(): Long = java.lang.Double.doubleToLongBits(this)
+
+internal actual fun Long.longBitsToDouble(): Double = java.lang.Double.longBitsToDouble(this)
