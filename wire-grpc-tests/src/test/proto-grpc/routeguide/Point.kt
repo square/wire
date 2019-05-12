@@ -42,7 +42,7 @@ data class Point(
     @JvmField
     val ADAPTER: ProtoAdapter<Point> = object : ProtoAdapter<Point>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Point::class.java
+      Point::class
     ) {
       override fun encodedSize(value: Point): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.latitude) +

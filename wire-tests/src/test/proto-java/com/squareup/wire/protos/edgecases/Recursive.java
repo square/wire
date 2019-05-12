@@ -15,6 +15,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class Recursive extends Message<Recursive, Recursive.Builder> {
@@ -111,7 +112,7 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
 
   private static final class ProtoAdapter_Recursive extends ProtoAdapter<Recursive> {
     public ProtoAdapter_Recursive() {
-      super(FieldEncoding.LENGTH_DELIMITED, Recursive.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Recursive.class));
     }
 
     @Override

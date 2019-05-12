@@ -30,7 +30,7 @@ data class SomeRequest(val unknownFields: ByteString = ByteString.EMPTY) : Messa
     @JvmField
     val ADAPTER: ProtoAdapter<SomeRequest> = object : ProtoAdapter<SomeRequest>(
       FieldEncoding.LENGTH_DELIMITED, 
-      SomeRequest::class.java
+      SomeRequest::class
     ) {
       override fun encodedSize(value: SomeRequest): Int = 
         value.unknownFields.size

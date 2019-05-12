@@ -44,7 +44,7 @@ data class Rectangle(
     @JvmField
     val ADAPTER: ProtoAdapter<Rectangle> = object : ProtoAdapter<Rectangle>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Rectangle::class.java
+      Rectangle::class
     ) {
       override fun encodedSize(value: Rectangle): Int = 
         Point.ADAPTER.encodedSizeWithTag(1, value.lo) +

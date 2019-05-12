@@ -47,7 +47,7 @@ data class Feature(
     @JvmField
     val ADAPTER: ProtoAdapter<Feature> = object : ProtoAdapter<Feature>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Feature::class.java
+      Feature::class
     ) {
       override fun encodedSize(value: Feature): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +

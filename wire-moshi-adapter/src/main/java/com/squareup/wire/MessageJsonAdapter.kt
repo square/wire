@@ -33,7 +33,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val options = JsonReader.Options.of(*fieldBindings.map { it.name }.toTypedArray())
 
   private val jsonAdapters = fieldBindings.map { fieldBinding ->
-    var fieldType: Type = fieldBinding.singleAdapter().type as Type
+    var fieldType: Type = fieldBinding.singleAdapter().type?.javaObjectType as Type
     if (fieldBinding.isMap) {
       val keyType = fieldBinding.keyAdapter().type?.javaObjectType
       fieldType = Types.newParameterizedType(Map::class.java, keyType, fieldType)

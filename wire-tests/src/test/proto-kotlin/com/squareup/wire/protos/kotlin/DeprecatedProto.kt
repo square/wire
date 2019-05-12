@@ -35,7 +35,7 @@ data class DeprecatedProto(@Deprecated(message = "foo is deprecated") @field:Wir
     @JvmField
     val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
       FieldEncoding.LENGTH_DELIMITED, 
-      DeprecatedProto::class.java
+      DeprecatedProto::class
     ) {
       override fun encodedSize(value: DeprecatedProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +

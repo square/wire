@@ -15,6 +15,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Builder> {
@@ -160,7 +161,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
 
   private static final class ProtoAdapter_OneOfMessage extends ProtoAdapter<OneOfMessage> {
     public ProtoAdapter_OneOfMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(OneOfMessage.class));
     }
 
     @Override

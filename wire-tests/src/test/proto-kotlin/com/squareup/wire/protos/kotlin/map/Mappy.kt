@@ -35,7 +35,7 @@ data class Mappy(@field:WireField(tag = 1, adapter = "thingsAdapter") val things
     @JvmField
     val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Mappy::class.java
+      Mappy::class
     ) {
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> =
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER)

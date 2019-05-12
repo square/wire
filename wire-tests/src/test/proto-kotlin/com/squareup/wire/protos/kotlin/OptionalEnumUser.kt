@@ -37,7 +37,7 @@ data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
     @JvmField
     val ADAPTER: ProtoAdapter<OptionalEnumUser> = object : ProtoAdapter<OptionalEnumUser>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OptionalEnumUser::class.java
+      OptionalEnumUser::class
     ) {
       override fun encodedSize(value: OptionalEnumUser): Int = 
         OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
@@ -76,7 +76,7 @@ data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
-        OptionalEnum::class.java
+        OptionalEnum::class
       ) {
         override fun fromValue(value: Int): OptionalEnum = OptionalEnum.fromValue(value)
       }

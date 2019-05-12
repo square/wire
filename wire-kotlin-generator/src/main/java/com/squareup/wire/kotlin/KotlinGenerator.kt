@@ -539,7 +539,7 @@ class KotlinGenerator private constructor(
    * companion object {
    *  @JvmField
    *  val ADAPTER : ProtoAdapter<Person> =
-   *      object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class.java) {
+   *      object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class) {
    *    override fun encodedSize(value: Person): Int { .. }
    *    override fun encode(writer: ProtoWriter, value: Person) { .. }
    *    override fun decode(reader: ProtoReader): Person { .. }
@@ -557,7 +557,7 @@ class KotlinGenerator private constructor(
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
         .addSuperclassConstructorParameter("\n⇥%T.LENGTH_DELIMITED",
             FieldEncoding::class.asClassName())
-        .addSuperclassConstructorParameter("\n%T::class.java\n⇤", parentClassName)
+        .addSuperclassConstructorParameter("\n%T::class\n⇤", parentClassName)
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
@@ -953,7 +953,7 @@ class KotlinGenerator private constructor(
    * Example
    * ```
    * @JvmField
-   * val ADAPTER = object : EnumAdapter<PhoneType>(PhoneType::class.java) {
+   * val ADAPTER = object : EnumAdapter<PhoneType>(PhoneType::class) {
    *     override fun fromValue(value: Int): PhoneType = PhoneType.fromValue(value)
    * }
    * ```
@@ -968,7 +968,7 @@ class KotlinGenerator private constructor(
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("\n⇥%T::class.java\n⇤", parentClassName)
+        .addSuperclassConstructorParameter("\n⇥%T::class\n⇤", parentClassName)
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)

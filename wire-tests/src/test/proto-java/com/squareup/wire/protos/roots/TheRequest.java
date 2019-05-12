@@ -12,6 +12,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
@@ -62,7 +63,7 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
 
   private static final class ProtoAdapter_TheRequest extends ProtoAdapter<TheRequest> {
     public ProtoAdapter_TheRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, TheRequest.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(TheRequest.class));
     }
 
     @Override

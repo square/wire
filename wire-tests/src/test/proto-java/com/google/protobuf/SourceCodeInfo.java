@@ -16,6 +16,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -513,7 +514,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     private static final class ProtoAdapter_Location extends ProtoAdapter<Location> {
       public ProtoAdapter_Location() {
-        super(FieldEncoding.LENGTH_DELIMITED, Location.class);
+        super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Location.class));
       }
 
       @Override
@@ -569,7 +570,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
   private static final class ProtoAdapter_SourceCodeInfo extends ProtoAdapter<SourceCodeInfo> {
     public ProtoAdapter_SourceCodeInfo() {
-      super(FieldEncoding.LENGTH_DELIMITED, SourceCodeInfo.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(SourceCodeInfo.class));
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -276,7 +277,7 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
     private static final class ProtoAdapter_Annotation extends ProtoAdapter<Annotation> {
       public ProtoAdapter_Annotation() {
-        super(FieldEncoding.LENGTH_DELIMITED, Annotation.class);
+        super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Annotation.class));
       }
 
       @Override
@@ -329,7 +330,7 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
   private static final class ProtoAdapter_GeneratedCodeInfo extends ProtoAdapter<GeneratedCodeInfo> {
     public ProtoAdapter_GeneratedCodeInfo() {
-      super(FieldEncoding.LENGTH_DELIMITED, GeneratedCodeInfo.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(GeneratedCodeInfo.class));
     }
 
     @Override

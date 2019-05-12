@@ -15,6 +15,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class CollisionSubject extends Message<CollisionSubject, CollisionSubject.Builder> {
@@ -100,7 +101,7 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
 
   private static final class ProtoAdapter_CollisionSubject extends ProtoAdapter<CollisionSubject> {
     public ProtoAdapter_CollisionSubject() {
-      super(FieldEncoding.LENGTH_DELIMITED, CollisionSubject.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(CollisionSubject.class));
     }
 
     @Override

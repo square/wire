@@ -14,6 +14,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class HeresAllTheDataResponse extends Message<HeresAllTheDataResponse, HeresAllTheDataResponse.Builder> {
@@ -92,7 +93,7 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
 
   private static final class ProtoAdapter_HeresAllTheDataResponse extends ProtoAdapter<HeresAllTheDataResponse> {
     public ProtoAdapter_HeresAllTheDataResponse() {
-      super(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataResponse.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(HeresAllTheDataResponse.class));
     }
 
     @Override

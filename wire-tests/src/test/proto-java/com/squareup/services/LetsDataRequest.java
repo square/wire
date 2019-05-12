@@ -14,6 +14,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class LetsDataRequest extends Message<LetsDataRequest, LetsDataRequest.Builder> {
@@ -92,7 +93,7 @@ public final class LetsDataRequest extends Message<LetsDataRequest, LetsDataRequ
 
   private static final class ProtoAdapter_LetsDataRequest extends ProtoAdapter<LetsDataRequest> {
     public ProtoAdapter_LetsDataRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, LetsDataRequest.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(LetsDataRequest.class));
     }
 
     @Override

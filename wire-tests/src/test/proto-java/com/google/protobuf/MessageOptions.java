@@ -19,6 +19,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class MessageOptions extends Message<MessageOptions, MessageOptions.Builder> {
@@ -454,7 +455,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
 
   private static final class ProtoAdapter_MessageOptions extends ProtoAdapter<MessageOptions> {
     public ProtoAdapter_MessageOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, MessageOptions.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(MessageOptions.class));
     }
 
     @Override

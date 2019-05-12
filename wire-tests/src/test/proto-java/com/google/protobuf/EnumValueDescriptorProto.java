@@ -15,6 +15,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -135,7 +136,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
   private static final class ProtoAdapter_EnumValueDescriptorProto extends ProtoAdapter<EnumValueDescriptorProto> {
     public ProtoAdapter_EnumValueDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumValueDescriptorProto.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(EnumValueDescriptorProto.class));
     }
 
     @Override

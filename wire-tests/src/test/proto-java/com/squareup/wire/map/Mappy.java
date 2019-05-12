@@ -15,6 +15,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.Map;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class Mappy extends Message<Mappy, Mappy.Builder> {
@@ -96,7 +97,7 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
     private final ProtoAdapter<Map<String, Thing>> things = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER);
 
     public ProtoAdapter_Mappy() {
-      super(FieldEncoding.LENGTH_DELIMITED, Mappy.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Mappy.class));
     }
 
     @Override
