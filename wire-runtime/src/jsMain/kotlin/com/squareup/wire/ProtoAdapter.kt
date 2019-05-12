@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright 2015 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal
+package com.squareup.wire
 
-import okio.IOException
-import kotlin.reflect.KClass
-
-actual interface Serializable
-
-actual annotation class Throws(actual vararg val exceptionClasses: KClass<out Throwable>)
-
-actual abstract class ObjectStreamException : IOException()
-
-actual fun <T> MutableList<T>.toUnmodifiableList(): List<T> = toList()
-
-actual fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = toMap()
+actual abstract class ProtoAdapter<E> {
+  actual abstract fun redact(value: E): E
+}

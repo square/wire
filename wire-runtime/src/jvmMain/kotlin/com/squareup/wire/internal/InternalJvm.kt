@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright 2013 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:JvmName("Internal")
+@file:JvmMultifileClass
+
 package com.squareup.wire.internal
 
-import okio.IOException
-import kotlin.reflect.KClass
+import com.squareup.wire.ProtoAdapter
 
-actual interface Serializable
+// Methods for generated code use only. Not subject to public API rules.
 
-actual annotation class Throws(actual vararg val exceptionClasses: KClass<out Throwable>)
+fun <T> redactElements(list: java.util.List<T>, adapter: ProtoAdapter<T>) {
+  for (i in 0 until list.size) {
+    list[i] = adapter.redact(list[i])
+  }
+}
 
-actual abstract class ObjectStreamException : IOException()
-
-actual fun <T> MutableList<T>.toUnmodifiableList(): List<T> = toList()
-
-actual fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = toMap()
+fun <T> redactElements(map: java.util.Map<*, T>, adapter: ProtoAdapter<T>) {
+  for (entry in map.entrySet()) {
+    entry.setValue(adapter.redact(entry.value))
+  }
+}

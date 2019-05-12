@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright 2019 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 @file:JvmName("Internal")
+@file:JvmMultifileClass
 
 package com.squareup.wire.internal
 
 import com.squareup.wire.ProtoAdapter
-import java.util.Collections
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 // Methods for generated code use only. Not subject to public API rules.
 
-fun <T> newMutableList(): MutableList<T> = MutableOnWriteList(Collections.emptyList())
+fun <T> newMutableList(): MutableList<T> = MutableOnWriteList(emptyList())
 
 fun <K, V> newMutableMap(): MutableMap<K, V> = LinkedHashMap()
 
 fun <T> copyOf(name: String, list: List<T>?): MutableList<T> {
   if (list == null) throw NullPointerException("$name == null")
-  return if (list === Collections.emptyList<T>() || list is ImmutableList<*>) {
+  return if (list === emptyList<T>() || list is ImmutableList<*>) {
     MutableOnWriteList(list)
   } else {
     ArrayList(list)
@@ -45,7 +47,7 @@ fun <T> immutableCopyOf(name: String, list: List<T>?): List<T> {
   if (list is MutableOnWriteList<*>) {
     list = (list as MutableOnWriteList<T>).mutableList
   }
-  if (list === Collections.emptyList<T>() || list is ImmutableList<*>) {
+  if (list === emptyList<T>() || list is ImmutableList<*>) {
     return list
   }
   val result = ImmutableList(list)
@@ -54,7 +56,7 @@ fun <T> immutableCopyOf(name: String, list: List<T>?): List<T> {
   return result as List<T>
 }
 
-fun <K, V> immutableCopyOf(name: String, map: Map<K, V>?): Map<K, V> {
+fun <K, V> immutableCopyOf(name: String, map: Map<K?, V?>?): Map<K, V> {
   if (map == null) throw NullPointerException("$name == null")
   if (map.isEmpty()) {
     return emptyMap()
@@ -63,25 +65,12 @@ fun <K, V> immutableCopyOf(name: String, map: Map<K, V>?): Map<K, V> {
   // Check after the map has been copied to defend against races.
   require(null !in result.keys) { "$name.containsKey(null)" }
   require(null !in result.values) { "$name.containsValue(null)" }
-  return Collections.unmodifiableMap(result)
+  return (result as MutableMap<K, V>).toUnmodifiableMap()
 }
 
-// Java-only
-fun <T> redactElements(list: java.util.List<T>, adapter: ProtoAdapter<T>) {
-  for (i in 0 until list.size) {
-    list[i] = adapter.redact(list[i])
-  }
-}
 
 @JvmName("-redactElements") // Hide from Java
 fun <T> List<T>.redactElements(adapter: ProtoAdapter<T>): List<T> = map(adapter::redact)
-
-// Java-only
-fun <T> redactElements(map: java.util.Map<*, T>, adapter: ProtoAdapter<T>) {
-  for (entry in map.entrySet()) {
-    entry.setValue(adapter.redact(entry.value))
-  }
-}
 
 @JvmName("-redactElements") // Hide from Java
 fun <K, V> Map<K, V>.redactElements(adapter: ProtoAdapter<V>): Map<K, V> {
