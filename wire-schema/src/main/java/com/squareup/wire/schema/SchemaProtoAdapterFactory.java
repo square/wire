@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import kotlin.jvm.JvmClassMappingKt;
 
 /**
  * Creates type adapters to read and write protocol buffer data from a schema model. This doesn't
@@ -95,7 +96,7 @@ final class SchemaProtoAdapterFactory {
     final EnumType enumType;
 
     EnumAdapter(EnumType enumType) {
-      super(FieldEncoding.VARINT, Object.class);
+      super(FieldEncoding.VARINT, JvmClassMappingKt.getKotlinClass(Object.class));
       this.enumType = enumType;
     }
 
@@ -131,7 +132,7 @@ final class SchemaProtoAdapterFactory {
     final boolean includeUnknown;
 
     MessageAdapter(boolean includeUnknown) {
-      super(FieldEncoding.LENGTH_DELIMITED, Map.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Map.class));
       this.includeUnknown = includeUnknown;
     }
 
