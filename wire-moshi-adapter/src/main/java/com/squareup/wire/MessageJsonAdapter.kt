@@ -33,9 +33,9 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val options = JsonReader.Options.of(*fieldBindings.map { it.name }.toTypedArray())
 
   private val jsonAdapters = fieldBindings.map { fieldBinding ->
-    var fieldType: Type = fieldBinding.singleAdapter().javaType as Type
+    var fieldType: Type = fieldBinding.singleAdapter().type as Type
     if (fieldBinding.isMap) {
-      val keyType = fieldBinding.keyAdapter().javaType
+      val keyType = fieldBinding.keyAdapter().type?.javaObjectType
       fieldType = Types.newParameterizedType(Map::class.java, keyType, fieldType)
     } else if (fieldBinding.label.isRepeated) {
       fieldType = Types.newParameterizedType(List::class.java, fieldType)
