@@ -69,7 +69,7 @@ class GrpcTest {
             .writeTimeout(Duration.ofMinutes(60))
             .callTimeout(Duration.ofMinutes(60))
             .build())
-        .baseUrl(mockService.url.toString())
+        .baseUrl(mockService.url)
         .build()
     routeGuideService = grpcClient.create(RouteGuide::class)
   }
