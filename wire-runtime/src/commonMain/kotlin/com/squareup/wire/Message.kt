@@ -15,18 +15,20 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.ProtoAdapterJvm.encode
+import com.squareup.wire.internal.ObjectStreamException
+import com.squareup.wire.internal.Serializable
+import com.squareup.wire.internal.Throws
 import okio.Buffer
 import okio.BufferedSink
 import okio.ByteString
-import java.io.IOException
-import java.io.ObjectStreamException
-import java.io.OutputStream
-import java.io.Serializable
+import okio.IOException
+import kotlin.jvm.JvmField
+import kotlin.jvm.Transient
+import kotlin.reflect.KClass
 
 /** A protocol buffer message.  */
 abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected constructor(
-  @field:Transient private val adapter: ProtoAdapter<M>,
+  @field:Transient internal val adapter: ProtoAdapter<M>,
   /** Unknown fields, proto-encoded. We permit null to support magic deserialization.  */
   @field:Transient private val unknownFields: ByteString?
 ) : Serializable {
@@ -57,7 +59,7 @@ abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected c
   override fun toString(): String = adapter.toString(this as M)
 
   @Throws(ObjectStreamException::class)
-  protected fun writeReplace(): Any = MessageSerializedForm(encode(), javaClass as Class<M>)
+  protected fun writeReplace(): Any = MessageSerializedForm(encode(), this::class as KClass<M>)
 
   /** The [ProtoAdapter] for encoding and decoding messages of this type. */
   fun adapter(): ProtoAdapter<M> = adapter
@@ -70,12 +72,6 @@ abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected c
 
   /** Encode this message as a `byte[]`.  */
   fun encode(): ByteArray = adapter.encode(this as M)
-
-  /** Encode this message and write it to `stream`.  */
-  @Throws(IOException::class)
-  fun encode(stream: OutputStream) {
-    adapter.encode(stream, this as M)
-  }
 
   /**
    * Superclass for protocol buffer message builders.

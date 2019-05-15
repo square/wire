@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Square Inc.
+ * Copyright 2019 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,14 @@
  */
 package com.squareup.wire
 
-import java.io.IOException
-import java.io.ObjectStreamException
-import java.io.Serializable
-import java.io.StreamCorruptedException
+import com.squareup.wire.internal.Serializable
 import kotlin.reflect.KClass
 
 internal actual class MessageSerializedForm<M : Message<M, B>, B : Message.Builder<M, B>>
 actual constructor(
-  private val bytes: ByteArray,
-  private val messageClass: KClass<M>
+  bytes: ByteArray,
+  messageClass: KClass<M>
 ) : Serializable {
-
-  @Throws(ObjectStreamException::class)
-  actual fun readResolve(): Any {
-    val adapter = ProtoAdapterJvm.get(messageClass.javaObjectType)
-    try {
-      // Extensions will be decoded as unknown values.
-      return adapter.decode(bytes)
-    } catch (e: IOException) {
-      throw StreamCorruptedException(e.message)
-    }
-  }
-
-  companion object {
-    private const val serialVersionUID = 0L
-  }
+  actual fun readResolve(): Any =
+      throw UnsupportedOperationException("Serialization is not supported in Native")
 }
