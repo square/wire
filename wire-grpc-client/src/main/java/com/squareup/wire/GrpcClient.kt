@@ -96,6 +96,11 @@ class GrpcClient private constructor(
       return this
     }
 
+    fun baseUrl(url: HttpUrl): Builder {
+      this.baseUrl = url
+      return this
+    }
+
     fun build(): GrpcClient {
       return GrpcClient(client = client!!, baseUrl = baseUrl!!)
     }
