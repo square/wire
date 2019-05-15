@@ -19,15 +19,17 @@ import com.squareup.wire.GrpcEncoding.Companion.toGrpcEncoding
 import com.squareup.wire.internal.genericParameterType
 import com.squareup.wire.internal.invokeSuspending
 import com.squareup.wire.internal.rawType
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consume
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.channels.toChannel
 import kotlinx.coroutines.launch
@@ -42,8 +44,8 @@ import okhttp3.Response
 import java.io.IOException
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Proxy
-import java.lang.reflect.WildcardType
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KClass
 
@@ -59,23 +61,22 @@ class GrpcClient private constructor(
 
     return Proxy.newProxyInstance(service.java.classLoader, arrayOf<Class<*>>(service.java),
         object : InvocationHandler {
-          override fun invoke(proxy: Any, method: Method, args: Array<out Any>): Any? {
-            val continuation = args.last() as Continuation<Any>
+          override fun invoke(proxy: Any?, method: Method?, args: Array<out Any>?): Any? {
 
             return when (val grpcMethod = methodToService[method] as GrpcMethod<*, *>) {
               is GrpcMethod.RequestResponse -> {
-                continuation.invokeSuspending {
-                  grpcMethod.invoke(continuation, this@GrpcClient, parameter = args[0])
+                (args!!.last() as Continuation<Any>).invokeSuspending {
+                  grpcMethod.invoke(this@GrpcClient, parameter = args[0])
                 }
               }
               is GrpcMethod.StreamingResponse -> {
-                grpcMethod.invoke(continuation, this@GrpcClient, parameter = args[0])
+                grpcMethod.invoke(this@GrpcClient, parameter = args!![0])
               }
               is GrpcMethod.StreamingRequest -> {
-                grpcMethod.invoke(continuation, this@GrpcClient)
+                grpcMethod.invoke(this@GrpcClient)
               }
               is GrpcMethod.FullDuplex -> {
-                grpcMethod.invoke(continuation, this@GrpcClient)
+                grpcMethod.invoke(this@GrpcClient)
               }
             }
           }
@@ -127,7 +128,7 @@ class GrpcClient private constructor(
     CoroutineScope(Dispatchers.IO).launch {
       val requestWriter = GrpcWriter.get(requestBody.createSink(), grpcMethod.requestAdapter)
       requestWriter.use {
-        for (message in requestChannel) {
+        requestChannel.consumeEach { message ->
           requestWriter.writeMessage(message)
           requestWriter.flush()
         }
@@ -177,21 +178,20 @@ class GrpcClient private constructor(
     val requestAdapter: ProtoAdapter<S>,
     val responseAdapter: ProtoAdapter<R>
   ) {
-    private fun invoke(
-      continuation: Continuation<Any>,
-      grpcClient: GrpcClient
-    ): Pair<Channel<S>, Channel<R>> {
-      val requestChannel = Channel<S>(0)
-      val responseChannel = Channel<R>(0)
+    /**
+     * Cancellation of the [Call] is always tied to the response. To cancel the call, either cancel
+     * the response channel, deferred, or suspending function call.
+     */
+    private fun invoke(grpcClient: GrpcClient): Pair<Channel<S>, Channel<R>> {
+      val requestChannel = Channel<S>(1)
+      val responseChannel = Channel<R>(1)
 
       val call = grpcClient.call(this, requestChannel, responseChannel)
 
-      continuation.context[Job]!!.invokeOnCompletion { cause: Throwable? ->
-        if (cause is CancellationException) {
-          call.cancel()
-          requestChannel.cancel()
-          responseChannel.cancel()
-        }
+      responseChannel.invokeOnClose { cause ->
+        call.cancel()
+        requestChannel.cancel()
+        responseChannel.cancel()
       }
 
       return requestChannel to responseChannel
@@ -204,15 +204,16 @@ class GrpcClient private constructor(
       responseAdapter: ProtoAdapter<R>
     ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
       suspend fun invoke(
-        continuation: Continuation<Any>,
         grpcClient: GrpcClient,
         parameter: Any
       ): Any {
-        val (requestChannel, responseChannel) = super.invoke(continuation, grpcClient)
+        val (requestChannel, responseChannel) = super.invoke(grpcClient)
 
-        requestChannel.send(parameter as S)
-        requestChannel.close()
-        return responseChannel.consume { responseChannel.receive() } as Any
+        responseChannel.consume {
+          requestChannel.send(parameter as S)
+          requestChannel.close()
+          return receive() as Any
+        }
       }
     }
 
@@ -223,16 +224,16 @@ class GrpcClient private constructor(
       responseAdapter: ProtoAdapter<R>
     ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
       fun invoke(
-        continuation: Continuation<Any>,
         grpcClient: GrpcClient
       ): Any {
-        val (requestChannel, responseChannel) = super.invoke(continuation, grpcClient)
+        val (requestChannel, responseChannel) = super.invoke(grpcClient)
 
-        val coroutineScope = CoroutineScope(continuation.context)
         return Pair(
             requestChannel,
-            coroutineScope.async {
-              responseChannel.consume { responseChannel.receive() }
+            // We use ATOMIC to guarantee the coroutine doesn't start after potential cancellations
+            // happen.
+            unconfinedCoroutineScope.async(start = CoroutineStart.ATOMIC) {
+              responseChannel.consume { receive() }
             }
         )
       }
@@ -245,15 +246,18 @@ class GrpcClient private constructor(
       responseAdapter: ProtoAdapter<R>
     ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
       fun invoke(
-        continuation: Continuation<Any>,
         grpcClient: GrpcClient,
         parameter: Any
       ): Any {
-        val (requestChannel, responseChannel) = super.invoke(continuation, grpcClient)
+        val (requestChannel, responseChannel) = super.invoke(grpcClient)
 
-        val coroutineScope = CoroutineScope(continuation.context)
-        return coroutineScope.produce<Any> {
-          requestChannel.consume { requestChannel.send(parameter as S) }
+        // TODO(benoit) Remove the cancellation handling once this ships: https://github.com/Kotlin/kotlinx.coroutines/issues/845
+        unconfinedCoroutineScope.coroutineContext[Job]!!.invokeOnCompletion {
+          responseChannel.cancel()
+        }
+        return unconfinedCoroutineScope.produce<Any> {
+          requestChannel.send(parameter as S)
+          requestChannel.close()
           (responseChannel as Channel<Any>).toChannel(channel)
         }
       }
@@ -266,40 +270,38 @@ class GrpcClient private constructor(
       responseAdapter: ProtoAdapter<R>
     ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
       fun invoke(
-        continuation: Continuation<Any>,
         grpcClient: GrpcClient
       ): Any {
-        return super.invoke(continuation, grpcClient)
+        return super.invoke(grpcClient)
       }
     }
   }
 
   companion object {
+    private val unconfinedCoroutineScope = CoroutineScope(Unconfined)
+
     internal fun <S, R> Method.toGrpc(): GrpcMethod<S, R> {
       val wireRpc = getAnnotation(WireRpc::class.java)
       val requestAdapter = ProtoAdapter.get(wireRpc.requestAdapter) as ProtoAdapter<S>
       val responseAdapter = ProtoAdapter.get(wireRpc.responseAdapter) as ProtoAdapter<R>
 
-      if (genericParameterTypes.size == 1) {
-        // Request is streaming.
-        val continuation = genericParameterTypes[0]
-        val pairReturnType =
-            (continuation.genericParameterType() as WildcardType).lowerBounds[0]
-
-        val responseStreaming =
-            pairReturnType.genericParameterType(1).rawType() == ReceiveChannel::class.java
-        return if (responseStreaming) {
-          GrpcMethod.FullDuplex(wireRpc.path, requestAdapter, responseAdapter)
-        } else {
-          GrpcMethod.StreamingRequest(wireRpc.path, requestAdapter, responseAdapter)
-        }
-      } else {
-        val responseStreaming =
-            genericParameterTypes.last().genericParameterType().rawType() == ReceiveChannel::class.java
-        return if (responseStreaming) {
-          GrpcMethod.StreamingResponse(wireRpc.path, requestAdapter, responseAdapter)
-        } else {
+      return when {
+        genericParameterTypes.size == 2 -> {
           GrpcMethod.RequestResponse(wireRpc.path, requestAdapter, responseAdapter)
+        }
+        genericParameterTypes.size == 1 -> {
+          GrpcMethod.StreamingResponse(wireRpc.path, requestAdapter, responseAdapter)
+        }
+        else -> {
+          // Request is streaming. How about the response?
+          val pairSecondType = (genericReturnType as ParameterizedType)
+              .genericParameterType(index = 1).rawType()
+          val responseStreaming = pairSecondType == ReceiveChannel::class.java
+          if (responseStreaming) {
+            GrpcMethod.FullDuplex(wireRpc.path, requestAdapter, responseAdapter)
+          } else {
+            GrpcMethod.StreamingRequest(wireRpc.path, requestAdapter, responseAdapter)
+          }
         }
       }
     }

@@ -23,6 +23,7 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveMessage
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
@@ -102,8 +103,8 @@ class GrpcTest {
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
+    val (requestChannel, deferredResponse) = routeGuideService.RecordRoute()
     runBlocking {
-      val (requestChannel, deferredResponse) = routeGuideService.RecordRoute()
       requestChannel.send(Point(3, 3))
       requestChannel.send(Point(9, 6))
       requestChannel.close()
@@ -126,9 +127,9 @@ class GrpcTest {
         SendMessage(RouteGuideProto.Feature.newBuilder().setName("house").build()))
     mockService.enqueue(SendCompleted)
 
+    val responseChannel = routeGuideService.ListFeatures(
+        Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
     runBlocking {
-      val responseChannel = routeGuideService.ListFeatures(
-          Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "tree"))
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "house"))
       assertThat(responseChannel.receiveOrNull()).isNull()
@@ -136,7 +137,7 @@ class GrpcTest {
   }
 
   @Test
-  fun duplex() {
+  fun duplex_receiveDataAfterClosingRequest() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueue(
         ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
@@ -149,8 +150,33 @@ class GrpcTest {
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
     runBlocking {
-      val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+      requestChannel.send(RouteNote(message = "marco"))
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
+      requestChannel.send(RouteNote(message = "rené"))
+      requestChannel.close()
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "lacoste"))
+      assertThat(responseChannel.receiveOrNull()).isNull()
+    }
+  }
+
+  @Test
+  fun duplex_receiveDataBeforeClosingRequest() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("polo").build()))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("lacoste").build()))
+    mockService.enqueue(SendCompleted)
+    mockService.enqueue(ReceiveComplete)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    runBlocking {
       requestChannel.send(RouteNote(message = "marco"))
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
       requestChannel.send(RouteNote(message = "rené"))
@@ -176,6 +202,7 @@ class GrpcTest {
         routeGuideService.GetFeature(Point(latitude = 5, longitude = 6))
         fail()
       }
+      // TODO(benoit) test without delay
       delay(200)
       deferred.cancel()
       mockService.awaitSuccess()
@@ -189,18 +216,17 @@ class GrpcTest {
     mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
     mockService.enqueue(ReceiveError)
 
+    val (_, responseDeferred) = routeGuideService.RecordRoute()
     runBlocking {
-      val deferred = async {
-        val (_, result) = routeGuideService.RecordRoute()
-        result.await()
-        fail()
-      }
+      // TODO(benoit) test without delay
       delay(200)
-      deferred.cancel()
+      responseDeferred.cancel()
       mockService.awaitSuccess()
       assertThat(callReference.get()?.isCanceled).isTrue()
     }
   }
+
+  // TODO(benoit) Maybe add backpressure test (tried and failed)
 
   @Test
   fun cancelStreamingResponse() {
@@ -211,73 +237,37 @@ class GrpcTest {
             .setHi(RouteGuideProto.Point.newBuilder().setLatitude(4).setLongitude(5).build())
             .build()))
     mockService.enqueue(ReceiveComplete)
-    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
     mockService.enqueue(
         SendMessage(RouteGuideProto.Feature.newBuilder().setName("tree").build()))
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
     mockService.enqueue(
         SendMessage(RouteGuideProto.Feature.newBuilder().setName("house").build()))
     mockService.enqueue(SendCompleted)
 
+    val receiveChannel =
+        routeGuideService.ListFeatures(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
     runBlocking {
-      val deferred = async {
-        val receiveChannel = routeGuideService.ListFeatures(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
-        receiveChannel.receive()
-        fail()
-      }
-      delay(200)
-      deferred.cancel()
+      receiveChannel.receive()
+      receiveChannel.cancel()
       mockService.awaitSuccess()
       assertThat(callReference.get()?.isCanceled).isTrue()
     }
   }
 
+  // TODO(benoit) test before/after request completes, before after response completes?
   @Test
   fun cancelDuplex() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
-    mockService.enqueue(ReceiveError)
 
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
     runBlocking {
-      val deferred = async {
-        val (_, receiveChannel) = routeGuideService.RouteChat()
-        receiveChannel.receive()
-        fail()
-      }
       delay(200)
-      deferred.cancel()
+      responseChannel.cancel()
+      assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
+      assertThat(requestChannel.isClosedForSend).isTrue()
       mockService.awaitSuccess()
       assertThat(callReference.get()?.isCanceled).isTrue()
-    }
-  }
-
-  @Test
-  @Ignore("https://github.com/square/wire/issues/876")
-  fun cancelChannel() {
-    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("one").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("two").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("three").build()))
-    mockService.enqueue(ReceiveError)
-
-    val senderChannelReference = AtomicReference<SendChannel<RouteNote>>()
-    val receiveChannelReference = AtomicReference<ReceiveChannel<RouteNote>>()
-
-    runBlocking {
-      val deferred = async {
-        val (sendChannel , receiveChannel) = routeGuideService.RouteChat()
-        senderChannelReference.set(sendChannel)
-        receiveChannelReference.set(receiveChannel)
-        delay(1000)
-      }
-      delay(100)
-      deferred.cancel()
-      mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled).isTrue()
-      assertThat(senderChannelReference.get()?.isClosedForSend).isTrue()
-      assertThat(receiveChannelReference.get()?.isClosedForReceive).isTrue()
     }
   }
 }

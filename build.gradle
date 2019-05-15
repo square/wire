@@ -1,7 +1,7 @@
 buildscript {
   ext.versions = [
       'android': '4.1.1.4',
-      'coroutines': '1.1.1',
+      'coroutines': '1.2.1',
       'errorprone': '2.0.21',
       'grpc': '1.14.0',
       'gson': '2.8.1',
