@@ -26,8 +26,6 @@ import com.squareup.wire.internal.Throws
 import com.squareup.wire.internal.format
 import com.squareup.wire.internal.intBitsToFloat
 import com.squareup.wire.internal.longBitsToDouble
-import com.squareup.wire.internal.toIntBits
-import com.squareup.wire.internal.toLongBits
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -479,7 +477,7 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun encode(writer: ProtoWriter, value: Float) {
-        writer.writeFixed32(value.toIntBits())
+        writer.writeFixed32(value.toBits())
       }
 
       @Throws(IOException::class)
@@ -497,7 +495,7 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun encode(writer: ProtoWriter, value: Double) {
-        writer.writeFixed64(value.toLongBits())
+        writer.writeFixed64(value.toBits())
       }
 
       @Throws(IOException::class)

@@ -32,10 +32,6 @@ actual fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = toMap()
 
 internal actual fun String.format(vararg args: Any?): String = TODO("Not implemented")
 
-internal actual fun Float.toIntBits(): Int = TODO("Not implemented")
-
 internal actual fun Int.intBitsToFloat(): Float = TODO("Not implemented")
-
-internal actual fun Double.toLongBits(): Long = TODO("Not implemented")
 
 internal actual fun Long.longBitsToDouble(): Double = TODO("Not implemented")

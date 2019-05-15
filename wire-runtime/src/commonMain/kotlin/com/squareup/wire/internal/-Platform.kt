@@ -32,10 +32,6 @@ expect fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V>
 
 internal expect fun String.format(vararg args: Any?): String
 
-internal expect fun Float.toIntBits(): Int
-
 internal expect fun Int.intBitsToFloat(): Float
-
-internal expect fun Double.toLongBits(): Long
 
 internal expect fun Long.longBitsToDouble(): Double

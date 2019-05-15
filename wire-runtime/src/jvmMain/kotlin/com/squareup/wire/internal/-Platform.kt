@@ -32,10 +32,6 @@ actual fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
 
 internal actual fun String.format(vararg args: Any?): String = String.format(this, args)
 
-internal actual fun Float.toIntBits(): Int = java.lang.Float.floatToIntBits(this)
-
 internal actual fun Int.intBitsToFloat(): Float = java.lang.Float.intBitsToFloat(this)
-
-internal actual fun Double.toLongBits(): Long = java.lang.Double.doubleToLongBits(this)
 
 internal actual fun Long.longBitsToDouble(): Double = java.lang.Double.longBitsToDouble(this)
