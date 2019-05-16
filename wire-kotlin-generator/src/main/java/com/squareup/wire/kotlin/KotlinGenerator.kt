@@ -80,11 +80,11 @@ class KotlinGenerator private constructor(
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
   private val ProtoType.typeName
-      get() = nameToKotlinName.getValue(this)
+    get() = nameToKotlinName.getValue(this)
   private val ProtoType.isEnum
-      get() = schema.getType(this) is EnumType
+    get() = schema.getType(this) is EnumType
   private val Type.typeName
-      get() = type().typeName
+    get() = type().typeName
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName
@@ -123,7 +123,7 @@ class KotlinGenerator private constructor(
         .addMember("responseAdapter = %S", "$packageName${rpc.responseType().simpleName()}#ADAPTER")
         .build()
     val funSpecBuilder = FunSpec.builder(rpc.name())
-        .addModifiers(KModifier.SUSPEND, KModifier.ABSTRACT)
+        .addModifiers(KModifier.ABSTRACT)
         .addAnnotation(wireRpcAnnotationSpec)
 
     when {
@@ -151,6 +151,7 @@ class KotlinGenerator private constructor(
       }
       else -> {
         funSpecBuilder
+            .addModifiers(KModifier.SUSPEND)
             .addParameter("request", rpc.requestType().typeName)
             .returns(rpc.responseType().typeName)
       }
@@ -1032,7 +1033,8 @@ class KotlinGenerator private constructor(
     }
 
   private fun ProtoType.asTypeName(): TypeName = when {
-    isMap -> Map::class.asTypeName().parameterizedBy(keyType().asTypeName(), valueType().asTypeName())
+    isMap -> Map::class.asTypeName()
+        .parameterizedBy(keyType().asTypeName(), valueType().asTypeName())
     else -> nameToKotlinName.getValue(this)
   }
 

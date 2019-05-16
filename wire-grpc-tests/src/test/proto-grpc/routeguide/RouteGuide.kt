@@ -22,19 +22,19 @@ interface RouteGuide : Service {
       requestAdapter = "routeguide.Rectangle#ADAPTER",
       responseAdapter = "routeguide.Feature#ADAPTER"
   )
-  suspend fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
+  fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
 
   @WireRpc(
       path = "/routeguide.RouteGuide/RecordRoute",
       requestAdapter = "routeguide.Point#ADAPTER",
       responseAdapter = "routeguide.RouteSummary#ADAPTER"
   )
-  suspend fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
+  fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
 
   @WireRpc(
       path = "/routeguide.RouteGuide/RouteChat",
       requestAdapter = "routeguide.RouteNote#ADAPTER",
       responseAdapter = "routeguide.RouteNote#ADAPTER"
   )
-  suspend fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+  fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
 }

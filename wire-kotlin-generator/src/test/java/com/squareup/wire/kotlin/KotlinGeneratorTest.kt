@@ -204,7 +204,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.Point#ADAPTER",
           |            responseAdapter = "routeguide.RouteSummary#ADAPTER"
           |    )
-          |    suspend fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
+          |    fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
           |}
           |""".trimMargin()
 
@@ -235,7 +235,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.Rectangle#ADAPTER",
           |            responseAdapter = "routeguide.Feature#ADAPTER"
           |    )
-          |    suspend fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
+          |    fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
           |}
           |""".trimMargin()
 
@@ -269,7 +269,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.RouteNote#ADAPTER",
           |            responseAdapter = "routeguide.RouteNote#ADAPTER"
           |    )
-          |    suspend fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+          |    fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
           |}
           |""".trimMargin()
 
@@ -309,7 +309,7 @@ class KotlinGeneratorTest {
           |            requestAdapter = "routeguide.RouteNote#ADAPTER",
           |            responseAdapter = "routeguide.RouteNote#ADAPTER"
           |    )
-          |    suspend fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+          |    fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
           |}
           |""".trimMargin()
 
