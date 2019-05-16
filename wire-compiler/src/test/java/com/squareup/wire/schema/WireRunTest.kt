@@ -70,6 +70,24 @@ class WireRunTest {
   }
 
   @Test
+  fun ktOnlyWithService() {
+    writeRedProto()
+    writeRedRouteProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("routes/src/main/proto")),
+        protoPath = listOf(Location.get("colors/src/main/proto")),
+        targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/kt/squareup/routes/Route.kt")
+    assertThat(fs.get("generated/kt/squareup/routes/Route.kt"))
+        .contains("interface Route")
+  }
+
+  @Test
   fun ktThenJava() {
     writeBlueProto()
     writeRedProto()
@@ -209,6 +227,17 @@ class WireRunTest {
           |package squareup.colors;
           |message Red {
           |  optional string oval = 1;
+          |}
+          """.trimMargin())
+  }
+
+  private fun writeRedRouteProto() {
+    fs.add("routes/src/main/proto/squareup/routes/route.proto", """
+          |syntax = "proto2";
+          |package squareup.routes;
+          |import "squareup/colors/red.proto";
+          |service Route {
+          |  rpc GetUpdatedRed(squareup.colors.Red) returns (squareup.colors.Red) {}
           |}
           """.trimMargin())
   }

@@ -35,7 +35,11 @@ sealed class Target {
    */
   abstract val elements: List<String>
 
-  internal abstract fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): TypeHandler
+  internal abstract fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    logger: WireLogger
+  ): SchemaHandler
 
   /** Generate `.java` sources. */
   data class JavaTarget(
@@ -54,8 +58,8 @@ sealed class Target {
      * normally implemented with generated code.
      */
     val compact: Boolean = false
-  ): Target() {
-    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger) : TypeHandler {
+  ) : Target() {
+    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
       val profileName = if (android) "android" else "java"
       val profile = ProfileLoader(fs, profileName)
           .schema(schema)
@@ -67,7 +71,7 @@ sealed class Target {
           .withAndroidAnnotations(androidAnnotations)
           .withCompact(compact)
 
-      return object : TypeHandler {
+      return object : SchemaHandler {
         override fun handle(type: Type) {
           val typeSpec = javaGenerator.generateType(type)
           val javaTypeName = javaGenerator.generatedTypeName(type)
@@ -90,6 +94,10 @@ sealed class Target {
                 "to $outDirectory", e)
           }
         }
+
+        override fun handle(service: Service) {
+          // Service handling isn't supporting in Java.
+        }
       }
     }
   }
@@ -105,12 +113,12 @@ sealed class Target {
 
     /** True for emitted types to implement APIs for easier migration from the Java target. */
     val javaInterop: Boolean = false
-  ): Target() {
-    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): TypeHandler {
+  ) : Target() {
+    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
 
       val kotlinGenerator = KotlinGenerator(schema, android, javaInterop)
 
-      return object : TypeHandler {
+      return object : SchemaHandler {
         override fun handle(type: Type) {
           val typeSpec = kotlinGenerator.generateType(type)
           val className = kotlinGenerator.generatedTypeName(type)
@@ -135,6 +143,28 @@ sealed class Target {
                 "${kotlinFile.packageName}.${className.canonicalName} to $outDirectory", e)
           }
         }
+
+        override fun handle(service: Service) {
+          val typeSpec = kotlinGenerator.generateService(service)
+          val packageName = service.type().enclosingTypeOrPackage()
+          val kotlinFile = FileSpec.builder(packageName, typeSpec.name!!)
+              .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
+              .apply {
+                service.location()?.let { addComment("\nSource file: %L", it.withPathOnly()) }
+              }
+              .addType(typeSpec)
+              .build()
+
+          val path = fs.getPath(outDirectory)
+          logger.artifact(path, kotlinFile)
+
+          try {
+            kotlinFile.writeTo(path)
+          } catch (e: IOException) {
+            throw IOException("Error emitting " +
+                "${kotlinFile.packageName}.${service.type()} to $outDirectory", e)
+          }
+        }
       }
     }
   }
@@ -142,17 +172,22 @@ sealed class Target {
   /** Omit code generation for these sources. Use this for a dry-run. */
   data class NullTarget(
     override val elements: List<String> = listOf("*")
-  ): Target() {
-    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): TypeHandler {
-      return object : TypeHandler {
+  ) : Target() {
+    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+      return object : SchemaHandler {
         override fun handle(type: Type) {
           logger.artifactSkipped(type.type())
+        }
+
+        override fun handle(service: Service) {
+          logger.artifactSkipped(service.type())
         }
       }
     }
   }
 
-  interface TypeHandler {
+  interface SchemaHandler {
     fun handle(type: Type)
+    fun handle(service: Service)
   }
 }
