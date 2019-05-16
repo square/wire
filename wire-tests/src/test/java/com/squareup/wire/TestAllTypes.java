@@ -328,7 +328,7 @@ public class TestAllTypes {
   @Test
   public void testWriteStream() throws IOException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    adapter.encode(stream, allTypes);
+    ProtoAdapterJvm.encode(adapter, stream, allTypes);
     byte[] output = stream.toByteArray();
     assertThat(output.length).isEqualTo(TestAllTypesData.expectedOutput.size());
     assertThat(ByteString.of(output)).isEqualTo(TestAllTypesData.expectedOutput);
@@ -364,7 +364,7 @@ public class TestAllTypes {
     byte[] data = adapter.encode(allTypes);
     InputStream stream = new ByteArrayInputStream(data);
 
-    AllTypes parsed = adapter.decode(stream);
+    AllTypes parsed = ProtoAdapterJvm.decode(adapter, stream);
     assertThat(parsed).isEqualTo(allTypes);
 
     assertThat(allTypes.ext_opt_bool).isEqualTo(Boolean.TRUE);

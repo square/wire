@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.ProtoAdapterJvm.encode
 import okio.Buffer
 import okio.BufferedSink
 import okio.ByteString

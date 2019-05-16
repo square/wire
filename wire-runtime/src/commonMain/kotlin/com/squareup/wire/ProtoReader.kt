@@ -34,14 +34,16 @@
 package com.squareup.wire
 
 import com.squareup.wire.TagHandler.Companion.UNKNOWN_TAG
+import com.squareup.wire.internal.ProtocolException
+import com.squareup.wire.internal.Throws
 import com.squareup.wire.internal.and
 import com.squareup.wire.internal.shl
 import okio.Buffer
 import okio.BufferedSource
 import okio.ByteString
-import java.io.EOFException
-import java.io.IOException
-import java.net.ProtocolException
+import okio.EOFException
+import okio.IOException
+import kotlin.jvm.JvmName
 
 /**
  * Reads and decodes protocol message fields.
