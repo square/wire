@@ -15,7 +15,8 @@
  */
 package com.squareup.wire
 
-import java.io.IOException
+import com.squareup.wire.internal.Throws
+import okio.IOException
 import kotlin.reflect.KClass
 
 /**
