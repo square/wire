@@ -164,7 +164,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
@@ -177,7 +177,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       result = result * 37 + (options != null ? options.hashCode() : 0);
       result = result * 37 + reserved_range.hashCode();
       result = result * 37 + reserved_name.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }
@@ -360,13 +360,13 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + (start != null ? start.hashCode() : 0);
         result = result * 37 + (end != null ? end.hashCode() : 0);
         result = result * 37 + (options != null ? options.hashCode() : 0);
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }
@@ -525,12 +525,12 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + (start != null ? start.hashCode() : 0);
         result = result * 37 + (end != null ? end.hashCode() : 0);
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }

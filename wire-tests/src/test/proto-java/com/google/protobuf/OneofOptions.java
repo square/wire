@@ -61,11 +61,11 @@ public final class OneofOptions extends Message<OneofOptions, OneofOptions.Build
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + uninterpreted_option.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

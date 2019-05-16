@@ -83,13 +83,13 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
       result = result * 37 + method.hashCode();
       result = result * 37 + (options != null ? options.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

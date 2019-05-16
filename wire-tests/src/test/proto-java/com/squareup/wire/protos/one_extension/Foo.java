@@ -58,11 +58,11 @@ public final class Foo extends Message<Foo, Foo.Builder> {
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (bar != null ? bar.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

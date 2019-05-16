@@ -78,12 +78,12 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + a.hashCode();
       result = result * 37 + b.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

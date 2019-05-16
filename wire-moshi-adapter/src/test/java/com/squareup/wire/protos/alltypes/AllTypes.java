@@ -1651,7 +1651,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
@@ -1791,7 +1791,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + ext_map_string_string.hashCode();
       result = result * 37 + ext_map_string_message.hashCode();
       result = result * 37 + ext_map_string_enum.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }
@@ -3008,11 +3008,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + (a != null ? a.hashCode() : 0);
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }

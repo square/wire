@@ -66,11 +66,11 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + a.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

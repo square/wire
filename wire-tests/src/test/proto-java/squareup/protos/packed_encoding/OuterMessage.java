@@ -69,12 +69,12 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (outer_number_before != null ? outer_number_before.hashCode() : 0);
       result = result * 37 + (embedded_message != null ? embedded_message.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

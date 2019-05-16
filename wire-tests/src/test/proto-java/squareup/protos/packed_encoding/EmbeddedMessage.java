@@ -71,12 +71,12 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + inner_repeated_number.hashCode();
       result = result * 37 + (inner_number_after != null ? inner_number_after.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

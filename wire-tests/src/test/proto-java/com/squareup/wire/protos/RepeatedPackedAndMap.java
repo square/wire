@@ -82,13 +82,13 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + rep_int32.hashCode();
       result = result * 37 + pack_int32.hashCode();
       result = result * 37 + map_int32_int32.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

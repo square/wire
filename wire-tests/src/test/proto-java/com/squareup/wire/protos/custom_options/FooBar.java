@@ -212,7 +212,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (foo != null ? foo.hashCode() : 0);
@@ -224,7 +224,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       result = result * 37 + nested.hashCode();
       result = result * 37 + (ext != null ? ext.hashCode() : 0);
       result = result * 37 + rep.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }
@@ -364,11 +364,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + (value != null ? value.hashCode() : 0);
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }
@@ -488,11 +488,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + serial.hashCode();
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }

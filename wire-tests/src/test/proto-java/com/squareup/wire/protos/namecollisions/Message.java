@@ -160,7 +160,7 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   @Override
   public int hashCode() {
-    int result_ = super.hashCode;
+    int result_ = super.cachedHashCode;
     if (result_ == 0) {
       result_ = unknownFields().hashCode();
       result_ = result_ * 37 + (unknownFields != null ? unknownFields.hashCode() : 0);
@@ -173,7 +173,7 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
       result_ = result_ * 37 + (MESSAGE_OPTIONS_ != null ? MESSAGE_OPTIONS_.hashCode() : 0);
       result_ = result_ * 37 + (this_ != null ? this_.hashCode() : 0);
       result_ = result_ * 37 + (message != null ? message.hashCode() : 0);
-      super.hashCode = result_;
+      super.cachedHashCode = result_;
     }
     return result_;
   }

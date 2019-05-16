@@ -211,7 +211,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
@@ -226,7 +226,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
       result = result * 37 + (options != null ? options.hashCode() : 0);
       result = result * 37 + (source_code_info != null ? source_code_info.hashCode() : 0);
       result = result * 37 + (syntax != null ? syntax.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

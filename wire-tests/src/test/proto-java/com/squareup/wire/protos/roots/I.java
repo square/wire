@@ -71,12 +71,12 @@ public final class I extends Message<I, I.Builder> {
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
       result = result * 37 + (j != null ? j.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

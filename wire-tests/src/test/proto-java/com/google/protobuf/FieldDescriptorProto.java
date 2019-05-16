@@ -197,7 +197,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
@@ -210,7 +210,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
       result = result * 37 + (oneof_index != null ? oneof_index.hashCode() : 0);
       result = result * 37 + (json_name != null ? json_name.hashCode() : 0);
       result = result * 37 + (options != null ? options.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

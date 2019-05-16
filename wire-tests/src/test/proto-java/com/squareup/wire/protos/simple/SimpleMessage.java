@@ -229,7 +229,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
   @Override
   public int hashCode() {
-    int result_ = super.hashCode;
+    int result_ = super.cachedHashCode;
     if (result_ == 0) {
       result_ = unknownFields().hashCode();
       result_ = result_ * 37 + (optional_int32 != null ? optional_int32.hashCode() : 0);
@@ -244,7 +244,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       result_ = result_ * 37 + (result != null ? result.hashCode() : 0);
       result_ = result_ * 37 + (other != null ? other.hashCode() : 0);
       result_ = result_ * 37 + (o != null ? o.hashCode() : 0);
-      super.hashCode = result_;
+      super.cachedHashCode = result_;
     }
     return result_;
   }
@@ -445,11 +445,11 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + (bb != null ? bb.hashCode() : 0);
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }

@@ -376,7 +376,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (java_package != null ? java_package.hashCode() : 0);
@@ -398,7 +398,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       result = result * 37 + (php_class_prefix != null ? php_class_prefix.hashCode() : 0);
       result = result * 37 + (php_namespace != null ? php_namespace.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

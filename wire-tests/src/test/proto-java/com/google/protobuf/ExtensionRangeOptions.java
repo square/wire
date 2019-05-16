@@ -62,11 +62,11 @@ public final class ExtensionRangeOptions extends Message<ExtensionRangeOptions, 
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + uninterpreted_option.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

@@ -125,7 +125,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
@@ -133,7 +133,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
       result = result * 37 + (enum_value_option != null ? enum_value_option.hashCode() : 0);
       result = result * 37 + (complex_enum_value_option != null ? complex_enum_value_option.hashCode() : 0);
       result = result * 37 + (foreign_enum_value_option != null ? foreign_enum_value_option.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

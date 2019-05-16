@@ -59,11 +59,11 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (inner_foreign_enum != null ? inner_foreign_enum.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

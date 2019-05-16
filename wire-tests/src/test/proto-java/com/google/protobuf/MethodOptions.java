@@ -98,13 +98,13 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + (idempotency_level != null ? idempotency_level.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

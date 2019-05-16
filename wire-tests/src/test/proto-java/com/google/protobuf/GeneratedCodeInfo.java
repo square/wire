@@ -68,11 +68,11 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + annotation.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }
@@ -197,14 +197,14 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + path.hashCode();
         result = result * 37 + (source_file != null ? source_file.hashCode() : 0);
         result = result * 37 + (begin != null ? begin.hashCode() : 0);
         result = result * 37 + (end != null ? end.hashCode() : 0);
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }

@@ -143,7 +143,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + name.hashCode();
@@ -153,7 +153,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
       result = result * 37 + (double_value != null ? double_value.hashCode() : 0);
       result = result * 37 + (string_value != null ? string_value.hashCode() : 0);
       result = result * 37 + (aggregate_value != null ? aggregate_value.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }
@@ -297,12 +297,12 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + name_part.hashCode();
         result = result * 37 + is_extension.hashCode();
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }

@@ -110,11 +110,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + location.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }
@@ -356,7 +356,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + path.hashCode();
@@ -364,7 +364,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
         result = result * 37 + (leading_comments != null ? leading_comments.hashCode() : 0);
         result = result * 37 + (trailing_comments != null ? trailing_comments.hashCode() : 0);
         result = result * 37 + leading_detached_comments.hashCode();
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }

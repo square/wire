@@ -261,7 +261,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (message_set_wire_format != null ? message_set_wire_format.hashCode() : 0);
@@ -276,7 +276,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       result = result * 37 + (my_message_option_five != null ? my_message_option_five.hashCode() : 0);
       result = result * 37 + (my_message_option_six != null ? my_message_option_six.hashCode() : 0);
       result = result * 37 + (foreign_message_option != null ? foreign_message_option.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

@@ -1405,7 +1405,7 @@ public final class JavaGenerator {
       return result.build();
     }
 
-    result.addStatement("int $N = super.hashCode", resultName);
+    result.addStatement("int $N = super.cachedHashCode", resultName);
     result.beginControlFlow("if ($N == 0)", resultName);
     result.addStatement("$N = unknownFields().hashCode()", resultName);
     for (Field field : fields) {
@@ -1417,7 +1417,7 @@ public final class JavaGenerator {
         result.addStatement("($1L != null ? $1L.hashCode() : 0)", fieldName);
       }
     }
-    result.addStatement("super.hashCode = $N", resultName);
+    result.addStatement("super.cachedHashCode = $N", resultName);
     result.endControlFlow();
     result.addStatement("return $N", resultName);
     return result.build();

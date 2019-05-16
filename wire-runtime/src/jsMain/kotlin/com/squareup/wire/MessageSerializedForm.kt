@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 internal actual class MessageSerializedForm<M : Message<M, B>, B : Message.Builder<M, B>>
 actual constructor(
   bytes: ByteArray,
-  messageClass: KClass<M>
+  messageKClass: KClass<M>
 ) : Serializable {
   actual fun readResolve(): Any =
       throw UnsupportedOperationException("Serialization is not supported in JS")

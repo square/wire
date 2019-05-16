@@ -319,7 +319,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (ctype != null ? ctype.hashCode() : 0);
@@ -338,7 +338,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       result = result * 37 + (squareup_protos_extension_collision_2_a != null ? squareup_protos_extension_collision_2_a.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);
       result = result * 37 + (redacted != null ? redacted.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

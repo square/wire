@@ -131,7 +131,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (f != null ? f.hashCode() : 0);
@@ -140,7 +140,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
       result = result * 37 + (bazext != null ? bazext.hashCode() : 0);
       result = result * 37 + (nested_message_ext != null ? nested_message_ext.hashCode() : 0);
       result = result * 37 + (nested_enum_ext != null ? nested_enum_ext.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

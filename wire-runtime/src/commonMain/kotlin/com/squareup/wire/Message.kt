@@ -36,7 +36,7 @@ abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected c
   @Transient internal var cachedSerializedSize = 0
 
   /** If non-zero, the hash code of this message. Accessed by generated code.  */
-  @Transient @JvmField protected var hashCode = 0
+  @Transient @JvmField protected var cachedHashCode = 0
 
   init {
     if (unknownFields == null) throw NullPointerException("unknownFields == null")

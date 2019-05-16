@@ -24,12 +24,13 @@ import kotlin.reflect.KClass
 internal actual class MessageSerializedForm<M : Message<M, B>, B : Message.Builder<M, B>>
 actual constructor(
   private val bytes: ByteArray,
-  private val messageClass: KClass<M>
+  messageKClass: KClass<M>
 ) : Serializable {
+  private val messageClass = messageKClass.javaObjectType
 
   @Throws(ObjectStreamException::class)
   actual fun readResolve(): Any {
-    val adapter = ProtoAdapterJvm.get(messageClass.javaObjectType)
+    val adapter = ProtoAdapterJvm.get(messageClass)
     try {
       // Extensions will be decoded as unknown values.
       return adapter.decode(bytes)

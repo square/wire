@@ -22,7 +22,7 @@ import kotlin.reflect.KClass
 
 internal expect class MessageSerializedForm<M : Message<M, B>, B : Message.Builder<M, B>>(
   bytes: ByteArray,
-  messageClass: KClass<M>
+  messageKClass: KClass<M>
 ) : Serializable {
   @Throws(ObjectStreamException::class)
   fun readResolve(): Any

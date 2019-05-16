@@ -117,7 +117,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
@@ -126,7 +126,7 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
       result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
       result = result * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
       result = result * 37 + v2_rs.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

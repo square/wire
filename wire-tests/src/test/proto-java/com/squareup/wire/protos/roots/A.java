@@ -80,12 +80,12 @@ public final class A extends Message<A, A.Builder> {
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (c != null ? c.hashCode() : 0);
       result = result * 37 + (d != null ? d.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

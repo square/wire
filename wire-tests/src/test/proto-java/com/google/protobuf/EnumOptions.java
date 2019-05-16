@@ -112,14 +112,14 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (allow_alias != null ? allow_alias.hashCode() : 0);
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
       result = result * 37 + (enum_option != null ? enum_option.hashCode() : 0);
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }

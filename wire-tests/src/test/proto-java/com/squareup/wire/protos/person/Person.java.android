@@ -115,14 +115,14 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
   @Override
   public int hashCode() {
-    int result = super.hashCode;
+    int result = super.cachedHashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + name.hashCode();
       result = result * 37 + id.hashCode();
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + phone.hashCode();
-      super.hashCode = result;
+      super.cachedHashCode = result;
     }
     return result;
   }
@@ -303,12 +303,12 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
     @Override
     public int hashCode() {
-      int result = super.hashCode;
+      int result = super.cachedHashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
         result = result * 37 + number.hashCode();
         result = result * 37 + (type != null ? type.hashCode() : 0);
-        super.hashCode = result;
+        super.cachedHashCode = result;
       }
       return result;
     }
