@@ -18,6 +18,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class MethodOptions extends Message<MethodOptions, MethodOptions.Builder> {
@@ -208,7 +209,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
     private static final class ProtoAdapter_IdempotencyLevel extends EnumAdapter<IdempotencyLevel> {
       ProtoAdapter_IdempotencyLevel() {
-        super(IdempotencyLevel.class);
+        super(JvmClassMappingKt.getKotlinClass(IdempotencyLevel.class));
       }
 
       @Override
@@ -220,7 +221,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
   private static final class ProtoAdapter_MethodOptions extends ProtoAdapter<MethodOptions> {
     public ProtoAdapter_MethodOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(MethodOptions.class));
     }
 
     @Override

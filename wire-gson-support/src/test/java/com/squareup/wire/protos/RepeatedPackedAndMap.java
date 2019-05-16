@@ -17,6 +17,7 @@ import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
 import java.util.Map;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, RepeatedPackedAndMap.Builder> {
@@ -142,7 +143,8 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
     private final ProtoAdapter<Map<Integer, Integer>> map_int32_int32 = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
 
     public ProtoAdapter_RepeatedPackedAndMap() {
-      super(FieldEncoding.LENGTH_DELIMITED, RepeatedPackedAndMap.class);
+      super(FieldEncoding.LENGTH_DELIMITED,
+          JvmClassMappingKt.getKotlinClass(RepeatedPackedAndMap.class));
     }
 
     @Override

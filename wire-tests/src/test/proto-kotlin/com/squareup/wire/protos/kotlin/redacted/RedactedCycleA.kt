@@ -33,7 +33,7 @@ data class RedactedCycleA(@field:WireField(tag = 1, adapter =
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedCycleA> = object : ProtoAdapter<RedactedCycleA>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedCycleA::class.java
+      RedactedCycleA::class
     ) {
       override fun encodedSize(value: RedactedCycleA): Int = 
         RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b) +

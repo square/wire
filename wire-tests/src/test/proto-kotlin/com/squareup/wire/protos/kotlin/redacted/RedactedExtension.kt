@@ -45,7 +45,7 @@ data class RedactedExtension(
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedExtension> = object : ProtoAdapter<RedactedExtension>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedExtension::class.java
+      RedactedExtension::class
     ) {
       override fun encodedSize(value: RedactedExtension): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.d) +

@@ -51,7 +51,7 @@ data class Percents(
     @JvmField
     val ADAPTER: ProtoAdapter<Percents> = object : ProtoAdapter<Percents>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Percents::class.java
+      Percents::class
     ) {
       override fun encodedSize(value: Percents): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.text) +

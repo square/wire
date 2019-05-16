@@ -43,7 +43,7 @@ data class RedactedRequired(@field:WireField(tag = 1, adapter =
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedRequired> = object : ProtoAdapter<RedactedRequired>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedRequired::class.java
+      RedactedRequired::class
     ) {
       override fun encodedSize(value: RedactedRequired): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +

@@ -35,7 +35,7 @@ data class OneOfMessage(val choice: Choice? = null, val unknownFields: ByteStrin
     @JvmField
     val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OneOfMessage::class.java
+      OneOfMessage::class
     ) {
       override fun encodedSize(value: OneOfMessage): Int = 
         when (value.choice) {

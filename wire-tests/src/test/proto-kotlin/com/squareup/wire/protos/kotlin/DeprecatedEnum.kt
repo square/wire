@@ -24,7 +24,7 @@ enum class DeprecatedEnum(override val value: Int) : WireEnum {
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<DeprecatedEnum> = object : EnumAdapter<DeprecatedEnum>(
-      DeprecatedEnum::class.java
+      DeprecatedEnum::class
     ) {
       override fun fromValue(value: Int): DeprecatedEnum = DeprecatedEnum.fromValue(value)
     }

@@ -15,6 +15,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage.Builder> {
@@ -116,7 +117,7 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
 
   private static final class ProtoAdapter_ForeignMessage extends ProtoAdapter<ForeignMessage> {
     public ProtoAdapter_ForeignMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, ForeignMessage.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(ForeignMessage.class));
     }
 
     @Override

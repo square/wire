@@ -23,6 +23,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -482,7 +483,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
       public ProtoAdapter_NestedMessage() {
-        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class);
+        super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(NestedMessage.class));
       }
 
       @Override
@@ -568,7 +569,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     private static final class ProtoAdapter_NestedEnum extends EnumAdapter<NestedEnum> {
       ProtoAdapter_NestedEnum() {
-        super(NestedEnum.class);
+        super(JvmClassMappingKt.getKotlinClass(NestedEnum.class));
       }
 
       @Override
@@ -580,7 +581,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
   private static final class ProtoAdapter_SimpleMessage extends ProtoAdapter<SimpleMessage> {
     public ProtoAdapter_SimpleMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, SimpleMessage.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(SimpleMessage.class));
     }
 
     @Override

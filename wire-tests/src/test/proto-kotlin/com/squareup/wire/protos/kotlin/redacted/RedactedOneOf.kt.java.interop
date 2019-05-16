@@ -71,7 +71,7 @@ data class RedactedOneOf(
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedOneOf> = object : ProtoAdapter<RedactedOneOf>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedOneOf::class.java
+      RedactedOneOf::class
     ) {
       override fun encodedSize(value: RedactedOneOf): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.b) +

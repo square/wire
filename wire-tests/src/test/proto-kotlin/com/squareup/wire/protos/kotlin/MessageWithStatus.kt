@@ -34,7 +34,7 @@ data class MessageWithStatus(val unknownFields: ByteString = ByteString.EMPTY) :
     @JvmField
     val ADAPTER: ProtoAdapter<MessageWithStatus> = object : ProtoAdapter<MessageWithStatus>(
       FieldEncoding.LENGTH_DELIMITED, 
-      MessageWithStatus::class.java
+      MessageWithStatus::class
     ) {
       override fun encodedSize(value: MessageWithStatus): Int = 
         value.unknownFields.size
@@ -66,7 +66,7 @@ data class MessageWithStatus(val unknownFields: ByteString = ByteString.EMPTY) :
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<Status> = object : EnumAdapter<Status>(
-        Status::class.java
+        Status::class
       ) {
         override fun fromValue(value: Int): Status = Status.fromValue(value)
       }

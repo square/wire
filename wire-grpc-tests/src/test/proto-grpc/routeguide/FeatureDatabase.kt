@@ -38,7 +38,7 @@ data class FeatureDatabase(@field:WireField(tag = 1, adapter = "routeguide.Featu
     @JvmField
     val ADAPTER: ProtoAdapter<FeatureDatabase> = object : ProtoAdapter<FeatureDatabase>(
       FieldEncoding.LENGTH_DELIMITED, 
-      FeatureDatabase::class.java
+      FeatureDatabase::class
     ) {
       override fun encodedSize(value: FeatureDatabase): Int = 
         Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature) +

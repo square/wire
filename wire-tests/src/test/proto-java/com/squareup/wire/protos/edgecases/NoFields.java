@@ -12,6 +12,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class NoFields extends Message<NoFields, NoFields.Builder> {
@@ -62,7 +63,7 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
 
   private static final class ProtoAdapter_NoFields extends ProtoAdapter<NoFields> {
     public ProtoAdapter_NoFields() {
-      super(FieldEncoding.LENGTH_DELIMITED, NoFields.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(NoFields.class));
     }
 
     @Override

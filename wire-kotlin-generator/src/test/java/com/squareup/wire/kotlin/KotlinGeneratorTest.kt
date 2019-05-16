@@ -45,7 +45,7 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("data class Person"))
     assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>(\n"))
     assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
-    assertTrue(code.contains("PhoneNumber::class.java"))
+    assertTrue(code.contains("PhoneNumber::class"))
     assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))
     assertTrue(code.contains("enum class PhoneType(override val value: Int) : WireEnum"))
     assertTrue(code.contains("WORK(1),"))

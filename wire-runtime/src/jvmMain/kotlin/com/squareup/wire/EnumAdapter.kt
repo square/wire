@@ -16,12 +16,13 @@
 package com.squareup.wire
 
 import java.io.IOException
+import kotlin.reflect.KClass
 
 /**
  * An abstract [ProtoAdapter] that converts values of an enum to and from integers.
  */
 abstract class EnumAdapter<E : WireEnum> protected constructor(
-  type: Class<E>
+  type: KClass<E>
 ) : ProtoAdapter<E>(FieldEncoding.VARINT, type) {
 
   override fun encodedSize(value: E): Int = ProtoWriter.varint32Size(value.value)
@@ -34,7 +35,7 @@ abstract class EnumAdapter<E : WireEnum> protected constructor(
   @Throws(IOException::class)
   override fun decode(reader: ProtoReader): E {
     val value = reader.readVarint32()
-    return fromValue(value) ?: throw EnumConstantNotFoundException(value, javaType)
+    return fromValue(value) ?: throw EnumConstantNotFoundException(value, type)
   }
 
   override fun redact(value: E): E = throw UnsupportedOperationException()

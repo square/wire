@@ -14,6 +14,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class OneBytesField extends Message<OneBytesField, OneBytesField.Builder> {
@@ -92,7 +93,7 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
 
   private static final class ProtoAdapter_OneBytesField extends ProtoAdapter<OneBytesField> {
     public ProtoAdapter_OneBytesField() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class);
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(OneBytesField.class));
     }
 
     @Override

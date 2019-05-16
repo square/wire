@@ -97,7 +97,7 @@ data class OneOfMessage(
     @JvmField
     val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OneOfMessage::class.java
+      OneOfMessage::class
     ) {
       override fun encodedSize(value: OneOfMessage): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +

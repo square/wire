@@ -27,9 +27,10 @@ import java.util.Collections
 import java.util.LinkedHashMap
 
 class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
-  private val messageType: Class<M>, private val builderType: Class<B>,
+  private val messageType: Class<M>,
+  private val builderType: Class<B>,
   val fieldBindings: Map<Int, FieldBinding<M, B>>
-) : ProtoAdapter<M>(FieldEncoding.LENGTH_DELIMITED, messageType) {
+) : ProtoAdapter<M>(FieldEncoding.LENGTH_DELIMITED, messageType.kotlin) {
 
   fun newBuilder(): B = builderType.newInstance()
 
@@ -62,9 +63,11 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     for (fieldBinding in fieldBindings.values) {
       if (fieldBinding.redacted && fieldBinding.label == WireField.Label.REQUIRED) {
         throw UnsupportedOperationException(
-            "Field '${fieldBinding.name}' in ${javaType?.name} is required and cannot be redacted.")
+            "Field '${fieldBinding.name}' in ${type?.javaObjectType?.name} is required and " +
+                "cannot be redacted.")
       }
-      val isMessage = Message::class.java.isAssignableFrom(fieldBinding.singleAdapter().javaType)
+      val isMessage = Message::class.java
+          .isAssignableFrom(fieldBinding.singleAdapter().type?.javaObjectType)
       if (fieldBinding.redacted || isMessage && !fieldBinding.label.isRepeated) {
         val builderValue = fieldBinding.getFromBuilder(builder)
         if (builderValue != null) {

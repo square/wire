@@ -61,7 +61,7 @@ data class Person(
     @JvmField
     val ADAPTER: ProtoAdapter<Person> = object : ProtoAdapter<Person>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Person::class.java
+      Person::class
     ) {
       override fun encodedSize(value: Person): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
@@ -124,7 +124,7 @@ data class Person(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<PhoneType> = object : EnumAdapter<PhoneType>(
-        PhoneType::class.java
+        PhoneType::class
       ) {
         override fun fromValue(value: Int): PhoneType = PhoneType.fromValue(value)
       }
@@ -166,7 +166,7 @@ data class Person(
       @JvmField
       val ADAPTER: ProtoAdapter<PhoneNumber> = object : ProtoAdapter<PhoneNumber>(
         FieldEncoding.LENGTH_DELIMITED, 
-        PhoneNumber::class.java
+        PhoneNumber::class
       ) {
         override fun encodedSize(value: PhoneNumber): Int = 
           ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +

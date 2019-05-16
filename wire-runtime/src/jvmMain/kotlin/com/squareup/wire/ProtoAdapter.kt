@@ -37,10 +37,11 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.lang.Double.doubleToLongBits
 import java.lang.Float.floatToIntBits
+import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E>(
   private val fieldEncoding: FieldEncoding,
-  val javaType: Class<*>?
+  val type: KClass<*>?
 ) {
   internal var packedAdapter: ProtoAdapter<List<E>>? = null
   internal var repeatedAdapter: ProtoAdapter<List<E>>? = null
@@ -154,7 +155,7 @@ actual abstract class ProtoAdapter<E>(
     require(fieldEncoding != FieldEncoding.LENGTH_DELIMITED) {
       "Unable to pack a length-delimited type."
     }
-    return object : ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List::class.java) {
+    return object : ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List::class) {
       @Throws(IOException::class)
       override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
         if (value != null && value.isNotEmpty()) {
@@ -189,7 +190,7 @@ actual abstract class ProtoAdapter<E>(
   }
 
   private fun createRepeated(): ProtoAdapter<List<E>> {
-    return object : ProtoAdapter<List<E>>(fieldEncoding, List::class.java) {
+    return object : ProtoAdapter<List<E>>(fieldEncoding, List::class) {
       override fun encodedSize(value: List<E>): Int {
         throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
       }
@@ -224,13 +225,13 @@ actual abstract class ProtoAdapter<E>(
 
   class EnumConstantNotFoundException(
     @JvmField val value: Int,
-    type: Class<*>?
-  ) : IllegalArgumentException("Unknown enum tag $value for ${type?.canonicalName}")
+    type: KClass<*>?
+  ) : IllegalArgumentException("Unknown enum tag $value for ${type?.qualifiedName}")
 
   private class MapProtoAdapter<K, V> internal constructor(
     keyAdapter: ProtoAdapter<K>,
     valueAdapter: ProtoAdapter<V>
-  ) : ProtoAdapter<Map<K, V>>(FieldEncoding.LENGTH_DELIMITED, Map::class.java) {
+  ) : ProtoAdapter<Map<K, V>>(FieldEncoding.LENGTH_DELIMITED, Map::class) {
     private val entryAdapter = MapEntryProtoAdapter(keyAdapter, valueAdapter)
 
     override fun encodedSize(value: Map<K, V>): Int {
@@ -286,7 +287,7 @@ actual abstract class ProtoAdapter<E>(
   private class MapEntryProtoAdapter<K, V> internal constructor(
     internal val keyAdapter: ProtoAdapter<K>,
     internal val valueAdapter: ProtoAdapter<V>
-  ) : ProtoAdapter<Map.Entry<K, V>>(FieldEncoding.LENGTH_DELIMITED, Map.Entry::class.java) {
+  ) : ProtoAdapter<Map.Entry<K, V>>(FieldEncoding.LENGTH_DELIMITED, Map.Entry::class) {
 
     override fun encodedSize(value: Map.Entry<K, V>): Int {
       return keyAdapter.encodedSizeWithTag(1, value.key) +
@@ -374,7 +375,7 @@ actual abstract class ProtoAdapter<E>(
 
     @JvmField val BOOL: ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean>(
         FieldEncoding.VARINT,
-        Boolean::class.javaObjectType
+        Boolean::class
     ) {
       override fun encodedSize(value: Boolean): Int = FIXED_BOOL_SIZE
 
@@ -394,7 +395,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val INT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
         FieldEncoding.VARINT,
-        Int::class.javaObjectType
+        Int::class
     ) {
       override fun encodedSize(value: Int): Int = int32Size(value)
 
@@ -410,7 +411,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val UINT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
         FieldEncoding.VARINT,
-        Int::class.javaObjectType
+        Int::class
     ) {
       override fun encodedSize(value: Int): Int = varint32Size(value)
 
@@ -426,7 +427,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val SINT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
         FieldEncoding.VARINT,
-        Int::class.javaObjectType
+        Int::class
     ) {
       override fun encodedSize(value: Int): Int = varint32Size(encodeZigZag32(value))
 
@@ -442,7 +443,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val FIXED32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
         FieldEncoding.FIXED32,
-        Int::class.javaObjectType
+        Int::class
     ) {
       override fun encodedSize(value: Int): Int = FIXED_32_SIZE
 
@@ -459,7 +460,7 @@ actual abstract class ProtoAdapter<E>(
     @JvmField val SFIXED32 = FIXED32
     @JvmField val INT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
         FieldEncoding.VARINT,
-        Long::class.javaObjectType
+        Long::class
     ) {
       override fun encodedSize(value: Long): Int = varint64Size(value)
 
@@ -479,7 +480,7 @@ actual abstract class ProtoAdapter<E>(
      */
     @JvmField val UINT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
         FieldEncoding.VARINT,
-        Long::class.javaObjectType
+        Long::class
     ) {
       override fun encodedSize(value: Long): Int = varint64Size(value)
 
@@ -495,7 +496,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val SINT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
         FieldEncoding.VARINT,
-        Long::class.javaObjectType
+        Long::class
     ) {
       override fun encodedSize(value: Long): Int = varint64Size(encodeZigZag64(value))
 
@@ -511,7 +512,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val FIXED64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
         FieldEncoding.FIXED64,
-        Long::class.javaObjectType
+        Long::class
     ) {
       override fun encodedSize(value: Long): Int = FIXED_64_SIZE
 
@@ -528,7 +529,7 @@ actual abstract class ProtoAdapter<E>(
     @JvmField val SFIXED64 = FIXED64
     @JvmField val FLOAT: ProtoAdapter<Float> = object : ProtoAdapter<Float>(
         FieldEncoding.FIXED32,
-        Float::class.javaObjectType
+        Float::class
     ) {
       override fun encodedSize(value: Float): Int = FIXED_32_SIZE
 
@@ -546,7 +547,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val DOUBLE: ProtoAdapter<Double> = object : ProtoAdapter<Double>(
         FieldEncoding.FIXED64,
-        Double::class.javaObjectType
+        Double::class
     ) {
       override fun encodedSize(value: Double): Int = FIXED_64_SIZE
 
@@ -564,7 +565,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val STRING: ProtoAdapter<String> = object : ProtoAdapter<String>(
         FieldEncoding.LENGTH_DELIMITED,
-        String::class.java
+        String::class
     ) {
       override fun encodedSize(value: String): Int = value.utf8Size().toInt()
 
@@ -580,7 +581,7 @@ actual abstract class ProtoAdapter<E>(
     }
     @JvmField val BYTES: ProtoAdapter<ByteString> = object : ProtoAdapter<ByteString>(
         FieldEncoding.LENGTH_DELIMITED,
-        ByteString::class.java
+        ByteString::class
     ) {
       override fun encodedSize(value: ByteString): Int = value.size
 

@@ -45,7 +45,7 @@ data class RouteNote(
     @JvmField
     val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RouteNote::class.java
+      RouteNote::class
     ) {
       override fun encodedSize(value: RouteNote): Int = 
         Point.ADAPTER.encodedSizeWithTag(1, value.location) +

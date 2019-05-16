@@ -37,7 +37,8 @@ abstract class AndroidMessage<M : Message<M, B>, B : Message.Builder<M, B>> prot
   ) : Parcelable.Creator<M> {
     override fun createFromParcel(input: Parcel): M = adapter.decode(input.createByteArray())
 
-    override fun newArray(size: Int): Array<M> = newInstance(adapter.javaType, size) as Array<M>
+    override fun newArray(size: Int): Array<M> =
+        newInstance(adapter.type?.javaObjectType, size) as Array<M>
   }
 
   companion object {

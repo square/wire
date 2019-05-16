@@ -43,7 +43,7 @@ data class MessageUsingMultipleEnums(
     val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
         ProtoAdapter<MessageUsingMultipleEnums>(
       FieldEncoding.LENGTH_DELIMITED, 
-      MessageUsingMultipleEnums::class.java
+      MessageUsingMultipleEnums::class
     ) {
       override fun encodedSize(value: MessageUsingMultipleEnums): Int = 
         MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a) +

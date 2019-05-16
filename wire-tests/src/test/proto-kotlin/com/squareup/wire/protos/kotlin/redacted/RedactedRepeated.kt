@@ -50,7 +50,7 @@ data class RedactedRepeated(
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedRepeated> = object : ProtoAdapter<RedactedRepeated>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedRepeated::class.java
+      RedactedRepeated::class
     ) {
       override fun encodedSize(value: RedactedRepeated): Int = 
         ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a) +
