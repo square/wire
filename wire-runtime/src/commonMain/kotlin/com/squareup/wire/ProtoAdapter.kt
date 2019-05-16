@@ -211,8 +211,6 @@ abstract class ProtoAdapter<E>(
   class EnumConstantNotFoundException(
     @JvmField val value: Int,
     type: KClass<*>?
-      // TODO(egorand): Error message should print out type.qualifiedName, but this currently fails
-      //  with: Unsupported [This reflection API is not supported yet in JavaScript]
   ) : IllegalArgumentException("Unknown enum tag $value for ${type?.simpleName}")
 
   private class MapProtoAdapter<K, V> internal constructor(
