@@ -12,7 +12,7 @@ jar {
 
 dependencies {
   api project(':wire-schema')
-  implementation project(path: ':wire-runtime', configuration: 'runtimeElements')
+  implementation project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
   api deps.kotlin.stdlib.jdk8
   implementation deps.okio.jvm
   implementation deps.guava
