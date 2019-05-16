@@ -156,13 +156,15 @@ data class WireRun(
 
     // 5. Call each target.
     val typesToHandle = mutableListOf<Type>()
+    val servicesToHandle = mutableListOf<Service>()
     for (protoFile in schema.protoFiles()) {
       if (schemaLoader.sourceLocationPaths.contains(protoFile.location().path)) {
         typesToHandle += protoFile.types()
+        servicesToHandle += protoFile.services()
       }
     }
     for (target in targets) {
-      val typeHandler = target.newHandler(schema, fs, logger)
+      val schemaHandler = target.newHandler(schema, fs, logger)
 
       val identifierSet = IdentifierSet.Builder()
           .include(target.elements)
@@ -172,8 +174,19 @@ data class WireRun(
       while (i.hasNext()) {
         val type = i.next()
         if (identifierSet.includes(type.type())) {
-          typeHandler.handle(type)
+          schemaHandler.handle(type)
+          // We don't let other targets handle this one.
           i.remove()
+        }
+      }
+
+      val j = servicesToHandle.iterator()
+      while (j.hasNext()) {
+        val service = j.next()
+        if (identifierSet.includes(service.type())) {
+          schemaHandler.handle(service)
+          // We don't let other targets handle this one.
+          j.remove()
         }
       }
 
