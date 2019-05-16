@@ -4,7 +4,7 @@ Change Log
 Version 3.0.0-alpha02 *(2019-05-16)*
 ------------------------------------
 
-TODO
+ * Fix: Kotlin Generator correctly generates code for Protobuf services.
 	
 Version 3.0.0-alpha01 *(2019-03-14)*
 ------------------------------------
