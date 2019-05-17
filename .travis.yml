@@ -8,7 +8,7 @@ before_script:
   - if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
 script:
-  - ./gradlew clean build
+  - ./gradlew clean build --refresh-dependencies
 
 after_success:
   - .buildscript/deploy_snapshot.sh
