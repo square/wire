@@ -15,7 +15,8 @@ jar {
 
 dependencies {
   api deps.kotlin.stdlib.jdk8
-  implementation project(path: ':wire-runtime', configuration: 'runtimeElements')
+  // TODO(egorand): Depend on runtimeElements once runtime is fully multiplatform
+  implementation project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
   api project(':wire-schema')
   implementation project(':wire-java-generator')
   implementation project(':wire-kotlin-generator')
