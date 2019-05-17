@@ -1,6 +1,30 @@
 Change Log
 ==========
+	
+Version 3.0.0-alpha02 *(2019-05-16)*
+------------------------------------
 
+ * New: Experimental multiplatform runtime.
+ 
+   Starting with this version, `wire-runtime` is published as a multiplatform Kotlin artifact. While
+   the JVM artifact is binary- and behavior-compatible with 3.0.0-alpha01, artifacts for other 
+   platforms may not work correctly at this point. The artifact name for the JVM artifact has been 
+   changed to `wire-runtime-jvm`: now, in order to depend on the multiplatform runtime, use the 
+   following Gradle dependency declaration:
+   
+   ```groovy
+   api "com.squareup.wire:wire-runtime:3.0.0-alpha02"
+   ``` 
+   
+   and if you want to depend on the JVM artifact only, use the following declaration:
+   
+   ```groovy
+   api "com.squareup.wire:wire-runtime-jvm:3.0.0-alpha02"
+   ```
+   
+ * Fix: Kotlin Generator correctly generates code for Protobuf services.
+ * Fix: Improved formatting of generated Kotlin code
+	
 Version 3.0.0-alpha01 *(2019-03-14)*
 ------------------------------------
 
