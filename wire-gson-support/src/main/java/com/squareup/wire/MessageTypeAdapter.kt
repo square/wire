@@ -115,7 +115,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       if (element.isJsonNull) {
         return emptyList<Any>()
       }
-      val itemType = fieldBinding.singleAdapter().type?.javaObjectType
+      val itemType = fieldBinding.singleAdapter().type!!.javaObjectType
       val adapter = gson.getAdapter(itemType)
       return element.asJsonArray.map(adapter::fromJsonTree)
     }
@@ -125,8 +125,8 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
         return emptyMap<Any, Any>()
       }
 
-      val keyType = fieldBinding.keyAdapter().type?.javaObjectType
-      val valueType = fieldBinding.singleAdapter().type?.javaObjectType
+      val keyType = fieldBinding.keyAdapter().type!!.javaObjectType
+      val valueType = fieldBinding.singleAdapter().type!!.javaObjectType
       val valueAdapter = gson.getAdapter(valueType)
 
       val jsonObject = element.asJsonObject
@@ -136,7 +136,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       )
     }
 
-    val elementType = fieldBinding.singleAdapter().type?.javaObjectType
+    val elementType = fieldBinding.singleAdapter().type!!.javaObjectType
     return gson.fromJson(element, elementType)
   }
 }
