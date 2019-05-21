@@ -20,6 +20,9 @@ import kotlin.reflect.KClass
 
 expect interface Serializable
 
+// TODO(egorand): Remove when https://youtrack.jetbrains.com/issue/KT-26283 lands
+@OptionalExpectation
+@UseExperimental(ExperimentalMultiplatform::class)
 expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable>)
 
 expect abstract class ObjectStreamException : IOException

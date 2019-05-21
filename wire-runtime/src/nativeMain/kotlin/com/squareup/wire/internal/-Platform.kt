@@ -20,8 +20,6 @@ import kotlin.reflect.KClass
 
 actual interface Serializable
 
-actual annotation class Throws(actual vararg val exceptionClasses: KClass<out Throwable>)
-
 actual abstract class ObjectStreamException : IOException()
 
 actual class ProtocolException actual constructor(host: String) : IOException()
