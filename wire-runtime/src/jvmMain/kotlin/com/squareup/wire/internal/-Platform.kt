@@ -35,9 +35,3 @@ actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 internal actual inline fun String.format(vararg args: Any?): String = String.format(this, args)
-
-@Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
-internal actual inline fun Int.intBitsToFloat(): Float = java.lang.Float.intBitsToFloat(this)
-
-@Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
-internal actual inline fun Long.longBitsToDouble(): Double = java.lang.Double.longBitsToDouble(this)

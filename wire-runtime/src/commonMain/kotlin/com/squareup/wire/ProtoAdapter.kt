@@ -24,8 +24,6 @@ import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
 import com.squareup.wire.internal.Throws
 import com.squareup.wire.internal.format
-import com.squareup.wire.internal.intBitsToFloat
-import com.squareup.wire.internal.longBitsToDouble
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -480,7 +478,7 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Float {
-        return reader.readFixed32().intBitsToFloat()
+        return Float.fromBits(reader.readFixed32())
       }
 
       override fun redact(value: Float): Float = throw UnsupportedOperationException()
@@ -498,7 +496,7 @@ abstract class ProtoAdapter<E>(
 
       @Throws(IOException::class)
       override fun decode(reader: ProtoReader): Double {
-        return reader.readFixed64().longBitsToDouble()
+        return Double.fromBits(reader.readFixed64())
       }
 
       override fun redact(value: Double): Double = throw UnsupportedOperationException()
