@@ -31,7 +31,3 @@ actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> = this
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = this
 
 internal actual fun String.format(vararg args: Any?): String = TODO("Not implemented")
-
-internal actual fun Int.intBitsToFloat(): Float = TODO("Not implemented")
-
-internal actual fun Long.longBitsToDouble(): Double = TODO("Not implemented")
