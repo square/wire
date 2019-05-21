@@ -26,9 +26,11 @@ actual abstract class ObjectStreamException : IOException()
 
 actual class ProtocolException actual constructor(host: String) : IOException()
 
-actual fun <T> MutableList<T>.toUnmodifiableList(): List<T> = toList()
+@Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
+actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> = this
 
-actual fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = toMap()
+@Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
+actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = this
 
 internal actual fun String.format(vararg args: Any?): String = TODO("Not implemented")
 
