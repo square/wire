@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
 class KotlinGeneratorTest {
   @Test fun basic() {
     val repoBuilder = RepoBuilder()
-      .add("message.proto", """
+        .add("message.proto", """
         |message Person {
         |	required string name = 1;
         |	required int32 id = 2;
@@ -53,7 +53,7 @@ class KotlinGeneratorTest {
 
   @Test fun defaultValues() {
     val repoBuilder = RepoBuilder()
-      .add("message.proto", """
+        .add("message.proto", """
         |message Message {
         |  optional int32 a = 1 [default = 10 ];
         |  optional int32 b = 2 [default = 0x20 ];
@@ -69,7 +69,7 @@ class KotlinGeneratorTest {
 
   @Test fun nameAllocatorIsUsed() {
     val repoBuilder = RepoBuilder()
-      .add("message.proto", """
+        .add("message.proto", """
         |message Message {
         |  required float when = 1;
         |  required int32 ADAPTER = 2;
@@ -326,6 +326,61 @@ class KotlinGeneratorTest {
           |$routeNoteMessage
           |""".trimMargin())
     assertEquals(expected, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide"))
+  }
+
+  @Test fun multipleRpcsAsSingleMethodInterface() {
+    val repoBuilder = RepoBuilder()
+        .add("routeguide.proto", """
+          |package routeguide;
+          |
+          |service RouteGuide {
+          |  rpc GetFeature(Point) returns (Feature) {}
+          |  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
+          |}
+          |$pointMessage
+          |$featureMessage
+          |$routeNoteMessage
+          |""".trimMargin())
+
+    val expectedGetFeature = """
+          |package routeguide
+          |
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |
+          |interface RouteGuideGetFeature : Service {
+          |    @WireRpc(
+          |            path = "/routeguide.RouteGuide/GetFeature",
+          |            requestAdapter = "routeguide.Point#ADAPTER",
+          |            responseAdapter = "routeguide.Feature#ADAPTER"
+          |    )
+          |    suspend fun GetFeature(request: Point): Feature
+          |}
+          |""".trimMargin()
+
+    assertEquals(expectedGetFeature,
+        repoBuilder.generateGrpcKotlinAsSingleMethod("routeguide.RouteGuide", "GetFeature"))
+
+    val expectedRouteChat = """
+          |package routeguide
+          |
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |import kotlin.Pair
+          |import kotlinx.coroutines.channels.ReceiveChannel
+          |import kotlinx.coroutines.channels.SendChannel
+          |
+          |interface RouteGuideRouteChat : Service {
+          |    @WireRpc(
+          |            path = "/routeguide.RouteGuide/RouteChat",
+          |            requestAdapter = "routeguide.RouteNote#ADAPTER",
+          |            responseAdapter = "routeguide.RouteNote#ADAPTER"
+          |    )
+          |    fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+          |}
+          |""".trimMargin()
+    assertEquals(expectedRouteChat,
+        repoBuilder.generateGrpcKotlinAsSingleMethod("routeguide.RouteGuide", "RouteChat"))
   }
 
   companion object {

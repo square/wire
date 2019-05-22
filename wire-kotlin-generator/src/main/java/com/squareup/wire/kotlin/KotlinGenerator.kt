@@ -98,7 +98,6 @@ class KotlinGenerator private constructor(
 
   fun generateService(service: Service): TypeSpec {
     val interfaceName = service.name()
-    // TODO(oldergod) maybe rename package or something to explicitly say it's grpc service?
     val superinterface = com.squareup.wire.Service::class.java
 
     return TypeSpec.interfaceBuilder(interfaceName)
@@ -106,6 +105,17 @@ class KotlinGenerator private constructor(
         .addFunctions(service.rpcs().map {
           generateRpcFunction(it, service.name(), service.type().enclosingTypeOrPackage())
         })
+        .build()
+  }
+
+  fun generateServiceAsSingleMethod(service: Service, rpc: Rpc): TypeSpec {
+    val interfaceName = service.name() + rpc.name()
+    val superinterface = com.squareup.wire.Service::class.java
+
+    return TypeSpec.interfaceBuilder(interfaceName)
+        .addSuperinterface(superinterface)
+        .addFunction(
+            generateRpcFunction(rpc, service.name(), service.type().enclosingTypeOrPackage()))
         .build()
   }
 
