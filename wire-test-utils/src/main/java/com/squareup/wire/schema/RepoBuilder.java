@@ -13,137 +13,130 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.kotlinpoet.FileSpec;
-import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.java.JavaGenerator;
-import com.squareup.wire.java.Profile;
-import com.squareup.wire.java.ProfileLoader;
-import com.squareup.wire.kotlin.KotlinGenerator;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import okio.Okio;
-import okio.Source;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import com.google.common.jimfs.Configuration
+import com.google.common.jimfs.Jimfs
+import com.squareup.javapoet.JavaFile
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.java.JavaGenerator
+import com.squareup.wire.java.Profile
+import com.squareup.wire.java.ProfileLoader
+import com.squareup.wire.kotlin.KotlinGenerator
+import okio.buffer
+import okio.source
+import java.io.File
+import java.io.IOException
+import java.nio.charset.StandardCharsets.UTF_8
+import java.nio.file.Files
 
 /**
- * Builds a repository of {@code .proto} and {@code .wire} files to create schemas, profiles, and
- * adapters for testing.
+ * Builds a repository of `.proto` and `.wire` files to create schemas, profiles, and adapters for
+ * testing.
  */
-public final class RepoBuilder {
-  final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
-  final Path root = fs.getPath("/source");
-  final SchemaLoader schemaLoader = new SchemaLoader().addSource(root);
+class RepoBuilder {
+  private val fs = Jimfs.newFileSystem(Configuration.unix())
+  private val root = fs.getPath("/source")
+  private val schemaLoader = SchemaLoader().addSource(root)
 
-  public RepoBuilder add(String name, String protoFile) {
+  fun add(name: String, protoFile: String): RepoBuilder {
     if (name.endsWith(".proto")) {
-      schemaLoader.addProto(name);
+      schemaLoader.addProto(name)
     } else if (!name.endsWith(".wire")) {
-      throw new IllegalArgumentException("unexpected file extension: " + name);
+      throw IllegalArgumentException("unexpected file extension: $name")
     }
 
-    Path relativePath = fs.getPath(name);
+    val relativePath = fs.getPath(name)
     try {
-      Path resolvedPath = root.resolve(relativePath);
-      Path parent = resolvedPath.getParent();
+      val resolvedPath = root.resolve(relativePath)
+      val parent = resolvedPath.parent
       if (parent != null) {
-        Files.createDirectories(parent);
+        Files.createDirectories(parent)
       }
-      Files.write(resolvedPath, protoFile.getBytes(UTF_8));
-    } catch (IOException e) {
-      throw new AssertionError(e);
+      Files.write(resolvedPath, protoFile.toByteArray(UTF_8))
+    } catch (e: IOException) {
+      throw AssertionError(e)
     }
 
-    return this;
+    return this
   }
 
-  public RepoBuilder add(String path) throws IOException {
-    File file = new File("../wire-tests/src/test/proto/" + path);
-    try (Source source = Okio.source(file)) {
-      String protoFile = Okio.buffer(source).readUtf8();
-      return add(path, protoFile);
+  @Throws(IOException::class)
+  fun add(path: String): RepoBuilder {
+    val file = File("../wire-tests/src/test/proto/$path")
+    file.source().use { source ->
+      val protoFile = source.buffer().readUtf8()
+      return add(path, protoFile)
     }
   }
 
-  public Schema schema() {
+  fun schema(): Schema {
     try {
-      return schemaLoader.load();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+      return schemaLoader.load()
+    } catch (e: IOException) {
+      throw RuntimeException(e)
     }
+
   }
 
-  public Profile profile(String name) throws IOException {
-    return new ProfileLoader(fs, name)
+  @Throws(IOException::class)
+  fun profile(name: String): Profile {
+    return ProfileLoader(fs, name)
         .schema(schema())
-        .load();
+        .load()
   }
 
-  public ProtoAdapter<Object> protoAdapter(String messageTypeName) throws IOException {
-    Schema schema = schema();
-    return schema.protoAdapter(messageTypeName, true);
+  @Throws(IOException::class)
+  fun protoAdapter(messageTypeName: String): ProtoAdapter<Any> {
+    return schema().protoAdapter(messageTypeName, true)
   }
 
-  public String generateCode(String typeName) throws IOException {
-    return generateCode(typeName, null);
-  }
-
-  public String generateCode(String typeName, String profile) throws IOException {
-    Schema schema = schema();
-    JavaGenerator javaGenerator = JavaGenerator.get(schema);
+  @Throws(IOException::class)
+  @JvmOverloads fun generateCode(typeName: String, profile: String? = null): String {
+    val schema = schema()
+    var javaGenerator = JavaGenerator.get(schema)
     if (profile != null) {
-      javaGenerator = javaGenerator.withProfile(profile(profile));
+      javaGenerator = javaGenerator.withProfile(profile(profile))
     }
-    Type type = schema.getType(typeName);
-    TypeSpec typeSpec = javaGenerator.generateType(type);
-    ClassName typeName1 = javaGenerator.generatedTypeName(type);
-    return JavaFile.builder(typeName1.packageName(), typeSpec).build().toString();
+    val type = schema.getType(typeName)
+    val typeSpec = javaGenerator.generateType(type)
+    val typeName1 = javaGenerator.generatedTypeName(type)
+    return JavaFile.builder(typeName1.packageName(), typeSpec).build().toString()
   }
 
-  public String generateKotlin(String typeName) {
-    Schema schema = schema();
-    KotlinGenerator kotlinGenerator = KotlinGenerator.get(schema, false, false);
-    com.squareup.kotlinpoet.TypeSpec typeSpec =
-        kotlinGenerator.generateType(schema.getType(typeName));
-    FileSpec fileSpec = FileSpec.builder("", "_")
+  fun generateKotlin(typeName: String): String {
+    val schema = schema()
+    val kotlinGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false)
+    val typeSpec = kotlinGenerator.generateType(schema.getType(typeName))
+    val fileSpec = FileSpec.builder("", "_")
         .addType(typeSpec)
         .addImport("com.squareup.wire.kotlin", "decodeMessage")
-        .build();
-    return fileSpec.toString();
+        .build()
+    return fileSpec.toString()
   }
 
-  public String generateGrpcKotlin(String serviceName) {
-    Schema schema = schema();
-    KotlinGenerator grpcGenerator = KotlinGenerator.get(schema, false, false);
-    Service service = schema.getService(serviceName);
-    com.squareup.kotlinpoet.TypeSpec typeSpec = grpcGenerator.generateService(service);
-    String packageName = service.type().enclosingTypeOrPackage();
-    FileSpec fileSpec = FileSpec.builder(packageName == null ? "" : packageName, "_")
+  fun generateGrpcKotlin(serviceName: String): String {
+    val schema = schema()
+    val grpcGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false)
+    val service = schema.getService(serviceName)
+    val typeSpec = grpcGenerator.generateService(service)
+    val packageName = service.type().enclosingTypeOrPackage()
+    val fileSpec = FileSpec.builder(packageName ?: "", "_")
         .addType(typeSpec)
-        .build();
-    return fileSpec.toString();
+        .build()
+    return fileSpec.toString()
   }
 
-  public String generateGrpcKotlinAsSingleMethod(String serviceName, String rpcName) {
-    Schema schema = schema();
-    KotlinGenerator grpcGenerator = KotlinGenerator.get(schema, false, false);
-    Service service = schema.getService(serviceName);
-    com.squareup.kotlinpoet.TypeSpec typeSpec =
-        grpcGenerator.generateServiceAsSingleMethod(service, service.rpc(rpcName));
-    String packageName = service.type().enclosingTypeOrPackage();
-    FileSpec fileSpec = FileSpec.builder(packageName == null ? "" : packageName, "_")
+  fun generateGrpcKotlinAsSingleMethod(serviceName: String, rpcName: String): String {
+    val schema = schema()
+    val grpcGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false)
+    val service = schema.getService(serviceName)
+    val typeSpec = grpcGenerator.generateServiceAsSingleMethod(service, service.rpc(rpcName)!!)
+    val packageName = service.type().enclosingTypeOrPackage()
+    val fileSpec = FileSpec.builder(packageName ?: "", "_")
         .addType(typeSpec)
-        .build();
-    return fileSpec.toString();
+        .build()
+    return fileSpec.toString()
   }
 }
