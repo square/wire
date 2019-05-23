@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.WireCompiler
 import com.squareup.wire.WireLogger
 import com.squareup.wire.java.JavaGenerator
@@ -112,7 +113,10 @@ sealed class Target {
     val android: Boolean = false,
 
     /** True for emitted types to implement APIs for easier migration from the Java target. */
-    val javaInterop: Boolean = false
+    val javaInterop: Boolean = false,
+
+    /** True for emitted services to implement one interface per RPC. */
+    val servicesAsSingleMethod: Boolean = false
   ) : Target() {
     override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
 
@@ -145,7 +149,16 @@ sealed class Target {
         }
 
         override fun handle(service: Service) {
-          val typeSpec = kotlinGenerator.generateService(service)
+          if (servicesAsSingleMethod) {
+            service.rpcs().forEach { rpc ->
+              write(service, kotlinGenerator.generateServiceAsSingleMethod(service, rpc))
+            }
+          } else {
+            write(service, kotlinGenerator.generateService(service))
+          }
+        }
+
+        private fun write(service: Service, typeSpec: TypeSpec) {
           val packageName = service.type().enclosingTypeOrPackage()
           val kotlinFile = FileSpec.builder(packageName, typeSpec.name!!)
               .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)

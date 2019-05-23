@@ -71,12 +71,15 @@ class WireRunTest {
 
   @Test
   fun ktOnlyWithService() {
+    writeBlueProto()
     writeRedProto()
-    writeRedRouteProto()
+    writeTriangleProto()
+    writeColorsRouteProto()
 
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("routes/src/main/proto")),
-        protoPath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("colors/src/main/proto"),
+            Location.get("polygons/src/main/proto")),
         targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
     )
     wireRun.execute(fs, logger)
@@ -84,7 +87,32 @@ class WireRunTest {
     assertThat(fs.find("generated")).containsExactly(
         "generated/kt/squareup/routes/Route.kt")
     assertThat(fs.get("generated/kt/squareup/routes/Route.kt"))
-        .contains("interface Route")
+        .contains("interface Route : Service")
+  }
+
+  @Test
+  fun ktOnlyWithServiceAsSingleMethod() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+    writeColorsRouteProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("routes/src/main/proto")),
+        protoPath = listOf(Location.get("colors/src/main/proto"),
+            Location.get("polygons/src/main/proto")),
+        targets = listOf(
+            Target.KotlinTarget(outDirectory = "generated/kt", servicesAsSingleMethod = true))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/kt/squareup/routes/RouteGetUpdatedBlue.kt",
+        "generated/kt/squareup/routes/RouteGetUpdatedRed.kt")
+    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedBlue.kt"))
+        .contains("interface RouteGetUpdatedBlue : Service")
+    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRed.kt"))
+        .contains("interface RouteGetUpdatedRed : Service")
   }
 
   @Test
@@ -231,13 +259,15 @@ class WireRunTest {
           """.trimMargin())
   }
 
-  private fun writeRedRouteProto() {
+  private fun writeColorsRouteProto() {
     fs.add("routes/src/main/proto/squareup/routes/route.proto", """
           |syntax = "proto2";
           |package squareup.routes;
+          |import "squareup/colors/blue.proto";
           |import "squareup/colors/red.proto";
           |service Route {
           |  rpc GetUpdatedRed(squareup.colors.Red) returns (squareup.colors.Red) {}
+          |  rpc GetUpdatedBlue(squareup.colors.Blue) returns (squareup.colors.Blue) {}
           |}
           """.trimMargin())
   }
