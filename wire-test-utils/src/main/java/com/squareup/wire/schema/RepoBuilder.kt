@@ -132,7 +132,7 @@ class RepoBuilder {
     val schema = schema()
     val grpcGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false)
     val service = schema.getService(serviceName)
-    val typeSpec = grpcGenerator.generateServiceAsSingleMethod(service, service.rpc(rpcName)!!)
+    val typeSpec = grpcGenerator.generateService(service, service.rpc(rpcName)!!)
     val packageName = service.type().enclosingTypeOrPackage()
     val fileSpec = FileSpec.builder(packageName ?: "", "_")
         .addType(typeSpec)

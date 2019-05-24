@@ -96,26 +96,22 @@ class KotlinGenerator private constructor(
     else -> error("Unknown type $type")
   }
 
-  fun generateService(service: Service): TypeSpec {
-    val interfaceName = service.name()
+  /**
+   * If [rpc] isn't null, this will generate code only for this rpc; otherwise, all rpcs of the
+   * [service] will be code generated.
+   */
+  fun generateService(service: Service, rpc: Rpc? = null): TypeSpec {
+    val (interfaceName, rpcs) =
+        if (rpc == null) service.name() to service.rpcs()
+        else service.name() + rpc.name() to listOf(rpc)
+
     val superinterface = com.squareup.wire.Service::class.java
 
     return TypeSpec.interfaceBuilder(interfaceName)
         .addSuperinterface(superinterface)
-        .addFunctions(service.rpcs().map {
+        .addFunctions(rpcs.map {
           generateRpcFunction(it, service.name(), service.type().enclosingTypeOrPackage())
         })
-        .build()
-  }
-
-  fun generateServiceAsSingleMethod(service: Service, rpc: Rpc): TypeSpec {
-    val interfaceName = service.name() + rpc.name()
-    val superinterface = com.squareup.wire.Service::class.java
-
-    return TypeSpec.interfaceBuilder(interfaceName)
-        .addSuperinterface(superinterface)
-        .addFunction(
-            generateRpcFunction(rpc, service.name(), service.type().enclosingTypeOrPackage()))
         .build()
   }
 
