@@ -359,7 +359,7 @@ class KotlinGeneratorTest {
           |""".trimMargin()
 
     assertEquals(expectedGetFeature,
-        repoBuilder.generateGrpcKotlinAsSingleMethod("routeguide.RouteGuide", "GetFeature"))
+        repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", "GetFeature"))
 
     val expectedRouteChat = """
           |package routeguide
@@ -380,7 +380,7 @@ class KotlinGeneratorTest {
           |}
           |""".trimMargin()
     assertEquals(expectedRouteChat,
-        repoBuilder.generateGrpcKotlinAsSingleMethod("routeguide.RouteGuide", "RouteChat"))
+        repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", "RouteChat"))
   }
 
   companion object {
