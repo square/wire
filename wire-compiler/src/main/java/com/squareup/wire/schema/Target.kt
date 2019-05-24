@@ -151,7 +151,7 @@ sealed class Target {
         override fun handle(service: Service) {
           if (servicesAsSingleMethod) {
             service.rpcs().forEach { rpc ->
-              write(service, kotlinGenerator.generateServiceAsSingleMethod(service, rpc))
+              write(service, kotlinGenerator.generateService(service, rpc))
             }
           } else {
             write(service, kotlinGenerator.generateService(service))
