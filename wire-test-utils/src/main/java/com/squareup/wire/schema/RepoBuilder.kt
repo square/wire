@@ -116,23 +116,12 @@ class RepoBuilder {
     return fileSpec.toString()
   }
 
-  fun generateGrpcKotlin(serviceName: String): String {
+  fun generateGrpcKotlin(serviceName: String, rpcName: String? = null): String {
     val schema = schema()
     val grpcGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false)
     val service = schema.getService(serviceName)
-    val typeSpec = grpcGenerator.generateService(service)
-    val packageName = service.type().enclosingTypeOrPackage()
-    val fileSpec = FileSpec.builder(packageName ?: "", "_")
-        .addType(typeSpec)
-        .build()
-    return fileSpec.toString()
-  }
-
-  fun generateGrpcKotlinAsSingleMethod(serviceName: String, rpcName: String): String {
-    val schema = schema()
-    val grpcGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false)
-    val service = schema.getService(serviceName)
-    val typeSpec = grpcGenerator.generateService(service, service.rpc(rpcName)!!)
+    val rpc = rpcName?.let { service.rpc(rpcName)!! }
+    val typeSpec = grpcGenerator.generateService(service, rpc)
     val packageName = service.type().enclosingTypeOrPackage()
     val fileSpec = FileSpec.builder(packageName ?: "", "_")
         .addType(typeSpec)
