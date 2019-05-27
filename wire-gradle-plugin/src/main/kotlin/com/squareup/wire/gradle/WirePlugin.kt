@@ -91,13 +91,13 @@ class WirePlugin @Inject constructor(
     val sourceConfiguration = project.configurations.create("wireSourceDependencies")
 
     val sourcePaths =
-      if (extension.sourcePaths.isNotEmpty() || extension.sourceTrees.isNotEmpty() || extension.sourceJars.isNotEmpty()) {
-        mergeDependencyPaths(
-            project, extension.sourcePaths, extension.sourceTrees, extension.sourceJars
-        )
-      } else {
-        mergeDependencyPaths(project, setOf("src/main/proto"))
-      }
+        if (extension.sourcePaths.isNotEmpty() || extension.sourceTrees.isNotEmpty() || extension.sourceJars.isNotEmpty()) {
+          mergeDependencyPaths(
+              project, extension.sourcePaths, extension.sourceTrees, extension.sourceJars
+          )
+        } else {
+          mergeDependencyPaths(project, setOf("src/main/proto"))
+        }
     sourcePaths.forEach {
       sourceConfiguration.dependencies.add(project.dependencies.create(it))
     }
@@ -258,12 +258,12 @@ class WirePlugin @Inject constructor(
   }
 
   private fun isURL(uri: URI) =
-    try {
-      uri.toURL()
-      true
-    } catch (e: Exception) {
-      false
-    }
+      try {
+        uri.toURL()
+        true
+      } catch (e: Exception) {
+        false
+      }
 
   sealed class DependencyType(val project: Project) {
     abstract val path: String
@@ -273,10 +273,12 @@ class WirePlugin @Inject constructor(
       override val dependency: Any
         get() = project.files(path)
     }
+
     class Jar(project: Project, override val path: String) : DependencyType(project) {
       override val dependency: Any
         get() = project.files(path)
     }
+
     class Path(project: Project, override val path: String) : DependencyType(project) {
       override val dependency: Any
         get() = path
