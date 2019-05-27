@@ -102,7 +102,7 @@ class WireRunTest {
         protoPath = listOf(Location.get("colors/src/main/proto"),
             Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.KotlinTarget(outDirectory = "generated/kt", servicesAsSingleMethod = true))
+            Target.KotlinTarget(outDirectory = "generated/kt", singleMethodServices = true))
     )
     wireRun.execute(fs, logger)
 

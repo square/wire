@@ -143,7 +143,8 @@ class WirePlugin @Inject constructor(
           elements = target.elements ?: listOf("*"),
           outDirectory = kotlinOut,
           android = target.android,
-          javaInterop = target.javaInterop
+          javaInterop = target.javaInterop,
+          singleMethodServices = target.singleMethodServices
       )
     }
 

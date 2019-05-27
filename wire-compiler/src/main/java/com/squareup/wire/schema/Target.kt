@@ -116,7 +116,7 @@ sealed class Target {
     val javaInterop: Boolean = false,
 
     /** True for emitted services to implement one interface per RPC. */
-    val servicesAsSingleMethod: Boolean = false
+    val singleMethodServices: Boolean = false
   ) : Target() {
     override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
 
@@ -149,7 +149,7 @@ sealed class Target {
         }
 
         override fun handle(service: Service) {
-          if (servicesAsSingleMethod) {
+          if (singleMethodServices) {
             service.rpcs().forEach { rpc ->
               write(service, kotlinGenerator.generateServiceAsSingleMethod(service, rpc))
             }
