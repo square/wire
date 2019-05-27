@@ -74,7 +74,7 @@ internal class KotlinFileWriter(
 
   private fun generateFileForService(service: Service): FileSpec {
     return generateFile(
-        packageName = service.type().enclosingTypeOrPackage(),
+        packageName = kotlinGenerator.generatedServiceName(service).packageName,
         typeSpec = kotlinGenerator.generateService(service),
         location = service.location()
     )

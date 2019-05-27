@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package squareup.protos.kotlin;
-
 option java_package = "com.squareup.wire.protos.kotlin";
 
-message SomeRequest {}
-message SomeResponse {}
+message NoPackageRequest {}
+message NoPackageResponse {}
 
-service SomeService {
-  rpc SomeMethod (SomeRequest) returns (SomeResponse);
+service NoPackageService {
+  rpc NoPackageMethod (NoPackageRequest) returns (NoPackageResponse);
 }

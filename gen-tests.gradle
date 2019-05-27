@@ -173,6 +173,7 @@ task generateKotlinTests(type: JavaExec) {
       'one_of.proto',
       'same_name_enum.proto',
       'service_kotlin.proto',
+      'service_without_package.proto',
       'redacted_test.proto',
       'redacted_one_of.proto',
       'deprecated_enum.proto',
