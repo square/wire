@@ -111,8 +111,10 @@ class WireRunTest {
         "generated/kt/squareup/routes/RouteGetUpdatedRed.kt")
     assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedBlue.kt"))
         .contains("interface RouteGetUpdatedBlue : Service")
+        .doesNotContain("interface RouteGetUpdatedRed : Service")
     assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRed.kt"))
         .contains("interface RouteGetUpdatedRed : Service")
+        .doesNotContain("interface RouteGetUpdatedBlue : Service")
   }
 
   @Test
