@@ -343,12 +343,25 @@ class WireCompilerTest {
   @Test
   fun serviceInKotlin() {
     val sources = arrayOf("service_kotlin.proto")
-    compileToKotlin(sources, "--includes=com.squareup.wire.protos.kotlin.SomeService")
+    compileToKotlin(sources, "--includes=squareup.protos.kotlin.SomeService")
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/kotlin/SomeService.kt",
         "com/squareup/wire/protos/kotlin/SomeResponse.kt",
         "com/squareup/wire/protos/kotlin/SomeRequest.kt"
+    )
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun serviceWithoutPackageInKotlin() {
+    val sources = arrayOf("service_without_package.proto")
+    compileToKotlin(sources, "--includes=NoPackageService")
+
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/kotlin/NoPackageService.kt",
+        "com/squareup/wire/protos/kotlin/NoPackageResponse.kt",
+        "com/squareup/wire/protos/kotlin/NoPackageRequest.kt"
     )
     assertKotlinOutputs(outputs)
   }

@@ -85,9 +85,13 @@ class KotlinGenerator private constructor(
     get() = schema.getType(this) is EnumType
   private val Type.typeName
     get() = type().typeName
+  private val Service.serviceName
+    get() = type().typeName
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName
+  /** Returns the full name of the class generated for [service].  */
+  fun generatedServiceName(service: Service) = service.serviceName
 
   fun generateType(type: Type): TypeSpec = when (type) {
     is MessageType -> generateMessage(type)
