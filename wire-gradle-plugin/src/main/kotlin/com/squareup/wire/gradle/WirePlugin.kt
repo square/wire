@@ -144,6 +144,7 @@ class WirePlugin @Inject constructor(
           outDirectory = kotlinOut,
           android = target.android,
           javaInterop = target.javaInterop,
+          blockingServices = target.blockingServices,
           singleMethodServices = target.singleMethodServices
       )
     }

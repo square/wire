@@ -75,7 +75,8 @@ class KotlinGenerator private constructor(
   val schema: Schema,
   private val nameToKotlinName: Map<ProtoType, ClassName>,
   private val emitAndroid: Boolean,
-  private val javaInterOp: Boolean
+  private val javaInterOp: Boolean,
+  private val blockingServices: Boolean
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -161,9 +162,11 @@ class KotlinGenerator private constructor(
       }
       else -> {
         funSpecBuilder
-            .addModifiers(KModifier.SUSPEND)
             .addParameter("request", rpc.requestType().typeName)
             .returns(rpc.responseType().typeName)
+            .apply {
+              if (!blockingServices) addModifiers(KModifier.SUSPEND)
+            }
       }
     }
 
@@ -1116,7 +1119,8 @@ class KotlinGenerator private constructor(
     operator fun invoke(
       schema: Schema,
       emitAndroid: Boolean = false,
-      javaInterop: Boolean = false
+      javaInterop: Boolean = false,
+      blockingServices: Boolean = false
     ): KotlinGenerator {
       val map = BUILT_IN_TYPES.toMutableMap()
 
@@ -1139,7 +1143,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map, emitAndroid, javaInterop)
+      return KotlinGenerator(schema, map, emitAndroid, javaInterop, blockingServices)
     }
   }
 }

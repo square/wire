@@ -87,7 +87,30 @@ class WireRunTest {
     assertThat(fs.find("generated")).containsExactly(
         "generated/kt/squareup/routes/Route.kt")
     assertThat(fs.get("generated/kt/squareup/routes/Route.kt"))
-        .contains("interface Route : Service")
+        .contains("interface Route : Service", "suspend fun GetUpdatedRed")
+  }
+
+  @Test
+  fun ktOnlyWithBlockingService() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+    writeColorsRouteProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("routes/src/main/proto")),
+        protoPath = listOf(Location.get("colors/src/main/proto"),
+            Location.get("polygons/src/main/proto")),
+        targets = listOf(
+            Target.KotlinTarget(outDirectory = "generated/kt", blockingServices = true))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/kt/squareup/routes/Route.kt")
+    assertThat(fs.get("generated/kt/squareup/routes/Route.kt"))
+        .contains("interface Route : Service", "fun GetUpdatedRed")
+        .doesNotContain("suspend fun GetUpdatedRed")
   }
 
   @Test
