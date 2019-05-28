@@ -115,12 +115,15 @@ sealed class Target {
     /** True for emitted types to implement APIs for easier migration from the Java target. */
     val javaInterop: Boolean = false,
 
+    /** True for emitted services to provide blocking APIs only. */
+    val blockingServices: Boolean = false,
+
     /** True for emitted services to implement one interface per RPC. */
     val singleMethodServices: Boolean = false
   ) : Target() {
     override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
 
-      val kotlinGenerator = KotlinGenerator(schema, android, javaInterop)
+      val kotlinGenerator = KotlinGenerator(schema, android, javaInterop, blockingServices)
 
       return object : SchemaHandler {
         override fun handle(type: Type) {

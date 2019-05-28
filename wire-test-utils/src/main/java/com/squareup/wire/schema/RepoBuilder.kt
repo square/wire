@@ -107,7 +107,8 @@ class RepoBuilder {
 
   fun generateKotlin(typeName: String): String {
     val schema = schema()
-    val kotlinGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false)
+    val kotlinGenerator =
+        KotlinGenerator(schema, emitAndroid = false, javaInterop = false, blockingServices = false)
     val typeSpec = kotlinGenerator.generateType(schema.getType(typeName))
     val fileSpec = FileSpec.builder("", "_")
         .addType(typeSpec)
@@ -116,9 +117,14 @@ class RepoBuilder {
     return fileSpec.toString()
   }
 
-  fun generateGrpcKotlin(serviceName: String, rpcName: String? = null): String {
+  fun generateGrpcKotlin(
+    serviceName: String,
+    rpcName: String? = null,
+    blockingServices: Boolean = false
+  ): String {
     val schema = schema()
-    val grpcGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false)
+    val grpcGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false,
+        blockingServices = blockingServices)
     val service = schema.getService(serviceName)
     val rpc = rpcName?.let { service.rpc(rpcName)!! }
     val typeSpec = grpcGenerator.generateService(service, rpc)

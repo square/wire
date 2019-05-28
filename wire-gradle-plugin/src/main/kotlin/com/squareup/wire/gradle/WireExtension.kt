@@ -219,6 +219,7 @@ open class WireExtension(
     var elements: List<String>? = null
     var android: Boolean = false
     var javaInterop: Boolean = false
+    var blockingServices: Boolean = false
     var singleMethodServices: Boolean = false
   }
 }
