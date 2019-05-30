@@ -48,7 +48,8 @@ data class Mappy(@field:WireField(tag = 1, adapter = "thingsAdapter") @JvmField 
       Mappy::class
     ) {
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER)
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING,
+          com.squareup.wire.protos.kotlin.map.Thing.ADAPTER)
 
       override fun encodedSize(value: Mappy): Int = 
         thingsAdapter.encodedSizeWithTag(1, value.things) +
@@ -74,7 +75,7 @@ data class Mappy(@field:WireField(tag = 1, adapter = "thingsAdapter") @JvmField 
       }
 
       override fun redact(value: Mappy): Mappy = value.copy(
-        things = value.things.redactElements(Thing.ADAPTER),
+        things = value.things.redactElements(com.squareup.wire.protos.kotlin.map.Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }

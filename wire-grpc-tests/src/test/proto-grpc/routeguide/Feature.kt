@@ -51,12 +51,12 @@ data class Feature(
     ) {
       override fun encodedSize(value: Feature): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        Point.ADAPTER.encodedSizeWithTag(2, value.location) +
+        routeguide.Point.ADAPTER.encodedSizeWithTag(2, value.location) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: Feature) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
-        Point.ADAPTER.encodeWithTag(writer, 2, value.location)
+        routeguide.Point.ADAPTER.encodeWithTag(writer, 2, value.location)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -66,7 +66,7 @@ data class Feature(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> name = ProtoAdapter.STRING.decode(reader)
-            2 -> location = Point.ADAPTER.decode(reader)
+            2 -> location = routeguide.Point.ADAPTER.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
         }
@@ -78,7 +78,7 @@ data class Feature(
       }
 
       override fun redact(value: Feature): Feature = value.copy(
-        location = value.location?.let(Point.ADAPTER::redact),
+        location = value.location?.let(routeguide.Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
     }

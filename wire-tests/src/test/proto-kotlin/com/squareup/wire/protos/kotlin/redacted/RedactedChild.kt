@@ -43,14 +43,16 @@ data class RedactedChild(
     ) {
       override fun encodedSize(value: RedactedChild): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
-        Redacted.ADAPTER.encodedSizeWithTag(2, value.b) +
-        NotRedacted.ADAPTER.encodedSizeWithTag(3, value.c) +
+        com.squareup.wire.protos.kotlin.redacted.Redacted.ADAPTER.encodedSizeWithTag(2, value.b) +
+        com.squareup.wire.protos.kotlin.redacted.NotRedacted.ADAPTER.encodedSizeWithTag(3,
+            value.c) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: RedactedChild) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
-        Redacted.ADAPTER.encodeWithTag(writer, 2, value.b)
-        NotRedacted.ADAPTER.encodeWithTag(writer, 3, value.c)
+        com.squareup.wire.protos.kotlin.redacted.Redacted.ADAPTER.encodeWithTag(writer, 2, value.b)
+        com.squareup.wire.protos.kotlin.redacted.NotRedacted.ADAPTER.encodeWithTag(writer, 3,
+            value.c)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -61,8 +63,8 @@ data class RedactedChild(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> a = ProtoAdapter.STRING.decode(reader)
-            2 -> b = Redacted.ADAPTER.decode(reader)
-            3 -> c = NotRedacted.ADAPTER.decode(reader)
+            2 -> b = com.squareup.wire.protos.kotlin.redacted.Redacted.ADAPTER.decode(reader)
+            3 -> c = com.squareup.wire.protos.kotlin.redacted.NotRedacted.ADAPTER.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
         }
@@ -75,8 +77,8 @@ data class RedactedChild(
       }
 
       override fun redact(value: RedactedChild): RedactedChild = value.copy(
-        b = value.b?.let(Redacted.ADAPTER::redact),
-        c = value.c?.let(NotRedacted.ADAPTER::redact),
+        b = value.b?.let(com.squareup.wire.protos.kotlin.redacted.Redacted.ADAPTER::redact),
+        c = value.c?.let(com.squareup.wire.protos.kotlin.redacted.NotRedacted.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
     }

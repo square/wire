@@ -43,7 +43,7 @@ data class Person(
    * A list of the customer's phone numbers.
    */
   @field:WireField(tag = 4, adapter =
-      "com.squareup.wire.protos.kotlin.person.Person.PhoneNumber#ADAPTER") val phone:
+      "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneNumber#ADAPTER") val phone:
       List<PhoneNumber> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
@@ -67,14 +67,16 @@ data class Person(
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) +
         ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) +
-        PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone) +
+        com.squareup.wire.protos.kotlin.person.Person$PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4,
+            value.phone) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: Person) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
-        PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
+        com.squareup.wire.protos.kotlin.person.Person$PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer,
+            4, value.phone)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -88,7 +90,8 @@ data class Person(
             1 -> name = ProtoAdapter.STRING.decode(reader)
             2 -> id = ProtoAdapter.INT32.decode(reader)
             3 -> email = ProtoAdapter.STRING.decode(reader)
-            4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
+            4 ->
+                phone.add(com.squareup.wire.protos.kotlin.person.Person$PhoneNumber.ADAPTER.decode(reader))
             else -> TagHandler.UNKNOWN_TAG
           }
         }
@@ -102,7 +105,8 @@ data class Person(
       }
 
       override fun redact(value: Person): Person = value.copy(
-        phone = value.phone.redactElements(PhoneNumber.ADAPTER),
+        phone =
+            value.phone.redactElements(com.squareup.wire.protos.kotlin.person.Person$PhoneNumber.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }
@@ -148,8 +152,8 @@ data class Person(
      * The type of phone stored here.
      */
     @field:WireField(tag = 2, adapter =
-        "com.squareup.wire.protos.kotlin.person.Person.PhoneType#ADAPTER") val type: PhoneType? =
-        PhoneType.HOME,
+        "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneType#ADAPTER") val type: PhoneType?
+        = PhoneType.HOME,
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -170,12 +174,14 @@ data class Person(
       ) {
         override fun encodedSize(value: PhoneNumber): Int = 
           ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
-          PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) +
+          com.squareup.wire.protos.kotlin.person.Person$PhoneType.ADAPTER.encodedSizeWithTag(2,
+              value.type) +
           value.unknownFields.size
 
         override fun encode(writer: ProtoWriter, value: PhoneNumber) {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
-          PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
+          com.squareup.wire.protos.kotlin.person.Person$PhoneType.ADAPTER.encodeWithTag(writer, 2,
+              value.type)
           writer.writeBytes(value.unknownFields)
         }
 
@@ -185,7 +191,8 @@ data class Person(
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
               1 -> number = ProtoAdapter.STRING.decode(reader)
-              2 -> type = PhoneType.ADAPTER.decode(reader)
+              2 -> type =
+                  com.squareup.wire.protos.kotlin.person.Person$PhoneType.ADAPTER.decode(reader)
               else -> TagHandler.UNKNOWN_TAG
             }
           }

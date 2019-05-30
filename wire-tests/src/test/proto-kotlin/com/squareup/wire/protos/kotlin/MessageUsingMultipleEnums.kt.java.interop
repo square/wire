@@ -18,10 +18,10 @@ import okio.ByteString
  */
 data class MessageUsingMultipleEnums(
   @field:WireField(tag = 1, adapter =
-      "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER") @JvmField val a:
+      "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER") @JvmField val a:
       MessageWithStatus.Status? = null,
   @field:WireField(tag = 2, adapter =
-      "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER") @JvmField val b:
+      "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER") @JvmField val b:
       OtherMessageWithStatus.Status? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageUsingMultipleEnums, MessageUsingMultipleEnums.Builder>(ADAPTER, unknownFields) {
@@ -65,13 +65,17 @@ data class MessageUsingMultipleEnums(
       MessageUsingMultipleEnums::class
     ) {
       override fun encodedSize(value: MessageUsingMultipleEnums): Int = 
-        MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a) +
-        OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b) +
+        com.squareup.wire.protos.kotlin.MessageWithStatus$Status.ADAPTER.encodedSizeWithTag(1,
+            value.a) +
+        com.squareup.wire.protos.kotlin.OtherMessageWithStatus$Status.ADAPTER.encodedSizeWithTag(2,
+            value.b) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums) {
-        MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
-        OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
+        com.squareup.wire.protos.kotlin.MessageWithStatus$Status.ADAPTER.encodeWithTag(writer, 1,
+            value.a)
+        com.squareup.wire.protos.kotlin.OtherMessageWithStatus$Status.ADAPTER.encodeWithTag(writer,
+            2, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -80,8 +84,9 @@ data class MessageUsingMultipleEnums(
         var b: OtherMessageWithStatus.Status? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> a = MessageWithStatus.Status.ADAPTER.decode(reader)
-            2 -> b = OtherMessageWithStatus.Status.ADAPTER.decode(reader)
+            1 -> a = com.squareup.wire.protos.kotlin.MessageWithStatus$Status.ADAPTER.decode(reader)
+            2 -> b =
+                com.squareup.wire.protos.kotlin.OtherMessageWithStatus$Status.ADAPTER.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
         }

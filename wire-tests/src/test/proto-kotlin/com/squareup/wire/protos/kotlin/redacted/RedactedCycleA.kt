@@ -36,11 +36,13 @@ data class RedactedCycleA(@field:WireField(tag = 1, adapter =
       RedactedCycleA::class
     ) {
       override fun encodedSize(value: RedactedCycleA): Int = 
-        RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b) +
+        com.squareup.wire.protos.kotlin.redacted.RedactedCycleB.ADAPTER.encodedSizeWithTag(1,
+            value.b) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: RedactedCycleA) {
-        RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b)
+        com.squareup.wire.protos.kotlin.redacted.RedactedCycleB.ADAPTER.encodeWithTag(writer, 1,
+            value.b)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -48,7 +50,7 @@ data class RedactedCycleA(@field:WireField(tag = 1, adapter =
         var b: RedactedCycleB? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> b = RedactedCycleB.ADAPTER.decode(reader)
+            1 -> b = com.squareup.wire.protos.kotlin.redacted.RedactedCycleB.ADAPTER.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
         }
@@ -59,7 +61,7 @@ data class RedactedCycleA(@field:WireField(tag = 1, adapter =
       }
 
       override fun redact(value: RedactedCycleA): RedactedCycleA = value.copy(
-        b = value.b?.let(RedactedCycleB.ADAPTER::redact),
+        b = value.b?.let(com.squareup.wire.protos.kotlin.redacted.RedactedCycleB.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
     }

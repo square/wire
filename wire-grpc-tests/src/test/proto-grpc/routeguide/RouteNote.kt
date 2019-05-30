@@ -48,12 +48,12 @@ data class RouteNote(
       RouteNote::class
     ) {
       override fun encodedSize(value: RouteNote): Int = 
-        Point.ADAPTER.encodedSizeWithTag(1, value.location) +
+        routeguide.Point.ADAPTER.encodedSizeWithTag(1, value.location) +
         ProtoAdapter.STRING.encodedSizeWithTag(2, value.message) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: RouteNote) {
-        Point.ADAPTER.encodeWithTag(writer, 1, value.location)
+        routeguide.Point.ADAPTER.encodeWithTag(writer, 1, value.location)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
         writer.writeBytes(value.unknownFields)
       }
@@ -63,7 +63,7 @@ data class RouteNote(
         var message: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> location = Point.ADAPTER.decode(reader)
+            1 -> location = routeguide.Point.ADAPTER.decode(reader)
             2 -> message = ProtoAdapter.STRING.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
@@ -76,7 +76,7 @@ data class RouteNote(
       }
 
       override fun redact(value: RouteNote): RouteNote = value.copy(
-        location = value.location?.let(Point.ADAPTER::redact),
+        location = value.location?.let(routeguide.Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
     }

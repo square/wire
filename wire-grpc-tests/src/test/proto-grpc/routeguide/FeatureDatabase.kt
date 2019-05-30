@@ -41,11 +41,11 @@ data class FeatureDatabase(@field:WireField(tag = 1, adapter = "routeguide.Featu
       FeatureDatabase::class
     ) {
       override fun encodedSize(value: FeatureDatabase): Int = 
-        Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature) +
+        routeguide.Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: FeatureDatabase) {
-        Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
+        routeguide.Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -53,7 +53,7 @@ data class FeatureDatabase(@field:WireField(tag = 1, adapter = "routeguide.Featu
         val feature = mutableListOf<Feature>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> feature.add(Feature.ADAPTER.decode(reader))
+            1 -> feature.add(routeguide.Feature.ADAPTER.decode(reader))
             else -> TagHandler.UNKNOWN_TAG
           }
         }
@@ -64,7 +64,7 @@ data class FeatureDatabase(@field:WireField(tag = 1, adapter = "routeguide.Featu
       }
 
       override fun redact(value: FeatureDatabase): FeatureDatabase = value.copy(
-        feature = value.feature.redactElements(Feature.ADAPTER),
+        feature = value.feature.redactElements(routeguide.Feature.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }

@@ -54,12 +54,14 @@ data class RedactedRepeated(
     ) {
       override fun encodedSize(value: RedactedRepeated): Int = 
         ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a) +
-        Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b) +
+        com.squareup.wire.protos.kotlin.redacted.Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2,
+            value.b) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: RedactedRepeated) {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
-        Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
+        com.squareup.wire.protos.kotlin.redacted.Redacted.ADAPTER.asRepeated().encodeWithTag(writer,
+            2, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -69,7 +71,7 @@ data class RedactedRepeated(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> a.add(ProtoAdapter.STRING.decode(reader))
-            2 -> b.add(Redacted.ADAPTER.decode(reader))
+            2 -> b.add(com.squareup.wire.protos.kotlin.redacted.Redacted.ADAPTER.decode(reader))
             else -> TagHandler.UNKNOWN_TAG
           }
         }
@@ -82,7 +84,7 @@ data class RedactedRepeated(
 
       override fun redact(value: RedactedRepeated): RedactedRepeated = value.copy(
         a = emptyList(),
-        b = value.b.redactElements(Redacted.ADAPTER),
+        b = value.b.redactElements(com.squareup.wire.protos.kotlin.redacted.Redacted.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }

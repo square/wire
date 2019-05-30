@@ -47,13 +47,13 @@ data class Rectangle(
       Rectangle::class
     ) {
       override fun encodedSize(value: Rectangle): Int = 
-        Point.ADAPTER.encodedSizeWithTag(1, value.lo) +
-        Point.ADAPTER.encodedSizeWithTag(2, value.hi) +
+        routeguide.Point.ADAPTER.encodedSizeWithTag(1, value.lo) +
+        routeguide.Point.ADAPTER.encodedSizeWithTag(2, value.hi) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: Rectangle) {
-        Point.ADAPTER.encodeWithTag(writer, 1, value.lo)
-        Point.ADAPTER.encodeWithTag(writer, 2, value.hi)
+        routeguide.Point.ADAPTER.encodeWithTag(writer, 1, value.lo)
+        routeguide.Point.ADAPTER.encodeWithTag(writer, 2, value.hi)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -62,8 +62,8 @@ data class Rectangle(
         var hi: Point? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> lo = Point.ADAPTER.decode(reader)
-            2 -> hi = Point.ADAPTER.decode(reader)
+            1 -> lo = routeguide.Point.ADAPTER.decode(reader)
+            2 -> hi = routeguide.Point.ADAPTER.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
         }
@@ -75,8 +75,8 @@ data class Rectangle(
       }
 
       override fun redact(value: Rectangle): Rectangle = value.copy(
-        lo = value.lo?.let(Point.ADAPTER::redact),
-        hi = value.hi?.let(Point.ADAPTER::redact),
+        lo = value.lo?.let(routeguide.Point.ADAPTER::redact),
+        hi = value.hi?.let(routeguide.Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
     }

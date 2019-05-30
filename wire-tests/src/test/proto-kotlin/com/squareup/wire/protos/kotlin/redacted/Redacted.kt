@@ -57,14 +57,16 @@ data class Redacted(
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
         ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) +
         ProtoAdapter.STRING.encodedSizeWithTag(3, value.c) +
-        RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension) +
+        com.squareup.wire.protos.kotlin.redacted.RedactedExtension.ADAPTER.encodedSizeWithTag(10,
+            value.extension) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: Redacted) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.c)
-        RedactedExtension.ADAPTER.encodeWithTag(writer, 10, value.extension)
+        com.squareup.wire.protos.kotlin.redacted.RedactedExtension.ADAPTER.encodeWithTag(writer, 10,
+            value.extension)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -78,7 +80,8 @@ data class Redacted(
             1 -> a = ProtoAdapter.STRING.decode(reader)
             2 -> b = ProtoAdapter.STRING.decode(reader)
             3 -> c = ProtoAdapter.STRING.decode(reader)
-            10 -> extension = RedactedExtension.ADAPTER.decode(reader)
+            10 -> extension =
+                com.squareup.wire.protos.kotlin.redacted.RedactedExtension.ADAPTER.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
         }
@@ -93,7 +96,8 @@ data class Redacted(
 
       override fun redact(value: Redacted): Redacted = value.copy(
         a = null,
-        extension = value.extension?.let(RedactedExtension.ADAPTER::redact),
+        extension =
+            value.extension?.let(com.squareup.wire.protos.kotlin.redacted.RedactedExtension.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
     }
