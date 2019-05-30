@@ -91,6 +91,7 @@ class KotlinGenerator private constructor(
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName
+
   /** Returns the full name of the class generated for [service].  */
   fun generatedServiceName(service: Service) = service.serviceName
 
@@ -881,7 +882,17 @@ class KotlinGenerator private constructor(
           ProtoAdapter::class, simpleName().toUpperCase(Locale.US)
       )
       isMap -> throw IllegalArgumentException("Can't create single adapter for map type $this")
-      else -> CodeBlock.of("%T${adapterFieldDelimiterName}ADAPTER", typeName)
+      else -> CodeBlock.of("%L${adapterFieldDelimiterName}ADAPTER", reflectionName())
+    }
+  }
+
+  private fun ProtoType.reflectionName(): String {
+    val className = nameToKotlinName.getValue(this)
+
+    return if (className.packageName.isEmpty()) {
+      className.simpleNames.joinToString(separator = "\$")
+    } else {
+      "${className.packageName}.${className.simpleNames.joinToString(separator = "\$")}"
     }
   }
 
