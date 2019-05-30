@@ -29,31 +29,46 @@ data class Person(
   /**
    * The customer's full name.
    */
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val name: String,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val name: String,
   /**
    * The customer's ID number.
    */
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") val id: Int,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val id: Int,
   /**
    * Email address for the customer.
    */
-  @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") val email: String? =
-      null,
+  @field:WireField(
+    tag = 3,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val email: String? = null,
   /**
    * A list of the customer's phone numbers.
    */
-  @field:WireField(tag = 4, adapter =
-      "com.squareup.wire.protos.kotlin.person.Person.PhoneNumber#ADAPTER") val phone:
-      List<PhoneNumber> = emptyList(),
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.protos.kotlin.person.Person.PhoneNumber#ADAPTER"
+  )
+  val phone: List<PhoneNumber> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: Person) : Message.Builder<Person, Builder>() {
+  class Builder(
+    private val message: Person
+  ) : Message.Builder<Person, Builder>() {
     override fun build(): Person = message
   }
 
@@ -111,7 +126,9 @@ data class Person(
   /**
    * Represents the type of the phone number: mobile, home or work.
    */
-  enum class PhoneType(override val value: Int) : WireEnum {
+  enum class PhoneType(
+    override val value: Int
+  ) : WireEnum {
     MOBILE(0),
 
     HOME(1),
@@ -143,22 +160,30 @@ data class Person(
     /**
      * The customer's phone number.
      */
-    @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val number: String,
+    @field:WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    )
+    val number: String,
     /**
      * The type of phone stored here.
      */
-    @field:WireField(tag = 2, adapter =
-        "com.squareup.wire.protos.kotlin.person.Person.PhoneType#ADAPTER") val type: PhoneType? =
-        PhoneType.HOME,
+    @field:WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.protos.kotlin.person.Person.PhoneType#ADAPTER"
+    )
+    val type: PhoneType? = PhoneType.HOME,
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
-        message = "Shouldn't be used in Kotlin",
-        level = DeprecationLevel.HIDDEN
+      message = "Shouldn't be used in Kotlin",
+      level = DeprecationLevel.HIDDEN
     )
     override fun newBuilder(): Builder = Builder(this.copy())
 
-    class Builder(private val message: PhoneNumber) : Message.Builder<PhoneNumber, Builder>() {
+    class Builder(
+      private val message: PhoneNumber
+    ) : Message.Builder<PhoneNumber, Builder>() {
       override fun build(): PhoneNumber = message
     }
 

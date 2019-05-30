@@ -17,12 +17,18 @@ import okio.ByteString
  * Enum names must be fully qualified in generated Kotlin
  */
 data class MessageUsingMultipleEnums(
-  @field:WireField(tag = 1, adapter =
-      "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER") @JvmField val a:
-      MessageWithStatus.Status? = null,
-  @field:WireField(tag = 2, adapter =
-      "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER") @JvmField val b:
-      OtherMessageWithStatus.Status? = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER"
+  )
+  @JvmField
+  val a: MessageWithStatus.Status? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER"
+  )
+  @JvmField
+  val b: OtherMessageWithStatus.Status? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageUsingMultipleEnums, MessageUsingMultipleEnums.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {

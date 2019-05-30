@@ -7,9 +7,9 @@ import com.squareup.wire.WireRpc
 
 interface SomeService : Service {
   @WireRpc(
-      path = "/squareup.protos.kotlin.SomeService/SomeMethod",
-      requestAdapter = "squareup.protos.kotlin.SomeRequest#ADAPTER",
-      responseAdapter = "squareup.protos.kotlin.SomeResponse#ADAPTER"
+    path = "/squareup.protos.kotlin.SomeService/SomeMethod",
+    requestAdapter = "squareup.protos.kotlin.SomeRequest#ADAPTER",
+    responseAdapter = "squareup.protos.kotlin.SomeResponse#ADAPTER"
   )
   suspend fun SomeMethod(request: SomeRequest): SomeResponse
 }

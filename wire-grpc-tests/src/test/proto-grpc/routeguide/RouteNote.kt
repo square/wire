@@ -23,21 +23,30 @@ data class RouteNote(
   /**
    * The location from which the message is sent.
    */
-  @field:WireField(tag = 1, adapter = "routeguide.Point#ADAPTER") val location: Point? = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "routeguide.Point#ADAPTER"
+  )
+  val location: Point? = null,
   /**
    * The message to be sent.
    */
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val message: String?
-      = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val message: String? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteNote, RouteNote.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: RouteNote) : Message.Builder<RouteNote, Builder>() {
+  class Builder(
+    private val message: RouteNote
+  ) : Message.Builder<RouteNote, Builder>() {
     override fun build(): RouteNote = message
   }
 

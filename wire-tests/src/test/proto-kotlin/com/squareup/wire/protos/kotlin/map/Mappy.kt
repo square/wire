@@ -18,16 +18,23 @@ import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Mappy(@field:WireField(tag = 1, adapter = "thingsAdapter") val things: Map<String,
-    Thing>, val unknownFields: ByteString = ByteString.EMPTY) : Message<Mappy,
-    Mappy.Builder>(ADAPTER, unknownFields) {
+data class Mappy(
+  @field:WireField(
+    tag = 1,
+    adapter = "thingsAdapter"
+  )
+  val things: Map<String, Thing>,
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<Mappy, Mappy.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: Mappy) : Message.Builder<Mappy, Builder>() {
+  class Builder(
+    private val message: Mappy
+  ) : Message.Builder<Mappy, Builder>() {
     override fun build(): Mappy = message
   }
 

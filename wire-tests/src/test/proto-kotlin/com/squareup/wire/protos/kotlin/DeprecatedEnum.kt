@@ -10,7 +10,9 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
-enum class DeprecatedEnum(override val value: Int) : WireEnum {
+enum class DeprecatedEnum(
+  override val value: Int
+) : WireEnum {
   @Deprecated(message = "DISABLED is deprecated")
   DISABLED(1),
 

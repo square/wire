@@ -7,9 +7,9 @@ import com.squareup.wire.WireRpc
 
 interface NoPackageService : Service {
   @WireRpc(
-      path = "/NoPackageService/NoPackageMethod",
-      requestAdapter = "NoPackageRequest#ADAPTER",
-      responseAdapter = "NoPackageResponse#ADAPTER"
+    path = "/NoPackageService/NoPackageMethod",
+    requestAdapter = "NoPackageRequest#ADAPTER",
+    responseAdapter = "NoPackageResponse#ADAPTER"
   )
   suspend fun NoPackageMethod(request: NoPackageRequest): NoPackageResponse
 }

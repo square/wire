@@ -25,21 +25,30 @@ data class Feature(
   /**
    * The name of the feature.
    */
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val name: String? =
-      null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val name: String? = null,
   /**
    * The point where the feature is detected.
    */
-  @field:WireField(tag = 2, adapter = "routeguide.Point#ADAPTER") val location: Point? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "routeguide.Point#ADAPTER"
+  )
+  val location: Point? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Feature, Feature.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: Feature) : Message.Builder<Feature, Builder>() {
+  class Builder(
+    private val message: Feature
+  ) : Message.Builder<Feature, Builder>() {
     override fun build(): Feature = message
   }
 

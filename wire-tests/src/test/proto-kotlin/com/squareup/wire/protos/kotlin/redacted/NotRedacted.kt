@@ -17,19 +17,27 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class NotRedacted(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val a: String? =
-      null,
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val b: String? =
-      null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val a: String? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val b: String? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NotRedacted, NotRedacted.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: NotRedacted) : Message.Builder<NotRedacted, Builder>() {
+  class Builder(
+    private val message: NotRedacted
+  ) : Message.Builder<NotRedacted, Builder>() {
     override fun build(): NotRedacted = message
   }
 
