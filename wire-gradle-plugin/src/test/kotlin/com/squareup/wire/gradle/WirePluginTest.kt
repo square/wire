@@ -7,6 +7,7 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 
 class WirePluginTest {
@@ -461,8 +462,8 @@ class WirePluginTest {
   }
 
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
-    val protoFieldPattern = "@field:WireField.*(val .*):"
-    val matchedFields = protoFieldPattern.toRegex(MULTILINE)
+    val protoFieldPattern = "@field:WireField.*?(val .*?):"
+    val matchedFields = protoFieldPattern.toRegex(setOf(MULTILINE, DOT_MATCHES_ALL))
         .findAll(generatedProtoSource)
     return matchedFields
         .map { it.groupValues[1] }
