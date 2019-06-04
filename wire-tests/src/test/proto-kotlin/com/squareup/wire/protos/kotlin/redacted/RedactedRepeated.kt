@@ -22,6 +22,7 @@ data class RedactedRepeated(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED,
     redacted = true
   )
   val a: List<String> = emptyList(),
@@ -30,7 +31,8 @@ data class RedactedRepeated(
    */
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER",
+    label = WireField.Label.REPEATED
   )
   val b: List<Redacted> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY

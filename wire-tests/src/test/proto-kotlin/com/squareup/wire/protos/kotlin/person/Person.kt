@@ -31,7 +31,8 @@ data class Person(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REQUIRED
   )
   val name: String,
   /**
@@ -39,7 +40,8 @@ data class Person(
    */
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.REQUIRED
   )
   val id: Int,
   /**
@@ -55,7 +57,8 @@ data class Person(
    */
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneNumber#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneNumber#ADAPTER",
+    label = WireField.Label.REPEATED
   )
   val phone: List<PhoneNumber> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY
@@ -162,7 +165,8 @@ data class Person(
      */
     @field:WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REQUIRED
     )
     val number: String,
     /**
