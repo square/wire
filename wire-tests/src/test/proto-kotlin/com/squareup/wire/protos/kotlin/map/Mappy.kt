@@ -21,7 +21,8 @@ import okio.ByteString
 data class Mappy(
   @field:WireField(
     tag = 1,
-    adapter = "thingsAdapter"
+    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
   )
   val things: Map<String, Thing>,
   val unknownFields: ByteString = ByteString.EMPTY

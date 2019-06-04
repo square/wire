@@ -21,12 +21,12 @@ import okio.ByteString
 data class MessageUsingMultipleEnums(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER"
   )
   val a: MessageWithStatus.Status? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER"
   )
   val b: OtherMessageWithStatus.Status? = null,
   val unknownFields: ByteString = ByteString.EMPTY
