@@ -19,15 +19,19 @@ import okio.ByteString
 /**
  * It's a one of message.
  */
-data class OneOfMessage(val choice: Choice? = null, val unknownFields: ByteString =
-    ByteString.EMPTY) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
+data class OneOfMessage(
+  val choice: Choice? = null,
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: OneOfMessage) : Message.Builder<OneOfMessage, Builder>() {
+  class Builder(
+    private val message: OneOfMessage
+  ) : Message.Builder<OneOfMessage, Builder>() {
     override fun build(): OneOfMessage = message
   }
 
@@ -79,10 +83,16 @@ data class OneOfMessage(val choice: Choice? = null, val unknownFields: ByteStrin
   }
 
   sealed class Choice {
-    data class Foo(val foo: Int) : Choice()
+    data class Foo(
+      val foo: Int
+    ) : Choice()
 
-    data class Bar(val bar: String) : Choice()
+    data class Bar(
+      val bar: String
+    ) : Choice()
 
-    data class Baz(val baz: String) : Choice()
+    data class Baz(
+      val baz: String
+    ) : Choice()
   }
 }

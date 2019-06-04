@@ -14,16 +14,18 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class NoPackageRequest(val unknownFields: ByteString = ByteString.EMPTY) :
-    Message<NoPackageRequest, NoPackageRequest.Builder>(ADAPTER, unknownFields) {
+data class NoPackageRequest(
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<NoPackageRequest, NoPackageRequest.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: NoPackageRequest) : Message.Builder<NoPackageRequest,
-      Builder>() {
+  class Builder(
+    private val message: NoPackageRequest
+  ) : Message.Builder<NoPackageRequest, Builder>() {
     override fun build(): NoPackageRequest = message
   }
 

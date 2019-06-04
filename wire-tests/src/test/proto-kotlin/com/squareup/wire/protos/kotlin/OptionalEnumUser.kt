@@ -18,18 +18,23 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
-    "com.squareup.wire.protos.kotlin.OptionalEnumUser.OptionalEnum#ADAPTER") val optional_enum:
-    OptionalEnum? = null, val unknownFields: ByteString = ByteString.EMPTY) :
-    Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
+data class OptionalEnumUser(
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser.OptionalEnum#ADAPTER"
+  )
+  val optional_enum: OptionalEnum? = null,
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<OptionalEnumUser, OptionalEnumUser.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: OptionalEnumUser) : Message.Builder<OptionalEnumUser,
-      Builder>() {
+  class Builder(
+    private val message: OptionalEnumUser
+  ) : Message.Builder<OptionalEnumUser, Builder>() {
     override fun build(): OptionalEnumUser = message
   }
 
@@ -68,7 +73,9 @@ data class OptionalEnumUser(@field:WireField(tag = 1, adapter =
     }
   }
 
-  enum class OptionalEnum(override val value: Int) : WireEnum {
+  enum class OptionalEnum(
+    override val value: Int
+  ) : WireEnum {
     FOO(1),
 
     BAR(2);

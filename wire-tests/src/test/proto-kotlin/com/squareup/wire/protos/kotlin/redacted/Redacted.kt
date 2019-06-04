@@ -17,20 +17,32 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Redacted(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true)
-      val a: String? = null,
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING") val b: String? =
-      null,
-  @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#STRING") val c: String? =
-      null,
-  @field:WireField(tag = 10, adapter =
-      "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER") val extension:
-      RedactedExtension? = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    redacted = true
+  )
+  val a: String? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val b: String? = null,
+  @field:WireField(
+    tag = 3,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val c: String? = null,
+  @field:WireField(
+    tag = 10,
+    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER"
+  )
+  val extension: RedactedExtension? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Redacted, Redacted.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
@@ -43,7 +55,9 @@ data class Redacted(
     append(")")
   }
 
-  class Builder(private val message: Redacted) : Message.Builder<Redacted, Builder>() {
+  class Builder(
+    private val message: Redacted
+  ) : Message.Builder<Redacted, Builder>() {
     override fun build(): Redacted = message
   }
 

@@ -23,20 +23,30 @@ data class Rectangle(
   /**
    * One corner of the rectangle.
    */
-  @field:WireField(tag = 1, adapter = "routeguide.Point#ADAPTER") val lo: Point? = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "routeguide.Point#ADAPTER"
+  )
+  val lo: Point? = null,
   /**
    * The other corner of the rectangle.
    */
-  @field:WireField(tag = 2, adapter = "routeguide.Point#ADAPTER") val hi: Point? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "routeguide.Point#ADAPTER"
+  )
+  val hi: Point? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Rectangle, Rectangle.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: Rectangle) : Message.Builder<Rectangle, Builder>() {
+  class Builder(
+    private val message: Rectangle
+  ) : Message.Builder<Rectangle, Builder>() {
     override fun build(): Rectangle = message
   }
 

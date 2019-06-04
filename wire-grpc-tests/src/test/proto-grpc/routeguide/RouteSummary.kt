@@ -26,32 +26,46 @@ data class RouteSummary(
   /**
    * The number of points received.
    */
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") val point_count: Int?
-      = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val point_count: Int? = null,
   /**
    * The number of known features passed while traversing the route.
    */
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") val feature_count:
-      Int? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val feature_count: Int? = null,
   /**
    * The distance covered in metres.
    */
-  @field:WireField(tag = 3, adapter = "com.squareup.wire.ProtoAdapter#INT32") val distance: Int? =
-      null,
+  @field:WireField(
+    tag = 3,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val distance: Int? = null,
   /**
    * The duration of the traversal in seconds.
    */
-  @field:WireField(tag = 4, adapter = "com.squareup.wire.ProtoAdapter#INT32") val elapsed_time: Int?
-      = null,
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val elapsed_time: Int? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteSummary, RouteSummary.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: RouteSummary) : Message.Builder<RouteSummary, Builder>() {
+  class Builder(
+    private val message: RouteSummary
+  ) : Message.Builder<RouteSummary, Builder>() {
     override fun build(): RouteSummary = message
   }
 

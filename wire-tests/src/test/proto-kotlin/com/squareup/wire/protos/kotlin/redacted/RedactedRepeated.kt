@@ -19,18 +19,25 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RedactedRepeated(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true)
-      val a: List<String> = emptyList(),
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    redacted = true
+  )
+  val a: List<String> = emptyList(),
   /**
    * Values in the repeated type need redacting.
    */
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER")
-      val b: List<Redacted> = emptyList(),
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER"
+  )
+  val b: List<Redacted> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedRepeated, RedactedRepeated.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
@@ -41,8 +48,9 @@ data class RedactedRepeated(
     append(")")
   }
 
-  class Builder(private val message: RedactedRepeated) : Message.Builder<RedactedRepeated,
-      Builder>() {
+  class Builder(
+    private val message: RedactedRepeated
+  ) : Message.Builder<RedactedRepeated, Builder>() {
     override fun build(): RedactedRepeated = message
   }
 

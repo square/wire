@@ -16,10 +16,19 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RedactedOneOf(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") @JvmField val b: Int?
-      = null,
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#STRING", redacted = true)
-      @JvmField val c: String? = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  @JvmField
+  val b: Int? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    redacted = true
+  )
+  @JvmField
+  val c: String? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
   init {
