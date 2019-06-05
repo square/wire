@@ -8,7 +8,8 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
-import java.lang.UnsupportedOperationException
+import com.squareup.wire.WireField
+import com.squareup.wire.internal.countNonNull
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -17,9 +18,25 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RedactedOneOf(
-  val a: A? = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val b: Int? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    redacted = true
+  )
+  val c: String? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
+  init {
+    require (countNonNull(b, c) <= 1) {
+      "At most one of b, c may be non-null"
+    }
+  }
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -28,7 +45,8 @@ data class RedactedOneOf(
 
   override fun toString(): String = buildString {
     append("RedactedOneOf(")
-    append("""a=██""")
+    append("""b=$b""")
+    append(""", c=██""")
     append(")")
   }
 
@@ -45,50 +63,37 @@ data class RedactedOneOf(
       RedactedOneOf::class
     ) {
       override fun encodedSize(value: RedactedOneOf): Int = 
-        when (value.a) {
-          is A.B -> ProtoAdapter.INT32.encodedSizeWithTag(1, value.a.b)
-          is A.C -> ProtoAdapter.STRING.encodedSizeWithTag(2, value.a.c)
-          else -> 0
-        } +
+        ProtoAdapter.INT32.encodedSizeWithTag(1, value.b) +
+        ProtoAdapter.STRING.encodedSizeWithTag(2, value.c) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: RedactedOneOf) {
-        when (value.a) {
-          is A.B -> ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a.b)
-          is A.C -> ProtoAdapter.STRING.encodeWithTag(writer, 2, value.a.c)
-        }
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun decode(reader: ProtoReader): RedactedOneOf {
-        var a: A? = null
+        var b: Int? = null
+        var c: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> a = A.B(ProtoAdapter.INT32.decode(reader))
-            2 -> a = A.C(ProtoAdapter.STRING.decode(reader))
+            1 -> b = ProtoAdapter.INT32.decode(reader)
+            2 -> c = ProtoAdapter.STRING.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
         }
         return RedactedOneOf(
-          a = a,
+          b = b,
+          c = c,
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(value: RedactedOneOf): RedactedOneOf {
-        throw
-            UnsupportedOperationException("Redacting messages with oneof fields is not supported yet!")
-      }
+      override fun redact(value: RedactedOneOf): RedactedOneOf = value.copy(
+        c = null,
+        unknownFields = ByteString.EMPTY
+      )
     }
-  }
-
-  sealed class A {
-    data class B(
-      val b: Int
-    ) : A()
-
-    data class C(
-      val c: String
-    ) : A()
   }
 }
