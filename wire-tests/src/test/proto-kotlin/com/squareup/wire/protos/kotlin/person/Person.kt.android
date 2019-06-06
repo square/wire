@@ -57,7 +57,7 @@ data class Person(
    */
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.protos.kotlin.person.Person.PhoneNumber#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneNumber#ADAPTER"
   )
   val phone: List<PhoneNumber> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY
@@ -175,7 +175,7 @@ data class Person(
      */
     @field:WireField(
       tag = 2,
-      adapter = "com.squareup.wire.protos.kotlin.person.Person.PhoneType#ADAPTER"
+      adapter = "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneType#ADAPTER"
     )
     val type: PhoneType? = PhoneType.HOME,
     val unknownFields: ByteString = ByteString.EMPTY

@@ -466,12 +466,7 @@ class KotlinGenerator private constructor(
             .build())
       }
 
-      parameterSpec.addAnnotation(AnnotationSpec.builder(WireField::class)
-          .useSiteTarget(FIELD)
-          .addMember("tag = %L", field.tag())
-          .addMember("adapter = %S", field.getAdapterName(nameDelimiter = '#'))
-          .apply { if (field.isRedacted) addMember("redacted = true") }
-          .build())
+      parameterSpec.addAnnotation(wireFieldAnnotation(field))
 
       if (javaInterOp) {
         parameterSpec.addAnnotation(JvmField::class)
@@ -511,6 +506,27 @@ class KotlinGenerator private constructor(
         .build())
 
     classBuilder.primaryConstructor(constructorBuilder.build())
+  }
+
+  private fun wireFieldAnnotation(field: Field): AnnotationSpec {
+    return AnnotationSpec.builder(WireField::class)
+        .useSiteTarget(FIELD)
+        .addMember("tag = %L", field.tag())
+        .apply {
+          if (field.type().isMap) {
+            addMember("keyAdapter = %S", field.type().keyType().adapterString())
+            addMember("adapter = %S", field.type().valueType().adapterString())
+          } else {
+            addMember("adapter = %S", field.type().adapterString())
+          }
+        }
+        .apply { if (field.isRedacted) addMember("redacted = true") }
+        .build()
+  }
+
+  private fun ProtoType.adapterString() = when {
+    isScalar -> ProtoAdapter::class.qualifiedName + '#' + toString().toUpperCase(Locale.US)
+    else -> typeName.reflectionName() + "#ADAPTER"
   }
 
   private fun generateToStringMethod(type: MessageType): FunSpec {
