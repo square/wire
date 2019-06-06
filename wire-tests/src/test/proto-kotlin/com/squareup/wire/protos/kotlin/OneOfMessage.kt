@@ -8,7 +8,8 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
-import java.lang.UnsupportedOperationException
+import com.squareup.wire.WireField
+import com.squareup.wire.internal.countNonNull
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -20,9 +21,38 @@ import okio.ByteString
  * It's a one of message.
  */
 data class OneOfMessage(
-  val choice: Choice? = null,
+  /**
+   * What foo.
+   */
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val foo: Int? = null,
+  /**
+   * Such bar.
+   */
+  @field:WireField(
+    tag = 3,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val bar: String? = null,
+  /**
+   * Nice baz.
+   */
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val baz: String? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
+  init {
+    require (countNonNull(foo, bar, baz) <= 1) {
+      "At most one of foo, bar, baz may be non-null"
+    }
+  }
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -42,57 +72,41 @@ data class OneOfMessage(
       OneOfMessage::class
     ) {
       override fun encodedSize(value: OneOfMessage): Int = 
-        when (value.choice) {
-          is Choice.Foo -> ProtoAdapter.INT32.encodedSizeWithTag(1, value.choice.foo)
-          is Choice.Bar -> ProtoAdapter.STRING.encodedSizeWithTag(3, value.choice.bar)
-          is Choice.Baz -> ProtoAdapter.STRING.encodedSizeWithTag(4, value.choice.baz)
-          else -> 0
-        } +
+        ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
+        ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) +
+        ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: OneOfMessage) {
-        when (value.choice) {
-          is Choice.Foo -> ProtoAdapter.INT32.encodeWithTag(writer, 1, value.choice.foo)
-          is Choice.Bar -> ProtoAdapter.STRING.encodeWithTag(writer, 3, value.choice.bar)
-          is Choice.Baz -> ProtoAdapter.STRING.encodeWithTag(writer, 4, value.choice.baz)
-        }
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
+        ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun decode(reader: ProtoReader): OneOfMessage {
-        var choice: Choice? = null
+        var foo: Int? = null
+        var bar: String? = null
+        var baz: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> choice = Choice.Foo(ProtoAdapter.INT32.decode(reader))
-            3 -> choice = Choice.Bar(ProtoAdapter.STRING.decode(reader))
-            4 -> choice = Choice.Baz(ProtoAdapter.STRING.decode(reader))
+            1 -> foo = ProtoAdapter.INT32.decode(reader)
+            3 -> bar = ProtoAdapter.STRING.decode(reader)
+            4 -> baz = ProtoAdapter.STRING.decode(reader)
             else -> TagHandler.UNKNOWN_TAG
           }
         }
         return OneOfMessage(
-          choice = choice,
+          foo = foo,
+          bar = bar,
+          baz = baz,
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(value: OneOfMessage): OneOfMessage {
-        throw
-            UnsupportedOperationException("Redacting messages with oneof fields is not supported yet!")
-      }
+      override fun redact(value: OneOfMessage): OneOfMessage = value.copy(
+        unknownFields = ByteString.EMPTY
+      )
     }
-  }
-
-  sealed class Choice {
-    data class Foo(
-      val foo: Int
-    ) : Choice()
-
-    data class Bar(
-      val bar: String
-    ) : Choice()
-
-    data class Baz(
-      val baz: String
-    ) : Choice()
   }
 }
