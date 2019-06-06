@@ -15,8 +15,9 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-data class OtherMessageWithStatus(val unknownFields: ByteString = ByteString.EMPTY) :
-    Message<OtherMessageWithStatus, OtherMessageWithStatus.Builder>(ADAPTER, unknownFields) {
+data class OtherMessageWithStatus(
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<OtherMessageWithStatus, OtherMessageWithStatus.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.addUnknownFields(unknownFields())
@@ -60,7 +61,9 @@ data class OtherMessageWithStatus(val unknownFields: ByteString = ByteString.EMP
     }
   }
 
-  enum class Status(override val value: Int) : WireEnum {
+  enum class Status(
+    override val value: Int
+  ) : WireEnum {
     A(1);
 
     companion object {

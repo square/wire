@@ -19,22 +19,27 @@ import okio.ByteString
  * Enum names must be fully qualified in generated Kotlin
  */
 data class MessageUsingMultipleEnums(
-  @field:WireField(tag = 1, adapter =
-      "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER") val a:
-      MessageWithStatus.Status? = null,
-  @field:WireField(tag = 2, adapter =
-      "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER") val b:
-      OtherMessageWithStatus.Status? = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus.Status#ADAPTER"
+  )
+  val a: MessageWithStatus.Status? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus.Status#ADAPTER"
+  )
+  val b: OtherMessageWithStatus.Status? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageUsingMultipleEnums, MessageUsingMultipleEnums.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: MessageUsingMultipleEnums) :
-      Message.Builder<MessageUsingMultipleEnums, Builder>() {
+  class Builder(
+    private val message: MessageUsingMultipleEnums
+  ) : Message.Builder<MessageUsingMultipleEnums, Builder>() {
     override fun build(): MessageUsingMultipleEnums = message
   }
 

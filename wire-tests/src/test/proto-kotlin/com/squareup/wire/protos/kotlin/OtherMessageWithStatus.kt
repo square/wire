@@ -17,16 +17,18 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-data class OtherMessageWithStatus(val unknownFields: ByteString = ByteString.EMPTY) :
-    Message<OtherMessageWithStatus, OtherMessageWithStatus.Builder>(ADAPTER, unknownFields) {
+data class OtherMessageWithStatus(
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<OtherMessageWithStatus, OtherMessageWithStatus.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: OtherMessageWithStatus) :
-      Message.Builder<OtherMessageWithStatus, Builder>() {
+  class Builder(
+    private val message: OtherMessageWithStatus
+  ) : Message.Builder<OtherMessageWithStatus, Builder>() {
     override fun build(): OtherMessageWithStatus = message
   }
 
@@ -61,7 +63,9 @@ data class OtherMessageWithStatus(val unknownFields: ByteString = ByteString.EMP
     }
   }
 
-  enum class Status(override val value: Int) : WireEnum {
+  enum class Status(
+    override val value: Int
+  ) : WireEnum {
     A(1);
 
     companion object {

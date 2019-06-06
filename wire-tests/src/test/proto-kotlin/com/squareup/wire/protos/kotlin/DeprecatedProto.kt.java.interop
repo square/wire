@@ -15,10 +15,16 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class DeprecatedProto(@Deprecated(message = "foo is deprecated") @field:WireField(tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING") @JvmField val foo: String? = null,
-    val unknownFields: ByteString = ByteString.EMPTY) : Message<DeprecatedProto,
-    DeprecatedProto.Builder>(ADAPTER, unknownFields) {
+data class DeprecatedProto(
+  @Deprecated(message = "foo is deprecated")
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  @JvmField
+  val foo: String? = null,
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<DeprecatedProto, DeprecatedProto.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.foo = foo

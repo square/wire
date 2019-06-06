@@ -22,19 +22,27 @@ import okio.ByteString
  * the range +/- 180 degrees (inclusive).
  */
 data class Point(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#INT32") val latitude: Int? =
-      null,
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.ProtoAdapter#INT32") val longitude: Int? =
-      null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val latitude: Int? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val longitude: Int? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Point, Point.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: Point) : Message.Builder<Point, Builder>() {
+  class Builder(
+    private val message: Point
+  ) : Message.Builder<Point, Builder>() {
     override fun build(): Point = message
   }
 

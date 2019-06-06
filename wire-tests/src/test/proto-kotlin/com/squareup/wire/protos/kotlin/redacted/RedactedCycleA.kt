@@ -15,17 +15,23 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class RedactedCycleA(@field:WireField(tag = 1, adapter =
-    "com.squareup.wire.protos.kotlin.redacted.RedactedCycleB#ADAPTER") val b: RedactedCycleB? =
-    null, val unknownFields: ByteString = ByteString.EMPTY) : Message<RedactedCycleA,
-    RedactedCycleA.Builder>(ADAPTER, unknownFields) {
+data class RedactedCycleA(
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedCycleB#ADAPTER"
+  )
+  val b: RedactedCycleB? = null,
+  val unknownFields: ByteString = ByteString.EMPTY
+) : Message<RedactedCycleA, RedactedCycleA.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: RedactedCycleA) : Message.Builder<RedactedCycleA, Builder>() {
+  class Builder(
+    private val message: RedactedCycleA
+  ) : Message.Builder<RedactedCycleA, Builder>() {
     override fun build(): RedactedCycleA = message
   }
 

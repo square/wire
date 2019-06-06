@@ -11,30 +11,30 @@ import kotlinx.coroutines.channels.SendChannel
 
 interface RouteGuide : Service {
   @WireRpc(
-      path = "/routeguide.RouteGuide/GetFeature",
-      requestAdapter = "routeguide.Point#ADAPTER",
-      responseAdapter = "routeguide.Feature#ADAPTER"
+    path = "/routeguide.RouteGuide/GetFeature",
+    requestAdapter = "routeguide.Point#ADAPTER",
+    responseAdapter = "routeguide.Feature#ADAPTER"
   )
   suspend fun GetFeature(request: Point): Feature
 
   @WireRpc(
-      path = "/routeguide.RouteGuide/ListFeatures",
-      requestAdapter = "routeguide.Rectangle#ADAPTER",
-      responseAdapter = "routeguide.Feature#ADAPTER"
+    path = "/routeguide.RouteGuide/ListFeatures",
+    requestAdapter = "routeguide.Rectangle#ADAPTER",
+    responseAdapter = "routeguide.Feature#ADAPTER"
   )
   fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
 
   @WireRpc(
-      path = "/routeguide.RouteGuide/RecordRoute",
-      requestAdapter = "routeguide.Point#ADAPTER",
-      responseAdapter = "routeguide.RouteSummary#ADAPTER"
+    path = "/routeguide.RouteGuide/RecordRoute",
+    requestAdapter = "routeguide.Point#ADAPTER",
+    responseAdapter = "routeguide.RouteSummary#ADAPTER"
   )
   fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
 
   @WireRpc(
-      path = "/routeguide.RouteGuide/RouteChat",
-      requestAdapter = "routeguide.RouteNote#ADAPTER",
-      responseAdapter = "routeguide.RouteNote#ADAPTER"
+    path = "/routeguide.RouteGuide/RouteChat",
+    requestAdapter = "routeguide.RouteNote#ADAPTER",
+    responseAdapter = "routeguide.RouteNote#ADAPTER"
   )
   fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
 }

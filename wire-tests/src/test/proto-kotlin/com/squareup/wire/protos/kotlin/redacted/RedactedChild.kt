@@ -17,21 +17,32 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RedactedChild(
-  @field:WireField(tag = 1, adapter = "com.squareup.wire.ProtoAdapter#STRING") val a: String? =
-      null,
-  @field:WireField(tag = 2, adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER")
-      val b: Redacted? = null,
-  @field:WireField(tag = 3, adapter =
-      "com.squareup.wire.protos.kotlin.redacted.NotRedacted#ADAPTER") val c: NotRedacted? = null,
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  val a: String? = null,
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER"
+  )
+  val b: Redacted? = null,
+  @field:WireField(
+    tag = 3,
+    adapter = "com.squareup.wire.protos.kotlin.redacted.NotRedacted#ADAPTER"
+  )
+  val c: NotRedacted? = null,
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedChild, RedactedChild.Builder>(ADAPTER, unknownFields) {
   @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
+    message = "Shouldn't be used in Kotlin",
+    level = DeprecationLevel.HIDDEN
   )
   override fun newBuilder(): Builder = Builder(this.copy())
 
-  class Builder(private val message: RedactedChild) : Message.Builder<RedactedChild, Builder>() {
+  class Builder(
+    private val message: RedactedChild
+  ) : Message.Builder<RedactedChild, Builder>() {
     override fun build(): RedactedChild = message
   }
 
