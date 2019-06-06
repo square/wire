@@ -23,7 +23,8 @@ import okio.ByteString
 data class FeatureDatabase(
   @field:WireField(
     tag = 1,
-    adapter = "routeguide.Feature#ADAPTER"
+    adapter = "routeguide.Feature#ADAPTER",
+    label = WireField.Label.REPEATED
   )
   val feature: List<Feature> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY

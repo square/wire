@@ -520,6 +520,15 @@ class KotlinGenerator private constructor(
             addMember("adapter = %S", field.type().adapterString())
           }
         }
+        .apply {
+          if (!field.isOptional) {
+            if (field.isPacked) {
+              addMember("label = %T.PACKED", WireField.Label::class)
+            } else if (field.label() != null) {
+              addMember("label = %T.%L", WireField.Label::class, field.label())
+            }
+          }
+        }
         .apply { if (field.isRedacted) addMember("redacted = true") }
         .build()
   }
