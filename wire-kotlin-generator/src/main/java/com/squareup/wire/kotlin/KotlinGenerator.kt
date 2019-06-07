@@ -952,7 +952,7 @@ class KotlinGenerator private constructor(
     get() = when {
       isRepeated -> List::class.asClassName().parameterizedBy(type().typeName)
       isMap -> Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
-      !isRequired || default != null -> type().typeName.copy(nullable = true)
+      !isRequired && default == null -> type().typeName.copy(nullable = true)
       else -> type().typeName
     }
 

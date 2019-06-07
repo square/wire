@@ -234,7 +234,7 @@ data class Person(
       adapter = "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneType#ADAPTER"
     )
     @JvmField
-    val type: PhoneType? = PhoneType.HOME,
+    val type: PhoneType = PhoneType.HOME,
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
     override fun newBuilder(): Builder {

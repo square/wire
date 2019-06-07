@@ -176,7 +176,7 @@ data class Person(
       tag = 2,
       adapter = "com.squareup.wire.protos.kotlin.person.Person${'$'}PhoneType#ADAPTER"
     )
-    val type: PhoneType? = PhoneType.HOME,
+    val type: PhoneType = PhoneType.HOME,
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
     @Deprecated(
