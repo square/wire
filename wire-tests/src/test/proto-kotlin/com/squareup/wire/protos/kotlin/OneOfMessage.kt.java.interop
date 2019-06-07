@@ -49,7 +49,7 @@ data class OneOfMessage(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   init {
-    require (countNonNull(foo, bar, baz) <= 1) {
+    require(countNonNull(foo, bar, baz) <= 1) {
       "At most one of foo, bar, baz may be non-null"
     }
   }

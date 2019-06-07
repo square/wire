@@ -32,7 +32,7 @@ data class RedactedOneOf(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
   init {
-    require (countNonNull(b, c) <= 1) {
+    require(countNonNull(b, c) <= 1) {
       "At most one of b, c may be non-null"
     }
   }
