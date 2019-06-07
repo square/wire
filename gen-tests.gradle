@@ -177,7 +177,8 @@ task generateKotlinTests(type: JavaExec) {
       'redacted_test.proto',
       'redacted_one_of.proto',
       'deprecated_enum.proto',
-      'deprecated.proto'
+      'deprecated.proto',
+      'form.proto'    
   ]
 }
 

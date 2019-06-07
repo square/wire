@@ -491,6 +491,15 @@ class WireCompilerTest {
     assertKotlinOutputs(outputs)
   }
 
+  @Test
+  fun testFormOneOfKotlin() {
+    val sources = arrayOf("form.proto")
+    compileToKotlin(sources)
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/Form.kt")
+    assertKotlinOutputs(outputs)
+  }
+
   private fun compileToJava(sources: Array<String>, vararg extraArgs: String) =
       invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
 

@@ -250,8 +250,8 @@ class KotlinGenerator private constructor(
           .forEach { oneOf ->
             val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
             val fieldNames = oneOf.fields().joinToString(", ", transform = nameAllocator::get)
-            beginControlFlow("require (%M(%L) <= 1)", countNonNull, fieldNames)
-            addStatement("\"At most one of $fieldNames may be non-null\"")
+            beginControlFlow("require(%M(%L) <= 1)", countNonNull, fieldNames)
+            addStatement("%S", "At most one of $fieldNames may be non-null")
             endControlFlow()
           }
     }
