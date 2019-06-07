@@ -19,7 +19,6 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.wire.protos.RepeatedPackedAndMap;
 import com.squareup.wire.protos.alltypes.AllTypes;
-import com.squareup.wire.protos.person.Person;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -294,19 +293,5 @@ public class MoshiTest {
     assertThat(parsed.rep_int32).isEmpty();
     assertThat(parsed.pack_int32).isEmpty();
     assertThat(parsed.map_int32_int32).isEmpty();
-  }
-
-  /**
-   * When we encounter an explicit null in the JSON, we discard it. As a consequence we won't
-   * overwrite a non-null value with null which could happen in malformed JSON that repeats a value.
-   */
-  @Test public void clobberNonNullWithNull() throws IOException {
-    Person personWithName = moshi.adapter(Person.class)
-        .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\"}");
-    assertThat(personWithName.email).isEqualTo("foo@square.com");
-
-    Person personWithNameClobberedWithNull = moshi.adapter(Person.class)
-        .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"email\":null}");
-    assertThat(personWithNameClobberedWithNull.email).isEqualTo("foo@square.com");
   }
 }
