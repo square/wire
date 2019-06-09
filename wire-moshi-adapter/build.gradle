@@ -18,10 +18,9 @@ animalsniffer {
 }
 
 dependencies {
-  api project(':wire-runtime')
+  implementation project(':wire-runtime')
   api deps.kotlin.stdlib.jdk8
   api deps.moshi
-  compileOnly deps.jsr305
   testImplementation deps.junit
   testImplementation deps.assertj
 }

@@ -16,6 +16,7 @@ jar {
 dependencies {
   implementation project(':wire-schema')
   implementation deps.kotlin.stdlib.jdk8
+  implementation deps.guava
 }
 
 shadowJar {
