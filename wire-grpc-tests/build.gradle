@@ -57,10 +57,10 @@ animalsniffer {
 }
 
 dependencies {
-  api project(':wire-grpc-client')
-  api deps.okio.jvm
+  implementation project(':wire-runtime')
+  implementation project(':wire-grpc-client')
+  implementation deps.okio.jvm
   compileOnly deps.android
-  compileOnly deps.jsr305
   testImplementation deps.junit
   testImplementation deps.assertj
   testImplementation deps.grpc.netty

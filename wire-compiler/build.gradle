@@ -15,15 +15,11 @@ jar {
 
 dependencies {
   api deps.kotlin.stdlib.jdk8
-  // TODO(egorand): Depend on runtimeElements once runtime is fully multiplatform
-  implementation project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
   api project(':wire-schema')
   implementation project(':wire-java-generator')
   implementation project(':wire-kotlin-generator')
   implementation deps.okio.jvm
   implementation deps.guava
-  implementation deps.javapoet
-  compileOnly deps.jsr305
   testImplementation deps.junit
   testImplementation deps.assertj
   testImplementation deps.jimfs

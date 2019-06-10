@@ -17,7 +17,7 @@ animalsniffer {
 }
 
 dependencies {
-  api project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
+  implementation project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
   api deps.okio.jvm
   api deps.okhttp
   api deps.kotlin.coroutines.core
