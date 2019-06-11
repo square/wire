@@ -8,25 +8,23 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class NoPackageResponse(
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<NoPackageResponse, NoPackageResponse.Builder>(ADAPTER, unknownFields) {
+) : Message<NoPackageResponse, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
-
-  class Builder(
-    private val message: NoPackageResponse
-  ) : Message.Builder<NoPackageResponse, Builder>() {
-    override fun build(): NoPackageResponse = message
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
   }
 
   companion object {

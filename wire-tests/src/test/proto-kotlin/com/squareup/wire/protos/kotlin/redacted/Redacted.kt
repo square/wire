@@ -9,9 +9,11 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -39,12 +41,14 @@ data class Redacted(
   )
   val extension: RedactedExtension? = null,
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<Redacted, Redacted.Builder>(ADAPTER, unknownFields) {
+) : Message<Redacted, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
+  }
 
   override fun toString(): String = buildString {
     append("Redacted(")
@@ -53,12 +57,6 @@ data class Redacted(
     append(""", c=$c""")
     append(""", extension=$extension""")
     append(")")
-  }
-
-  class Builder(
-    private val message: Redacted
-  ) : Message.Builder<Redacted, Builder>() {
-    override fun build(): Redacted = message
   }
 
   companion object {

@@ -10,9 +10,11 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -46,7 +48,7 @@ data class OneOfMessage(
   )
   val baz: String? = null,
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
+) : Message<OneOfMessage, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(foo, bar, baz) <= 1) {
       "At most one of foo, bar, baz may be non-null"
@@ -57,12 +59,8 @@ data class OneOfMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
-
-  class Builder(
-    private val message: OneOfMessage
-  ) : Message.Builder<OneOfMessage, Builder>() {
-    override fun build(): OneOfMessage = message
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
   }
 
   companion object {

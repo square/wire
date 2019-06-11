@@ -9,9 +9,11 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -39,17 +41,13 @@ data class Feature(
   )
   val location: Point? = null,
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<Feature, Feature.Builder>(ADAPTER, unknownFields) {
+) : Message<Feature, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
-
-  class Builder(
-    private val message: Feature
-  ) : Message.Builder<Feature, Builder>() {
-    override fun build(): Feature = message
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
   }
 
   companion object {
