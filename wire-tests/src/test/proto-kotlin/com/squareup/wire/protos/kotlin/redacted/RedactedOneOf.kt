@@ -10,9 +10,11 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -30,7 +32,7 @@ data class RedactedOneOf(
   )
   val c: String? = null,
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
+) : Message<RedactedOneOf, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(b, c) <= 1) {
       "At most one of b, c may be non-null"
@@ -41,19 +43,15 @@ data class RedactedOneOf(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
+  }
 
   override fun toString(): String = buildString {
     append("RedactedOneOf(")
     append("""b=$b""")
     append(""", c=██""")
     append(")")
-  }
-
-  class Builder(
-    private val message: RedactedOneOf
-  ) : Message.Builder<RedactedOneOf, Builder>() {
-    override fun build(): RedactedOneOf = message
   }
 
   companion object {

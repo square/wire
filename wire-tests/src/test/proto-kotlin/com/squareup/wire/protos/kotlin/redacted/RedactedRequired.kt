@@ -11,9 +11,11 @@ import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
 import java.lang.UnsupportedOperationException
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -27,23 +29,19 @@ data class RedactedRequired(
   )
   val a: String,
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<RedactedRequired, RedactedRequired.Builder>(ADAPTER, unknownFields) {
+) : Message<RedactedRequired, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
+  }
 
   override fun toString(): String = buildString {
     append("RedactedRequired(")
     append("""a=██""")
     append(")")
-  }
-
-  class Builder(
-    private val message: RedactedRequired
-  ) : Message.Builder<RedactedRequired, Builder>() {
-    override fun build(): RedactedRequired = message
   }
 
   companion object {

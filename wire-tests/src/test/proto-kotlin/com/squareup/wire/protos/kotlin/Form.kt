@@ -10,9 +10,11 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -78,7 +80,7 @@ data class Form(
   )
   val currency_conversion_flags_element: CurrencyConversionFlagsElement? = null,
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<Form, Form.Builder>(ADAPTER, unknownFields) {
+) : Message<Form, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(button_element, local_image_element, remote_image_element, money_element,
         spacer_element, text_element, customized_card_element, address_element, text_input_element,
@@ -91,12 +93,8 @@ data class Form(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
-
-  class Builder(
-    private val message: Form
-  ) : Message.Builder<Form, Builder>() {
-    override fun build(): Form = message
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
   }
 
   companion object {
@@ -209,17 +207,13 @@ data class Form(
 
   data class ButtonElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<ButtonElement, ButtonElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<ButtonElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: ButtonElement
-    ) : Message.Builder<ButtonElement, Builder>() {
-      override fun build(): ButtonElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -255,17 +249,13 @@ data class Form(
 
   data class LocalImageElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<LocalImageElement, LocalImageElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<LocalImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: LocalImageElement
-    ) : Message.Builder<LocalImageElement, Builder>() {
-      override fun build(): LocalImageElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -301,17 +291,13 @@ data class Form(
 
   data class RemoteImageElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<RemoteImageElement, RemoteImageElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<RemoteImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: RemoteImageElement
-    ) : Message.Builder<RemoteImageElement, Builder>() {
-      override fun build(): RemoteImageElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -347,17 +333,13 @@ data class Form(
 
   data class MoneyElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<MoneyElement, MoneyElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<MoneyElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: MoneyElement
-    ) : Message.Builder<MoneyElement, Builder>() {
-      override fun build(): MoneyElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -393,17 +375,13 @@ data class Form(
 
   data class SpacerElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<SpacerElement, SpacerElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<SpacerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: SpacerElement
-    ) : Message.Builder<SpacerElement, Builder>() {
-      override fun build(): SpacerElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -439,17 +417,13 @@ data class Form(
 
   data class TextElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<TextElement, TextElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<TextElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: TextElement
-    ) : Message.Builder<TextElement, Builder>() {
-      override fun build(): TextElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -485,17 +459,13 @@ data class Form(
 
   data class CustomizedCardElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<CustomizedCardElement, CustomizedCardElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<CustomizedCardElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: CustomizedCardElement
-    ) : Message.Builder<CustomizedCardElement, Builder>() {
-      override fun build(): CustomizedCardElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -532,17 +502,13 @@ data class Form(
 
   data class AddressElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<AddressElement, AddressElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<AddressElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: AddressElement
-    ) : Message.Builder<AddressElement, Builder>() {
-      override fun build(): AddressElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -578,17 +544,13 @@ data class Form(
 
   data class TextInputElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<TextInputElement, TextInputElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<TextInputElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: TextInputElement
-    ) : Message.Builder<TextInputElement, Builder>() {
-      override fun build(): TextInputElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -624,17 +586,13 @@ data class Form(
 
   data class OptionPickerElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<OptionPickerElement, OptionPickerElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<OptionPickerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: OptionPickerElement
-    ) : Message.Builder<OptionPickerElement, Builder>() {
-      override fun build(): OptionPickerElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -670,17 +628,13 @@ data class Form(
 
   data class DetailRowElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<DetailRowElement, DetailRowElement.Builder>(ADAPTER, unknownFields) {
+  ) : Message<DetailRowElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: DetailRowElement
-    ) : Message.Builder<DetailRowElement, Builder>() {
-      override fun build(): DetailRowElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
@@ -716,18 +670,13 @@ data class Form(
 
   data class CurrencyConversionFlagsElement(
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<CurrencyConversionFlagsElement, CurrencyConversionFlagsElement.Builder>(ADAPTER,
-      unknownFields) {
+  ) : Message<CurrencyConversionFlagsElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: CurrencyConversionFlagsElement
-    ) : Message.Builder<CurrencyConversionFlagsElement, Builder>() {
-      override fun build(): CurrencyConversionFlagsElement = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {

@@ -10,9 +10,11 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.List
 import kotlin.jvm.JvmField
@@ -36,24 +38,20 @@ data class RedactedRepeated(
   )
   val b: List<Redacted> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<RedactedRepeated, RedactedRepeated.Builder>(ADAPTER, unknownFields) {
+) : Message<RedactedRepeated, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
+  }
 
   override fun toString(): String = buildString {
     append("RedactedRepeated(")
     append("""a=██""")
     append(""", b=$b""")
     append(")")
-  }
-
-  class Builder(
-    private val message: RedactedRepeated
-  ) : Message.Builder<RedactedRepeated, Builder>() {
-    override fun build(): RedactedRepeated = message
   }
 
   companion object {

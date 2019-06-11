@@ -30,6 +30,7 @@ import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.LONG
 import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.NOTHING
 import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
@@ -215,11 +216,19 @@ class KotlinGenerator private constructor(
     val classBuilder = TypeSpec.classBuilder(className)
         .apply { if (type.documentation().isNotBlank()) addKdoc("%L\n", type.documentation()) }
         .addModifiers(DATA)
-        .superclass(superclass.parameterizedBy(className, builderClassName))
+        .superclass(if (javaInterOp) {
+          superclass.parameterizedBy(className, builderClassName)
+        } else {
+          superclass.parameterizedBy(className, NOTHING)
+        })
         .addSuperclassConstructorParameter(adapterName)
         .addSuperclassConstructorParameter(unknownFields)
         .addFunction(generateNewBuilderMethod(type, builderClassName))
-        .addType(generateBuilderClass(type, className, builderClassName))
+        .apply {
+          if (javaInterOp) {
+            addType(generateBuilderClass(type, className, builderClassName))
+          }
+        }
 
     if (emitAndroid) {
       addAndroidCreator(type, companionObjBuilder)
@@ -260,7 +269,6 @@ class KotlinGenerator private constructor(
   private fun generateNewBuilderMethod(type: MessageType, builderClassName: ClassName): FunSpec {
     val funBuilder = FunSpec.builder("newBuilder")
         .addModifiers(OVERRIDE)
-        .returns(builderClassName)
 
     if (!javaInterOp) {
       return funBuilder
@@ -268,9 +276,12 @@ class KotlinGenerator private constructor(
               .addMember("message = %S", "Shouldn't be used in Kotlin")
               .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
               .build())
-          .addStatement("return %T(this.copy())", builderClassName)
+          .returns(NOTHING)
+          .addStatement("throw %T()", ClassName("kotlin", "AssertionError"))
           .build()
     }
+
+    funBuilder.returns(builderClassName)
 
     val nameAllocator = nameAllocator(type)
 

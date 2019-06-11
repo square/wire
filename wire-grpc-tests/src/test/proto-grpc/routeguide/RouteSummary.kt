@@ -9,9 +9,11 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -56,17 +58,13 @@ data class RouteSummary(
   )
   val elapsed_time: Int? = null,
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<RouteSummary, RouteSummary.Builder>(ADAPTER, unknownFields) {
+) : Message<RouteSummary, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
-
-  class Builder(
-    private val message: RouteSummary
-  ) : Message.Builder<RouteSummary, Builder>() {
-    override fun build(): RouteSummary = message
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
   }
 
   companion object {

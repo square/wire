@@ -13,9 +13,11 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
+import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.List
 import kotlin.jvm.JvmField
@@ -62,17 +64,13 @@ data class Person(
   )
   val phone: List<PhoneNumber> = emptyList(),
   val unknownFields: ByteString = ByteString.EMPTY
-) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
+) : Message<Person, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Builder = Builder(this.copy())
-
-  class Builder(
-    private val message: Person
-  ) : Message.Builder<Person, Builder>() {
-    override fun build(): Person = message
+  override fun newBuilder(): Nothing {
+    throw AssertionError()
   }
 
   companion object {
@@ -178,17 +176,13 @@ data class Person(
     )
     val type: PhoneType? = PhoneType.HOME,
     val unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
+  ) : Message<PhoneNumber, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Builder = Builder(this.copy())
-
-    class Builder(
-      private val message: PhoneNumber
-    ) : Message.Builder<PhoneNumber, Builder>() {
-      override fun build(): PhoneNumber = message
+    override fun newBuilder(): Nothing {
+      throw AssertionError()
     }
 
     companion object {
