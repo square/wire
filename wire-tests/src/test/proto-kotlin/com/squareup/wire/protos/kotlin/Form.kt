@@ -15,7 +15,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Form(
@@ -98,7 +97,6 @@ data class Form(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<Form> = object : ProtoAdapter<Form>(
       FieldEncoding.LENGTH_DELIMITED, 
       Form::class
@@ -217,7 +215,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<ButtonElement> = object : ProtoAdapter<ButtonElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         ButtonElement::class
@@ -259,7 +256,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<LocalImageElement> = object : ProtoAdapter<LocalImageElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         LocalImageElement::class
@@ -301,7 +297,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<RemoteImageElement> = object : ProtoAdapter<RemoteImageElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         RemoteImageElement::class
@@ -343,7 +338,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<MoneyElement> = object : ProtoAdapter<MoneyElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         MoneyElement::class
@@ -385,7 +379,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<SpacerElement> = object : ProtoAdapter<SpacerElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         SpacerElement::class
@@ -427,7 +420,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<TextElement> = object : ProtoAdapter<TextElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         TextElement::class
@@ -469,7 +461,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<CustomizedCardElement> = object :
           ProtoAdapter<CustomizedCardElement>(
         FieldEncoding.LENGTH_DELIMITED, 
@@ -512,7 +503,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<AddressElement> = object : ProtoAdapter<AddressElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         AddressElement::class
@@ -554,7 +544,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<TextInputElement> = object : ProtoAdapter<TextInputElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         TextInputElement::class
@@ -596,7 +585,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<OptionPickerElement> = object : ProtoAdapter<OptionPickerElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         OptionPickerElement::class
@@ -638,7 +626,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<DetailRowElement> = object : ProtoAdapter<DetailRowElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         DetailRowElement::class
@@ -680,7 +667,6 @@ data class Form(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<CurrencyConversionFlagsElement> = object :
           ProtoAdapter<CurrencyConversionFlagsElement>(
         FieldEncoding.LENGTH_DELIMITED, 

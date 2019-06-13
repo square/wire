@@ -20,8 +20,6 @@ import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.List
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 /**
@@ -74,7 +72,6 @@ data class Person(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<Person> = object : ProtoAdapter<Person>(
       FieldEncoding.LENGTH_DELIMITED, 
       Person::class
@@ -140,14 +137,12 @@ data class Person(
     WORK(2);
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<PhoneType> = object : EnumAdapter<PhoneType>(
         PhoneType::class
       ) {
         override fun fromValue(value: Int): PhoneType = PhoneType.fromValue(value)
       }
 
-      @JvmStatic
       fun fromValue(value: Int): PhoneType = when (value) {
         0 -> MOBILE
         1 -> HOME
@@ -186,7 +181,6 @@ data class Person(
     }
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<PhoneNumber> = object : ProtoAdapter<PhoneNumber>(
         FieldEncoding.LENGTH_DELIMITED, 
         PhoneNumber::class

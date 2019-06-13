@@ -16,8 +16,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class OptionalEnumUser(
@@ -37,7 +35,6 @@ data class OptionalEnumUser(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<OptionalEnumUser> = object : ProtoAdapter<OptionalEnumUser>(
       FieldEncoding.LENGTH_DELIMITED, 
       OptionalEnumUser::class
@@ -79,14 +76,12 @@ data class OptionalEnumUser(
     BAR(2);
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
         OptionalEnum::class
       ) {
         override fun fromValue(value: Int): OptionalEnum = OptionalEnum.fromValue(value)
       }
 
-      @JvmStatic
       fun fromValue(value: Int): OptionalEnum = when (value) {
         1 -> FOO
         2 -> BAR

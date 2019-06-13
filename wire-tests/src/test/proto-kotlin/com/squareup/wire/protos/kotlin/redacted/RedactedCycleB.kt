@@ -14,7 +14,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RedactedCycleB(
@@ -34,7 +33,6 @@ data class RedactedCycleB(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<RedactedCycleB> = object : ProtoAdapter<RedactedCycleB>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedCycleB::class

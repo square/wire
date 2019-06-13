@@ -16,7 +16,6 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 /**
@@ -64,7 +63,6 @@ data class OneOfMessage(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       OneOfMessage::class

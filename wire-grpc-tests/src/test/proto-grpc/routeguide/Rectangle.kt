@@ -14,7 +14,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 /**
@@ -49,7 +48,6 @@ data class Rectangle(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<Rectangle> = object : ProtoAdapter<Rectangle>(
       FieldEncoding.LENGTH_DELIMITED, 
       Rectangle::class

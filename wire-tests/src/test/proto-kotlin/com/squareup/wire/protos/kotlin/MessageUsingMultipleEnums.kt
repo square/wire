@@ -14,7 +14,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 /**
@@ -42,7 +41,6 @@ data class MessageUsingMultipleEnums(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
         ProtoAdapter<MessageUsingMultipleEnums>(
       FieldEncoding.LENGTH_DELIMITED, 

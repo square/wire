@@ -354,7 +354,7 @@ class KotlinGenerator private constructor(
           .initializer(field.getDefaultValue())
 
       if (javaInterOp) {
-        propertyBuilder.addAnnotation(JvmField::class)
+        propertyBuilder.jvmField()
       }
 
       builder
@@ -563,7 +563,7 @@ class KotlinGenerator private constructor(
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
 
     companionObjBuilder.addProperty(PropertySpec.builder(adapterName, adapterType)
-        .jvmField()
+        .apply { if (javaInterOp) jvmField() }
         .initializer("%L", adapterObject.build())
         .build())
   }
@@ -847,7 +847,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val valueName = nameAllocator["value"]
     val fromValue = FunSpec.builder("fromValue")
-        .jvmStatic()
+        .apply { if (javaInterOp) jvmStatic() }
         .addParameter(valueName, Int::class)
         .returns(parentClassName)
         .apply {
@@ -894,7 +894,7 @@ class KotlinGenerator private constructor(
         .build()
 
     return PropertySpec.builder(adapterName, adapterType)
-        .jvmField()
+        .apply { if (javaInterOp) jvmField() }
         .initializer("%L", adapterObject)
         .build()
   }
@@ -916,7 +916,7 @@ class KotlinGenerator private constructor(
         .parameterizedBy(parentClassName)
 
     companionObjBuilder.addProperty(PropertySpec.builder(creatorName, creatorTypeName)
-        .jvmField()
+        .apply { if (javaInterOp) jvmField() }
         .initializer("%T.newCreator(ADAPTER)", ANDROID_MESSAGE)
         .build())
   }

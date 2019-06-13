@@ -15,7 +15,6 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 /**
@@ -49,7 +48,6 @@ data class RouteNote(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(
       FieldEncoding.LENGTH_DELIMITED, 
       RouteNote::class

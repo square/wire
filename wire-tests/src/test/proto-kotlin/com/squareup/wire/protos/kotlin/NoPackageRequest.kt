@@ -13,7 +13,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class NoPackageRequest(
@@ -28,7 +27,6 @@ data class NoPackageRequest(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<NoPackageRequest> = object : ProtoAdapter<NoPackageRequest>(
       FieldEncoding.LENGTH_DELIMITED, 
       NoPackageRequest::class

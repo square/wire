@@ -15,8 +15,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class OtherMessageWithStatus(
@@ -31,7 +29,6 @@ data class OtherMessageWithStatus(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<OtherMessageWithStatus> = object :
         ProtoAdapter<OtherMessageWithStatus>(
       FieldEncoding.LENGTH_DELIMITED, 
@@ -67,14 +64,12 @@ data class OtherMessageWithStatus(
     A(1);
 
     companion object {
-      @JvmField
       val ADAPTER: ProtoAdapter<Status> = object : EnumAdapter<Status>(
         Status::class
       ) {
         override fun fromValue(value: Int): Status = Status.fromValue(value)
       }
 
-      @JvmStatic
       fun fromValue(value: Int): Status = when (value) {
         1 -> A
         else -> throw IllegalArgumentException("""Unexpected value: $value""")

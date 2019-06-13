@@ -14,7 +14,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 /**
@@ -68,7 +67,6 @@ data class RouteSummary(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<RouteSummary> = object : ProtoAdapter<RouteSummary>(
       FieldEncoding.LENGTH_DELIMITED, 
       RouteSummary::class

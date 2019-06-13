@@ -17,7 +17,6 @@ import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.Map
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Mappy(
@@ -38,7 +37,6 @@ data class Mappy(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(
       FieldEncoding.LENGTH_DELIMITED, 
       Mappy::class

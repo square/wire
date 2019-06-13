@@ -15,7 +15,6 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class Redacted(
@@ -60,7 +59,6 @@ data class Redacted(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<Redacted> = object : ProtoAdapter<Redacted>(
       FieldEncoding.LENGTH_DELIMITED, 
       Redacted::class

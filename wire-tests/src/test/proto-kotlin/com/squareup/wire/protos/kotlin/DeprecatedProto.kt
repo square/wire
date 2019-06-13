@@ -15,7 +15,6 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class DeprecatedProto(
@@ -36,7 +35,6 @@ data class DeprecatedProto(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       DeprecatedProto::class

@@ -17,7 +17,6 @@ import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.List
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class RedactedRepeated(
@@ -55,7 +54,6 @@ data class RedactedRepeated(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<RedactedRepeated> = object : ProtoAdapter<RedactedRepeated>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedRepeated::class

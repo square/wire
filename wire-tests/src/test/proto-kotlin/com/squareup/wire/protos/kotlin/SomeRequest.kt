@@ -13,7 +13,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class SomeRequest(
@@ -28,7 +27,6 @@ data class SomeRequest(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<SomeRequest> = object : ProtoAdapter<SomeRequest>(
       FieldEncoding.LENGTH_DELIMITED, 
       SomeRequest::class

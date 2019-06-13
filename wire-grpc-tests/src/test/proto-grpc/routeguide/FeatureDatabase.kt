@@ -16,7 +16,6 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.collections.List
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 /**
@@ -40,7 +39,6 @@ data class FeatureDatabase(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<FeatureDatabase> = object : ProtoAdapter<FeatureDatabase>(
       FieldEncoding.LENGTH_DELIMITED, 
       FeatureDatabase::class

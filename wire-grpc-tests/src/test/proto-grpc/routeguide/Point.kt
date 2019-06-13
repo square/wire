@@ -14,7 +14,6 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
-import kotlin.jvm.JvmField
 import okio.ByteString
 
 /**
@@ -45,7 +44,6 @@ data class Point(
   }
 
   companion object {
-    @JvmField
     val ADAPTER: ProtoAdapter<Point> = object : ProtoAdapter<Point>(
       FieldEncoding.LENGTH_DELIMITED, 
       Point::class
