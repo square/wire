@@ -24,17 +24,17 @@ import java.io.ObjectStreamException
 import java.io.OutputStream
 import java.io.Serializable
 
-/** A protocol buffer message.  */
-abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected constructor(
+/** A protocol buffer message. */
+actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected constructor(
   @field:Transient private val adapter: ProtoAdapter<M>,
-  /** Unknown fields, proto-encoded. We permit null to support magic deserialization.  */
+  /** Unknown fields, proto-encoded. We permit null to support magic deserialization. */
   @field:Transient private val unknownFields: ByteString?
 ) : Serializable {
-  /** If not `0` then the serialized size of this message.  */
+  /** If not `0` then the serialized size of this message. */
   @Transient internal var cachedSerializedSize = 0
 
-  /** If non-zero, the hash code of this message. Accessed by generated code.  */
-  @Transient @JvmField protected var hashCode = 0
+  /** If non-zero, the hash code of this message. Accessed by generated code. */
+  @Transient @JvmField protected actual var hashCode = 0
 
   init {
     if (unknownFields == null) throw NullPointerException("unknownFields == null")
@@ -44,15 +44,15 @@ abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected c
    * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
    * an empty byte string if this message has no unknown fields.
    */
-  fun unknownFields(): ByteString = unknownFields ?: ByteString.EMPTY
+  actual fun unknownFields(): ByteString = unknownFields ?: ByteString.EMPTY
 
   /**
    * Returns a new builder initialized with the data in this message.
    */
-  abstract fun newBuilder(): B
+  actual abstract fun newBuilder(): B
 
-  /** Returns this message with any unknown fields removed.  */
-  fun withoutUnknownFields(): M = newBuilder().clearUnknownFields().build()
+  /** Returns this message with any unknown fields removed. */
+  actual fun withoutUnknownFields(): M = newBuilder().clearUnknownFields().build()
 
   override fun toString(): String = adapter.toString(this as M)
 
@@ -60,16 +60,16 @@ abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected c
   protected fun writeReplace(): Any = MessageSerializedForm(encode(), javaClass as Class<M>)
 
   /** The [ProtoAdapter] for encoding and decoding messages of this type. */
-  fun adapter(): ProtoAdapter<M> = adapter
+  actual fun adapter(): ProtoAdapter<M> = adapter
 
-  /** Encode this message and write it to `stream`.  */
+  /** Encode this message and write it to `stream`. */
   @Throws(IOException::class)
-  fun encode(sink: BufferedSink) {
+  actual fun encode(sink: BufferedSink) {
     adapter.encode(sink, this as M)
   }
 
   /** Encode this message as a `byte[]`.  */
-  fun encode(): ByteArray = adapter.encode(this as M)
+  actual fun encode(): ByteArray = adapter.encode(this as M)
 
   /** Encode this message and write it to `stream`.  */
   @Throws(IOException::class)
@@ -80,7 +80,7 @@ abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected c
   /**
    * Superclass for protocol buffer message builders.
    */
-  abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected constructor() {
+  actual abstract class Builder<M : Message<M, B>, B : Builder<M, B>> protected constructor() {
     /**
      * Caches unknown fields as a [ByteString] when [buildUnknownFields] is called.
      * When the caller adds an additional unknown field after that, it will be written to the new
