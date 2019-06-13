@@ -10,7 +10,7 @@ actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> prot
   private val unknownFields: ByteString?
 ) {
   /** If non-zero, the hash code of this message. Accessed by generated code. */
-  protected actual var hashCode = 0
+  @JsName("cachedHashCode") protected actual var hashCode = 0
 
   init {
     if (unknownFields == null) throw NullPointerException("unknownFields == null")
