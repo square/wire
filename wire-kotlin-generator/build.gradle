@@ -12,9 +12,7 @@ jar {
 
 dependencies {
   api project(':wire-schema')
-  // TODO(egorand): Ideally KotlinGenerator should generate platform-independent code, once runtime
-  // is 100% multiplatform find the right configuration to enforce this
-  implementation project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
+  implementation project(':wire-runtime')
   implementation project(':wire-grpc-client')
   api deps.kotlin.stdlib.jdk8
   implementation deps.okio.jvm

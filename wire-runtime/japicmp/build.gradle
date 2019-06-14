@@ -1,6 +1,17 @@
 import me.champeau.gradle.japicmp.JapicmpTask
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
+buildscript {
+  dependencies {
+    classpath deps.plugins.kotlin
+  }
+  repositories {
+    mavenCentral()
+  }
+}
 
 apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'me.champeau.gradle.japicmp'
 
 configurations {
@@ -8,12 +19,20 @@ configurations {
   latest
 }
 
+afterEvaluate {
+  def baseline = configurations.baseline.attributes
+  def latest = configurations.latest.attributes
+  def platformAttr = Attribute.of('org.jetbrains.kotlin.platform.type', KotlinPlatformType.class)
+  baseline.attribute(platformAttr, KotlinPlatformType.jvm)
+  latest.attribute(platformAttr, KotlinPlatformType.jvm)
+}
+
 dependencies {
   baseline('com.squareup.wire:wire-runtime:3.0.0-alpha01') {
     transitive = false
     force = true
   }
-  latest project(path: ':wire-runtime', configuration: 'jvmRuntimeElements')
+  latest project(':wire-runtime')
 }
 
 task japicmp(type: JapicmpTask, dependsOn: 'jar') {

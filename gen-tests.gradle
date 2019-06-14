@@ -1,6 +1,17 @@
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
+
+buildscript {
+  dependencies {
+    classpath deps.plugins.kotlin
+  }
+  repositories {
+    mavenCentral()
+  }
+}
 
 def PROTOS = Files.find(
       Paths.get("${rootProject.rootDir}/wire-tests/src/test/proto"),
@@ -16,6 +27,12 @@ def PROTOS = Files.find(
 
 configurations {
   wire
+}
+
+afterEvaluate {
+  def wire = configurations.wire.attributes
+  def platformAttr = Attribute.of('org.jetbrains.kotlin.platform.type', KotlinPlatformType.class)
+  wire.attribute(platformAttr, KotlinPlatformType.jvm)
 }
 
 dependencies {
