@@ -15,16 +15,9 @@ apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'me.champeau.gradle.japicmp'
 
 configurations {
-  baseline
-  latest
-}
-
-afterEvaluate {
-  def baseline = configurations.baseline.attributes
-  def latest = configurations.latest.attributes
   def platformAttr = Attribute.of('org.jetbrains.kotlin.platform.type', KotlinPlatformType.class)
-  baseline.attribute(platformAttr, KotlinPlatformType.jvm)
-  latest.attribute(platformAttr, KotlinPlatformType.jvm)
+  baseline.with { attributes.attribute(platformAttr, KotlinPlatformType.jvm) }
+  latest.with { attributes.attribute(platformAttr, KotlinPlatformType.jvm) }
 }
 
 dependencies {

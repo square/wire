@@ -26,13 +26,10 @@ def PROTOS = Files.find(
     .collect(Collectors.toList())
 
 configurations {
-  wire
-}
-
-afterEvaluate {
-  def wire = configurations.wire.attributes
-  def platformAttr = Attribute.of('org.jetbrains.kotlin.platform.type', KotlinPlatformType.class)
-  wire.attribute(platformAttr, KotlinPlatformType.jvm)
+  wire.with {
+    def platformAttr = Attribute.of('org.jetbrains.kotlin.platform.type', KotlinPlatformType.class)
+    attributes.attribute(platformAttr, KotlinPlatformType.jvm)
+  }
 }
 
 dependencies {
