@@ -39,6 +39,9 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
   packageExcludes = [
       'com.squareup.wire.internal',
   ]
+  classExcludes = [
+      'com.squareup.wire.TagHandler',    
+  ]
   methodExcludes = [
       // package protected -> public
       'com.squareup.wire.WireField$Label#isOneOf()',

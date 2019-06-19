@@ -197,13 +197,11 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
           case 3: builder.c(ProtoAdapter.STRING.decode(reader)); break;
           case 10: builder.extension(RedactedExtension.ADAPTER.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

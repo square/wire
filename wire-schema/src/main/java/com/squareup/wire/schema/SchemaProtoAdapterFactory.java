@@ -202,7 +202,7 @@ final class SchemaProtoAdapterFactory {
           result.put(field.name, value);
         }
       }
-      reader.endMessage(token);
+      reader.endMessageAndGetUnknownFields(token); // Ignore return value
       return result;
     }
 

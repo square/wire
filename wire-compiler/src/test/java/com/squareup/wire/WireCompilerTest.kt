@@ -180,7 +180,9 @@ class WireCompilerTest {
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/unknownfields/VersionOne.java",
-        "com/squareup/wire/protos/unknownfields/VersionTwo.java")
+        "com/squareup/wire/protos/unknownfields/VersionTwo.java",
+        "com/squareup/wire/protos/unknownfields/NestedVersionOne.java",
+        "com/squareup/wire/protos/unknownfields/NestedVersionTwo.java")
     assertJavaOutputs(outputs)
   }
 

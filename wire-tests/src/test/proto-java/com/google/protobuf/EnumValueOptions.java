@@ -242,13 +242,11 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
           case 70001: builder.complex_enum_value_option(FooBar.More.ADAPTER.decode(reader)); break;
           case 70002: builder.foreign_enum_value_option(ProtoAdapter.BOOL.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

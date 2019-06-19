@@ -7,7 +7,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import kotlin.AssertionError
 import kotlin.Deprecated
@@ -72,7 +71,7 @@ data class RedactedChild(
             1 -> a = ProtoAdapter.STRING.decode(reader)
             2 -> b = Redacted.ADAPTER.decode(reader)
             3 -> c = NotRedacted.ADAPTER.decode(reader)
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return RedactedChild(

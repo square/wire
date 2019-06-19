@@ -8,7 +8,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import kotlin.Int
 import kotlin.jvm.JvmField
@@ -47,7 +46,7 @@ data class OtherMessageWithStatus(
       override fun decode(reader: ProtoReader): OtherMessageWithStatus {
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return OtherMessageWithStatus(

@@ -348,7 +348,7 @@ internal class MapProtoAdapter<K, V> internal constructor(
         // Ignore unknown tags in map entries.
       }
     }
-    reader.endMessage(token)
+    reader.endMessageAndGetUnknownFields(token)
 
     check(key != null) { "Map entry with null key" }
     check(value != null) { "Map entry with null value" }

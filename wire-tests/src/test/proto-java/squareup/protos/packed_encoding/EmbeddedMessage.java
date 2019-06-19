@@ -143,13 +143,11 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
           case 1: builder.inner_repeated_number.add(ProtoAdapter.INT32.decode(reader)); break;
           case 2: builder.inner_number_after(ProtoAdapter.INT32.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

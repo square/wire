@@ -33,7 +33,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.squareup.wire
 
-import com.squareup.wire.TagHandler.Companion.UNKNOWN_TAG
 import com.squareup.wire.internal.ProtocolException
 import com.squareup.wire.internal.Throws
 import com.squareup.wire.internal.and
@@ -63,6 +62,8 @@ class ProtoReader(private val source: BufferedSource) {
   private var pushedLimit: Long = -1
   /** The encoding of the next value to be read. */
   private var nextFieldEncoding: FieldEncoding? = null
+  /** Pooled buffers for unknown fields, indexed by [recursionDepth]. */
+  private val bufferStack = mutableListOf<Buffer>()
 
   /**
    * Begin a nested message. A call to this method will restrict the reader so that [nextTag]
@@ -75,6 +76,8 @@ class ProtoReader(private val source: BufferedSource) {
     if (++recursionDepth > RECURSION_LIMIT) {
       throw IOException("Wire recursion limit exceeded")
     }
+    // Allocate a buffer to store unknown fields encountered at this recursion level.
+    if (recursionDepth > bufferStack.size) bufferStack += Buffer()
     // Give the pushed limit to the caller to hold. The value is returned in endMessage() where we
     // resume using it as our limit.
     val token = pushedLimit
@@ -90,13 +93,35 @@ class ProtoReader(private val source: BufferedSource) {
    * @param token value returned from the corresponding call to [beginMessage].
    */
   @Throws(IOException::class)
-  fun endMessage(token: Long) {
+  fun endMessageAndGetUnknownFields(token: Long): ByteString {
     check(state == STATE_TAG) { "Unexpected call to endMessage()" }
     check(--recursionDepth >= 0 && pushedLimit == -1L) { "No corresponding call to beginMessage()" }
     if (pos != limit && recursionDepth != 0) {
       throw IOException("Expected to end at $limit but was $pos")
     }
     limit = token
+    val unknownFieldsBuffer = bufferStack[recursionDepth]
+    return if (unknownFieldsBuffer.size > 0L) {
+      unknownFieldsBuffer.readByteString()
+    } else {
+      ByteString.EMPTY
+    }
+  }
+
+  /**
+   * End a length-delimited nested message. Calls to this method must be symmetric with calls to
+   * [beginMessage].
+   *
+   * @param token value returned from the corresponding call to [beginMessage].
+   */
+  @Throws(IOException::class)
+  @Deprecated(
+      level = DeprecationLevel.WARNING,
+      message = "prefer endMessageAndGetUnknownFields()",
+      replaceWith = ReplaceWith("endMessageAndGetUnknownFields(token)")
+  )
+  fun endMessage(token: Long) {
+    endMessageAndGetUnknownFields(token)
   }
 
   /**
@@ -385,35 +410,28 @@ class ProtoReader(private val source: BufferedSource) {
   }
 
   /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
-  @Throws(IOException::class)
-  fun forEachTag(tagHandler: TagHandler): ByteString = forEachTag(tagHandler::decodeMessage)
-
-  /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
   @JvmName("-forEachTag") // hide from Java
   inline fun forEachTag(tagHandler: (Int) -> Any): ByteString {
-    // Lazily created if the current message has unknown fields.
-    var unknownFieldsBuffer: Buffer? = null
-    var unknownFieldsWriter: ProtoWriter? = null
-
     val token = beginMessage()
-    var tag: Int
     while (true) {
-      tag = nextTag()
+      val tag = nextTag()
       if (tag == -1) break
-      if (tagHandler(tag) !== UNKNOWN_TAG) continue
-      if (unknownFieldsBuffer == null) {
-        unknownFieldsBuffer = Buffer()
-        unknownFieldsWriter = ProtoWriter(unknownFieldsBuffer)
-      }
-      val fieldEncoding = peekFieldEncoding()
-      val protoAdapter = fieldEncoding!!.rawProtoAdapter()
-      val value = protoAdapter.decode(this)
-      @Suppress("UNCHECKED_CAST") // We encode and decode the same types.
-      (protoAdapter as ProtoAdapter<Any>).encodeWithTag(unknownFieldsWriter!!, tag, value)
+      tagHandler(tag)
     }
-    endMessage(token)
+    return endMessageAndGetUnknownFields(token)
+  }
 
-    return unknownFieldsBuffer?.readByteString() ?: ByteString.EMPTY
+  /**
+   * Read an unknown field and store temporarily. Once the entire message is read, call
+   * [endMessageAndGetUnknownFields] to retrieve unknown fields.
+   */
+  fun readUnknownField(tag: Int) {
+    val unknownFieldsWriter = ProtoWriter(bufferStack[recursionDepth - 1])
+    val fieldEncoding = peekFieldEncoding()
+    val protoAdapter = fieldEncoding!!.rawProtoAdapter()
+    val value = protoAdapter.decode(this)
+    @Suppress("UNCHECKED_CAST") // We encode and decode the same types.
+    (protoAdapter as ProtoAdapter<Any>).encodeWithTag(unknownFieldsWriter, tag, value)
   }
 
   companion object {

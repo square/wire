@@ -18,8 +18,8 @@ import java.lang.StringBuilder;
 import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
-public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
-  public static final ProtoAdapter<VersionOne> ADAPTER = new ProtoAdapter_VersionOne();
+public final class NestedVersionOne extends Message<NestedVersionOne, NestedVersionOne.Builder> {
+  public static final ProtoAdapter<NestedVersionOne> ADAPTER = new ProtoAdapter_NestedVersionOne();
 
   private static final long serialVersionUID = 0L;
 
@@ -31,27 +31,19 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
   )
   public final Integer i;
 
-  @WireField(
-      tag = 7,
-      adapter = "com.squareup.wire.protos.unknownfields.NestedVersionOne#ADAPTER"
-  )
-  public final NestedVersionOne obj;
-
-  public VersionOne(Integer i, NestedVersionOne obj) {
-    this(i, obj, ByteString.EMPTY);
+  public NestedVersionOne(Integer i) {
+    this(i, ByteString.EMPTY);
   }
 
-  public VersionOne(Integer i, NestedVersionOne obj, ByteString unknownFields) {
+  public NestedVersionOne(Integer i, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.i = i;
-    this.obj = obj;
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.i = i;
-    builder.obj = obj;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -59,11 +51,10 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
-    if (!(other instanceof VersionOne)) return false;
-    VersionOne o = (VersionOne) other;
+    if (!(other instanceof NestedVersionOne)) return false;
+    NestedVersionOne o = (NestedVersionOne) other;
     return unknownFields().equals(o.unknownFields())
-        && Internal.equals(i, o.i)
-        && Internal.equals(obj, o.obj);
+        && Internal.equals(i, o.i);
   }
 
   @Override
@@ -72,7 +63,6 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
-      result = result * 37 + (obj != null ? obj.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -82,14 +72,11 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (i != null) builder.append(", i=").append(i);
-    if (obj != null) builder.append(", obj=").append(obj);
-    return builder.replace(0, 2, "VersionOne{").append('}').toString();
+    return builder.replace(0, 2, "NestedVersionOne{").append('}').toString();
   }
 
-  public static final class Builder extends Message.Builder<VersionOne, Builder> {
+  public static final class Builder extends Message.Builder<NestedVersionOne, Builder> {
     public Integer i;
-
-    public NestedVersionOne obj;
 
     public Builder() {
     }
@@ -99,44 +86,36 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
       return this;
     }
 
-    public Builder obj(NestedVersionOne obj) {
-      this.obj = obj;
-      return this;
-    }
-
     @Override
-    public VersionOne build() {
-      return new VersionOne(i, obj, super.buildUnknownFields());
+    public NestedVersionOne build() {
+      return new NestedVersionOne(i, super.buildUnknownFields());
     }
   }
 
-  private static final class ProtoAdapter_VersionOne extends ProtoAdapter<VersionOne> {
-    public ProtoAdapter_VersionOne() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(VersionOne.class));
+  private static final class ProtoAdapter_NestedVersionOne extends ProtoAdapter<NestedVersionOne> {
+    public ProtoAdapter_NestedVersionOne() {
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(NestedVersionOne.class));
     }
 
     @Override
-    public int encodedSize(VersionOne value) {
+    public int encodedSize(NestedVersionOne value) {
       return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
-          + NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj)
           + value.unknownFields().size();
     }
 
     @Override
-    public void encode(ProtoWriter writer, VersionOne value) throws IOException {
+    public void encode(ProtoWriter writer, NestedVersionOne value) throws IOException {
       ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
-      NestedVersionOne.ADAPTER.encodeWithTag(writer, 7, value.obj);
       writer.writeBytes(value.unknownFields());
     }
 
     @Override
-    public VersionOne decode(ProtoReader reader) throws IOException {
+    public NestedVersionOne decode(ProtoReader reader) throws IOException {
       Builder builder = new Builder();
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
           case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
-          case 7: builder.obj(NestedVersionOne.ADAPTER.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -147,9 +126,8 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     }
 
     @Override
-    public VersionOne redact(VersionOne value) {
+    public NestedVersionOne redact(NestedVersionOne value) {
       Builder builder = value.newBuilder();
-      if (builder.obj != null) builder.obj = NestedVersionOne.ADAPTER.redact(builder.obj);
       builder.clearUnknownFields();
       return builder.build();
     }

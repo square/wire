@@ -326,13 +326,11 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
           case 9: builder.this_(ProtoAdapter.STRING.decode(reader)); break;
           case 10: builder.message(ProtoAdapter.STRING.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

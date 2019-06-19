@@ -309,13 +309,11 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
             case 3: builder.begin(ProtoAdapter.INT32.decode(reader)); break;
             case 4: builder.end(ProtoAdapter.INT32.decode(reader)); break;
             default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
+              reader.readUnknownField(tag);
             }
           }
         }
-        reader.endMessage(token);
+        builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
         return builder.build();
       }
 
@@ -353,13 +351,11 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
         switch (tag) {
           case 1: builder.annotation.add(Annotation.ADAPTER.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

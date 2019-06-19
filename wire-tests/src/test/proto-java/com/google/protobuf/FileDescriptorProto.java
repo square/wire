@@ -444,13 +444,11 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
           case 11: builder.weak_dependency.add(ProtoAdapter.INT32.decode(reader)); break;
           case 12: builder.syntax(ProtoAdapter.STRING.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

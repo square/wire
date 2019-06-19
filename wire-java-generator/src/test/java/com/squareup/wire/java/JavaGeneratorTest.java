@@ -17,7 +17,6 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.schema.EnclosingType;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.RepoBuilder;
@@ -210,7 +209,7 @@ public final class JavaGeneratorTest {
         + "        }\n"
         + "      }\n"
         + "    }\n"
-        + "    reader.endMessage(token);\n"
+        + "    reader.endMessageAndGetUnknownFields(token);\n"
         + "    return fromProto(field, numbers, coin_flip, bars);\n"
         + "  }\n"
         + "\n"

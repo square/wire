@@ -83,13 +83,11 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 
