@@ -406,10 +406,6 @@ class ProtoReader(private val source: BufferedSource) {
   }
 
   /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
-  @Throws(IOException::class)
-  fun forEachTag(tagHandler: TagHandler): ByteString = forEachTag(tagHandler::decodeMessage)
-
-  /** Reads each tag, handles it, and returns a byte string with the unknown fields. */
   @JvmName("-forEachTag") // hide from Java
   inline fun forEachTag(tagHandler: (Int) -> Any): ByteString {
     val token = beginMessage()
