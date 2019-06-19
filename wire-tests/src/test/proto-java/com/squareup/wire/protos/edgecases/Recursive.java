@@ -138,13 +138,11 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
           case 1: builder.value(ProtoAdapter.INT32.decode(reader)); break;
           case 2: builder.recursive(Recursive.ADAPTER.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

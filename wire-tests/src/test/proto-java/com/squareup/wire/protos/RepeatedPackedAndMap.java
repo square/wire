@@ -172,13 +172,11 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
           case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
           case 401: builder.map_int32_int32.putAll(map_int32_int32.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

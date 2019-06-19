@@ -991,9 +991,7 @@ public final class JavaGenerator {
 
     result.beginControlFlow("default:");
     if (useBuilder) {
-      result.addStatement("$T fieldEncoding = reader.peekFieldEncoding()", FieldEncoding.class)
-          .addStatement("$T value = fieldEncoding.rawProtoAdapter().decode(reader)", Object.class)
-          .addStatement("builder.addUnknownField(tag, fieldEncoding, value)");
+      result.addStatement("reader.readUnknownField(tag)");
     } else {
       result.addStatement("reader.skip()");
     }
@@ -1001,7 +999,11 @@ public final class JavaGenerator {
 
     result.endControlFlow(); // switch
     result.endControlFlow(); // for
-    result.addStatement("reader.endMessage(token)");
+    if (useBuilder) {
+      result.addStatement("builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token))");
+    } else {
+      result.addStatement("reader.endMessageAndGetUnknownFields(token)");
+    }
 
     if (useBuilder) {
       result.addStatement("return builder.build()");

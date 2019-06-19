@@ -3226,13 +3226,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           switch (tag) {
             case 1: builder.a(ProtoAdapter.INT32.decode(reader)); break;
             default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
+              reader.readUnknownField(tag);
             }
           }
         }
-        reader.endMessage(token);
+        builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
         return builder.build();
       }
 
@@ -3750,13 +3748,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 1503: builder.ext_map_string_message.putAll(ext_map_string_message.decode(reader)); break;
           case 1504: builder.ext_map_string_enum.putAll(ext_map_string_enum.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

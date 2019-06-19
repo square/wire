@@ -7,7 +7,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
@@ -43,7 +42,7 @@ data class SomeResponse(
       override fun decode(reader: ProtoReader): SomeResponse {
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return SomeResponse(

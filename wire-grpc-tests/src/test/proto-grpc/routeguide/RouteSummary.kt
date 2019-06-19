@@ -7,7 +7,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import kotlin.AssertionError
 import kotlin.Deprecated
@@ -99,7 +98,7 @@ data class RouteSummary(
             2 -> feature_count = ProtoAdapter.INT32.decode(reader)
             3 -> distance = ProtoAdapter.INT32.decode(reader)
             4 -> elapsed_time = ProtoAdapter.INT32.decode(reader)
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return RouteSummary(

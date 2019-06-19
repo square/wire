@@ -257,7 +257,7 @@ abstract class ProtoAdapter<E>(
           // Ignore unknown tags in map entries.
         }
       }
-      reader.endMessage(token)
+      reader.endMessageAndGetUnknownFields(token) // Ignore return value
 
       check(key != null) { "Map entry with null key" }
       check(value != null) { "Map entry with null value" }

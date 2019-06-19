@@ -321,7 +321,7 @@ public class WireTest {
     assertThat(reader.peekFieldEncoding()).isEqualTo(FieldEncoding.VARINT);
     assertThat(FieldEncoding.VARINT.rawProtoAdapter().decode(reader)).isEqualTo(17L);
     assertThat(reader.nextTag()).isEqualTo(-1);
-    reader.endMessage(token);
+    reader.endMessageAndGetUnknownFields(token);
 
     // Serialize again, value is preserved
     byte[] newData = adapter.encode(result);

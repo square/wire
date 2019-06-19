@@ -30,6 +30,6 @@ class ProtoReaderTest {
     assertThat(reader.nextTag()).isEqualTo(90)
     assertThat(ProtoAdapter.INT32.decode(reader)).isEqualTo(701)
     assertThat(reader.nextTag()).isEqualTo(-1)
-    reader.endMessage(token)
+    reader.endMessageAndGetUnknownFields(token)
   }
 }

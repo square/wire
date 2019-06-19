@@ -372,13 +372,11 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
             case 1: builder.name_part(ProtoAdapter.STRING.decode(reader)); break;
             case 2: builder.is_extension(ProtoAdapter.BOOL.decode(reader)); break;
             default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
+              reader.readUnknownField(tag);
             }
           }
         }
-        reader.endMessage(token);
+        builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
         return builder.build();
       }
 
@@ -434,13 +432,11 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
           case 7: builder.string_value(ProtoAdapter.BYTES.decode(reader)); break;
           case 8: builder.aggregate_value(ProtoAdapter.STRING.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

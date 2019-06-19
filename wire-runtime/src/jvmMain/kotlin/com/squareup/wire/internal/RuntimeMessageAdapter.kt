@@ -135,7 +135,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
       }
 
     }
-    reader.endMessage(token)
+    reader.endMessageAndGetUnknownFields(token) // Ignore return value
 
     return builder.build()
   }

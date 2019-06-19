@@ -7,7 +7,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import kotlin.AssertionError
 import kotlin.Deprecated
@@ -66,7 +65,7 @@ data class MessageUsingMultipleEnums(
           when (tag) {
             1 -> a = MessageWithStatus.Status.ADAPTER.decode(reader)
             2 -> b = OtherMessageWithStatus.Status.ADAPTER.decode(reader)
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return MessageUsingMultipleEnums(

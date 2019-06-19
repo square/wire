@@ -165,13 +165,11 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
           case 2: builder.number(ProtoAdapter.INT32.decode(reader)); break;
           case 3: builder.options(EnumValueOptions.ADAPTER.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

@@ -8,7 +8,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import kotlin.AssertionError
@@ -56,7 +55,7 @@ data class OptionalEnumUser(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> optional_enum = OptionalEnum.ADAPTER.decode(reader)
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return OptionalEnumUser(

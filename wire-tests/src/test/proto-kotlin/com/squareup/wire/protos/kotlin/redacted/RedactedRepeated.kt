@@ -7,7 +7,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import kotlin.AssertionError
@@ -78,7 +77,7 @@ data class RedactedRepeated(
           when (tag) {
             1 -> a.add(ProtoAdapter.STRING.decode(reader))
             2 -> b.add(Redacted.ADAPTER.decode(reader))
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return RedactedRepeated(
