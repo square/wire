@@ -69,16 +69,6 @@ task japicmp(type: JapicmpTask, dependsOn: 'jar') {
       'com.squareup.wire.ProtoWriter#writeVarint64(long)',
       // non-abstract -> abstract
       'com.squareup.wire.ProtoAdapter#redact(java.lang.Object)',
-      // removed constructors
-      'com.squareup.wire.ProtoAdapter#ProtoAdapter(com.squareup.wire.FieldEncoding, java.lang.Class)',
-      'com.squareup.wire.ProtoAdapter$EnumConstantNotFoundException#ProtoAdapter$EnumConstantNotFoundException(int, java.lang.Class)',
-      // moved to ProtoAdapterJvm
-      'com.squareup.wire.ProtoAdapter#decode(java.io.InputStream)',
-      'com.squareup.wire.ProtoAdapter#encode(java.io.OutputStream, java.lang.Object)',
-      'com.squareup.wire.ProtoAdapter#get(com.squareup.wire.Message)',
-      'com.squareup.wire.ProtoAdapter#get(java.lang.Class)',
-      'com.squareup.wire.ProtoAdapter#get(java.lang.String)',
-      'com.squareup.wire.ProtoAdapter#newMessageAdapter(java.lang.Class)',
   ]
 }
 check.dependsOn japicmp

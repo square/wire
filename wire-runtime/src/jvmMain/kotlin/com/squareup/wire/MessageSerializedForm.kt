@@ -27,7 +27,7 @@ internal class MessageSerializedForm<M : Message<M, B>, B : Message.Builder<M, B
 
   @Throws(ObjectStreamException::class)
   fun readResolve(): Any {
-    val adapter = ProtoAdapterJvm.get(messageClass)
+    val adapter = ProtoAdapter.get(messageClass)
     try {
       // Extensions will be decoded as unknown values.
       return adapter.decode(bytes)
