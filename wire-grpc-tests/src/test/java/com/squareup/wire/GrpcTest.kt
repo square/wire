@@ -18,14 +18,13 @@ package com.squareup.wire
 import com.squareup.wire.MockRouteGuideService.Action.Delay
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
-import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveMessage
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import com.squareup.wire.MockRouteGuideService.Action.SendMessage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
@@ -34,7 +33,6 @@ import okhttp3.Protocol
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
@@ -49,6 +47,8 @@ import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
+@ExperimentalCoroutinesApi
+@ObsoleteCoroutinesApi
 class GrpcTest {
   @JvmField @Rule val mockService = MockRouteGuideService()
   @JvmField @Rule val timeout = Timeout(8, TimeUnit.SECONDS)
@@ -172,6 +172,8 @@ class GrpcTest {
         ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
     mockService.enqueue(
         SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("lacoste").build()))
+    // We give time to the sender to read the response.
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
@@ -202,7 +204,7 @@ class GrpcTest {
         routeGuideService.GetFeature(Point(latitude = 5, longitude = 6))
         fail()
       }
-      // TODO(benoit) test without delay
+      // We wait for the request to complete and cancel before the response is sent.
       delay(200)
       deferred.cancel()
       mockService.awaitSuccess()
@@ -213,12 +215,10 @@ class GrpcTest {
   @Test
   fun cancelStreamingRequest() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
-    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
-    mockService.enqueue(ReceiveError)
 
     val (_, responseDeferred) = routeGuideService.RecordRoute()
     runBlocking {
-      // TODO(benoit) test without delay
+      // We wait for the request to proceed.
       delay(200)
       responseDeferred.cancel()
       mockService.awaitSuccess()
@@ -254,19 +254,99 @@ class GrpcTest {
     }
   }
 
-  // TODO(benoit) test before/after request completes, before after response completes?
   @Test
-  fun cancelDuplex() {
+  fun cancelDuplexBeforeRequestCompletes() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
-    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
 
     val (requestChannel, responseChannel) = routeGuideService.RouteChat()
     runBlocking {
-      delay(200)
+      // We wait for mockService to process our actions.
+      delay(500)
       responseChannel.cancel()
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
       mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelDuplexAfterRequestCompletes() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
+    mockService.enqueue(ReceiveComplete)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    runBlocking {
+      requestChannel.send(RouteNote(message = "marco"))
+      requestChannel.close()
+      // We wait for mockService to process our actions.
+      delay(500)
+
+      responseChannel.cancel()
+      assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
+      assertThat(requestChannel.isClosedForSend).isTrue()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelDuplexBeforeResponseCompletes() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("polo").build()))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
+    mockService.enqueue(ReceiveComplete)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    runBlocking {
+      requestChannel.send(RouteNote(message = "marco"))
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
+      requestChannel.send(RouteNote(message = "rené"))
+      requestChannel.close()
+
+      // We wait for mockService to process our actions.
+      delay(500)
+
+      responseChannel.cancel()
+      assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
+      assertThat(requestChannel.isClosedForSend).isTrue()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelDuplexAfterResponseCompletes() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("polo").build()))
+    mockService.enqueue(
+        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
+    mockService.enqueue(
+        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("lacoste").build()))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(SendCompleted)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    runBlocking {
+      requestChannel.send(RouteNote(message = "marco"))
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
+      requestChannel.send(RouteNote(message = "rené"))
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "lacoste"))
+      requestChannel.close()
+      assertThat(responseChannel.receiveOrNull()).isNull()
+
+      responseChannel.cancel()
+      assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
+      assertThat(requestChannel.isClosedForSend).isTrue()
       assertThat(callReference.get()?.isCanceled).isTrue()
     }
   }
