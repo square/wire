@@ -287,8 +287,8 @@ class GrpcClient private constructor(
 
     internal fun <S, R> Method.toGrpc(): GrpcMethod<S, R> {
       val wireRpc = getAnnotation(WireRpc::class.java)
-      val requestAdapter = ProtoAdapterJvm.get(wireRpc.requestAdapter) as ProtoAdapter<S>
-      val responseAdapter = ProtoAdapterJvm.get(wireRpc.responseAdapter) as ProtoAdapter<R>
+      val requestAdapter = ProtoAdapter.get(wireRpc.requestAdapter) as ProtoAdapter<S>
+      val responseAdapter = ProtoAdapter.get(wireRpc.responseAdapter) as ProtoAdapter<R>
 
       return when {
         genericParameterTypes.size == 2 -> {

@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import com.squareup.wire.AndroidMessage;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
-import com.squareup.wire.ProtoAdapterJvm;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -19,7 +18,7 @@ import java.util.List;
 import okio.ByteString;
 
 public final class Person extends AndroidMessage<Person, Person.Builder> {
-  public static final ProtoAdapter<Person> ADAPTER = ProtoAdapterJvm.newMessageAdapter(Person.class);
+  public static final ProtoAdapter<Person> ADAPTER = ProtoAdapter.newMessageAdapter(Person.class);
 
   public static final Parcelable.Creator<Person> CREATOR = AndroidMessage.newCreator(ADAPTER);
 
@@ -188,7 +187,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
      */
     WORK(2);
 
-    public static final ProtoAdapter<PhoneType> ADAPTER = ProtoAdapterJvm.newEnumAdapter(PhoneType.class);
+    public static final ProtoAdapter<PhoneType> ADAPTER = ProtoAdapter.newEnumAdapter(PhoneType.class);
 
     private final int value;
 
@@ -215,7 +214,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   }
 
   public static final class PhoneNumber extends AndroidMessage<PhoneNumber, PhoneNumber.Builder> {
-    public static final ProtoAdapter<PhoneNumber> ADAPTER = ProtoAdapterJvm.newMessageAdapter(PhoneNumber.class);
+    public static final ProtoAdapter<PhoneNumber> ADAPTER = ProtoAdapter.newMessageAdapter(PhoneNumber.class);
 
     public static final Parcelable.Creator<PhoneNumber> CREATOR = AndroidMessage.newCreator(ADAPTER);
 

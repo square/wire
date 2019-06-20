@@ -39,7 +39,6 @@ import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoAdapter.EnumConstantNotFoundException;
-import com.squareup.wire.ProtoAdapterJvm;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireEnum;
@@ -487,7 +486,7 @@ public final class JavaGenerator {
     if (!emitCompact) {
       adapterBuilder.initializer("new $T()", adapterJavaType);
     } else {
-      adapterBuilder.initializer("$T.newEnumAdapter($T.class)", ProtoAdapterJvm.class, javaType);
+      adapterBuilder.initializer("$T.newEnumAdapter($T.class)", ProtoAdapter.class, javaType);
     }
     builder.addField(adapterBuilder.build());
 
@@ -708,7 +707,7 @@ public final class JavaGenerator {
     FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), adapterName)
         .addModifiers(PUBLIC, STATIC, FINAL);
     if (emitCompact) {
-      result.initializer("$T.newMessageAdapter($T.class)", ProtoAdapterJvm.class, javaType);
+      result.initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType);
     } else {
       result.initializer("new $T()", adapterJavaType);
     }
