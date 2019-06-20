@@ -150,7 +150,8 @@ expect abstract class ProtoAdapter<E>(
   }
 }
 
-internal fun <E> ProtoAdapter<E>.commonEncodedSizeWithTag(tag: Int, value: E?): Int {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonEncodedSizeWithTag(tag: Int, value: E?): Int {
   if (value == null) return 0
   var size = encodedSize(value)
   if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
@@ -159,7 +160,12 @@ internal fun <E> ProtoAdapter<E>.commonEncodedSizeWithTag(tag: Int, value: E?): 
   return size + ProtoWriter.tagSize(tag)
 }
 
-internal fun <E> ProtoAdapter<E>.commonEncodeWithTag(writer: ProtoWriter, tag: Int, value: E?) {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonEncodeWithTag(
+  writer: ProtoWriter,
+  tag: Int,
+  value: E?
+) {
   if (value == null) return
   writer.writeTag(tag, fieldEncoding)
   if (fieldEncoding == FieldEncoding.LENGTH_DELIMITED) {
@@ -168,40 +174,53 @@ internal fun <E> ProtoAdapter<E>.commonEncodeWithTag(writer: ProtoWriter, tag: I
   encode(writer, value)
 }
 
-internal fun <E> ProtoAdapter<E>.commonEncode(sink: BufferedSink, value: E) {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonEncode(sink: BufferedSink, value: E) {
   encode(ProtoWriter(sink), value)
 }
 
-internal fun <E> ProtoAdapter<E>.commonEncode(value: E): ByteArray {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonEncode(value: E): ByteArray {
   val buffer = Buffer()
   encode(buffer, value)
   return buffer.readByteArray()
 }
 
-internal fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteArray): E = decode(Buffer().write(bytes))
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteArray): E {
+  return decode(Buffer().write(bytes))
+}
 
-internal fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteString): E = decode(Buffer().write(bytes))
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonDecode(bytes: ByteString): E {
+  return decode(Buffer().write(bytes))
+}
 
-internal fun <E> ProtoAdapter<E>.commonDecode(source: BufferedSource): E {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonDecode(source: BufferedSource): E {
   return decode(ProtoReader(source))
 }
 
-internal fun <E> commonToString(value: E): String = value.toString()
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> commonToString(value: E): String = value.toString()
 
-internal fun <E> ProtoAdapter<E>.commonWithLabel(label: WireField.Label): ProtoAdapter<*> {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonWithLabel(label: WireField.Label): ProtoAdapter<*> {
   if (label.isRepeated) {
     return if (label.isPacked) asPacked() else asRepeated()
   }
   return this
 }
 
-internal fun <E> ProtoAdapter<E>.commonAsPacked(): ProtoAdapter<List<E>> {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonAsPacked(): ProtoAdapter<List<E>> {
   return packedAdapter ?: commonCreatePacked().also {
     packedAdapter = it
   }
 }
 
-internal fun <E> ProtoAdapter<E>.commonCreatePacked(): ProtoAdapter<List<E>> {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonCreatePacked(): ProtoAdapter<List<E>> {
   require(fieldEncoding != FieldEncoding.LENGTH_DELIMITED) {
     "Unable to pack a length-delimited type."
   }
@@ -240,13 +259,15 @@ internal fun <E> ProtoAdapter<E>.commonCreatePacked(): ProtoAdapter<List<E>> {
   }
 }
 
-internal fun <E> ProtoAdapter<E>.commonAsRepeated(): ProtoAdapter<List<E>> {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonAsRepeated(): ProtoAdapter<List<E>> {
   return repeatedAdapter ?: commonCreateRepeated().also {
     repeatedAdapter = it
   }
 }
 
-internal fun <E> ProtoAdapter<E>.commonCreateRepeated(): ProtoAdapter<List<E>> {
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E> ProtoAdapter<E>.commonCreateRepeated(): ProtoAdapter<List<E>> {
   val adapter = this
   return object : ProtoAdapter<List<E>>(fieldEncoding, List::class) {
     override fun encodedSize(value: List<E>): Int {
@@ -281,7 +302,7 @@ internal fun <E> ProtoAdapter<E>.commonCreateRepeated(): ProtoAdapter<List<E>> {
   }
 }
 
-private class MapProtoAdapter<K, V> internal constructor(
+internal class MapProtoAdapter<K, V> internal constructor(
   keyAdapter: ProtoAdapter<K>,
   valueAdapter: ProtoAdapter<V>
 ) : ProtoAdapter<Map<K, V>>(FieldEncoding.LENGTH_DELIMITED, Map::class) {
@@ -366,7 +387,8 @@ private const val FIXED_BOOL_SIZE = 1
 private const val FIXED_32_SIZE = 4
 private const val FIXED_64_SIZE = 8
 
-internal fun <K, V> commonNewMapAdapter(
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <K, V> commonNewMapAdapter(
   keyAdapter: ProtoAdapter<K>,
   valueAdapter: ProtoAdapter<V>
 ): ProtoAdapter<Map<K, V>> {
