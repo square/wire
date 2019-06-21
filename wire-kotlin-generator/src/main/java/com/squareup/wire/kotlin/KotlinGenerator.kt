@@ -536,77 +536,45 @@ class KotlinGenerator private constructor(
     type.fieldsAndOneOfFields().filter { it.default != null }.forEach { field ->
       val fieldName = "DEFAULT_" + nameAllocator[field].toUpperCase(Locale.US)
       val fieldType = field.getClass().copy(nullable = false)
-      val fieldValue = fieldInitializer(type, field.type(), nameAllocator, field.default)
-      companionBuilder.addProperty(PropertySpec.builder(fieldName, fieldType)
-          .apply {
-            if (field.type().isScalar && field.type() != ProtoType.BYTES) {
-              addModifiers(KModifier.CONST)
-            } else {
-              jvmField()
-            }
-          }
-          .initializer(fieldValue)
-          .build())
+      val fieldValue = defaultFieldInitializer(field.type(), field.default)
+      companionBuilder.addProperty(
+          PropertySpec.builder(fieldName, fieldType)
+              .apply {
+                if (field.type().isScalar && field.type() != ProtoType.BYTES) {
+                  addModifiers(KModifier.CONST)
+                } else {
+                  jvmField()
+                }
+              }
+              .initializer(fieldValue)
+              .build())
     }
   }
 
-  private fun fieldInitializer(
-    messageType: MessageType,
-    protoType: ProtoType,
-    nameAllocator: NameAllocator,
-    value: Any?
-  ): CodeBlock {
+  private fun defaultFieldInitializer(protoType: ProtoType, defaultValue: Any): CodeBlock {
     val typeName = protoType.typeName
     return when {
-      value is List<*> -> buildCodeBlock {
-        add("listOf(")
-        var first = true
-        for (element in value) {
-          if (!first) add(",")
-          first = false
-          add("\n⇥%L⇤", fieldInitializer(messageType, protoType, nameAllocator, element))
-        }
-        add(")")
-      }
-      value is Map<*, *> -> buildCodeBlock {
-        add("copy(")
-        var first = true
-        for ((entryKey, entryValue) in value) {
-          if (!first) add(",")
-          first = false
-          val protoMember = entryKey as ProtoMember
-          val field = schema.getField(protoMember)
-          val entryInitializer =
-              fieldInitializer(messageType, field.type(), nameAllocator, entryValue)
-          add("\n⇥%L = %L⇤", nameAllocator[field], entryInitializer)
-        }
-        add(")")
-      }
-      typeName == BOOLEAN -> CodeBlock.of("%L", value ?: false)
-      typeName == INT -> value.toIntFieldInitializer()
-      typeName == LONG -> value.toLongFieldInitializer()
-      typeName == FLOAT -> CodeBlock.of("%Lf", value?.toString() ?: 0f)
-      typeName == DOUBLE -> CodeBlock.of("%L", value?.toString() ?: 0)
-      typeName == STRING -> CodeBlock.of("%S", value ?: "")
-      typeName == ByteString::class.asTypeName() -> if (value == null) {
-        CodeBlock.of("%M", ByteString::class.asClassName().member("EMPTY"))
-      } else {
-        CodeBlock.of("%S.%M()!!", value.toString().encode(charset = Charsets.ISO_8859_1).base64(),
+      typeName == BOOLEAN -> CodeBlock.of("%L", defaultValue)
+      typeName == INT -> defaultValue.toIntFieldInitializer()
+      typeName == LONG -> defaultValue.toLongFieldInitializer()
+      typeName == FLOAT -> CodeBlock.of("%Lf", defaultValue.toString())
+      typeName == DOUBLE -> CodeBlock.of("%L", defaultValue.toString())
+      typeName == STRING -> CodeBlock.of("%S", defaultValue)
+      typeName == ByteString::class.asTypeName() -> CodeBlock.of("%S.%M()!!",
+            defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
             ByteString.Companion::class.asClassName().member("decodeBase64"))
-      }
-      protoType.isEnum && value != null -> CodeBlock.of("%T.%L", typeName, value)
+      protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue)
       else -> throw IllegalStateException("$protoType is not an allowed scalar type")
     }
   }
 
-  private fun Any?.toIntFieldInitializer(): CodeBlock = when (val int = valueToInt()) {
+  private fun Any.toIntFieldInitializer(): CodeBlock = when (val int = valueToInt()) {
     Int.MIN_VALUE -> CodeBlock.of("%T.MIN_VALUE", INT)
     Int.MAX_VALUE -> CodeBlock.of("%T.MAX_VALUE", INT)
     else -> CodeBlock.of("%L", int)
   }
 
-  private fun Any?.valueToInt(): Int {
-    if (this == null) return 0
+  private fun Any.valueToInt(): Int {
     val string = toString()
     return when {
       string.startsWith("0x") || string.startsWith("0X") ->
@@ -617,14 +585,13 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun Any?.toLongFieldInitializer(): CodeBlock = when (val long = valueToLong()) {
+  private fun Any.toLongFieldInitializer(): CodeBlock = when (val long = valueToLong()) {
     Long.MIN_VALUE -> CodeBlock.of("%T.MIN_VALUE", LONG)
     Long.MAX_VALUE -> CodeBlock.of("%T.MAX_VALUE", LONG)
     else -> CodeBlock.of("%LL", long)
   }
 
-  private fun Any?.valueToLong(): Long {
-    if (this == null) return 0L
+  private fun Any.valueToLong(): Long {
     val string = toString()
     return when {
       string.startsWith("0x") || string.startsWith("0X") ->
