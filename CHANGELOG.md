@@ -1,7 +1,7 @@
 Change Log
 ==========
 	
-Version 3.0.0-alpha02 *(2019-05-16)*
+Version 3.0.0-alpha02 *(2019-06-21)*
 ------------------------------------
 
  * New: Experimental multiplatform runtime.
@@ -22,8 +22,17 @@ Version 3.0.0-alpha02 *(2019-05-16)*
    api "com.squareup.wire:wire-runtime-jvm:3.0.0-alpha02"
    ```
    
+ * New: Generate RPCs as Single Abstract Methods.
+ * New: Add "singleMethod" Gradle plugin configuration for services.
+ * New: Add "blockingServices" Gradle plugin configuration for services.
+ * New: Support packageless services code generation.
+ * New: Remove sealed classes-based oneof implementation.
+ * New: Don't generate a Builder for non-interop Kotlin messages.
  * Fix: Kotlin Generator correctly generates code for Protobuf services.
- * Fix: Improved formatting of generated Kotlin code
+ * Fix: Improved formatting of generated Kotlin code.
+ * Fix: Generate correct adapter names for WireField annotation.
+ * Fix: Generate labels for WireField annotation.
+ * Fix: Wrap oneof error message properly.
 	
 Version 3.0.0-alpha01 *(2019-03-14)*
 ------------------------------------
