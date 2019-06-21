@@ -22,7 +22,7 @@ buildscript {
       'animalSnifferGradle': '1.5.0',
       'maven': '3.5.0',
       'mavenAnnotations': '3.5',
-      'mavenPluginBuilder': '1.2.1',
+      'mavenPluginBuilder': '1.2.4',
       'mavenPublish': '0.8.0',
       'releasedWire': '3.0.0-alpha01'
   ]
