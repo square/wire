@@ -30,11 +30,13 @@ import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.LONG
 import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.MemberName.Companion.member
 import com.squareup.kotlinpoet.NOTHING
 import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
@@ -68,6 +70,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
+import okio.ByteString.Companion.encode
+import java.math.BigInteger
 import java.util.Locale
 
 class KotlinGenerator private constructor(
@@ -209,9 +213,10 @@ class KotlinGenerator private constructor(
     val adapterName = nameAllocator["ADAPTER"]
     val unknownFields = nameAllocator["unknownFields"]
     val superclass = if (emitAndroid) ANDROID_MESSAGE else MESSAGE
-    val companionObjBuilder = TypeSpec.companionObjectBuilder()
+    val companionBuilder = TypeSpec.companionObjectBuilder()
 
-    addAdapter(type, companionObjBuilder)
+    addDefaultFields(type, companionBuilder, nameAllocator)
+    addAdapter(type, companionBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
         .apply { if (type.documentation().isNotBlank()) addKdoc("%L\n", type.documentation()) }
@@ -231,14 +236,14 @@ class KotlinGenerator private constructor(
         }
 
     if (emitAndroid) {
-      addAndroidCreator(type, companionObjBuilder)
+      addAndroidCreator(type, companionBuilder)
     }
 
     if (type.oneOfs().isNotEmpty()) {
       classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
     }
 
-    classBuilder.addType(companionObjBuilder.build())
+    classBuilder.addType(companionBuilder.build())
 
     addMessageConstructor(type, classBuilder)
 
@@ -351,7 +356,7 @@ class KotlinGenerator private constructor(
 
       val propertyBuilder = PropertySpec.builder(fieldName, field.declarationClass)
           .mutable(true)
-          .initializer(field.getDefaultValue())
+          .initializer(field.defaultValue)
 
       if (javaInterOp) {
         propertyBuilder.addAnnotation(JvmField::class)
@@ -422,11 +427,10 @@ class KotlinGenerator private constructor(
       val fieldClass = field.typeName
       val fieldName = nameAllocator[field]
       val fieldType = field.type()
-      val defaultValue = field.getDefaultValue()
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
       if (!field.isRequired && !fieldType.isMap) {
-        parameterSpec.defaultValue(defaultValue)
+        parameterSpec.defaultValue(field.defaultValue)
       }
 
       if (field.isDeprecated) {
@@ -522,6 +526,113 @@ class KotlinGenerator private constructor(
           endControlFlow()
         })
         .build()
+  }
+
+  private fun addDefaultFields(
+    type: MessageType,
+    companionBuilder: TypeSpec.Builder,
+    nameAllocator: NameAllocator
+  ) {
+    type.fieldsAndOneOfFields().filter { it.default != null }.forEach { field ->
+      val fieldName = "DEFAULT_" + nameAllocator[field].toUpperCase(Locale.US)
+      val fieldType = field.getClass().copy(nullable = false)
+      val fieldValue = fieldInitializer(type, field.type(), nameAllocator, field.default)
+      companionBuilder.addProperty(PropertySpec.builder(fieldName, fieldType)
+          .apply {
+            if (field.type().isScalar && field.type() != ProtoType.BYTES) {
+              addModifiers(KModifier.CONST)
+            } else {
+              jvmField()
+            }
+          }
+          .initializer(fieldValue)
+          .build())
+    }
+  }
+
+  private fun fieldInitializer(
+    messageType: MessageType,
+    protoType: ProtoType,
+    nameAllocator: NameAllocator,
+    value: Any?
+  ): CodeBlock {
+    val typeName = protoType.typeName
+    return when {
+      value is List<*> -> buildCodeBlock {
+        add("listOf(")
+        var first = true
+        for (element in value) {
+          if (!first) add(",")
+          first = false
+          add("\n⇥%L⇤", fieldInitializer(messageType, protoType, nameAllocator, element))
+        }
+        add(")")
+      }
+      value is Map<*, *> -> buildCodeBlock {
+        add("copy(")
+        var first = true
+        for ((entryKey, entryValue) in value) {
+          if (!first) add(",")
+          first = false
+          val protoMember = entryKey as ProtoMember
+          val field = schema.getField(protoMember)
+          val entryInitializer =
+              fieldInitializer(messageType, field.type(), nameAllocator, entryValue)
+          add("\n⇥%L = %L⇤", nameAllocator[field], entryInitializer)
+        }
+        add(")")
+      }
+      typeName == BOOLEAN -> CodeBlock.of("%L", value ?: false)
+      typeName == INT -> value.toIntFieldInitializer()
+      typeName == LONG -> value.toLongFieldInitializer()
+      typeName == FLOAT -> CodeBlock.of("%Lf", value?.toString() ?: 0f)
+      typeName == DOUBLE -> CodeBlock.of("%L", value?.toString() ?: 0)
+      typeName == STRING -> CodeBlock.of("%S", value ?: "")
+      typeName == ByteString::class.asTypeName() -> if (value == null) {
+        CodeBlock.of("%M", ByteString::class.asClassName().member("EMPTY"))
+      } else {
+        CodeBlock.of("%S.%M()!!", value.toString().encode(charset = Charsets.ISO_8859_1).base64(),
+            ByteString.Companion::class.asClassName().member("decodeBase64"))
+      }
+      protoType.isEnum && value != null -> CodeBlock.of("%T.%L", typeName, value)
+      else -> throw IllegalStateException("$protoType is not an allowed scalar type")
+    }
+  }
+
+  private fun Any?.toIntFieldInitializer(): CodeBlock = when (val int = valueToInt()) {
+    Int.MIN_VALUE -> CodeBlock.of("%T.MIN_VALUE", INT)
+    Int.MAX_VALUE -> CodeBlock.of("%T.MAX_VALUE", INT)
+    else -> CodeBlock.of("%L", int)
+  }
+
+  private fun Any?.valueToInt(): Int {
+    if (this == null) return 0
+    val string = toString()
+    return when {
+      string.startsWith("0x") || string.startsWith("0X") ->
+        string.substring("0x".length).toInt(radix = 16) // Hexadecimal.
+      string.startsWith("0") && string != "0" ->
+        throw IllegalStateException("Octal literal unsupported $this")
+      else -> BigInteger(string).toInt()
+    }
+  }
+
+  private fun Any?.toLongFieldInitializer(): CodeBlock = when (val long = valueToLong()) {
+    Long.MIN_VALUE -> CodeBlock.of("%T.MIN_VALUE", LONG)
+    Long.MAX_VALUE -> CodeBlock.of("%T.MAX_VALUE", LONG)
+    else -> CodeBlock.of("%LL", long)
+  }
+
+  private fun Any?.valueToLong(): Long {
+    if (this == null) return 0L
+    val string = toString()
+    return when {
+      string.startsWith("0x") || string.startsWith("0X") ->
+        string.substring("0x".length).toLong(radix = 16) // Hexadecimal.
+      string.startsWith("0") && string != "0" ->
+        throw IllegalStateException("Octal literal unsupported $this")
+      else -> BigInteger(string).toLong()
+    }
   }
 
   /**
@@ -930,20 +1041,16 @@ class KotlinGenerator private constructor(
     return classBuilder.build()
   }
 
-  private val Field.isEnum: Boolean
-    get() = schema.getType(type()) is EnumType
-
   private fun Field.getDeclaration(allocatedName: String) = when {
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type().typeName)
     isMap -> CodeBlock.of("val $allocatedName = mutableMapOf<%T, %T>()",
         keyType.typeName, valueType.typeName)
-    else -> CodeBlock.of("var $allocatedName: %T = %L", declarationClass, getDefaultValue())
+    else -> CodeBlock.of("var $allocatedName: %T = %L", declarationClass, defaultValue)
   }
 
   private val Field.declarationClass: TypeName
     get() = when {
-      isRepeated || default != null -> getClass()
-      isMap -> getClass()
+      isRepeated || isMap -> getClass()
       else -> getClass().copy(nullable = true)
     }
 
@@ -955,7 +1062,7 @@ class KotlinGenerator private constructor(
 
   private fun Field.getClass(baseClass: TypeName = type().asTypeName()) = when {
     isRepeated -> List::class.asClassName().parameterizedBy(baseClass)
-    isOptional && default == null -> baseClass.copy(nullable = true)
+    isOptional -> baseClass.copy(nullable = true)
     else -> baseClass.copy(nullable = false)
   }
 
@@ -963,24 +1070,16 @@ class KotlinGenerator private constructor(
     get() = when {
       isRepeated -> List::class.asClassName().parameterizedBy(type().typeName)
       isMap -> Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
-      !isRequired || default != null -> type().typeName.copy(nullable = true)
+      !isRequired -> type().typeName.copy(nullable = true)
       else -> type().typeName
     }
 
-  private fun Field.getDefaultValue(): CodeBlock {
-    return when {
+  private val Field.defaultValue: CodeBlock
+    get() =  when {
       isRepeated -> CodeBlock.of("emptyList()")
       isMap -> CodeBlock.of("emptyMap()")
-      default != null -> {
-        if (isEnum) {
-          CodeBlock.of("%T.%L", type().typeName, default)
-        } else {
-          CodeBlock.of("%L", default)
-        }
-      }
       else -> CodeBlock.of("null")
     }
-  }
 
   companion object {
     private val BUILT_IN_TYPES = mapOf(
