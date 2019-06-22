@@ -377,6 +377,24 @@ class WireCompilerTest {
   }
 
   @Test
+  fun testAllTypesKotlin() {
+    val sources = arrayOf("all_types.proto")
+    compileToKotlin(sources)
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/alltypes/AllTypes.kt")
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun testAllTypesJavaInteropKotlin() {
+    val sources = arrayOf("all_types.proto")
+    compileToKotlin(sources, "--java_interop")
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/alltypes/AllTypes.kt")
+    assertKotlinOutputs(outputs, ".java.interop")
+  }
+
+  @Test
   fun testPersonKotlin() {
     val sources = arrayOf("person.proto")
     compileToKotlin(sources)

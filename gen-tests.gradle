@@ -181,6 +181,7 @@ task generateKotlinTests(type: JavaExec) {
   args = [
       '--proto_path=wire-tests/src/test/proto/kotlin',
       '--kotlin_out=wire-tests/src/test/proto-kotlin',
+      'all_types.proto',    
       'person.proto',
       'optional_enum.proto',
       'map.proto',
@@ -229,6 +230,7 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
           '--proto_path=wire-tests/src/test/proto/kotlin',
           '--kotlin_out=wire-tests/src/test/proto-kotlin.java.interop',
           '--java_interop',
+          'all_types.proto',
           'person.proto',
           'deprecated.proto',
           'one_of.proto',

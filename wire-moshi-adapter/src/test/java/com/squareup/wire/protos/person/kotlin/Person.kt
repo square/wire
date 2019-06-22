@@ -173,7 +173,7 @@ data class Person(
       tag = 2,
       adapter = "com.squareup.wire.protos.person.kotlin.Person${'$'}PhoneType#ADAPTER"
     )
-    val type: PhoneType? = PhoneType.HOME,
+    val type: PhoneType? = null,
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<PhoneNumber, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -185,6 +185,9 @@ data class Person(
     }
 
     companion object {
+      @JvmField
+      val DEFAULT_TYPE: PhoneType = PhoneType.HOME
+
       @JvmField
       val ADAPTER: ProtoAdapter<PhoneNumber> = object : ProtoAdapter<PhoneNumber>(
         FieldEncoding.LENGTH_DELIMITED, 
@@ -203,7 +206,7 @@ data class Person(
 
         override fun decode(reader: ProtoReader): PhoneNumber {
           var number: String? = null
-          var type: PhoneType = PhoneType.HOME
+          var type: PhoneType? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
               1 -> number = ProtoAdapter.STRING.decode(reader)
