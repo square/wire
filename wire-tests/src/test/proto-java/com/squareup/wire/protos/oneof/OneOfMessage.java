@@ -190,13 +190,11 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
           case 3: builder.bar(ProtoAdapter.STRING.decode(reader)); break;
           case 4: builder.baz(ProtoAdapter.STRING.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

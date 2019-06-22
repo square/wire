@@ -340,13 +340,11 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
             case 1: builder.start(ProtoAdapter.INT32.decode(reader)); break;
             case 2: builder.end(ProtoAdapter.INT32.decode(reader)); break;
             default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
+              reader.readUnknownField(tag);
             }
           }
         }
-        reader.endMessage(token);
+        builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
         return builder.build();
       }
 
@@ -396,13 +394,11 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
           case 4: builder.reserved_range.add(EnumReservedRange.ADAPTER.decode(reader)); break;
           case 5: builder.reserved_name.add(ProtoAdapter.STRING.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

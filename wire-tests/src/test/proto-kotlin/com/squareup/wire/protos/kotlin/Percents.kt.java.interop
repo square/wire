@@ -7,7 +7,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import kotlin.Int
 import kotlin.String
@@ -71,7 +70,7 @@ data class Percents(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> text = ProtoAdapter.STRING.decode(reader)
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return Percents(

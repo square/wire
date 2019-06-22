@@ -124,13 +124,11 @@ public final class OneofOptions extends Message<OneofOptions, OneofOptions.Build
         switch (tag) {
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

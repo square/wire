@@ -222,13 +222,11 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
           case 71000: builder.enum_option(ProtoAdapter.BOOL.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

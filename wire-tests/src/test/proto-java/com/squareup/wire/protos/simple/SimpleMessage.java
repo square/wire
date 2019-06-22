@@ -506,13 +506,11 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
           switch (tag) {
             case 1: builder.bb(ProtoAdapter.INT32.decode(reader)); break;
             default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
+              reader.readUnknownField(tag);
             }
           }
         }
-        reader.endMessage(token);
+        builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
         return builder.build();
       }
 
@@ -658,13 +656,11 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
           case 11: builder.other(ProtoAdapter.STRING.decode(reader)); break;
           case 12: builder.o(ProtoAdapter.STRING.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

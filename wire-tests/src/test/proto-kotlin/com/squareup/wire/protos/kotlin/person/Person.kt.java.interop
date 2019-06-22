@@ -8,7 +8,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
@@ -163,7 +162,7 @@ data class Person(
             2 -> id = ProtoAdapter.INT32.decode(reader)
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return Person(
@@ -299,7 +298,7 @@ data class Person(
             when (tag) {
               1 -> number = ProtoAdapter.STRING.decode(reader)
               2 -> type = PhoneType.ADAPTER.decode(reader)
-              else -> TagHandler.UNKNOWN_TAG
+              else -> reader.readUnknownField(tag)
             }
           }
           return PhoneNumber(

@@ -7,7 +7,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
 import kotlin.AssertionError
@@ -78,7 +77,7 @@ data class RedactedOneOf(
           when (tag) {
             1 -> b = ProtoAdapter.INT32.decode(reader)
             2 -> c = ProtoAdapter.STRING.decode(reader)
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return RedactedOneOf(

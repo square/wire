@@ -549,13 +549,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
             case 4: builder.trailing_comments(ProtoAdapter.STRING.decode(reader)); break;
             case 6: builder.leading_detached_comments.add(ProtoAdapter.STRING.decode(reader)); break;
             default: {
-              FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-              Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-              builder.addUnknownField(tag, fieldEncoding, value);
+              reader.readUnknownField(tag);
             }
           }
         }
-        reader.endMessage(token);
+        builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
         return builder.build();
       }
 
@@ -593,13 +591,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
         switch (tag) {
           case 1: builder.location.add(Location.ADAPTER.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

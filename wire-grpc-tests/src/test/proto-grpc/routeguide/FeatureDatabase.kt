@@ -7,7 +7,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import kotlin.AssertionError
@@ -59,7 +58,7 @@ data class FeatureDatabase(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> feature.add(Feature.ADAPTER.decode(reader))
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return FeatureDatabase(

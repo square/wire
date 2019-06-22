@@ -680,10 +680,7 @@ class KotlinGenerator private constructor(
 
         addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
       }
-
-      val tagHandlerClass = ClassName("com.squareup.wire", "TagHandler")
-
-      addStatement("else -> %T.%L", tagHandlerClass, "UNKNOWN_TAG")
+      addStatement("else -> reader.readUnknownField(tag)")
       add("⇤}\n⇤}\n") // close the block
     }
 

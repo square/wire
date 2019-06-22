@@ -139,13 +139,11 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
           case 1: builder.outer_number_before(ProtoAdapter.INT32.decode(reader)); break;
           case 2: builder.embedded_message(EmbeddedMessage.ADAPTER.decode(reader)); break;
           default: {
-            FieldEncoding fieldEncoding = reader.peekFieldEncoding();
-            Object value = fieldEncoding.rawProtoAdapter().decode(reader);
-            builder.addUnknownField(tag, fieldEncoding, value);
+            reader.readUnknownField(tag);
           }
         }
       }
-      reader.endMessage(token);
+      builder.addUnknownFields(reader.endMessageAndGetUnknownFields(token));
       return builder.build();
     }
 

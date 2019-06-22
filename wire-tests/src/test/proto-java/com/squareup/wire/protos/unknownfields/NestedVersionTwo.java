@@ -20,8 +20,8 @@ import java.util.List;
 import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
-public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
-  public static final ProtoAdapter<VersionTwo> ADAPTER = new ProtoAdapter_VersionTwo();
+public final class NestedVersionTwo extends Message<NestedVersionTwo, NestedVersionTwo.Builder> {
+  public static final ProtoAdapter<NestedVersionTwo> ADAPTER = new ProtoAdapter_NestedVersionTwo();
 
   private static final long serialVersionUID = 0L;
 
@@ -72,19 +72,13 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
   )
   public final List<String> v2_rs;
 
-  @WireField(
-      tag = 7,
-      adapter = "com.squareup.wire.protos.unknownfields.NestedVersionTwo#ADAPTER"
-  )
-  public final NestedVersionTwo obj;
-
-  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64,
-      List<String> v2_rs, NestedVersionTwo obj) {
-    this(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, obj, ByteString.EMPTY);
+  public NestedVersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64,
+      List<String> v2_rs) {
+    this(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, ByteString.EMPTY);
   }
 
-  public VersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64,
-      List<String> v2_rs, NestedVersionTwo obj, ByteString unknownFields) {
+  public NestedVersionTwo(Integer i, Integer v2_i, String v2_s, Integer v2_f32, Long v2_f64,
+      List<String> v2_rs, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.i = i;
     this.v2_i = v2_i;
@@ -92,7 +86,6 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     this.v2_f32 = v2_f32;
     this.v2_f64 = v2_f64;
     this.v2_rs = Internal.immutableCopyOf("v2_rs", v2_rs);
-    this.obj = obj;
   }
 
   @Override
@@ -104,7 +97,6 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     builder.v2_f32 = v2_f32;
     builder.v2_f64 = v2_f64;
     builder.v2_rs = Internal.copyOf("v2_rs", v2_rs);
-    builder.obj = obj;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -112,16 +104,15 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
   @Override
   public boolean equals(Object other) {
     if (other == this) return true;
-    if (!(other instanceof VersionTwo)) return false;
-    VersionTwo o = (VersionTwo) other;
+    if (!(other instanceof NestedVersionTwo)) return false;
+    NestedVersionTwo o = (NestedVersionTwo) other;
     return unknownFields().equals(o.unknownFields())
         && Internal.equals(i, o.i)
         && Internal.equals(v2_i, o.v2_i)
         && Internal.equals(v2_s, o.v2_s)
         && Internal.equals(v2_f32, o.v2_f32)
         && Internal.equals(v2_f64, o.v2_f64)
-        && v2_rs.equals(o.v2_rs)
-        && Internal.equals(obj, o.obj);
+        && v2_rs.equals(o.v2_rs);
   }
 
   @Override
@@ -135,7 +126,6 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
       result = result * 37 + (v2_f32 != null ? v2_f32.hashCode() : 0);
       result = result * 37 + (v2_f64 != null ? v2_f64.hashCode() : 0);
       result = result * 37 + v2_rs.hashCode();
-      result = result * 37 + (obj != null ? obj.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -150,11 +140,10 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     if (v2_f32 != null) builder.append(", v2_f32=").append(v2_f32);
     if (v2_f64 != null) builder.append(", v2_f64=").append(v2_f64);
     if (!v2_rs.isEmpty()) builder.append(", v2_rs=").append(v2_rs);
-    if (obj != null) builder.append(", obj=").append(obj);
-    return builder.replace(0, 2, "VersionTwo{").append('}').toString();
+    return builder.replace(0, 2, "NestedVersionTwo{").append('}').toString();
   }
 
-  public static final class Builder extends Message.Builder<VersionTwo, Builder> {
+  public static final class Builder extends Message.Builder<NestedVersionTwo, Builder> {
     public Integer i;
 
     public Integer v2_i;
@@ -166,8 +155,6 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     public Long v2_f64;
 
     public List<String> v2_rs;
-
-    public NestedVersionTwo obj;
 
     public Builder() {
       v2_rs = Internal.newMutableList();
@@ -204,48 +191,41 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
       return this;
     }
 
-    public Builder obj(NestedVersionTwo obj) {
-      this.obj = obj;
-      return this;
-    }
-
     @Override
-    public VersionTwo build() {
-      return new VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, obj, super.buildUnknownFields());
+    public NestedVersionTwo build() {
+      return new NestedVersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, super.buildUnknownFields());
     }
   }
 
-  private static final class ProtoAdapter_VersionTwo extends ProtoAdapter<VersionTwo> {
-    public ProtoAdapter_VersionTwo() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(VersionTwo.class));
+  private static final class ProtoAdapter_NestedVersionTwo extends ProtoAdapter<NestedVersionTwo> {
+    public ProtoAdapter_NestedVersionTwo() {
+      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(NestedVersionTwo.class));
     }
 
     @Override
-    public int encodedSize(VersionTwo value) {
+    public int encodedSize(NestedVersionTwo value) {
       return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
           + ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i)
           + ProtoAdapter.STRING.encodedSizeWithTag(3, value.v2_s)
           + ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.v2_f32)
           + ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64)
           + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs)
-          + NestedVersionTwo.ADAPTER.encodedSizeWithTag(7, value.obj)
           + value.unknownFields().size();
     }
 
     @Override
-    public void encode(ProtoWriter writer, VersionTwo value) throws IOException {
+    public void encode(ProtoWriter writer, NestedVersionTwo value) throws IOException {
       ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
       ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i);
       ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s);
       ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.v2_f32);
       ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64);
       ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs);
-      NestedVersionTwo.ADAPTER.encodeWithTag(writer, 7, value.obj);
       writer.writeBytes(value.unknownFields());
     }
 
     @Override
-    public VersionTwo decode(ProtoReader reader) throws IOException {
+    public NestedVersionTwo decode(ProtoReader reader) throws IOException {
       Builder builder = new Builder();
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
@@ -256,7 +236,6 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
           case 4: builder.v2_f32(ProtoAdapter.FIXED32.decode(reader)); break;
           case 5: builder.v2_f64(ProtoAdapter.FIXED64.decode(reader)); break;
           case 6: builder.v2_rs.add(ProtoAdapter.STRING.decode(reader)); break;
-          case 7: builder.obj(NestedVersionTwo.ADAPTER.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -267,9 +246,8 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     }
 
     @Override
-    public VersionTwo redact(VersionTwo value) {
+    public NestedVersionTwo redact(NestedVersionTwo value) {
       Builder builder = value.newBuilder();
-      if (builder.obj != null) builder.obj = NestedVersionTwo.ADAPTER.redact(builder.obj);
       builder.clearUnknownFields();
       return builder.build();
     }
