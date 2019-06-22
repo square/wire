@@ -1,5 +1,9 @@
 Change Log
 ==========
+
+Version 3.0.0-alpha03 *(2019-06-22)*
+------------------------------------
+ * Similar to alpha02, but with proper `wire-runtime` multiplatform artifacts.
 	
 Version 3.0.0-alpha02 *(2019-06-21)*
 ------------------------------------
