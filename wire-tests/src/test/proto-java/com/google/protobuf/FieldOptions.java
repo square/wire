@@ -21,7 +21,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class FieldOptions extends Message<FieldOptions, FieldOptions.Builder> {
@@ -599,7 +598,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     private static final class ProtoAdapter_CType extends EnumAdapter<CType> {
       ProtoAdapter_CType() {
-        super(JvmClassMappingKt.getKotlinClass(CType.class));
+        super(CType.class);
       }
 
       @Override
@@ -652,7 +651,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     private static final class ProtoAdapter_JSType extends EnumAdapter<JSType> {
       ProtoAdapter_JSType() {
-        super(JvmClassMappingKt.getKotlinClass(JSType.class));
+        super(JSType.class);
       }
 
       @Override
@@ -664,7 +663,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   private static final class ProtoAdapter_FieldOptions extends ProtoAdapter<FieldOptions> {
     public ProtoAdapter_FieldOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(FieldOptions.class));
+      super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class);
     }
 
     @Override

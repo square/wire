@@ -14,7 +14,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -114,7 +113,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
 
   private static final class ProtoAdapter_OneofDescriptorProto extends ProtoAdapter<OneofDescriptorProto> {
     public ProtoAdapter_OneofDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(OneofDescriptorProto.class));
+      super(FieldEncoding.LENGTH_DELIMITED, OneofDescriptorProto.class);
     }
 
     @Override

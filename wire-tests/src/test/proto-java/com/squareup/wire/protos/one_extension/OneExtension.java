@@ -14,7 +14,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class OneExtension extends Message<OneExtension, OneExtension.Builder> {
@@ -114,7 +113,7 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
 
   private static final class ProtoAdapter_OneExtension extends ProtoAdapter<OneExtension> {
     public ProtoAdapter_OneExtension() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(OneExtension.class));
+      super(FieldEncoding.LENGTH_DELIMITED, OneExtension.class);
     }
 
     @Override

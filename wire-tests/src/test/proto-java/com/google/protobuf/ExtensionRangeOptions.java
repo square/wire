@@ -15,7 +15,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class ExtensionRangeOptions extends Message<ExtensionRangeOptions, ExtensionRangeOptions.Builder> {
@@ -102,7 +101,7 @@ public final class ExtensionRangeOptions extends Message<ExtensionRangeOptions, 
 
   private static final class ProtoAdapter_ExtensionRangeOptions extends ProtoAdapter<ExtensionRangeOptions> {
     public ProtoAdapter_ExtensionRangeOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(ExtensionRangeOptions.class));
+      super(FieldEncoding.LENGTH_DELIMITED, ExtensionRangeOptions.class);
     }
 
     @Override

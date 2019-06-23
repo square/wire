@@ -16,7 +16,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -413,7 +412,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     private static final class ProtoAdapter_ExtensionRange extends ProtoAdapter<ExtensionRange> {
       public ProtoAdapter_ExtensionRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(ExtensionRange.class));
+        super(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class);
       }
 
       @Override
@@ -573,7 +572,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     private static final class ProtoAdapter_ReservedRange extends ProtoAdapter<ReservedRange> {
       public ProtoAdapter_ReservedRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(ReservedRange.class));
+        super(FieldEncoding.LENGTH_DELIMITED, ReservedRange.class);
       }
 
       @Override
@@ -618,7 +617,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
   private static final class ProtoAdapter_DescriptorProto extends ProtoAdapter<DescriptorProto> {
     public ProtoAdapter_DescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(DescriptorProto.class));
+      super(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class);
     }
 
     @Override

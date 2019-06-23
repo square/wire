@@ -14,7 +14,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class Bar extends Message<Bar, Bar.Builder> {
@@ -185,7 +184,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       private static final class ProtoAdapter_Moo extends ProtoAdapter<Moo> {
         public ProtoAdapter_Moo() {
-          super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Moo.class));
+          super(FieldEncoding.LENGTH_DELIMITED, Moo.class);
         }
 
         @Override
@@ -227,7 +226,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     private static final class ProtoAdapter_Baz extends ProtoAdapter<Baz> {
       public ProtoAdapter_Baz() {
-        super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Baz.class));
+        super(FieldEncoding.LENGTH_DELIMITED, Baz.class);
       }
 
       @Override
@@ -266,7 +265,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
   private static final class ProtoAdapter_Bar extends ProtoAdapter<Bar> {
     public ProtoAdapter_Bar() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Bar.class));
+      super(FieldEncoding.LENGTH_DELIMITED, Bar.class);
     }
 
     @Override

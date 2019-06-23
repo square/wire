@@ -8,7 +8,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.TagHandler
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
@@ -3008,7 +3007,7 @@ data class AllTypes(
             1402 -> ext_map_string_string.putAll(ext_map_string_stringAdapter.decode(reader))
             1503 -> ext_map_string_message.putAll(ext_map_string_messageAdapter.decode(reader))
             1504 -> ext_map_string_enum.putAll(ext_map_string_enumAdapter.decode(reader))
-            else -> TagHandler.UNKNOWN_TAG
+            else -> reader.readUnknownField(tag)
           }
         }
         return AllTypes(
@@ -3240,7 +3239,7 @@ data class AllTypes(
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
               1 -> a = ProtoAdapter.INT32.decode(reader)
-              else -> TagHandler.UNKNOWN_TAG
+              else -> reader.readUnknownField(tag)
             }
           }
           return NestedMessage(

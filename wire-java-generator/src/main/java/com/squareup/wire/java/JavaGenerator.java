@@ -71,7 +71,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -738,8 +737,8 @@ public final class JavaGenerator {
 
     MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
     constructorBuilder.addModifiers(PUBLIC);
-    constructorBuilder.addStatement("super($T.VARINT, $T.getKotlinClass($T.class))",
-        FieldEncoding.class, JvmClassMappingKt.class, javaType);
+    constructorBuilder.addStatement("super($T.VARINT, $T.class)",
+        FieldEncoding.class, javaType);
     for (EnumConstant constant : type.constants()) {
       String name = nameAllocator.get(constant);
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(javaType, name)
@@ -777,8 +776,8 @@ public final class JavaGenerator {
       String name = nameAllocator.get(constant);
       fromValueBuilder.addStatement("case $L: return $N", constant.getTag(), name);
     }
-    fromValueBuilder.addStatement("default: throw new $T($N, $T.getKotlinClass($T.class))",
-        EnumConstantNotFoundException.class, value, JvmClassMappingKt.class, javaType);
+    fromValueBuilder.addStatement("default: throw new $T($N, $T.class)",
+        EnumConstantNotFoundException.class, value, javaType);
     fromValueBuilder.endControlFlow();
     builder.addMethod(fromValueBuilder.build());
 
@@ -820,7 +819,7 @@ public final class JavaGenerator {
         .superclass(enumAdapterOf(javaType))
         .addModifiers(PRIVATE, STATIC, FINAL)
         .addMethod(MethodSpec.constructorBuilder()
-            .addStatement("super($T.getKotlinClass($T.class))", JvmClassMappingKt.class, javaType)
+            .addStatement("super($T.class)", javaType)
             .build())
         .addMethod(MethodSpec.methodBuilder("fromValue")
             .addAnnotation(Override.class)
@@ -846,8 +845,7 @@ public final class JavaGenerator {
 
     adapter.addMethod(MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addStatement("super($T.LENGTH_DELIMITED, $T.getKotlinClass($T.class))",
-            FieldEncoding.class, JvmClassMappingKt.class, javaType)
+        .addStatement("super($T.LENGTH_DELIMITED, $T.class)", FieldEncoding.class, javaType)
         .build());
 
     if (!useBuilder) {

@@ -16,7 +16,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.lang.UnsupportedOperationException;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class RedactedRequired extends Message<RedactedRequired, RedactedRequired.Builder> {
@@ -104,7 +103,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
 
   private static final class ProtoAdapter_RedactedRequired extends ProtoAdapter<RedactedRequired> {
     public ProtoAdapter_RedactedRequired() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(RedactedRequired.class));
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class);
     }
 
     @Override

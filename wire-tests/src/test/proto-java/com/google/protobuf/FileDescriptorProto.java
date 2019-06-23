@@ -16,7 +16,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -388,7 +387,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
 
   private static final class ProtoAdapter_FileDescriptorProto extends ProtoAdapter<FileDescriptorProto> {
     public ProtoAdapter_FileDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(FileDescriptorProto.class));
+      super(FieldEncoding.LENGTH_DELIMITED, FileDescriptorProto.class);
     }
 
     @Override

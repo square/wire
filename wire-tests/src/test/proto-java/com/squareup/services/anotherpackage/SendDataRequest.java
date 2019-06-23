@@ -14,7 +14,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class SendDataRequest extends Message<SendDataRequest, SendDataRequest.Builder> {
@@ -93,7 +92,7 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
 
   private static final class ProtoAdapter_SendDataRequest extends ProtoAdapter<SendDataRequest> {
     public ProtoAdapter_SendDataRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(SendDataRequest.class));
+      super(FieldEncoding.LENGTH_DELIMITED, SendDataRequest.class);
     }
 
     @Override

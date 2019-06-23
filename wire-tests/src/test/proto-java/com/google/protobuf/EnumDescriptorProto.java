@@ -16,7 +16,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -314,7 +313,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
     private static final class ProtoAdapter_EnumReservedRange extends ProtoAdapter<EnumReservedRange> {
       public ProtoAdapter_EnumReservedRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(EnumReservedRange.class));
+        super(FieldEncoding.LENGTH_DELIMITED, EnumReservedRange.class);
       }
 
       @Override
@@ -359,7 +358,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
   private static final class ProtoAdapter_EnumDescriptorProto extends ProtoAdapter<EnumDescriptorProto> {
     public ProtoAdapter_EnumDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(EnumDescriptorProto.class));
+      super(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class);
     }
 
     @Override

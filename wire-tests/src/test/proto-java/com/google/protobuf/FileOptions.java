@@ -19,7 +19,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -708,7 +707,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
     private static final class ProtoAdapter_OptimizeMode extends EnumAdapter<OptimizeMode> {
       ProtoAdapter_OptimizeMode() {
-        super(JvmClassMappingKt.getKotlinClass(OptimizeMode.class));
+        super(OptimizeMode.class);
       }
 
       @Override
@@ -720,7 +719,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
   private static final class ProtoAdapter_FileOptions extends ProtoAdapter<FileOptions> {
     public ProtoAdapter_FileOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(FileOptions.class));
+      super(FieldEncoding.LENGTH_DELIMITED, FileOptions.class);
     }
 
     @Override

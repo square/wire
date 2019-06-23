@@ -16,7 +16,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMessage.Builder> {
@@ -117,7 +116,7 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
 
   private static final class ProtoAdapter_EmbeddedMessage extends ProtoAdapter<EmbeddedMessage> {
     public ProtoAdapter_EmbeddedMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(EmbeddedMessage.class));
+      super(FieldEncoding.LENGTH_DELIMITED, EmbeddedMessage.class);
     }
 
     @Override
