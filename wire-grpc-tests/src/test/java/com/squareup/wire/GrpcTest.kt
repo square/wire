@@ -344,6 +344,9 @@ class GrpcTest {
       requestChannel.close()
       assertThat(responseChannel.receiveOrNull()).isNull()
 
+      // We wait for mockService to process our actions.
+      delay(500)
+
       responseChannel.cancel()
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
