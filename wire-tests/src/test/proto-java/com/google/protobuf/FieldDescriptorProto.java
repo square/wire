@@ -17,7 +17,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -452,7 +451,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     private static final class ProtoAdapter_Type extends EnumAdapter<Type> {
       ProtoAdapter_Type() {
-        super(JvmClassMappingKt.getKotlinClass(Type.class));
+        super(Type.class);
       }
 
       @Override
@@ -499,7 +498,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     private static final class ProtoAdapter_Label extends EnumAdapter<Label> {
       ProtoAdapter_Label() {
-        super(JvmClassMappingKt.getKotlinClass(Label.class));
+        super(Label.class);
       }
 
       @Override
@@ -511,7 +510,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   private static final class ProtoAdapter_FieldDescriptorProto extends ProtoAdapter<FieldDescriptorProto> {
     public ProtoAdapter_FieldDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(FieldDescriptorProto.class));
+      super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class);
     }
 
     @Override

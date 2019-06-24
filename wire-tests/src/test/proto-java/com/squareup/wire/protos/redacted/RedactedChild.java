@@ -14,7 +14,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class RedactedChild extends Message<RedactedChild, RedactedChild.Builder> {
@@ -129,7 +128,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
 
   private static final class ProtoAdapter_RedactedChild extends ProtoAdapter<RedactedChild> {
     public ProtoAdapter_RedactedChild() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(RedactedChild.class));
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedChild.class);
     }
 
     @Override

@@ -22,28 +22,47 @@ import kotlin.reflect.KClass
 /**
  * An abstract [ProtoAdapter] that converts values of an enum to and from integers.
  */
-abstract class EnumAdapter<E : WireEnum> protected constructor(
+expect abstract class EnumAdapter<E : WireEnum> protected constructor(
   type: KClass<E>
-) : ProtoAdapter<E>(FieldEncoding.VARINT, type) {
+) : ProtoAdapter<E> {
 
-  override fun encodedSize(value: E): Int = ProtoWriter.varint32Size(value.value)
-
-  @Throws(IOException::class)
-  override fun encode(writer: ProtoWriter, value: E) {
-    writer.writeVarint32(value.value)
-  }
+  override fun encodedSize(value: E): Int
 
   @Throws(IOException::class)
-  override fun decode(reader: ProtoReader): E {
-    val value = reader.readVarint32()
-    return fromValue(value) ?: throw EnumConstantNotFoundException(value, type)
-  }
+  override fun encode(writer: ProtoWriter, value: E)
 
-  override fun redact(value: E): E = throw UnsupportedOperationException()
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader): E
+
+  override fun redact(value: E): E
 
   /**
    * Converts an integer to an enum.
    * Returns null if there is no corresponding enum.
    */
   protected abstract fun fromValue(value: Int): E?
+}
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E : WireEnum> commonEncodedSize(value: E): Int {
+  return ProtoWriter.varint32Size(value.value)
+}
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E : WireEnum> commonEncode(writer: ProtoWriter, value: E) {
+  writer.writeVarint32(value.value)
+}
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E : WireEnum> EnumAdapter<E>.commonDecode(
+  reader: ProtoReader,
+  fromValue: (Int) -> E?
+): E {
+  val value = reader.readVarint32()
+  return fromValue(value) ?: throw ProtoAdapter.EnumConstantNotFoundException(value, type)
+}
+
+@Suppress("NOTHING_TO_INLINE", "UNUSED_PARAMETER")
+internal inline fun <E : WireEnum> commonRedact(value: E): E {
+  throw UnsupportedOperationException()
 }

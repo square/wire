@@ -6,7 +6,6 @@ import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
-import kotlin.jvm.JvmClassMappingKt;
 
 public enum ForeignEnum implements WireEnum {
   BAV(0),
@@ -39,7 +38,7 @@ public enum ForeignEnum implements WireEnum {
 
   private static final class ProtoAdapter_ForeignEnum extends EnumAdapter<ForeignEnum> {
     ProtoAdapter_ForeignEnum() {
-      super(JvmClassMappingKt.getKotlinClass(ForeignEnum.class));
+      super(ForeignEnum.class);
     }
 
     @Override

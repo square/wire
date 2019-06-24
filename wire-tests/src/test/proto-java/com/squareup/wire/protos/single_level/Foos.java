@@ -15,7 +15,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class Foos extends Message<Foos, Foos.Builder> {
@@ -95,7 +94,7 @@ public final class Foos extends Message<Foos, Foos.Builder> {
 
   private static final class ProtoAdapter_Foos extends ProtoAdapter<Foos> {
     public ProtoAdapter_Foos() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Foos.class));
+      super(FieldEncoding.LENGTH_DELIMITED, Foos.class);
     }
 
     @Override

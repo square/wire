@@ -16,7 +16,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions.Builder> {
@@ -143,7 +142,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
 
   private static final class ProtoAdapter_ServiceOptions extends ProtoAdapter<ServiceOptions> {
     public ProtoAdapter_ServiceOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(ServiceOptions.class));
+      super(FieldEncoding.LENGTH_DELIMITED, ServiceOptions.class);
     }
 
     @Override

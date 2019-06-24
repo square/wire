@@ -16,7 +16,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder> {
@@ -190,7 +189,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
 
   private static final class ProtoAdapter_EnumOptions extends ProtoAdapter<EnumOptions> {
     public ProtoAdapter_EnumOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(EnumOptions.class));
+      super(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class);
     }
 
     @Override

@@ -12,7 +12,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class UnnecessaryResponse extends Message<UnnecessaryResponse, UnnecessaryResponse.Builder> {
@@ -63,7 +62,7 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
 
   private static final class ProtoAdapter_UnnecessaryResponse extends ProtoAdapter<UnnecessaryResponse> {
     public ProtoAdapter_UnnecessaryResponse() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(UnnecessaryResponse.class));
+      super(FieldEncoding.LENGTH_DELIMITED, UnnecessaryResponse.class);
     }
 
     @Override

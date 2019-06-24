@@ -17,7 +17,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class NestedVersionTwo extends Message<NestedVersionTwo, NestedVersionTwo.Builder> {
@@ -199,7 +198,7 @@ public final class NestedVersionTwo extends Message<NestedVersionTwo, NestedVers
 
   private static final class ProtoAdapter_NestedVersionTwo extends ProtoAdapter<NestedVersionTwo> {
     public ProtoAdapter_NestedVersionTwo() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(NestedVersionTwo.class));
+      super(FieldEncoding.LENGTH_DELIMITED, NestedVersionTwo.class);
     }
 
     @Override

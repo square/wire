@@ -18,7 +18,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 /**
@@ -231,7 +230,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneType extends EnumAdapter<PhoneType> {
       ProtoAdapter_PhoneType() {
-        super(JvmClassMappingKt.getKotlinClass(PhoneType.class));
+        super(PhoneType.class);
       }
 
       @Override
@@ -353,7 +352,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
       public ProtoAdapter_PhoneNumber() {
-        super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(PhoneNumber.class));
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class);
       }
 
       @Override
@@ -405,7 +404,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
     public ProtoAdapter_Person() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Person.class));
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class);
     }
 
     @Override

@@ -13,7 +13,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import kotlin.jvm.JvmClassMappingKt;
 import okio.ByteString;
 
 public final class Message extends com.squareup.wire.Message<Message, Message.Builder> {
@@ -276,7 +275,7 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   private static final class ProtoAdapter_Message extends ProtoAdapter<Message> {
     public ProtoAdapter_Message() {
-      super(FieldEncoding.LENGTH_DELIMITED, JvmClassMappingKt.getKotlinClass(Message.class));
+      super(FieldEncoding.LENGTH_DELIMITED, Message.class);
     }
 
     @Override
