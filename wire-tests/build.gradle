@@ -1,23 +1,78 @@
-apply plugin: 'java'
-apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
-sourceSets {
-  test.java.srcDirs += 'src/test/proto-java'
-  test.kotlin.srcDirs += 'src/test/proto-kotlin'
-}
+kotlin {
+  jvm {
+    withJava()
+  }
+  js {
+    configure([compilations.main, compilations.test]) {
+      tasks.getByName(compileKotlinTaskName).kotlinOptions {
+        moduleKind = 'umd'
+        sourceMap = true
+        metaInfo = true
+      }
+    }
+    nodejs()
+  }
+  iosX64()
+  iosArm64()
+  // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
+  linuxX64()
+  macosX64()
+  mingwX64('winX64')
+  sourceSets {
+    commonMain {
+      dependencies {
+        api deps.kotlin.stdlib.common
+        api project(':wire-runtime')
+      }
+    }
+    commonTest {
+      dependencies {
+        implementation deps.kotlin.test.common
+        implementation deps.kotlin.test.annotations
+      }
+    }
+    jvmMain {
+      dependencies {
+        api deps.kotlin.stdlib.jdk6
+      }
+    }
+    jvmTest {
+      kotlin.srcDirs += 'src/jvmTest/proto-kotlin'
+      kotlin.srcDirs += 'src/jvmTest/proto-java'
+      dependencies {
+        implementation project(':wire-grpc-client')
+        implementation project(':wire-test-utils')
+        implementation deps.assertj
+        implementation deps.kotlin.test.junit
+        implementation deps.jimfs
+      }
+    }
+    jsMain {
+      dependencies {
+        api deps.kotlin.stdlib.js
+      }
+    }
+    jsTest {
+      dependencies {
+        implementation deps.kotlin.test.js
+      }
+    }
+    nativeMain {
+      dependsOn commonMain
+    }
+    nativeTest {
+      dependsOn commonTest
+    }
 
-jar {
-  manifest {
-    attributes('Automatic-Module-Name': 'wire-tests')
+    configure([iosX64Main, iosArm64Main, linuxX64Main, macosX64Main, winX64Main]) {
+      dependsOn nativeMain
+    }
+    configure([iosX64Test, iosArm64Test, linuxX64Test, macosX64Test, winX64Test]) {
+      dependsOn nativeTest
+    }
   }
 }
 
-dependencies {
-  testImplementation project(':wire-grpc-client')
-  testImplementation project(':wire-runtime')
-  testImplementation project(':wire-test-utils')
-  testImplementation deps.kotlin.stdlib.jdk6
-  testImplementation deps.junit
-  testImplementation deps.assertj
-  testImplementation deps.jimfs
-}
+apply from: 'jvm.gradle'

@@ -599,12 +599,12 @@ class WireCompilerTest {
 
   private enum class TargetLanguage {
     JAVA {
-      override fun protoPathArg() = "--proto_path=../wire-tests/src/test/proto"
+      override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto"
       override fun outArg(testDirPath: String) = "--java_out=$testDirPath"
       override fun protoFolderSuffix() = "java"
     },
     KOTLIN {
-      override fun protoPathArg() = "--proto_path=../wire-tests/src/test/proto/kotlin"
+      override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/kotlin"
       override fun outArg(testDirPath: String) = "--kotlin_out=$testDirPath"
       override fun protoFolderSuffix() = "kotlin"
     };
@@ -615,11 +615,11 @@ class WireCompilerTest {
 
     internal fun expectedFile(path: String, suffix: String): File {
       val protoFolder = "/proto-${protoFolderSuffix()}/"
-      var expectedFile = File("../wire-tests/src/test$protoFolder$path$suffix")
+      var expectedFile = File("../wire-tests/src/jvmTest$protoFolder$path$suffix")
       if (expectedFile.exists()) {
         println("Comparing against expected output ${expectedFile.name}")
       } else {
-        expectedFile = File("../wire-tests/src/test$protoFolder$path")
+        expectedFile = File("../wire-tests/src/jvmTest$protoFolder$path")
       }
       return expectedFile
     }

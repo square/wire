@@ -1,8 +1,10 @@
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 kotlin {
-  jvm()
-  js() {
+  jvm {
+    withJava()
+  }
+  js {
     configure([compilations.main, compilations.test]) {
       tasks.getByName(compileKotlinTaskName).kotlinOptions {
         moduleKind = 'umd'
@@ -11,12 +13,12 @@ kotlin {
       }
     }
   }
-  iosX64() {
+  iosX64 {
     binaries {
       framework()
     }
   }
-  iosArm64() {
+  iosArm64 {
     binaries {
       framework()
     }
