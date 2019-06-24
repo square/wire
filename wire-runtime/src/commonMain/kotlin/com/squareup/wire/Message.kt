@@ -19,7 +19,10 @@ import okio.BufferedSink
 import okio.ByteString
 
 /** A protocol buffer message. */
-expect abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> {
+expect abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected constructor(
+  adapter: ProtoAdapter<M>,
+  unknownFields: ByteString?
+) {
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   protected var hashCode: Int
 
