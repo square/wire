@@ -287,19 +287,18 @@ task generateMoshiAdapterJavaTests(type: JavaExec) {
   ]
 }
 
-// Uncomment when #997 is fixed, and add generateMoshiAdapterInteropKotlinTests to the gradle tasks.
-//task generateMoshiAdapterInteropKotlinTests(type: JavaExec) {
-//  group = 'Generate MoshiAdapter Java interop Kotlin Tests'
-//  description = 'Generates Java interop Kotlin classes from the MoshiAdapter test protos'
-//  classpath = configurations.wire
-//  main = 'com.squareup.wire.WireCompiler'
-//  args = [
-//          '--proto_path=wire-moshi-adapter/src/test/proto',
-//          '--kotlin_out=wire-moshi-adapter/src/test/java',
-//          '--java_interop',
-//          'person_java_interop_kotlin.proto'
-//  ]
-//}
+task generateMoshiAdapterInteropKotlinTests(type: JavaExec) {
+  group = 'Generate MoshiAdapter Java interop Kotlin Tests'
+  description = 'Generates Java interop Kotlin classes from the MoshiAdapter test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-moshi-adapter/src/test/proto',
+          '--kotlin_out=wire-moshi-adapter/src/test/java',
+          '--java_interop',
+          'person_java_interop_kotlin.proto'
+  ]
+}
 
 task generateMoshiAdapterKotlinTests(type: JavaExec) {
   group = 'Generate MoshiAdapter Kotlin Tests'
@@ -327,7 +326,7 @@ task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generate
     generateGsonTests, generateIncludesExcludesTests, generateAndroidTests, 
     generateAndroidCompactTests, generateKotlinTests, generateKotlinAndroidTests, 
     generateKotlinJavaInteropTests, generateGrpcTests, generateMoshiAdapterJavaTests,
-    generateMoshiAdapterKotlinTests]) {
+    generateMoshiAdapterKotlinTests, generateMoshiAdapterInteropKotlinTests]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
 }
