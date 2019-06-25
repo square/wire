@@ -19,7 +19,8 @@ import okio.BufferedSink
 import okio.ByteString
 
 /** A protocol buffer message. */
-actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> protected constructor(
+actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>>
+protected actual constructor(
   private val adapter: ProtoAdapter<M>,
   /** Unknown fields, proto-encoded. We permit null to support magic deserialization. */
   private val unknownFields: ByteString?
