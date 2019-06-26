@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
 import org.junit.Test
 import com.squareup.wire.protos.person.java.Person as JavaPerson
+import com.squareup.wire.protos.person.javainteropkotlin.Person as JavaInteropKotlinPerson
 import com.squareup.wire.protos.person.kotlin.Person as KotlinPerson
 
 class MoshiPersonTest {
@@ -34,17 +35,16 @@ class MoshiPersonTest {
     assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
   }
 
-// Uncomment when #997 is fixed.
-//  @Test
-//  fun javaInteropKotlinClobberNonNullWithNull() {
-//    val personWithName = moshi.adapter(JavaInteropKotlinPerson::class.java)
-//        .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\"}")
-//    assertThat(personWithName!!.email).isEqualTo("foo@square.com")
-//
-//    val personWithNameClobberedWithNull = moshi.adapter(JavaInteropKotlinPerson::class.java)
-//        .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"email\":null}")
-//    assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
-//  }
+  @Test
+  fun javaInteropKotlinClobberNonNullWithNull() {
+    val personWithName = moshi.adapter(JavaInteropKotlinPerson::class.java)
+        .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\"}")
+    assertThat(personWithName!!.email).isEqualTo("foo@square.com")
+
+    val personWithNameClobberedWithNull = moshi.adapter(JavaInteropKotlinPerson::class.java)
+        .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"email\":null}")
+    assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
+  }
 
   companion object {
     private val moshi = Moshi.Builder()
