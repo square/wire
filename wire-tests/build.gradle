@@ -1,9 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
 sourceSets {
   test.java.srcDirs += 'src/test/proto-java'
   test.kotlin.srcDirs += 'src/test/proto-kotlin'
