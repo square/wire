@@ -409,6 +409,7 @@ Unsupported
 Wire does not support:
 
  * Groups - they are skipped when parsing binary input data
+ * [proto3](https://github.com/square/wire/issues/279)
 
 Wire supports custom options on messages and fields. Other custom options are ignored. Pass
 `--excludes=google.protobuf.*` to the compiler to omit options from the generated code.
