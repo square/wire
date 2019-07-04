@@ -1,9 +1,6 @@
 apply plugin: 'com.liferay.maven.plugin.builder'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
 jar {
   manifest {
     attributes('Automatic-Module-Name': 'wire-codegen-sample')

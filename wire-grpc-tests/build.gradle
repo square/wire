@@ -14,9 +14,6 @@ apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'ru.vyarus.animalsniffer'
 apply plugin: 'com.google.protobuf'
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
-
 protobuf {
   plugins {
     grpc {

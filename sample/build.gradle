@@ -3,9 +3,6 @@ apply plugin: 'com.squareup.wire'
 
 mainClassName = 'com.squareup.dinosaurs.Sample'
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
-
 jar {
   manifest {
     attributes('Automatic-Module-Name': 'wire-sample')
