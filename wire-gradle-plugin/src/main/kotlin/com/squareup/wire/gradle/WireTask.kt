@@ -20,6 +20,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.FileCollectionDependency
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.Input
@@ -27,6 +28,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 
 open class WireTask : SourceTask() {
   @Input
@@ -52,7 +54,7 @@ open class WireTask : SourceTask() {
   lateinit var targets: List<Target>
 
   @Internal
-  lateinit var jarToIncludes: Map<String, List<String>>
+  lateinit var dependencyToIncludes: Map<Dependency, List<String>>
 
   @TaskAction
   fun generateWireFiles() {
@@ -112,20 +114,27 @@ open class WireTask : SourceTask() {
         .flatMap { dep ->
           files(dep)
               .flatMap { file ->
-                if (dep !is FileCollectionDependency) {
-                  listOf(Location.get(file.path))
-                } else if (dep.files is SourceDirectorySet) {
-                  val srcDir = (dep.files as SourceDirectorySet).srcDirs.first {
-                    file.path.startsWith(it.path + "/")
-                  }
-                  listOf(Location.get(srcDir.path, file.path.substring(srcDir.path.length + 1)))
-                } else {
-                  val includes = jarToIncludes[file.path]
-                  includes?.map {
-                    Location.get(file.path, it)
-                  } ?: listOf(Location.get(file.path))
-                }
+                file.toLocations(dep)
               }
         }
+  }
+
+  private fun File.toLocations(dependency: Dependency): List<Location> {
+    if (dependency is FileCollectionDependency && dependency.files is SourceDirectorySet) {
+      val srcDir = (dependency.files as SourceDirectorySet).srcDirs.first {
+        path.startsWith(it.path + "/")
+      }
+      return listOf(Location.get(
+          base = srcDir.path,
+          path = path.substring(srcDir.path.length + 1)
+      ))
+    }
+
+    val includes = dependencyToIncludes[dependency]
+        ?: return listOf(Location.get(path))
+
+    return includes.map {
+      include -> Location.get(base = path, path = include)
+    }
   }
 }

@@ -130,6 +130,18 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourcePathMavenCoordinatesSingleFile() {
+    val fixtureRoot = File("src/test/projects/sourcepath-maven-single-file")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+  }
+
+  @Test
   fun sourceTreeOneSrcDirOneFile() {
     val fixtureRoot = File("src/test/projects/sourcetree-one-srcdir-one-file")
 

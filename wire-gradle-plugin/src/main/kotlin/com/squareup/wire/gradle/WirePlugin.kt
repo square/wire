@@ -23,6 +23,7 @@ import com.squareup.wire.gradle.WirePlugin.DependencyType.Path
 import com.squareup.wire.schema.Target
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.internal.file.SourceDirectorySetFactory
@@ -43,7 +44,7 @@ class WirePlugin @Inject constructor(
 ) : Plugin<Project> {
   private var kotlin = false
   private var java = false
-  private val jarToIncludes = mutableMapOf<String, List<String>>()
+  private val dependencyToIncludes = mutableMapOf<Dependency, List<String>>()
 
   private lateinit var sourceSetContainer: SourceSetContainer
 
@@ -90,7 +91,7 @@ class WirePlugin @Inject constructor(
   ) {
     val sourceConfiguration = project.configurations.create("wireSourceDependencies")
 
-    val sourcePaths =
+    val sourcePathDependencies =
         if (extension.sourcePaths.isNotEmpty() || extension.sourceTrees.isNotEmpty() || extension.sourceJars.isNotEmpty()) {
           mergeDependencyPaths(
               project, extension.sourcePaths, extension.sourceTrees, extension.sourceJars
@@ -98,19 +99,15 @@ class WirePlugin @Inject constructor(
         } else {
           mergeDependencyPaths(project, setOf("src/main/proto"))
         }
-    sourcePaths.forEach {
-      sourceConfiguration.dependencies.add(project.dependencies.create(it))
-    }
+    sourceConfiguration.dependencies.addAll(sourcePathDependencies)
 
     val protoConfiguration = project.configurations.create("wireProtoDependencies")
 
     if (extension.protoPaths.isNotEmpty() || extension.protoTrees.isNotEmpty() || extension.protoJars.isNotEmpty()) {
-      val allPaths = mergeDependencyPaths(
+      val protoPathDependencies = mergeDependencyPaths(
           project, extension.protoPaths, extension.protoTrees, extension.protoJars
       )
-      allPaths.forEach { path ->
-        protoConfiguration.dependencies.add(project.dependencies.create(path))
-      }
+      protoConfiguration.dependencies.addAll(protoPathDependencies)
     } else {
       protoConfiguration.dependencies.addAll(sourceConfiguration.dependencies)
     }
@@ -158,7 +155,7 @@ class WirePlugin @Inject constructor(
       task.rules = extension.rules
       task.targets = targets
       task.group = "wire"
-      task.jarToIncludes = jarToIncludes
+      task.dependencyToIncludes = dependencyToIncludes
       task.description = "Generate Wire protocol buffer implementation for .proto files"
     }
 
@@ -192,32 +189,36 @@ class WirePlugin @Inject constructor(
     }
   }
 
+  /** Returns a list of dependencies for the build's paths, trees, and .jars. */
   private fun mergeDependencyPaths(
     project: Project,
     dependencyPaths: Set<String>,
     dependencyTrees: Set<SourceDirectorySet> = emptySet(),
     dependencyJars: Set<ProtoRootSet> = emptySet()
-  ): List<Any> {
-    val allPaths = dependencyTrees.toMutableList<Any>()
+  ): List<Dependency> {
+    val result = mutableListOf<Dependency>()
+
+    for (dependencyTree in dependencyTrees) {
+      result += project.dependencies.create(dependencyTree)
+    }
 
     val parser = FileOrUriNotationConverter.parser()
 
     dependencyJars.forEach { depJar ->
       depJar.srcJar?.let { path ->
         val depPath = mapDependencyPath(parser, path, project)
-        if (depPath is Jar && depJar.includes.isNotEmpty()) {
-          jarToIncludes[depPath.path] = depJar.includes
-        }
-        allPaths += depPath.dependency
+        val dependency = project.dependencies.create(depPath.dependency)
+        dependencyToIncludes[dependency] = depJar.includes
+        result += dependency
       }
     }
 
     dependencyPaths.forEach { path ->
       val depPath = mapDependencyPath(parser, path, project)
-      allPaths += depPath.dependency
+      result += project.dependencies.create(depPath.dependency)
     }
 
-    return allPaths
+    return result
   }
 
   private fun mapDependencyPath(
