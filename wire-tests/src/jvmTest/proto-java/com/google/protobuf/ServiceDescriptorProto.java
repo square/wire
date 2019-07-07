@@ -63,7 +63,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.name = name;
-    builder.method = Internal.copyOf("method", method);
+    builder.method = Internal.copyOf(method);
     builder.options = options;
     builder.addUnknownFields(unknownFields());
     return builder;

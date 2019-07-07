@@ -51,7 +51,7 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.annotation = Internal.copyOf("annotation", annotation);
+    builder.annotation = Internal.copyOf(annotation);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -174,7 +174,7 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
     @Override
     public Builder newBuilder() {
       Builder builder = new Builder();
-      builder.path = Internal.copyOf("path", path);
+      builder.path = Internal.copyOf(path);
       builder.source_file = source_file;
       builder.begin = begin;
       builder.end = end;

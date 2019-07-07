@@ -28,8 +28,13 @@ fun <T> newMutableList(): MutableList<T> = MutableOnWriteList(emptyList())
 
 fun <K, V> newMutableMap(): MutableMap<K, V> = LinkedHashMap()
 
-fun <T> copyOf(name: String, list: List<T>?): MutableList<T> {
-  if (list == null) throw NullPointerException("$name == null")
+@Deprecated(
+    message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
+    replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(list)")
+)
+fun <T> copyOf(name: String, list: List<T>?): MutableList<T> = copyOf(list!!)
+
+fun <T> copyOf(list: List<T>): MutableList<T> {
   return if (list === emptyList<T>() || list is ImmutableList<*>) {
     MutableOnWriteList(list)
   } else {
@@ -37,13 +42,16 @@ fun <T> copyOf(name: String, list: List<T>?): MutableList<T> {
   }
 }
 
-fun <K, V> copyOf(name: String, map: Map<K, V>?): MutableMap<K, V> {
-  if (map == null) throw NullPointerException("$name == null")
-  return LinkedHashMap(map)
-}
+@Deprecated(
+    message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
+    replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(map)")
+)
+fun <K, V> copyOf(name: String, map: Map<K, V>?): MutableMap<K, V> = copyOf(map!!)
 
-fun <T> immutableCopyOf(name: String, list: List<T>?): List<T> {
-  var list = list ?: throw NullPointerException("$name == null")
+fun <K, V> copyOf(map: Map<K, V>): MutableMap<K, V> = LinkedHashMap(map)
+
+fun <T> immutableCopyOf(name: String, list: List<T>): List<T> {
+  var list = list
   if (list is MutableOnWriteList<*>) {
     list = (list as MutableOnWriteList<T>).mutableList
   }
@@ -56,8 +64,7 @@ fun <T> immutableCopyOf(name: String, list: List<T>?): List<T> {
   return result as List<T>
 }
 
-fun <K, V> immutableCopyOf(name: String, map: Map<K?, V?>?): Map<K, V> {
-  if (map == null) throw NullPointerException("$name == null")
+fun <K, V> immutableCopyOf(name: String, map: Map<K?, V?>): Map<K, V> {
   if (map.isEmpty()) {
     return emptyMap()
   }
@@ -100,9 +107,8 @@ fun missingRequiredFields(vararg args: Any?): IllegalStateException {
   throw IllegalStateException("Required field$plural not set:$fields")
 }
 
-/** Throw [NullPointerException] if `list` or one of its items are null. */
-fun checkElementsNotNull(list: List<*>?) {
-  if (list == null) throw NullPointerException("list == null")
+/** Throw [NullPointerException] if any of `list`'s items is null. */
+fun checkElementsNotNull(list: List<*>) {
   for (i in 0 until list.size) {
     if (list[i] == null) {
       throw NullPointerException("Element at index $i is null")
@@ -110,9 +116,8 @@ fun checkElementsNotNull(list: List<*>?) {
   }
 }
 
-/** Throw [NullPointerException] if `map` or one of its keys or values are null. */
-fun checkElementsNotNull(map: Map<*, *>?) {
-  if (map == null) throw NullPointerException("map == null")
+/** Throw [NullPointerException] if any of`map`'s keys or values is null. */
+fun checkElementsNotNull(map: Map<*, *>) {
   for ((key, value) in map) {
     if (key == null) {
       throw NullPointerException("map.containsKey(null)")

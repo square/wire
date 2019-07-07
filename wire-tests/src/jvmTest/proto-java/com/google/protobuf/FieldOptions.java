@@ -278,7 +278,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     builder.lazy = lazy;
     builder.deprecated = deprecated;
     builder.weak = weak;
-    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
     builder.my_field_option_one = my_field_option_one;
     builder.my_field_option_two = my_field_option_two;
     builder.my_field_option_three = my_field_option_three;

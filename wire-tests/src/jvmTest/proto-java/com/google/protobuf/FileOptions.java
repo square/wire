@@ -341,7 +341,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     builder.swift_prefix = swift_prefix;
     builder.php_class_prefix = php_class_prefix;
     builder.php_namespace = php_namespace;
-    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

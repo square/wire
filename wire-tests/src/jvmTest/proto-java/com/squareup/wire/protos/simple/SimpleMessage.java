@@ -195,7 +195,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     builder.optional_external_msg = optional_external_msg;
     builder.default_nested_enum = default_nested_enum;
     builder.required_int32 = required_int32;
-    builder.repeated_double = Internal.copyOf("repeated_double", repeated_double);
+    builder.repeated_double = Internal.copyOf(repeated_double);
     builder.default_foreign_enum = default_foreign_enum;
     builder.no_default_foreign_enum = no_default_foreign_enum;
     builder.package_ = package_;

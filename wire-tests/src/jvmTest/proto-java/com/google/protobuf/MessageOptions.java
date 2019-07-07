@@ -226,7 +226,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     builder.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
     builder.deprecated = deprecated;
     builder.map_entry = map_entry;
-    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
     builder.my_message_option_one = my_message_option_one;
     builder.my_message_option_two = my_message_option_two;
     builder.my_message_option_three = my_message_option_three;

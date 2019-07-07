@@ -114,7 +114,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.name = Internal.copyOf("name", name);
+    builder.name = Internal.copyOf(name);
     builder.identifier_value = identifier_value;
     builder.positive_int_value = positive_int_value;
     builder.negative_int_value = negative_int_value;

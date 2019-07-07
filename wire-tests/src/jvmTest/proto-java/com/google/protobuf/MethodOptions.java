@@ -79,7 +79,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     Builder builder = new Builder();
     builder.deprecated = deprecated;
     builder.idempotency_level = idempotency_level;
-    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

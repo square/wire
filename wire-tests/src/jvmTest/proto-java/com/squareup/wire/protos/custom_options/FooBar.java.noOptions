@@ -129,11 +129,11 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     builder.bar = bar;
     builder.baz = baz;
     builder.qux = qux;
-    builder.fred = Internal.copyOf("fred", fred);
+    builder.fred = Internal.copyOf(fred);
     builder.daisy = daisy;
-    builder.nested = Internal.copyOf("nested", nested);
+    builder.nested = Internal.copyOf(nested);
     builder.ext = ext;
-    builder.rep = Internal.copyOf("rep", rep);
+    builder.rep = Internal.copyOf(rep);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -415,7 +415,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     @Override
     public Builder newBuilder() {
       Builder builder = new Builder();
-      builder.serial = Internal.copyOf("serial", serial);
+      builder.serial = Internal.copyOf(serial);
       builder.addUnknownFields(unknownFields());
       return builder;
     }

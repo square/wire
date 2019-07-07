@@ -41,7 +41,7 @@ public final class Bars extends Message<Bars, Bars.Builder> {
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.bars = Internal.copyOf("bars", bars);
+    builder.bars = Internal.copyOf(bars);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
