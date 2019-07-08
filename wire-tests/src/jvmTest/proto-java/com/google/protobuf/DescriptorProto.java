@@ -130,15 +130,15 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.name = name;
-    builder.field = Internal.copyOf("field", field);
-    builder.extension = Internal.copyOf("extension", extension);
-    builder.nested_type = Internal.copyOf("nested_type", nested_type);
-    builder.enum_type = Internal.copyOf("enum_type", enum_type);
-    builder.extension_range = Internal.copyOf("extension_range", extension_range);
-    builder.oneof_decl = Internal.copyOf("oneof_decl", oneof_decl);
+    builder.field = Internal.copyOf(field);
+    builder.extension = Internal.copyOf(extension);
+    builder.nested_type = Internal.copyOf(nested_type);
+    builder.enum_type = Internal.copyOf(enum_type);
+    builder.extension_range = Internal.copyOf(extension_range);
+    builder.oneof_decl = Internal.copyOf(oneof_decl);
     builder.options = options;
-    builder.reserved_range = Internal.copyOf("reserved_range", reserved_range);
-    builder.reserved_name = Internal.copyOf("reserved_name", reserved_name);
+    builder.reserved_range = Internal.copyOf(reserved_range);
+    builder.reserved_name = Internal.copyOf(reserved_name);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

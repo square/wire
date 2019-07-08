@@ -52,7 +52,7 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.inner_repeated_number = Internal.copyOf("inner_repeated_number", inner_repeated_number);
+    builder.inner_repeated_number = Internal.copyOf(inner_repeated_number);
     builder.inner_number_after = inner_number_after;
     builder.addUnknownFields(unknownFields());
     return builder;

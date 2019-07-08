@@ -95,7 +95,7 @@ public final class NestedVersionTwo extends Message<NestedVersionTwo, NestedVers
     builder.v2_s = v2_s;
     builder.v2_f32 = v2_f32;
     builder.v2_f64 = v2_f64;
-    builder.v2_rs = Internal.copyOf("v2_rs", v2_rs);
+    builder.v2_rs = Internal.copyOf(v2_rs);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

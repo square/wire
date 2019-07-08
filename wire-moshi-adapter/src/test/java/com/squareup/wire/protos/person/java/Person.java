@@ -92,7 +92,7 @@ public final class Person extends Message<Person, Person.Builder> {
     builder.name = name;
     builder.id = id;
     builder.email = email;
-    builder.phone = Internal.copyOf("phone", phone);
+    builder.phone = Internal.copyOf(phone);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

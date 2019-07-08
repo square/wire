@@ -45,7 +45,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.file = Internal.copyOf("file", file);
+    builder.file = Internal.copyOf(file);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

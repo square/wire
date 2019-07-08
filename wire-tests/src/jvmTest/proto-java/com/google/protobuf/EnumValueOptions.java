@@ -101,7 +101,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.deprecated = deprecated;
-    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
     builder.enum_value_option = enum_value_option;
     builder.complex_enum_value_option = complex_enum_value_option;
     builder.foreign_enum_value_option = foreign_enum_value_option;

@@ -93,7 +93,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.location = Internal.copyOf("location", location);
+    builder.location = Internal.copyOf(location);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -331,11 +331,11 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     @Override
     public Builder newBuilder() {
       Builder builder = new Builder();
-      builder.path = Internal.copyOf("path", path);
-      builder.span = Internal.copyOf("span", span);
+      builder.path = Internal.copyOf(path);
+      builder.span = Internal.copyOf(span);
       builder.leading_comments = leading_comments;
       builder.trailing_comments = trailing_comments;
-      builder.leading_detached_comments = Internal.copyOf("leading_detached_comments", leading_detached_comments);
+      builder.leading_detached_comments = Internal.copyOf(leading_detached_comments);
       builder.addUnknownFields(unknownFields());
       return builder;
     }

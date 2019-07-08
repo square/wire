@@ -59,8 +59,8 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.a = Internal.copyOf("a", a);
-    builder.b = Internal.copyOf("b", b);
+    builder.a = Internal.copyOf(a);
+    builder.b = Internal.copyOf(b);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

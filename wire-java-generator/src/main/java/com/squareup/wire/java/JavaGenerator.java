@@ -1538,8 +1538,7 @@ public final class JavaGenerator {
     for (Field field : fields) {
       String fieldName = localNameAllocator.get(field);
       if (field.isRepeated() || field.type().isMap()) {
-        result.addStatement("$1L.$2L = $3T.copyOf($2S, $2L)", builderName, fieldName,
-            Internal.class);
+        result.addStatement("$1L.$2L = $3T.copyOf($2L)", builderName, fieldName, Internal.class);
       } else {
         result.addStatement("$1L.$2L = $2L", builderName, fieldName);
       }

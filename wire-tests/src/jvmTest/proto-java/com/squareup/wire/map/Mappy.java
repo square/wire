@@ -41,7 +41,7 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.things = Internal.copyOf("things", things);
+    builder.things = Internal.copyOf(things);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

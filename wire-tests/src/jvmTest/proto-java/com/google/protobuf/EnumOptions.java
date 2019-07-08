@@ -91,7 +91,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
     Builder builder = new Builder();
     builder.allow_alias = allow_alias;
     builder.deprecated = deprecated;
-    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
     builder.enum_option = enum_option;
     builder.addUnknownFields(unknownFields());
     return builder;

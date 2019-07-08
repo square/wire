@@ -90,10 +90,10 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.name = name;
-    builder.value = Internal.copyOf("value", value);
+    builder.value = Internal.copyOf(value);
     builder.options = options;
-    builder.reserved_range = Internal.copyOf("reserved_range", reserved_range);
-    builder.reserved_name = Internal.copyOf("reserved_name", reserved_name);
+    builder.reserved_range = Internal.copyOf(reserved_range);
+    builder.reserved_name = Internal.copyOf(reserved_name);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

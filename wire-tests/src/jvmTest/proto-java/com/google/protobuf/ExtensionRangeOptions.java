@@ -45,7 +45,7 @@ public final class ExtensionRangeOptions extends Message<ExtensionRangeOptions, 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.uninterpreted_option = Internal.copyOf("uninterpreted_option", uninterpreted_option);
+    builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
   }

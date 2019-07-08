@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import kotlin.KotlinNullPointerException;
 import okio.Buffer;
 import okio.ByteString;
 import okio.ForwardingSource;
@@ -561,8 +562,9 @@ public class TestAllTypes {
       // A null value for a repeated field is not allowed.
       getBuilder().rep_nested_enum(null);
       fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("list == null");
+    } catch (IllegalArgumentException e) {
+      assertThat(e).hasMessage("Parameter specified as non-null is null: method "
+          + "com.squareup.wire.internal.Internal__InternalKt.checkElementsNotNull, parameter list");
     }
   }
 }

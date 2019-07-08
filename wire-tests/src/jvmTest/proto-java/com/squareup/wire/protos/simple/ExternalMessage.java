@@ -105,7 +105,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   public Builder newBuilder() {
     Builder builder = new Builder();
     builder.f = f;
-    builder.fooext = Internal.copyOf("fooext", fooext);
+    builder.fooext = Internal.copyOf(fooext);
     builder.barext = barext;
     builder.bazext = bazext;
     builder.nested_message_ext = nested_message_ext;

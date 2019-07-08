@@ -62,9 +62,9 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
-    builder.rep_int32 = Internal.copyOf("rep_int32", rep_int32);
-    builder.pack_int32 = Internal.copyOf("pack_int32", pack_int32);
-    builder.map_int32_int32 = Internal.copyOf("map_int32_int32", map_int32_int32);
+    builder.rep_int32 = Internal.copyOf(rep_int32);
+    builder.pack_int32 = Internal.copyOf(pack_int32);
+    builder.map_int32_int32 = Internal.copyOf(map_int32_int32);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
