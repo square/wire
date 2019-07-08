@@ -28,6 +28,11 @@ kotlin {
   macosX64()
   mingwX64('winX64')
   sourceSets {
+    all {
+      languageSettings {
+        useExperimentalAnnotation("kotlin.Experimental")
+      }
+    }
     commonMain {
       dependencies {
         api deps.kotlin.stdlib.common
