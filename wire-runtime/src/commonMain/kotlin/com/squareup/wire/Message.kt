@@ -44,7 +44,7 @@ expect abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> prot
   fun withoutUnknownFields(): M
 
   /** The [ProtoAdapter] for encoding and decoding messages of this type. */
-  fun adapter(): ProtoAdapter<M>
+  val adapter: ProtoAdapter<M>
 
   /** Encode this message and write it to `stream`. */
   fun encode(sink: BufferedSink)
