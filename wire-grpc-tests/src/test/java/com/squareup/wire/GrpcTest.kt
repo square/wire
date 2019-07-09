@@ -147,8 +147,8 @@ class GrpcTest {
         ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
     mockService.enqueue(
         SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("lacoste").build()))
-    mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(SendCompleted)
 
     val (requestChannel, responseChannel) = routeGuideService.RouteChat()
     runBlocking {
