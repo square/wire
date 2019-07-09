@@ -26,7 +26,8 @@ import java.io.Serializable
 /** A protocol buffer message. */
 actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>>
 protected actual constructor(
-  @field:Transient private val adapter: ProtoAdapter<M>,
+  /** The [ProtoAdapter] for encoding and decoding messages of this type. */
+  @field:Transient @get:JvmName("adapter") actual val adapter: ProtoAdapter<M>,
   /** Unknown fields, proto-encoded. We permit null to support magic deserialization. */
   @field:Transient private val unknownFields: ByteString?
 ) : Serializable {
@@ -58,9 +59,6 @@ protected actual constructor(
 
   @Throws(ObjectStreamException::class)
   protected fun writeReplace(): Any = MessageSerializedForm(encode(), javaClass as Class<M>)
-
-  /** The [ProtoAdapter] for encoding and decoding messages of this type. */
-  actual fun adapter(): ProtoAdapter<M> = adapter
 
   /** Encode this message and write it to `stream`. */
   @Throws(IOException::class)

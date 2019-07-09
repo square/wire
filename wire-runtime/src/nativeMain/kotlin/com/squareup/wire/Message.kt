@@ -21,7 +21,8 @@ import okio.ByteString
 /** A protocol buffer message. */
 actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>>
 protected actual constructor(
-  private val adapter: ProtoAdapter<M>,
+  /** The [ProtoAdapter] for encoding and decoding messages of this type. */
+  actual val adapter: ProtoAdapter<M>,
   /** Unknown fields, proto-encoded. We permit null to support magic deserialization. */
   private val unknownFields: ByteString?
 ) {
@@ -45,9 +46,6 @@ protected actual constructor(
 
   /** Returns this message with any unknown fields removed. */
   actual fun withoutUnknownFields(): M = TODO()
-
-  /** The [ProtoAdapter] for encoding and decoding messages of this type. */
-  actual fun adapter(): ProtoAdapter<M> = adapter
 
   /** Encode this message and write it to `stream`. */
   actual fun encode(sink: BufferedSink) {
