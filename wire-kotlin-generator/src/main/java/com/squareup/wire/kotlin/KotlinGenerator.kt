@@ -712,7 +712,7 @@ class KotlinGenerator private constructor(
 
   private fun decodeFun(message: MessageType): FunSpec {
     val className = nameToKotlinName.getValue(message.type())
-    val nameAllocator = nameAllocator(message)
+    val nameAllocator = nameAllocator(message).copy()
 
     val declarationBody = buildCodeBlock {
       message.fieldsAndOneOfFields().forEach { field ->
@@ -743,8 +743,9 @@ class KotlinGenerator private constructor(
     }
 
     val decodeBlock = buildCodeBlock {
-      addStatement("val unknownFields = reader.forEachTag { tag ->")
-      addStatement("⇥when (tag) {⇥")
+      val readerTagParamName = nameAllocator.newName("tag")
+      addStatement("val unknownFields = reader.forEachTag { $readerTagParamName ->")
+      addStatement("⇥when ($readerTagParamName) {⇥")
 
       message.fieldsAndOneOfFields().forEach { field ->
         val fieldName = nameAllocator[field]
@@ -758,7 +759,7 @@ class KotlinGenerator private constructor(
 
         addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
       }
-      addStatement("else -> reader.readUnknownField(tag)")
+      addStatement("else -> reader.readUnknownField($readerTagParamName)")
       add("⇤}\n⇤}\n") // close the block
     }
 

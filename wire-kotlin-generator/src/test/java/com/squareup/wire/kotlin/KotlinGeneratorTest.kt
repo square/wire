@@ -414,6 +414,19 @@ class KotlinGeneratorTest {
         repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", "RouteChat"))
   }
 
+  @Test fun nameAllocatorIsUsedInDecodeForReaderTag() {
+    val repoBuilder = RepoBuilder()
+        .add("message.proto", """
+        |message Message {
+        |  required float tag = 1;
+        |}""".trimMargin())
+    val code = repoBuilder.generateKotlin("Message")
+    assertTrue(code.contains("val unknownFields = reader.forEachTag { tag_ ->"))
+    assertTrue(code.contains("when (tag_)"))
+    assertTrue(code.contains("1 -> tag = ProtoAdapter.FLOAT.decode(reader)"))
+    assertTrue(code.contains("else -> reader.readUnknownField(tag_)"))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {
