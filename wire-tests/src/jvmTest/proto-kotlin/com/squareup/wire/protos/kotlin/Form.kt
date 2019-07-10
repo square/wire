@@ -148,8 +148,8 @@ data class Form(
         var option_picker_element: OptionPickerElement? = null
         var detail_row_element: DetailRowElement? = null
         var currency_conversion_flags_element: CurrencyConversionFlagsElement? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> button_element = ButtonElement.ADAPTER.decode(reader)
             2 -> local_image_element = LocalImageElement.ADAPTER.decode(reader)
             3 -> remote_image_element = RemoteImageElement.ADAPTER.decode(reader)
@@ -163,7 +163,7 @@ data class Form(
             11 -> detail_row_element = DetailRowElement.ADAPTER.decode(reader)
             12 -> currency_conversion_flags_element =
                 CurrencyConversionFlagsElement.ADAPTER.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return Form(
@@ -229,9 +229,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): ButtonElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return ButtonElement(
@@ -271,9 +271,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): LocalImageElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return LocalImageElement(
@@ -313,9 +313,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): RemoteImageElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return RemoteImageElement(
@@ -355,9 +355,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): MoneyElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return MoneyElement(
@@ -397,9 +397,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): SpacerElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return SpacerElement(
@@ -439,9 +439,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): TextElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return TextElement(
@@ -482,9 +482,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): CustomizedCardElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return CustomizedCardElement(
@@ -524,9 +524,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): AddressElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return AddressElement(
@@ -566,9 +566,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): TextInputElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return TextInputElement(
@@ -608,9 +608,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): OptionPickerElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return OptionPickerElement(
@@ -650,9 +650,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): DetailRowElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return DetailRowElement(
@@ -693,9 +693,9 @@ data class Form(
         }
 
         override fun decode(reader: ProtoReader): CurrencyConversionFlagsElement {
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
-              else -> reader.readUnknownField(tag)
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return CurrencyConversionFlagsElement(

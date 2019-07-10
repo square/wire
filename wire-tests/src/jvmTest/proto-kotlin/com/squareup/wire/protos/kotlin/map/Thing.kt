@@ -50,10 +50,10 @@ data class Thing(
 
       override fun decode(reader: ProtoReader): Thing {
         var name: String? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> name = ProtoAdapter.STRING.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return Thing(

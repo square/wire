@@ -98,13 +98,13 @@ data class Person(
         var id: Int? = null
         var email: String? = null
         val phone = mutableListOf<PhoneNumber>()
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> name = ProtoAdapter.STRING.decode(reader)
             2 -> id = ProtoAdapter.INT32.decode(reader)
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return Person(
@@ -207,11 +207,11 @@ data class Person(
         override fun decode(reader: ProtoReader): PhoneNumber {
           var number: String? = null
           var type: PhoneType? = null
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
               1 -> number = ProtoAdapter.STRING.decode(reader)
               2 -> type = PhoneType.ADAPTER.decode(reader)
-              else -> reader.readUnknownField(tag)
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return PhoneNumber(

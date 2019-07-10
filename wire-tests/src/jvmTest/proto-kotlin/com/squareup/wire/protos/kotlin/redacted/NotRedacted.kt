@@ -58,11 +58,11 @@ data class NotRedacted(
       override fun decode(reader: ProtoReader): NotRedacted {
         var a: String? = null
         var b: String? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> a = ProtoAdapter.STRING.decode(reader)
             2 -> b = ProtoAdapter.STRING.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return NotRedacted(

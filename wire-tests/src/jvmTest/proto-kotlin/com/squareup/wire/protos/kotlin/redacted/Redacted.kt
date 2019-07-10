@@ -84,13 +84,13 @@ data class Redacted(
         var b: String? = null
         var c: String? = null
         var extension: RedactedExtension? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> a = ProtoAdapter.STRING.decode(reader)
             2 -> b = ProtoAdapter.STRING.decode(reader)
             3 -> c = ProtoAdapter.STRING.decode(reader)
             10 -> extension = RedactedExtension.ADAPTER.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return Redacted(

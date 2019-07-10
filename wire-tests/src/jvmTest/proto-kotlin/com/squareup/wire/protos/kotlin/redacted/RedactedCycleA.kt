@@ -49,10 +49,10 @@ data class RedactedCycleA(
 
       override fun decode(reader: ProtoReader): RedactedCycleA {
         var b: RedactedCycleB? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> b = RedactedCycleB.ADAPTER.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return RedactedCycleA(

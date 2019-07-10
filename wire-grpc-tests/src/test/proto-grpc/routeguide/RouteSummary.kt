@@ -92,13 +92,13 @@ data class RouteSummary(
         var feature_count: Int? = null
         var distance: Int? = null
         var elapsed_time: Int? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> point_count = ProtoAdapter.INT32.decode(reader)
             2 -> feature_count = ProtoAdapter.INT32.decode(reader)
             3 -> distance = ProtoAdapter.INT32.decode(reader)
             4 -> elapsed_time = ProtoAdapter.INT32.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return RouteSummary(

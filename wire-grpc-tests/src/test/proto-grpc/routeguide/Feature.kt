@@ -69,11 +69,11 @@ data class Feature(
       override fun decode(reader: ProtoReader): Feature {
         var name: String? = null
         var location: Point? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> name = ProtoAdapter.STRING.decode(reader)
             2 -> location = Point.ADAPTER.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return Feature(

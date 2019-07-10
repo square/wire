@@ -40,9 +40,9 @@ data class NoPackageResponse(
       }
 
       override fun decode(reader: ProtoReader): NoPackageResponse {
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
-            else -> reader.readUnknownField(tag)
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return NoPackageResponse(

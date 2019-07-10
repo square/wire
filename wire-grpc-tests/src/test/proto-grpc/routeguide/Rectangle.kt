@@ -67,11 +67,11 @@ data class Rectangle(
       override fun decode(reader: ProtoReader): Rectangle {
         var lo: Point? = null
         var hi: Point? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> lo = Point.ADAPTER.decode(reader)
             2 -> hi = Point.ADAPTER.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return Rectangle(

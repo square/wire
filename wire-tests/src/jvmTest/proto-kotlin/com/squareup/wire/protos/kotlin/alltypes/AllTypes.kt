@@ -1296,8 +1296,8 @@ data class AllTypes(
         val ext_map_string_string = mutableMapOf<String, String>()
         val ext_map_string_message = mutableMapOf<String, NestedMessage>()
         val ext_map_string_enum = mutableMapOf<String, NestedEnum>()
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> opt_int32 = ProtoAdapter.INT32.decode(reader)
             2 -> opt_uint32 = ProtoAdapter.UINT32.decode(reader)
             3 -> opt_sint32 = ProtoAdapter.SINT32.decode(reader)
@@ -1435,7 +1435,7 @@ data class AllTypes(
             1402 -> ext_map_string_string.putAll(ext_map_string_stringAdapter.decode(reader))
             1503 -> ext_map_string_message.putAll(ext_map_string_messageAdapter.decode(reader))
             1504 -> ext_map_string_enum.putAll(ext_map_string_enumAdapter.decode(reader))
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return AllTypes(
@@ -1649,10 +1649,10 @@ data class AllTypes(
 
         override fun decode(reader: ProtoReader): NestedMessage {
           var a: Int? = null
-          val unknownFields = reader.forEachTag { tag ->
-            when (tag) {
+          val unknownFields = reader.forEachTag { readerTag ->
+            when (readerTag) {
               1 -> a = ProtoAdapter.INT32.decode(reader)
-              else -> reader.readUnknownField(tag)
+              else -> reader.readUnknownField(readerTag)
             }
           }
           return NestedMessage(

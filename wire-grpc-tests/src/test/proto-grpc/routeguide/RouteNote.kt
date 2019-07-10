@@ -67,11 +67,11 @@ data class RouteNote(
       override fun decode(reader: ProtoReader): RouteNote {
         var location: Point? = null
         var message: String? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> location = Point.ADAPTER.decode(reader)
             2 -> message = ProtoAdapter.STRING.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return RouteNote(

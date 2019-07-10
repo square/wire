@@ -60,10 +60,10 @@ data class RedactedRequired(
 
       override fun decode(reader: ProtoReader): RedactedRequired {
         var a: String? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> a = ProtoAdapter.STRING.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return RedactedRequired(

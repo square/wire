@@ -85,12 +85,12 @@ data class OneOfMessage(
         var foo: Int? = null
         var bar: String? = null
         var baz: String? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> foo = ProtoAdapter.INT32.decode(reader)
             3 -> bar = ProtoAdapter.STRING.decode(reader)
             4 -> baz = ProtoAdapter.STRING.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return OneOfMessage(

@@ -73,11 +73,11 @@ data class RedactedOneOf(
       override fun decode(reader: ProtoReader): RedactedOneOf {
         var b: Int? = null
         var c: String? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> b = ProtoAdapter.INT32.decode(reader)
             2 -> c = ProtoAdapter.STRING.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return RedactedOneOf(

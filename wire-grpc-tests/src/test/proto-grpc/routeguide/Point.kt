@@ -63,11 +63,11 @@ data class Point(
       override fun decode(reader: ProtoReader): Point {
         var latitude: Int? = null
         var longitude: Int? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> latitude = ProtoAdapter.INT32.decode(reader)
             2 -> longitude = ProtoAdapter.INT32.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return Point(

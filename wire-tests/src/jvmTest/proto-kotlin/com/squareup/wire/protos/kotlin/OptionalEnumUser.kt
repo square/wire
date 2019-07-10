@@ -52,10 +52,10 @@ data class OptionalEnumUser(
 
       override fun decode(reader: ProtoReader): OptionalEnumUser {
         var optional_enum: OptionalEnum? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> optional_enum = OptionalEnum.ADAPTER.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return OptionalEnumUser(

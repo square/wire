@@ -66,12 +66,12 @@ data class RedactedChild(
         var a: String? = null
         var b: Redacted? = null
         var c: NotRedacted? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> a = ProtoAdapter.STRING.decode(reader)
             2 -> b = Redacted.ADAPTER.decode(reader)
             3 -> c = NotRedacted.ADAPTER.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return RedactedChild(

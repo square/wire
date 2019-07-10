@@ -67,10 +67,10 @@ data class Mappy(
 
       override fun decode(reader: ProtoReader): Mappy {
         val things = mutableMapOf<String, Thing>()
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> things.putAll(thingsAdapter.decode(reader))
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return Mappy(

@@ -61,11 +61,11 @@ data class MessageUsingMultipleEnums(
       override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
         var a: MessageWithStatus.Status? = null
         var b: OtherMessageWithStatus.Status? = null
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> a = MessageWithStatus.Status.ADAPTER.decode(reader)
             2 -> b = OtherMessageWithStatus.Status.ADAPTER.decode(reader)
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return MessageUsingMultipleEnums(

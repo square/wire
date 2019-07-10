@@ -55,10 +55,10 @@ data class FeatureDatabase(
 
       override fun decode(reader: ProtoReader): FeatureDatabase {
         val feature = mutableListOf<Feature>()
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
+        val unknownFields = reader.forEachTag { readerTag ->
+          when (readerTag) {
             1 -> feature.add(Feature.ADAPTER.decode(reader))
-            else -> reader.readUnknownField(tag)
+            else -> reader.readUnknownField(readerTag)
           }
         }
         return FeatureDatabase(
