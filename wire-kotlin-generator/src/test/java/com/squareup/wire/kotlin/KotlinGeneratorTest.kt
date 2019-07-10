@@ -421,10 +421,10 @@ class KotlinGeneratorTest {
         |  required float readerTag = 1;
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Message")
-    assertTrue(code.contains("val unknownFields = reader.forEachTag { readerTag ->"))
-    assertTrue(code.contains("when (readerTag)"))
-    assertTrue(code.contains("1 -> readerTag_ = ProtoAdapter.FLOAT.decode(reader)"))
-    assertTrue(code.contains("else -> reader.readUnknownField(readerTag)"))
+    assertTrue(code.contains("val unknownFields = reader.forEachTag { readerTag_ ->"))
+    assertTrue(code.contains("when (readerTag_)"))
+    assertTrue(code.contains("1 -> readerTag = ProtoAdapter.FLOAT.decode(reader)"))
+    assertTrue(code.contains("else -> reader.readUnknownField(readerTag_)"))
   }
 
   companion object {
