@@ -193,6 +193,7 @@ class KotlinGenerator private constructor(
             newName("reader", "reader")
             newName("Builder", "Builder")
             newName("builder", "builder")
+            newName("readerTag", "readerTag")
 
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
@@ -743,8 +744,10 @@ class KotlinGenerator private constructor(
     }
 
     val decodeBlock = buildCodeBlock {
-      addStatement("val unknownFields = reader.forEachTag { tag ->")
-      addStatement("⇥when (tag) {⇥")
+      val readerTagParamName = nameAllocator["readerTag"]
+
+      addStatement("val unknownFields = reader.forEachTag { $readerTagParamName ->")
+      addStatement("⇥when ($readerTagParamName) {⇥")
 
       message.fieldsAndOneOfFields().forEach { field ->
         val fieldName = nameAllocator[field]
@@ -758,7 +761,7 @@ class KotlinGenerator private constructor(
 
         addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
       }
-      addStatement("else -> reader.readUnknownField(tag)")
+      addStatement("else -> reader.readUnknownField($readerTagParamName)")
       add("⇤}\n⇤}\n") // close the block
     }
 
