@@ -55,7 +55,6 @@ animalsniffer {
 
 dependencies {
   implementation project(':wire-runtime')
-  implementation project(':wire-grpc')
   implementation project(':wire-grpc-client')
   implementation deps.okio.jvm
   compileOnly deps.android
