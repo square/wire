@@ -15,7 +15,6 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.GrpcEncoding.Companion.toGrpcEncoding
 import com.squareup.wire.internal.genericParameterType
 import com.squareup.wire.internal.invokeSuspending
 import com.squareup.wire.internal.rawType
@@ -153,7 +152,7 @@ class GrpcClient private constructor(
             val grpcEncoding = response.header("grpc-encoding")
             val responseSource = response.body()!!.source()
             val responseReader = GrpcReader(
-                responseSource, grpcMethod.responseAdapter, grpcEncoding?.toGrpcEncoding())
+                responseSource, grpcMethod.responseAdapter, grpcEncoding)
             responseReader.use {
               while (true) {
                 val message = it.readMessage() ?: break
