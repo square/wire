@@ -110,7 +110,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     return builder.build()
   }
 
-  private fun parseValue(fieldBinding: FieldBinding<*, *>, element: JsonElement): Any {
+  private fun parseValue(fieldBinding: FieldBinding<*, *>, element: JsonElement): Any? {
     if (fieldBinding.label.isRepeated) {
       if (element.isJsonNull) {
         return emptyList<Any>()

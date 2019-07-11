@@ -100,7 +100,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  operator fun set(builder: B, value: Any) {
+  operator fun set(builder: B, value: Any?) {
     if (label.isOneOf) {
       // In order to maintain the 'oneof' invariant, call the builder setter method rather
       // than setting the builder field directly.
