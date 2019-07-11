@@ -46,10 +46,10 @@ class GrpcReader<T>(
     //                 Message → *{binary octet}
 
     val compressedFlag = source.readByte()
-    val messageEncoding: GrpcEncoding = when {
-      compressedFlag.toInt() == 0 -> GrpcEncoding.IdentityGrpcEncoding
+    val messageDecoding: GrpcDecoder = when {
+      compressedFlag.toInt() == 0 -> GrpcDecoder.IdentityGrpcDecoder
       compressedFlag.toInt() == 1 -> {
-        grpcEncoding?.toGrpcEncoding() ?: throw ProtocolException(
+        grpcEncoding?.toGrpcDecoding() ?: throw ProtocolException(
             "message is encoded but message-encoding header was omitted")
       }
       else -> throw ProtocolException("unexpected compressed-flag: $compressedFlag")
@@ -60,7 +60,7 @@ class GrpcReader<T>(
     val encodedMessage = Buffer()
     encodedMessage.write(source, encodedLength)
 
-    return messageAdapter.decode(messageEncoding.decode(encodedMessage).buffer())
+    return messageAdapter.decode(messageDecoding.decode(encodedMessage).buffer())
   }
 
   override fun close() {

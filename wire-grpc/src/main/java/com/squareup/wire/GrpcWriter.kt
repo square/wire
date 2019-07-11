@@ -22,30 +22,35 @@ import java.io.Closeable
 /** Writes a sequence of GRPC messages as an HTTP/2 stream. */
 class GrpcWriter<T> private constructor(
   private val sink: BufferedSink,
-  private val messageAdapter: ProtoAdapter<T>
+  private val messageAdapter: ProtoAdapter<T>,
+  private val grpcEncoding: String
 ) : Closeable {
   companion object {
     /**
      * @param sink the HTTP/2 stream body.
      * @param messageAdapter a proto adapter for each message.
+     * @param grpcEncoding the content coding for the stream body.
      */
     fun <T> get(
       sink: BufferedSink,
-      messageAdapter: ProtoAdapter<T>
-    ) = GrpcWriter(sink, messageAdapter)
+      messageAdapter: ProtoAdapter<T>,
+      grpcEncoding: String = "identity"
+    ) = GrpcWriter(sink, messageAdapter, grpcEncoding)
   }
 
   fun writeMessage(message: T) {
-    // TODO: support writing nontrivial encodings
-    val compressedFlag = 0
-    sink.writeByte(compressedFlag)
+    val messageEncoding = grpcEncoding.toGrpcEncoder()
+    val encodingSink = messageEncoding.encode(sink)
+
+    val compressedFlag = if (grpcEncoding == "identity") 0 else 1
+    encodingSink.writeByte(compressedFlag)
 
     val encodedMessage = Buffer()
     messageAdapter.encode(encodedMessage, message)
 
-    // TODO: fail if the message size is less than MAX_INT
-    sink.writeInt(encodedMessage.size.toInt())
-    sink.writeAll(encodedMessage)
+    // TODO: fail if the message size is more than MAX_INT
+    encodingSink.writeInt(encodedMessage.size.toInt())
+    encodingSink.writeAll(encodedMessage)
   }
 
   fun flush() {
