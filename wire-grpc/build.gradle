@@ -12,3 +12,9 @@ animalsniffer {
   sourceSets = [sourceSets.main]
   ignore 'com.squareup.wire.internal'
 }
+
+dependencies {
+  implementation project(':wire-runtime')
+  api deps.okio.jvm
+  api deps.kotlin.stdlib.jdk8
+}
