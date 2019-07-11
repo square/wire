@@ -20,7 +20,7 @@ import okio.BufferedSink
 import java.io.Closeable
 
 /** Writes a sequence of GRPC messages as an HTTP/2 stream. */
-internal class GrpcWriter<T> private constructor(
+class GrpcWriter<T> private constructor(
   private val sink: BufferedSink,
   private val messageAdapter: ProtoAdapter<T>
 ) : Closeable {

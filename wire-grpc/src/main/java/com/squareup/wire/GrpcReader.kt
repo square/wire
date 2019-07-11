@@ -28,10 +28,10 @@ import java.net.ProtocolException
  * @param messageAdapter a proto adapter for each message.
  * @param grpcEncoding the "grpc-encoding" header, or null if it is absent.
  */
-internal class GrpcReader<T>(
+class GrpcReader<T>(
   private val source: BufferedSource,
   private val messageAdapter: ProtoAdapter<T>,
-  private val grpcEncoding: GrpcEncoding? = null
+  private val grpcEncoding: String? = null
 ) : Closeable {
   /**
    * Read the next length-prefixed message on the stream and return it. Returns null if there are
@@ -49,7 +49,7 @@ internal class GrpcReader<T>(
     val messageEncoding: GrpcEncoding = when {
       compressedFlag.toInt() == 0 -> GrpcEncoding.IdentityGrpcEncoding
       compressedFlag.toInt() == 1 -> {
-        grpcEncoding ?: throw ProtocolException(
+        grpcEncoding?.toGrpcEncoding() ?: throw ProtocolException(
             "message is encoded but message-encoding header was omitted")
       }
       else -> throw ProtocolException("unexpected compressed-flag: $compressedFlag")
