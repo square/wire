@@ -270,6 +270,13 @@ public class GsonTest {
     assertThat(gson.toJson(parsed)).isEqualTo(gson.toJson(allTypes));
   }
 
+  @Test public void deserializationOfNullValues() {
+    // Modifying JSON string manually, cause serialization omits fields with null values.
+    String json = JSON.replace("\"opt_string\":\"124\",", "\"opt_string\":null,");
+    AllTypes deserializedAllTypesWithNulls = gson.fromJson(json, AllTypes.class);
+    assertThat(deserializedAllTypesWithNulls.opt_string).isNull();
+  }
+
   @Test public void omitsUnknownFields() {
     AllTypes.Builder builder = createBuilder();
     builder.addUnknownField(9000, FieldEncoding.FIXED32, 9000);
