@@ -58,6 +58,11 @@ dependencies {
   implementation project(':wire-grpc')
   implementation project(':wire-grpc-client')
   implementation deps.okio.jvm
+  if (JavaVersion.current().isJava9Compatible()) {
+    // Workaround for @javax.annotation.Generated
+    // see: https://github.com/grpc/grpc-java/issues/3633
+    implementation 'javax.annotation:javax.annotation-api:1.3.1'
+  }
   compileOnly deps.android
   testImplementation deps.junit
   testImplementation deps.assertj
