@@ -4,7 +4,7 @@ apply plugin: 'ru.vyarus.animalsniffer'
 
 jar {
   manifest {
-    attributes('Automatic-Module-Name': 'wire-grpc-client')
+    attributes('Automatic-Module-Name': 'wire-grpc')
   }
 }
 
@@ -15,8 +15,6 @@ animalsniffer {
 
 dependencies {
   implementation project(':wire-runtime')
-  implementation project(':wire-grpc')
   api deps.okio.jvm
-  api deps.okhttp
-  api deps.kotlin.coroutines.core
+  api deps.kotlin.stdlib.jdk8
 }
