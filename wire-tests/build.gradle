@@ -42,7 +42,6 @@ kotlin {
       kotlin.srcDirs += 'src/jvmTest/proto-kotlin'
       kotlin.srcDirs += 'src/jvmTest/proto-java'
       dependencies {
-        implementation project(':wire-grpc')
         implementation project(':wire-grpc-client')
         implementation project(':wire-test-utils')
         implementation deps.assertj
