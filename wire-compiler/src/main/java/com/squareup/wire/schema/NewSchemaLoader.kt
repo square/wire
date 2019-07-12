@@ -72,14 +72,35 @@ class NewSchemaLoader(
 
     // Load the imported files next.
     val protoPathRoots = allRoots(closer, protoPath)
+    val missingImports = mutableListOf<String>()
     while (true) {
       val import = imports.poll() ?: break
       if (loaded[import] != null) continue // Already loaded.
 
+      var loadedFrom: Location? = null
       for (protoPathRoot in protoPathRoots) {
         val locationAndPath = protoPathRoot.resolve(import) ?: continue
+        if (loadedFrom != null) {
+          errors += "$import is ambiguous:\n  $locationAndPath\n  $loadedFrom"
+          continue
+        }
+        loadedFrom = locationAndPath.location
         load(locationAndPath)
       }
+
+      if (loadedFrom == null) {
+        missingImports += import
+        continue
+      }
+    }
+
+    if (missingImports.isNotEmpty()) {
+      errors += """
+          |unable to resolve ${missingImports.size} imports:
+          |  ${missingImports.joinToString(separator = "\n  ")}
+          |searching ${protoPathRoots.size} proto paths:
+          |  ${protoPathRoots.joinToString(separator = "\n  ")}
+          """.trimMargin()
     }
 
     if (errors.isNotEmpty()) {

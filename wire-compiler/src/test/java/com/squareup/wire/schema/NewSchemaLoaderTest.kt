@@ -157,4 +157,78 @@ class NewSchemaLoaderTest {
         "squareup/curves/circle.proto"
     )
   }
+
+  @Test
+  fun importNotFound() {
+    fs.add("colors/src/main/proto/squareup/colors/blue.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |import "squareup/curves/circle.proto";
+        |import "squareup/polygons/rectangle.proto";
+        |message Blue {
+        |}
+        """.trimMargin())
+    fs.add("polygons/src/main/proto/squareup/polygons/triangle.proto", """
+        |syntax = "proto2";
+        |package squareup.polygons;
+        |message Triangle {
+        |}
+        """.trimMargin())
+    fs.addZip("lib/curves.zip",
+        "squareup/curves/oval.proto" to """
+        |syntax = "proto2";
+        |package squareup.curves;
+        |message Oval {
+        |}
+        """.trimMargin())
+
+    val sourcePath = listOf(Location.get("colors/src/main/proto"))
+    val protoPath = listOf(Location.get("polygons/src/main/proto"), Location.get("lib/curves.zip"))
+    val exception = assertFailsWith<IllegalArgumentException> {
+      NewSchemaLoader(fs, sourcePath, protoPath).use { it.load() }
+    }
+    assertThat(exception).hasMessage("""
+        |unable to resolve 2 imports:
+        |  squareup/curves/circle.proto
+        |  squareup/polygons/rectangle.proto
+        |searching 2 proto paths:
+        |  polygons/src/main/proto
+        |  lib/curves.zip
+        """.trimMargin())
+  }
+
+  @Test
+  fun ambiguousImport() {
+    fs.add("colors/src/main/proto/squareup/colors/blue.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |import "squareup/curves/circle.proto";
+        |message Blue {
+        |}
+        """.trimMargin())
+    fs.add("polygons/src/main/proto/squareup/curves/circle.proto", """
+        |syntax = "proto2";
+        |package squareup.curves;
+        |message Circle {
+        |}
+        """.trimMargin())
+    fs.addZip("lib/curves.zip",
+        "squareup/curves/circle.proto" to """
+        |syntax = "proto2";
+        |package squareup.curves;
+        |message Circle {
+        |}
+        """.trimMargin())
+
+    val sourcePath = listOf(Location.get("colors/src/main/proto"))
+    val protoPath = listOf(Location.get("polygons/src/main/proto"), Location.get("lib/curves.zip"))
+    val exception = assertFailsWith<IllegalArgumentException> {
+      NewSchemaLoader(fs, sourcePath, protoPath).use { it.load() }
+    }
+    assertThat(exception).hasMessage("""
+        |squareup/curves/circle.proto is ambiguous:
+        |  lib/curves.zip/squareup/curves/circle.proto
+        |  polygons/src/main/proto/squareup/curves/circle.proto
+        """.trimMargin())
+  }
 }
