@@ -242,6 +242,20 @@ class WirePluginTest {
   }
 
   @Test
+  fun protoPathMavenCoordinates() {
+    val fixtureRoot = File("src/test/projects/protopath-maven")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+        .doesNotContain("Writing com.squareup.geology.Period")
+        .contains("Writing com.squareup.dinosaurs.Dig")
+        .contains("src/test/projects/protopath-maven/build/generated/src/main/java")
+  }
+
+  @Test
   fun differentJavaOutputDir() {
     val fixtureRoot = File("src/test/projects/different-java-out")
 
