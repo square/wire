@@ -121,6 +121,8 @@ internal class ProtoFilePath(val location: Location, val path: Path) : Root() {
       throw IOException("Failed to load $path", e)
     }
   }
+
+  override fun toString(): String = location.toString()
 }
 
 internal class DirectoryRoot(
@@ -149,6 +151,8 @@ internal class DirectoryRoot(
     if (!Files.exists(resolved)) return null
     return ProtoFilePath(Location.get(base, import), resolved)
   }
+
+  override fun toString(): String = base
 }
 
 private fun Path.endsWithDotProto() = fileName.toString().endsWith(".proto")
