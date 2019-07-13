@@ -1,0 +1,19 @@
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'ru.vyarus.animalsniffer'
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-grpc-server')
+  }
+}
+
+animalsniffer {
+  sourceSets = [sourceSets.main]
+  ignore 'com.squareup.wire.internal'
+}
+
+dependencies {
+  implementation project(':wire-runtime')
+  api project(':wire-grpc')
+}
