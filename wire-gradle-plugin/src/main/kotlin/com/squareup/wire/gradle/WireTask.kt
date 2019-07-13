@@ -131,10 +131,13 @@ open class WireTask : SourceTask() {
     }
 
     val includes = dependencyToIncludes[dependency]
-        ?: return listOf(Location.get(path))
 
-    return includes.map {
-      include -> Location.get(base = path, path = include)
+    if (includes == null || includes.isEmpty()) {
+      return listOf(Location.get(path))
+    }
+
+    return includes.map { include ->
+      Location.get(base = path, path = include)
     }
   }
 }

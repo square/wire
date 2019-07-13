@@ -1,0 +1,20 @@
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+// See installProtoJars task in wire-gradle-plugin/build.gradle
+repositories {
+  maven {
+    url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
+  }
+}
+
+wire {
+  protoPath {
+    srcJar 'com.squareup.wire.dinosaur:all-protos:+'
+  }
+  sourcePath {
+    srcDir 'src/main/proto'
+  }
+}
