@@ -41,7 +41,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Proxy
@@ -58,28 +57,27 @@ class GrpcClient private constructor(
     val methodToService: Map<Method, GrpcMethod<*, *>> =
         service.java.methods.associate { method -> method to method.toGrpc<Any, Any>() }
 
-    return Proxy.newProxyInstance(service.java.classLoader, arrayOf<Class<*>>(service.java),
-        object : InvocationHandler {
-          override fun invoke(proxy: Any?, method: Method?, args: Array<out Any>?): Any? {
-
-            return when (val grpcMethod = methodToService[method] as GrpcMethod<*, *>) {
-              is GrpcMethod.RequestResponse -> {
-                (args!!.last() as Continuation<Any>).invokeSuspending {
-                  grpcMethod.invoke(this@GrpcClient, parameter = args[0])
-                }
-              }
-              is GrpcMethod.StreamingResponse -> {
-                grpcMethod.invoke(this@GrpcClient, parameter = args!![0])
-              }
-              is GrpcMethod.StreamingRequest -> {
-                grpcMethod.invoke(this@GrpcClient)
-              }
-              is GrpcMethod.FullDuplex -> {
-                grpcMethod.invoke(this@GrpcClient)
-              }
-            }
+    return Proxy.newProxyInstance(
+        service.java.classLoader,
+        arrayOf<Class<*>>(service.java)
+    ) { _, method, args ->
+      when (val grpcMethod = methodToService[method] as GrpcMethod<*, *>) {
+        is GrpcMethod.RequestResponse -> {
+          (args.last() as Continuation<Any>).invokeSuspending {
+            grpcMethod.invoke(this@GrpcClient, parameter = args[0])
           }
-        }) as T
+        }
+        is GrpcMethod.StreamingResponse -> {
+          grpcMethod.invoke(this@GrpcClient, parameter = args[0])
+        }
+        is GrpcMethod.StreamingRequest -> {
+          grpcMethod.invoke(this@GrpcClient)
+        }
+        is GrpcMethod.FullDuplex -> {
+          grpcMethod.invoke(this@GrpcClient)
+        }
+      }
+    } as T
   }
 
   class Builder {
