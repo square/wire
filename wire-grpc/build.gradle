@@ -14,7 +14,7 @@ animalsniffer {
 }
 
 dependencies {
-  implementation project(':wire-runtime')
+  api project(':wire-runtime')
   api deps.okio.jvm
   api deps.kotlin.stdlib.jdk8
 }
