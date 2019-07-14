@@ -13,6 +13,12 @@ animalsniffer {
   ignore 'com.squareup.wire.internal'
 }
 
+compileKotlin {
+  kotlinOptions{
+    freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
+  }
+}
+
 dependencies {
   implementation project(':wire-runtime')
   api project(':wire-grpc')

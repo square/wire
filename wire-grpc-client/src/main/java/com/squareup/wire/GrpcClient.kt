@@ -22,7 +22,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Unconfined
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -106,6 +108,7 @@ class GrpcClient private constructor(
     }
   }
 
+  @UseExperimental(ObsoleteCoroutinesApi::class)
   internal fun <S, R> call(
     grpcMethod: GrpcMethod<S, R>,
     requestChannel: ReceiveChannel<S>,
@@ -187,6 +190,7 @@ class GrpcClient private constructor(
      * Cancellation of the [Call] is always tied to the response. To cancel the call, either cancel
      * the response channel, deferred, or suspending function call.
      */
+    @UseExperimental(ExperimentalCoroutinesApi::class)
     private fun invoke(grpcClient: GrpcClient): Pair<Channel<S>, Channel<R>> {
       val requestChannel = Channel<S>(1)
       val responseChannel = Channel<R>(1)
@@ -208,6 +212,7 @@ class GrpcClient private constructor(
       requestAdapter: ProtoAdapter<S>,
       responseAdapter: ProtoAdapter<R>
     ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
+      @UseExperimental(ObsoleteCoroutinesApi::class)
       suspend fun invoke(
         grpcClient: GrpcClient,
         parameter: Any
@@ -228,6 +233,7 @@ class GrpcClient private constructor(
       requestAdapter: ProtoAdapter<S>,
       responseAdapter: ProtoAdapter<R>
     ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
+      @UseExperimental(ExperimentalCoroutinesApi::class, ObsoleteCoroutinesApi::class)
       fun invoke(
         grpcClient: GrpcClient
       ): Any {
@@ -250,6 +256,7 @@ class GrpcClient private constructor(
       requestAdapter: ProtoAdapter<S>,
       responseAdapter: ProtoAdapter<R>
     ) : GrpcMethod<S, R>(path, requestAdapter, responseAdapter) {
+      @UseExperimental(ExperimentalCoroutinesApi::class, ObsoleteCoroutinesApi::class)
       fun invoke(
         grpcClient: GrpcClient,
         parameter: Any
