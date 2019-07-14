@@ -32,7 +32,7 @@ class GrpcReader<T>(
   private val source: BufferedSource,
   private val messageAdapter: ProtoAdapter<T>,
   private val grpcEncoding: String? = null
-) : Closeable {
+) : Closeable by source {
   /**
    * Read the next length-prefixed message on the stream and return it. Returns null if there are
    * no further messages on this stream.
@@ -61,9 +61,5 @@ class GrpcReader<T>(
     encodedMessage.write(source, encodedLength)
 
     return messageAdapter.decode(messageDecoding.decode(encodedMessage).buffer())
-  }
-
-  override fun close() {
-    source.close()
   }
 }
