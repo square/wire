@@ -24,7 +24,7 @@ class GrpcWriter<T> private constructor(
   private val sink: BufferedSink,
   private val messageAdapter: ProtoAdapter<T>,
   private val grpcEncoding: String
-) : Closeable {
+) : Closeable by sink {
   companion object {
     /**
      * @param sink the HTTP/2 stream body.
@@ -55,9 +55,5 @@ class GrpcWriter<T> private constructor(
 
   fun flush() {
     sink.flush()
-  }
-
-  override fun close() {
-    sink.close()
   }
 }
