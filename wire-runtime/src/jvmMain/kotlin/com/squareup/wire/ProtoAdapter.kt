@@ -137,7 +137,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
   actual class EnumConstantNotFoundException actual constructor(
     @JvmField actual val value: Int,
     type: KClass<*>?
-  ) : IllegalArgumentException("Unknown enum tag $value for ${type?.simpleName}") {
+  ) : IllegalArgumentException("Unknown enum tag $value for ${type?.java?.name}") {
     constructor(value: Int, type: Class<*>): this(value, type.kotlin)
   }
 
