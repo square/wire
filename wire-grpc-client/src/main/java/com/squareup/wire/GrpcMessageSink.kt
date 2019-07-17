@@ -17,14 +17,13 @@ package com.squareup.wire
 
 import okio.Buffer
 import okio.BufferedSink
-import java.io.Closeable
 
 /** Writes a sequence of GRPC messages as an HTTP/2 stream. */
-class GrpcWriter<T> private constructor(
+internal class GrpcMessageSink<T> private constructor(
   private val sink: BufferedSink,
   private val messageAdapter: ProtoAdapter<T>,
   private val grpcEncoding: String
-) : Closeable by sink {
+) : MessageSink<T> {
   companion object {
     /**
      * @param sink the HTTP/2 stream body.
@@ -35,7 +34,12 @@ class GrpcWriter<T> private constructor(
       sink: BufferedSink,
       messageAdapter: ProtoAdapter<T>,
       grpcEncoding: String = "identity"
-    ) = GrpcWriter(sink, messageAdapter, grpcEncoding)
+    ) = GrpcMessageSink(sink, messageAdapter, grpcEncoding)
+  }
+
+  override fun send(message: T) {
+    writeMessage(message)
+    flush()
   }
 
   fun writeMessage(message: T) {
@@ -55,5 +59,9 @@ class GrpcWriter<T> private constructor(
 
   fun flush() {
     sink.flush()
+  }
+
+  override fun close() {
+    sink.close()
   }
 }

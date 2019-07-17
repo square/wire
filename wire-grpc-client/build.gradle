@@ -15,7 +15,6 @@ animalsniffer {
 
 dependencies {
   implementation project(':wire-runtime')
-  api project(':wire-grpc')
   api deps.okio.jvm
   api deps.okhttp
   api deps.kotlin.coroutines.core

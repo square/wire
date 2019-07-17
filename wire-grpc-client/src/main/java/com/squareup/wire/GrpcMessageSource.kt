@@ -22,17 +22,19 @@ import java.io.Closeable
 import java.net.ProtocolException
 
 /**
- *  Reads an HTTP/2 stream as a sequence of GRPC messages.
+ * Reads an HTTP/2 stream as a sequence of GRPC messages.
  *
  * @param source the HTTP/2 stream body.
  * @param messageAdapter a proto adapter for each message.
  * @param grpcEncoding the "grpc-encoding" header, or null if it is absent.
  */
-class GrpcReader<T>(
+internal class GrpcMessageSource<T>(
   private val source: BufferedSource,
   private val messageAdapter: ProtoAdapter<T>,
   private val grpcEncoding: String? = null
-) : Closeable by source {
+) : MessageSource<T> {
+  override fun receiveOrNull(): T? = readMessage()
+
   /**
    * Read the next length-prefixed message on the stream and return it. Returns null if there are
    * no further messages on this stream.
@@ -61,5 +63,9 @@ class GrpcReader<T>(
     encodedMessage.write(source, encodedLength)
 
     return messageAdapter.decode(messageDecoding.decode(encodedMessage).buffer())
+  }
+
+  override fun close() {
+    source.close()
   }
 }
