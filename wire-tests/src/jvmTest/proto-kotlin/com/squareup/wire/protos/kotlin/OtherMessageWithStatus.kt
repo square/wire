@@ -44,11 +44,7 @@ data class OtherMessageWithStatus(
       }
 
       override fun decode(reader: ProtoReader): OtherMessageWithStatus {
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
-            else -> reader.readUnknownField(tag)
-          }
-        }
+        val unknownFields = reader.forEachTag(reader::readUnknownField)
         return OtherMessageWithStatus(
           unknownFields = unknownFields
         )

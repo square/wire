@@ -40,11 +40,7 @@ data class SomeRequest(
       }
 
       override fun decode(reader: ProtoReader): SomeRequest {
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
-            else -> reader.readUnknownField(tag)
-          }
-        }
+        val unknownFields = reader.forEachTag(reader::readUnknownField)
         return SomeRequest(
           unknownFields = unknownFields
         )
