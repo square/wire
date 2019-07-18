@@ -15,18 +15,12 @@
  */
 package com.squareup.wire.gradle
 
-import com.squareup.wire.gradle.WireExtension.JavaTarget
-import com.squareup.wire.schema.Target
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.file.SourceDirectorySetFactory
 import org.gradle.api.plugins.JavaBasePlugin
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import javax.inject.Inject
 
 class WirePlugin @Inject constructor(
@@ -102,37 +96,19 @@ class WirePlugin @Inject constructor(
 
     // At this point, all source and proto file references should be set up for Gradle to resolve.
 
-    val targets = mutableListOf<Target>()
-    val defaultBuildDirectory = "${project.buildDir}/generated/src/main/java"
-    val javaOutDirs = mutableListOf<String>()
-    val kotlinOutDirs = mutableListOf<String>()
-
-    val kotlinTarget = extension.kotlinTarget
-    val javaTarget = extension.javaTarget ?: if (kotlinTarget != null) null else JavaTarget()
-
-    javaTarget?.let { target ->
-      val javaOut = target.out ?: defaultBuildDirectory
-      javaOutDirs += javaOut
-      targets += Target.JavaTarget(
-          elements = target.elements ?: listOf("*"),
-          outDirectory = javaOut,
-          android = target.android,
-          androidAnnotations = target.androidAnnotations,
-          compact = target.compact
-      )
+    val outputs = extension.outputs.toMutableList()
+    if (outputs.isEmpty()) {
+      outputs.add(JavaOutput())
     }
-    kotlinTarget?.let { target ->
-      val kotlinOut = target.out ?: defaultBuildDirectory
-      kotlinOutDirs += kotlinOut
-      targets += Target.KotlinTarget(
-          elements = target.elements ?: listOf("*"),
-          outDirectory = kotlinOut,
-          android = target.android,
-          javaInterop = target.javaInterop,
-          blockingServices = target.blockingServices,
-          singleMethodServices = target.singleMethodServices
-      )
+
+    for (output in outputs) {
+      if (output.out == null) {
+        val defaultBuildDirectory = "${project.buildDir}/generated/src/main/java"
+        output.out = defaultBuildDirectory
+      }
     }
+
+    val targets = outputs.map { it.toTarget() }
 
     val wireTask = project.tasks.register("generateProtos", WireTask::class.java) { task ->
       task.source(sourceInput.configuration)
@@ -146,33 +122,8 @@ class WirePlugin @Inject constructor(
       task.description = "Generate Wire protocol buffer implementation for .proto files"
     }
 
-    javaTarget?.let {
-      val compileJavaTask = project.tasks.named("compileJava") as TaskProvider<JavaCompile>
-      compileJavaTask.configure {
-        it.source(javaOutDirs)
-        it.dependsOn(wireTask)
-      }
-      if (kotlin) {
-        sourceSetContainer = project.property("sourceSets") as SourceSetContainer
-        val mainSourceSet = sourceSetContainer.getByName("main") as SourceSet
-        mainSourceSet.java.srcDirs(javaOutDirs)
-
-        val compileKotlinTask = project.tasks.named("compileKotlin") as TaskProvider<KotlinCompile>
-        compileKotlinTask.configure {
-          it.dependsOn(wireTask)
-        }
-      }
-    }
-
-    kotlinTarget?.let {
-      val compileKotlinTasks = project.tasks.withType(KotlinCompile::class.java)
-      if (compileKotlinTasks.isEmpty()) {
-        throw IllegalStateException("To generate Kotlin protos, please apply a Kotlin plugin.")
-      }
-      compileKotlinTasks.configureEach {
-        it.source(kotlinOutDirs)
-        it.dependsOn(wireTask)
-      }
+    for (output in outputs) {
+      output.applyToProject(project, wireTask, kotlin)
     }
   }
 }

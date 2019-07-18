@@ -301,7 +301,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -339,7 +339,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
@@ -374,7 +374,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -393,7 +393,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-      File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
@@ -500,6 +500,44 @@ class WirePluginTest {
         .contains(
             "src/test/projects/sourcepath-and-protopath-intersect/build/generated/src/main/java"
         )
+  }
+
+  @Test
+  fun emitJavaThenEmitKotlin() {
+    val fixtureRoot = File("src/test/projects/emit-java-then-emit-kotlin")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+
+    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).doesNotExist()
+    assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/geology/Period.java")).doesNotExist()
+  }
+
+  @Test
+  fun emitKotlinThenEmitJava() {
+    val fixtureRoot = File("src/test/projects/emit-kotlin-then-emit-java")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+
+    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).doesNotExist()
+    assertThat(File(outputRoot, "com/squareup/geology/Period.java")).exists()
+    assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).doesNotExist()
   }
 
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
