@@ -16,29 +16,23 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
-import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.FileCollectionDependency
-import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
-import java.io.File
 
 open class WireTask : SourceTask() {
   @Input
   fun pluginVersion() = VERSION
 
   @Internal
-  lateinit var sourceConfiguration: Configuration
+  internal lateinit var sourceInput: WireInput
 
   @Internal
-  lateinit var protoConfiguration: Configuration
+  internal lateinit var protoInput: WireInput
 
   @Input
   lateinit var roots: List<String>
@@ -52,9 +46,6 @@ open class WireTask : SourceTask() {
 
   @Input
   lateinit var targets: List<Target>
-
-  @Internal
-  lateinit var dependencyToIncludes: Map<Dependency, List<String>>
 
   @TaskAction
   fun generateWireFiles() {
@@ -81,18 +72,8 @@ open class WireTask : SourceTask() {
     if (includes.isEmpty() && excludes.isEmpty()) logger.info("NO INCLUDES OR EXCLUDES")
 
     if (logger.isDebugEnabled) {
-      sourceConfiguration.dependencies.forEach {
-        logger.debug(
-            "dep: $it -> " + ((it as? FileCollectionDependency)?.files as? SourceDirectorySet)?.srcDirs
-        )
-        logger.debug("sourceConfiguration.files for dep: " + sourceConfiguration.files(it))
-      }
-      protoConfiguration.dependencies.forEach {
-        logger.debug(
-            "dep: $it -> " + ((it as? FileCollectionDependency)?.files as? SourceDirectorySet)?.srcDirs
-        )
-        logger.debug("protoConfiguration.files for dep: " + protoConfiguration.files(it))
-      }
+      sourceInput.debug(logger)
+      protoInput.debug(logger)
       logger.debug("roots: $roots")
       logger.debug("prunes: $prunes")
       logger.debug("rules: $rules")
@@ -100,44 +81,12 @@ open class WireTask : SourceTask() {
     }
 
     val wireRun = WireRun(
-        sourcePath = sourceConfiguration.toLocations(),
-        protoPath = protoConfiguration.toLocations(),
+        sourcePath = sourceInput.toLocations(),
+        protoPath = protoInput.toLocations(),
         treeShakingRoots = if (roots.isEmpty()) includes else roots,
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
         targets = targets
     )
     wireRun.execute()
-  }
-
-  private fun Configuration.toLocations(): List<Location> {
-    return dependencies
-        .flatMap { dep ->
-          files(dep)
-              .flatMap { file ->
-                file.toLocations(dep)
-              }
-        }
-  }
-
-  private fun File.toLocations(dependency: Dependency): List<Location> {
-    if (dependency is FileCollectionDependency && dependency.files is SourceDirectorySet) {
-      val srcDir = (dependency.files as SourceDirectorySet).srcDirs.first {
-        path.startsWith(it.path + "/")
-      }
-      return listOf(Location.get(
-          base = srcDir.path,
-          path = path.substring(srcDir.path.length + 1)
-      ))
-    }
-
-    val includes = dependencyToIncludes[dependency]
-
-    if (includes == null || includes.isEmpty()) {
-      return listOf(Location.get(path))
-    }
-
-    return includes.map { include ->
-      Location.get(base = path, path = include)
-    }
   }
 }

@@ -487,6 +487,21 @@ class WirePluginTest {
     assertThat(generatedProto2).exists()
   }
 
+  @Test
+  fun sourcePathAndProtoPathIntersect() {
+    val fixtureRoot = File("src/test/projects/sourcepath-and-protopath-intersect")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .doesNotContain("Writing com.squareup.geology.Period")
+        .contains(
+            "src/test/projects/sourcepath-and-protopath-intersect/build/generated/src/main/java"
+        )
+  }
+
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
     val protoFieldPattern = "@field:WireField.*?(val .*?):"
     val matchedFields = protoFieldPattern.toRegex(setOf(MULTILINE, DOT_MATCHES_ALL))
