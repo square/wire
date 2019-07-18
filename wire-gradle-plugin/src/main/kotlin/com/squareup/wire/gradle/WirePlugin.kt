@@ -96,8 +96,6 @@ class WirePlugin @Inject constructor(
       protoInput.addTrees(extension.protoTrees)
       protoInput.addJars(extension.protoJars)
       protoInput.addPaths(extension.protoPaths)
-    } else {
-      protoInput.configuration.dependencies.addAll(sourceInput.configuration.dependencies)
     }
 
     // At this point, all source and proto file references should be set up for Gradle to resolve.
