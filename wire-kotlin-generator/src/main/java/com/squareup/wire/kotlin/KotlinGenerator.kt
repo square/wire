@@ -743,24 +743,29 @@ class KotlinGenerator private constructor(
     }
 
     val decodeBlock = buildCodeBlock {
-      val readerTagParamName = nameAllocator.newName("tag")
-      addStatement("val unknownFields = reader.forEachTag { $readerTagParamName ->")
-      addStatement("⇥when ($readerTagParamName) {⇥")
+      val fields = message.fieldsAndOneOfFields()
+      if (fields.isEmpty()) {
+        addStatement("val unknownFields = reader.forEachTag(reader::readUnknownField)")
+      } else {
+        val readerTagParamName = nameAllocator.newName("tag")
+        addStatement("val unknownFields = reader.forEachTag { $readerTagParamName ->")
+        addStatement("⇥when ($readerTagParamName) {⇥")
 
-      message.fieldsAndOneOfFields().forEach { field ->
-        val fieldName = nameAllocator[field]
-        val adapterName = field.getAdapterName()
+        message.fieldsAndOneOfFields().forEach { field ->
+          val fieldName = nameAllocator[field]
+          val adapterName = field.getAdapterName()
 
-        val decodeBodyTemplate = when {
-          field.isRepeated -> "%L -> %L.add(%L.decode(reader))"
-          field.isMap -> "%L -> %L.putAll(%L.decode(reader))"
-          else -> "%L -> %L = %L.decode(reader)"
+          val decodeBodyTemplate = when {
+            field.isRepeated -> "%L -> %L.add(%L.decode(reader))"
+            field.isMap -> "%L -> %L.putAll(%L.decode(reader))"
+            else -> "%L -> %L = %L.decode(reader)"
+          }
+
+          addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
         }
-
-        addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
+        addStatement("else -> reader.readUnknownField($readerTagParamName)")
+        add("⇤}\n⇤}\n") // close the block
       }
-      addStatement("else -> reader.readUnknownField($readerTagParamName)")
-      add("⇤}\n⇤}\n") // close the block
     }
 
     return FunSpec.builder("decode")

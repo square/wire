@@ -520,6 +520,15 @@ class WireCompilerTest {
     assertKotlinOutputs(outputs)
   }
 
+  @Test
+  fun testNoFieldsKotlin() {
+    val sources = arrayOf("no_fields.proto")
+    compileToKotlin(sources)
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/NoFields.kt")
+    assertKotlinOutputs(outputs)
+  }
+
   private fun compileToJava(sources: Array<String>, vararg extraArgs: String) =
       invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
 

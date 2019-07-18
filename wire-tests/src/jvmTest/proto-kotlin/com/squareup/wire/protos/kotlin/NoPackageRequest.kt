@@ -40,11 +40,7 @@ data class NoPackageRequest(
       }
 
       override fun decode(reader: ProtoReader): NoPackageRequest {
-        val unknownFields = reader.forEachTag { tag ->
-          when (tag) {
-            else -> reader.readUnknownField(tag)
-          }
-        }
+        val unknownFields = reader.forEachTag(reader::readUnknownField)
         return NoPackageRequest(
           unknownFields = unknownFields
         )
