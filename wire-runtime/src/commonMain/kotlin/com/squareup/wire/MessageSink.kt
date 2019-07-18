@@ -15,8 +15,13 @@
  */
 package com.squareup.wire
 
-expect interface MessageSink<in T> {
-  fun send(message: T)
+import com.squareup.wire.internal.Throws
+import okio.IOException
 
+expect interface MessageSink<in T> {
+  @Throws(IOException::class)
+  fun write(message: T)
+
+  @Throws(IOException::class)
   fun close()
 }

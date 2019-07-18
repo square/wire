@@ -15,31 +15,13 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.Throws
+import okio.IOException
+
 actual interface MessageSource<out T> {
-  actual fun receiveOrNull(): T?
+  @Throws(IOException::class)
+  actual fun read(): T?
 
+  @Throws(IOException::class)
   actual fun close()
-}
-
-actual inline fun <T> MessageSource<T>.consumeEachAndClose(block: (T) -> Unit) {
-  var exception: Throwable? = null
-  try {
-    while (true) {
-      val message = receiveOrNull() ?: return
-      block(message)
-    }
-  } catch (e: Throwable) {
-    exception = e
-    throw e
-  } finally {
-    when (exception) {
-      null -> close()
-      else ->
-        try {
-          close()
-        } catch (closeException: Throwable) {
-          // Nothing to do...
-        }
-    }
-  }
 }

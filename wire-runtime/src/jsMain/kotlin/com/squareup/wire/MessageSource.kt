@@ -16,30 +16,7 @@
 package com.squareup.wire
 
 actual interface MessageSource<out T> {
-  actual fun receiveOrNull(): T?
+  actual fun read(): T?
 
   actual fun close()
-}
-
-actual inline fun <T> MessageSource<T>.consumeEachAndClose(block: (T) -> Unit) {
-  var exception: Throwable? = null
-  try {
-    while (true) {
-      val message = receiveOrNull() ?: return
-      block(message)
-    }
-  } catch (e: Throwable) {
-    exception = e
-    throw e
-  } finally {
-    when (exception) {
-      null -> close()
-      else ->
-        try {
-          close()
-        } catch (closeException: Throwable) {
-          // Nothing to do...
-        }
-    }
-  }
 }

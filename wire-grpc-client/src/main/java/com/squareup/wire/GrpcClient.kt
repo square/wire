@@ -128,12 +128,11 @@ class GrpcClient private constructor(
     // 2. write it to the stream (blocking)
     // 3. repeat. We also have to wait for all 2s to end before closing the writer
     CoroutineScope(Dispatchers.IO).launch {
-      val requestWriter = GrpcMessageSink.get(
+      val requestWriter = GrpcMessageSink(
           requestBody.createSink(), grpcMethod.requestAdapter, grpcEncoding = "identity")
       requestWriter.use {
         requestChannel.consumeEach { message ->
-          requestWriter.writeMessage(message)
-          requestWriter.flush()
+          requestWriter.write(message)
         }
       }
     }
@@ -154,7 +153,7 @@ class GrpcClient private constructor(
                 responseSource, grpcMethod.responseAdapter, grpcEncoding)
             responseReader.use {
               while (true) {
-                val message = it.readMessage() ?: break
+                val message = it.read() ?: break
                 responseChannel.send(message)
               }
 
