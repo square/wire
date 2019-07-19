@@ -159,6 +159,48 @@ class NewSchemaLoaderTest {
   }
 
   @Test
+  fun symlinkDirectory() {
+    fs.add("secret/proto/squareup/colors/blue.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Blue {
+        |}
+        """.trimMargin())
+    fs.symlink(
+        "colors/src/main/proto",
+        "../../../secret/proto"
+    )
+
+    val sourcePath = listOf(Location.get("colors/src/main/proto"))
+    val loader = NewSchemaLoader(fs, sourcePath)
+    val protoFiles = loader.use { it.load() }
+    assertThat(protoFiles.map { it.location() }).containsExactlyInAnyOrder(
+        Location("colors/src/main/proto", "squareup/colors/blue.proto")
+    )
+  }
+
+  @Test
+  fun symlinkFile() {
+    fs.add("secret/proto/squareup/colors/blue.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Blue {
+        |}
+        """.trimMargin())
+    fs.symlink(
+        "colors/src/main/proto/squareup/colors/blue.proto",
+        "../../../../../../secret/proto/squareup/colors/blue.proto"
+    )
+
+    val sourcePath = listOf(Location.get("colors/src/main/proto"))
+    val loader = NewSchemaLoader(fs, sourcePath)
+    val protoFiles = loader.use { it.load() }
+    assertThat(protoFiles.map { it.location() }).containsExactlyInAnyOrder(
+        Location("colors/src/main/proto", "squareup/colors/blue.proto")
+    )
+  }
+
+  @Test
   fun importNotFound() {
     fs.add("colors/src/main/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
