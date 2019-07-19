@@ -12,6 +12,7 @@ kotlin {
         metaInfo = true
       }
     }
+    nodejs()
   }
   iosX64()
   iosArm64()
