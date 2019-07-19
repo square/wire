@@ -22,7 +22,6 @@ import org.gradle.api.internal.file.SourceDirectorySetFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
-import javax.inject.Inject
 
 open class WireExtension(
   project: Project,
@@ -68,21 +67,9 @@ open class WireExtension(
   @get:Optional
   var rules: String? = null
 
-  /**
-   * Defines java-specific settings for [com.squareup.wire.schema.WireRun.targets]
-   * Maps to [com.squareup.wire.schema.Target.JavaTarget]
-   */
+  /** Specified what types to output where. Maps to [com.squareup.wire.schema.Target] */
   @get:Input
-  @get:Optional
-  var javaTarget: JavaTarget? = null
-
-  /**
-   * Defines kotlin-specific settings for [com.squareup.wire.schema.WireRun.targets]
-   * Maps to [com.squareup.wire.schema.Target.KotlinTarget]
-   */
-  @get:Input
-  @get:Optional
-  var kotlinTarget: KotlinTarget? = null
+  val outputs = mutableListOf<WireOutput>()
 
   @InputFiles
   @Optional
@@ -174,14 +161,16 @@ open class WireExtension(
     }
   }
 
-  fun java(action: Action<JavaTarget>) {
-    javaTarget = objectFactory.newInstance(JavaTarget::class.java)
-    action.execute(javaTarget!!)
+  fun java(action: Action<JavaOutput>) {
+    val javaOutput = objectFactory.newInstance(JavaOutput::class.java)!!
+    action.execute(javaOutput)
+    outputs += javaOutput
   }
 
-  fun kotlin(action: Action<KotlinTarget>) {
-    kotlinTarget = objectFactory.newInstance(KotlinTarget::class.java)
-    action.execute(kotlinTarget!!)
+  fun kotlin(action: Action<KotlinOutput>) {
+    val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)!!
+    action.execute(kotlinOutput)
+    outputs += kotlinOutput
   }
 
   open class ProtoRootSet {
@@ -204,22 +193,5 @@ open class WireExtension(
     fun include(vararg includePaths: String) {
       includes += includePaths
     }
-  }
-
-  open class JavaTarget @Inject constructor() {
-    var elements: List<String>? = null
-    var out: String? = null
-    var android: Boolean = false
-    var androidAnnotations: Boolean = false
-    var compact: Boolean = false
-  }
-
-  open class KotlinTarget @Inject constructor() {
-    var out: String? = null
-    var elements: List<String>? = null
-    var android: Boolean = false
-    var javaInterop: Boolean = false
-    var blockingServices: Boolean = false
-    var singleMethodServices: Boolean = false
   }
 }
