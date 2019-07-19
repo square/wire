@@ -17,19 +17,19 @@ package com.squareup.wire
 
 import okio.Buffer
 import okio.ByteString.Companion.decodeHex
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ProtoReaderTest {
   @Test fun packedExposedAsRepeated() {
     val packedEncoded = "d20504d904bd05".decodeHex()
     val reader = ProtoReader(Buffer().write(packedEncoded))
     val token = reader.beginMessage()
-    assertThat(reader.nextTag()).isEqualTo(90)
-    assertThat(ProtoAdapter.INT32.decode(reader)).isEqualTo(601)
-    assertThat(reader.nextTag()).isEqualTo(90)
-    assertThat(ProtoAdapter.INT32.decode(reader)).isEqualTo(701)
-    assertThat(reader.nextTag()).isEqualTo(-1)
+    assertEquals(90, reader.nextTag())
+    assertEquals(601, ProtoAdapter.INT32.decode(reader))
+    assertEquals(90, reader.nextTag())
+    assertEquals(701, ProtoAdapter.INT32.decode(reader))
+    assertEquals(-1, reader.nextTag())
     reader.endMessageAndGetUnknownFields(token)
   }
 }
