@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-actual interface MessageSource<out T> {
+actual interface MessageSource<out T : Any> {
   actual fun read(): T?
 
   actual fun close()

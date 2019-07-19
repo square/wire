@@ -18,7 +18,7 @@ package com.squareup.wire
 import com.squareup.wire.internal.Throws
 import okio.IOException
 
-expect interface MessageSource<out T> {
+expect interface MessageSource<out T : Any> {
   @Throws(IOException::class)
   fun read(): T?
 
