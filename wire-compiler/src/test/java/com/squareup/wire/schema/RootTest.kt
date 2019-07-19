@@ -141,6 +141,15 @@ fun FileSystem.add(pathString: String, contents: String) {
   Files.write(path, contents.toByteArray(UTF_8))
 }
 
+fun FileSystem.symlink(linkPathString: String, targetPathString: String) {
+  val linkPath = getPath(linkPathString)
+  if (linkPath.parent != null) {
+    Files.createDirectories(linkPath.parent)
+  }
+  val targetPath = getPath(targetPathString)
+  Files.createSymbolicLink(linkPath, targetPath)
+}
+
 fun FileSystem.get(pathString: String): String {
   val path = getPath(pathString)
   return String(Files.readAllBytes(path), UTF_8)

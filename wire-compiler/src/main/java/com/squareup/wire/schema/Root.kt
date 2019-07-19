@@ -22,6 +22,7 @@ import okio.source
 import java.io.IOException
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
+import java.nio.file.FileVisitOption
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
 import java.nio.file.Path
@@ -134,15 +135,16 @@ internal class DirectoryRoot(
 ) : Root() {
   override fun allProtoFiles(): Set<ProtoFilePath> {
     val result = mutableSetOf<ProtoFilePath>()
-    Files.walkFileTree(rootDirectory, object : SimpleFileVisitor<Path>() {
-      override fun visitFile(descendant: Path, attrs: BasicFileAttributes): FileVisitResult {
-        if (descendant.endsWithDotProto()) {
-          val location = Location.get(base, "${rootDirectory.relativize(descendant)}")
-          result.add(ProtoFilePath(location, descendant))
-        }
-        return FileVisitResult.CONTINUE
-      }
-    })
+    Files.walkFileTree(rootDirectory, setOf(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
+        object : SimpleFileVisitor<Path>() {
+          override fun visitFile(descendant: Path, attrs: BasicFileAttributes): FileVisitResult {
+            if (descendant.endsWithDotProto()) {
+              val location = Location.get(base, "${rootDirectory.relativize(descendant)}")
+              result.add(ProtoFilePath(location, descendant))
+            }
+            return FileVisitResult.CONTINUE
+          }
+        })
     return result
   }
 
