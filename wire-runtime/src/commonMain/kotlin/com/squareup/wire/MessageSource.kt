@@ -15,10 +15,13 @@
  */
 package com.squareup.wire
 
-expect interface MessageSource<out T> {
-  fun receiveOrNull(): T?
+import com.squareup.wire.internal.Throws
+import okio.IOException
 
+expect interface MessageSource<out T> {
+  @Throws(IOException::class)
+  fun read(): T?
+
+  @Throws(IOException::class)
   fun close()
 }
-
-expect inline fun <T> MessageSource<T>.consumeEachAndClose(block: (T) -> Unit)

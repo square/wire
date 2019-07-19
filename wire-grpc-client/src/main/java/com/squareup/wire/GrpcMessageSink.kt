@@ -17,32 +17,21 @@ package com.squareup.wire
 
 import okio.Buffer
 import okio.BufferedSink
+import java.io.Closeable
 
-/** Writes a sequence of GRPC messages as an HTTP/2 stream. */
-internal class GrpcMessageSink<T> private constructor(
+/**
+ * Writes a sequence of gRPC messages as an HTTP/2 stream.
+ *
+ * @param sink the HTTP/2 stream body.
+ * @param messageAdapter a proto adapter for each message.
+ * @param grpcEncoding the content coding for the stream body.
+ */
+internal class GrpcMessageSink<T> constructor(
   private val sink: BufferedSink,
   private val messageAdapter: ProtoAdapter<T>,
   private val grpcEncoding: String
-) : MessageSink<T> {
-  companion object {
-    /**
-     * @param sink the HTTP/2 stream body.
-     * @param messageAdapter a proto adapter for each message.
-     * @param grpcEncoding the content coding for the stream body.
-     */
-    fun <T> get(
-      sink: BufferedSink,
-      messageAdapter: ProtoAdapter<T>,
-      grpcEncoding: String = "identity"
-    ) = GrpcMessageSink(sink, messageAdapter, grpcEncoding)
-  }
-
-  override fun send(message: T) {
-    writeMessage(message)
-    flush()
-  }
-
-  fun writeMessage(message: T) {
+) : MessageSink<T>, Closeable by sink {
+  override fun write(message: T) {
     val messageEncoding = grpcEncoding.toGrpcEncoder()
     val encodingSink = messageEncoding.encode(sink)
 
@@ -55,13 +44,7 @@ internal class GrpcMessageSink<T> private constructor(
     // TODO: fail if the message size is more than MAX_INT
     encodingSink.writeInt(encodedMessage.size.toInt())
     encodingSink.writeAll(encodedMessage)
-  }
 
-  fun flush() {
     sink.flush()
-  }
-
-  override fun close() {
-    sink.close()
   }
 }

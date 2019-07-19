@@ -16,7 +16,7 @@
 package com.squareup.wire
 
 actual interface MessageSink<in T> {
-  actual fun send(message: T)
+  actual fun write(message: T)
 
   actual fun close()
 }
