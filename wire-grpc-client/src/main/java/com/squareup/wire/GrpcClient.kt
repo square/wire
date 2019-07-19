@@ -104,7 +104,7 @@ class GrpcClient private constructor(
     }
   }
 
-  internal fun <S, R> call(
+  internal fun <S : Any, R : Any> call(
     grpcMethod: GrpcMethod<S, R>,
     requestChannel: ReceiveChannel<S>,
     responseChannel: SendChannel<R>
@@ -175,7 +175,7 @@ class GrpcClient private constructor(
     return call
   }
 
-  internal sealed class GrpcMethod<S, R>(
+  internal sealed class GrpcMethod<S : Any, R : Any>(
     val path: String,
     val requestAdapter: ProtoAdapter<S>,
     val responseAdapter: ProtoAdapter<R>
@@ -200,7 +200,7 @@ class GrpcClient private constructor(
     }
 
     /** Single request, single response. */
-    class RequestResponse<S, R>(
+    class RequestResponse<S : Any, R : Any>(
       path: String,
       requestAdapter: ProtoAdapter<S>,
       responseAdapter: ProtoAdapter<R>
@@ -214,13 +214,13 @@ class GrpcClient private constructor(
         responseChannel.consume {
           requestChannel.send(parameter as S)
           requestChannel.close()
-          return receive() as Any
+          return receive()
         }
       }
     }
 
     /** Request is streaming, with one single response. */
-    class StreamingRequest<S, R>(
+    class StreamingRequest<S : Any, R : Any>(
       path: String,
       requestAdapter: ProtoAdapter<S>,
       responseAdapter: ProtoAdapter<R>
@@ -242,7 +242,7 @@ class GrpcClient private constructor(
     }
 
     /** Single request, and response is streaming. */
-    class StreamingResponse<S, R>(
+    class StreamingResponse<S : Any, R : Any>(
       path: String,
       requestAdapter: ProtoAdapter<S>,
       responseAdapter: ProtoAdapter<R>
@@ -260,13 +260,13 @@ class GrpcClient private constructor(
         return unconfinedCoroutineScope.produce<Any> {
           requestChannel.send(parameter as S)
           requestChannel.close()
-          (responseChannel as Channel<Any>).toChannel(channel)
+          responseChannel.toChannel(channel)
         }
       }
     }
 
     /** Request and response are both streaming. */
-    class FullDuplex<S, R>(
+    class FullDuplex<S : Any, R : Any>(
       path: String,
       requestAdapter: ProtoAdapter<S>,
       responseAdapter: ProtoAdapter<R>
@@ -282,7 +282,7 @@ class GrpcClient private constructor(
   companion object {
     private val unconfinedCoroutineScope = CoroutineScope(Unconfined)
 
-    internal fun <S, R> Method.toGrpc(): GrpcMethod<S, R> {
+    internal fun <S : Any, R : Any> Method.toGrpc(): GrpcMethod<S, R> {
       val wireRpc = getAnnotation(WireRpc::class.java)
       val requestAdapter = ProtoAdapter.get(wireRpc.requestAdapter) as ProtoAdapter<S>
       val responseAdapter = ProtoAdapter.get(wireRpc.responseAdapter) as ProtoAdapter<R>

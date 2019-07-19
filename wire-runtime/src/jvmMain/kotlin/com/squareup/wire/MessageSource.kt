@@ -35,7 +35,7 @@ import java.io.Closeable
  *
  * Instances of this interface are not safe for concurrent use.
  */
-actual interface MessageSource<out T> : Closeable {
+actual interface MessageSource<out T : Any> : Closeable {
   /**
    * Read the next length-prefixed message on the stream and return it. Returns null if there are
    * no further messages on this stream.

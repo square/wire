@@ -18,7 +18,7 @@ package com.squareup.wire
 import com.squareup.wire.internal.Throws
 import okio.IOException
 
-actual interface MessageSink<in T> {
+actual interface MessageSink<in T : Any> {
   @Throws(IOException::class)
   actual fun write(message: T)
 

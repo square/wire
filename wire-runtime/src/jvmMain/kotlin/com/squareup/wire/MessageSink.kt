@@ -40,7 +40,7 @@ import java.io.Closeable
  *
  * Instances of this interface are not safe for concurrent use.
  */
-actual interface MessageSink<in T> : Closeable {
+actual interface MessageSink<in T : Any> : Closeable {
   /**
    * Encode [message] to bytes and enqueue the bytes for delivery, waiting if necessary until the
    * delivery channel has capacity for the encoded message.

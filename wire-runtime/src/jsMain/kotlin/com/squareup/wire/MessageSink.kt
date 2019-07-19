@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-actual interface MessageSink<in T> {
+actual interface MessageSink<in T : Any> {
   actual fun write(message: T)
 
   actual fun close()
