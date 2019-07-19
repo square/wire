@@ -395,7 +395,7 @@ internal inline fun <K, V> commonNewMapAdapter(
   return MapProtoAdapter(keyAdapter, valueAdapter)
 }
 
-@JvmField internal val COMMON_BOOL: ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean>(
+internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean>(
     FieldEncoding.VARINT,
     Boolean::class
 ) {
@@ -415,7 +415,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Boolean): Boolean = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_INT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
+internal fun commonInt32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
     FieldEncoding.VARINT,
     Int::class
 ) {
@@ -431,7 +431,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_UINT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
+internal fun commonUint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
     FieldEncoding.VARINT,
     Int::class
 ) {
@@ -447,7 +447,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_SINT32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
+internal fun commonSint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
     FieldEncoding.VARINT,
     Int::class
 ) {
@@ -463,7 +463,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_FIXED32: ProtoAdapter<Int> = object : ProtoAdapter<Int>(
+internal fun commonFixed32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
     FieldEncoding.FIXED32,
     Int::class
 ) {
@@ -479,8 +479,8 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_SFIXED32 = COMMON_FIXED32
-@JvmField internal val COMMON_INT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
+internal fun commonSfixed32() = commonFixed32()
+internal fun commonInt64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
     FieldEncoding.VARINT,
     Long::class
 ) {
@@ -500,7 +500,7 @@ internal inline fun <K, V> commonNewMapAdapter(
  * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
  * in JSON.
  */
-@JvmField internal val COMMON_UINT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
+internal fun commonUint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
     FieldEncoding.VARINT,
     Long::class
 ) {
@@ -516,7 +516,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_SINT64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
+internal fun commonSint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
     FieldEncoding.VARINT,
     Long::class
 ) {
@@ -532,7 +532,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_FIXED64: ProtoAdapter<Long> = object : ProtoAdapter<Long>(
+internal fun commonFixed64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
     FieldEncoding.FIXED64,
     Long::class
 ) {
@@ -548,8 +548,8 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_SFIXED64 = COMMON_FIXED64
-@JvmField internal val COMMON_FLOAT: ProtoAdapter<Float> = object : ProtoAdapter<Float>(
+internal fun commonSfixed64() = commonFixed64()
+internal fun commonFloat(): ProtoAdapter<Float> = object : ProtoAdapter<Float>(
     FieldEncoding.FIXED32,
     Float::class
 ) {
@@ -567,7 +567,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Float): Float = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_DOUBLE: ProtoAdapter<Double> = object : ProtoAdapter<Double>(
+internal fun commonDouble(): ProtoAdapter<Double> = object : ProtoAdapter<Double>(
     FieldEncoding.FIXED64,
     Double::class
 ) {
@@ -585,7 +585,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: Double): Double = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_STRING: ProtoAdapter<String> = object : ProtoAdapter<String>(
+internal fun commonString(): ProtoAdapter<String> = object : ProtoAdapter<String>(
     FieldEncoding.LENGTH_DELIMITED,
     String::class
 ) {
@@ -601,7 +601,7 @@ internal inline fun <K, V> commonNewMapAdapter(
 
   override fun redact(value: String): String = throw UnsupportedOperationException()
 }
-@JvmField internal val COMMON_BYTES: ProtoAdapter<ByteString> = object : ProtoAdapter<ByteString>(
+internal fun commonBytes(): ProtoAdapter<ByteString> = object : ProtoAdapter<ByteString>(
     FieldEncoding.LENGTH_DELIMITED,
     ByteString::class
 ) {

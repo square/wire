@@ -126,24 +126,24 @@ actual abstract class ProtoAdapter<E> actual constructor(
       return commonNewMapAdapter(keyAdapter, valueAdapter)
     }
 
-    actual val BOOL: ProtoAdapter<Boolean> = COMMON_BOOL
-    actual val INT32: ProtoAdapter<Int> = COMMON_INT32
-    actual val UINT32: ProtoAdapter<Int> = COMMON_UINT32
-    actual val SINT32: ProtoAdapter<Int> = COMMON_SINT32
-    actual val FIXED32: ProtoAdapter<Int> = COMMON_FIXED32
-    actual val SFIXED32: ProtoAdapter<Int> = COMMON_SFIXED32
-    actual val INT64: ProtoAdapter<Long> = COMMON_INT64
+    actual val BOOL: ProtoAdapter<Boolean> = commonBool()
+    actual val INT32: ProtoAdapter<Int> = commonInt32()
+    actual val UINT32: ProtoAdapter<Int> = commonUint32()
+    actual val SINT32: ProtoAdapter<Int> = commonSint32()
+    actual val FIXED32: ProtoAdapter<Int> = commonFixed32()
+    actual val SFIXED32: ProtoAdapter<Int> = commonSfixed32()
+    actual val INT64: ProtoAdapter<Long> = commonInt64()
     /**
      * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
      * in JSON.
      */
-    actual val UINT64: ProtoAdapter<Long> = COMMON_UINT64
-    actual val SINT64: ProtoAdapter<Long> = COMMON_SINT64
-    actual val FIXED64: ProtoAdapter<Long> = COMMON_FIXED64
-    actual val SFIXED64: ProtoAdapter<Long> = COMMON_SFIXED64
-    actual val FLOAT: ProtoAdapter<Float> = COMMON_FLOAT
-    actual val DOUBLE: ProtoAdapter<Double> = COMMON_DOUBLE
-    actual val BYTES: ProtoAdapter<ByteString> = COMMON_BYTES
-    actual val STRING: ProtoAdapter<String> = COMMON_STRING
+    actual val UINT64: ProtoAdapter<Long> = commonUint64()
+    actual val SINT64: ProtoAdapter<Long> = commonSint64()
+    actual val FIXED64: ProtoAdapter<Long> = commonFixed64()
+    actual val SFIXED64: ProtoAdapter<Long> = commonSfixed64()
+    actual val FLOAT: ProtoAdapter<Float> = commonFloat()
+    actual val DOUBLE: ProtoAdapter<Double> = commonDouble()
+    actual val BYTES: ProtoAdapter<ByteString> = commonBytes()
+    actual val STRING: ProtoAdapter<String> = commonString()
   }
 }
