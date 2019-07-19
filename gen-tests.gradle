@@ -180,7 +180,7 @@ task generateKotlinTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/src/jvmTest/proto-kotlin',
+      '--kotlin_out=wire-tests/src/commonTest/proto-kotlin',
       'all_types.proto',    
       'person.proto',
       'optional_enum.proto',

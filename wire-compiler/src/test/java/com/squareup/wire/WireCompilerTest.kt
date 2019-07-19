@@ -633,7 +633,10 @@ class WireCompilerTest {
 
     internal fun expectedFile(path: String, suffix: String): File {
       val protoFolder = "/proto-${protoFolderSuffix()}/"
-      var expectedFile = File("../wire-tests/src/jvmTest$protoFolder$path$suffix")
+      // egorand: For now we assume that all pure-Kotlin tests (no suffix) live in commonTest, and
+      // all JVM-specific Kotlin tests (.java, .android, etc.) live in jvmTest.
+      val sourceSet = if (suffix.isEmpty()) "commonTest" else "jvmTest"
+      var expectedFile = File("../wire-tests/src/$sourceSet$protoFolder$path$suffix")
       if (expectedFile.exists()) {
         println("Comparing against expected output ${expectedFile.name}")
       } else {

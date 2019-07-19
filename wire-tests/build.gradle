@@ -27,6 +27,7 @@ kotlin {
       }
     }
     commonTest {
+      kotlin.srcDirs += 'src/commonTest/proto-kotlin'
       dependencies {
         implementation deps.kotlin.test.common
         implementation deps.kotlin.test.annotations
