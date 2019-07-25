@@ -540,6 +540,58 @@ class WirePluginTest {
     assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).doesNotExist()
   }
 
+  @Test
+  fun emitKotlinAndEmitJava() {
+    val fixtureRoot = File("src/test/projects/emit-kotlin-and-emit-java")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+
+    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
+    assertThat(File(outputRoot, "com/squareup/geology/Period.java")).exists()
+    assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).doesNotExist()
+  }
+
+  @Test
+  fun emitService() {
+    val fixtureRoot = File("src/test/projects/emit-service")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.BattleService")
+
+    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleService.kt")).exists()
+  }
+
+  @Test
+  fun emitServiceTwoWays() {
+    val fixtureRoot = File("src/test/projects/emit-service-two-ways")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.BattleServiceFight")
+        .contains("Writing com.squareup.dinosaurs.BattleServiceBrawl")
+
+    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleService.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceFight.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawl.kt")).exists()
+  }
+
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
     val protoFieldPattern = "@field:WireField.*?(val .*?):"
     val matchedFields = protoFieldPattern.toRegex(setOf(MULTILINE, DOT_MATCHES_ALL))

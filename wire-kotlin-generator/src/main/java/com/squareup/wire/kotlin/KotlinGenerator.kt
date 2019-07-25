@@ -96,6 +96,11 @@ class KotlinGenerator private constructor(
   fun generatedTypeName(type: Type) = type.typeName
   /** Returns the full name of the class generated for [service].  */
   fun generatedServiceName(service: Service) = service.serviceName
+  /** Returns the full name of the class generated for [service]#[rpc].  */
+  fun generatedServiceRpcName(service: Service, rpc: Rpc): ClassName {
+    val typeName = service.serviceName
+    return typeName.peerClass(typeName.simpleName + rpc.name())
+  }
 
   fun generateType(type: Type): TypeSpec = when (type) {
     is MessageType -> generateMessage(type)
@@ -110,8 +115,8 @@ class KotlinGenerator private constructor(
    */
   fun generateService(service: Service, rpc: Rpc? = null): TypeSpec {
     val (interfaceName, rpcs) =
-        if (rpc == null) service.name() to service.rpcs()
-        else service.name() + rpc.name() to listOf(rpc)
+        if (rpc == null) generatedServiceName(service) to service.rpcs()
+        else generatedServiceRpcName(service, rpc) to listOf(rpc)
 
     val superinterface = com.squareup.wire.Service::class.java
 

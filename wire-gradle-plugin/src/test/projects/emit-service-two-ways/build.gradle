@@ -1,0 +1,20 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+wire {
+  // Blocking Server API.
+  kotlin {
+    exclusive = false
+    singleMethodServices = true
+    blockingServices = true
+  }
+  // Coroutines Client API.
+  kotlin {
+    exclusive = false
+    singleMethodServices = false
+    blockingServices = false
+  }
+}

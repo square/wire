@@ -163,7 +163,8 @@ data class WireRun(
         servicesToHandle += protoFile.services()
       }
     }
-    for (target in targets) {
+    val targetsExclusiveLast = targets.sortedBy { it.exclusive }
+    for (target in targetsExclusiveLast) {
       val schemaHandler = target.newHandler(schema, fs, logger)
 
       val identifierSet = IdentifierSet.Builder()
@@ -176,7 +177,7 @@ data class WireRun(
         if (identifierSet.includes(type.type())) {
           schemaHandler.handle(type)
           // We don't let other targets handle this one.
-          i.remove()
+          if (target.exclusive) i.remove()
         }
       }
 
@@ -186,7 +187,7 @@ data class WireRun(
         if (identifierSet.includes(service.type())) {
           schemaHandler.handle(service)
           // We don't let other targets handle this one.
-          j.remove()
+          if (target.exclusive) j.remove()
         }
       }
 

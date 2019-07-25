@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.javapoet.JavaFile
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.WireCompiler
@@ -36,6 +37,12 @@ sealed class Target {
    */
   abstract val elements: List<String>
 
+  /**
+   * True if types emitted for this target should not also be emitted for other targets. Use this
+   * to cause multiple outputs to be emitted for the same input type.
+   */
+  abstract val exclusive: Boolean
+
   internal abstract fun newHandler(
     schema: Schema,
     fs: FileSystem,
@@ -45,6 +52,8 @@ sealed class Target {
   /** Generate `.java` sources. */
   data class JavaTarget(
     override val elements: List<String> = listOf("*"),
+
+    override val exclusive: Boolean = true,
 
     val outDirectory: String,
 
@@ -107,6 +116,8 @@ sealed class Target {
   data class KotlinTarget(
     override val elements: List<String> = listOf("*"),
 
+    override val exclusive: Boolean = true,
+
     val outDirectory: String,
 
     /** True for emitted types to implement `android.os.Parcelable`. */
@@ -154,16 +165,23 @@ sealed class Target {
         override fun handle(service: Service) {
           if (singleMethodServices) {
             service.rpcs().forEach { rpc ->
-              write(service, kotlinGenerator.generateService(service, rpc))
+              write(
+                  service,
+                  kotlinGenerator.generatedServiceRpcName(service, rpc),
+                  kotlinGenerator.generateService(service, rpc)
+              )
             }
           } else {
-            write(service, kotlinGenerator.generateService(service))
+            write(
+                service,
+                kotlinGenerator.generatedServiceName(service),
+                kotlinGenerator.generateService(service)
+            )
           }
         }
 
-        private fun write(service: Service, typeSpec: TypeSpec) {
-          val packageName = service.type().enclosingTypeOrPackage()
-          val kotlinFile = FileSpec.builder(packageName, typeSpec.name!!)
+        private fun write(service: Service, name: ClassName, typeSpec: TypeSpec) {
+          val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
               .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
               .apply {
                 service.location()?.let { addComment("\nSource file: %L", it.withPathOnly()) }
@@ -189,6 +207,8 @@ sealed class Target {
   data class NullTarget(
     override val elements: List<String> = listOf("*")
   ) : Target() {
+    override val exclusive: Boolean = true
+
     override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
       return object : SchemaHandler {
         override fun handle(type: Type) {

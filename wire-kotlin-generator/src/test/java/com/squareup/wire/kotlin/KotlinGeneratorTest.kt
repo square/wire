@@ -163,6 +163,39 @@ class KotlinGeneratorTest {
     assertEquals(expected, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", blockingServices = true))
   }
 
+  @Test fun javaPackageOption() {
+    // Note that the @WireRpc path does not use the Java package option.
+    val expected = """
+          |package com.squareup.routeguide
+          |
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |
+          |interface RouteGuide : Service {
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/GetFeature",
+          |    requestAdapter = "routeguide.Point#ADAPTER",
+          |    responseAdapter = "routeguide.Feature#ADAPTER"
+          |  )
+          |  fun GetFeature(request: Point): Feature
+          |}
+          |""".trimMargin()
+
+    val repoBuilder = RepoBuilder()
+        .add("routeguide.proto", """
+          |package routeguide;
+          |
+          |option java_package = "com.squareup.routeguide";
+          |
+          |service RouteGuide {
+          |  rpc GetFeature(Point) returns (Feature) {}
+          |}
+          |$pointMessage
+          |$featureMessage
+          |""".trimMargin())
+    assertEquals(expected, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", blockingServices = true))
+  }
+
   @Test fun noPackage() {
     val expected = """
           |import com.squareup.wire.Service

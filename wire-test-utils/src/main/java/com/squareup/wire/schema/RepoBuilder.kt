@@ -101,16 +101,20 @@ class RepoBuilder {
     }
     val type = schema.getType(typeName)
     val typeSpec = javaGenerator.generateType(type)
-    val typeName1 = javaGenerator.generatedTypeName(type)
-    return JavaFile.builder(typeName1.packageName(), typeSpec).build().toString()
+    val packageName = javaGenerator.generatedTypeName(type).packageName()
+    val javaFile = JavaFile.builder(packageName, typeSpec)
+        .build()
+    return javaFile.toString()
   }
 
   fun generateKotlin(typeName: String): String {
     val schema = schema()
     val kotlinGenerator =
         KotlinGenerator(schema, emitAndroid = false, javaInterop = false, blockingServices = false)
-    val typeSpec = kotlinGenerator.generateType(schema.getType(typeName))
-    val fileSpec = FileSpec.builder("", "_")
+    val type = schema.getType(typeName)
+    val typeSpec = kotlinGenerator.generateType(type)
+    val packageName = kotlinGenerator.generatedTypeName(type).packageName
+    val fileSpec = FileSpec.builder(packageName, "_")
         .addType(typeSpec)
         .addImport("com.squareup.wire.kotlin", "decodeMessage")
         .build()
@@ -128,8 +132,8 @@ class RepoBuilder {
     val service = schema.getService(serviceName)
     val rpc = rpcName?.let { service.rpc(rpcName)!! }
     val typeSpec = grpcGenerator.generateService(service, rpc)
-    val packageName = service.type().enclosingTypeOrPackage()
-    val fileSpec = FileSpec.builder(packageName ?: "", "_")
+    val packageName = grpcGenerator.generatedServiceName(service).packageName
+    val fileSpec = FileSpec.builder(packageName, "_")
         .addType(typeSpec)
         .build()
     return fileSpec.toString()
