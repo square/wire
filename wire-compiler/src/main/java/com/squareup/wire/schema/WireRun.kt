@@ -34,7 +34,8 @@ import java.nio.file.FileSystems
  *     and not in [treeShakingRubbish].
  *
  *  4. Call each target. It will generate sources for protos in the [sourcePath] that are in its
- *     [Target.elements] and that haven't already been emitted by an earlier target.
+ *     [Target.includes], that are not in its [Target.excludes], and that haven't already been
+ *     emitted by an earlier target.
  *
  *
  * Source Directories and Archives
@@ -61,8 +62,9 @@ import java.nio.file.FileSystems
  * Matching Packages, Types, and Members
  * -------------------------------------
  *
- * The [treeShakingRoots], [treeShakingRubbish], and [Target.elements] lists contain strings that
- * select proto types and members. Strings in these lists are in one of these forms:
+ * The [treeShakingRoots], [treeShakingRubbish], [Target.includes] and [Target.excludes] lists
+ * contain strings that select proto types and members. Strings in these lists are in one of these
+ * forms:
  *
  *  * Package names followed by `.*`, like `squareup.dinosaurs.*`. This matches types defined in the
  *    package and its descendant packages. A lone asterisk `*` matches all packages.
@@ -167,8 +169,9 @@ data class WireRun(
     for (target in targetsExclusiveLast) {
       val schemaHandler = target.newHandler(schema, fs, logger)
 
-      val identifierSet = IdentifierSet.Builder()
-          .include(target.elements)
+      val identifierSet: IdentifierSet = IdentifierSet.Builder()
+          .include(target.includes)
+          .exclude(target.excludes)
           .build()
 
       val i = typesToHandle.iterator()
@@ -192,7 +195,10 @@ data class WireRun(
       }
 
       for (rule in identifierSet.unusedIncludes()) {
-        logger.info("Unused element in target elements: $rule")
+        logger.info("Unused include in target: $rule")
+      }
+      for (rule in identifierSet.unusedExcludes()) {
+        logger.info("Unused exclude in target: $rule")
       }
     }
   }

@@ -152,7 +152,7 @@ class WireRunTest {
         targets = listOf(
             Target.KotlinTarget(
                 outDirectory = "generated/kt",
-                elements = listOf("squareup.colors.Blue")),
+                includes = listOf("squareup.colors.Blue")),
             Target.JavaTarget(
                 outDirectory = "generated/java")
         )
@@ -180,7 +180,7 @@ class WireRunTest {
         targets = listOf(
             Target.JavaTarget(
                 outDirectory = "generated/java",
-                elements = listOf("squareup.colors.Blue")),
+                includes = listOf("squareup.colors.Blue")),
             Target.KotlinTarget(
                 outDirectory = "generated/kt")
         )
@@ -194,6 +194,72 @@ class WireRunTest {
         .contains("public final class Blue extends Message")
     assertThat(fs.get("generated/kt/squareup/colors/Red.kt"))
         .contains("data class Red")
+  }
+
+  @Test
+  fun excludesTypeName() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(
+            Location.get("colors/src/main/proto"),
+            Location.get("polygons/src/main/proto")
+        ),
+        targets = listOf(
+            Target.KotlinTarget(
+                outDirectory = "generated/kt",
+                excludes = listOf("squareup.colors.Red")),
+            Target.JavaTarget(
+                outDirectory = "generated/java")
+        )
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+        "generated/kt/squareup/colors/Blue.kt",
+        "generated/java/squareup/colors/Red.java",
+        "generated/kt/squareup/polygons/Triangle.kt")
+    assertThat(fs.get("generated/kt/squareup/colors/Blue.kt"))
+        .contains("data class Blue")
+    assertThat(fs.get("generated/java/squareup/colors/Red.java"))
+        .contains("public final class Red extends Message")
+    assertThat(fs.get("generated/kt/squareup/polygons/Triangle.kt"))
+        .contains("data class Triangle")
+  }
+
+  @Test
+  fun excludesWildcard() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(
+            Location.get("colors/src/main/proto"),
+            Location.get("polygons/src/main/proto")
+        ),
+        targets = listOf(
+            Target.KotlinTarget(
+                outDirectory = "generated/kt",
+                excludes = listOf("squareup.colors.*")),
+            Target.JavaTarget(
+                outDirectory = "generated/java")
+        )
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+        "generated/java/squareup/colors/Blue.java",
+        "generated/java/squareup/colors/Red.java",
+        "generated/kt/squareup/polygons/Triangle.kt")
+    assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
+        .contains("public final class Blue extends Message")
+    assertThat(fs.get("generated/java/squareup/colors/Red.java"))
+        .contains("public final class Red extends Message")
+    assertThat(fs.get("generated/kt/squareup/polygons/Triangle.kt"))
+        .contains("data class Triangle")
   }
 
   @Test
@@ -242,7 +308,7 @@ class WireRunTest {
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.NullTarget(elements = listOf("squareup.colors.Red")),
+            Target.NullTarget(includes = listOf("squareup.colors.Red")),
             Target.KotlinTarget(outDirectory = "generated/kt")
         )
     )
@@ -262,7 +328,7 @@ class WireRunTest {
         targets = listOf(
             Target.JavaTarget(
                 outDirectory = "generated/java",
-                elements = listOf("squareup.polygons.Square")),
+                includes = listOf("squareup.polygons.Square")),
             Target.KotlinTarget(
                 outDirectory = "generated/kt")
         )
@@ -287,7 +353,7 @@ class WireRunTest {
             Target.KotlinTarget(
                 outDirectory = "generated/kt",
                 exclusive = false,
-                elements = listOf("squareup.polygons.Square"))
+                includes = listOf("squareup.polygons.Square"))
         )
     )
     wireRun.execute(fs, logger)
