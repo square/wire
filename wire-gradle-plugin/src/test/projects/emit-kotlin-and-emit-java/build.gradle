@@ -1,0 +1,16 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+wire {
+  kotlin {
+    // Kotlin gets the named types only.
+    elements = ['squareup.dinosaurs.Dinosaur']
+  }
+  java {
+    // Java gets everything.
+    exclusive = false
+  }
+}

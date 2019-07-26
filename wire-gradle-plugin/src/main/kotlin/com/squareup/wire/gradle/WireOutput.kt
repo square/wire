@@ -46,6 +46,7 @@ abstract class WireOutput {
 
 open class JavaOutput @Inject constructor() : WireOutput() {
   var elements: List<String>? = null
+  var exclusive: Boolean = true
   var android: Boolean = false
   var androidAnnotations: Boolean = false
   var compact: Boolean = false
@@ -53,6 +54,7 @@ open class JavaOutput @Inject constructor() : WireOutput() {
   override fun toTarget(): Target {
     return Target.JavaTarget(
         elements = elements ?: listOf("*"),
+        exclusive = exclusive,
         outDirectory = out!!,
         android = android,
         androidAnnotations = androidAnnotations,
@@ -85,6 +87,7 @@ open class JavaOutput @Inject constructor() : WireOutput() {
 
 open class KotlinOutput @Inject constructor() : WireOutput() {
   var elements: List<String>? = null
+  var exclusive: Boolean = true
   var android: Boolean = false
   var javaInterop: Boolean = false
   var blockingServices: Boolean = false
@@ -93,6 +96,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   override fun toTarget(): Target.KotlinTarget {
     return Target.KotlinTarget(
         elements = elements ?: listOf("*"),
+        exclusive = exclusive,
         outDirectory = out!!,
         android = android,
         javaInterop = javaInterop,

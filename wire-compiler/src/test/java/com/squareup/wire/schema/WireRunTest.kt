@@ -274,6 +274,30 @@ class WireRunTest {
         "generated/kt/com/squareup/polygons/Rhombus.kt")
   }
 
+  @Test
+  fun nonExclusiveTypeEmittedTwice() {
+    writeSquareProto()
+    writeRhombusProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(
+            Target.JavaTarget(
+                outDirectory = "generated/java"),
+            Target.KotlinTarget(
+                outDirectory = "generated/kt",
+                exclusive = false,
+                elements = listOf("squareup.polygons.Square"))
+        )
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+        "generated/java/com/squareup/polygons/Square.java",
+        "generated/java/com/squareup/polygons/Rhombus.java",
+        "generated/kt/com/squareup/polygons/Square.kt")
+  }
+
   private fun writeRedProto() {
     fs.add("colors/src/main/proto/squareup/colors/red.proto", """
           |syntax = "proto2";
