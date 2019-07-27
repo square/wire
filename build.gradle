@@ -140,8 +140,14 @@ subprojects { project ->
     targetCompatibility = JavaVersion.VERSION_1_8
   }
 
-  if (project.name != 'wire-runtime' && project.name != 'japicmp') {
+  if (project.name != 'wire-runtime' && project.name != 'japicmp' && project.name != 'wire-tests') {
     apply plugin: 'com.vanniktech.maven.publish'
+  } else {
+    tasks.create('uploadArchives') {
+      // TODO(egorand): Find out why this became a problem.
+      // No-op task to prevent Gradle from calling a real uploadArchives task which is added by an
+      // unknown plugin (or Gradle itself) and fails for multiplatform projects.
+    }
   }
   apply plugin: 'checkstyle'
 
