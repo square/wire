@@ -113,6 +113,18 @@ publishing {
     }
   }
 
+  if (project.name == 'wire-runtime') {
+    // Use default artifact name for the JVM target
+    publications {
+      kotlinMultiplatform {
+        artifactId = 'wire-runtime-multiplatform'
+      }
+      jvm {
+        artifactId = 'wire-runtime'
+      }
+    }
+  }
+
   afterEvaluate {
     publications.getByName('kotlinMultiplatform') {
       // Source jars are only created for platforms, not the common artifact.
