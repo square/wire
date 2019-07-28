@@ -843,7 +843,7 @@ class KotlinGenerator private constructor(
     if (requiredRedactedMessageFields.isNotEmpty()) {
       result.addStatement(
           "throw %T(%S)",
-          UnsupportedOperationException::class,
+          ClassName("kotlin", "UnsupportedOperationException"),
           requiredRedactedMessageFields.joinToString(
               prefix = if (requiredRedactedMessageFields.size > 1) "Fields [" else "Field '",
               postfix = if (requiredRedactedMessageFields.size > 1) "] are " else "' is " +
