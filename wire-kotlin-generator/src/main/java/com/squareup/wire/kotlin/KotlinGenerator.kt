@@ -48,6 +48,8 @@ import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
+import com.squareup.wire.MessageSink
+import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
@@ -94,8 +96,10 @@ class KotlinGenerator private constructor(
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName
+
   /** Returns the full name of the class generated for [service].  */
   fun generatedServiceName(service: Service) = service.serviceName
+
   /** Returns the full name of the class generated for [service]#[rpc].  */
   fun generatedServiceRpcName(service: Service, rpc: Rpc): ClassName {
     val typeName = service.serviceName
@@ -145,41 +149,84 @@ class KotlinGenerator private constructor(
         .addModifiers(KModifier.ABSTRACT)
         .addAnnotation(wireRpcAnnotationSpec)
 
-    when {
-      rpc.requestStreaming() && rpc.responseStreaming() -> {
-        val requestChannel =
-            SendChannel::class.asClassName().parameterizedBy(rpc.requestType().typeName)
-        val responseChannel =
-            ReceiveChannel::class.asClassName().parameterizedBy(rpc.responseType().typeName)
-        funSpecBuilder
-            .returns(Pair::class.asClassName().parameterizedBy(requestChannel, responseChannel))
+    val requestType = rpc.requestType().typeName
+    val responseType = rpc.responseType().typeName
+
+    if (blockingServices) {
+      when {
+        rpc.requestStreaming() && rpc.responseStreaming() -> {
+          funSpecBuilder
+              .addParameter("request", messageSourceOf(requestType))
+              .addParameter("response", messageSinkOf(responseType))
+        }
+        rpc.requestStreaming() -> {
+          funSpecBuilder
+              .addParameter("request", messageSourceOf(requestType))
+              .returns(responseType)
+        }
+        rpc.responseStreaming() -> {
+          funSpecBuilder
+              .addParameter("request", requestType)
+              .addParameter("response", messageSinkOf(responseType))
+        }
+        else -> {
+          funSpecBuilder
+              .addParameter("request", requestType)
+              .returns(responseType)
+        }
       }
-      rpc.requestStreaming() -> {
-        val requestChannel =
-            SendChannel::class.asClassName().parameterizedBy(rpc.requestType().typeName)
-        val responseDeferred =
-            Deferred::class.asClassName().parameterizedBy(rpc.responseType().typeName)
-        funSpecBuilder
-            .returns(Pair::class.asClassName().parameterizedBy(requestChannel, responseDeferred))
-      }
-      rpc.responseStreaming() -> {
-        funSpecBuilder
-            .addParameter("request", rpc.requestType().typeName)
-            .returns(
-                ReceiveChannel::class.asClassName().parameterizedBy(rpc.responseType().typeName))
-      }
-      else -> {
-        funSpecBuilder
-            .addParameter("request", rpc.requestType().typeName)
-            .returns(rpc.responseType().typeName)
-            .apply {
-              if (!blockingServices) addModifiers(KModifier.SUSPEND)
-            }
+    } else {
+      when {
+        rpc.requestStreaming() && rpc.responseStreaming() -> {
+          funSpecBuilder.returns(
+              pairOf(
+                  sendChannelOf(requestType),
+                  receiveChannelOf(responseType)
+              )
+          )
+        }
+        rpc.requestStreaming() -> {
+          funSpecBuilder.returns(
+              pairOf(
+                  sendChannelOf(requestType),
+                  deferredOf(responseType)
+              )
+          )
+        }
+        rpc.responseStreaming() -> {
+          funSpecBuilder
+              .addParameter("request", requestType)
+              .returns(receiveChannelOf(responseType))
+        }
+        else -> {
+          funSpecBuilder
+              .addModifiers(KModifier.SUSPEND)
+              .addParameter("request", requestType)
+              .returns(responseType)
+        }
       }
     }
 
     return funSpecBuilder.build()
   }
+
+  private fun messageSinkOf(typeName: TypeName) =
+      MessageSink::class.asClassName().parameterizedBy(typeName)
+
+  private fun messageSourceOf(typeName: TypeName) =
+      MessageSource::class.asClassName().parameterizedBy(typeName)
+
+  private fun receiveChannelOf(typeName: TypeName) =
+      ReceiveChannel::class.asClassName().parameterizedBy(typeName)
+
+  private fun sendChannelOf(typeName: TypeName) =
+      SendChannel::class.asClassName().parameterizedBy(typeName)
+
+  private fun pairOf(a: TypeName, b: TypeName) =
+      Pair::class.asClassName().parameterizedBy(a, b)
+
+  private fun deferredOf(typeName: TypeName) =
+      Deferred::class.asClassName().parameterizedBy(typeName)
 
   private fun nameAllocator(message: Type): NameAllocator {
     return nameAllocatorStore.getOrPut(message) {
@@ -566,8 +613,8 @@ class KotlinGenerator private constructor(
       typeName == DOUBLE -> CodeBlock.of("%L", defaultValue.toString())
       typeName == STRING -> CodeBlock.of("%S", defaultValue)
       typeName == ByteString::class.asTypeName() -> CodeBlock.of("%S.%M()!!",
-            defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
-            ByteString.Companion::class.asClassName().member("decodeBase64"))
+          defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
+          ByteString.Companion::class.asClassName().member("decodeBase64"))
       protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue)
       else -> throw IllegalStateException("$protoType is not an allowed scalar type")
     }
@@ -1050,7 +1097,7 @@ class KotlinGenerator private constructor(
     }
 
   private val Field.defaultValue: CodeBlock
-    get() =  when {
+    get() = when {
       isRepeated -> CodeBlock.of("emptyList()")
       isMap -> CodeBlock.of("emptyMap()")
       else -> CodeBlock.of("null")

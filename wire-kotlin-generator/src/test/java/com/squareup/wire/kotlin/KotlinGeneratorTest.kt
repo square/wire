@@ -133,7 +133,7 @@ class KotlinGeneratorTest {
     assertEquals(expected, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide"))
   }
 
-  @Test fun blockingRequestResponse() {
+  @Test fun blockingSingleRequestSingleResponse() {
     val expected = """
           |package routeguide
           |
@@ -160,7 +160,105 @@ class KotlinGeneratorTest {
           |$pointMessage
           |$featureMessage
           |""".trimMargin())
-    assertEquals(expected, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", blockingServices = true))
+    assertEquals(expected, repoBuilder.generateGrpcKotlin(
+        "routeguide.RouteGuide", blockingServices = true))
+  }
+
+  @Test fun blockingStreamingRequestSingleResponse() {
+    val expected = """
+          |package routeguide
+          |
+          |import com.squareup.wire.MessageSource
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |
+          |interface RouteGuide : Service {
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/GetFeature",
+          |    requestAdapter = "routeguide.Point#ADAPTER",
+          |    responseAdapter = "routeguide.Feature#ADAPTER"
+          |  )
+          |  fun GetFeature(request: MessageSource<Point>): Feature
+          |}
+          |""".trimMargin()
+
+    val repoBuilder = RepoBuilder()
+        .add("routeguide.proto", """
+          |package routeguide;
+          |
+          |service RouteGuide {
+          |  rpc GetFeature(stream Point) returns (Feature) {}
+          |}
+          |$pointMessage
+          |$featureMessage
+          |""".trimMargin())
+    assertEquals(expected, repoBuilder.generateGrpcKotlin(
+        "routeguide.RouteGuide", blockingServices = true))
+  }
+
+  @Test fun blockingSingleRequestStreamingResponse() {
+    val expected = """
+          |package routeguide
+          |
+          |import com.squareup.wire.MessageSink
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |
+          |interface RouteGuide : Service {
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/GetFeature",
+          |    requestAdapter = "routeguide.Point#ADAPTER",
+          |    responseAdapter = "routeguide.Feature#ADAPTER"
+          |  )
+          |  fun GetFeature(request: Point, response: MessageSink<Feature>)
+          |}
+          |""".trimMargin()
+
+    val repoBuilder = RepoBuilder()
+        .add("routeguide.proto", """
+          |package routeguide;
+          |
+          |service RouteGuide {
+          |  rpc GetFeature(Point) returns (stream Feature) {}
+          |}
+          |$pointMessage
+          |$featureMessage
+          |""".trimMargin())
+    assertEquals(expected, repoBuilder.generateGrpcKotlin(
+        "routeguide.RouteGuide", blockingServices = true))
+  }
+
+  @Test fun blockingStreamingRequestStreamingResponse() {
+    val expected = """
+          |package routeguide
+          |
+          |import com.squareup.wire.MessageSink
+          |import com.squareup.wire.MessageSource
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |
+          |interface RouteGuide : Service {
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/GetFeature",
+          |    requestAdapter = "routeguide.Point#ADAPTER",
+          |    responseAdapter = "routeguide.Feature#ADAPTER"
+          |  )
+          |  fun GetFeature(request: MessageSource<Point>, response: MessageSink<Feature>)
+          |}
+          |""".trimMargin()
+
+    val repoBuilder = RepoBuilder()
+        .add("routeguide.proto", """
+          |package routeguide;
+          |
+          |service RouteGuide {
+          |  rpc GetFeature(stream Point) returns (stream Feature) {}
+          |}
+          |$pointMessage
+          |$featureMessage
+          |""".trimMargin())
+    assertEquals(expected, repoBuilder.generateGrpcKotlin(
+        "routeguide.RouteGuide", blockingServices = true))
   }
 
   @Test fun javaPackageOption() {
