@@ -9,13 +9,13 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
-import java.lang.UnsupportedOperationException
 import kotlin.AssertionError
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
+import kotlin.UnsupportedOperationException
 import kotlin.jvm.JvmField
 import okio.ByteString
 
