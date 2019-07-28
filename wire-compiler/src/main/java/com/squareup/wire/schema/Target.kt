@@ -29,13 +29,22 @@ import java.nio.file.FileSystem
 
 sealed class Target {
   /**
-   * Proto types to generate sources for with this target. Types included here will be generated
-   * for this target and not for subsequent targets in the task.
+   * Proto types to include generated sources for. Types listed here will be generated for this
+   * target and not for subsequent targets in the task.
    *
    * This list should contain package names (suffixed with `.*`) and type names only. It should
    * not contain member names.
    */
-  abstract val elements: List<String>
+  abstract val includes: List<String>
+
+  /**
+   * Proto types to excluded generated sources for. Types listed here will not be generated for this
+   * target.
+   *
+   * This list should contain package names (suffixed with `.*`) and type names only. It should
+   * not contain member names.
+   */
+  abstract val excludes: List<String>
 
   /**
    * True if types emitted for this target should not also be emitted for other targets. Use this
@@ -51,7 +60,8 @@ sealed class Target {
 
   /** Generate `.java` sources. */
   data class JavaTarget(
-    override val elements: List<String> = listOf("*"),
+    override val includes: List<String> = listOf("*"),
+    override val excludes: List<String> = listOf(),
 
     override val exclusive: Boolean = true,
 
@@ -114,7 +124,8 @@ sealed class Target {
 
   /** Generate `.kt` sources. */
   data class KotlinTarget(
-    override val elements: List<String> = listOf("*"),
+    override val includes: List<String> = listOf("*"),
+    override val excludes: List<String> = listOf(),
 
     override val exclusive: Boolean = true,
 
@@ -205,7 +216,8 @@ sealed class Target {
 
   /** Omit code generation for these sources. Use this for a dry-run. */
   data class NullTarget(
-    override val elements: List<String> = listOf("*")
+    override val includes: List<String> = listOf("*"),
+    override val excludes: List<String> = listOf()
   ) : Target() {
     override val exclusive: Boolean = true
 

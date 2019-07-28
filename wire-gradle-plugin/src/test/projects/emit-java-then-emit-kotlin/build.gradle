@@ -7,7 +7,7 @@ plugins {
 wire {
   java {
     // Java gets the named types only.
-    elements = ['squareup.dinosaurs.Dinosaur']
+    includes = ['squareup.dinosaurs.Dinosaur']
   }
   kotlin {
     // Kotlin gets everything else.
