@@ -63,7 +63,7 @@ data class Person(
   )
   @JvmField
   val phone: List<PhoneNumber> = emptyList(),
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
@@ -234,7 +234,7 @@ data class Person(
     )
     @JvmField
     val type: PhoneType? = null,
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<PhoneNumber, PhoneNumber.Builder>(ADAPTER, unknownFields) {
     override fun newBuilder(): Builder {
       val builder = Builder()

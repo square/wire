@@ -45,7 +45,7 @@ data class OneOfMessage(
   )
   @JvmField
   val baz: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(foo, bar, baz) <= 1) {

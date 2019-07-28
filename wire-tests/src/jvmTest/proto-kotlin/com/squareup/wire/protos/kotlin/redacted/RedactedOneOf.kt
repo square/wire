@@ -30,7 +30,7 @@ data class RedactedOneOf(
     redacted = true
   )
   val c: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedOneOf, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(b, c) <= 1) {

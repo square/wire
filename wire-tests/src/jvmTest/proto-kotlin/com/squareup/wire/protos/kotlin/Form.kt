@@ -78,7 +78,7 @@ data class Form(
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}CurrencyConversionFlagsElement#ADAPTER"
   )
   val currency_conversion_flags_element: CurrencyConversionFlagsElement? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Form, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(button_element, local_image_element, remote_image_element, money_element,
@@ -205,7 +205,7 @@ data class Form(
   }
 
   data class ButtonElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<ButtonElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -243,7 +243,7 @@ data class Form(
   }
 
   data class LocalImageElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<LocalImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -281,7 +281,7 @@ data class Form(
   }
 
   data class RemoteImageElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<RemoteImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -319,7 +319,7 @@ data class Form(
   }
 
   data class MoneyElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<MoneyElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -357,7 +357,7 @@ data class Form(
   }
 
   data class SpacerElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<SpacerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -395,7 +395,7 @@ data class Form(
   }
 
   data class TextElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<TextElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -433,7 +433,7 @@ data class Form(
   }
 
   data class CustomizedCardElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<CustomizedCardElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -472,7 +472,7 @@ data class Form(
   }
 
   data class AddressElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<AddressElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -510,7 +510,7 @@ data class Form(
   }
 
   data class TextInputElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<TextInputElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -548,7 +548,7 @@ data class Form(
   }
 
   data class OptionPickerElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<OptionPickerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -586,7 +586,7 @@ data class Form(
   }
 
   data class DetailRowElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<DetailRowElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -624,7 +624,7 @@ data class Form(
   }
 
   data class CurrencyConversionFlagsElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<CurrencyConversionFlagsElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",

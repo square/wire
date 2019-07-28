@@ -16,7 +16,7 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 data class SomeResponse(
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<SomeResponse, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

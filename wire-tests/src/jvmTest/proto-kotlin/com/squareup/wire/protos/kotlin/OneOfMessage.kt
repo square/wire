@@ -46,7 +46,7 @@ data class OneOfMessage(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val baz: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(foo, bar, baz) <= 1) {

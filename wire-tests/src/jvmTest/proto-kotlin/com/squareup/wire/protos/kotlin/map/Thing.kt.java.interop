@@ -20,7 +20,7 @@ data class Thing(
   )
   @JvmField
   val name: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Thing, Thing.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()

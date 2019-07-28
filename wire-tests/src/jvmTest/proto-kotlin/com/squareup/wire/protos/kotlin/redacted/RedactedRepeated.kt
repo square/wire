@@ -36,7 +36,7 @@ data class RedactedRepeated(
     label = WireField.Label.REPEATED
   )
   val b: List<Redacted> = emptyList(),
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedRepeated, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

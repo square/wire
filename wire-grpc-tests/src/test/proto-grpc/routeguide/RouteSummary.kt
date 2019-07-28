@@ -56,7 +56,7 @@ data class RouteSummary(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val elapsed_time: Int? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteSummary, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

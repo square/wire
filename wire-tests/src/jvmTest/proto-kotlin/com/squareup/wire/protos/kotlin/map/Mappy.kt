@@ -26,7 +26,7 @@ data class Mappy(
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
   )
   val things: Map<String, Thing>,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Mappy, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

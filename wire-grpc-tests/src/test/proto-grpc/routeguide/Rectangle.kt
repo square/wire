@@ -37,7 +37,7 @@ data class Rectangle(
     adapter = "routeguide.Point#ADAPTER"
   )
   val hi: Point? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Rectangle, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

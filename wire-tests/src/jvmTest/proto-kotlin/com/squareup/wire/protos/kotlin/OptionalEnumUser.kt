@@ -25,7 +25,7 @@ data class OptionalEnumUser(
     adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser${'$'}OptionalEnum#ADAPTER"
   )
   val optional_enum: OptionalEnum? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OptionalEnumUser, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

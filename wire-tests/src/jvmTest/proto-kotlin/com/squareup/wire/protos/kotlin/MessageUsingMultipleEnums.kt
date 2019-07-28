@@ -30,7 +30,7 @@ data class MessageUsingMultipleEnums(
     adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER"
   )
   val b: OtherMessageWithStatus.Status? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageUsingMultipleEnums, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

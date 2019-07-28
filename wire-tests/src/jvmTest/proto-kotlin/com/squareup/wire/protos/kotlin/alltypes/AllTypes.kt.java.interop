@@ -936,7 +936,7 @@ data class AllTypes(
   )
   @JvmField
   val ext_map_string_enum: Map<String, NestedEnum>,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<AllTypes, AllTypes.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
@@ -3195,7 +3195,7 @@ data class AllTypes(
     )
     @JvmField
     val a: Int? = null,
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
     override fun newBuilder(): Builder {
       val builder = Builder()

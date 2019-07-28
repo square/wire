@@ -15,7 +15,7 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class OtherMessageWithStatus(
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OtherMessageWithStatus, OtherMessageWithStatus.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()

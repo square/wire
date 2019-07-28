@@ -28,7 +28,7 @@ data class RedactedOneOf(
   )
   @JvmField
   val c: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(b, c) <= 1) {

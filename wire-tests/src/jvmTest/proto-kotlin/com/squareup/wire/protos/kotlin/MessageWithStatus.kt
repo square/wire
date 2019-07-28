@@ -19,7 +19,7 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 data class MessageWithStatus(
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageWithStatus, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

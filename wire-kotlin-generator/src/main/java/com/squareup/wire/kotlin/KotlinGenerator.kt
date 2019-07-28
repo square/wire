@@ -464,7 +464,7 @@ class KotlinGenerator private constructor(
    *   val name: String,
    *   val email: String? = null,
    *   val phone: List<PhoneNumber> = emptyList(),
-   *   val unknownFields: ByteString = ByteString.EMPTY
+   *   override val unknownFields: ByteString = ByteString.EMPTY
    * )
    * ```
    */
@@ -511,6 +511,7 @@ class KotlinGenerator private constructor(
     val unknownFields = nameAllocator["unknownFields"]
     constructorBuilder.addParameter(
         ParameterSpec.builder(unknownFields, byteClass)
+            .addModifiers(OVERRIDE)
             .defaultValue("%T.EMPTY", byteClass)
             .build())
     classBuilder.addProperty(PropertySpec.builder(unknownFields, byteClass)

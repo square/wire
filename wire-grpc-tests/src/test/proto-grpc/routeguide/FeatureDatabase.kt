@@ -28,7 +28,7 @@ data class FeatureDatabase(
     label = WireField.Label.REPEATED
   )
   val feature: List<Feature> = emptyList(),
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FeatureDatabase, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

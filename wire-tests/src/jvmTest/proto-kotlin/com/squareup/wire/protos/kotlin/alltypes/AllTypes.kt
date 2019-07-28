@@ -802,7 +802,7 @@ data class AllTypes(
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   val ext_map_string_enum: Map<String, NestedEnum>,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<AllTypes, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
@@ -1622,7 +1622,7 @@ data class AllTypes(
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
     val a: Int? = null,
-    val unknownFields: ByteString = ByteString.EMPTY
+    override val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<NestedMessage, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",

@@ -28,7 +28,7 @@ data class NotRedacted(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val b: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NotRedacted, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

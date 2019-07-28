@@ -39,7 +39,7 @@ data class Redacted(
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER"
   )
   val extension: RedactedExtension? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Redacted, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

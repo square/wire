@@ -28,7 +28,7 @@ data class MessageUsingMultipleEnums(
   )
   @JvmField
   val b: OtherMessageWithStatus.Status? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageUsingMultipleEnums, MessageUsingMultipleEnums.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()

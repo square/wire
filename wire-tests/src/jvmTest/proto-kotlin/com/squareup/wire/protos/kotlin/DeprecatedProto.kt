@@ -24,7 +24,7 @@ data class DeprecatedProto(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val foo: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<DeprecatedProto, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

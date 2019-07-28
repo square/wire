@@ -23,7 +23,7 @@ data class Mappy(
   )
   @JvmField
   val things: Map<String, Thing>,
-  val unknownFields: ByteString = ByteString.EMPTY
+  override val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Mappy, Mappy.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
