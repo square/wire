@@ -40,7 +40,7 @@ data class RedactedOneOf(
     val builder = Builder()
     builder.b = b
     builder.c = c
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 

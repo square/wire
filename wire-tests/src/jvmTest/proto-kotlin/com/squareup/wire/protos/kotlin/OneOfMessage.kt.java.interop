@@ -58,7 +58,7 @@ data class OneOfMessage(
     builder.foo = foo
     builder.bar = bar
     builder.baz = baz
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 

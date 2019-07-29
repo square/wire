@@ -19,7 +19,7 @@ data class MessageWithStatus(
 ) : Message<MessageWithStatus, MessageWithStatus.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 

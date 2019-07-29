@@ -28,7 +28,7 @@ data class Mappy(
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.things = things
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 

@@ -71,7 +71,7 @@ data class Person(
     builder.id = id
     builder.email = email
     builder.phone = phone
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 
@@ -240,7 +240,7 @@ data class Person(
       val builder = Builder()
       builder.number = number
       builder.type = type
-      builder.addUnknownFields(unknownFields())
+      builder.addUnknownFields(unknownFields)
       return builder
     }
 

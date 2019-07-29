@@ -34,7 +34,7 @@ data class MessageUsingMultipleEnums(
     val builder = Builder()
     builder.a = a
     builder.b = b
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 

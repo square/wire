@@ -27,7 +27,7 @@ data class DeprecatedProto(
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.foo = foo
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 

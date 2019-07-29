@@ -350,7 +350,7 @@ class KotlinGenerator private constructor(
     }
 
     return funBuilder
-        .addStatement("builder.addUnknownFields(unknownFields())")
+        .addStatement("builder.addUnknownFields(unknownFields)")
         .addStatement("return builder")
         .build()
   }

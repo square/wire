@@ -28,7 +28,7 @@ data class Percents(
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.text = text
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 
