@@ -102,3 +102,15 @@ repositories.whenObjectAdded {
 
 apply from: 'jvm.gradle'
 apply from: "$rootDir/gradle/gradle-mvn-mpp-push.gradle"
+
+publishing {
+  // Use default artifact name for the JVM target
+  publications {
+    kotlinMultiplatform {
+      artifactId = 'wire-runtime-multiplatform'
+    }
+    jvm {
+      artifactId = 'wire-runtime'
+    }
+  }
+}
