@@ -36,8 +36,7 @@ mkdocs gh-deploy
 
 # Restore Javadocs from 2.x
 git checkout gh-pages
-# TODO(jwilson): get a SHA to cherry-pick Wire 2.x docs.
-# git cherry-pick b3205fa199a19d6fbf13ee5c8e0c3d6d2b15b05f
+git cherry-pick 0e1192aaa1d074c9703748fae100daef707218d4
 git push
 
 # Delete our temp folder
