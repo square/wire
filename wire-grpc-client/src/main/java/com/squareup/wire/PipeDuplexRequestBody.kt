@@ -24,7 +24,7 @@ import okio.buffer
 /**
  * A duplex request body that provides early writes via a pipe.
  */
-class PipeDuplexRequestBody(
+internal class PipeDuplexRequestBody(
   private val contentType: MediaType?,
   pipeMaxBufferSize: Long
 ) : RequestBody() {

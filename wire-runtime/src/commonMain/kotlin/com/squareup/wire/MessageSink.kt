@@ -18,7 +18,33 @@ package com.squareup.wire
 import com.squareup.wire.internal.Throws
 import okio.IOException
 
+/**
+ * A writable stream of messages.
+ *
+ * Typical implementations will immediately encode messages and enqueue them for transmission, such
+ * as for client-to-server or server-to-client networking. But this interface is not limited to 1-1
+ * networking use cases and implementations may persist, broadcast, validate, or take any other
+ * action with the messages.
+ *
+ * There is no flushing mechanism. Messages are flushed one-by-one as they are written. This
+ * minimizes latency at a potential cost of throughput.
+ *
+ * On its own this offers no guarantees that messages are delivered. For example, a message may
+ * accepted by [write] could be lost due to a network partition or crash. It is the caller's
+ * responsibility to confirm delivery and to retransmit as necessary.
+ *
+ * It is possible for a writer to saturate the transmission channel, such as when a writer writes
+ * faster than the corresponding reader can read. In such cases calls to [write] will block until
+ * there is capacity in the outbound channel. You may use this as a basic backpressure mechanism.
+ * You should ensure that such backpressure propagates to the originator of outbound messages.
+ *
+ * Instances of this interface are not safe for concurrent use.
+ */
 expect interface MessageSink<in T : Any> {
+  /**
+   * Encode [message] to bytes and enqueue the bytes for delivery, waiting if necessary until the
+   * delivery channel has capacity for the encoded message.
+   */
   @Throws(IOException::class)
   fun write(message: T)
 

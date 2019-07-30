@@ -36,46 +36,31 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
   constructor(fieldEncoding: FieldEncoding, type: Class<*>): this(fieldEncoding, type.kotlin)
 
-  /** Returns the redacted form of `value`. */
   actual abstract fun redact(value: E): E
 
-  /**
-   * The size of the non-null data `value`. This does not include the size required for a
-   * length-delimited prefix (should the type require one).
-   */
   actual abstract fun encodedSize(value: E): Int
 
-  /**
-   * The size of `tag` and `value` in the wire format. This size includes the tag, type,
-   * length-delimited prefix (should the type require one), and value. Returns 0 if `value` is
-   * null.
-   */
   actual open fun encodedSizeWithTag(tag: Int, value: E?): Int {
     return commonEncodedSizeWithTag(tag, value)
   }
 
-  /** Write non-null `value` to `writer`. */
   @Throws(IOException::class)
   actual abstract fun encode(writer: ProtoWriter, value: E)
 
-  /** Write `tag` and `value` to `writer`. If value is null this does nothing. */
   @Throws(IOException::class)
   actual open fun encodeWithTag(writer: ProtoWriter, tag: Int, value: E?) {
     commonEncodeWithTag(writer, tag, value)
   }
 
-  /** Encode `value` and write it to `stream`. */
   @Throws(IOException::class)
   actual fun encode(sink: BufferedSink, value: E) {
     commonEncode(sink, value)
   }
 
-  /** Encode `value` as a `byte[]`. */
   actual fun encode(value: E): ByteArray {
     return commonEncode(value)
   }
 
-  /** Encode `value` and write it to `stream`. */
   @Throws(IOException::class)
   fun encode(stream: OutputStream, value: E) {
     val buffer = stream.sink().buffer()
@@ -83,33 +68,27 @@ actual abstract class ProtoAdapter<E> actual constructor(
     buffer.emit()
   }
 
-  /** Read a non-null value from `reader`. */
   @Throws(IOException::class)
   actual abstract fun decode(reader: ProtoReader): E
 
-  /** Read an encoded message from `bytes`. */
   @Throws(IOException::class)
   actual fun decode(bytes: ByteArray): E {
     return commonDecode(bytes)
   }
 
-  /** Read an encoded message from `bytes`. */
   @Throws(IOException::class)
   actual fun decode(bytes: ByteString): E {
     return commonDecode(bytes)
   }
 
-  /** Read an encoded message from `source`. */
   @Throws(IOException::class)
   actual fun decode(source: BufferedSource): E {
     return commonDecode(source)
   }
 
-  /** Read an encoded message from `stream`. */
   @Throws(IOException::class)
   fun decode(stream: InputStream): E = decode(stream.source().buffer())
 
-  /** Returns a human-readable version of the given `value`. */
   actual open fun toString(value: E): String {
     return commonToString(value)
   }
@@ -118,18 +97,10 @@ actual abstract class ProtoAdapter<E> actual constructor(
     return commonWithLabel(label)
   }
 
-  /** Returns an adapter for `E` but as a packed, repeated value. */
   actual fun asPacked(): ProtoAdapter<List<E>> {
     return commonAsPacked()
   }
 
-  /**
-   * Returns an adapter for `E` but as a repeated value.
-   *
-   * Note: Repeated items are not required to be encoded sequentially. Thus, when decoding using
-   * the returned adapter, only single-element lists will be returned and it is the caller's
-   * responsibility to merge them into the final list.
-   */
   actual fun asRepeated(): ProtoAdapter<List<E>> {
     return commonAsRepeated()
   }
@@ -142,13 +113,6 @@ actual abstract class ProtoAdapter<E> actual constructor(
   }
 
   actual companion object {
-    /**
-     * Creates a new proto adapter for a map using `keyAdapter` and `valueAdapter`.
-     *
-     * Note: Map entries are not required to be encoded sequentially. Thus, when decoding using
-     * the returned adapter, only single-element maps will be returned and it is the caller's
-     * responsibility to merge them into the final map.
-     */
     @JvmStatic actual fun <K, V> newMapAdapter(
       keyAdapter: ProtoAdapter<K>,
       valueAdapter: ProtoAdapter<V>
@@ -211,10 +175,6 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmField actual val FIXED32: ProtoAdapter<Int> = COMMON_FIXED32
     @JvmField actual val SFIXED32: ProtoAdapter<Int> = COMMON_SFIXED32
     @JvmField actual val INT64: ProtoAdapter<Long> = COMMON_INT64
-    /**
-     * Like INT64, but negative longs are interpreted as large positive values, and encoded that way
-     * in JSON.
-     */
     @JvmField actual val UINT64: ProtoAdapter<Long> = COMMON_UINT64
     @JvmField actual val SINT64: ProtoAdapter<Long> = COMMON_SINT64
     @JvmField actual val FIXED64: ProtoAdapter<Long> = COMMON_FIXED64
