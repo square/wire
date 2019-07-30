@@ -1,7 +1,9 @@
-Wire Protocol Buffers
-=====================
+Wire
+====
 
 *“A man got to have a code!”* - Omar Little
+
+See the [project website][wire] for documentation and APIs.
 
 As our teams and programs grow, the variety and volume of data also grows. Success will turn your
 simple data models into complex ones! Whether your application is storing data to disk or
@@ -425,3 +427,4 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
  [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/
+ [wire]: https://square.github.io/wire/
