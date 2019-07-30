@@ -43,7 +43,9 @@ nav:
     - 'wire-grpc-client': 3.x/wire-grpc-client/com.squareup.wire/index.md
     - 'wire-moshi-adapter': 3.x/wire-moshi-adapter/com.squareup.wire/index.md
     - 'wire-runtime': 3.x/wire-runtime/com.squareup.wire/index.md
-  - '2.x API ⏏': https://square.github.io/wire/2.x/wire-runtime/
+  - '2.x API':
+    - 'wire-gson-support ⏏': https://square.github.io/wire/2.x/wire-gson-support/
+    - 'wire-runtime ⏏': https://square.github.io/wire/2.x/wire-runtime/
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md
