@@ -16,3 +16,9 @@ generated
 
 # Maven
 plugin*.xml
+
+# Special Mkdocs files
+docs/3.x
+docs/changelog.md
+docs/contributing.md
+docs/index.md

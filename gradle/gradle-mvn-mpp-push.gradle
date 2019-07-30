@@ -3,8 +3,15 @@ apply plugin: 'signing'
 apply plugin: 'org.jetbrains.dokka'
 
 dokka {
+  outputDirectory = "$rootDir/docs/3.x"
+  outputFormat = 'gfm'
+  reportUndocumented = false
+  skipDeprecated = true
+  jdkVersion = 8
+
   // This will force platform tags for all non-common sources e.g. "JVM"
   impliedPlatforms = ["Common"]
+
   kotlinTasks {
     // dokka fails to retrieve sources from MPP-tasks so they must be set empty to avoid exception
     // use sourceRoot instead (see below)
