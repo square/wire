@@ -18,7 +18,28 @@ package com.squareup.wire
 import com.squareup.wire.internal.Throws
 import okio.IOException
 
+/**
+ * A readable stream of messages.
+ *
+ * Typical implementations will receive messages recently transmitted from a peer, such as for
+ * server-to-client or client-to-server networking. But this implementation is not limited to such
+ * networking use cases and implementations may load messages from local storage or generate
+ * messages on demand.
+ *
+ * Calls to [read] will block until a message becomes available. There is no mechanism to limit how
+ * long a specific [read] will wait, though implementations may be configured to fail if they
+ * consider a source to be unhealthy.
+ *
+ * Readers should take care to keep up with the stream of messages. A reader that takes an excessive
+ * amount of time to process a message may cause their writer to back up and suffer queueing.
+ *
+ * Instances of this interface are not safe for concurrent use.
+ */
 expect interface MessageSource<out T : Any> {
+  /**
+   * Read the next length-prefixed message on the stream and return it. Returns null if there are
+   * no further messages on this stream.
+   */
   @Throws(IOException::class)
   fun read(): T?
 
