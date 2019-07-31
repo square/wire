@@ -26,7 +26,7 @@ import okio.ByteString
 /**
  * Message representing a person, includes their name, unique ID number, email and phone number.
  */
-data class Person(
+class Person(
   /**
    * The customer's full name.
    */
@@ -108,6 +108,14 @@ data class Person(
     if (phone.isNotEmpty()) result += """phone=$phone"""
     return result.joinToString(prefix = "Person{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    name: String = this.name,
+    id: Int = this.id,
+    email: String? = this.email,
+    phone: List<PhoneNumber> = this.phone,
+    unknownFields: ByteString = this.unknownFields
+  ): Person = Person(name, id, email, phone, unknownFields)
 
   class Builder : Message.Builder<Person, Builder>() {
     @JvmField
@@ -248,7 +256,7 @@ data class Person(
     }
   }
 
-  data class PhoneNumber(
+  class PhoneNumber(
     /**
      * The customer's phone number.
      */
@@ -302,6 +310,12 @@ data class Person(
       if (type != null) result += """type=$type"""
       return result.joinToString(prefix = "PhoneNumber{", separator = ", ", postfix = "}")
     }
+
+    fun copy(
+      number: String = this.number,
+      type: PhoneType? = this.type,
+      unknownFields: ByteString = this.unknownFields
+    ): PhoneNumber = PhoneNumber(number, type, unknownFields)
 
     class Builder : Message.Builder<PhoneNumber, Builder>() {
       @JvmField

@@ -21,7 +21,7 @@ import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Form(
+class Form(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}ButtonElement#ADAPTER"
@@ -157,6 +157,25 @@ data class Form(
     return result.joinToString(prefix = "Form{", separator = ", ", postfix = "}")
   }
 
+  fun copy(
+    button_element: ButtonElement? = this.button_element,
+    local_image_element: LocalImageElement? = this.local_image_element,
+    remote_image_element: RemoteImageElement? = this.remote_image_element,
+    money_element: MoneyElement? = this.money_element,
+    spacer_element: SpacerElement? = this.spacer_element,
+    text_element: TextElement? = this.text_element,
+    customized_card_element: CustomizedCardElement? = this.customized_card_element,
+    address_element: AddressElement? = this.address_element,
+    text_input_element: TextInputElement? = this.text_input_element,
+    option_picker_element: OptionPickerElement? = this.option_picker_element,
+    detail_row_element: DetailRowElement? = this.detail_row_element,
+    currency_conversion_flags_element: CurrencyConversionFlagsElement? =
+        this.currency_conversion_flags_element,
+    unknownFields: ByteString = this.unknownFields
+  ): Form = Form(button_element, local_image_element, remote_image_element, money_element,
+      spacer_element, text_element, customized_card_element, address_element, text_input_element,
+      option_picker_element, detail_row_element, currency_conversion_flags_element, unknownFields)
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Form> = object : ProtoAdapter<Form>(
@@ -265,7 +284,7 @@ data class Form(
     }
   }
 
-  data class ButtonElement(
+  class ButtonElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<ButtonElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -281,6 +300,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "ButtonElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): ButtonElement =
+        ButtonElement(unknownFields)
 
     companion object {
       @JvmField
@@ -309,7 +331,7 @@ data class Form(
     }
   }
 
-  data class LocalImageElement(
+  class LocalImageElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<LocalImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -325,6 +347,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "LocalImageElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): LocalImageElement =
+        LocalImageElement(unknownFields)
 
     companion object {
       @JvmField
@@ -353,7 +378,7 @@ data class Form(
     }
   }
 
-  data class RemoteImageElement(
+  class RemoteImageElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<RemoteImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -369,6 +394,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "RemoteImageElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): RemoteImageElement =
+        RemoteImageElement(unknownFields)
 
     companion object {
       @JvmField
@@ -397,7 +425,7 @@ data class Form(
     }
   }
 
-  data class MoneyElement(
+  class MoneyElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<MoneyElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -413,6 +441,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "MoneyElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): MoneyElement =
+        MoneyElement(unknownFields)
 
     companion object {
       @JvmField
@@ -441,7 +472,7 @@ data class Form(
     }
   }
 
-  data class SpacerElement(
+  class SpacerElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<SpacerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -457,6 +488,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "SpacerElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): SpacerElement =
+        SpacerElement(unknownFields)
 
     companion object {
       @JvmField
@@ -485,7 +519,7 @@ data class Form(
     }
   }
 
-  data class TextElement(
+  class TextElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<TextElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -501,6 +535,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "TextElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): TextElement =
+        TextElement(unknownFields)
 
     companion object {
       @JvmField
@@ -529,7 +566,7 @@ data class Form(
     }
   }
 
-  data class CustomizedCardElement(
+  class CustomizedCardElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<CustomizedCardElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -545,6 +582,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "CustomizedCardElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): CustomizedCardElement =
+        CustomizedCardElement(unknownFields)
 
     companion object {
       @JvmField
@@ -574,7 +614,7 @@ data class Form(
     }
   }
 
-  data class AddressElement(
+  class AddressElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<AddressElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -590,6 +630,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "AddressElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): AddressElement =
+        AddressElement(unknownFields)
 
     companion object {
       @JvmField
@@ -618,7 +661,7 @@ data class Form(
     }
   }
 
-  data class TextInputElement(
+  class TextInputElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<TextInputElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -634,6 +677,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "TextInputElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): TextInputElement =
+        TextInputElement(unknownFields)
 
     companion object {
       @JvmField
@@ -662,7 +708,7 @@ data class Form(
     }
   }
 
-  data class OptionPickerElement(
+  class OptionPickerElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<OptionPickerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -678,6 +724,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "OptionPickerElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): OptionPickerElement =
+        OptionPickerElement(unknownFields)
 
     companion object {
       @JvmField
@@ -706,7 +755,7 @@ data class Form(
     }
   }
 
-  data class DetailRowElement(
+  class DetailRowElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<DetailRowElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -722,6 +771,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "DetailRowElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): DetailRowElement =
+        DetailRowElement(unknownFields)
 
     companion object {
       @JvmField
@@ -750,7 +802,7 @@ data class Form(
     }
   }
 
-  data class CurrencyConversionFlagsElement(
+  class CurrencyConversionFlagsElement(
     val unknownFields: ByteString = ByteString.EMPTY
   ) : Message<CurrencyConversionFlagsElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -766,6 +818,9 @@ data class Form(
     override fun hashCode(): Int = unknownFields.hashCode()
 
     override fun toString(): String = "CurrencyConversionFlagsElement{}"
+
+    fun copy(unknownFields: ByteString = this.unknownFields): CurrencyConversionFlagsElement =
+        CurrencyConversionFlagsElement(unknownFields)
 
     companion object {
       @JvmField

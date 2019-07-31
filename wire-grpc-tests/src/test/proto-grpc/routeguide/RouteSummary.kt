@@ -27,7 +27,7 @@ import okio.ByteString
  * detected features, and the total distance covered as the cumulative sum of
  * the distance between each point.
  */
-data class RouteSummary(
+class RouteSummary(
   /**
    * The number of points received.
    */
@@ -100,6 +100,14 @@ data class RouteSummary(
     if (elapsed_time != null) result += """elapsed_time=$elapsed_time"""
     return result.joinToString(prefix = "RouteSummary{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    point_count: Int? = this.point_count,
+    feature_count: Int? = this.feature_count,
+    distance: Int? = this.distance,
+    elapsed_time: Int? = this.elapsed_time,
+    unknownFields: ByteString = this.unknownFields
+  ): RouteSummary = RouteSummary(point_count, feature_count, distance, elapsed_time, unknownFields)
 
   companion object {
     @JvmField

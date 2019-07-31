@@ -26,7 +26,7 @@ import okio.ByteString
  * Latitudes should be in the range +/- 90 degrees and longitude should be in
  * the range +/- 180 degrees (inclusive).
  */
-data class Point(
+class Point(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -71,6 +71,12 @@ data class Point(
     if (longitude != null) result += """longitude=$longitude"""
     return result.joinToString(prefix = "Point{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    latitude: Int? = this.latitude,
+    longitude: Int? = this.longitude,
+    unknownFields: ByteString = this.unknownFields
+  ): Point = Point(latitude, longitude, unknownFields)
 
   companion object {
     @JvmField

@@ -24,7 +24,7 @@ import okio.ByteString
 /**
  * Not used in the RPC.  Instead, this is here for the form serialized to disk.
  */
-data class FeatureDatabase(
+class FeatureDatabase(
   @field:WireField(
     tag = 1,
     adapter = "routeguide.Feature#ADAPTER",
@@ -62,6 +62,9 @@ data class FeatureDatabase(
     if (feature.isNotEmpty()) result += """feature=$feature"""
     return result.joinToString(prefix = "FeatureDatabase{", separator = ", ", postfix = "}")
   }
+
+  fun copy(feature: List<Feature> = this.feature, unknownFields: ByteString = this.unknownFields):
+      FeatureDatabase = FeatureDatabase(feature, unknownFields)
 
   companion object {
     @JvmField

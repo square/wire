@@ -20,7 +20,7 @@ import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Redacted(
+class Redacted(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -82,6 +82,14 @@ data class Redacted(
     if (extension != null) result += """extension=$extension"""
     return result.joinToString(prefix = "Redacted{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    a: String? = this.a,
+    b: String? = this.b,
+    c: String? = this.c,
+    extension: RedactedExtension? = this.extension,
+    unknownFields: ByteString = this.unknownFields
+  ): Redacted = Redacted(a, b, c, extension, unknownFields)
 
   companion object {
     @JvmField

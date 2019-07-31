@@ -20,7 +20,7 @@ import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Thing(
+class Thing(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
@@ -57,6 +57,9 @@ data class Thing(
     if (name != null) result += """name=$name"""
     return result.joinToString(prefix = "Thing{", separator = ", ", postfix = "}")
   }
+
+  fun copy(name: String? = this.name, unknownFields: ByteString = this.unknownFields): Thing =
+      Thing(name, unknownFields)
 
   companion object {
     @JvmField

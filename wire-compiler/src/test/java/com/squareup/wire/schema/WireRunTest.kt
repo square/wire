@@ -64,9 +64,9 @@ class WireRunTest {
         "generated/kt/squareup/colors/Blue.kt",
         "generated/kt/squareup/colors/Red.kt")
     assertThat(fs.get("generated/kt/squareup/colors/Blue.kt"))
-        .contains("data class Blue")
+        .contains("class Blue")
     assertThat(fs.get("generated/kt/squareup/colors/Red.kt"))
-        .contains("data class Red")
+        .contains("class Red")
   }
 
   @Test
@@ -163,7 +163,7 @@ class WireRunTest {
         "generated/kt/squareup/colors/Blue.kt",
         "generated/java/squareup/colors/Red.java")
     assertThat(fs.get("generated/kt/squareup/colors/Blue.kt"))
-        .contains("data class Blue")
+        .contains("class Blue")
     assertThat(fs.get("generated/java/squareup/colors/Red.java"))
         .contains("public final class Red extends Message")
   }
@@ -193,7 +193,7 @@ class WireRunTest {
     assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
         .contains("public final class Blue extends Message")
     assertThat(fs.get("generated/kt/squareup/colors/Red.kt"))
-        .contains("data class Red")
+        .contains("class Red")
   }
 
   @Test
@@ -222,11 +222,11 @@ class WireRunTest {
         "generated/java/squareup/colors/Red.java",
         "generated/kt/squareup/polygons/Triangle.kt")
     assertThat(fs.get("generated/kt/squareup/colors/Blue.kt"))
-        .contains("data class Blue")
+        .contains("class Blue")
     assertThat(fs.get("generated/java/squareup/colors/Red.java"))
         .contains("public final class Red extends Message")
     assertThat(fs.get("generated/kt/squareup/polygons/Triangle.kt"))
-        .contains("data class Triangle")
+        .contains("class Triangle")
   }
 
   @Test
@@ -259,7 +259,7 @@ class WireRunTest {
     assertThat(fs.get("generated/java/squareup/colors/Red.java"))
         .contains("public final class Red extends Message")
     assertThat(fs.get("generated/kt/squareup/polygons/Triangle.kt"))
-        .contains("data class Triangle")
+        .contains("class Triangle")
   }
 
   @Test

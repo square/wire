@@ -23,7 +23,7 @@ import okio.ByteString
 /**
  * Enum names must be fully qualified in generated Kotlin
  */
-data class MessageUsingMultipleEnums(
+class MessageUsingMultipleEnums(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER"
@@ -69,6 +69,12 @@ data class MessageUsingMultipleEnums(
     return result.joinToString(prefix = "MessageUsingMultipleEnums{", separator = ", ", postfix =
         "}")
   }
+
+  fun copy(
+    a: MessageWithStatus.Status? = this.a,
+    b: OtherMessageWithStatus.Status? = this.b,
+    unknownFields: ByteString = this.unknownFields
+  ): MessageUsingMultipleEnums = MessageUsingMultipleEnums(a, b, unknownFields)
 
   companion object {
     @JvmField

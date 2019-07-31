@@ -21,7 +21,7 @@ import kotlin.UnsupportedOperationException
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class RedactedRequired(
+class RedactedRequired(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -60,6 +60,9 @@ data class RedactedRequired(
     result += """a=██"""
     return result.joinToString(prefix = "RedactedRequired{", separator = ", ", postfix = "}")
   }
+
+  fun copy(a: String = this.a, unknownFields: ByteString = this.unknownFields): RedactedRequired =
+      RedactedRequired(a, unknownFields)
 
   companion object {
     @JvmField

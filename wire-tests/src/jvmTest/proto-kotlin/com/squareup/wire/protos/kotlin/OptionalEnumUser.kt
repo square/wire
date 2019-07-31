@@ -23,7 +23,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-data class OptionalEnumUser(
+class OptionalEnumUser(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser${'$'}OptionalEnum#ADAPTER"
@@ -60,6 +60,9 @@ data class OptionalEnumUser(
     if (optional_enum != null) result += """optional_enum=$optional_enum"""
     return result.joinToString(prefix = "OptionalEnumUser{", separator = ", ", postfix = "}")
   }
+
+  fun copy(optional_enum: OptionalEnum? = this.optional_enum, unknownFields: ByteString =
+      this.unknownFields): OptionalEnumUser = OptionalEnumUser(optional_enum, unknownFields)
 
   companion object {
     @JvmField

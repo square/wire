@@ -24,7 +24,7 @@ import okio.ByteString
 /**
  * It's a one of message.
  */
-data class OneOfMessage(
+class OneOfMessage(
   /**
    * What foo.
    */
@@ -92,6 +92,13 @@ data class OneOfMessage(
     if (baz != null) result += """baz=$baz"""
     return result.joinToString(prefix = "OneOfMessage{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    foo: Int? = this.foo,
+    bar: String? = this.bar,
+    baz: String? = this.baz,
+    unknownFields: ByteString = this.unknownFields
+  ): OneOfMessage = OneOfMessage(foo, bar, baz, unknownFields)
 
   companion object {
     @JvmField

@@ -23,7 +23,7 @@ import okio.ByteString
 /**
  * A RouteNote is a message sent while at a given point.
  */
-data class RouteNote(
+class RouteNote(
   /**
    * The location from which the message is sent.
    */
@@ -74,6 +74,12 @@ data class RouteNote(
     if (message != null) result += """message=$message"""
     return result.joinToString(prefix = "RouteNote{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    location: Point? = this.location,
+    message: String? = this.message,
+    unknownFields: ByteString = this.unknownFields
+  ): RouteNote = RouteNote(location, message, unknownFields)
 
   companion object {
     @JvmField
