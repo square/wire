@@ -280,10 +280,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("ButtonElement{")
-      append('}')
-    }
+    override fun toString(): String = "ButtonElement{}"
 
     companion object {
       @JvmField
@@ -327,10 +324,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("LocalImageElement{")
-      append('}')
-    }
+    override fun toString(): String = "LocalImageElement{}"
 
     companion object {
       @JvmField
@@ -374,10 +368,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("RemoteImageElement{")
-      append('}')
-    }
+    override fun toString(): String = "RemoteImageElement{}"
 
     companion object {
       @JvmField
@@ -421,10 +412,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("MoneyElement{")
-      append('}')
-    }
+    override fun toString(): String = "MoneyElement{}"
 
     companion object {
       @JvmField
@@ -468,10 +456,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("SpacerElement{")
-      append('}')
-    }
+    override fun toString(): String = "SpacerElement{}"
 
     companion object {
       @JvmField
@@ -515,10 +500,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("TextElement{")
-      append('}')
-    }
+    override fun toString(): String = "TextElement{}"
 
     companion object {
       @JvmField
@@ -562,10 +544,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("CustomizedCardElement{")
-      append('}')
-    }
+    override fun toString(): String = "CustomizedCardElement{}"
 
     companion object {
       @JvmField
@@ -610,10 +589,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("AddressElement{")
-      append('}')
-    }
+    override fun toString(): String = "AddressElement{}"
 
     companion object {
       @JvmField
@@ -657,10 +633,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("TextInputElement{")
-      append('}')
-    }
+    override fun toString(): String = "TextInputElement{}"
 
     companion object {
       @JvmField
@@ -704,10 +677,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("OptionPickerElement{")
-      append('}')
-    }
+    override fun toString(): String = "OptionPickerElement{}"
 
     companion object {
       @JvmField
@@ -751,10 +721,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("DetailRowElement{")
-      append('}')
-    }
+    override fun toString(): String = "DetailRowElement{}"
 
     companion object {
       @JvmField
@@ -798,10 +765,7 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = buildString {
-      append("CurrencyConversionFlagsElement{")
-      append('}')
-    }
+    override fun toString(): String = "CurrencyConversionFlagsElement{}"
 
     companion object {
       @JvmField

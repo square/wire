@@ -33,10 +33,7 @@ data class NoPackageResponse(
 
   override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = buildString {
-    append("NoPackageResponse{")
-    append('}')
-  }
+  override fun toString(): String = "NoPackageResponse{}"
 
   companion object {
     @JvmField

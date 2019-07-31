@@ -33,10 +33,7 @@ data class SomeRequest(
 
   override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = buildString {
-    append("SomeRequest{")
-    append('}')
-  }
+  override fun toString(): String = "SomeRequest{}"
 
   companion object {
     @JvmField

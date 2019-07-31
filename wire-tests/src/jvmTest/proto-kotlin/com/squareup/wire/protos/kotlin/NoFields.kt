@@ -33,10 +33,7 @@ data class NoFields(
 
   override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = buildString {
-    append("NoFields{")
-    append('}')
-  }
+  override fun toString(): String = "NoFields{}"
 
   companion object {
     @JvmField

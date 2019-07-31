@@ -33,10 +33,7 @@ data class NoPackageRequest(
 
   override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = buildString {
-    append("NoPackageRequest{")
-    append('}')
-  }
+  override fun toString(): String = "NoPackageRequest{}"
 
   companion object {
     @JvmField

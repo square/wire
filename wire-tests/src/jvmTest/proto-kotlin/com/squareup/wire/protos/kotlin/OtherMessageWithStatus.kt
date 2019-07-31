@@ -36,10 +36,7 @@ data class OtherMessageWithStatus(
 
   override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = buildString {
-    append("OtherMessageWithStatus{")
-    append('}')
-  }
+  override fun toString(): String = "OtherMessageWithStatus{}"
 
   companion object {
     @JvmField

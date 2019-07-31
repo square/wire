@@ -284,7 +284,7 @@ class KotlinGenerator private constructor(
         .addFunction(generateNewBuilderMethod(type, builderClassName))
         .addFunction(generateEqualsMethod(type, nameAllocator))
         .addFunction(generateHashCodeMethod(type, nameAllocator))
-        .addFunction(generateToStringMethod(type))
+        .addFunction(generateToStringMethod(type, nameAllocator))
         .apply {
           if (javaInterOp) {
             addType(generateBuilderClass(type, className, builderClassName))
@@ -640,16 +640,17 @@ class KotlinGenerator private constructor(
     else -> typeName.reflectionName() + "#ADAPTER"
   }
 
-  private fun generateToStringMethod(type: MessageType): FunSpec {
-    val nameAllocator = nameAllocator(type)
+  private fun generateToStringMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val className = generatedTypeName(type)
-    return FunSpec.builder("toString")
-        .addModifiers(OVERRIDE)
-        .returns(String::class)
-        .addCode("return %L", buildCodeBlock {
+    val fields = type.fieldsAndOneOfFields()
+    val body = buildCodeBlock {
+      if (fields.isEmpty()) {
+        addStatement("return %S", className.simpleName + "{}")
+      } else {
+        add("return %L", buildCodeBlock {
           beginControlFlow("buildString")
           addStatement("append(%S)", className.simpleName + "{")
-          type.fieldsAndOneOfFields().forEachIndexed { index, field ->
+          fields.forEachIndexed { index, field ->
             val fieldName = nameAllocator[field]
             if (field.isRepeated || field.isMap) {
               add("if (%N.isNotEmpty()) ", fieldName)
@@ -670,6 +671,12 @@ class KotlinGenerator private constructor(
           addStatement("append('}')")
           endControlFlow()
         })
+      }
+    }
+    return FunSpec.builder("toString")
+        .addModifiers(OVERRIDE)
+        .returns(String::class)
+        .addCode(body)
         .build()
   }
 
