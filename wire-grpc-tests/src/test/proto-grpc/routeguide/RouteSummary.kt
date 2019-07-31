@@ -8,7 +8,9 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import kotlin.Any
 import kotlin.AssertionError
+import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -64,6 +66,16 @@ data class RouteSummary(
   )
   override fun newBuilder(): Nothing {
     throw AssertionError()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is RouteSummary) return false
+    return unknownFields == other.unknownFields
+        && point_count == other.point_count
+        && feature_count == other.feature_count
+        && distance == other.distance
+        && elapsed_time == other.elapsed_time
   }
 
   companion object {

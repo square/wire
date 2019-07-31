@@ -8,6 +8,8 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import kotlin.Any
+import kotlin.Boolean
 import kotlin.Int
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -36,6 +38,14 @@ data class MessageUsingMultipleEnums(
     builder.b = b
     builder.addUnknownFields(unknownFields())
     return builder
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is MessageUsingMultipleEnums) return false
+    return unknownFields == other.unknownFields
+        && a == other.a
+        && b == other.b
   }
 
   class Builder : Message.Builder<MessageUsingMultipleEnums, Builder>() {

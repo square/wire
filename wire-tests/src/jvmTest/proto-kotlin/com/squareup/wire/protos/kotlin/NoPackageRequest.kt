@@ -7,7 +7,9 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import kotlin.Any
 import kotlin.AssertionError
+import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -25,6 +27,8 @@ data class NoPackageRequest(
   override fun newBuilder(): Nothing {
     throw AssertionError()
   }
+
+  override fun equals(other: Any?): Boolean = other is NoPackageRequest
 
   companion object {
     @JvmField

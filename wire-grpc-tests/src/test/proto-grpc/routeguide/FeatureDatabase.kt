@@ -9,7 +9,9 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
+import kotlin.Any
 import kotlin.AssertionError
+import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -36,6 +38,13 @@ data class FeatureDatabase(
   )
   override fun newBuilder(): Nothing {
     throw AssertionError()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is FeatureDatabase) return false
+    return unknownFields == other.unknownFields
+        && feature == other.feature
   }
 
   companion object {

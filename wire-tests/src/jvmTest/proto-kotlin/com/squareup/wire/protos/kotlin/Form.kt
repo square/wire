@@ -9,7 +9,9 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import kotlin.Any
 import kotlin.AssertionError
+import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -94,6 +96,24 @@ data class Form(
   )
   override fun newBuilder(): Nothing {
     throw AssertionError()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is Form) return false
+    return unknownFields == other.unknownFields
+        && button_element == other.button_element
+        && local_image_element == other.local_image_element
+        && remote_image_element == other.remote_image_element
+        && money_element == other.money_element
+        && spacer_element == other.spacer_element
+        && text_element == other.text_element
+        && customized_card_element == other.customized_card_element
+        && address_element == other.address_element
+        && text_input_element == other.text_input_element
+        && option_picker_element == other.option_picker_element
+        && detail_row_element == other.detail_row_element
+        && currency_conversion_flags_element == other.currency_conversion_flags_element
   }
 
   companion object {
@@ -215,6 +235,8 @@ data class Form(
       throw AssertionError()
     }
 
+    override fun equals(other: Any?): Boolean = other is ButtonElement
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<ButtonElement> = object : ProtoAdapter<ButtonElement>(
@@ -252,6 +274,8 @@ data class Form(
     override fun newBuilder(): Nothing {
       throw AssertionError()
     }
+
+    override fun equals(other: Any?): Boolean = other is LocalImageElement
 
     companion object {
       @JvmField
@@ -291,6 +315,8 @@ data class Form(
       throw AssertionError()
     }
 
+    override fun equals(other: Any?): Boolean = other is RemoteImageElement
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<RemoteImageElement> = object : ProtoAdapter<RemoteImageElement>(
@@ -328,6 +354,8 @@ data class Form(
     override fun newBuilder(): Nothing {
       throw AssertionError()
     }
+
+    override fun equals(other: Any?): Boolean = other is MoneyElement
 
     companion object {
       @JvmField
@@ -367,6 +395,8 @@ data class Form(
       throw AssertionError()
     }
 
+    override fun equals(other: Any?): Boolean = other is SpacerElement
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<SpacerElement> = object : ProtoAdapter<SpacerElement>(
@@ -405,6 +435,8 @@ data class Form(
       throw AssertionError()
     }
 
+    override fun equals(other: Any?): Boolean = other is TextElement
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<TextElement> = object : ProtoAdapter<TextElement>(
@@ -442,6 +474,8 @@ data class Form(
     override fun newBuilder(): Nothing {
       throw AssertionError()
     }
+
+    override fun equals(other: Any?): Boolean = other is CustomizedCardElement
 
     companion object {
       @JvmField
@@ -482,6 +516,8 @@ data class Form(
       throw AssertionError()
     }
 
+    override fun equals(other: Any?): Boolean = other is AddressElement
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<AddressElement> = object : ProtoAdapter<AddressElement>(
@@ -519,6 +555,8 @@ data class Form(
     override fun newBuilder(): Nothing {
       throw AssertionError()
     }
+
+    override fun equals(other: Any?): Boolean = other is TextInputElement
 
     companion object {
       @JvmField
@@ -558,6 +596,8 @@ data class Form(
       throw AssertionError()
     }
 
+    override fun equals(other: Any?): Boolean = other is OptionPickerElement
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<OptionPickerElement> = object : ProtoAdapter<OptionPickerElement>(
@@ -596,6 +636,8 @@ data class Form(
       throw AssertionError()
     }
 
+    override fun equals(other: Any?): Boolean = other is DetailRowElement
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<DetailRowElement> = object : ProtoAdapter<DetailRowElement>(
@@ -633,6 +675,8 @@ data class Form(
     override fun newBuilder(): Nothing {
       throw AssertionError()
     }
+
+    override fun equals(other: Any?): Boolean = other is CurrencyConversionFlagsElement
 
     companion object {
       @JvmField
