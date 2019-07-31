@@ -23,21 +23,17 @@ actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>>
 protected actual constructor(
   /** The [ProtoAdapter] for encoding and decoding messages of this type. */
   actual val adapter: ProtoAdapter<M>,
-  /** Unknown fields, proto-encoded. We permit null to support magic deserialization. */
-  private val unknownFields: ByteString?
+  /** Unknown fields, proto-encoded. */
+  private val unknownFields: ByteString
 ) {
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   @JsName("cachedHashCode") protected actual var hashCode = 0
-
-  init {
-    if (unknownFields == null) throw NullPointerException("unknownFields == null")
-  }
 
   /**
    * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
    * an empty byte string if this message has no unknown fields.
    */
-  actual fun unknownFields(): ByteString = unknownFields ?: ByteString.EMPTY
+  actual fun unknownFields(): ByteString = unknownFields
 
   /**
    * Returns a new builder initialized with the data in this message.
