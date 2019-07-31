@@ -20,7 +20,7 @@ import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class DeprecatedProto(
+class DeprecatedProto(
   @Deprecated(message = "foo is deprecated")
   @field:WireField(
     tag = 1,
@@ -58,6 +58,9 @@ data class DeprecatedProto(
     if (foo != null) result += """foo=$foo"""
     return result.joinToString(prefix = "DeprecatedProto{", separator = ", ", postfix = "}")
   }
+
+  fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields): DeprecatedProto
+      = DeprecatedProto(foo, unknownFields)
 
   companion object {
     @JvmField

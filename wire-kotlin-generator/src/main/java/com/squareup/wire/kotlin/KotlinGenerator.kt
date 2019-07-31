@@ -273,7 +273,6 @@ class KotlinGenerator private constructor(
 
     val classBuilder = TypeSpec.classBuilder(className)
         .apply { if (type.documentation().isNotBlank()) addKdoc("%L\n", type.documentation()) }
-        .addModifiers(DATA)
         .superclass(if (javaInterOp) {
           superclass.parameterizedBy(className, builderClassName)
         } else {
@@ -285,6 +284,7 @@ class KotlinGenerator private constructor(
         .addFunction(generateEqualsMethod(type, nameAllocator))
         .addFunction(generateHashCodeMethod(type, nameAllocator))
         .addFunction(generateToStringMethod(type, nameAllocator))
+        .addFunction(generateCopyMethod(type, nameAllocator))
         .apply {
           if (javaInterOp) {
             addType(generateBuilderClass(type, className, builderClassName))
@@ -442,6 +442,38 @@ class KotlinGenerator private constructor(
     }
     result.addCode(body)
 
+    return result.build()
+  }
+
+  // Example:
+  //
+  // fun copy(
+  //   name: String = this.name,
+  //   id: Int = this.id,
+  //   email: String? = this.email,
+  //   phone: List<PhoneNumber> = this.phone,
+  //   unknownFields: ByteString = this.unknownFields
+  // ): Person {
+  //   return Person(name, id, email, phone, unknownFields)
+  // }
+  private fun generateCopyMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
+    val className = generatedTypeName(type)
+    val result = FunSpec.builder("copy")
+        .returns(type.typeName)
+    val fieldNames = mutableListOf<String>()
+    for (field in type.fieldsAndOneOfFields()) {
+      val fieldName = nameAllocator[field]
+      result.addParameter(ParameterSpec.builder(fieldName, field.typeName)
+          .defaultValue("this.%N", fieldName)
+          .build())
+      fieldNames += fieldName
+    }
+    result.addParameter(ParameterSpec.builder("unknownFields", ByteString::class)
+        .defaultValue("this.unknownFields")
+        .build())
+    fieldNames += "unknownFields"
+    result.addStatement("return %L", fieldNames
+        .joinToString(prefix = className.simpleName + "(", postfix = ")"))
     return result.build()
   }
 

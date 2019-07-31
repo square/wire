@@ -21,7 +21,7 @@ import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Mappy(
+class Mappy(
   @field:WireField(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -59,6 +59,9 @@ data class Mappy(
     if (things.isNotEmpty()) result += """things=$things"""
     return result.joinToString(prefix = "Mappy{", separator = ", ", postfix = "}")
   }
+
+  fun copy(things: Map<String, Thing> = this.things, unknownFields: ByteString =
+      this.unknownFields): Mappy = Mappy(things, unknownFields)
 
   companion object {
     @JvmField

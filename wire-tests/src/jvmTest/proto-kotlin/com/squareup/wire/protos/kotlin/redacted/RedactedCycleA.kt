@@ -20,7 +20,7 @@ import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class RedactedCycleA(
+class RedactedCycleA(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedCycleB#ADAPTER"
@@ -57,6 +57,9 @@ data class RedactedCycleA(
     if (b != null) result += """b=$b"""
     return result.joinToString(prefix = "RedactedCycleA{", separator = ", ", postfix = "}")
   }
+
+  fun copy(b: RedactedCycleB? = this.b, unknownFields: ByteString = this.unknownFields):
+      RedactedCycleA = RedactedCycleA(b, unknownFields)
 
   companion object {
     @JvmField

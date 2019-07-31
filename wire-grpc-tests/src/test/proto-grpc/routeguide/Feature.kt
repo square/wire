@@ -25,7 +25,7 @@ import okio.ByteString
  *
  * If a feature could not be named, the name is empty.
  */
-data class Feature(
+class Feature(
   /**
    * The name of the feature.
    */
@@ -76,6 +76,12 @@ data class Feature(
     if (location != null) result += """location=$location"""
     return result.joinToString(prefix = "Feature{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    name: String? = this.name,
+    location: Point? = this.location,
+    unknownFields: ByteString = this.unknownFields
+  ): Feature = Feature(name, location, unknownFields)
 
   companion object {
     @JvmField

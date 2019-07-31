@@ -21,7 +21,7 @@ import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class RedactedRepeated(
+class RedactedRepeated(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -72,6 +72,12 @@ data class RedactedRepeated(
     if (b.isNotEmpty()) result += """b=$b"""
     return result.joinToString(prefix = "RedactedRepeated{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    a: List<String> = this.a,
+    b: List<Redacted> = this.b,
+    unknownFields: ByteString = this.unknownFields
+  ): RedactedRepeated = RedactedRepeated(a, b, unknownFields)
 
   companion object {
     @JvmField

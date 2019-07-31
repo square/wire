@@ -24,7 +24,7 @@ import okio.ByteString
  * A latitude-longitude rectangle, represented as two diagonally opposite
  * points "lo" and "hi".
  */
-data class Rectangle(
+class Rectangle(
   /**
    * One corner of the rectangle.
    */
@@ -75,6 +75,12 @@ data class Rectangle(
     if (hi != null) result += """hi=$hi"""
     return result.joinToString(prefix = "Rectangle{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    lo: Point? = this.lo,
+    hi: Point? = this.hi,
+    unknownFields: ByteString = this.unknownFields
+  ): Rectangle = Rectangle(lo, hi, unknownFields)
 
   companion object {
     @JvmField

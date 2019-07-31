@@ -18,7 +18,7 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class NoPackageRequest(
+class NoPackageRequest(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NoPackageRequest, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
@@ -34,6 +34,9 @@ data class NoPackageRequest(
   override fun hashCode(): Int = unknownFields.hashCode()
 
   override fun toString(): String = "NoPackageRequest{}"
+
+  fun copy(unknownFields: ByteString = this.unknownFields): NoPackageRequest =
+      NoPackageRequest(unknownFields)
 
   companion object {
     @JvmField

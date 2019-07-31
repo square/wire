@@ -17,7 +17,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-data class OtherMessageWithStatus(
+class OtherMessageWithStatus(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OtherMessageWithStatus, OtherMessageWithStatus.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
@@ -31,6 +31,9 @@ data class OtherMessageWithStatus(
   override fun hashCode(): Int = unknownFields.hashCode()
 
   override fun toString(): String = "OtherMessageWithStatus{}"
+
+  fun copy(unknownFields: ByteString = this.unknownFields): OtherMessageWithStatus =
+      OtherMessageWithStatus(unknownFields)
 
   class Builder : Message.Builder<OtherMessageWithStatus, Builder>() {
     override fun build(): OtherMessageWithStatus = OtherMessageWithStatus(

@@ -21,7 +21,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-data class MessageWithStatus(
+class MessageWithStatus(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageWithStatus, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
@@ -37,6 +37,9 @@ data class MessageWithStatus(
   override fun hashCode(): Int = unknownFields.hashCode()
 
   override fun toString(): String = "MessageWithStatus{}"
+
+  fun copy(unknownFields: ByteString = this.unknownFields): MessageWithStatus =
+      MessageWithStatus(unknownFields)
 
   companion object {
     @JvmField

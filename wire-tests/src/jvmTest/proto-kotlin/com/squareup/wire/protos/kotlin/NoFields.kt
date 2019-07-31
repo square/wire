@@ -18,7 +18,7 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class NoFields(
+class NoFields(
   val unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NoFields, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
@@ -34,6 +34,8 @@ data class NoFields(
   override fun hashCode(): Int = unknownFields.hashCode()
 
   override fun toString(): String = "NoFields{}"
+
+  fun copy(unknownFields: ByteString = this.unknownFields): NoFields = NoFields(unknownFields)
 
   companion object {
     @JvmField

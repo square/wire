@@ -16,7 +16,7 @@ import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class Percents(
+class Percents(
   /**
    * e.g. "No limits, free to send and just 2.75% to receive".
    */
@@ -56,6 +56,9 @@ data class Percents(
     if (text != null) result += """text=$text"""
     return result.joinToString(prefix = "Percents{", separator = ", ", postfix = "}")
   }
+
+  fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields): Percents =
+      Percents(text, unknownFields)
 
   class Builder : Message.Builder<Percents, Builder>() {
     @JvmField

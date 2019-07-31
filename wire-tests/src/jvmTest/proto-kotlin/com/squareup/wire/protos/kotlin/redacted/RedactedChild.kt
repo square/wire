@@ -20,7 +20,7 @@ import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-data class RedactedChild(
+class RedactedChild(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
@@ -73,6 +73,13 @@ data class RedactedChild(
     if (c != null) result += """c=$c"""
     return result.joinToString(prefix = "RedactedChild{", separator = ", ", postfix = "}")
   }
+
+  fun copy(
+    a: String? = this.a,
+    b: Redacted? = this.b,
+    c: NotRedacted? = this.c,
+    unknownFields: ByteString = this.unknownFields
+  ): RedactedChild = RedactedChild(a, b, c, unknownFields)
 
   companion object {
     @JvmField
