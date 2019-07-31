@@ -57,6 +57,16 @@ data class Rectangle(
         && hi == other.hi
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + (lo?.hashCode() ?: 0)
+      result = result * 37 + (hi?.hashCode() ?: 0)
+      super.hashCode = result
+    }
+    return result
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Rectangle> = object : ProtoAdapter<Rectangle>(

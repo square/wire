@@ -78,6 +78,18 @@ data class RouteSummary(
         && elapsed_time == other.elapsed_time
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + (point_count?.hashCode() ?: 0)
+      result = result * 37 + (feature_count?.hashCode() ?: 0)
+      result = result * 37 + (distance?.hashCode() ?: 0)
+      result = result * 37 + (elapsed_time?.hashCode() ?: 0)
+      super.hashCode = result
+    }
+    return result
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<RouteSummary> = object : ProtoAdapter<RouteSummary>(

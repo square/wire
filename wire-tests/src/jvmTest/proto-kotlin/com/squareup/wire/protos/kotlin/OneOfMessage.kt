@@ -73,6 +73,17 @@ data class OneOfMessage(
         && baz == other.baz
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + (foo?.hashCode() ?: 0)
+      result = result * 37 + (bar?.hashCode() ?: 0)
+      result = result * 37 + (baz?.hashCode() ?: 0)
+      super.hashCode = result
+    }
+    return result
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(

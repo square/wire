@@ -30,6 +30,8 @@ data class NoPackageResponse(
 
   override fun equals(other: Any?): Boolean = other is NoPackageResponse
 
+  override fun hashCode(): Int = unknownFields.hashCode()
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<NoPackageResponse> = object : ProtoAdapter<NoPackageResponse>(

@@ -57,6 +57,16 @@ data class RouteNote(
         && message == other.message
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + (location?.hashCode() ?: 0)
+      result = result * 37 + (message?.hashCode() ?: 0)
+      super.hashCode = result
+    }
+    return result
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(

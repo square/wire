@@ -283,6 +283,7 @@ class KotlinGenerator private constructor(
         .addSuperclassConstructorParameter(unknownFields)
         .addFunction(generateNewBuilderMethod(type, builderClassName))
         .addFunction(generateEqualsMethod(type, nameAllocator))
+        .addFunction(generateHashCodeMethod(type, nameAllocator))
         .apply {
           if (javaInterOp) {
             addType(generateBuilderClass(type, className, builderClassName))
@@ -357,6 +358,14 @@ class KotlinGenerator private constructor(
         .build()
   }
 
+  // Example:
+  //
+  // override fun equals(other: Any?): Boolean {
+  //   if (other === this) return true
+  //   if (other !is SimpleMessage) return false
+  //   return unknownFields == other.unknownFields
+  //       && optional_int32 == other.optional_int32
+  // }
   private fun generateEqualsMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val localNameAllocator = nameAllocator.copy()
     val otherName = localNameAllocator.newName("other")
@@ -381,6 +390,55 @@ class KotlinGenerator private constructor(
         add("\n&& %1L == %2N.%1L", fieldName, otherName)
       }
       add("\n»")
+    }
+    result.addCode(body)
+
+    return result.build()
+  }
+
+  // Example:
+  //
+  // override fun hashCode(): Int {
+  //   var result = super.hashCode
+  //   if (result == 0) {
+  //     result = unknownFields.hashCode()
+  //     result = result * 37 + (f?.hashCode() ?: 0)
+  //     super.hashCode = result
+  //   }
+  //   return result
+  // }
+  //
+  // For repeated fields, the final "0" in the example above changes to a "1"
+  // in order to be the same as the system hash code for an empty list.
+  //
+  private fun generateHashCodeMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
+    val localNameAllocator = nameAllocator.copy()
+    val resultName = localNameAllocator.newName("result")
+    val result = FunSpec.builder("hashCode")
+        .addModifiers(OVERRIDE)
+        .returns(INT)
+
+    val fields = type.fieldsAndOneOfFields()
+    if (fields.isEmpty()) {
+      result.addStatement("return unknownFields.hashCode()")
+      return result.build()
+    }
+
+    val body = buildCodeBlock {
+      addStatement("var %N = super.hashCode", resultName)
+      beginControlFlow("if (%N == 0)", resultName)
+      for (field in fields) {
+        val fieldName = localNameAllocator[field]
+        add("%1N = %1N * 37 + ", resultName)
+        if (field.isRepeated || field.isRequired || field.isMap) {
+          addStatement("%L.hashCode()", fieldName)
+        } else {
+          addStatement("(%L?.hashCode() ?: 0)", fieldName)
+        }
+      }
+      addStatement("super.hashCode = %N", resultName)
+      endControlFlow()
+      addStatement("return %N", resultName)
     }
     result.addCode(body)
 

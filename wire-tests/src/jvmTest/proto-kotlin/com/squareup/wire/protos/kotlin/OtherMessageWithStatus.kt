@@ -33,6 +33,8 @@ data class OtherMessageWithStatus(
 
   override fun equals(other: Any?): Boolean = other is OtherMessageWithStatus
 
+  override fun hashCode(): Int = unknownFields.hashCode()
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<OtherMessageWithStatus> = object :

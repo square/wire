@@ -41,6 +41,15 @@ data class RedactedCycleB(
         && a == other.a
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + (a?.hashCode() ?: 0)
+      super.hashCode = result
+    }
+    return result
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedCycleB> = object : ProtoAdapter<RedactedCycleB>(

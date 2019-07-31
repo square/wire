@@ -53,6 +53,16 @@ data class Point(
         && longitude == other.longitude
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + (latitude?.hashCode() ?: 0)
+      result = result * 37 + (longitude?.hashCode() ?: 0)
+      super.hashCode = result
+    }
+    return result
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Point> = object : ProtoAdapter<Point>(

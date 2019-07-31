@@ -49,6 +49,16 @@ data class RedactedExtension(
         && e == other.e
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + (d?.hashCode() ?: 0)
+      result = result * 37 + (e?.hashCode() ?: 0)
+      super.hashCode = result
+    }
+    return result
+  }
+
   override fun toString(): String = buildString {
     append("RedactedExtension(")
     append("""d=██""")

@@ -87,6 +87,18 @@ data class Person(
         && phone == other.phone
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + name.hashCode()
+      result = result * 37 + id.hashCode()
+      result = result * 37 + (email?.hashCode() ?: 0)
+      result = result * 37 + phone.hashCode()
+      super.hashCode = result
+    }
+    return result
+  }
+
   class Builder : Message.Builder<Person, Builder>() {
     @JvmField
     var name: String? = null
@@ -262,6 +274,16 @@ data class Person(
       return unknownFields == other.unknownFields
           && number == other.number
           && type == other.type
+    }
+
+    override fun hashCode(): Int {
+      var result = super.hashCode
+      if (result == 0) {
+        result = result * 37 + number.hashCode()
+        result = result * 37 + (type?.hashCode() ?: 0)
+        super.hashCode = result
+      }
+      return result
     }
 
     class Builder : Message.Builder<PhoneNumber, Builder>() {

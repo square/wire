@@ -30,6 +30,8 @@ data class NoFields(
 
   override fun equals(other: Any?): Boolean = other is NoFields
 
+  override fun hashCode(): Int = unknownFields.hashCode()
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<NoFields> = object : ProtoAdapter<NoFields>(
