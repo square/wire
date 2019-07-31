@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -59,6 +60,14 @@ data class MessageUsingMultipleEnums(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (a != null) result += """a=$a"""
+    if (b != null) result += """b=$b"""
+    return result.joinToString(prefix = "MessageUsingMultipleEnums{", separator = ", ", postfix =
+        "}")
   }
 
   companion object {

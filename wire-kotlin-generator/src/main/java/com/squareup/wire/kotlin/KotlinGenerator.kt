@@ -284,6 +284,7 @@ class KotlinGenerator private constructor(
         .addFunction(generateNewBuilderMethod(type, builderClassName))
         .addFunction(generateEqualsMethod(type, nameAllocator))
         .addFunction(generateHashCodeMethod(type, nameAllocator))
+        .addFunction(generateToStringMethod(type, nameAllocator))
         .apply {
           if (javaInterOp) {
             addType(generateBuilderClass(type, className, builderClassName))
@@ -301,10 +302,6 @@ class KotlinGenerator private constructor(
     classBuilder.addType(companionBuilder.build())
 
     addMessageConstructor(type, classBuilder)
-
-    if (type.fieldsAndOneOfFields().any { it.isRedacted }) {
-      classBuilder.addFunction(generateToStringMethod(type))
-    }
 
     type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
@@ -643,33 +640,45 @@ class KotlinGenerator private constructor(
     else -> typeName.reflectionName() + "#ADAPTER"
   }
 
-  private fun generateToStringMethod(type: MessageType): FunSpec {
-    val nameAllocator = nameAllocator(type)
+  private fun generateToStringMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
+    val localNameAllocator = nameAllocator.copy()
     val className = generatedTypeName(type)
+    val fields = type.fieldsAndOneOfFields()
+    val body = buildCodeBlock {
+      if (fields.isEmpty()) {
+        addStatement("return %S", className.simpleName + "{}")
+      } else {
+        val resultName = localNameAllocator.newName("result")
+        addStatement("val %N = mutableListOf<%T>()", resultName, STRING)
+        for (field in fields) {
+          val fieldName = localNameAllocator[field]
+          if (field.isRepeated || field.isMap) {
+            add("if (%N.isNotEmpty()) ", fieldName)
+          } else if (!field.isRequired) {
+            add("if (%N != null) ", fieldName)
+          }
+          addStatement("%N += %P", resultName, buildString {
+            append(fieldName)
+            if (field.isRedacted) {
+              append("=██")
+            } else {
+              append("=\$")
+              append(fieldName)
+            }
+          })
+        }
+        addStatement(
+            "return %N.joinToString(prefix = %S, separator = \", \", postfix = %S)",
+            resultName,
+            className.simpleName + "{",
+            "}"
+        )
+      }
+    }
     return FunSpec.builder("toString")
         .addModifiers(OVERRIDE)
         .returns(String::class)
-        .addCode("return %L", buildCodeBlock {
-          beginControlFlow("buildString")
-          addStatement("append(%S)", className.simpleName + "(")
-          val redactedFields = type.fieldsAndOneOfFields().map { field ->
-            nameAllocator[field] to field.isRedacted
-          }
-          redactedFields.forEachIndexed { index, (name, isRedacted) ->
-            addStatement("append(%P)", buildString {
-              if (index > 0) append(", ")
-              append(name)
-              if (isRedacted) {
-                append("=██")
-              } else {
-                append("=\$")
-                append(name)
-              }
-            })
-          }
-          addStatement("append(%S)", ")")
-          endControlFlow()
-        })
+        .addCode(body)
         .build()
   }
 

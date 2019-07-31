@@ -14,6 +14,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -31,6 +32,8 @@ data class NoPackageResponse(
   override fun equals(other: Any?): Boolean = other is NoPackageResponse
 
   override fun hashCode(): Int = unknownFields.hashCode()
+
+  override fun toString(): String = "NoPackageResponse{}"
 
   companion object {
     @JvmField

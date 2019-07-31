@@ -16,6 +16,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -135,6 +136,25 @@ data class Form(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (button_element != null) result += """button_element=$button_element"""
+    if (local_image_element != null) result += """local_image_element=$local_image_element"""
+    if (remote_image_element != null) result += """remote_image_element=$remote_image_element"""
+    if (money_element != null) result += """money_element=$money_element"""
+    if (spacer_element != null) result += """spacer_element=$spacer_element"""
+    if (text_element != null) result += """text_element=$text_element"""
+    if (customized_card_element != null) result +=
+        """customized_card_element=$customized_card_element"""
+    if (address_element != null) result += """address_element=$address_element"""
+    if (text_input_element != null) result += """text_input_element=$text_input_element"""
+    if (option_picker_element != null) result += """option_picker_element=$option_picker_element"""
+    if (detail_row_element != null) result += """detail_row_element=$detail_row_element"""
+    if (currency_conversion_flags_element != null) result +=
+        """currency_conversion_flags_element=$currency_conversion_flags_element"""
+    return result.joinToString(prefix = "Form{", separator = ", ", postfix = "}")
   }
 
   companion object {
@@ -260,6 +280,8 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
+    override fun toString(): String = "ButtonElement{}"
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<ButtonElement> = object : ProtoAdapter<ButtonElement>(
@@ -301,6 +323,8 @@ data class Form(
     override fun equals(other: Any?): Boolean = other is LocalImageElement
 
     override fun hashCode(): Int = unknownFields.hashCode()
+
+    override fun toString(): String = "LocalImageElement{}"
 
     companion object {
       @JvmField
@@ -344,6 +368,8 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
+    override fun toString(): String = "RemoteImageElement{}"
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<RemoteImageElement> = object : ProtoAdapter<RemoteImageElement>(
@@ -385,6 +411,8 @@ data class Form(
     override fun equals(other: Any?): Boolean = other is MoneyElement
 
     override fun hashCode(): Int = unknownFields.hashCode()
+
+    override fun toString(): String = "MoneyElement{}"
 
     companion object {
       @JvmField
@@ -428,6 +456,8 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
+    override fun toString(): String = "SpacerElement{}"
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<SpacerElement> = object : ProtoAdapter<SpacerElement>(
@@ -470,6 +500,8 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
+    override fun toString(): String = "TextElement{}"
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<TextElement> = object : ProtoAdapter<TextElement>(
@@ -511,6 +543,8 @@ data class Form(
     override fun equals(other: Any?): Boolean = other is CustomizedCardElement
 
     override fun hashCode(): Int = unknownFields.hashCode()
+
+    override fun toString(): String = "CustomizedCardElement{}"
 
     companion object {
       @JvmField
@@ -555,6 +589,8 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
+    override fun toString(): String = "AddressElement{}"
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<AddressElement> = object : ProtoAdapter<AddressElement>(
@@ -596,6 +632,8 @@ data class Form(
     override fun equals(other: Any?): Boolean = other is TextInputElement
 
     override fun hashCode(): Int = unknownFields.hashCode()
+
+    override fun toString(): String = "TextInputElement{}"
 
     companion object {
       @JvmField
@@ -639,6 +677,8 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
+    override fun toString(): String = "OptionPickerElement{}"
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<OptionPickerElement> = object : ProtoAdapter<OptionPickerElement>(
@@ -681,6 +721,8 @@ data class Form(
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
+    override fun toString(): String = "DetailRowElement{}"
+
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<DetailRowElement> = object : ProtoAdapter<DetailRowElement>(
@@ -722,6 +764,8 @@ data class Form(
     override fun equals(other: Any?): Boolean = other is CurrencyConversionFlagsElement
 
     override fun hashCode(): Int = unknownFields.hashCode()
+
+    override fun toString(): String = "CurrencyConversionFlagsElement{}"
 
     companion object {
       @JvmField

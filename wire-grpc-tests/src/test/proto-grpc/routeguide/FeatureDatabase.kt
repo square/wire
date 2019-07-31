@@ -16,6 +16,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -54,6 +55,12 @@ data class FeatureDatabase(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (feature.isNotEmpty()) result += """feature=$feature"""
+    return result.joinToString(prefix = "FeatureDatabase{", separator = ", ", postfix = "}")
   }
 
   companion object {

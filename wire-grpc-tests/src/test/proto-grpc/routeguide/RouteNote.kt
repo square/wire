@@ -68,6 +68,13 @@ data class RouteNote(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (location != null) result += """location=$location"""
+    if (message != null) result += """message=$message"""
+    return result.joinToString(prefix = "RouteNote{", separator = ", ", postfix = "}")
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(

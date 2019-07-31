@@ -70,6 +70,13 @@ data class Feature(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (name != null) result += """name=$name"""
+    if (location != null) result += """location=$location"""
+    return result.joinToString(prefix = "Feature{", separator = ", ", postfix = "}")
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Feature> = object : ProtoAdapter<Feature>(

@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -49,6 +50,12 @@ data class RedactedCycleA(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (b != null) result += """b=$b"""
+    return result.joinToString(prefix = "RedactedCycleA{", separator = ", ", postfix = "}")
   }
 
   companion object {

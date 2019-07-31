@@ -17,6 +17,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
@@ -52,6 +53,12 @@ data class OptionalEnumUser(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (optional_enum != null) result += """optional_enum=$optional_enum"""
+    return result.joinToString(prefix = "OptionalEnumUser{", separator = ", ", postfix = "}")
   }
 
   companion object {

@@ -59,6 +59,13 @@ data class NotRedacted(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (a != null) result += """a=$a"""
+    if (b != null) result += """b=$b"""
+    return result.joinToString(prefix = "NotRedacted{", separator = ", ", postfix = "}")
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<NotRedacted> = object : ProtoAdapter<NotRedacted>(

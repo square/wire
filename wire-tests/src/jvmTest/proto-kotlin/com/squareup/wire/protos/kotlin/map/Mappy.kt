@@ -54,6 +54,12 @@ data class Mappy(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (things.isNotEmpty()) result += """things=$things"""
+    return result.joinToString(prefix = "Mappy{", separator = ", ", postfix = "}")
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(

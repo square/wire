@@ -66,6 +66,14 @@ data class RedactedChild(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (a != null) result += """a=$a"""
+    if (b != null) result += """b=$b"""
+    if (c != null) result += """c=$c"""
+    return result.joinToString(prefix = "RedactedChild{", separator = ", ", postfix = "}")
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedChild> = object : ProtoAdapter<RedactedChild>(

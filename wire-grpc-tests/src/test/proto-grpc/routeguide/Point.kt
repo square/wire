@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -62,6 +63,13 @@ data class Point(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (latitude != null) result += """latitude=$latitude"""
+    if (longitude != null) result += """longitude=$longitude"""
+    return result.joinToString(prefix = "Point{", separator = ", ", postfix = "}")
   }
 
   companion object {

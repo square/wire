@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -66,6 +67,13 @@ data class Rectangle(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (lo != null) result += """lo=$lo"""
+    if (hi != null) result += """hi=$hi"""
+    return result.joinToString(prefix = "Rectangle{", separator = ", ", postfix = "}")
   }
 
   companion object {

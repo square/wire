@@ -12,6 +12,7 @@ import com.squareup.wire.WireEnum
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
+import kotlin.String
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -28,6 +29,8 @@ data class OtherMessageWithStatus(
   override fun equals(other: Any?): Boolean = other is OtherMessageWithStatus
 
   override fun hashCode(): Int = unknownFields.hashCode()
+
+  override fun toString(): String = "OtherMessageWithStatus{}"
 
   class Builder : Message.Builder<OtherMessageWithStatus, Builder>() {
     override fun build(): OtherMessageWithStatus = OtherMessageWithStatus(

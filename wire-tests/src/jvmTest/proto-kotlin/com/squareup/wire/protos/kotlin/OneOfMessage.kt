@@ -85,6 +85,14 @@ data class OneOfMessage(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (foo != null) result += """foo=$foo"""
+    if (bar != null) result += """bar=$bar"""
+    if (baz != null) result += """baz=$baz"""
+    return result.joinToString(prefix = "OneOfMessage{", separator = ", ", postfix = "}")
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(

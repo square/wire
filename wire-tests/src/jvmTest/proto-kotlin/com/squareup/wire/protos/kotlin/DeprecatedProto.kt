@@ -53,6 +53,12 @@ data class DeprecatedProto(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (foo != null) result += """foo=$foo"""
+    return result.joinToString(prefix = "DeprecatedProto{", separator = ", ", postfix = "}")
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(

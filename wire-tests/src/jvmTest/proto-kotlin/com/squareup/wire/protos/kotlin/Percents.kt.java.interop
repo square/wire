@@ -51,6 +51,12 @@ data class Percents(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (text != null) result += """text=$text"""
+    return result.joinToString(prefix = "Percents{", separator = ", ", postfix = "}")
+  }
+
   class Builder : Message.Builder<Percents, Builder>() {
     @JvmField
     var text: String? = null

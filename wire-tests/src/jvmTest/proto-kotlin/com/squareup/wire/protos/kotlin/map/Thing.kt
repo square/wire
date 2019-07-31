@@ -52,6 +52,12 @@ data class Thing(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (name != null) result += """name=$name"""
+    return result.joinToString(prefix = "Thing{", separator = ", ", postfix = "}")
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Thing> = object : ProtoAdapter<Thing>(

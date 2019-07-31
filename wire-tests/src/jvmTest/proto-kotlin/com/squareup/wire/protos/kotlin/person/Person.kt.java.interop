@@ -100,6 +100,15 @@ data class Person(
     return result
   }
 
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    result += """name=$name"""
+    result += """id=$id"""
+    if (email != null) result += """email=$email"""
+    if (phone.isNotEmpty()) result += """phone=$phone"""
+    return result.joinToString(prefix = "Person{", separator = ", ", postfix = "}")
+  }
+
   class Builder : Message.Builder<Person, Builder>() {
     @JvmField
     var name: String? = null
@@ -285,6 +294,13 @@ data class Person(
         super.hashCode = result
       }
       return result
+    }
+
+    override fun toString(): String {
+      val result = mutableListOf<String>()
+      result += """number=$number"""
+      if (type != null) result += """type=$type"""
+      return result.joinToString(prefix = "PhoneNumber{", separator = ", ", postfix = "}")
     }
 
     class Builder : Message.Builder<PhoneNumber, Builder>() {

@@ -60,11 +60,11 @@ data class RedactedExtension(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("RedactedExtension(")
-    append("""d=██""")
-    append(""", e=$e""")
-    append(")")
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (d != null) result += """d=██"""
+    if (e != null) result += """e=$e"""
+    return result.joinToString(prefix = "RedactedExtension{", separator = ", ", postfix = "}")
   }
 
   companion object {

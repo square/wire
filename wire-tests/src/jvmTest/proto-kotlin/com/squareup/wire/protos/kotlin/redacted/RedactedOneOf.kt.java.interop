@@ -65,11 +65,11 @@ data class RedactedOneOf(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("RedactedOneOf(")
-    append("""b=$b""")
-    append(""", c=██""")
-    append(")")
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (b != null) result += """b=$b"""
+    if (c != null) result += """c=██"""
+    return result.joinToString(prefix = "RedactedOneOf{", separator = ", ", postfix = "}")
   }
 
   class Builder : Message.Builder<RedactedOneOf, Builder>() {
