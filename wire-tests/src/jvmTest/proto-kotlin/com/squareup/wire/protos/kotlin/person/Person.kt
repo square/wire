@@ -97,6 +97,15 @@ data class Person(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("Person{")
+    append("""name=$name""")
+    append(""", id=$id""")
+    if (email != null) append(""", email=$email""")
+    if (phone.isNotEmpty()) append(""", phone=$phone""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Person> = object : ProtoAdapter<Person>(
@@ -225,6 +234,13 @@ data class Person(
         super.hashCode = result
       }
       return result
+    }
+
+    override fun toString(): String = buildString {
+      append("PhoneNumber{")
+      append("""number=$number""")
+      if (type != null) append(""", type=$type""")
+      append('}')
     }
 
     companion object {

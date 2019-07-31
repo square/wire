@@ -56,9 +56,9 @@ data class RedactedRequired(
   }
 
   override fun toString(): String = buildString {
-    append("RedactedRequired(")
+    append("RedactedRequired{")
     append("""a=██""")
-    append(")")
+    append('}')
   }
 
   companion object {

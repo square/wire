@@ -59,6 +59,13 @@ data class NotRedacted(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("NotRedacted{")
+    if (a != null) append("""a=$a""")
+    if (b != null) append(""", b=$b""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<NotRedacted> = object : ProtoAdapter<NotRedacted>(

@@ -100,6 +100,15 @@ data class Person(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("Person{")
+    append("""name=$name""")
+    append(""", id=$id""")
+    if (email != null) append(""", email=$email""")
+    if (phone.isNotEmpty()) append(""", phone=$phone""")
+    append('}')
+  }
+
   class Builder : Message.Builder<Person, Builder>() {
     @JvmField
     var name: String? = null
@@ -285,6 +294,13 @@ data class Person(
         super.hashCode = result
       }
       return result
+    }
+
+    override fun toString(): String = buildString {
+      append("PhoneNumber{")
+      append("""number=$number""")
+      if (type != null) append(""", type=$type""")
+      append('}')
     }
 
     class Builder : Message.Builder<PhoneNumber, Builder>() {

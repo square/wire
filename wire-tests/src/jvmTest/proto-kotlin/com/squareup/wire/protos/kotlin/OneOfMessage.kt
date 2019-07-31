@@ -85,6 +85,14 @@ data class OneOfMessage(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("OneOfMessage{")
+    if (foo != null) append("""foo=$foo""")
+    if (bar != null) append(""", bar=$bar""")
+    if (baz != null) append(""", baz=$baz""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(

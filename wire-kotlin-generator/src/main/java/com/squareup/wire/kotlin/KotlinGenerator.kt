@@ -284,6 +284,7 @@ class KotlinGenerator private constructor(
         .addFunction(generateNewBuilderMethod(type, builderClassName))
         .addFunction(generateEqualsMethod(type, nameAllocator))
         .addFunction(generateHashCodeMethod(type, nameAllocator))
+        .addFunction(generateToStringMethod(type))
         .apply {
           if (javaInterOp) {
             addType(generateBuilderClass(type, className, builderClassName))
@@ -301,10 +302,6 @@ class KotlinGenerator private constructor(
     classBuilder.addType(companionBuilder.build())
 
     addMessageConstructor(type, classBuilder)
-
-    if (type.fieldsAndOneOfFields().any { it.isRedacted }) {
-      classBuilder.addFunction(generateToStringMethod(type))
-    }
 
     type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
 
@@ -651,23 +648,26 @@ class KotlinGenerator private constructor(
         .returns(String::class)
         .addCode("return %L", buildCodeBlock {
           beginControlFlow("buildString")
-          addStatement("append(%S)", className.simpleName + "(")
-          val redactedFields = type.fieldsAndOneOfFields().map { field ->
-            nameAllocator[field] to field.isRedacted
-          }
-          redactedFields.forEachIndexed { index, (name, isRedacted) ->
+          addStatement("append(%S)", className.simpleName + "{")
+          type.fieldsAndOneOfFields().forEachIndexed { index, field ->
+            val fieldName = nameAllocator[field]
+            if (field.isRepeated || field.isMap) {
+              add("if (%N.isNotEmpty()) ", fieldName)
+            } else if (!field.isRequired) {
+              add("if (%N != null) ", fieldName)
+            }
             addStatement("append(%P)", buildString {
               if (index > 0) append(", ")
-              append(name)
-              if (isRedacted) {
+              append(fieldName)
+              if (field.isRedacted) {
                 append("=██")
               } else {
                 append("=\$")
-                append(name)
+                append(fieldName)
               }
             })
           }
-          addStatement("append(%S)", ")")
+          addStatement("append('}')")
           endControlFlow()
         })
         .build()

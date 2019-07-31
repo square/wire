@@ -50,6 +50,12 @@ data class Mappy(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("Mappy{")
+    if (things.isNotEmpty()) append("""things=$things""")
+    append('}')
+  }
+
   class Builder : Message.Builder<Mappy, Builder>() {
     @JvmField
     var things: Map<String, Thing> = emptyMap()

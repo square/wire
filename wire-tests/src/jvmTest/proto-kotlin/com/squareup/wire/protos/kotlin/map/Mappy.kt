@@ -54,6 +54,12 @@ data class Mappy(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("Mappy{")
+    if (things.isNotEmpty()) append("""things=$things""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(

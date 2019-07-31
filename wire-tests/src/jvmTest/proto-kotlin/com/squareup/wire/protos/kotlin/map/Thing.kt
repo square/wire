@@ -52,6 +52,12 @@ data class Thing(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("Thing{")
+    if (name != null) append("""name=$name""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Thing> = object : ProtoAdapter<Thing>(

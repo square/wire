@@ -61,10 +61,10 @@ data class RedactedExtension(
   }
 
   override fun toString(): String = buildString {
-    append("RedactedExtension(")
-    append("""d=██""")
-    append(""", e=$e""")
-    append(")")
+    append("RedactedExtension{")
+    if (d != null) append("""d=██""")
+    if (e != null) append(""", e=$e""")
+    append('}')
   }
 
   companion object {

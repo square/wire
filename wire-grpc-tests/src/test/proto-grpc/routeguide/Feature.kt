@@ -70,6 +70,13 @@ data class Feature(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("Feature{")
+    if (name != null) append("""name=$name""")
+    if (location != null) append(""", location=$location""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Feature> = object : ProtoAdapter<Feature>(

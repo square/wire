@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -89,6 +90,15 @@ data class RouteSummary(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String = buildString {
+    append("RouteSummary{")
+    if (point_count != null) append("""point_count=$point_count""")
+    if (feature_count != null) append(""", feature_count=$feature_count""")
+    if (distance != null) append(""", distance=$distance""")
+    if (elapsed_time != null) append(""", elapsed_time=$elapsed_time""")
+    append('}')
   }
 
   companion object {

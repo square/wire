@@ -16,6 +16,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -34,6 +35,11 @@ data class MessageWithStatus(
   override fun equals(other: Any?): Boolean = other is MessageWithStatus
 
   override fun hashCode(): Int = unknownFields.hashCode()
+
+  override fun toString(): String = buildString {
+    append("MessageWithStatus{")
+    append('}')
+  }
 
   companion object {
     @JvmField

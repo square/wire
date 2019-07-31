@@ -66,6 +66,14 @@ data class RedactedChild(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("RedactedChild{")
+    if (a != null) append("""a=$a""")
+    if (b != null) append(""", b=$b""")
+    if (c != null) append(""", c=$c""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedChild> = object : ProtoAdapter<RedactedChild>(

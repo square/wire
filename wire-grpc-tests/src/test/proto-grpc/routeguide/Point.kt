@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -62,6 +63,13 @@ data class Point(
       super.hashCode = result
     }
     return result
+  }
+
+  override fun toString(): String = buildString {
+    append("Point{")
+    if (latitude != null) append("""latitude=$latitude""")
+    if (longitude != null) append(""", longitude=$longitude""")
+    append('}')
   }
 
   companion object {

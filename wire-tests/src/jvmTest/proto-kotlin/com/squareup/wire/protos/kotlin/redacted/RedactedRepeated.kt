@@ -67,10 +67,10 @@ data class RedactedRepeated(
   }
 
   override fun toString(): String = buildString {
-    append("RedactedRepeated(")
-    append("""a=██""")
-    append(""", b=$b""")
-    append(")")
+    append("RedactedRepeated{")
+    if (a.isNotEmpty()) append("""a=██""")
+    if (b.isNotEmpty()) append(""", b=$b""")
+    append('}')
   }
 
   companion object {

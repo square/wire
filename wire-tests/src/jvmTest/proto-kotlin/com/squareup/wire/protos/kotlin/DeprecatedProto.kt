@@ -53,6 +53,12 @@ data class DeprecatedProto(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("DeprecatedProto{")
+    if (foo != null) append("""foo=$foo""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(

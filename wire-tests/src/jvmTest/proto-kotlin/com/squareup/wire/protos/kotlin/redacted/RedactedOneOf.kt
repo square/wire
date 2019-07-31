@@ -68,10 +68,10 @@ data class RedactedOneOf(
   }
 
   override fun toString(): String = buildString {
-    append("RedactedOneOf(")
-    append("""b=$b""")
-    append(""", c=██""")
-    append(")")
+    append("RedactedOneOf{")
+    if (b != null) append("""b=$b""")
+    if (c != null) append(""", c=██""")
+    append('}')
   }
 
   companion object {

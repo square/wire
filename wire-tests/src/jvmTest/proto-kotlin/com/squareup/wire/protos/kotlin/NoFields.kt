@@ -14,6 +14,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -31,6 +32,11 @@ data class NoFields(
   override fun equals(other: Any?): Boolean = other is NoFields
 
   override fun hashCode(): Int = unknownFields.hashCode()
+
+  override fun toString(): String = buildString {
+    append("NoFields{")
+    append('}')
+  }
 
   companion object {
     @JvmField

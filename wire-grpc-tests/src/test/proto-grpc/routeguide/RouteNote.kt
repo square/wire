@@ -68,6 +68,13 @@ data class RouteNote(
     return result
   }
 
+  override fun toString(): String = buildString {
+    append("RouteNote{")
+    if (location != null) append("""location=$location""")
+    if (message != null) append(""", message=$message""")
+    append('}')
+  }
+
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(

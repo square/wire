@@ -75,12 +75,12 @@ data class Redacted(
   }
 
   override fun toString(): String = buildString {
-    append("Redacted(")
-    append("""a=██""")
-    append(""", b=$b""")
-    append(""", c=$c""")
-    append(""", extension=$extension""")
-    append(")")
+    append("Redacted{")
+    if (a != null) append("""a=██""")
+    if (b != null) append(""", b=$b""")
+    if (c != null) append(""", c=$c""")
+    if (extension != null) append(""", extension=$extension""")
+    append('}')
   }
 
   companion object {
