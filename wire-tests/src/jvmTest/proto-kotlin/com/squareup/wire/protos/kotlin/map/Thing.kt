@@ -52,10 +52,10 @@ data class Thing(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("Thing{")
-    if (name != null) append("""name=$name""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (name != null) result += """name=$name"""
+    return result.joinToString(prefix = "Thing{", postfix = "}")
   }
 
   companion object {

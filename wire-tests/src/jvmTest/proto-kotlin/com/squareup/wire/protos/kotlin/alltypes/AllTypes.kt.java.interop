@@ -1371,151 +1371,151 @@ data class AllTypes(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("AllTypes{")
-    if (opt_int32 != null) append("""opt_int32=$opt_int32""")
-    if (opt_uint32 != null) append(""", opt_uint32=$opt_uint32""")
-    if (opt_sint32 != null) append(""", opt_sint32=$opt_sint32""")
-    if (opt_fixed32 != null) append(""", opt_fixed32=$opt_fixed32""")
-    if (opt_sfixed32 != null) append(""", opt_sfixed32=$opt_sfixed32""")
-    if (opt_int64 != null) append(""", opt_int64=$opt_int64""")
-    if (opt_uint64 != null) append(""", opt_uint64=$opt_uint64""")
-    if (opt_sint64 != null) append(""", opt_sint64=$opt_sint64""")
-    if (opt_fixed64 != null) append(""", opt_fixed64=$opt_fixed64""")
-    if (opt_sfixed64 != null) append(""", opt_sfixed64=$opt_sfixed64""")
-    if (opt_bool != null) append(""", opt_bool=$opt_bool""")
-    if (opt_float != null) append(""", opt_float=$opt_float""")
-    if (opt_double != null) append(""", opt_double=$opt_double""")
-    if (opt_string != null) append(""", opt_string=$opt_string""")
-    if (opt_bytes != null) append(""", opt_bytes=$opt_bytes""")
-    if (opt_nested_enum != null) append(""", opt_nested_enum=$opt_nested_enum""")
-    if (opt_nested_message != null) append(""", opt_nested_message=$opt_nested_message""")
-    append(""", req_int32=$req_int32""")
-    append(""", req_uint32=$req_uint32""")
-    append(""", req_sint32=$req_sint32""")
-    append(""", req_fixed32=$req_fixed32""")
-    append(""", req_sfixed32=$req_sfixed32""")
-    append(""", req_int64=$req_int64""")
-    append(""", req_uint64=$req_uint64""")
-    append(""", req_sint64=$req_sint64""")
-    append(""", req_fixed64=$req_fixed64""")
-    append(""", req_sfixed64=$req_sfixed64""")
-    append(""", req_bool=$req_bool""")
-    append(""", req_float=$req_float""")
-    append(""", req_double=$req_double""")
-    append(""", req_string=$req_string""")
-    append(""", req_bytes=$req_bytes""")
-    append(""", req_nested_enum=$req_nested_enum""")
-    append(""", req_nested_message=$req_nested_message""")
-    if (rep_int32.isNotEmpty()) append(""", rep_int32=$rep_int32""")
-    if (rep_uint32.isNotEmpty()) append(""", rep_uint32=$rep_uint32""")
-    if (rep_sint32.isNotEmpty()) append(""", rep_sint32=$rep_sint32""")
-    if (rep_fixed32.isNotEmpty()) append(""", rep_fixed32=$rep_fixed32""")
-    if (rep_sfixed32.isNotEmpty()) append(""", rep_sfixed32=$rep_sfixed32""")
-    if (rep_int64.isNotEmpty()) append(""", rep_int64=$rep_int64""")
-    if (rep_uint64.isNotEmpty()) append(""", rep_uint64=$rep_uint64""")
-    if (rep_sint64.isNotEmpty()) append(""", rep_sint64=$rep_sint64""")
-    if (rep_fixed64.isNotEmpty()) append(""", rep_fixed64=$rep_fixed64""")
-    if (rep_sfixed64.isNotEmpty()) append(""", rep_sfixed64=$rep_sfixed64""")
-    if (rep_bool.isNotEmpty()) append(""", rep_bool=$rep_bool""")
-    if (rep_float.isNotEmpty()) append(""", rep_float=$rep_float""")
-    if (rep_double.isNotEmpty()) append(""", rep_double=$rep_double""")
-    if (rep_string.isNotEmpty()) append(""", rep_string=$rep_string""")
-    if (rep_bytes.isNotEmpty()) append(""", rep_bytes=$rep_bytes""")
-    if (rep_nested_enum.isNotEmpty()) append(""", rep_nested_enum=$rep_nested_enum""")
-    if (rep_nested_message.isNotEmpty()) append(""", rep_nested_message=$rep_nested_message""")
-    if (pack_int32.isNotEmpty()) append(""", pack_int32=$pack_int32""")
-    if (pack_uint32.isNotEmpty()) append(""", pack_uint32=$pack_uint32""")
-    if (pack_sint32.isNotEmpty()) append(""", pack_sint32=$pack_sint32""")
-    if (pack_fixed32.isNotEmpty()) append(""", pack_fixed32=$pack_fixed32""")
-    if (pack_sfixed32.isNotEmpty()) append(""", pack_sfixed32=$pack_sfixed32""")
-    if (pack_int64.isNotEmpty()) append(""", pack_int64=$pack_int64""")
-    if (pack_uint64.isNotEmpty()) append(""", pack_uint64=$pack_uint64""")
-    if (pack_sint64.isNotEmpty()) append(""", pack_sint64=$pack_sint64""")
-    if (pack_fixed64.isNotEmpty()) append(""", pack_fixed64=$pack_fixed64""")
-    if (pack_sfixed64.isNotEmpty()) append(""", pack_sfixed64=$pack_sfixed64""")
-    if (pack_bool.isNotEmpty()) append(""", pack_bool=$pack_bool""")
-    if (pack_float.isNotEmpty()) append(""", pack_float=$pack_float""")
-    if (pack_double.isNotEmpty()) append(""", pack_double=$pack_double""")
-    if (pack_nested_enum.isNotEmpty()) append(""", pack_nested_enum=$pack_nested_enum""")
-    if (default_int32 != null) append(""", default_int32=$default_int32""")
-    if (default_uint32 != null) append(""", default_uint32=$default_uint32""")
-    if (default_sint32 != null) append(""", default_sint32=$default_sint32""")
-    if (default_fixed32 != null) append(""", default_fixed32=$default_fixed32""")
-    if (default_sfixed32 != null) append(""", default_sfixed32=$default_sfixed32""")
-    if (default_int64 != null) append(""", default_int64=$default_int64""")
-    if (default_uint64 != null) append(""", default_uint64=$default_uint64""")
-    if (default_sint64 != null) append(""", default_sint64=$default_sint64""")
-    if (default_fixed64 != null) append(""", default_fixed64=$default_fixed64""")
-    if (default_sfixed64 != null) append(""", default_sfixed64=$default_sfixed64""")
-    if (default_bool != null) append(""", default_bool=$default_bool""")
-    if (default_float != null) append(""", default_float=$default_float""")
-    if (default_double != null) append(""", default_double=$default_double""")
-    if (default_string != null) append(""", default_string=$default_string""")
-    if (default_bytes != null) append(""", default_bytes=$default_bytes""")
-    if (default_nested_enum != null) append(""", default_nested_enum=$default_nested_enum""")
-    if (map_int32_int32.isNotEmpty()) append(""", map_int32_int32=$map_int32_int32""")
-    if (map_string_string.isNotEmpty()) append(""", map_string_string=$map_string_string""")
-    if (map_string_message.isNotEmpty()) append(""", map_string_message=$map_string_message""")
-    if (map_string_enum.isNotEmpty()) append(""", map_string_enum=$map_string_enum""")
-    if (ext_opt_int32 != null) append(""", ext_opt_int32=$ext_opt_int32""")
-    if (ext_opt_uint32 != null) append(""", ext_opt_uint32=$ext_opt_uint32""")
-    if (ext_opt_sint32 != null) append(""", ext_opt_sint32=$ext_opt_sint32""")
-    if (ext_opt_fixed32 != null) append(""", ext_opt_fixed32=$ext_opt_fixed32""")
-    if (ext_opt_sfixed32 != null) append(""", ext_opt_sfixed32=$ext_opt_sfixed32""")
-    if (ext_opt_int64 != null) append(""", ext_opt_int64=$ext_opt_int64""")
-    if (ext_opt_uint64 != null) append(""", ext_opt_uint64=$ext_opt_uint64""")
-    if (ext_opt_sint64 != null) append(""", ext_opt_sint64=$ext_opt_sint64""")
-    if (ext_opt_fixed64 != null) append(""", ext_opt_fixed64=$ext_opt_fixed64""")
-    if (ext_opt_sfixed64 != null) append(""", ext_opt_sfixed64=$ext_opt_sfixed64""")
-    if (ext_opt_bool != null) append(""", ext_opt_bool=$ext_opt_bool""")
-    if (ext_opt_float != null) append(""", ext_opt_float=$ext_opt_float""")
-    if (ext_opt_double != null) append(""", ext_opt_double=$ext_opt_double""")
-    if (ext_opt_string != null) append(""", ext_opt_string=$ext_opt_string""")
-    if (ext_opt_bytes != null) append(""", ext_opt_bytes=$ext_opt_bytes""")
-    if (ext_opt_nested_enum != null) append(""", ext_opt_nested_enum=$ext_opt_nested_enum""")
-    if (ext_opt_nested_message != null)
-        append(""", ext_opt_nested_message=$ext_opt_nested_message""")
-    if (ext_rep_int32.isNotEmpty()) append(""", ext_rep_int32=$ext_rep_int32""")
-    if (ext_rep_uint32.isNotEmpty()) append(""", ext_rep_uint32=$ext_rep_uint32""")
-    if (ext_rep_sint32.isNotEmpty()) append(""", ext_rep_sint32=$ext_rep_sint32""")
-    if (ext_rep_fixed32.isNotEmpty()) append(""", ext_rep_fixed32=$ext_rep_fixed32""")
-    if (ext_rep_sfixed32.isNotEmpty()) append(""", ext_rep_sfixed32=$ext_rep_sfixed32""")
-    if (ext_rep_int64.isNotEmpty()) append(""", ext_rep_int64=$ext_rep_int64""")
-    if (ext_rep_uint64.isNotEmpty()) append(""", ext_rep_uint64=$ext_rep_uint64""")
-    if (ext_rep_sint64.isNotEmpty()) append(""", ext_rep_sint64=$ext_rep_sint64""")
-    if (ext_rep_fixed64.isNotEmpty()) append(""", ext_rep_fixed64=$ext_rep_fixed64""")
-    if (ext_rep_sfixed64.isNotEmpty()) append(""", ext_rep_sfixed64=$ext_rep_sfixed64""")
-    if (ext_rep_bool.isNotEmpty()) append(""", ext_rep_bool=$ext_rep_bool""")
-    if (ext_rep_float.isNotEmpty()) append(""", ext_rep_float=$ext_rep_float""")
-    if (ext_rep_double.isNotEmpty()) append(""", ext_rep_double=$ext_rep_double""")
-    if (ext_rep_string.isNotEmpty()) append(""", ext_rep_string=$ext_rep_string""")
-    if (ext_rep_bytes.isNotEmpty()) append(""", ext_rep_bytes=$ext_rep_bytes""")
-    if (ext_rep_nested_enum.isNotEmpty()) append(""", ext_rep_nested_enum=$ext_rep_nested_enum""")
-    if (ext_rep_nested_message.isNotEmpty())
-        append(""", ext_rep_nested_message=$ext_rep_nested_message""")
-    if (ext_pack_int32.isNotEmpty()) append(""", ext_pack_int32=$ext_pack_int32""")
-    if (ext_pack_uint32.isNotEmpty()) append(""", ext_pack_uint32=$ext_pack_uint32""")
-    if (ext_pack_sint32.isNotEmpty()) append(""", ext_pack_sint32=$ext_pack_sint32""")
-    if (ext_pack_fixed32.isNotEmpty()) append(""", ext_pack_fixed32=$ext_pack_fixed32""")
-    if (ext_pack_sfixed32.isNotEmpty()) append(""", ext_pack_sfixed32=$ext_pack_sfixed32""")
-    if (ext_pack_int64.isNotEmpty()) append(""", ext_pack_int64=$ext_pack_int64""")
-    if (ext_pack_uint64.isNotEmpty()) append(""", ext_pack_uint64=$ext_pack_uint64""")
-    if (ext_pack_sint64.isNotEmpty()) append(""", ext_pack_sint64=$ext_pack_sint64""")
-    if (ext_pack_fixed64.isNotEmpty()) append(""", ext_pack_fixed64=$ext_pack_fixed64""")
-    if (ext_pack_sfixed64.isNotEmpty()) append(""", ext_pack_sfixed64=$ext_pack_sfixed64""")
-    if (ext_pack_bool.isNotEmpty()) append(""", ext_pack_bool=$ext_pack_bool""")
-    if (ext_pack_float.isNotEmpty()) append(""", ext_pack_float=$ext_pack_float""")
-    if (ext_pack_double.isNotEmpty()) append(""", ext_pack_double=$ext_pack_double""")
-    if (ext_pack_nested_enum.isNotEmpty())
-        append(""", ext_pack_nested_enum=$ext_pack_nested_enum""")
-    if (ext_map_int32_int32.isNotEmpty()) append(""", ext_map_int32_int32=$ext_map_int32_int32""")
-    if (ext_map_string_string.isNotEmpty())
-        append(""", ext_map_string_string=$ext_map_string_string""")
-    if (ext_map_string_message.isNotEmpty())
-        append(""", ext_map_string_message=$ext_map_string_message""")
-    if (ext_map_string_enum.isNotEmpty()) append(""", ext_map_string_enum=$ext_map_string_enum""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (opt_int32 != null) result += """opt_int32=$opt_int32"""
+    if (opt_uint32 != null) result += """opt_uint32=$opt_uint32"""
+    if (opt_sint32 != null) result += """opt_sint32=$opt_sint32"""
+    if (opt_fixed32 != null) result += """opt_fixed32=$opt_fixed32"""
+    if (opt_sfixed32 != null) result += """opt_sfixed32=$opt_sfixed32"""
+    if (opt_int64 != null) result += """opt_int64=$opt_int64"""
+    if (opt_uint64 != null) result += """opt_uint64=$opt_uint64"""
+    if (opt_sint64 != null) result += """opt_sint64=$opt_sint64"""
+    if (opt_fixed64 != null) result += """opt_fixed64=$opt_fixed64"""
+    if (opt_sfixed64 != null) result += """opt_sfixed64=$opt_sfixed64"""
+    if (opt_bool != null) result += """opt_bool=$opt_bool"""
+    if (opt_float != null) result += """opt_float=$opt_float"""
+    if (opt_double != null) result += """opt_double=$opt_double"""
+    if (opt_string != null) result += """opt_string=$opt_string"""
+    if (opt_bytes != null) result += """opt_bytes=$opt_bytes"""
+    if (opt_nested_enum != null) result += """opt_nested_enum=$opt_nested_enum"""
+    if (opt_nested_message != null) result += """opt_nested_message=$opt_nested_message"""
+    result += """req_int32=$req_int32"""
+    result += """req_uint32=$req_uint32"""
+    result += """req_sint32=$req_sint32"""
+    result += """req_fixed32=$req_fixed32"""
+    result += """req_sfixed32=$req_sfixed32"""
+    result += """req_int64=$req_int64"""
+    result += """req_uint64=$req_uint64"""
+    result += """req_sint64=$req_sint64"""
+    result += """req_fixed64=$req_fixed64"""
+    result += """req_sfixed64=$req_sfixed64"""
+    result += """req_bool=$req_bool"""
+    result += """req_float=$req_float"""
+    result += """req_double=$req_double"""
+    result += """req_string=$req_string"""
+    result += """req_bytes=$req_bytes"""
+    result += """req_nested_enum=$req_nested_enum"""
+    result += """req_nested_message=$req_nested_message"""
+    if (rep_int32.isNotEmpty()) result += """rep_int32=$rep_int32"""
+    if (rep_uint32.isNotEmpty()) result += """rep_uint32=$rep_uint32"""
+    if (rep_sint32.isNotEmpty()) result += """rep_sint32=$rep_sint32"""
+    if (rep_fixed32.isNotEmpty()) result += """rep_fixed32=$rep_fixed32"""
+    if (rep_sfixed32.isNotEmpty()) result += """rep_sfixed32=$rep_sfixed32"""
+    if (rep_int64.isNotEmpty()) result += """rep_int64=$rep_int64"""
+    if (rep_uint64.isNotEmpty()) result += """rep_uint64=$rep_uint64"""
+    if (rep_sint64.isNotEmpty()) result += """rep_sint64=$rep_sint64"""
+    if (rep_fixed64.isNotEmpty()) result += """rep_fixed64=$rep_fixed64"""
+    if (rep_sfixed64.isNotEmpty()) result += """rep_sfixed64=$rep_sfixed64"""
+    if (rep_bool.isNotEmpty()) result += """rep_bool=$rep_bool"""
+    if (rep_float.isNotEmpty()) result += """rep_float=$rep_float"""
+    if (rep_double.isNotEmpty()) result += """rep_double=$rep_double"""
+    if (rep_string.isNotEmpty()) result += """rep_string=$rep_string"""
+    if (rep_bytes.isNotEmpty()) result += """rep_bytes=$rep_bytes"""
+    if (rep_nested_enum.isNotEmpty()) result += """rep_nested_enum=$rep_nested_enum"""
+    if (rep_nested_message.isNotEmpty()) result += """rep_nested_message=$rep_nested_message"""
+    if (pack_int32.isNotEmpty()) result += """pack_int32=$pack_int32"""
+    if (pack_uint32.isNotEmpty()) result += """pack_uint32=$pack_uint32"""
+    if (pack_sint32.isNotEmpty()) result += """pack_sint32=$pack_sint32"""
+    if (pack_fixed32.isNotEmpty()) result += """pack_fixed32=$pack_fixed32"""
+    if (pack_sfixed32.isNotEmpty()) result += """pack_sfixed32=$pack_sfixed32"""
+    if (pack_int64.isNotEmpty()) result += """pack_int64=$pack_int64"""
+    if (pack_uint64.isNotEmpty()) result += """pack_uint64=$pack_uint64"""
+    if (pack_sint64.isNotEmpty()) result += """pack_sint64=$pack_sint64"""
+    if (pack_fixed64.isNotEmpty()) result += """pack_fixed64=$pack_fixed64"""
+    if (pack_sfixed64.isNotEmpty()) result += """pack_sfixed64=$pack_sfixed64"""
+    if (pack_bool.isNotEmpty()) result += """pack_bool=$pack_bool"""
+    if (pack_float.isNotEmpty()) result += """pack_float=$pack_float"""
+    if (pack_double.isNotEmpty()) result += """pack_double=$pack_double"""
+    if (pack_nested_enum.isNotEmpty()) result += """pack_nested_enum=$pack_nested_enum"""
+    if (default_int32 != null) result += """default_int32=$default_int32"""
+    if (default_uint32 != null) result += """default_uint32=$default_uint32"""
+    if (default_sint32 != null) result += """default_sint32=$default_sint32"""
+    if (default_fixed32 != null) result += """default_fixed32=$default_fixed32"""
+    if (default_sfixed32 != null) result += """default_sfixed32=$default_sfixed32"""
+    if (default_int64 != null) result += """default_int64=$default_int64"""
+    if (default_uint64 != null) result += """default_uint64=$default_uint64"""
+    if (default_sint64 != null) result += """default_sint64=$default_sint64"""
+    if (default_fixed64 != null) result += """default_fixed64=$default_fixed64"""
+    if (default_sfixed64 != null) result += """default_sfixed64=$default_sfixed64"""
+    if (default_bool != null) result += """default_bool=$default_bool"""
+    if (default_float != null) result += """default_float=$default_float"""
+    if (default_double != null) result += """default_double=$default_double"""
+    if (default_string != null) result += """default_string=$default_string"""
+    if (default_bytes != null) result += """default_bytes=$default_bytes"""
+    if (default_nested_enum != null) result += """default_nested_enum=$default_nested_enum"""
+    if (map_int32_int32.isNotEmpty()) result += """map_int32_int32=$map_int32_int32"""
+    if (map_string_string.isNotEmpty()) result += """map_string_string=$map_string_string"""
+    if (map_string_message.isNotEmpty()) result += """map_string_message=$map_string_message"""
+    if (map_string_enum.isNotEmpty()) result += """map_string_enum=$map_string_enum"""
+    if (ext_opt_int32 != null) result += """ext_opt_int32=$ext_opt_int32"""
+    if (ext_opt_uint32 != null) result += """ext_opt_uint32=$ext_opt_uint32"""
+    if (ext_opt_sint32 != null) result += """ext_opt_sint32=$ext_opt_sint32"""
+    if (ext_opt_fixed32 != null) result += """ext_opt_fixed32=$ext_opt_fixed32"""
+    if (ext_opt_sfixed32 != null) result += """ext_opt_sfixed32=$ext_opt_sfixed32"""
+    if (ext_opt_int64 != null) result += """ext_opt_int64=$ext_opt_int64"""
+    if (ext_opt_uint64 != null) result += """ext_opt_uint64=$ext_opt_uint64"""
+    if (ext_opt_sint64 != null) result += """ext_opt_sint64=$ext_opt_sint64"""
+    if (ext_opt_fixed64 != null) result += """ext_opt_fixed64=$ext_opt_fixed64"""
+    if (ext_opt_sfixed64 != null) result += """ext_opt_sfixed64=$ext_opt_sfixed64"""
+    if (ext_opt_bool != null) result += """ext_opt_bool=$ext_opt_bool"""
+    if (ext_opt_float != null) result += """ext_opt_float=$ext_opt_float"""
+    if (ext_opt_double != null) result += """ext_opt_double=$ext_opt_double"""
+    if (ext_opt_string != null) result += """ext_opt_string=$ext_opt_string"""
+    if (ext_opt_bytes != null) result += """ext_opt_bytes=$ext_opt_bytes"""
+    if (ext_opt_nested_enum != null) result += """ext_opt_nested_enum=$ext_opt_nested_enum"""
+    if (ext_opt_nested_message != null) result +=
+        """ext_opt_nested_message=$ext_opt_nested_message"""
+    if (ext_rep_int32.isNotEmpty()) result += """ext_rep_int32=$ext_rep_int32"""
+    if (ext_rep_uint32.isNotEmpty()) result += """ext_rep_uint32=$ext_rep_uint32"""
+    if (ext_rep_sint32.isNotEmpty()) result += """ext_rep_sint32=$ext_rep_sint32"""
+    if (ext_rep_fixed32.isNotEmpty()) result += """ext_rep_fixed32=$ext_rep_fixed32"""
+    if (ext_rep_sfixed32.isNotEmpty()) result += """ext_rep_sfixed32=$ext_rep_sfixed32"""
+    if (ext_rep_int64.isNotEmpty()) result += """ext_rep_int64=$ext_rep_int64"""
+    if (ext_rep_uint64.isNotEmpty()) result += """ext_rep_uint64=$ext_rep_uint64"""
+    if (ext_rep_sint64.isNotEmpty()) result += """ext_rep_sint64=$ext_rep_sint64"""
+    if (ext_rep_fixed64.isNotEmpty()) result += """ext_rep_fixed64=$ext_rep_fixed64"""
+    if (ext_rep_sfixed64.isNotEmpty()) result += """ext_rep_sfixed64=$ext_rep_sfixed64"""
+    if (ext_rep_bool.isNotEmpty()) result += """ext_rep_bool=$ext_rep_bool"""
+    if (ext_rep_float.isNotEmpty()) result += """ext_rep_float=$ext_rep_float"""
+    if (ext_rep_double.isNotEmpty()) result += """ext_rep_double=$ext_rep_double"""
+    if (ext_rep_string.isNotEmpty()) result += """ext_rep_string=$ext_rep_string"""
+    if (ext_rep_bytes.isNotEmpty()) result += """ext_rep_bytes=$ext_rep_bytes"""
+    if (ext_rep_nested_enum.isNotEmpty()) result += """ext_rep_nested_enum=$ext_rep_nested_enum"""
+    if (ext_rep_nested_message.isNotEmpty()) result +=
+        """ext_rep_nested_message=$ext_rep_nested_message"""
+    if (ext_pack_int32.isNotEmpty()) result += """ext_pack_int32=$ext_pack_int32"""
+    if (ext_pack_uint32.isNotEmpty()) result += """ext_pack_uint32=$ext_pack_uint32"""
+    if (ext_pack_sint32.isNotEmpty()) result += """ext_pack_sint32=$ext_pack_sint32"""
+    if (ext_pack_fixed32.isNotEmpty()) result += """ext_pack_fixed32=$ext_pack_fixed32"""
+    if (ext_pack_sfixed32.isNotEmpty()) result += """ext_pack_sfixed32=$ext_pack_sfixed32"""
+    if (ext_pack_int64.isNotEmpty()) result += """ext_pack_int64=$ext_pack_int64"""
+    if (ext_pack_uint64.isNotEmpty()) result += """ext_pack_uint64=$ext_pack_uint64"""
+    if (ext_pack_sint64.isNotEmpty()) result += """ext_pack_sint64=$ext_pack_sint64"""
+    if (ext_pack_fixed64.isNotEmpty()) result += """ext_pack_fixed64=$ext_pack_fixed64"""
+    if (ext_pack_sfixed64.isNotEmpty()) result += """ext_pack_sfixed64=$ext_pack_sfixed64"""
+    if (ext_pack_bool.isNotEmpty()) result += """ext_pack_bool=$ext_pack_bool"""
+    if (ext_pack_float.isNotEmpty()) result += """ext_pack_float=$ext_pack_float"""
+    if (ext_pack_double.isNotEmpty()) result += """ext_pack_double=$ext_pack_double"""
+    if (ext_pack_nested_enum.isNotEmpty()) result +=
+        """ext_pack_nested_enum=$ext_pack_nested_enum"""
+    if (ext_map_int32_int32.isNotEmpty()) result += """ext_map_int32_int32=$ext_map_int32_int32"""
+    if (ext_map_string_string.isNotEmpty()) result +=
+        """ext_map_string_string=$ext_map_string_string"""
+    if (ext_map_string_message.isNotEmpty()) result +=
+        """ext_map_string_message=$ext_map_string_message"""
+    if (ext_map_string_enum.isNotEmpty()) result += """ext_map_string_enum=$ext_map_string_enum"""
+    return result.joinToString(prefix = "AllTypes{", postfix = "}")
   }
 
   class Builder : Message.Builder<AllTypes, Builder>() {
@@ -3657,10 +3657,10 @@ data class AllTypes(
       return result
     }
 
-    override fun toString(): String = buildString {
-      append("NestedMessage{")
-      if (a != null) append("""a=$a""")
-      append('}')
+    override fun toString(): String {
+      val result = mutableListOf<String>()
+      if (a != null) result += """a=$a"""
+      return result.joinToString(prefix = "NestedMessage{", postfix = "}")
     }
 
     class Builder : Message.Builder<NestedMessage, Builder>() {

@@ -69,11 +69,11 @@ data class Rectangle(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("Rectangle{")
-    if (lo != null) append("""lo=$lo""")
-    if (hi != null) append(""", hi=$hi""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (lo != null) result += """lo=$lo"""
+    if (hi != null) result += """hi=$hi"""
+    return result.joinToString(prefix = "Rectangle{", postfix = "}")
   }
 
   companion object {

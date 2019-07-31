@@ -57,10 +57,10 @@ data class FeatureDatabase(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("FeatureDatabase{")
-    if (feature.isNotEmpty()) append("""feature=$feature""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (feature.isNotEmpty()) result += """feature=$feature"""
+    return result.joinToString(prefix = "FeatureDatabase{", postfix = "}")
   }
 
   companion object {

@@ -66,11 +66,11 @@ data class RedactedRepeated(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("RedactedRepeated{")
-    if (a.isNotEmpty()) append("""a=██""")
-    if (b.isNotEmpty()) append(""", b=$b""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (a.isNotEmpty()) result += """a=██"""
+    if (b.isNotEmpty()) result += """b=$b"""
+    return result.joinToString(prefix = "RedactedRepeated{", postfix = "}")
   }
 
   companion object {

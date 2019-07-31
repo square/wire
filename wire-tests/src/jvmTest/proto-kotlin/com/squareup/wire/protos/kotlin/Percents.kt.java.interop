@@ -51,10 +51,10 @@ data class Percents(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("Percents{")
-    if (text != null) append("""text=$text""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (text != null) result += """text=$text"""
+    return result.joinToString(prefix = "Percents{", postfix = "}")
   }
 
   class Builder : Message.Builder<Percents, Builder>() {

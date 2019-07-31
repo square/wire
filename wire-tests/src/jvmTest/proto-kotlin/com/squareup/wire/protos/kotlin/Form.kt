@@ -138,23 +138,23 @@ data class Form(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("Form{")
-    if (button_element != null) append("""button_element=$button_element""")
-    if (local_image_element != null) append(""", local_image_element=$local_image_element""")
-    if (remote_image_element != null) append(""", remote_image_element=$remote_image_element""")
-    if (money_element != null) append(""", money_element=$money_element""")
-    if (spacer_element != null) append(""", spacer_element=$spacer_element""")
-    if (text_element != null) append(""", text_element=$text_element""")
-    if (customized_card_element != null)
-        append(""", customized_card_element=$customized_card_element""")
-    if (address_element != null) append(""", address_element=$address_element""")
-    if (text_input_element != null) append(""", text_input_element=$text_input_element""")
-    if (option_picker_element != null) append(""", option_picker_element=$option_picker_element""")
-    if (detail_row_element != null) append(""", detail_row_element=$detail_row_element""")
-    if (currency_conversion_flags_element != null)
-        append(""", currency_conversion_flags_element=$currency_conversion_flags_element""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (button_element != null) result += """button_element=$button_element"""
+    if (local_image_element != null) result += """local_image_element=$local_image_element"""
+    if (remote_image_element != null) result += """remote_image_element=$remote_image_element"""
+    if (money_element != null) result += """money_element=$money_element"""
+    if (spacer_element != null) result += """spacer_element=$spacer_element"""
+    if (text_element != null) result += """text_element=$text_element"""
+    if (customized_card_element != null) result +=
+        """customized_card_element=$customized_card_element"""
+    if (address_element != null) result += """address_element=$address_element"""
+    if (text_input_element != null) result += """text_input_element=$text_input_element"""
+    if (option_picker_element != null) result += """option_picker_element=$option_picker_element"""
+    if (detail_row_element != null) result += """detail_row_element=$detail_row_element"""
+    if (currency_conversion_flags_element != null) result +=
+        """currency_conversion_flags_element=$currency_conversion_flags_element"""
+    return result.joinToString(prefix = "Form{", postfix = "}")
   }
 
   companion object {

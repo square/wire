@@ -54,10 +54,10 @@ data class Mappy(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("Mappy{")
-    if (things.isNotEmpty()) append("""things=$things""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (things.isNotEmpty()) result += """things=$things"""
+    return result.joinToString(prefix = "Mappy{", postfix = "}")
   }
 
   companion object {

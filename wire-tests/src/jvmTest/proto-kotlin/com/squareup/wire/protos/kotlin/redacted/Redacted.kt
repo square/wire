@@ -74,13 +74,13 @@ data class Redacted(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("Redacted{")
-    if (a != null) append("""a=██""")
-    if (b != null) append(""", b=$b""")
-    if (c != null) append(""", c=$c""")
-    if (extension != null) append(""", extension=$extension""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (a != null) result += """a=██"""
+    if (b != null) result += """b=$b"""
+    if (c != null) result += """c=$c"""
+    if (extension != null) result += """extension=$extension"""
+    return result.joinToString(prefix = "Redacted{", postfix = "}")
   }
 
   companion object {

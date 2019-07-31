@@ -67,11 +67,11 @@ data class RedactedOneOf(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("RedactedOneOf{")
-    if (b != null) append("""b=$b""")
-    if (c != null) append(""", c=██""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (b != null) result += """b=$b"""
+    if (c != null) result += """c=██"""
+    return result.joinToString(prefix = "RedactedOneOf{", postfix = "}")
   }
 
   companion object {

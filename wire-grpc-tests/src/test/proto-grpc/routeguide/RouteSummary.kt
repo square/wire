@@ -92,13 +92,13 @@ data class RouteSummary(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("RouteSummary{")
-    if (point_count != null) append("""point_count=$point_count""")
-    if (feature_count != null) append(""", feature_count=$feature_count""")
-    if (distance != null) append(""", distance=$distance""")
-    if (elapsed_time != null) append(""", elapsed_time=$elapsed_time""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (point_count != null) result += """point_count=$point_count"""
+    if (feature_count != null) result += """feature_count=$feature_count"""
+    if (distance != null) result += """distance=$distance"""
+    if (elapsed_time != null) result += """elapsed_time=$elapsed_time"""
+    return result.joinToString(prefix = "RouteSummary{", postfix = "}")
   }
 
   companion object {

@@ -55,10 +55,10 @@ data class RedactedRequired(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("RedactedRequired{")
-    append("""a=██""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    result += """a=██"""
+    return result.joinToString(prefix = "RedactedRequired{", postfix = "}")
   }
 
   companion object {

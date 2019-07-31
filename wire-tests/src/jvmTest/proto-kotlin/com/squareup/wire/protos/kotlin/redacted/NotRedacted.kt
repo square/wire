@@ -59,11 +59,11 @@ data class NotRedacted(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("NotRedacted{")
-    if (a != null) append("""a=$a""")
-    if (b != null) append(""", b=$b""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (a != null) result += """a=$a"""
+    if (b != null) result += """b=$b"""
+    return result.joinToString(prefix = "NotRedacted{", postfix = "}")
   }
 
   companion object {

@@ -53,10 +53,10 @@ data class DeprecatedProto(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("DeprecatedProto{")
-    if (foo != null) append("""foo=$foo""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (foo != null) result += """foo=$foo"""
+    return result.joinToString(prefix = "DeprecatedProto{", postfix = "}")
   }
 
   companion object {

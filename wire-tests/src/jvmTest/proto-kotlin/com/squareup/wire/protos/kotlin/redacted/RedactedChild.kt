@@ -66,12 +66,12 @@ data class RedactedChild(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("RedactedChild{")
-    if (a != null) append("""a=$a""")
-    if (b != null) append(""", b=$b""")
-    if (c != null) append(""", c=$c""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (a != null) result += """a=$a"""
+    if (b != null) result += """b=$b"""
+    if (c != null) result += """c=$c"""
+    return result.joinToString(prefix = "RedactedChild{", postfix = "}")
   }
 
   companion object {

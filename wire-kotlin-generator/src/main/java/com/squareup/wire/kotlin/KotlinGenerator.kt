@@ -641,36 +641,38 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateToStringMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
+    val localNameAllocator = nameAllocator.copy()
     val className = generatedTypeName(type)
     val fields = type.fieldsAndOneOfFields()
     val body = buildCodeBlock {
       if (fields.isEmpty()) {
         addStatement("return %S", className.simpleName + "{}")
       } else {
-        add("return %L", buildCodeBlock {
-          beginControlFlow("buildString")
-          addStatement("append(%S)", className.simpleName + "{")
-          fields.forEachIndexed { index, field ->
-            val fieldName = nameAllocator[field]
-            if (field.isRepeated || field.isMap) {
-              add("if (%N.isNotEmpty()) ", fieldName)
-            } else if (!field.isRequired) {
-              add("if (%N != null) ", fieldName)
-            }
-            addStatement("append(%P)", buildString {
-              if (index > 0) append(", ")
-              append(fieldName)
-              if (field.isRedacted) {
-                append("=██")
-              } else {
-                append("=\$")
-                append(fieldName)
-              }
-            })
+        val resultName = localNameAllocator.newName("result")
+        addStatement("val %N = mutableListOf<%T>()", resultName, STRING)
+        for (field in fields) {
+          val fieldName = localNameAllocator[field]
+          if (field.isRepeated || field.isMap) {
+            add("if (%N.isNotEmpty()) ", fieldName)
+          } else if (!field.isRequired) {
+            add("if (%N != null) ", fieldName)
           }
-          addStatement("append('}')")
-          endControlFlow()
-        })
+          addStatement("%N += %P", resultName, buildString {
+            append(fieldName)
+            if (field.isRedacted) {
+              append("=██")
+            } else {
+              append("=\$")
+              append(fieldName)
+            }
+          })
+        }
+        addStatement(
+            "return %N.joinToString(prefix = %S, postfix = %S)",
+            resultName,
+            className.simpleName + "{",
+            "}"
+        )
       }
     }
     return FunSpec.builder("toString")

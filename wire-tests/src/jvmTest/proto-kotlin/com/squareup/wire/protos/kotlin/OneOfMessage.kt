@@ -85,12 +85,12 @@ data class OneOfMessage(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("OneOfMessage{")
-    if (foo != null) append("""foo=$foo""")
-    if (bar != null) append(""", bar=$bar""")
-    if (baz != null) append(""", baz=$baz""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (foo != null) result += """foo=$foo"""
+    if (bar != null) result += """bar=$bar"""
+    if (baz != null) result += """baz=$baz"""
+    return result.joinToString(prefix = "OneOfMessage{", postfix = "}")
   }
 
   companion object {

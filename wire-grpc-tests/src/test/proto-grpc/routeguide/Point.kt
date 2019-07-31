@@ -65,11 +65,11 @@ data class Point(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("Point{")
-    if (latitude != null) append("""latitude=$latitude""")
-    if (longitude != null) append(""", longitude=$longitude""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (latitude != null) result += """latitude=$latitude"""
+    if (longitude != null) result += """longitude=$longitude"""
+    return result.joinToString(prefix = "Point{", postfix = "}")
   }
 
   companion object {

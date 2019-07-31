@@ -55,10 +55,10 @@ data class OptionalEnumUser(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("OptionalEnumUser{")
-    if (optional_enum != null) append("""optional_enum=$optional_enum""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (optional_enum != null) result += """optional_enum=$optional_enum"""
+    return result.joinToString(prefix = "OptionalEnumUser{", postfix = "}")
   }
 
   companion object {

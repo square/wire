@@ -97,13 +97,13 @@ data class Person(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("Person{")
-    append("""name=$name""")
-    append(""", id=$id""")
-    if (email != null) append(""", email=$email""")
-    if (phone.isNotEmpty()) append(""", phone=$phone""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    result += """name=$name"""
+    result += """id=$id"""
+    if (email != null) result += """email=$email"""
+    if (phone.isNotEmpty()) result += """phone=$phone"""
+    return result.joinToString(prefix = "Person{", postfix = "}")
   }
 
   companion object {
@@ -236,11 +236,11 @@ data class Person(
       return result
     }
 
-    override fun toString(): String = buildString {
-      append("PhoneNumber{")
-      append("""number=$number""")
-      if (type != null) append(""", type=$type""")
-      append('}')
+    override fun toString(): String {
+      val result = mutableListOf<String>()
+      result += """number=$number"""
+      if (type != null) result += """type=$type"""
+      return result.joinToString(prefix = "PhoneNumber{", postfix = "}")
     }
 
     companion object {

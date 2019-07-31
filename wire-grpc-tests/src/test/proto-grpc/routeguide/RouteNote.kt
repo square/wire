@@ -68,11 +68,11 @@ data class RouteNote(
     return result
   }
 
-  override fun toString(): String = buildString {
-    append("RouteNote{")
-    if (location != null) append("""location=$location""")
-    if (message != null) append(""", message=$message""")
-    append('}')
+  override fun toString(): String {
+    val result = mutableListOf<String>()
+    if (location != null) result += """location=$location"""
+    if (message != null) result += """message=$message"""
+    return result.joinToString(prefix = "RouteNote{", postfix = "}")
   }
 
   companion object {
