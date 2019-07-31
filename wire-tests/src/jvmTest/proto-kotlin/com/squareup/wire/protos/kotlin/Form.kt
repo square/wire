@@ -16,6 +16,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -119,18 +120,18 @@ data class Form(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + (button_element?.hashCode() ?: 0)
-      result = result * 37 + (local_image_element?.hashCode() ?: 0)
-      result = result * 37 + (remote_image_element?.hashCode() ?: 0)
-      result = result * 37 + (money_element?.hashCode() ?: 0)
-      result = result * 37 + (spacer_element?.hashCode() ?: 0)
-      result = result * 37 + (text_element?.hashCode() ?: 0)
-      result = result * 37 + (customized_card_element?.hashCode() ?: 0)
-      result = result * 37 + (address_element?.hashCode() ?: 0)
-      result = result * 37 + (text_input_element?.hashCode() ?: 0)
-      result = result * 37 + (option_picker_element?.hashCode() ?: 0)
-      result = result * 37 + (detail_row_element?.hashCode() ?: 0)
-      result = result * 37 + (currency_conversion_flags_element?.hashCode() ?: 0)
+      result = result * 37 + button_element.hashCode()
+      result = result * 37 + local_image_element.hashCode()
+      result = result * 37 + remote_image_element.hashCode()
+      result = result * 37 + money_element.hashCode()
+      result = result * 37 + spacer_element.hashCode()
+      result = result * 37 + text_element.hashCode()
+      result = result * 37 + customized_card_element.hashCode()
+      result = result * 37 + address_element.hashCode()
+      result = result * 37 + text_input_element.hashCode()
+      result = result * 37 + option_picker_element.hashCode()
+      result = result * 37 + detail_row_element.hashCode()
+      result = result * 37 + currency_conversion_flags_element.hashCode()
       super.hashCode = result
     }
     return result

@@ -16,6 +16,7 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -60,8 +61,8 @@ data class RouteNote(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + (location?.hashCode() ?: 0)
-      result = result * 37 + (message?.hashCode() ?: 0)
+      result = result * 37 + location.hashCode()
+      result = result * 37 + message.hashCode()
       super.hashCode = result
     }
     return result

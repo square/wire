@@ -18,6 +18,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -92,7 +93,7 @@ data class Person(
     if (result == 0) {
       result = result * 37 + name.hashCode()
       result = result * 37 + id.hashCode()
-      result = result * 37 + (email?.hashCode() ?: 0)
+      result = result * 37 + email.hashCode()
       result = result * 37 + phone.hashCode()
       super.hashCode = result
     }
@@ -280,7 +281,7 @@ data class Person(
       var result = super.hashCode
       if (result == 0) {
         result = result * 37 + number.hashCode()
-        result = result * 37 + (type?.hashCode() ?: 0)
+        result = result * 37 + type.hashCode()
         super.hashCode = result
       }
       return result

@@ -17,6 +17,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -47,7 +48,7 @@ data class OptionalEnumUser(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + (optional_enum?.hashCode() ?: 0)
+      result = result * 37 + optional_enum.hashCode()
       super.hashCode = result
     }
     return result

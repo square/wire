@@ -402,7 +402,7 @@ class KotlinGenerator private constructor(
   //   var result = super.hashCode
   //   if (result == 0) {
   //     result = unknownFields.hashCode()
-  //     result = result * 37 + (f?.hashCode() ?: 0)
+  //     result = result * 37 + f?.hashCode()
   //     super.hashCode = result
   //   }
   //   return result
@@ -427,15 +427,18 @@ class KotlinGenerator private constructor(
     val body = buildCodeBlock {
       addStatement("var %N = super.hashCode", resultName)
       beginControlFlow("if (%N == 0)", resultName)
+
+      val hashCode = MemberName("kotlin", "hashCode")
       for (field in fields) {
         val fieldName = localNameAllocator[field]
         add("%1N = %1N * 37 + ", resultName)
         if (field.isRepeated || field.isRequired || field.isMap) {
           addStatement("%L.hashCode()", fieldName)
         } else {
-          addStatement("(%L?.hashCode() ?: 0)", fieldName)
+          addStatement("%L.%M()", fieldName, hashCode)
         }
       }
+
       addStatement("super.hashCode = %N", resultName)
       endControlFlow()
       addStatement("return %N", resultName)

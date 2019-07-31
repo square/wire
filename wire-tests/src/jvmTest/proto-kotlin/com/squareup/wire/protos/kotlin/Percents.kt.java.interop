@@ -12,6 +12,7 @@ import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -44,7 +45,7 @@ data class Percents(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + (text?.hashCode() ?: 0)
+      result = result * 37 + text.hashCode()
       super.hashCode = result
     }
     return result

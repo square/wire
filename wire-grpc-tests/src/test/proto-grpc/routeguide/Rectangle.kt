@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -60,8 +61,8 @@ data class Rectangle(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + (lo?.hashCode() ?: 0)
-      result = result * 37 + (hi?.hashCode() ?: 0)
+      result = result * 37 + lo.hashCode()
+      result = result * 37 + hi.hashCode()
       super.hashCode = result
     }
     return result

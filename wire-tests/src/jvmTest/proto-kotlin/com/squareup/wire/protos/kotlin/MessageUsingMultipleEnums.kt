@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -53,8 +54,8 @@ data class MessageUsingMultipleEnums(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + (a?.hashCode() ?: 0)
-      result = result * 37 + (b?.hashCode() ?: 0)
+      result = result * 37 + a.hashCode()
+      result = result * 37 + b.hashCode()
       super.hashCode = result
     }
     return result
