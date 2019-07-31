@@ -9,6 +9,8 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import kotlin.Any
+import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
 import kotlin.jvm.JvmField
@@ -60,6 +62,15 @@ data class OneOfMessage(
     builder.baz = baz
     builder.addUnknownFields(unknownFields())
     return builder
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is OneOfMessage) return false
+    return unknownFields == other.unknownFields
+        && foo == other.foo
+        && bar == other.bar
+        && baz == other.baz
   }
 
   class Builder : Message.Builder<OneOfMessage, Builder>() {

@@ -9,7 +9,9 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
+import kotlin.Any
 import kotlin.AssertionError
+import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -28,6 +30,8 @@ data class OtherMessageWithStatus(
   override fun newBuilder(): Nothing {
     throw AssertionError()
   }
+
+  override fun equals(other: Any?): Boolean = other is OtherMessageWithStatus
 
   companion object {
     @JvmField

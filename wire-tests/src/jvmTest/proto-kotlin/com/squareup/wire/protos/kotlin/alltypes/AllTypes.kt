@@ -12,6 +12,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
+import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
 import kotlin.Deprecated
@@ -810,6 +811,149 @@ data class AllTypes(
   )
   override fun newBuilder(): Nothing {
     throw AssertionError()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is AllTypes) return false
+    return unknownFields == other.unknownFields
+        && opt_int32 == other.opt_int32
+        && opt_uint32 == other.opt_uint32
+        && opt_sint32 == other.opt_sint32
+        && opt_fixed32 == other.opt_fixed32
+        && opt_sfixed32 == other.opt_sfixed32
+        && opt_int64 == other.opt_int64
+        && opt_uint64 == other.opt_uint64
+        && opt_sint64 == other.opt_sint64
+        && opt_fixed64 == other.opt_fixed64
+        && opt_sfixed64 == other.opt_sfixed64
+        && opt_bool == other.opt_bool
+        && opt_float == other.opt_float
+        && opt_double == other.opt_double
+        && opt_string == other.opt_string
+        && opt_bytes == other.opt_bytes
+        && opt_nested_enum == other.opt_nested_enum
+        && opt_nested_message == other.opt_nested_message
+        && req_int32 == other.req_int32
+        && req_uint32 == other.req_uint32
+        && req_sint32 == other.req_sint32
+        && req_fixed32 == other.req_fixed32
+        && req_sfixed32 == other.req_sfixed32
+        && req_int64 == other.req_int64
+        && req_uint64 == other.req_uint64
+        && req_sint64 == other.req_sint64
+        && req_fixed64 == other.req_fixed64
+        && req_sfixed64 == other.req_sfixed64
+        && req_bool == other.req_bool
+        && req_float == other.req_float
+        && req_double == other.req_double
+        && req_string == other.req_string
+        && req_bytes == other.req_bytes
+        && req_nested_enum == other.req_nested_enum
+        && req_nested_message == other.req_nested_message
+        && rep_int32 == other.rep_int32
+        && rep_uint32 == other.rep_uint32
+        && rep_sint32 == other.rep_sint32
+        && rep_fixed32 == other.rep_fixed32
+        && rep_sfixed32 == other.rep_sfixed32
+        && rep_int64 == other.rep_int64
+        && rep_uint64 == other.rep_uint64
+        && rep_sint64 == other.rep_sint64
+        && rep_fixed64 == other.rep_fixed64
+        && rep_sfixed64 == other.rep_sfixed64
+        && rep_bool == other.rep_bool
+        && rep_float == other.rep_float
+        && rep_double == other.rep_double
+        && rep_string == other.rep_string
+        && rep_bytes == other.rep_bytes
+        && rep_nested_enum == other.rep_nested_enum
+        && rep_nested_message == other.rep_nested_message
+        && pack_int32 == other.pack_int32
+        && pack_uint32 == other.pack_uint32
+        && pack_sint32 == other.pack_sint32
+        && pack_fixed32 == other.pack_fixed32
+        && pack_sfixed32 == other.pack_sfixed32
+        && pack_int64 == other.pack_int64
+        && pack_uint64 == other.pack_uint64
+        && pack_sint64 == other.pack_sint64
+        && pack_fixed64 == other.pack_fixed64
+        && pack_sfixed64 == other.pack_sfixed64
+        && pack_bool == other.pack_bool
+        && pack_float == other.pack_float
+        && pack_double == other.pack_double
+        && pack_nested_enum == other.pack_nested_enum
+        && default_int32 == other.default_int32
+        && default_uint32 == other.default_uint32
+        && default_sint32 == other.default_sint32
+        && default_fixed32 == other.default_fixed32
+        && default_sfixed32 == other.default_sfixed32
+        && default_int64 == other.default_int64
+        && default_uint64 == other.default_uint64
+        && default_sint64 == other.default_sint64
+        && default_fixed64 == other.default_fixed64
+        && default_sfixed64 == other.default_sfixed64
+        && default_bool == other.default_bool
+        && default_float == other.default_float
+        && default_double == other.default_double
+        && default_string == other.default_string
+        && default_bytes == other.default_bytes
+        && default_nested_enum == other.default_nested_enum
+        && map_int32_int32 == other.map_int32_int32
+        && map_string_string == other.map_string_string
+        && map_string_message == other.map_string_message
+        && map_string_enum == other.map_string_enum
+        && ext_opt_int32 == other.ext_opt_int32
+        && ext_opt_uint32 == other.ext_opt_uint32
+        && ext_opt_sint32 == other.ext_opt_sint32
+        && ext_opt_fixed32 == other.ext_opt_fixed32
+        && ext_opt_sfixed32 == other.ext_opt_sfixed32
+        && ext_opt_int64 == other.ext_opt_int64
+        && ext_opt_uint64 == other.ext_opt_uint64
+        && ext_opt_sint64 == other.ext_opt_sint64
+        && ext_opt_fixed64 == other.ext_opt_fixed64
+        && ext_opt_sfixed64 == other.ext_opt_sfixed64
+        && ext_opt_bool == other.ext_opt_bool
+        && ext_opt_float == other.ext_opt_float
+        && ext_opt_double == other.ext_opt_double
+        && ext_opt_string == other.ext_opt_string
+        && ext_opt_bytes == other.ext_opt_bytes
+        && ext_opt_nested_enum == other.ext_opt_nested_enum
+        && ext_opt_nested_message == other.ext_opt_nested_message
+        && ext_rep_int32 == other.ext_rep_int32
+        && ext_rep_uint32 == other.ext_rep_uint32
+        && ext_rep_sint32 == other.ext_rep_sint32
+        && ext_rep_fixed32 == other.ext_rep_fixed32
+        && ext_rep_sfixed32 == other.ext_rep_sfixed32
+        && ext_rep_int64 == other.ext_rep_int64
+        && ext_rep_uint64 == other.ext_rep_uint64
+        && ext_rep_sint64 == other.ext_rep_sint64
+        && ext_rep_fixed64 == other.ext_rep_fixed64
+        && ext_rep_sfixed64 == other.ext_rep_sfixed64
+        && ext_rep_bool == other.ext_rep_bool
+        && ext_rep_float == other.ext_rep_float
+        && ext_rep_double == other.ext_rep_double
+        && ext_rep_string == other.ext_rep_string
+        && ext_rep_bytes == other.ext_rep_bytes
+        && ext_rep_nested_enum == other.ext_rep_nested_enum
+        && ext_rep_nested_message == other.ext_rep_nested_message
+        && ext_pack_int32 == other.ext_pack_int32
+        && ext_pack_uint32 == other.ext_pack_uint32
+        && ext_pack_sint32 == other.ext_pack_sint32
+        && ext_pack_fixed32 == other.ext_pack_fixed32
+        && ext_pack_sfixed32 == other.ext_pack_sfixed32
+        && ext_pack_int64 == other.ext_pack_int64
+        && ext_pack_uint64 == other.ext_pack_uint64
+        && ext_pack_sint64 == other.ext_pack_sint64
+        && ext_pack_fixed64 == other.ext_pack_fixed64
+        && ext_pack_sfixed64 == other.ext_pack_sfixed64
+        && ext_pack_bool == other.ext_pack_bool
+        && ext_pack_float == other.ext_pack_float
+        && ext_pack_double == other.ext_pack_double
+        && ext_pack_nested_enum == other.ext_pack_nested_enum
+        && ext_map_int32_int32 == other.ext_map_int32_int32
+        && ext_map_string_string == other.ext_map_string_string
+        && ext_map_string_message == other.ext_map_string_message
+        && ext_map_string_enum == other.ext_map_string_enum
   }
 
   companion object {
@@ -1630,6 +1774,13 @@ data class AllTypes(
     )
     override fun newBuilder(): Nothing {
       throw AssertionError()
+    }
+
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is NestedMessage) return false
+      return unknownFields == other.unknownFields
+          && a == other.a
     }
 
     companion object {

@@ -9,6 +9,8 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import kotlin.Any
+import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
 import kotlin.jvm.JvmField
@@ -42,6 +44,14 @@ data class RedactedOneOf(
     builder.c = c
     builder.addUnknownFields(unknownFields())
     return builder
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is RedactedOneOf) return false
+    return unknownFields == other.unknownFields
+        && b == other.b
+        && c == other.c
   }
 
   override fun toString(): String = buildString {

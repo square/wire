@@ -12,7 +12,9 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
+import kotlin.Any
 import kotlin.AssertionError
+import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
@@ -70,6 +72,16 @@ data class Person(
   )
   override fun newBuilder(): Nothing {
     throw AssertionError()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is Person) return false
+    return unknownFields == other.unknownFields
+        && name == other.name
+        && id == other.id
+        && email == other.email
+        && phone == other.phone
   }
 
   companion object {
@@ -182,6 +194,14 @@ data class Person(
     )
     override fun newBuilder(): Nothing {
       throw AssertionError()
+    }
+
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is PhoneNumber) return false
+      return unknownFields == other.unknownFields
+          && number == other.number
+          && type == other.type
     }
 
     companion object {

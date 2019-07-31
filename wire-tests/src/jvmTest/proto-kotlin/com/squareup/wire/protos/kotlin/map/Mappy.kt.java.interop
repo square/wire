@@ -9,6 +9,8 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
+import kotlin.Any
+import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
@@ -30,6 +32,13 @@ data class Mappy(
     builder.things = things
     builder.addUnknownFields(unknownFields())
     return builder
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is Mappy) return false
+    return unknownFields == other.unknownFields
+        && things == other.things
   }
 
   class Builder : Message.Builder<Mappy, Builder>() {

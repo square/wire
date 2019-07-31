@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.kotlin
 
+import com.squareup.kotlinpoet.ANY
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.AnnotationSpec.UseSiteTarget.FIELD
 import com.squareup.kotlinpoet.BOOLEAN
@@ -281,6 +282,7 @@ class KotlinGenerator private constructor(
         .addSuperclassConstructorParameter(adapterName)
         .addSuperclassConstructorParameter(unknownFields)
         .addFunction(generateNewBuilderMethod(type, builderClassName))
+        .addFunction(generateEqualsMethod(type, nameAllocator))
         .apply {
           if (javaInterOp) {
             addType(generateBuilderClass(type, className, builderClassName))
@@ -353,6 +355,36 @@ class KotlinGenerator private constructor(
         .addStatement("builder.addUnknownFields(unknownFields())")
         .addStatement("return builder")
         .build()
+  }
+
+  private fun generateEqualsMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
+    val localNameAllocator = nameAllocator.copy()
+    val otherName = localNameAllocator.newName("other")
+    val kotlinType = type.typeName
+    val result = FunSpec.builder("equals")
+        .addModifiers(OVERRIDE)
+        .addParameter(otherName, ANY.copy(nullable = true))
+        .returns(BOOLEAN)
+
+    val fields = type.fieldsAndOneOfFields()
+    if (fields.isEmpty()) {
+      result.addStatement("return %N is %T", otherName, kotlinType)
+      return result.build()
+    }
+
+    val body = buildCodeBlock {
+      addStatement("if (%N === this) return true", otherName)
+      addStatement("if (%N !is %T) return false", otherName, kotlinType)
+      add("«return unknownFields == %N.unknownFields", otherName)
+      for (field in fields) {
+        val fieldName = localNameAllocator[field]
+        add("\n&& %1L == %2N.%1L", fieldName, otherName)
+      }
+      add("\n»")
+    }
+    result.addCode(body)
+
+    return result.build()
   }
 
   private fun generateBuilderClass(
