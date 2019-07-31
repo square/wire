@@ -27,6 +27,8 @@ data class OtherMessageWithStatus(
 
   override fun equals(other: Any?): Boolean = other is OtherMessageWithStatus
 
+  override fun hashCode(): Int = unknownFields.hashCode()
+
   class Builder : Message.Builder<OtherMessageWithStatus, Builder>() {
     override fun build(): OtherMessageWithStatus = OtherMessageWithStatus(
       unknownFields = buildUnknownFields()

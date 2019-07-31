@@ -16,6 +16,7 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -57,6 +58,16 @@ data class Feature(
     return unknownFields == other.unknownFields
         && name == other.name
         && location == other.location
+  }
+
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + name.hashCode()
+      result = result * 37 + location.hashCode()
+      super.hashCode = result
+    }
+    return result
   }
 
   companion object {

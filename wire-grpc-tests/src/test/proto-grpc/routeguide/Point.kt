@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -51,6 +52,16 @@ data class Point(
     return unknownFields == other.unknownFields
         && latitude == other.latitude
         && longitude == other.longitude
+  }
+
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + latitude.hashCode()
+      result = result * 37 + longitude.hashCode()
+      super.hashCode = result
+    }
+    return result
   }
 
   companion object {

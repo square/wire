@@ -16,6 +16,7 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -41,6 +42,15 @@ data class DeprecatedProto(
     if (other !is DeprecatedProto) return false
     return unknownFields == other.unknownFields
         && foo == other.foo
+  }
+
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + foo.hashCode()
+      super.hashCode = result
+    }
+    return result
   }
 
   companion object {

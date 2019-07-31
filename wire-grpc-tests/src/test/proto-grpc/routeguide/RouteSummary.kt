@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -76,6 +77,18 @@ data class RouteSummary(
         && feature_count == other.feature_count
         && distance == other.distance
         && elapsed_time == other.elapsed_time
+  }
+
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + point_count.hashCode()
+      result = result * 37 + feature_count.hashCode()
+      result = result * 37 + distance.hashCode()
+      result = result * 37 + elapsed_time.hashCode()
+      super.hashCode = result
+    }
+    return result
   }
 
   companion object {

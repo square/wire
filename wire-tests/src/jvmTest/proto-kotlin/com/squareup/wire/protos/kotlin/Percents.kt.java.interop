@@ -12,6 +12,7 @@ import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -39,6 +40,15 @@ data class Percents(
     if (other !is Percents) return false
     return unknownFields == other.unknownFields
         && text == other.text
+  }
+
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + text.hashCode()
+      super.hashCode = result
+    }
+    return result
   }
 
   class Builder : Message.Builder<Percents, Builder>() {

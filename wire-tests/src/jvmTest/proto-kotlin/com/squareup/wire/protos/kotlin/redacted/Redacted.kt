@@ -16,6 +16,7 @@ import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
 import kotlin.String
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -59,6 +60,18 @@ data class Redacted(
         && b == other.b
         && c == other.c
         && extension == other.extension
+  }
+
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + a.hashCode()
+      result = result * 37 + b.hashCode()
+      result = result * 37 + c.hashCode()
+      result = result * 37 + extension.hashCode()
+      super.hashCode = result
+    }
+    return result
   }
 
   override fun toString(): String = buildString {

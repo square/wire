@@ -46,6 +46,15 @@ data class RedactedRequired(
         && a == other.a
   }
 
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + a.hashCode()
+      super.hashCode = result
+    }
+    return result
+  }
+
   override fun toString(): String = buildString {
     append("RedactedRequired(")
     append("""a=██""")

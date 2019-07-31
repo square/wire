@@ -15,6 +15,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Nothing
+import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -39,6 +40,15 @@ data class RedactedCycleB(
     if (other !is RedactedCycleB) return false
     return unknownFields == other.unknownFields
         && a == other.a
+  }
+
+  override fun hashCode(): Int {
+    var result = super.hashCode
+    if (result == 0) {
+      result = result * 37 + a.hashCode()
+      super.hashCode = result
+    }
+    return result
   }
 
   companion object {
