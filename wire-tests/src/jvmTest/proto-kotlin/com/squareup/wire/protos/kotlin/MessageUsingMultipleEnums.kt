@@ -66,7 +66,8 @@ data class MessageUsingMultipleEnums(
     val result = mutableListOf<String>()
     if (a != null) result += """a=$a"""
     if (b != null) result += """b=$b"""
-    return result.joinToString(prefix = "MessageUsingMultipleEnums{", postfix = "}")
+    return result.joinToString(prefix = "MessageUsingMultipleEnums{", separator = ", ", postfix =
+        "}")
   }
 
   companion object {

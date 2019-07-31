@@ -56,7 +56,7 @@ data class DeprecatedProto(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=$foo"""
-    return result.joinToString(prefix = "DeprecatedProto{", postfix = "}")
+    return result.joinToString(prefix = "DeprecatedProto{", separator = ", ", postfix = "}")
   }
 
   companion object {

@@ -63,7 +63,7 @@ data class NotRedacted(
     val result = mutableListOf<String>()
     if (a != null) result += """a=$a"""
     if (b != null) result += """b=$b"""
-    return result.joinToString(prefix = "NotRedacted{", postfix = "}")
+    return result.joinToString(prefix = "NotRedacted{", separator = ", ", postfix = "}")
   }
 
   companion object {

@@ -64,7 +64,7 @@ data class RedactedExtension(
     val result = mutableListOf<String>()
     if (d != null) result += """d=██"""
     if (e != null) result += """e=$e"""
-    return result.joinToString(prefix = "RedactedExtension{", postfix = "}")
+    return result.joinToString(prefix = "RedactedExtension{", separator = ", ", postfix = "}")
   }
 
   companion object {

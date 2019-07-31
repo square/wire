@@ -71,7 +71,7 @@ data class RedactedChild(
     if (a != null) result += """a=$a"""
     if (b != null) result += """b=$b"""
     if (c != null) result += """c=$c"""
-    return result.joinToString(prefix = "RedactedChild{", postfix = "}")
+    return result.joinToString(prefix = "RedactedChild{", separator = ", ", postfix = "}")
   }
 
   companion object {

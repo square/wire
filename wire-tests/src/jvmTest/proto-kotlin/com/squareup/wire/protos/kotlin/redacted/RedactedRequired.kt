@@ -58,7 +58,7 @@ data class RedactedRequired(
   override fun toString(): String {
     val result = mutableListOf<String>()
     result += """a=██"""
-    return result.joinToString(prefix = "RedactedRequired{", postfix = "}")
+    return result.joinToString(prefix = "RedactedRequired{", separator = ", ", postfix = "}")
   }
 
   companion object {

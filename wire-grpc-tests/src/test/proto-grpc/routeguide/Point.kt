@@ -69,7 +69,7 @@ data class Point(
     val result = mutableListOf<String>()
     if (latitude != null) result += """latitude=$latitude"""
     if (longitude != null) result += """longitude=$longitude"""
-    return result.joinToString(prefix = "Point{", postfix = "}")
+    return result.joinToString(prefix = "Point{", separator = ", ", postfix = "}")
   }
 
   companion object {

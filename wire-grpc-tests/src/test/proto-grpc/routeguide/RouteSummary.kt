@@ -98,7 +98,7 @@ data class RouteSummary(
     if (feature_count != null) result += """feature_count=$feature_count"""
     if (distance != null) result += """distance=$distance"""
     if (elapsed_time != null) result += """elapsed_time=$elapsed_time"""
-    return result.joinToString(prefix = "RouteSummary{", postfix = "}")
+    return result.joinToString(prefix = "RouteSummary{", separator = ", ", postfix = "}")
   }
 
   companion object {

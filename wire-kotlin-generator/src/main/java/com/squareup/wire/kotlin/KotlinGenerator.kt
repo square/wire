@@ -668,7 +668,7 @@ class KotlinGenerator private constructor(
           })
         }
         addStatement(
-            "return %N.joinToString(prefix = %S, postfix = %S)",
+            "return %N.joinToString(prefix = %S, separator = \", \", postfix = %S)",
             resultName,
             className.simpleName + "{",
             "}"

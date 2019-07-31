@@ -71,7 +71,7 @@ data class RedactedOneOf(
     val result = mutableListOf<String>()
     if (b != null) result += """b=$b"""
     if (c != null) result += """c=██"""
-    return result.joinToString(prefix = "RedactedOneOf{", postfix = "}")
+    return result.joinToString(prefix = "RedactedOneOf{", separator = ", ", postfix = "}")
   }
 
   companion object {

@@ -51,7 +51,7 @@ data class Thing(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=$name"""
-    return result.joinToString(prefix = "Thing{", postfix = "}")
+    return result.joinToString(prefix = "Thing{", separator = ", ", postfix = "}")
   }
 
   class Builder : Message.Builder<Thing, Builder>() {

@@ -1246,7 +1246,7 @@ data class AllTypes(
     if (ext_map_string_message.isNotEmpty()) result +=
         """ext_map_string_message=$ext_map_string_message"""
     if (ext_map_string_enum.isNotEmpty()) result += """ext_map_string_enum=$ext_map_string_enum"""
-    return result.joinToString(prefix = "AllTypes{", postfix = "}")
+    return result.joinToString(prefix = "AllTypes{", separator = ", ", postfix = "}")
   }
 
   companion object {
@@ -2088,7 +2088,7 @@ data class AllTypes(
     override fun toString(): String {
       val result = mutableListOf<String>()
       if (a != null) result += """a=$a"""
-      return result.joinToString(prefix = "NestedMessage{", postfix = "}")
+      return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
     companion object {

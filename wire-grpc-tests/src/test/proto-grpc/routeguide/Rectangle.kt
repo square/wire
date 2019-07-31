@@ -73,7 +73,7 @@ data class Rectangle(
     val result = mutableListOf<String>()
     if (lo != null) result += """lo=$lo"""
     if (hi != null) result += """hi=$hi"""
-    return result.joinToString(prefix = "Rectangle{", postfix = "}")
+    return result.joinToString(prefix = "Rectangle{", separator = ", ", postfix = "}")
   }
 
   companion object {

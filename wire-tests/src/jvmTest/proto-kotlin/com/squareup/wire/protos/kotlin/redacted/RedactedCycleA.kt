@@ -55,7 +55,7 @@ data class RedactedCycleA(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (b != null) result += """b=$b"""
-    return result.joinToString(prefix = "RedactedCycleA{", postfix = "}")
+    return result.joinToString(prefix = "RedactedCycleA{", separator = ", ", postfix = "}")
   }
 
   companion object {

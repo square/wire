@@ -70,7 +70,7 @@ data class RedactedRepeated(
     val result = mutableListOf<String>()
     if (a.isNotEmpty()) result += """a=██"""
     if (b.isNotEmpty()) result += """b=$b"""
-    return result.joinToString(prefix = "RedactedRepeated{", postfix = "}")
+    return result.joinToString(prefix = "RedactedRepeated{", separator = ", ", postfix = "}")
   }
 
   companion object {

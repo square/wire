@@ -154,7 +154,7 @@ data class Form(
     if (detail_row_element != null) result += """detail_row_element=$detail_row_element"""
     if (currency_conversion_flags_element != null) result +=
         """currency_conversion_flags_element=$currency_conversion_flags_element"""
-    return result.joinToString(prefix = "Form{", postfix = "}")
+    return result.joinToString(prefix = "Form{", separator = ", ", postfix = "}")
   }
 
   companion object {

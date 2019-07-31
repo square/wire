@@ -74,7 +74,7 @@ data class Feature(
     val result = mutableListOf<String>()
     if (name != null) result += """name=$name"""
     if (location != null) result += """location=$location"""
-    return result.joinToString(prefix = "Feature{", postfix = "}")
+    return result.joinToString(prefix = "Feature{", separator = ", ", postfix = "}")
   }
 
   companion object {

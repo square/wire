@@ -72,7 +72,7 @@ data class RouteNote(
     val result = mutableListOf<String>()
     if (location != null) result += """location=$location"""
     if (message != null) result += """message=$message"""
-    return result.joinToString(prefix = "RouteNote{", postfix = "}")
+    return result.joinToString(prefix = "RouteNote{", separator = ", ", postfix = "}")
   }
 
   companion object {

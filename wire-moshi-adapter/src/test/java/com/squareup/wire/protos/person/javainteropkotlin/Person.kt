@@ -106,7 +106,7 @@ data class Person(
     result += """id=$id"""
     if (email != null) result += """email=$email"""
     if (phone.isNotEmpty()) result += """phone=$phone"""
-    return result.joinToString(prefix = "Person{", postfix = "}")
+    return result.joinToString(prefix = "Person{", separator = ", ", postfix = "}")
   }
 
   class Builder : Message.Builder<Person, Builder>() {
@@ -300,7 +300,7 @@ data class Person(
       val result = mutableListOf<String>()
       result += """number=$number"""
       if (type != null) result += """type=$type"""
-      return result.joinToString(prefix = "PhoneNumber{", postfix = "}")
+      return result.joinToString(prefix = "PhoneNumber{", separator = ", ", postfix = "}")
     }
 
     class Builder : Message.Builder<PhoneNumber, Builder>() {

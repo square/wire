@@ -80,7 +80,7 @@ data class Redacted(
     if (b != null) result += """b=$b"""
     if (c != null) result += """c=$c"""
     if (extension != null) result += """extension=$extension"""
-    return result.joinToString(prefix = "Redacted{", postfix = "}")
+    return result.joinToString(prefix = "Redacted{", separator = ", ", postfix = "}")
   }
 
   companion object {
