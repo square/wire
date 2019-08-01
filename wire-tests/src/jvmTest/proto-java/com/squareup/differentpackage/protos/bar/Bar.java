@@ -38,7 +38,10 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
   @Override
   public boolean equals(Object other) {
-    return other instanceof Bar;
+    if (other == this) return true;
+    if (!(other instanceof Bar)) return false;
+    Bar o = (Bar) other;
+    return unknownFields().equals(o.unknownFields());
   }
 
   @Override
@@ -84,7 +87,10 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     @Override
     public boolean equals(Object other) {
-      return other instanceof Baz;
+      if (other == this) return true;
+      if (!(other instanceof Baz)) return false;
+      Baz o = (Baz) other;
+      return unknownFields().equals(o.unknownFields());
     }
 
     @Override

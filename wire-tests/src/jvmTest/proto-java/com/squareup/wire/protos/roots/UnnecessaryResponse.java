@@ -36,7 +36,10 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
 
   @Override
   public boolean equals(Object other) {
-    return other instanceof UnnecessaryResponse;
+    if (other == this) return true;
+    if (!(other instanceof UnnecessaryResponse)) return false;
+    UnnecessaryResponse o = (UnnecessaryResponse) other;
+    return unknownFields().equals(o.unknownFields());
   }
 
   @Override

@@ -29,7 +29,11 @@ class NoFields(
     throw AssertionError()
   }
 
-  override fun equals(other: Any?): Boolean = other is NoFields
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is NoFields) return false
+    return unknownFields == other.unknownFields
+  }
 
   override fun hashCode(): Int = unknownFields.hashCode()
 

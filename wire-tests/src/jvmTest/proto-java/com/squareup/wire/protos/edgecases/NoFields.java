@@ -36,7 +36,10 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
 
   @Override
   public boolean equals(Object other) {
-    return other instanceof NoFields;
+    if (other == this) return true;
+    if (!(other instanceof NoFields)) return false;
+    NoFields o = (NoFields) other;
+    return unknownFields().equals(o.unknownFields());
   }
 
   @Override

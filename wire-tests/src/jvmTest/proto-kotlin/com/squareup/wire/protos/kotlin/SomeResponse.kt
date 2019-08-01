@@ -29,7 +29,11 @@ class SomeResponse(
     throw AssertionError()
   }
 
-  override fun equals(other: Any?): Boolean = other is SomeResponse
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is SomeResponse) return false
+    return unknownFields == other.unknownFields
+  }
 
   override fun hashCode(): Int = unknownFields.hashCode()
 

@@ -32,7 +32,11 @@ class MessageWithStatus(
     throw AssertionError()
   }
 
-  override fun equals(other: Any?): Boolean = other is MessageWithStatus
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is MessageWithStatus) return false
+    return unknownFields == other.unknownFields
+  }
 
   override fun hashCode(): Int = unknownFields.hashCode()
 

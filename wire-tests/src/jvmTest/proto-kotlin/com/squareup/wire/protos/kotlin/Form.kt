@@ -295,7 +295,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is ButtonElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is ButtonElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -342,7 +346,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is LocalImageElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is LocalImageElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -389,7 +397,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is RemoteImageElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is RemoteImageElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -436,7 +448,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is MoneyElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is MoneyElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -483,7 +499,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is SpacerElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is SpacerElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -530,7 +550,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is TextElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is TextElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -577,7 +601,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is CustomizedCardElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is CustomizedCardElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -625,7 +653,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is AddressElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is AddressElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -672,7 +704,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is TextInputElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is TextInputElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -719,7 +755,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is OptionPickerElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is OptionPickerElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -766,7 +806,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is DetailRowElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is DetailRowElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
@@ -813,7 +857,11 @@ class Form(
       throw AssertionError()
     }
 
-    override fun equals(other: Any?): Boolean = other is CurrencyConversionFlagsElement
+    override fun equals(other: Any?): Boolean {
+      if (other === this) return true
+      if (other !is CurrencyConversionFlagsElement) return false
+      return unknownFields == other.unknownFields
+    }
 
     override fun hashCode(): Int = unknownFields.hashCode()
 
