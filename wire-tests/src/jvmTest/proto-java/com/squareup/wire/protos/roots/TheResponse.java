@@ -36,7 +36,10 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
 
   @Override
   public boolean equals(Object other) {
-    return other instanceof TheResponse;
+    if (other == this) return true;
+    if (!(other instanceof TheResponse)) return false;
+    TheResponse o = (TheResponse) other;
+    return unknownFields().equals(o.unknownFields());
   }
 
   @Override

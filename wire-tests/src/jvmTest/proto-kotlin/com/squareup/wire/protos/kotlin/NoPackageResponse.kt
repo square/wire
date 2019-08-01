@@ -29,7 +29,11 @@ class NoPackageResponse(
     throw AssertionError()
   }
 
-  override fun equals(other: Any?): Boolean = other is NoPackageResponse
+  override fun equals(other: Any?): Boolean {
+    if (other === this) return true
+    if (other !is NoPackageResponse) return false
+    return unknownFields == other.unknownFields
+  }
 
   override fun hashCode(): Int = unknownFields.hashCode()
 

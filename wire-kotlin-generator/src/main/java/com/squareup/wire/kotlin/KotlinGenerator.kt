@@ -372,16 +372,11 @@ class KotlinGenerator private constructor(
         .addParameter(otherName, ANY.copy(nullable = true))
         .returns(BOOLEAN)
 
-    val fields = type.fieldsAndOneOfFields()
-    if (fields.isEmpty()) {
-      result.addStatement("return %N is %T", otherName, kotlinType)
-      return result.build()
-    }
-
     val body = buildCodeBlock {
       addStatement("if (%N === this) return true", otherName)
       addStatement("if (%N !is %T) return false", otherName, kotlinType)
       add("«return unknownFields == %N.unknownFields", otherName)
+      val fields = type.fieldsAndOneOfFields()
       for (field in fields) {
         val fieldName = localNameAllocator[field]
         add("\n&& %1L == %2N.%1L", fieldName, otherName)

@@ -1349,17 +1349,13 @@ public final class JavaGenerator {
         .returns(boolean.class)
         .addParameter(Object.class, otherName);
 
-    List<Field> fields = type.fieldsAndOneOfFields();
-    if (fields.isEmpty()) {
-      result.addStatement("return $N instanceof $T", otherName, javaType);
-      return result.build();
-    }
-
     result.addStatement("if ($N == this) return true", otherName);
     result.addStatement("if (!($N instanceof $T)) return false", otherName, javaType);
 
     result.addStatement("$T $N = ($T) $N", javaType, oName, javaType, otherName);
     result.addCode("$[return unknownFields().equals($N.unknownFields())", oName);
+
+    List<Field> fields = type.fieldsAndOneOfFields();
     for (Field field : fields) {
       String fieldName = localNameAllocator.get(field);
       if (field.isRequired() || field.isRepeated() || field.type().isMap()) {

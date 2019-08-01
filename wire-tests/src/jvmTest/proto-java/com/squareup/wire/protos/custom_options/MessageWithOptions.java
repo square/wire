@@ -95,7 +95,10 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
 
   @Override
   public boolean equals(Object other) {
-    return other instanceof MessageWithOptions;
+    if (other == this) return true;
+    if (!(other instanceof MessageWithOptions)) return false;
+    MessageWithOptions o = (MessageWithOptions) other;
+    return unknownFields().equals(o.unknownFields());
   }
 
   @Override
