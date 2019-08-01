@@ -1,6 +1,47 @@
 Change Log
 ==========
 
+Version 3.0.0-rc01
+---------------------
+
+_2019-08-02_
+
+### Compiler + Gradle plugin
+
+ * New: Support includes on Maven coordinate dependencies.
+ * New: Track includes separately for source vs proto paths.
+ * New: Follow symlinks when building.
+ * New: Change the Gradle plugin to track targets as a list.
+ * New: Includes and Excludes for Wire targets.
+ * New: Print errors on ambiguous and missing imports.
+ * Fix: Fix a bug where protopath Maven resources weren't working.
+ * Fix: Don't reuse source dependencies as protopath dependencies.
+ * Fix: Fix `equals()` implementation for messages with no fields.
+
+### Kotlin
+
+ * New: Move Wire.kt into `jvmMain` to discourage its use in common Kotlin code.
+ * New: Make `Message.adapter` a `val`.
+ * New: Optimize `decode()` code for protos with no fields.
+ * New: Update supported Native platforms.
+ * New: Make `Message.unknownFields` property non-nullable.
+ * New: Make `Message.unknownFields` a `val`.
+ * Fix: Don't use `KClass.simpleName` to avoid needing `kotlin-reflect` dependency.
+ * Fix: Use `kotlin.UnsupportedOperationException` in generated code.
+ 
+### gRPC
+
+ * New: Introduce `MessageSource` and `MessageSink` interfaces in `wire-runtime`.
+ * New: Honor Java package names in Wire gRPC services.
+ * New: Make `PipeDuplexRequestBody` internal.
+ * Fix: Workaround for `@Generated` annotation on Java 9+.
+ * Fix: Fix types for blocking APIs.
+ 
+### Misc
+
+ * Fix: Fix deserializing null values in Gson adapter.
+ * Fix: Change `wire-runtime` artifact names to preserve 2.x compatibility.
+
 Version 3.0.0-alpha03
 ---------------------
 
