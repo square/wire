@@ -48,7 +48,7 @@ class OneOfMessage(
   )
   @JvmField
   val baz: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(foo, bar, baz) <= 1) {
@@ -61,7 +61,7 @@ class OneOfMessage(
     builder.foo = foo
     builder.bar = bar
     builder.baz = baz
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 

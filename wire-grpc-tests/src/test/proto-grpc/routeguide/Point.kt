@@ -37,7 +37,7 @@ class Point(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val longitude: Int? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Point, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

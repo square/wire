@@ -30,7 +30,7 @@ expect abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> prot
    * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
    * an empty byte string if this message has no unknown fields.
    */
-  fun unknownFields(): ByteString
+  val unknownFields: ByteString
 
   /**
    * Returns a new builder initialized with the data in this message.

@@ -29,7 +29,7 @@ class RedactedRequired(
     redacted = true
   )
   val a: String,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedRequired, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

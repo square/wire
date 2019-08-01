@@ -40,7 +40,7 @@ class RouteNote(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val message: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteNote, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

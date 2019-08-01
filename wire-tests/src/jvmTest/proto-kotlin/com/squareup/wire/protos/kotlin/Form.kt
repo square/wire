@@ -82,7 +82,7 @@ class Form(
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}CurrencyConversionFlagsElement#ADAPTER"
   )
   val currency_conversion_flags_element: CurrencyConversionFlagsElement? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Form, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(button_element, local_image_element, remote_image_element, money_element,
@@ -285,7 +285,7 @@ class Form(
   }
 
   class ButtonElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<ButtonElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -332,7 +332,7 @@ class Form(
   }
 
   class LocalImageElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<LocalImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -379,7 +379,7 @@ class Form(
   }
 
   class RemoteImageElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<RemoteImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -426,7 +426,7 @@ class Form(
   }
 
   class MoneyElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<MoneyElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -473,7 +473,7 @@ class Form(
   }
 
   class SpacerElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<SpacerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -520,7 +520,7 @@ class Form(
   }
 
   class TextElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<TextElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -567,7 +567,7 @@ class Form(
   }
 
   class CustomizedCardElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<CustomizedCardElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -615,7 +615,7 @@ class Form(
   }
 
   class AddressElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<AddressElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -662,7 +662,7 @@ class Form(
   }
 
   class TextInputElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<TextInputElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -709,7 +709,7 @@ class Form(
   }
 
   class OptionPickerElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<OptionPickerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -756,7 +756,7 @@ class Form(
   }
 
   class DetailRowElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<DetailRowElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
@@ -803,7 +803,7 @@ class Form(
   }
 
   class CurrencyConversionFlagsElement(
-    val unknownFields: ByteString = ByteString.EMPTY
+    unknownFields: ByteString = ByteString.EMPTY
   ) : Message<CurrencyConversionFlagsElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",

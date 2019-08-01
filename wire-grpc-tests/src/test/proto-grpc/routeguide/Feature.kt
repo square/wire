@@ -42,7 +42,7 @@ class Feature(
     adapter = "routeguide.Point#ADAPTER"
   )
   val location: Point? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Feature, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

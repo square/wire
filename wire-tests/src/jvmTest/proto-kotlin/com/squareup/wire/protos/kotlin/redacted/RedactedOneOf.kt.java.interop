@@ -31,7 +31,7 @@ class RedactedOneOf(
   )
   @JvmField
   val c: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(b, c) <= 1) {
@@ -43,7 +43,7 @@ class RedactedOneOf(
     val builder = Builder()
     builder.b = b
     builder.c = c
-    builder.addUnknownFields(unknownFields())
+    builder.addUnknownFields(unknownFields)
     return builder
   }
 
