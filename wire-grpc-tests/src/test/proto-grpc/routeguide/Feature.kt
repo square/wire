@@ -63,7 +63,7 @@ class Feature(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + name.hashCode()
+      result = name.hashCode()
       result = result * 37 + location.hashCode()
       super.hashCode = result
     }

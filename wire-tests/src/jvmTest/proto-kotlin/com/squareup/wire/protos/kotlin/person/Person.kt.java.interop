@@ -91,7 +91,7 @@ class Person(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + name.hashCode()
+      result = name.hashCode()
       result = result * 37 + id.hashCode()
       result = result * 37 + email.hashCode()
       result = result * 37 + phone.hashCode()
@@ -297,7 +297,7 @@ class Person(
     override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
-        result = result * 37 + number.hashCode()
+        result = number.hashCode()
         result = result * 37 + type.hashCode()
         super.hashCode = result
       }

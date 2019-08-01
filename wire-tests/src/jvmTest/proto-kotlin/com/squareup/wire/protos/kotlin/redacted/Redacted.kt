@@ -65,7 +65,7 @@ class Redacted(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + a.hashCode()
+      result = a.hashCode()
       result = result * 37 + b.hashCode()
       result = result * 37 + c.hashCode()
       result = result * 37 + extension.hashCode()

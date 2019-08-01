@@ -83,7 +83,7 @@ class RouteSummary(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + point_count.hashCode()
+      result = point_count.hashCode()
       result = result * 37 + feature_count.hashCode()
       result = result * 37 + distance.hashCode()
       result = result * 37 + elapsed_time.hashCode()
