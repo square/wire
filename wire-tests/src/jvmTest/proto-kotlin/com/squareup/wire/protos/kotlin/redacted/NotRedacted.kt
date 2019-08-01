@@ -52,7 +52,7 @@ class NotRedacted(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + a.hashCode()
+      result = a.hashCode()
       result = result * 37 + b.hashCode()
       super.hashCode = result
     }

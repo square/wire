@@ -49,7 +49,7 @@ class OptionalEnumUser(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + optional_enum.hashCode()
+      result = optional_enum.hashCode()
       super.hashCode = result
     }
     return result

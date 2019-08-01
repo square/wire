@@ -121,7 +121,7 @@ class Form(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = result * 37 + button_element.hashCode()
+      result = button_element.hashCode()
       result = result * 37 + local_image_element.hashCode()
       result = result * 37 + remote_image_element.hashCode()
       result = result * 37 + money_element.hashCode()
