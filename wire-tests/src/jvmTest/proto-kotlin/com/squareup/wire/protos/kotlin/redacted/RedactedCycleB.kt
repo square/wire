@@ -26,7 +26,7 @@ class RedactedCycleB(
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedCycleA#ADAPTER"
   )
   val a: RedactedCycleA? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedCycleB, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

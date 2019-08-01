@@ -19,7 +19,7 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 class NoPackageRequest(
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NoPackageRequest, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

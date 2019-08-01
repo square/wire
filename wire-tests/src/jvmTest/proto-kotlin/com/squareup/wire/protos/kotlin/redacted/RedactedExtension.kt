@@ -32,7 +32,7 @@ class RedactedExtension(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val e: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedExtension, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

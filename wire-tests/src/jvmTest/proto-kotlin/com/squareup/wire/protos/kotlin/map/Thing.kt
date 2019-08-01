@@ -26,7 +26,7 @@ class Thing(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val name: String? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Thing, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

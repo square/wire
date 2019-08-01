@@ -36,7 +36,7 @@ class RedactedChild(
     adapter = "com.squareup.wire.protos.kotlin.redacted.NotRedacted#ADAPTER"
   )
   val c: NotRedacted? = null,
-  val unknownFields: ByteString = ByteString.EMPTY
+  unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedChild, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",

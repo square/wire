@@ -350,7 +350,7 @@ class KotlinGenerator private constructor(
     }
 
     return funBuilder
-        .addStatement("builder.addUnknownFields(unknownFields())")
+        .addStatement("builder.addUnknownFields(unknownFields)")
         .addStatement("return builder")
         .build()
   }
@@ -582,11 +582,11 @@ class KotlinGenerator private constructor(
   /**
    * Example
    * ```
-   * data class Person(
+   * class Person(
    *   val name: String,
    *   val email: String? = null,
    *   val phone: List<PhoneNumber> = emptyList(),
-   *   val unknownFields: ByteString = ByteString.EMPTY
+   *   unknownFields: ByteString = ByteString.EMPTY
    * )
    * ```
    */
@@ -635,9 +635,6 @@ class KotlinGenerator private constructor(
         ParameterSpec.builder(unknownFields, byteClass)
             .defaultValue("%T.EMPTY", byteClass)
             .build())
-    classBuilder.addProperty(PropertySpec.builder(unknownFields, byteClass)
-        .initializer(unknownFields)
-        .build())
 
     classBuilder.primaryConstructor(constructorBuilder.build())
   }
