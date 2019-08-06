@@ -529,6 +529,15 @@ class WireCompilerTest {
     assertKotlinOutputs(outputs)
   }
 
+  @Test
+  fun testToStringKotlin() {
+    val sources = arrayOf("to_string.proto")
+    compileToKotlin(sources)
+
+    val outputs = arrayOf("com/squareup/wire/protos/kotlin/VeryLongProtoNameCausingBrokenLineBreaks.kt")
+    assertKotlinOutputs(outputs)
+  }
+
   private fun compileToJava(sources: Array<String>, vararg extraArgs: String) =
       invokeCompiler(TargetLanguage.JAVA, sources, *extraArgs)
 
