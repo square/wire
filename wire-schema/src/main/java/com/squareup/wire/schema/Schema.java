@@ -109,6 +109,10 @@ public final class Schema {
     return field;
   }
 
+  public static Schema fromFiles(Iterable<ProtoFile> files) {
+    return new Linker(files).link();
+  }
+
   private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles) {
     Map<String, Type> result = new LinkedHashMap<>();
     for (ProtoFile protoFile : protoFiles) {

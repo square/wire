@@ -151,7 +151,7 @@ data class WireRun(
     val protoFilesPlusDescriptor = protoFiles.plus(schemaLoader.loadDescriptorProto())
 
     // 3. Validate the schema and resolve references
-    val fullSchema = Linker(protoFilesPlusDescriptor).link()
+    val fullSchema = Schema.fromFiles(protoFilesPlusDescriptor)
 
     // 4. Optionally prune the schema.
     val schema = treeShake(fullSchema, logger)
