@@ -20,14 +20,14 @@ src/
       com/
         example/
           pizza/
-            pizza_delivery.kt
-            pizza.kt
+            pizza_delivery.proto
+            pizza.proto
           sales/
-            price.kt
-            store.kt
+            price.proto
+            store.proto
           geo/
-            address.kt
-            country.kt
+            address.proto
+            country.proto
     kotlin/
       com/
         example/
