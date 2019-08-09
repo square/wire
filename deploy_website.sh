@@ -26,6 +26,12 @@ cd $DIR
   :wire-moshi-adapter:dokka \
   :wire-runtime:dokka
 
+# Fix *.md links to point to where the docs live under Mkdocs.
+# Linux
+sed -i 's/docs\/wire_compiler.md/wire_compiler/' README.md
+# OSX
+# sed -i "" 's/docs\/wire_compiler.md/wire_compiler/' README.md
+
 # Copy in special files that GitHub wants in the project root.
 cat README.md | grep -v 'project website' > docs/index.md
 cp CHANGELOG.md docs/changelog.md
