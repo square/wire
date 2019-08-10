@@ -101,8 +101,9 @@ class WirePlugin @Inject constructor(
 
     for (output in outputs) {
       if (output.out == null) {
-        val defaultBuildDirectory = "${project.buildDir}/generated/src/main/java"
-        output.out = defaultBuildDirectory
+        output.out = "${project.buildDir}/generated/source/wire"
+      } else {
+        output.out = project.file(output.out!!).path
       }
     }
 

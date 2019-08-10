@@ -63,7 +63,7 @@ code. It uses [KotlinPoet][kotlinpoet] internally to generate compact and legibl
 
 ![Basic](images/gradle_basic@2x.png)
 
-Wire will generate files in `build/generated/src/main/java`. It'll also register this directory as a
+Wire will generate files in `build/generated/source/wire`. It'll also register this directory as a
 source directory for the project so the generated sources are compiled by the Kotlin compiler.
 
 Replace `kotlin` with `java` to generate Java sources instead.
