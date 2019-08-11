@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:JvmName("RuntimeUtils")
+
 package com.squareup.wire.internal
+
+import kotlin.jvm.JvmName
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 internal inline infix fun Byte.and(other: Int): Int = toInt() and other
