@@ -281,7 +281,7 @@ class GrpcClient private constructor(
     }
   }
 
-  companion object {
+  internal companion object {
     private val unconfinedCoroutineScope = CoroutineScope(Unconfined)
 
     internal fun <S : Any, R : Any> Method.toGrpc(): GrpcMethod<S, R> {

@@ -15,6 +15,7 @@ dependencies {
   implementation deps.okio.jvm
   api deps.kotlinpoet
   implementation deps.guava
+  implementation deps.kotlin.coroutines.core
   testImplementation project(':wire-test-utils')
   testImplementation deps.kotlin.test.junit
 }

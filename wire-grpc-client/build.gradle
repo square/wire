@@ -14,10 +14,10 @@ animalsniffer {
 }
 
 dependencies {
-  implementation project(':wire-runtime')
-  api deps.okio.jvm
+  api project(':wire-runtime')
   api deps.okhttp
-  api deps.kotlin.coroutines.core
+  implementation deps.okio.jvm
+  implementation deps.kotlin.coroutines.core
 }
 
 afterEvaluate { project ->
