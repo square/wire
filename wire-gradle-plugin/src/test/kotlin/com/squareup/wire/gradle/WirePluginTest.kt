@@ -54,7 +54,7 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcepath-default/build/generated/src/main/java")
+        .contains("src/test/projects/sourcepath-default/build/generated/source/wire")
   }
 
   @Test
@@ -113,7 +113,7 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcepath-dir/build/generated/src/main/java")
+        .contains("src/test/projects/sourcepath-dir/build/generated/source/wire")
   }
 
   @Test
@@ -126,7 +126,7 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcepath-maven/build/generated/src/main/java")
+        .contains("src/test/projects/sourcepath-maven/build/generated/source/wire")
   }
 
   @Test
@@ -150,7 +150,7 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcetree-one-srcdir-one-file/build/generated/src/main/java")
+        .contains("src/test/projects/sourcetree-one-srcdir-one-file/build/generated/source/wire")
   }
 
   @Test
@@ -164,7 +164,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
         .contains(
-            "src/test/projects/sourcetree-one-srcdir-many-files/build/generated/src/main/java"
+            "src/test/projects/sourcetree-one-srcdir-many-files/build/generated/source/wire"
         )
   }
 
@@ -178,7 +178,7 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/sourcetree-many-srcdirs/build/generated/src/main/java")
+        .contains("src/test/projects/sourcetree-many-srcdirs/build/generated/source/wire")
   }
 
   @Test
@@ -192,7 +192,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
         .contains(
-            "src/test/projects/sourcejar-local-many-files/build/generated/src/main/java"
+            "src/test/projects/sourcejar-local-many-files/build/generated/source/wire"
         )
   }
 
@@ -207,7 +207,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
         .contains(
-            "src/test/projects/sourcejar-local-single-file/build/generated/src/main/java"
+            "src/test/projects/sourcejar-local-single-file/build/generated/source/wire"
         )
   }
 
@@ -222,7 +222,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
         .contains(
-            "src/test/projects/sourcejar-remote-many-files/build/generated/src/main/java"
+            "src/test/projects/sourcejar-remote-many-files/build/generated/source/wire"
         )
   }
 
@@ -237,7 +237,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .doesNotContain("Writing com.squareup.geology.Period")
         .contains(
-            "src/test/projects/sourcejar-remote-protopath/build/generated/src/main/java"
+            "src/test/projects/sourcejar-remote-protopath/build/generated/source/wire"
         )
   }
 
@@ -252,7 +252,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
         .doesNotContain("Writing com.squareup.geology.Period")
         .contains("Writing com.squareup.dinosaurs.Dig")
-        .contains("src/test/projects/protopath-maven/build/generated/src/main/java")
+        .contains("src/test/projects/protopath-maven/build/generated/source/wire")
   }
 
   @Test
@@ -264,7 +264,7 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/different-java-out/build/custom")
+        .contains("src/test/projects/different-java-out/custom")
   }
 
   @Test
@@ -276,7 +276,7 @@ class WirePluginTest {
     assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/different-kotlin-out/build/custom")
+        .contains("src/test/projects/different-kotlin-out/custom")
   }
 
   @Test
@@ -301,7 +301,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -319,7 +319,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -339,7 +339,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
@@ -357,7 +357,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name", "val length_meters")
@@ -374,7 +374,7 @@ class WirePluginTest {
         .doesNotContain("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     val generatedProtoSource = generatedProto.readText()
@@ -393,7 +393,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.geology.Period")
 
     val generatedProto =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     assertThat(generatedProto).exists()
 
     assertThat(generatedProto.readText()).doesNotContain("val name")
@@ -411,12 +411,12 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/java-project-java-protos/build/generated/src/main/java")
+        .contains("src/test/projects/java-project-java-protos/build/generated/source/wire")
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.java")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.java")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.java")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.java")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -433,12 +433,12 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/java-project-kotlin-protos/build/generated/src/main/java")
+        .contains("src/test/projects/java-project-kotlin-protos/build/generated/source/wire")
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -455,12 +455,12 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/kotlin-project-java-protos/build/generated/src/main/java")
+        .contains("src/test/projects/kotlin-project-java-protos/build/generated/source/wire")
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.java")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.java")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.java")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.java")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -477,12 +477,12 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
-        .contains("src/test/projects/kotlin-project-kotlin-protos/build/generated/src/main/java")
+        .contains("src/test/projects/kotlin-project-kotlin-protos/build/generated/source/wire")
 
     val generatedProto1 =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/dinosaurs/Dinosaur.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     val generatedProto2 =
-        File(fixtureRoot, "build/generated/src/main/java/com/squareup/geology/Period.kt")
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
   }
@@ -498,7 +498,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .doesNotContain("Writing com.squareup.geology.Period")
         .contains(
-            "src/test/projects/sourcepath-and-protopath-intersect/build/generated/src/main/java"
+            "src/test/projects/sourcepath-and-protopath-intersect/build/generated/source/wire"
         )
   }
 
@@ -514,7 +514,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
 
-    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).doesNotExist()
     assertThat(File(outputRoot, "com/squareup/geology/Period.kt")).exists()
@@ -533,7 +533,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
 
-    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).doesNotExist()
     assertThat(File(outputRoot, "com/squareup/geology/Period.java")).exists()
@@ -552,7 +552,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
 
-    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.kt")).exists()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/Dinosaur.java")).exists()
     assertThat(File(outputRoot, "com/squareup/geology/Period.java")).exists()
@@ -570,7 +570,7 @@ class WirePluginTest {
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.BattleService")
 
-    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleService.kt")).exists()
   }
 
@@ -586,7 +586,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.BattleServiceFight")
         .contains("Writing com.squareup.dinosaurs.BattleServiceBrawl")
 
-    val outputRoot = File(fixtureRoot, "build/generated/src/main/java")
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleService.kt")).exists()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceFight.kt")).exists()
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawl.kt")).exists()

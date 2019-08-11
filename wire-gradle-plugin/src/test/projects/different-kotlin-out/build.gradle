@@ -6,6 +6,6 @@ plugins {
 
 wire {
   kotlin {
-    out "${buildDir}/custom"
+    out "custom"
   }
 }
