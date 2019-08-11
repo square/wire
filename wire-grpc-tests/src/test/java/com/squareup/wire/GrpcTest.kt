@@ -208,7 +208,7 @@ class GrpcTest {
       delay(200)
       deferred.cancel()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled).isTrue()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
     }
   }
 
@@ -222,7 +222,7 @@ class GrpcTest {
       delay(200)
       responseDeferred.cancel()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled).isTrue()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
     }
   }
 
@@ -250,7 +250,7 @@ class GrpcTest {
       receiveChannel.receive()
       receiveChannel.cancel()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled).isTrue()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
     }
   }
 
@@ -266,7 +266,7 @@ class GrpcTest {
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled).isTrue()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
     }
   }
 
@@ -288,7 +288,7 @@ class GrpcTest {
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled).isTrue()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
     }
   }
 
@@ -317,7 +317,7 @@ class GrpcTest {
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
       mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled).isTrue()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
     }
   }
 
@@ -350,7 +350,7 @@ class GrpcTest {
       responseChannel.cancel()
       assertThat((requestChannel as Channel).isClosedForReceive).isTrue()
       assertThat(requestChannel.isClosedForSend).isTrue()
-      assertThat(callReference.get()?.isCanceled).isTrue()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
     }
   }
 }
