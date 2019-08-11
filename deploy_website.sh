@@ -28,9 +28,9 @@ cd $DIR
 
 # Fix *.md links to point to where the docs live under Mkdocs.
 # Linux
-sed -i 's/docs\/wire_compiler.md/wire_compiler/' README.md
+# sed -i 's/docs\/wire_compiler.md/wire_compiler/' README.md
 # OSX
-# sed -i "" 's/docs\/wire_compiler.md/wire_compiler/' README.md
+sed -i "" 's/docs\/wire_compiler.md/wire_compiler/' README.md
 
 # Copy in special files that GitHub wants in the project root.
 cat README.md | grep -v 'project website' > docs/index.md
@@ -40,10 +40,13 @@ cp CONTRIBUTING.md docs/contributing.md
 # Build the site and push the new files up to GitHub
 mkdocs gh-deploy
 
+# Undo any file changes to be able to jump branches.
+git checkout -- .
+
 # Restore Javadocs from 2.x
 git checkout gh-pages
 git cherry-pick 0e1192aaa1d074c9703748fae100daef707218d4
-git push
+git push --set-upstream origin gh-pages && git push
 
 # Delete our temp folder
 cd ..
