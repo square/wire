@@ -46,8 +46,7 @@ git checkout -- .
 # Restore Javadocs from 2.x
 git checkout gh-pages
 git cherry-pick 0e1192aaa1d074c9703748fae100daef707218d4
-git push --set-upstream origin gh-pages
-git push
+git push --set-upstream origin gh-pages && git push
 
 # Delete our temp folder
 cd ..
