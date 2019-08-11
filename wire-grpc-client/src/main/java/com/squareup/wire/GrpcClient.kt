@@ -36,7 +36,9 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -47,7 +49,7 @@ import java.lang.reflect.Proxy
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KClass
 
-internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = MediaType.get("application/grpc")
+internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMediaType()
 
 class GrpcClient private constructor(
   private val client: OkHttpClient,
@@ -90,7 +92,7 @@ class GrpcClient private constructor(
     }
 
     fun baseUrl(baseUrl: String): Builder {
-      this.baseUrl = HttpUrl.parse(baseUrl)
+      this.baseUrl = baseUrl.toHttpUrlOrNull()
       return this
     }
 
@@ -148,7 +150,7 @@ class GrpcClient private constructor(
           response.use {
             // Stream messages from the response body to the response channel.
             val grpcEncoding = response.header("grpc-encoding")
-            val responseSource = response.body()!!.source()
+            val responseSource = response.body!!.source()
             val responseReader = GrpcMessageSource(
                 responseSource, grpcMethod.responseAdapter, grpcEncoding)
             responseReader.use {
