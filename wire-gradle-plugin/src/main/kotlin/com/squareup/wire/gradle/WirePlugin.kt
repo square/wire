@@ -116,6 +116,7 @@ class WirePlugin @Inject constructor(
       task.roots = extension.roots.toList()
       task.prunes = extension.prunes.toList()
       task.rules = extension.rules
+      task.generateOnBuild = extension.generateOnBuild
       task.targets = targets
       task.group = "wire"
       task.description = "Generate Wire protocol buffer implementation for .proto files"

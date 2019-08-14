@@ -39,7 +39,7 @@ abstract class WireOutput {
   /** Configure the project's graph to compile the files emitted. */
   abstract fun applyToProject(
     project: Project,
-    wireTask: TaskProvider<WireTask>?,
+    wireTask: TaskProvider<WireTask>,
     kotlin: Boolean
   )
 }
@@ -66,13 +66,15 @@ open class JavaOutput @Inject constructor() : WireOutput() {
 
   override fun applyToProject(
     project: Project,
-    wireTask: TaskProvider<WireTask>?,
+    wireTask: TaskProvider<WireTask>,
     kotlin: Boolean
   ) {
     val compileJavaTask = project.tasks.named("compileJava") as TaskProvider<JavaCompile>
     compileJavaTask.configure {
       it.source(out)
-      it.dependsOn(wireTask)
+      if (wireTask.get().generateOnBuild) {
+        it.dependsOn(wireTask)
+      }
     }
     if (kotlin) {
       val sourceSetContainer = project.property("sourceSets") as SourceSetContainer
@@ -81,7 +83,9 @@ open class JavaOutput @Inject constructor() : WireOutput() {
 
       val compileKotlinTask = project.tasks.named("compileKotlin") as TaskProvider<KotlinCompile>
       compileKotlinTask.configure {
-        it.dependsOn(wireTask)
+        if (wireTask.get().generateOnBuild) {
+          it.dependsOn(wireTask)
+        }
       }
     }
   }
@@ -111,7 +115,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
 
   override fun applyToProject(
     project: Project,
-    wireTask: TaskProvider<WireTask>?,
+    wireTask: TaskProvider<WireTask>,
     kotlin: Boolean
   ) {
     val compileKotlinTasks = project.tasks.withType(KotlinCompile::class.java)
@@ -120,7 +124,9 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
     }
     compileKotlinTasks.configureEach {
       it.source(out)
-      it.dependsOn(wireTask)
+      if (wireTask.get().generateOnBuild) {
+        it.dependsOn(wireTask)
+      }
     }
   }
 }

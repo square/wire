@@ -131,6 +131,13 @@ open class WireExtension(
     populateRootSets(action, protoTrees, protoJars, "proto-tree")
   }
 
+  /**
+   * A flag indicating whether to generate protos before every compilation run
+   */
+  @get:Input
+  @get:Optional
+  var generateOnBuild: Boolean = true
+
   private fun populateRootSets(
     action: Action<ProtoRootSet>,
     sourceTrees: MutableSet<SourceDirectorySet>,
