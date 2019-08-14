@@ -60,6 +60,12 @@ internal class WireInput(
 
   fun addTrees(trees: Set<SourceDirectorySet>) {
     for (tree in trees) {
+      // TODO: this eagerly resolves dependencies; fix this!
+      tree.srcDirs.forEach {
+        check(it.exists()) {
+          "Invalid path string: \"${it.relativeTo(project.projectDir)}\". Path does not exist."
+        }
+      }
       val dependency = project.dependencies.create(tree)
       configuration.dependencies.add(dependency)
     }
