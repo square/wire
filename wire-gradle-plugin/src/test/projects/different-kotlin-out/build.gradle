@@ -6,6 +6,6 @@ plugins {
 
 wire {
   kotlin {
-    out "custom"
+    out 'custom'
   }
 }
