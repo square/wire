@@ -18,9 +18,7 @@ package com.squareup.wire
 import com.squareup.wire.MockRouteGuideService.Action.Delay
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
-import com.squareup.wire.MockRouteGuideService.Action.ReceiveMessage
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
-import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.async
@@ -40,35 +38,29 @@ import routeguide.Feature
 import routeguide.Point
 import routeguide.Rectangle
 import routeguide.RouteGuide
-import routeguide.RouteGuideProto
 import routeguide.RouteNote
 import routeguide.RouteSummary
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
-class GrpcTest {
+class GrpcClientTest {
   @JvmField @Rule val mockService = MockRouteGuideService()
-  @JvmField @Rule val timeout = Timeout(8, TimeUnit.SECONDS)
+  @JvmField @Rule val timeout = Timeout(30, TimeUnit.SECONDS)
 
-  private lateinit var grpcClient: GrpcClient
   private lateinit var routeGuideService: RouteGuide
   private var callReference = AtomicReference<Call>()
 
   @Before
   fun setUp() {
-    grpcClient = GrpcClient.Builder()
+    val grpcClient = GrpcClient.Builder()
         .client(OkHttpClient.Builder()
             .addInterceptor { chain ->
               callReference.set(chain.call())
               chain.proceed(chain.request())
             }
             .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
-            .readTimeout(Duration.ofMinutes(60))
-            .writeTimeout(Duration.ofMinutes(60))
-            .callTimeout(Duration.ofMinutes(60))
             .build())
         .baseUrl(mockService.url)
         .build()
@@ -78,11 +70,9 @@ class GrpcTest {
   @Test
   fun requestResponse() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.Point.newBuilder().setLatitude(5).setLongitude(6).build()))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
     mockService.enqueue(ReceiveComplete)
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.Feature.newBuilder().setName("tree at 5,6").build()))
+    mockService.enqueueSendFeature(name = "tree at 5,6")
     mockService.enqueue(SendCompleted)
 
     runBlocking {
@@ -94,12 +84,9 @@ class GrpcTest {
   @Test
   fun streamingRequest() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.Point.newBuilder().setLatitude(3).setLongitude(3).build()))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.Point.newBuilder().setLatitude(9).setLongitude(6).build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteSummary.newBuilder().setPointCount(2).build()))
+    mockService.enqueueReceivePoint(latitude = 3, longitude = 3)
+    mockService.enqueueReceivePoint(latitude = 9, longitude = 6)
+    mockService.enqueueSendSummary(pointCount = 2)
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
@@ -115,16 +102,10 @@ class GrpcTest {
   @Test
   fun streamingResponse() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.Rectangle.newBuilder()
-            .setLo(RouteGuideProto.Point.newBuilder().setLatitude(0).setLongitude(0).build())
-            .setHi(RouteGuideProto.Point.newBuilder().setLatitude(4).setLongitude(5).build())
-            .build()))
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
     mockService.enqueue(ReceiveComplete)
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.Feature.newBuilder().setName("tree").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.Feature.newBuilder().setName("house").build()))
+    mockService.enqueueSendFeature(name = "tree")
+    mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
 
     val responseChannel = routeGuideService.ListFeatures(
@@ -139,14 +120,10 @@ class GrpcTest {
   @Test
   fun duplex_receiveDataAfterClosingRequest() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("polo").build()))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("lacoste").build()))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueReceiveNote(message = "rené")
+    mockService.enqueueSendNote(message = "lacoste")
     mockService.enqueue(ReceiveComplete)
     mockService.enqueue(SendCompleted)
 
@@ -164,14 +141,10 @@ class GrpcTest {
   @Test
   fun duplex_receiveDataBeforeClosingRequest() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("polo").build()))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("lacoste").build()))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueReceiveNote(message = "rené")
+    mockService.enqueueSendNote(message = "lacoste")
     // We give time to the sender to read the response.
     mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
     mockService.enqueue(SendCompleted)
@@ -191,12 +164,10 @@ class GrpcTest {
   @Test
   fun cancelRequestResponse() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.Point.newBuilder().setLatitude(5).setLongitude(6).build()))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
     mockService.enqueue(ReceiveComplete)
     mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.Feature.newBuilder().setName("tree at 5,6").build()))
+    mockService.enqueueSendFeature(name = "tree at 5,6")
     mockService.enqueue(SendCompleted)
 
     runBlocking {
@@ -231,17 +202,11 @@ class GrpcTest {
   @Test
   fun cancelStreamingResponse() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.Rectangle.newBuilder()
-            .setLo(RouteGuideProto.Point.newBuilder().setLatitude(0).setLongitude(0).build())
-            .setHi(RouteGuideProto.Point.newBuilder().setLatitude(4).setLongitude(5).build())
-            .build()))
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
     mockService.enqueue(ReceiveComplete)
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.Feature.newBuilder().setName("tree").build()))
+    mockService.enqueueSendFeature(name = "tree")
     mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.Feature.newBuilder().setName("house").build()))
+    mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
 
     val receiveChannel =
@@ -273,8 +238,7 @@ class GrpcTest {
   @Test
   fun cancelDuplexAfterRequestCompletes() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
+    mockService.enqueueReceiveNote(message = "marco")
     mockService.enqueue(ReceiveComplete)
 
     val (requestChannel, responseChannel) = routeGuideService.RouteChat()
@@ -295,12 +259,9 @@ class GrpcTest {
   @Test
   fun cancelDuplexBeforeResponseCompletes() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("polo").build()))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueReceiveNote(message = "rené")
     mockService.enqueue(ReceiveComplete)
 
     val (requestChannel, responseChannel) = routeGuideService.RouteChat()
@@ -324,14 +285,10 @@ class GrpcTest {
   @Test
   fun cancelDuplexAfterResponseCompletes() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("marco").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("polo").build()))
-    mockService.enqueue(
-        ReceiveMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("rené").build()))
-    mockService.enqueue(
-        SendMessage(RouteGuideProto.RouteNote.newBuilder().setMessage("lacoste").build()))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueReceiveNote(message = "rené")
+    mockService.enqueueSendNote(message = "lacoste")
     mockService.enqueue(ReceiveComplete)
     mockService.enqueue(SendCompleted)
 

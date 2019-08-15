@@ -29,6 +29,7 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import routeguide.RouteGuideGrpc
+import routeguide.RouteGuideProto
 import routeguide.RouteGuideProto.Feature
 import routeguide.RouteGuideProto.Point
 import routeguide.RouteGuideProto.Rectangle
@@ -53,6 +54,44 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
 
   fun enqueue(action: Action) {
     script.add(action)
+  }
+
+  fun enqueueReceiveNote(message: String) {
+    enqueue(Action.ReceiveMessage(RouteNote.newBuilder()
+        .setMessage(message)
+        .build()))
+  }
+
+  fun enqueueReceivePoint(latitude: Int, longitude: Int) {
+    enqueue(Action.ReceiveMessage(RouteGuideProto.Point.newBuilder()
+        .setLatitude(latitude)
+        .setLongitude(longitude)
+        .build()))
+  }
+
+  fun enqueueReceiveRectangle(lo: routeguide.Point, hi: routeguide.Point) {
+    enqueue(Action.ReceiveMessage(Rectangle.newBuilder()
+        .setLo(Point.newBuilder().setLatitude(lo.latitude!!).setLongitude(lo.longitude!!).build())
+        .setHi(Point.newBuilder().setLatitude(hi.latitude!!).setLongitude(hi.longitude!!).build())
+        .build()))
+  }
+
+  fun enqueueSendFeature(name: String) {
+    enqueue(Action.SendMessage(Feature.newBuilder()
+        .setName(name)
+        .build()))
+  }
+
+  fun enqueueSendNote(message: String) {
+    enqueue(Action.SendMessage(RouteNote.newBuilder()
+        .setMessage(message)
+        .build()))
+  }
+
+  fun enqueueSendSummary(pointCount: Int) {
+    enqueue(Action.SendMessage(RouteSummary.newBuilder()
+        .setPointCount(pointCount)
+        .build()))
   }
 
   suspend fun awaitSuccess() {

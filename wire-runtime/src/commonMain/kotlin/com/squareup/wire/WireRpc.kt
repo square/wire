@@ -15,6 +15,18 @@
  */
 package com.squareup.wire
 
+/**
+ * For gRPC actions the path is formatted as `/<service name>/<method name>`. The path of the proto
+ * service below is `/squareup.helloworld.Greeter/SayHello`.
+ *
+ * ```
+ * package squareup.helloworld;
+ *
+ * service Greeter {
+ *   rpc SayHello (HelloRequest) returns (HelloReply) {}
+ * }
+ * ```
+ */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class WireRpc(
