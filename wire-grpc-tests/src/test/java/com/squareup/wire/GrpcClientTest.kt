@@ -38,7 +38,7 @@ import org.junit.rules.Timeout
 import routeguide.Feature
 import routeguide.Point
 import routeguide.Rectangle
-import routeguide.RouteGuide
+import routeguide.RouteGuideClient
 import routeguide.RouteNote
 import routeguide.RouteSummary
 import java.util.concurrent.TimeUnit
@@ -50,7 +50,7 @@ class GrpcClientTest {
   @JvmField @Rule val mockService = MockRouteGuideService()
   @JvmField @Rule val timeout = Timeout(30, TimeUnit.SECONDS)
 
-  private lateinit var routeGuideService: RouteGuide
+  private lateinit var routeGuideService: RouteGuideClient
   private var callReference = AtomicReference<Call>()
 
   @Before
@@ -65,7 +65,7 @@ class GrpcClientTest {
             .build())
         .baseUrl(mockService.url)
         .build()
-    routeGuideService = grpcClient.create(RouteGuide::class)
+    routeGuideService = grpcClient.create(RouteGuideClient::class)
   }
 
   @Test

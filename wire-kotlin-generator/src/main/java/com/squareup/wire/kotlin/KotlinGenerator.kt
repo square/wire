@@ -26,7 +26,6 @@ import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.KModifier.DATA
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.LONG
@@ -35,6 +34,7 @@ import com.squareup.kotlinpoet.MemberName.Companion.member
 import com.squareup.kotlinpoet.NOTHING
 import com.squareup.kotlinpoet.NameAllocator
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
@@ -82,7 +82,8 @@ class KotlinGenerator private constructor(
   private val nameToKotlinName: Map<ProtoType, ClassName>,
   private val emitAndroid: Boolean,
   private val javaInterOp: Boolean,
-  private val blockingServices: Boolean
+  private val rpcCallStyle: RpcCallStyle,
+  private val rpcRole: RpcRole
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -98,13 +99,27 @@ class KotlinGenerator private constructor(
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName
 
-  /** Returns the full name of the class generated for [service].  */
-  fun generatedServiceName(service: Service) = service.serviceName
-
-  /** Returns the full name of the class generated for [service]#[rpc].  */
-  fun generatedServiceRpcName(service: Service, rpc: Rpc): ClassName {
+  /**
+   * Returns the full name of the class generated for [service]#[rpc]. This returns a name like
+   * `RouteGuideClient` or `RouteGuideGetFeatureBlockingServer`.
+   */
+  fun generatedServiceName(service: Service, rpc: Rpc? = null): ClassName {
     val typeName = service.serviceName
-    return typeName.peerClass(typeName.simpleName + rpc.name())
+    val simpleName = buildString {
+      append(typeName.simpleName)
+      if (rpc != null) {
+        append(rpc.name())
+      }
+      when (rpcCallStyle) {
+        RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
+        RpcCallStyle.BLOCKING -> append("Blocking")
+      }
+      when (rpcRole) {
+        RpcRole.CLIENT -> append("Client")
+        RpcRole.SERVER -> append("Server")
+      }
+    }
+    return typeName.peerClass(simpleName)
   }
 
   fun generateType(type: Type): TypeSpec = when (type) {
@@ -115,22 +130,21 @@ class KotlinGenerator private constructor(
   }
 
   /**
-   * If [rpc] isn't null, this will generate code only for this rpc; otherwise, all rpcs of the
-   * [service] will be code generated.
+   * If [onlyRpc] isn't null, this will generate code only for this onlyRpc; otherwise, all RPCs of
+   * the [service] will be code generated.
    */
-  fun generateService(service: Service, rpc: Rpc? = null): TypeSpec {
-    val (interfaceName, rpcs) =
-        if (rpc == null) generatedServiceName(service) to service.rpcs()
-        else generatedServiceRpcName(service, rpc) to listOf(rpc)
+  fun generateService(service: Service, onlyRpc: Rpc? = null): TypeSpec {
+    val serviceName = generatedServiceName(service, onlyRpc)
+    val builder = TypeSpec.interfaceBuilder(serviceName)
+        .addSuperinterface(com.squareup.wire.Service::class.java)
 
-    val superinterface = com.squareup.wire.Service::class.java
+    val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
+    for (rpc in rpcs) {
+      builder.addFunction(generateRpcFunction(
+          rpc, service.name(), service.type().enclosingTypeOrPackage()))
+    }
 
-    return TypeSpec.interfaceBuilder(interfaceName)
-        .addSuperinterface(superinterface)
-        .addFunctions(rpcs.map {
-          generateRpcFunction(it, service.name(), service.type().enclosingTypeOrPackage())
-        })
-        .build()
+    return builder.build()
   }
 
   private fun generateRpcFunction(
@@ -153,22 +167,25 @@ class KotlinGenerator private constructor(
     val requestType = rpc.requestType().typeName
     val responseType = rpc.responseType().typeName
 
-    if (blockingServices) {
+    if (rpcRole == RpcRole.SERVER) {
+      if (rpcCallStyle == RpcCallStyle.SUSPENDING) {
+        funSpecBuilder.addModifiers(KModifier.SUSPEND)
+      }
       when {
         rpc.requestStreaming() && rpc.responseStreaming() -> {
           funSpecBuilder
-              .addParameter("request", messageSourceOf(requestType))
-              .addParameter("response", messageSinkOf(responseType))
+              .addParameter("request", readableStreamOf(requestType))
+              .addParameter("response", writableStreamOf(responseType))
         }
         rpc.requestStreaming() -> {
           funSpecBuilder
-              .addParameter("request", messageSourceOf(requestType))
+              .addParameter("request", readableStreamOf(requestType))
               .returns(responseType)
         }
         rpc.responseStreaming() -> {
           funSpecBuilder
               .addParameter("request", requestType)
-              .addParameter("response", messageSinkOf(responseType))
+              .addParameter("response", writableStreamOf(responseType))
         }
         else -> {
           funSpecBuilder
@@ -181,27 +198,29 @@ class KotlinGenerator private constructor(
         rpc.requestStreaming() && rpc.responseStreaming() -> {
           funSpecBuilder.returns(
               pairOf(
-                  sendChannelOf(requestType),
-                  receiveChannelOf(responseType)
+                  readableStreamOf(requestType),
+                  writableStreamOf(responseType)
               )
           )
         }
         rpc.requestStreaming() -> {
           funSpecBuilder.returns(
               pairOf(
-                  sendChannelOf(requestType),
-                  deferredOf(responseType)
+                  readableStreamOf(requestType),
+                  readableSingleOf(responseType)
               )
           )
         }
         rpc.responseStreaming() -> {
           funSpecBuilder
               .addParameter("request", requestType)
-              .returns(receiveChannelOf(responseType))
+              .returns(writableStreamOf(responseType))
         }
         else -> {
+          if (rpcCallStyle == RpcCallStyle.SUSPENDING) {
+            funSpecBuilder.addModifiers(KModifier.SUSPEND)
+          }
           funSpecBuilder
-              .addModifiers(KModifier.SUSPEND)
               .addParameter("request", requestType)
               .returns(responseType)
         }
@@ -211,23 +230,29 @@ class KotlinGenerator private constructor(
     return funSpecBuilder.build()
   }
 
-  private fun messageSinkOf(typeName: TypeName) =
-      MessageSink::class.asClassName().parameterizedBy(typeName)
+  private fun writableStreamOf(typeName: TypeName): ParameterizedTypeName {
+    return when (rpcCallStyle) {
+      RpcCallStyle.SUSPENDING -> ReceiveChannel::class.asClassName().parameterizedBy(typeName)
+      RpcCallStyle.BLOCKING -> MessageSink::class.asClassName().parameterizedBy(typeName)
+    }
+  }
 
-  private fun messageSourceOf(typeName: TypeName) =
-      MessageSource::class.asClassName().parameterizedBy(typeName)
+  private fun readableStreamOf(typeName: TypeName): ParameterizedTypeName {
+    return when (rpcCallStyle) {
+      RpcCallStyle.SUSPENDING -> SendChannel::class.asClassName().parameterizedBy(typeName)
+      RpcCallStyle.BLOCKING -> MessageSource::class.asClassName().parameterizedBy(typeName)
+    }
+  }
 
-  private fun receiveChannelOf(typeName: TypeName) =
-      ReceiveChannel::class.asClassName().parameterizedBy(typeName)
-
-  private fun sendChannelOf(typeName: TypeName) =
-      SendChannel::class.asClassName().parameterizedBy(typeName)
+  private fun readableSingleOf(typeName: TypeName): ParameterizedTypeName {
+    return when (rpcCallStyle) {
+      RpcCallStyle.SUSPENDING -> Deferred::class.asClassName().parameterizedBy(typeName)
+      RpcCallStyle.BLOCKING -> MessageSource::class.asClassName().parameterizedBy(typeName)
+    }
+  }
 
   private fun pairOf(a: TypeName, b: TypeName) =
       Pair::class.asClassName().parameterizedBy(a, b)
-
-  private fun deferredOf(typeName: TypeName) =
-      Deferred::class.asClassName().parameterizedBy(typeName)
 
   private fun nameAllocator(message: Type): NameAllocator {
     return nameAllocatorStore.getOrPut(message) {
@@ -1261,7 +1286,8 @@ class KotlinGenerator private constructor(
       schema: Schema,
       emitAndroid: Boolean = false,
       javaInterop: Boolean = false,
-      blockingServices: Boolean = false
+      rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
+      rpcRole: RpcRole = RpcRole.CLIENT
     ): KotlinGenerator {
       val map = BUILT_IN_TYPES.toMutableMap()
 
@@ -1284,9 +1310,19 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map, emitAndroid, javaInterop, blockingServices)
+      return KotlinGenerator(schema, map, emitAndroid, javaInterop, rpcCallStyle, rpcRole)
     }
   }
 }
 
 private fun ProtoFile.kotlinPackage() = javaPackage() ?: packageName() ?: ""
+
+enum class RpcCallStyle {
+  SUSPENDING,
+  BLOCKING
+}
+
+enum class RpcRole {
+  CLIENT,
+  SERVER
+}

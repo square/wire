@@ -348,7 +348,7 @@ class WireCompilerTest {
     compileToKotlin(sources, "--includes=squareup.protos.kotlin.SomeService")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/SomeService.kt",
+        "com/squareup/wire/protos/kotlin/SomeServiceClient.kt",
         "com/squareup/wire/protos/kotlin/SomeResponse.kt",
         "com/squareup/wire/protos/kotlin/SomeRequest.kt"
     )
@@ -361,7 +361,7 @@ class WireCompilerTest {
     compileToKotlin(sources, "--includes=NoPackageService")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/NoPackageService.kt",
+        "com/squareup/wire/protos/kotlin/NoPackageServiceClient.kt",
         "com/squareup/wire/protos/kotlin/NoPackageResponse.kt",
         "com/squareup/wire/protos/kotlin/NoPackageRequest.kt"
     )

@@ -31,10 +31,10 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
-import routeguide.BlockingRouteGuide
 import routeguide.Feature
 import routeguide.Point
 import routeguide.Rectangle
+import routeguide.RouteGuideBlockingClient
 import routeguide.RouteNote
 import routeguide.RouteSummary
 import java.util.concurrent.Executors
@@ -45,7 +45,7 @@ class GrpcBlockingClientTest {
   @JvmField @Rule val mockService = MockRouteGuideService()
   @JvmField @Rule val timeout = Timeout(30, TimeUnit.SECONDS)
 
-  private lateinit var routeGuideService: BlockingRouteGuide
+  private lateinit var routeGuideService: RouteGuideBlockingClient
   private val executorService = Executors.newCachedThreadPool()
   private var callReference = AtomicReference<Call>()
 
@@ -61,7 +61,7 @@ class GrpcBlockingClientTest {
             .build())
         .baseUrl(mockService.url)
         .build()
-    routeGuideService = grpcClient.create(BlockingRouteGuide::class)
+    routeGuideService = grpcClient.create(RouteGuideBlockingClient::class)
   }
 
   @Test

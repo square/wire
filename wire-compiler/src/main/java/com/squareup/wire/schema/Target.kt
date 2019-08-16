@@ -24,6 +24,8 @@ import com.squareup.wire.WireLogger
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.java.ProfileLoader
 import com.squareup.wire.kotlin.KotlinGenerator
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import java.io.IOException
 import java.nio.file.FileSystem
 
@@ -144,8 +146,10 @@ sealed class Target {
     val singleMethodServices: Boolean = false
   ) : Target() {
     override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+      val rpcCallStyle = if (blockingServices) RpcCallStyle.BLOCKING else RpcCallStyle.SUSPENDING
+      val rpcRole = if (blockingServices) RpcRole.SERVER else RpcRole.CLIENT
 
-      val kotlinGenerator = KotlinGenerator(schema, android, javaInterop, blockingServices)
+      val kotlinGenerator = KotlinGenerator(schema, android, javaInterop, rpcCallStyle, rpcRole)
 
       return object : SchemaHandler {
         override fun handle(type: Type) {
@@ -178,7 +182,7 @@ sealed class Target {
             service.rpcs().forEach { rpc ->
               write(
                   service,
-                  kotlinGenerator.generatedServiceRpcName(service, rpc),
+                  kotlinGenerator.generatedServiceName(service, rpc),
                   kotlinGenerator.generateService(service, rpc)
               )
             }

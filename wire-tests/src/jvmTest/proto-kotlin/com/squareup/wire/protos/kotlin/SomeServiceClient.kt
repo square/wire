@@ -5,7 +5,7 @@ package com.squareup.wire.protos.kotlin
 import com.squareup.wire.Service
 import com.squareup.wire.WireRpc
 
-interface SomeService : Service {
+interface SomeServiceClient : Service {
   @WireRpc(
     path = "/squareup.protos.kotlin.SomeService/SomeMethod",
     requestAdapter = "squareup.protos.kotlin.SomeRequest#ADAPTER",
