@@ -1,0 +1,19 @@
+// ../wire-tests/src/commonTest/proto/foreign.proto
+package squareup.protos.foreign;
+
+import "google/protobuf/descriptor.proto";
+
+option java_package = "com.squareup.wire.protos.foreign";
+option java_outer_classname = "Foreign";
+
+enum ForeignEnum {
+  BAV = 0;
+  BAX = 1;
+}
+
+extend google.protobuf.MessageOptions {
+  optional ForeignMessage foreign_message_option = 50007;
+}
+extend google.protobuf.EnumValueOptions {
+  optional bool foreign_enum_value_option = 70002;
+}

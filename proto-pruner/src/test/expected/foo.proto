@@ -1,0 +1,10 @@
+// ../wire-tests/src/commonTest/proto/foo.proto
+package squareup.foobar;
+
+import "bar.proto";
+
+option java_package = "com.squareup.foobar.protos.foo";
+
+message Foo {
+  optional Bar.Baz.Moo moo = 1;
+}
