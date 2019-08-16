@@ -60,7 +60,7 @@ internal class BlockingMessageSource<R : Any>(
   fun readFromResponseBodyCallback(): Callback {
     return object : Callback {
       override fun onFailure(call: Call, e: IOException) {
-        queue.put(e)
+        queue.put(Failure(e))
       }
 
       override fun onResponse(call: Call, response: Response) {
