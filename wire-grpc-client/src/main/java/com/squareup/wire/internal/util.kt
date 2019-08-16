@@ -18,6 +18,7 @@
 package com.squareup.wire.internal
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -25,6 +26,8 @@ import java.lang.reflect.WildcardType
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+
+internal val unconfinedCoroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
 /**
  * Invokes `block` and returns its result to the continuation. Useful in reflection code when you
