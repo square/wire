@@ -1,0 +1,10 @@
+// ../wire-tests/src/commonTest/proto/external_message.proto
+package squareup.protos.simple;
+
+option java_package = "com.squareup.wire.protos.simple";
+
+message ExternalMessage {
+  optional float f = 1;
+
+  extensions 100 to 200;
+}

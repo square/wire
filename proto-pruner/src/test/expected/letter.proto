@@ -1,0 +1,9 @@
+// ../wire-tests/src/commonTest/proto/letter.proto
+syntax = "proto2";
+package squareup.options.letter;
+
+import "file_prefix.proto";
+
+option (squareup.objc.file_prefix) = "CCAppProto";
+
+message Letter {}

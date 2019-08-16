@@ -35,7 +35,8 @@ class ProtoPruner(
     schema.protoFiles()
         .filter { it.types().isNotEmpty() || it.services().isNotEmpty() }
         .forEach { protoFile ->
-          val relativePath = protoFile.packageName()?.replace(".", "/") ?: "."
+          val relativePath = protoFile.location()?.path
+              ?.substringBeforeLast("/", missingDelimiterValue = ".")
           val outFolder = File(outPath, relativePath)
           outFolder.mkdirs() // Ensure the directories to the file have been created.
 
