@@ -1,9 +1,6 @@
 apply plugin: 'java-library'
 
 kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
-  target.project.sourceCompatibility = JavaVersion.VERSION_1_8
-  target.project.targetCompatibility = JavaVersion.VERSION_1_8
-  
   target.project.sourceSets.test.java.srcDirs += 'src/jvmTest/proto-java'
 
   tasks['jar'].configure {
