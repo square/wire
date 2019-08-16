@@ -27,6 +27,7 @@ import okhttp3.Protocol
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
@@ -148,6 +149,7 @@ class GrpcBlockingClientTest {
   }
 
   @Test
+  @Ignore // TODO(jwilson): rework this test for blocking APIs.
   fun cancelRequestResponse() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
