@@ -312,4 +312,19 @@ class GrpcClientTest {
       assertThat(callReference.get()?.isCanceled()).isTrue()
     }
   }
+
+  @Test
+  fun duplexReceiveOnly() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "welcome")
+    mockService.enqueue(SendCompleted)
+    mockService.enqueue(ReceiveComplete)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    runBlocking {
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "welcome"))
+      requestChannel.close()
+      assertThat(responseChannel.receiveOrNull()).isNull()
+    }
+  }
 }
