@@ -13,8 +13,8 @@ jar {
 dependencies {
   api deps.kotlin.stdlib.jdk8
   api project(':wire-schema')
+  api project(':wire-kotlin-generator')
   implementation project(':wire-java-generator')
-  implementation project(':wire-kotlin-generator')
   implementation deps.okio.jvm
   implementation deps.guava
   testImplementation deps.junit

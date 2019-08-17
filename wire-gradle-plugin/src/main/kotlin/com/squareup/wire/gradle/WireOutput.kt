@@ -15,7 +15,11 @@
  */
 package com.squareup.wire.gradle
 
+import com.squareup.wire.schema.JavaTarget
+import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.Target
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
@@ -52,8 +56,8 @@ open class JavaOutput @Inject constructor() : WireOutput() {
   var androidAnnotations: Boolean = false
   var compact: Boolean = false
 
-  override fun toTarget(): Target {
-    return Target.JavaTarget(
+  override fun toTarget(): JavaTarget {
+    return JavaTarget(
         includes = includes ?: listOf("*"),
         excludes = excludes ?: listOf(),
         exclusive = exclusive,
@@ -93,18 +97,20 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var exclusive: Boolean = true
   var android: Boolean = false
   var javaInterop: Boolean = false
-  var blockingServices: Boolean = false
+  var rpcCallStyle = RpcCallStyle.SUSPENDING
+  var rpcRole = RpcRole.CLIENT
   var singleMethodServices: Boolean = false
 
-  override fun toTarget(): Target.KotlinTarget {
-    return Target.KotlinTarget(
+  override fun toTarget(): KotlinTarget {
+    return KotlinTarget(
         includes = includes ?: listOf("*"),
         excludes = excludes ?: listOf(),
         exclusive = exclusive,
         outDirectory = out!!,
         android = android,
         javaInterop = javaInterop,
-        blockingServices = blockingServices,
+        rpcCallStyle = rpcCallStyle,
+        rpcRole = rpcRole,
         singleMethodServices = singleMethodServices
     )
   }

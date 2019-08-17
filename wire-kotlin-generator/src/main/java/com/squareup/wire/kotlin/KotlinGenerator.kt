@@ -1316,13 +1316,3 @@ class KotlinGenerator private constructor(
 }
 
 private fun ProtoFile.kotlinPackage() = javaPackage() ?: packageName() ?: ""
-
-enum class RpcCallStyle {
-  SUSPENDING,
-  BLOCKING
-}
-
-enum class RpcRole {
-  CLIENT,
-  SERVER
-}

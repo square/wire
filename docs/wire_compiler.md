@@ -284,7 +284,8 @@ wire {
 
 ### Kotlin
 
-Here's an exhaustive Kotlin configuration. Booleans are shown with their non-default behavior.
+Here's an exhaustive Kotlin configuration. Booleans and enums are shown with their non-default
+behavior.
 
 ```groovy
 wire {
@@ -318,8 +319,13 @@ wire {
     // target.
     javaInterop = true
 
-    // True for emitted services to provide blocking APIs only.
-    blockingServices = true
+    // SUSPENDING to generate coroutines APIs that require a Kotlin coroutines context.
+    // BLOCKING to generate blocking APIs callable by Java and Kotlin.
+    rpcCallStyle = com.squareup.wire.kotlin.RpcCallStyle.BLOCKING
+
+    // CLIENT to generate interfaces best suited to sending outbound calls.
+    // SERVER to generate interfaces best suited to receiving inbound calls.
+    rpcRole = com.squareup.wire.kotlin.RpcRole.SERVER
 
     // True for emitted services to implement one interface per RPC.
     singleMethodServices = true

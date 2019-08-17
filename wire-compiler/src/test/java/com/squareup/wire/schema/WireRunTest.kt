@@ -18,6 +18,8 @@ package com.squareup.wire.schema
 import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
 import com.squareup.wire.StringWireLogger
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -34,7 +36,7 @@ class WireRunTest {
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
-        targets = listOf(Target.JavaTarget(outDirectory = "generated/java"))
+        targets = listOf(JavaTarget(outDirectory = "generated/java"))
     )
     wireRun.execute(fs, logger)
 
@@ -56,7 +58,7 @@ class WireRunTest {
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
-        targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
     )
     wireRun.execute(fs, logger)
 
@@ -80,7 +82,7 @@ class WireRunTest {
         sourcePath = listOf(Location.get("routes/src/main/proto")),
         protoPath = listOf(Location.get("colors/src/main/proto"),
             Location.get("polygons/src/main/proto")),
-        targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
     )
     wireRun.execute(fs, logger)
 
@@ -102,7 +104,12 @@ class WireRunTest {
         protoPath = listOf(Location.get("colors/src/main/proto"),
             Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.KotlinTarget(outDirectory = "generated/kt", blockingServices = true))
+            KotlinTarget(
+                outDirectory = "generated/kt",
+                rpcCallStyle = RpcCallStyle.BLOCKING,
+                rpcRole = RpcRole.SERVER
+            )
+        )
     )
     wireRun.execute(fs, logger)
 
@@ -125,7 +132,7 @@ class WireRunTest {
         protoPath = listOf(Location.get("colors/src/main/proto"),
             Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.KotlinTarget(outDirectory = "generated/kt", singleMethodServices = true))
+            KotlinTarget(outDirectory = "generated/kt", singleMethodServices = true))
     )
     wireRun.execute(fs, logger)
 
@@ -150,10 +157,10 @@ class WireRunTest {
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.KotlinTarget(
+            KotlinTarget(
                 outDirectory = "generated/kt",
                 includes = listOf("squareup.colors.Blue")),
-            Target.JavaTarget(
+            JavaTarget(
                 outDirectory = "generated/java")
         )
     )
@@ -178,10 +185,10 @@ class WireRunTest {
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.JavaTarget(
+            JavaTarget(
                 outDirectory = "generated/java",
                 includes = listOf("squareup.colors.Blue")),
-            Target.KotlinTarget(
+            KotlinTarget(
                 outDirectory = "generated/kt")
         )
     )
@@ -208,10 +215,10 @@ class WireRunTest {
             Location.get("polygons/src/main/proto")
         ),
         targets = listOf(
-            Target.KotlinTarget(
+            KotlinTarget(
                 outDirectory = "generated/kt",
                 excludes = listOf("squareup.colors.Red")),
-            Target.JavaTarget(
+            JavaTarget(
                 outDirectory = "generated/java")
         )
     )
@@ -241,10 +248,10 @@ class WireRunTest {
             Location.get("polygons/src/main/proto")
         ),
         targets = listOf(
-            Target.KotlinTarget(
+            KotlinTarget(
                 outDirectory = "generated/kt",
                 excludes = listOf("squareup.colors.*")),
-            Target.JavaTarget(
+            JavaTarget(
                 outDirectory = "generated/java")
         )
     )
@@ -272,7 +279,7 @@ class WireRunTest {
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
         treeShakingRoots = listOf("squareup.colors.Blue"),
-        targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
     )
     wireRun.execute(fs, logger)
 
@@ -290,7 +297,7 @@ class WireRunTest {
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
         treeShakingRubbish = listOf("squareup.colors.Red"),
-        targets = listOf(Target.KotlinTarget(outDirectory = "generated/kt"))
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
     )
     wireRun.execute(fs, logger)
 
@@ -308,8 +315,8 @@ class WireRunTest {
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.NullTarget(includes = listOf("squareup.colors.Red")),
-            Target.KotlinTarget(outDirectory = "generated/kt")
+            NullTarget(includes = listOf("squareup.colors.Red")),
+            KotlinTarget(outDirectory = "generated/kt")
         )
     )
     wireRun.execute(fs, logger)
@@ -326,10 +333,10 @@ class WireRunTest {
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.JavaTarget(
+            JavaTarget(
                 outDirectory = "generated/java",
                 includes = listOf("squareup.polygons.Square")),
-            Target.KotlinTarget(
+            KotlinTarget(
                 outDirectory = "generated/kt")
         )
     )
@@ -348,9 +355,9 @@ class WireRunTest {
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(
-            Target.JavaTarget(
+            JavaTarget(
                 outDirectory = "generated/java"),
-            Target.KotlinTarget(
+            KotlinTarget(
                 outDirectory = "generated/kt",
                 exclusive = false,
                 includes = listOf("squareup.polygons.Square"))
