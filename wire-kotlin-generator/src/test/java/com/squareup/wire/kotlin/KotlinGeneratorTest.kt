@@ -110,7 +110,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -140,7 +140,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -161,7 +161,7 @@ class KotlinGeneratorTest {
           |$featureMessage
           |""".trimMargin())
     assertEquals(expected, repoBuilder.generateGrpcKotlin(
-        "routeguide.RouteGuide", blockingServices = true))
+        "routeguide.RouteGuide", rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER))
   }
 
   @Test fun blockingStreamingRequestSingleResponse() {
@@ -172,7 +172,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -193,7 +193,7 @@ class KotlinGeneratorTest {
           |$featureMessage
           |""".trimMargin())
     assertEquals(expected, repoBuilder.generateGrpcKotlin(
-        "routeguide.RouteGuide", blockingServices = true))
+        "routeguide.RouteGuide", rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER))
   }
 
   @Test fun blockingSingleRequestStreamingResponse() {
@@ -204,7 +204,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -225,7 +225,7 @@ class KotlinGeneratorTest {
           |$featureMessage
           |""".trimMargin())
     assertEquals(expected, repoBuilder.generateGrpcKotlin(
-        "routeguide.RouteGuide", blockingServices = true))
+        "routeguide.RouteGuide", rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER))
   }
 
   @Test fun blockingStreamingRequestStreamingResponse() {
@@ -237,7 +237,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -258,7 +258,7 @@ class KotlinGeneratorTest {
           |$featureMessage
           |""".trimMargin())
     assertEquals(expected, repoBuilder.generateGrpcKotlin(
-        "routeguide.RouteGuide", blockingServices = true))
+        "routeguide.RouteGuide", rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER))
   }
 
   @Test fun javaPackageOption() {
@@ -269,7 +269,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -291,7 +291,8 @@ class KotlinGeneratorTest {
           |$pointMessage
           |$featureMessage
           |""".trimMargin())
-    assertEquals(expected, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", blockingServices = true))
+    assertEquals(expected, repoBuilder.generateGrpcKotlin(
+        "routeguide.RouteGuide", rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER))
   }
 
   @Test fun noPackage() {
@@ -299,7 +300,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideClient : Service {
           |  @WireRpc(
           |    path = "/RouteGuide/GetFeature",
           |    requestAdapter = "Point#ADAPTER",
@@ -327,7 +328,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.grpc.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.grpc.Point#ADAPTER",
@@ -360,7 +361,7 @@ class KotlinGeneratorTest {
           |import kotlinx.coroutines.Deferred
           |import kotlinx.coroutines.channels.SendChannel
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RecordRoute",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -391,7 +392,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.WireRpc
           |import kotlinx.coroutines.channels.ReceiveChannel
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/ListFeatures",
           |    requestAdapter = "routeguide.Rectangle#ADAPTER",
@@ -416,7 +417,42 @@ class KotlinGeneratorTest {
   }
 
   @Test fun bidirectional() {
-    val expected = """
+    val blockingClient = """
+          |package routeguide
+          |
+          |import com.squareup.wire.MessageSink
+          |import com.squareup.wire.MessageSource
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |import kotlin.Pair
+          |
+          |interface RouteGuideBlockingClient : Service {
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/RouteChat",
+          |    requestAdapter = "routeguide.RouteNote#ADAPTER",
+          |    responseAdapter = "routeguide.RouteNote#ADAPTER"
+          |  )
+          |  fun RouteChat(): Pair<MessageSource<RouteNote>, MessageSink<RouteNote>>
+          |}
+          |""".trimMargin()
+    val blockingServer = """
+          |package routeguide
+          |
+          |import com.squareup.wire.MessageSink
+          |import com.squareup.wire.MessageSource
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |
+          |interface RouteGuideBlockingServer : Service {
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/RouteChat",
+          |    requestAdapter = "routeguide.RouteNote#ADAPTER",
+          |    responseAdapter = "routeguide.RouteNote#ADAPTER"
+          |  )
+          |  fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>)
+          |}
+          |""".trimMargin()
+    val suspendingClient = """
           |package routeguide
           |
           |import com.squareup.wire.Service
@@ -425,13 +461,30 @@ class KotlinGeneratorTest {
           |import kotlinx.coroutines.channels.ReceiveChannel
           |import kotlinx.coroutines.channels.SendChannel
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
           |    responseAdapter = "routeguide.RouteNote#ADAPTER"
           |  )
           |  fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+          |}
+          |""".trimMargin()
+    val suspendingServer = """
+          |package routeguide
+          |
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |import kotlinx.coroutines.channels.ReceiveChannel
+          |import kotlinx.coroutines.channels.SendChannel
+          |
+          |interface RouteGuideServer : Service {
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/RouteChat",
+          |    requestAdapter = "routeguide.RouteNote#ADAPTER",
+          |    responseAdapter = "routeguide.RouteNote#ADAPTER"
+          |  )
+          |  suspend fun RouteChat(request: SendChannel<RouteNote>, response: ReceiveChannel<RouteNote>)
           |}
           |""".trimMargin()
 
@@ -445,7 +498,14 @@ class KotlinGeneratorTest {
           |$pointMessage
           |$routeNoteMessage
           |""".trimMargin())
-    assertEquals(expected, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide"))
+    assertEquals(blockingClient, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide",
+        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.CLIENT))
+    assertEquals(blockingServer, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide",
+        rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER))
+    assertEquals(suspendingClient, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide",
+        rpcCallStyle = RpcCallStyle.SUSPENDING, rpcRole = RpcRole.CLIENT))
+    assertEquals(suspendingServer, repoBuilder.generateGrpcKotlin("routeguide.RouteGuide",
+        rpcCallStyle = RpcCallStyle.SUSPENDING, rpcRole = RpcRole.SERVER))
   }
 
   @Test fun multipleRpcs() {
@@ -458,7 +518,7 @@ class KotlinGeneratorTest {
           |import kotlinx.coroutines.channels.ReceiveChannel
           |import kotlinx.coroutines.channels.SendChannel
           |
-          |interface RouteGuide : Service {
+          |interface RouteGuideClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -510,7 +570,7 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
-          |interface RouteGuideGetFeature : Service {
+          |interface RouteGuideGetFeatureClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -532,7 +592,7 @@ class KotlinGeneratorTest {
           |import kotlinx.coroutines.channels.ReceiveChannel
           |import kotlinx.coroutines.channels.SendChannel
           |
-          |interface RouteGuideRouteChat : Service {
+          |interface RouteGuideRouteChatClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",

@@ -571,7 +571,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.BattleService")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleService.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
   }
 
   @Test
@@ -587,9 +587,9 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.BattleServiceBrawl")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleService.kt")).exists()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceFight.kt")).exists()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawl.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceFightBlockingServer.kt")).exists()
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
   }
 
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {

@@ -85,9 +85,9 @@ class WireRunTest {
     wireRun.execute(fs, logger)
 
     assertThat(fs.find("generated")).containsExactly(
-        "generated/kt/squareup/routes/Route.kt")
-    assertThat(fs.get("generated/kt/squareup/routes/Route.kt"))
-        .contains("interface Route : Service", "suspend fun GetUpdatedRed")
+        "generated/kt/squareup/routes/RouteClient.kt")
+    assertThat(fs.get("generated/kt/squareup/routes/RouteClient.kt"))
+        .contains("interface RouteClient : Service", "suspend fun GetUpdatedRed")
   }
 
   @Test
@@ -107,9 +107,9 @@ class WireRunTest {
     wireRun.execute(fs, logger)
 
     assertThat(fs.find("generated")).containsExactly(
-        "generated/kt/squareup/routes/Route.kt")
-    assertThat(fs.get("generated/kt/squareup/routes/Route.kt"))
-        .contains("interface Route : Service", "fun GetUpdatedRed")
+        "generated/kt/squareup/routes/RouteBlockingServer.kt")
+    assertThat(fs.get("generated/kt/squareup/routes/RouteBlockingServer.kt"))
+        .contains("interface RouteBlockingServer : Service", "fun GetUpdatedRed")
         .doesNotContain("suspend fun GetUpdatedRed")
   }
 
@@ -130,14 +130,14 @@ class WireRunTest {
     wireRun.execute(fs, logger)
 
     assertThat(fs.find("generated")).containsExactly(
-        "generated/kt/squareup/routes/RouteGetUpdatedBlue.kt",
-        "generated/kt/squareup/routes/RouteGetUpdatedRed.kt")
-    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedBlue.kt"))
-        .contains("interface RouteGetUpdatedBlue : Service")
-        .doesNotContain("interface RouteGetUpdatedRed : Service")
-    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRed.kt"))
-        .contains("interface RouteGetUpdatedRed : Service")
-        .doesNotContain("interface RouteGetUpdatedBlue : Service")
+        "generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt",
+        "generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt")
+    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt"))
+        .contains("interface RouteGetUpdatedBlueClient : Service")
+        .doesNotContain("interface RouteGetUpdatedRedClient : Service")
+    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt"))
+        .contains("interface RouteGetUpdatedRedClient : Service")
+        .doesNotContain("interface RouteGetUpdatedBlueClient : Service")
   }
 
   @Test

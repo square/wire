@@ -24,6 +24,8 @@ import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.java.Profile
 import com.squareup.wire.java.ProfileLoader
 import com.squareup.wire.kotlin.KotlinGenerator
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import okio.buffer
 import okio.source
 import java.io.File
@@ -109,8 +111,7 @@ class RepoBuilder {
 
   fun generateKotlin(typeName: String): String {
     val schema = schema()
-    val kotlinGenerator =
-        KotlinGenerator(schema, emitAndroid = false, javaInterop = false, blockingServices = false)
+    val kotlinGenerator = KotlinGenerator(schema)
     val type = schema.getType(typeName)
     val typeSpec = kotlinGenerator.generateType(type)
     val packageName = kotlinGenerator.generatedTypeName(type).packageName
@@ -124,11 +125,17 @@ class RepoBuilder {
   fun generateGrpcKotlin(
     serviceName: String,
     rpcName: String? = null,
-    blockingServices: Boolean = false
+    rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
+    rpcRole: RpcRole = RpcRole.CLIENT
   ): String {
     val schema = schema()
-    val grpcGenerator = KotlinGenerator(schema, emitAndroid = false, javaInterop = false,
-        blockingServices = blockingServices)
+    val grpcGenerator = KotlinGenerator(
+        schema = schema,
+        emitAndroid = false,
+        javaInterop = false,
+        rpcCallStyle = rpcCallStyle,
+        rpcRole = rpcRole
+    )
     val service = schema.getService(serviceName)
     val rpc = rpcName?.let { service.rpc(rpcName)!! }
     val typeSpec = grpcGenerator.generateService(service, rpc)
