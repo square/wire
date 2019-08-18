@@ -60,186 +60,192 @@ sealed class Target {
     logger: WireLogger
   ): SchemaHandler
 
-  /** Generate `.java` sources. */
-  data class JavaTarget(
-    override val includes: List<String> = listOf("*"),
-    override val excludes: List<String> = listOf(),
-
-    override val exclusive: Boolean = true,
-
-    val outDirectory: String,
-
-    /** True for emitted types to implement `android.os.Parcelable`. */
-    val android: Boolean = false,
-
-    /** True to enable the `androidx.annotation.Nullable` annotation where applicable. */
-    val androidAnnotations: Boolean = false,
-
-    /**
-     * True to emit code that uses reflection for reading, writing, and toString methods which are
-     * normally implemented with generated code.
-     */
-    val compact: Boolean = false
-  ) : Target() {
-    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
-      val profileName = if (android) "android" else "java"
-      val profile = ProfileLoader(fs, profileName)
-          .schema(schema)
-          .load()
-
-      val javaGenerator = JavaGenerator.get(schema)
-          .withProfile(profile)
-          .withAndroid(android)
-          .withAndroidAnnotations(androidAnnotations)
-          .withCompact(compact)
-
-      return object : SchemaHandler {
-        override fun handle(type: Type) {
-          val typeSpec = javaGenerator.generateType(type)
-          val javaTypeName = javaGenerator.generatedTypeName(type)
-          val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
-              .addFileComment("\$L",
-                  WireCompiler.CODE_GENERATED_BY_WIRE)
-              .apply {
-                val location = type.location()
-                if (location != null) {
-                  addFileComment("\nSource file: \$L", location.withPathOnly())
-                }
-              }.build()
-
-          val path = fs.getPath(outDirectory)
-          logger.artifact(path, javaFile)
-          try {
-            javaFile.writeTo(path)
-          } catch (e: IOException) {
-            throw IOException("Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} " +
-                "to $outDirectory", e)
-          }
-        }
-
-        override fun handle(service: Service) {
-          // Service handling isn't supporting in Java.
-        }
-      }
-    }
-  }
-
-  /** Generate `.kt` sources. */
-  data class KotlinTarget(
-    override val includes: List<String> = listOf("*"),
-    override val excludes: List<String> = listOf(),
-
-    override val exclusive: Boolean = true,
-
-    val outDirectory: String,
-
-    /** True for emitted types to implement `android.os.Parcelable`. */
-    val android: Boolean = false,
-
-    /** True for emitted types to implement APIs for easier migration from the Java target. */
-    val javaInterop: Boolean = false,
-
-    /** True for emitted services to provide blocking APIs only. */
-    val blockingServices: Boolean = false,
-
-    /** True for emitted services to implement one interface per RPC. */
-    val singleMethodServices: Boolean = false
-  ) : Target() {
-    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
-      val rpcCallStyle = if (blockingServices) RpcCallStyle.BLOCKING else RpcCallStyle.SUSPENDING
-      val rpcRole = if (blockingServices) RpcRole.SERVER else RpcRole.CLIENT
-
-      val kotlinGenerator = KotlinGenerator(schema, android, javaInterop, rpcCallStyle, rpcRole)
-
-      return object : SchemaHandler {
-        override fun handle(type: Type) {
-          val typeSpec = kotlinGenerator.generateType(type)
-          val className = kotlinGenerator.generatedTypeName(type)
-          val kotlinFile = FileSpec.builder(className.packageName, typeSpec.name!!)
-              .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-              .apply {
-                val location = type.location()
-                if (location != null) {
-                  addComment("\nSource file: %L", location.withPathOnly())
-                }
-              }
-              .addType(typeSpec)
-              .build()
-
-          val path = fs.getPath(outDirectory)
-          logger.artifact(path, kotlinFile)
-
-          try {
-            kotlinFile.writeTo(path)
-          } catch (e: IOException) {
-            throw IOException("Error emitting " +
-                "${kotlinFile.packageName}.${className.canonicalName} to $outDirectory", e)
-          }
-        }
-
-        override fun handle(service: Service) {
-          if (singleMethodServices) {
-            service.rpcs().forEach { rpc ->
-              write(
-                  service,
-                  kotlinGenerator.generatedServiceName(service, rpc),
-                  kotlinGenerator.generateService(service, rpc)
-              )
-            }
-          } else {
-            write(
-                service,
-                kotlinGenerator.generatedServiceName(service),
-                kotlinGenerator.generateService(service)
-            )
-          }
-        }
-
-        private fun write(service: Service, name: ClassName, typeSpec: TypeSpec) {
-          val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
-              .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-              .apply {
-                service.location()?.let { addComment("\nSource file: %L", it.withPathOnly()) }
-              }
-              .addType(typeSpec)
-              .build()
-
-          val path = fs.getPath(outDirectory)
-          logger.artifact(path, kotlinFile)
-
-          try {
-            kotlinFile.writeTo(path)
-          } catch (e: IOException) {
-            throw IOException("Error emitting " +
-                "${kotlinFile.packageName}.${service.type()} to $outDirectory", e)
-          }
-        }
-      }
-    }
-  }
-
-  /** Omit code generation for these sources. Use this for a dry-run. */
-  data class NullTarget(
-    override val includes: List<String> = listOf("*"),
-    override val excludes: List<String> = listOf()
-  ) : Target() {
-    override val exclusive: Boolean = true
-
-    override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
-      return object : SchemaHandler {
-        override fun handle(type: Type) {
-          logger.artifactSkipped(type.type())
-        }
-
-        override fun handle(service: Service) {
-          logger.artifactSkipped(service.type())
-        }
-      }
-    }
-  }
-
   interface SchemaHandler {
     fun handle(type: Type)
     fun handle(service: Service)
+  }
+}
+
+/** Generate `.java` sources. */
+data class JavaTarget(
+  override val includes: List<String> = listOf("*"),
+  override val excludes: List<String> = listOf(),
+
+  override val exclusive: Boolean = true,
+
+  val outDirectory: String,
+
+  /** True for emitted types to implement `android.os.Parcelable`. */
+  val android: Boolean = false,
+
+  /** True to enable the `androidx.annotation.Nullable` annotation where applicable. */
+  val androidAnnotations: Boolean = false,
+
+  /**
+   * True to emit code that uses reflection for reading, writing, and toString methods which are
+   * normally implemented with generated code.
+   */
+  val compact: Boolean = false
+) : Target() {
+  override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+    val profileName = if (android) "android" else "java"
+    val profile = ProfileLoader(fs, profileName)
+        .schema(schema)
+        .load()
+
+    val javaGenerator = JavaGenerator.get(schema)
+        .withProfile(profile)
+        .withAndroid(android)
+        .withAndroidAnnotations(androidAnnotations)
+        .withCompact(compact)
+
+    return object : SchemaHandler {
+      override fun handle(type: Type) {
+        val typeSpec = javaGenerator.generateType(type)
+        val javaTypeName = javaGenerator.generatedTypeName(type)
+        val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
+            .addFileComment("\$L",
+                WireCompiler.CODE_GENERATED_BY_WIRE)
+            .apply {
+              val location = type.location()
+              if (location != null) {
+                addFileComment("\nSource file: \$L", location.withPathOnly())
+              }
+            }.build()
+
+        val path = fs.getPath(outDirectory)
+        logger.artifact(path, javaFile)
+        try {
+          javaFile.writeTo(path)
+        } catch (e: IOException) {
+          throw IOException("Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} " +
+              "to $outDirectory", e)
+        }
+      }
+
+      override fun handle(service: Service) {
+        // Service handling isn't supporting in Java.
+      }
+    }
+  }
+}
+
+/** Generate `.kt` sources. */
+data class KotlinTarget(
+  override val includes: List<String> = listOf("*"),
+  override val excludes: List<String> = listOf(),
+
+  override val exclusive: Boolean = true,
+
+  val outDirectory: String,
+
+  /** True for emitted types to implement `android.os.Parcelable`. */
+  val android: Boolean = false,
+
+  /** True for emitted types to implement APIs for easier migration from the Java target. */
+  val javaInterop: Boolean = false,
+
+  /** Blocking or suspending. */
+  val rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
+
+  /** Client or server. */
+  val rpcRole: RpcRole = RpcRole.CLIENT,
+
+  /** True for emitted services to implement one interface per RPC. */
+  val singleMethodServices: Boolean = false
+) : Target() {
+  override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+    val kotlinGenerator = KotlinGenerator(
+        schema = schema,
+        emitAndroid = android,
+        javaInterop = javaInterop,
+        rpcCallStyle = rpcCallStyle,
+        rpcRole = rpcRole
+    )
+
+    return object : SchemaHandler {
+      override fun handle(type: Type) {
+        val typeSpec = kotlinGenerator.generateType(type)
+        val className = kotlinGenerator.generatedTypeName(type)
+        val kotlinFile = FileSpec.builder(className.packageName, typeSpec.name!!)
+            .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
+            .apply {
+              val location = type.location()
+              if (location != null) {
+                addComment("\nSource file: %L", location.withPathOnly())
+              }
+            }
+            .addType(typeSpec)
+            .build()
+
+        val path = fs.getPath(outDirectory)
+        logger.artifact(path, kotlinFile)
+
+        try {
+          kotlinFile.writeTo(path)
+        } catch (e: IOException) {
+          throw IOException("Error emitting " +
+              "${kotlinFile.packageName}.${className.canonicalName} to $outDirectory", e)
+        }
+      }
+
+      override fun handle(service: Service) {
+        if (singleMethodServices) {
+          service.rpcs().forEach { rpc ->
+            write(
+                service,
+                kotlinGenerator.generatedServiceName(service, rpc),
+                kotlinGenerator.generateService(service, rpc)
+            )
+          }
+        } else {
+          write(
+              service,
+              kotlinGenerator.generatedServiceName(service),
+              kotlinGenerator.generateService(service)
+          )
+        }
+      }
+
+      private fun write(service: Service, name: ClassName, typeSpec: TypeSpec) {
+        val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
+            .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
+            .apply {
+              service.location()?.let { addComment("\nSource file: %L", it.withPathOnly()) }
+            }
+            .addType(typeSpec)
+            .build()
+
+        val path = fs.getPath(outDirectory)
+        logger.artifact(path, kotlinFile)
+
+        try {
+          kotlinFile.writeTo(path)
+        } catch (e: IOException) {
+          throw IOException("Error emitting " +
+              "${kotlinFile.packageName}.${service.type()} to $outDirectory", e)
+        }
+      }
+    }
+  }
+}
+
+/** Omit code generation for these sources. Use this for a dry-run. */
+data class NullTarget(
+  override val includes: List<String> = listOf("*"),
+  override val excludes: List<String> = listOf()
+) : Target() {
+  override val exclusive: Boolean = true
+
+  override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+    return object : SchemaHandler {
+      override fun handle(type: Type) {
+        logger.artifactSkipped(type.type())
+      }
+
+      override fun handle(service: Service) {
+        logger.artifactSkipped(service.type())
+      }
+    }
   }
 }
