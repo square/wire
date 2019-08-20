@@ -15,11 +15,11 @@
  */
 package com.squareup.wire.gradle
 
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.Target
-import com.squareup.wire.kotlin.RpcCallStyle
-import com.squareup.wire.kotlin.RpcRole
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
@@ -97,11 +97,20 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var exclusive: Boolean = true
   var android: Boolean = false
   var javaInterop: Boolean = false
-  var rpcCallStyle = RpcCallStyle.SUSPENDING
-  var rpcRole = RpcRole.CLIENT
+  var rpcCallStyle: String = "suspending"
+  var rpcRole: String = "client"
   var singleMethodServices: Boolean = false
 
   override fun toTarget(): KotlinTarget {
+    val rpcCallStyle = RpcCallStyle.values()
+        .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
+        ?: throw IllegalArgumentException(
+            "Unknown rpcCallStyle $rpcCallStyle. Valid values: ${RpcCallStyle.values().contentToString()}")
+    val rpcRole = RpcRole.values()
+        .singleOrNull { it.toString().equals(rpcRole, ignoreCase = true) }
+        ?: throw IllegalArgumentException(
+            "Unknown rpcRole $rpcRole. Valid values: ${RpcRole.values().contentToString()}")
+
     return KotlinTarget(
         includes = includes ?: listOf("*"),
         excludes = excludes ?: listOf(),
