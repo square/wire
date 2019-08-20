@@ -18,4 +18,5 @@ dependencies {
   implementation deps.kotlin.coroutines.core
   testImplementation project(':wire-test-utils')
   testImplementation deps.kotlin.test.junit
+  testImplementation deps.kotlin.test.kotlinCompilerUtil
 }

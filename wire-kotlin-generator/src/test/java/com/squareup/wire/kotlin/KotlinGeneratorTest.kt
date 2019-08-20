@@ -18,6 +18,7 @@ package com.squareup.wire.kotlin
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.schema.IdentifierSet
 import com.squareup.wire.schema.RepoBuilder
+import io.github.sullis.kotlin.compiler.KotlinCompiler
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -50,6 +51,7 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))
     assertTrue(code.contains("enum class PhoneType(    override val value: Int  ) : WireEnum"))
     assertTrue(code.contains("WORK(1),"))
+    assertCodeCompiles(code)
   }
 
   @Test fun defaultValues() {
@@ -618,6 +620,11 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("else -> reader.readUnknownField(tag_)"))
   }
 
+  private fun assertCodeCompiles(code: String) {
+    val result = KotlinCompiler().compileSourceCode(code)
+    assertTrue(result.isSuccess(), result.errors.toString())
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {
@@ -651,4 +658,5 @@ class KotlinGeneratorTest {
           |  optional int32 elapsed_time = 4;
           |}""".trimMargin()
   }
+
 }

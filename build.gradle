@@ -63,6 +63,7 @@ buildscript {
               'annotations': "org.jetbrains.kotlin:kotlin-test-annotations-common",    
               'junit': "org.jetbrains.kotlin:kotlin-test-junit",
               'js': "org.jetbrains.kotlin:kotlin-test-js",
+              'kotlinCompilerUtil' : "io.github.sullis:kotlin-compiler-util:0.0.1",
           ],
           'coroutines': [
               'core': "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
