@@ -319,13 +319,13 @@ wire {
     // target.
     javaInterop = true
 
-    // SUSPENDING to generate coroutines APIs that require a Kotlin coroutines context.
-    // BLOCKING to generate blocking APIs callable by Java and Kotlin.
-    rpcCallStyle = com.squareup.wire.kotlin.RpcCallStyle.BLOCKING
+    // `suspending` to generate coroutines APIs that require a Kotlin coroutines context.
+    // `blocking` to generate blocking APIs callable by Java and Kotlin.
+    rpcCallStyle = 'blocking'
 
-    // CLIENT to generate interfaces best suited to sending outbound calls.
-    // SERVER to generate interfaces best suited to receiving inbound calls.
-    rpcRole = com.squareup.wire.kotlin.RpcRole.SERVER
+    // `client` to generate interfaces best suited to sending outbound calls.
+    // `server` to generate interfaces best suited to receiving inbound calls.
+    rpcRole = 'server'
 
     // True for emitted services to implement one interface per RPC.
     singleMethodServices = true

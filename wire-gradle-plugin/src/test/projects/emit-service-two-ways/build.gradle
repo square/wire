@@ -9,14 +9,14 @@ wire {
   kotlin {
     exclusive = false
     singleMethodServices = true
-    rpcCallStyle = com.squareup.wire.kotlin.RpcCallStyle.BLOCKING
-    rpcRole = com.squareup.wire.kotlin.RpcRole.SERVER
+    rpcCallStyle = 'blocking'
+    rpcRole = 'server'
   }
   // Coroutines Client API.
   kotlin {
     exclusive = false
     singleMethodServices = false
-    rpcCallStyle = com.squareup.wire.kotlin.RpcCallStyle.SUSPENDING
-    rpcRole = com.squareup.wire.kotlin.RpcRole.CLIENT
+    rpcCallStyle = 'suspending'
+    rpcRole = 'client'
   }
 }
