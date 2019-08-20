@@ -21,4 +21,7 @@ import java.io.Closeable
 actual interface MessageSink<in T : Any> : Closeable {
   @Throws(IOException::class)
   actual fun write(message: T)
+
+  @Throws(IOException::class)
+  actual fun cancel()
 }

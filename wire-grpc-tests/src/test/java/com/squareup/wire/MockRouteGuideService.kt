@@ -221,7 +221,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
           else -> return
         }
       }
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
       runBlocking {
         scriptResults.send(e)
       }

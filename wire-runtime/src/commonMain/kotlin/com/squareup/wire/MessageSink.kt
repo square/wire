@@ -44,10 +44,27 @@ expect interface MessageSink<in T : Any> {
   /**
    * Encode [message] to bytes and enqueue the bytes for delivery, waiting if necessary until the
    * delivery channel has capacity for the encoded message.
+   *
+   * @throws IllegalStateException if this stream is closed.
    */
   @Throws(IOException::class)
   fun write(message: T)
 
+  /**
+   * Truncate this stream abnormally. This attempts to signal to readers of this data that it is
+   * incomplete. Note that unlike some cancel methods this is not safe for concurrent use.
+   *
+   * A stream must be closed after it is canceled.
+   *
+   * @throws IllegalStateException if this stream is closed.
+   */
+  @Throws(IOException::class)
+  fun cancel()
+
+  /**
+   * Terminate the stream and release its resources. If this has not been canceled this signals a
+   * normal completion of the stream.
+   */
   @Throws(IOException::class)
   fun close()
 }

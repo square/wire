@@ -46,7 +46,13 @@ internal fun <S : Any> newRequestBody(
     override fun contentType() = APPLICATION_GRPC_MEDIA_TYPE
 
     override fun writeTo(sink: BufferedSink) {
-      GrpcMessageSink(sink, requestAdapter, grpcEncoding = "identity").use {
+      val grpcMessageSink = GrpcMessageSink(
+          sink = sink,
+          messageAdapter = requestAdapter,
+          callForCancel = null,
+          grpcEncoding = "identity"
+      )
+      grpcMessageSink.use {
         it.write(onlyMessage)
       }
     }
@@ -63,10 +69,14 @@ internal fun newDuplexRequestBody(): PipeDuplexRequestBody {
 
 /** Writes messages to the request body. */
 internal fun <S : Any> PipeDuplexRequestBody.messageSink(
-  requestAdapter: ProtoAdapter<S>
-): GrpcMessageSink<S> {
-  return GrpcMessageSink(createSink(), requestAdapter, grpcEncoding = "identity")
-}
+  requestAdapter: ProtoAdapter<S>,
+  callForCancel: Call
+) = GrpcMessageSink(
+    sink = createSink(),
+    messageAdapter = requestAdapter,
+    callForCancel = callForCancel,
+    grpcEncoding = "identity"
+)
 
 /** Sends the response messages to the channel. */
 internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
@@ -104,12 +114,19 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
  */
 internal fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestBody: PipeDuplexRequestBody,
-  requestAdapter: ProtoAdapter<S>
+  requestAdapter: ProtoAdapter<S>,
+  callForCancel: Call
 ) {
   CoroutineScope(Dispatchers.IO).launch {
-    requestBody.messageSink(requestAdapter).use { requestWriter ->
-      consumeEach { message ->
-        requestWriter.write(message)
+    requestBody.messageSink(requestAdapter, callForCancel).use { requestWriter ->
+      var success = false
+      try {
+        consumeEach { message ->
+          requestWriter.write(message)
+        }
+        success = true
+      } finally {
+        if (!success) requestWriter.cancel()
       }
     }
   }
