@@ -811,6 +811,14 @@ public final class JavaGenerator {
         .addStatement("return fromValue($N)", value)
         .build());
 
+    builder.addMethod(MethodSpec.methodBuilder("redact")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .returns(javaType)
+        .addParameter(javaType, "value")
+        .addStatement("return value")
+        .build());
+
     return builder.build();
   }
 
