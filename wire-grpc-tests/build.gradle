@@ -13,6 +13,7 @@ apply plugin: 'java-library'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'ru.vyarus.animalsniffer'
 apply plugin: 'com.google.protobuf'
+apply plugin: 'com.squareup.wire'
 
 protobuf {
   plugins {
@@ -45,6 +46,20 @@ sourceSets {
 jar {
   manifest {
     attributes('Automatic-Module-Name': 'wire-grpc-tests')
+  }
+}
+
+wire {
+  sourcePath {
+    srcDir "src/test/proto"
+  }
+  kotlin {
+    out "src/test/proto-grpc"
+    exclusive = false
+    includes = ['routeguide.RouteGuideProto']
+    rpcCallStyle = 'blocking'
+    rpcRole = 'server'
+    singleMethodServices = true
   }
 }
 
