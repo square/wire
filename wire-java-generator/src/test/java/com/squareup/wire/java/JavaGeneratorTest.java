@@ -295,6 +295,11 @@ public final class JavaGeneratorTest {
         + "    int value = reader.readVarint32();\n"
         + "    return fromValue(value);\n"
         + "  }\n"
+        + "\n"
+        + "  @Override\n"
+        + "  public JavaCoinFlip redact(JavaCoinFlip value) {\n"
+        + "    return value;\n"
+        + "  }\n"
         + "}\n");
   }
 
