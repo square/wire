@@ -174,11 +174,11 @@ class KotlinGeneratorTest {
           |
           |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
-          |    path = "/routeguide.RouteGuide/GetFeature",
+          |    path = "/routeguide.RouteGuide/RecordRoute",
           |    requestAdapter = "routeguide.Point#ADAPTER",
-          |    responseAdapter = "routeguide.Feature#ADAPTER"
+          |    responseAdapter = "routeguide.RouteSummary#ADAPTER"
           |  )
-          |  fun GetFeature(request: MessageSource<Point>): Feature
+          |  fun RecordRoute(request: MessageSource<Point>): RouteSummary
           |}
           |""".trimMargin()
 
@@ -187,10 +187,10 @@ class KotlinGeneratorTest {
           |package routeguide;
           |
           |service RouteGuide {
-          |  rpc GetFeature(stream Point) returns (Feature) {}
+          |  rpc RecordRoute(stream Point) returns (RouteSummary) {}
           |}
           |$pointMessage
-          |$featureMessage
+          |$routeSummaryMessage
           |""".trimMargin())
     assertEquals(expected, repoBuilder.generateGrpcKotlin(
         "routeguide.RouteGuide", rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER))
@@ -206,11 +206,11 @@ class KotlinGeneratorTest {
           |
           |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
-          |    path = "/routeguide.RouteGuide/GetFeature",
-          |    requestAdapter = "routeguide.Point#ADAPTER",
+          |    path = "/routeguide.RouteGuide/ListFeatures",
+          |    requestAdapter = "routeguide.Rectangle#ADAPTER",
           |    responseAdapter = "routeguide.Feature#ADAPTER"
           |  )
-          |  fun GetFeature(request: Point, response: MessageSink<Feature>)
+          |  fun ListFeatures(request: Rectangle, response: MessageSink<Feature>)
           |}
           |""".trimMargin()
 
@@ -219,9 +219,10 @@ class KotlinGeneratorTest {
           |package routeguide;
           |
           |service RouteGuide {
-          |  rpc GetFeature(Point) returns (stream Feature) {}
+          |  rpc ListFeatures(Rectangle) returns (stream Feature) {}
           |}
           |$pointMessage
+          |$rectangeMessage
           |$featureMessage
           |""".trimMargin())
     assertEquals(expected, repoBuilder.generateGrpcKotlin(
@@ -239,11 +240,11 @@ class KotlinGeneratorTest {
           |
           |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
-          |    path = "/routeguide.RouteGuide/GetFeature",
-          |    requestAdapter = "routeguide.Point#ADAPTER",
-          |    responseAdapter = "routeguide.Feature#ADAPTER"
+          |    path = "/routeguide.RouteGuide/RouteChat",
+          |    requestAdapter = "routeguide.RouteNote#ADAPTER",
+          |    responseAdapter = "routeguide.RouteNote#ADAPTER"
           |  )
-          |  fun GetFeature(request: MessageSource<Point>, response: MessageSink<Feature>)
+          |  fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>)
           |}
           |""".trimMargin()
 
@@ -252,10 +253,11 @@ class KotlinGeneratorTest {
           |package routeguide;
           |
           |service RouteGuide {
-          |  rpc GetFeature(stream Point) returns (stream Feature) {}
+          |  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
           |}
           |$pointMessage
-          |$featureMessage
+          |$rectangeMessage
+          |$routeNoteMessage
           |""".trimMargin())
     assertEquals(expected, repoBuilder.generateGrpcKotlin(
         "routeguide.RouteGuide", rpcCallStyle = RpcCallStyle.BLOCKING, rpcRole = RpcRole.SERVER))
