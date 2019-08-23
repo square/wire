@@ -52,7 +52,7 @@ class RedactedOneOf(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedOneOf) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && b == other.b
         && c == other.c
   }
@@ -77,7 +77,7 @@ class RedactedOneOf(
   fun copy(
     b: Int? = this.b,
     c: String? = this.c,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): RedactedOneOf = RedactedOneOf(b, c, unknownFields)
 
   companion object {
@@ -89,12 +89,12 @@ class RedactedOneOf(
       override fun encodedSize(value: RedactedOneOf): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.b) +
         ProtoAdapter.STRING.encodedSizeWithTag(2, value.c) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: RedactedOneOf) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): RedactedOneOf {

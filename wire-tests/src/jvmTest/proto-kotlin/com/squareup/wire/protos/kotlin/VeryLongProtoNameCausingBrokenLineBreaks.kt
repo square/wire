@@ -42,7 +42,7 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VeryLongProtoNameCausingBrokenLineBreaks) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && foo == other.foo
   }
 
@@ -62,7 +62,7 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
         ", ", postfix = "}")
   }
 
-  fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields):
+  fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields()):
       VeryLongProtoNameCausingBrokenLineBreaks = VeryLongProtoNameCausingBrokenLineBreaks(foo,
       unknownFields)
 
@@ -75,11 +75,11 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
     ) {
       override fun encodedSize(value: VeryLongProtoNameCausingBrokenLineBreaks): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: VeryLongProtoNameCausingBrokenLineBreaks) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): VeryLongProtoNameCausingBrokenLineBreaks {

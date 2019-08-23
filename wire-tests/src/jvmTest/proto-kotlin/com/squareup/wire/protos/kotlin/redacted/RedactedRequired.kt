@@ -42,7 +42,7 @@ class RedactedRequired(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedRequired) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && a == other.a
   }
 
@@ -61,7 +61,7 @@ class RedactedRequired(
     return result.joinToString(prefix = "RedactedRequired{", separator = ", ", postfix = "}")
   }
 
-  fun copy(a: String = this.a, unknownFields: ByteString = this.unknownFields): RedactedRequired =
+  fun copy(a: String = this.a, unknownFields: ByteString = this.unknownFields()): RedactedRequired =
       RedactedRequired(a, unknownFields)
 
   companion object {
@@ -72,11 +72,11 @@ class RedactedRequired(
     ) {
       override fun encodedSize(value: RedactedRequired): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: RedactedRequired) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): RedactedRequired {

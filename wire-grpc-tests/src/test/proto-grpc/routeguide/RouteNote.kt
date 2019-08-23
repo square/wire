@@ -53,7 +53,7 @@ class RouteNote(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteNote) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && location == other.location
         && message == other.message
   }
@@ -78,7 +78,7 @@ class RouteNote(
   fun copy(
     location: Point? = this.location,
     message: String? = this.message,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): RouteNote = RouteNote(location, message, unknownFields)
 
   companion object {
@@ -90,12 +90,12 @@ class RouteNote(
       override fun encodedSize(value: RouteNote): Int = 
         Point.ADAPTER.encodedSizeWithTag(1, value.location) +
         ProtoAdapter.STRING.encodedSizeWithTag(2, value.message) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: RouteNote) {
         Point.ADAPTER.encodeWithTag(writer, 1, value.location)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): RouteNote {

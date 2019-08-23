@@ -35,14 +35,14 @@ class MessageWithStatus(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageWithStatus) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields().hashCode()
 
   override fun toString(): String = "MessageWithStatus{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): MessageWithStatus =
+  fun copy(unknownFields: ByteString = this.unknownFields()): MessageWithStatus =
       MessageWithStatus(unknownFields)
 
   companion object {
@@ -52,10 +52,10 @@ class MessageWithStatus(
       MessageWithStatus::class
     ) {
       override fun encodedSize(value: MessageWithStatus): Int = 
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: MessageWithStatus) {
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): MessageWithStatus {

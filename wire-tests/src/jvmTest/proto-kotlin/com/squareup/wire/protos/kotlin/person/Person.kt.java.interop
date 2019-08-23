@@ -74,14 +74,14 @@ class Person(
     builder.id = id
     builder.email = email
     builder.phone = phone
-    builder.addUnknownFields(unknownFields)
+    builder.addUnknownFields(unknownFields())
     return builder
   }
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Person) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && name == other.name
         && id == other.id
         && email == other.email
@@ -114,7 +114,7 @@ class Person(
     id: Int = this.id,
     email: String? = this.email,
     phone: List<PhoneNumber> = this.phone,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): Person = Person(name, id, email, phone, unknownFields)
 
   class Builder : Message.Builder<Person, Builder>() {
@@ -183,14 +183,14 @@ class Person(
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) +
         ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) +
         PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: Person) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): Person {
@@ -282,14 +282,14 @@ class Person(
       val builder = Builder()
       builder.number = number
       builder.type = type
-      builder.addUnknownFields(unknownFields)
+      builder.addUnknownFields(unknownFields())
       return builder
     }
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is PhoneNumber) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
           && number == other.number
           && type == other.type
     }
@@ -314,7 +314,7 @@ class Person(
     fun copy(
       number: String = this.number,
       type: PhoneType? = this.type,
-      unknownFields: ByteString = this.unknownFields
+      unknownFields: ByteString = this.unknownFields()
     ): PhoneNumber = PhoneNumber(number, type, unknownFields)
 
     class Builder : Message.Builder<PhoneNumber, Builder>() {
@@ -359,12 +359,12 @@ class Person(
         override fun encodedSize(value: PhoneNumber): Int = 
           ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
           PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) +
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: PhoneNumber) {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
           PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): PhoneNumber {

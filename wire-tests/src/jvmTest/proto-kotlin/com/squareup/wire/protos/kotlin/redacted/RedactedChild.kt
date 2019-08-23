@@ -49,7 +49,7 @@ class RedactedChild(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedChild) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && a == other.a
         && b == other.b
         && c == other.c
@@ -78,7 +78,7 @@ class RedactedChild(
     a: String? = this.a,
     b: Redacted? = this.b,
     c: NotRedacted? = this.c,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): RedactedChild = RedactedChild(a, b, c, unknownFields)
 
   companion object {
@@ -91,13 +91,13 @@ class RedactedChild(
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
         Redacted.ADAPTER.encodedSizeWithTag(2, value.b) +
         NotRedacted.ADAPTER.encodedSizeWithTag(3, value.c) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: RedactedChild) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         Redacted.ADAPTER.encodeWithTag(writer, 2, value.b)
         NotRedacted.ADAPTER.encodeWithTag(writer, 3, value.c)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): RedactedChild {

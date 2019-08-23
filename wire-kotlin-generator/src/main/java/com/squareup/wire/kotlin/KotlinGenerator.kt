@@ -375,7 +375,7 @@ class KotlinGenerator private constructor(
     }
 
     return funBuilder
-        .addStatement("builder.addUnknownFields(unknownFields)")
+        .addStatement("builder.addUnknownFields(unknownFields())")
         .addStatement("return builder")
         .build()
   }
@@ -385,7 +385,7 @@ class KotlinGenerator private constructor(
   // override fun equals(other: Any?): Boolean {
   //   if (other === this) return true
   //   if (other !is SimpleMessage) return false
-  //   return unknownFields == other.unknownFields
+  //   return unknownFields == other.unknownFields()
   //       && optional_int32 == other.optional_int32
   // }
   private fun generateEqualsMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
@@ -400,7 +400,7 @@ class KotlinGenerator private constructor(
     val body = buildCodeBlock {
       addStatement("if (%N === this) return true", otherName)
       addStatement("if (%N !is %T) return false", otherName, kotlinType)
-      add("«return unknownFields == %N.unknownFields", otherName)
+      add("«return unknownFields() == %N.unknownFields()", otherName)
       val fields = type.fieldsAndOneOfFields()
       for (field in fields) {
         val fieldName = localNameAllocator[field]
@@ -418,7 +418,7 @@ class KotlinGenerator private constructor(
   // override fun hashCode(): Int {
   //   var result = super.hashCode
   //   if (result == 0) {
-  //     result = unknownFields.hashCode()
+  //     result = unknownFields().hashCode()
   //     result = result * 37 + f?.hashCode()
   //     super.hashCode = result
   //   }
@@ -437,7 +437,7 @@ class KotlinGenerator private constructor(
 
     val fields = type.fieldsAndOneOfFields()
     if (fields.isEmpty()) {
-      result.addStatement("return unknownFields.hashCode()")
+      result.addStatement("return unknownFields().hashCode()")
       return result.build()
     }
 
@@ -475,7 +475,7 @@ class KotlinGenerator private constructor(
   //   id: Int = this.id,
   //   email: String? = this.email,
   //   phone: List<PhoneNumber> = this.phone,
-  //   unknownFields: ByteString = this.unknownFields
+  //   unknownFields: ByteString = this.unknownFields()
   // ): Person {
   //   return Person(name, id, email, phone, unknownFields)
   // }
@@ -492,7 +492,7 @@ class KotlinGenerator private constructor(
       fieldNames += fieldName
     }
     result.addParameter(ParameterSpec.builder("unknownFields", ByteString::class)
-        .defaultValue("this.unknownFields")
+        .defaultValue("this.unknownFields()")
         .build())
     fieldNames += "unknownFields"
     result.addStatement("return %L", fieldNames
@@ -882,7 +882,7 @@ class KotlinGenerator private constructor(
             field.tag(),
             fieldName)
       }
-      add("value.unknownFields.size⇤\n")
+      add("value.unknownFields().size⇤\n")
     }
     return FunSpec.builder("encodedSize")
         .addParameter("value", className)
@@ -906,7 +906,7 @@ class KotlinGenerator private constructor(
             field.tag(),
             fieldName)
       }
-      addStatement("writer.writeBytes(value.unknownFields)")
+      addStatement("writer.writeBytes(value.unknownFields())")
     }
 
     return FunSpec.builder("encode")

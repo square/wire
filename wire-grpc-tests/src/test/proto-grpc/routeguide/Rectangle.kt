@@ -54,7 +54,7 @@ class Rectangle(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Rectangle) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && lo == other.lo
         && hi == other.hi
   }
@@ -79,7 +79,7 @@ class Rectangle(
   fun copy(
     lo: Point? = this.lo,
     hi: Point? = this.hi,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): Rectangle = Rectangle(lo, hi, unknownFields)
 
   companion object {
@@ -91,12 +91,12 @@ class Rectangle(
       override fun encodedSize(value: Rectangle): Int = 
         Point.ADAPTER.encodedSizeWithTag(1, value.lo) +
         Point.ADAPTER.encodedSizeWithTag(2, value.hi) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: Rectangle) {
         Point.ADAPTER.encodeWithTag(writer, 1, value.lo)
         Point.ADAPTER.encodeWithTag(writer, 2, value.hi)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): Rectangle {

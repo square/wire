@@ -32,14 +32,14 @@ class NoPackageRequest(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoPackageRequest) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields().hashCode()
 
   override fun toString(): String = "NoPackageRequest{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): NoPackageRequest =
+  fun copy(unknownFields: ByteString = this.unknownFields()): NoPackageRequest =
       NoPackageRequest(unknownFields)
 
   companion object {
@@ -49,10 +49,10 @@ class NoPackageRequest(
       NoPackageRequest::class
     ) {
       override fun encodedSize(value: NoPackageRequest): Int = 
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: NoPackageRequest) {
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): NoPackageRequest {

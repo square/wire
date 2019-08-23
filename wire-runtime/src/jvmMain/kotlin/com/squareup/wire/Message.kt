@@ -28,17 +28,21 @@ actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>>
 protected actual constructor(
   /** The [ProtoAdapter] for encoding and decoding messages of this type. */
   @field:Transient @get:JvmName("adapter") actual val adapter: ProtoAdapter<M>,
-  /**
-   * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
-   * an empty byte string if this message has no unknown fields.
-   */
-  @field:Transient @get:JvmName("unknownFields") actual val unknownFields: ByteString
+  unknownFields: ByteString
 ) : Serializable {
+  @field:Transient private val unknownFields: ByteString? = unknownFields
+
   /** If not `0` then the serialized size of this message. */
   @Transient internal var cachedSerializedSize = 0
 
   /** If non-zero, the hash code of this message. Accessed by generated code. */
   @Transient @JvmField protected actual var hashCode = 0
+
+  /**
+   * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
+   * an empty byte string if this message has no unknown fields.
+   */
+  actual fun unknownFields(): ByteString = unknownFields ?: ByteString.EMPTY
 
   /**
    * Returns a new builder initialized with the data in this message.

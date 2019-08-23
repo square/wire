@@ -32,14 +32,14 @@ class NoFields(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoFields) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields().hashCode()
 
   override fun toString(): String = "NoFields{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): NoFields = NoFields(unknownFields)
+  fun copy(unknownFields: ByteString = this.unknownFields()): NoFields = NoFields(unknownFields)
 
   companion object {
     @JvmField
@@ -48,10 +48,10 @@ class NoFields(
       NoFields::class
     ) {
       override fun encodedSize(value: NoFields): Int = 
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: NoFields) {
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): NoFields {

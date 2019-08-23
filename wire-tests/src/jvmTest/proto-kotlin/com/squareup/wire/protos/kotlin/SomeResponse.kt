@@ -32,14 +32,14 @@ class SomeResponse(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is SomeResponse) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields().hashCode()
 
   override fun toString(): String = "SomeResponse{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): SomeResponse =
+  fun copy(unknownFields: ByteString = this.unknownFields()): SomeResponse =
       SomeResponse(unknownFields)
 
   companion object {
@@ -49,10 +49,10 @@ class SomeResponse(
       SomeResponse::class
     ) {
       override fun encodedSize(value: SomeResponse): Int = 
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: SomeResponse) {
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): SomeResponse {

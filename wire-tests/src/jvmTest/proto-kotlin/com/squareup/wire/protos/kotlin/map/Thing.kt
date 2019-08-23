@@ -39,7 +39,7 @@ class Thing(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Thing) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && name == other.name
   }
 
@@ -58,7 +58,7 @@ class Thing(
     return result.joinToString(prefix = "Thing{", separator = ", ", postfix = "}")
   }
 
-  fun copy(name: String? = this.name, unknownFields: ByteString = this.unknownFields): Thing =
+  fun copy(name: String? = this.name, unknownFields: ByteString = this.unknownFields()): Thing =
       Thing(name, unknownFields)
 
   companion object {
@@ -69,11 +69,11 @@ class Thing(
     ) {
       override fun encodedSize(value: Thing): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: Thing) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): Thing {

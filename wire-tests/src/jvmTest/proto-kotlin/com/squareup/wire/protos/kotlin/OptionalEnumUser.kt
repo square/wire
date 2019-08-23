@@ -42,7 +42,7 @@ class OptionalEnumUser(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OptionalEnumUser) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && optional_enum == other.optional_enum
   }
 
@@ -62,7 +62,7 @@ class OptionalEnumUser(
   }
 
   fun copy(optional_enum: OptionalEnum? = this.optional_enum, unknownFields: ByteString =
-      this.unknownFields): OptionalEnumUser = OptionalEnumUser(optional_enum, unknownFields)
+      this.unknownFields()): OptionalEnumUser = OptionalEnumUser(optional_enum, unknownFields)
 
   companion object {
     @JvmField
@@ -72,11 +72,11 @@ class OptionalEnumUser(
     ) {
       override fun encodedSize(value: OptionalEnumUser): Int = 
         OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: OptionalEnumUser) {
         OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): OptionalEnumUser {

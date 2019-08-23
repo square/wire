@@ -73,7 +73,7 @@ class RouteSummary(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteSummary) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && point_count == other.point_count
         && feature_count == other.feature_count
         && distance == other.distance
@@ -106,7 +106,7 @@ class RouteSummary(
     feature_count: Int? = this.feature_count,
     distance: Int? = this.distance,
     elapsed_time: Int? = this.elapsed_time,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): RouteSummary = RouteSummary(point_count, feature_count, distance, elapsed_time, unknownFields)
 
   companion object {
@@ -120,14 +120,14 @@ class RouteSummary(
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.feature_count) +
         ProtoAdapter.INT32.encodedSizeWithTag(3, value.distance) +
         ProtoAdapter.INT32.encodedSizeWithTag(4, value.elapsed_time) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: RouteSummary) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.point_count)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.feature_count)
         ProtoAdapter.INT32.encodeWithTag(writer, 3, value.distance)
         ProtoAdapter.INT32.encodeWithTag(writer, 4, value.elapsed_time)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): RouteSummary {

@@ -44,7 +44,7 @@ class NotRedacted(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NotRedacted) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && a == other.a
         && b == other.b
   }
@@ -69,7 +69,7 @@ class NotRedacted(
   fun copy(
     a: String? = this.a,
     b: String? = this.b,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): NotRedacted = NotRedacted(a, b, unknownFields)
 
   companion object {
@@ -81,12 +81,12 @@ class NotRedacted(
       override fun encodedSize(value: NotRedacted): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
         ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: NotRedacted) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): NotRedacted {

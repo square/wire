@@ -817,7 +817,7 @@ class AllTypes(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllTypes) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && opt_int32 == other.opt_int32
         && opt_uint32 == other.opt_uint32
         && opt_sint32 == other.opt_sint32
@@ -1387,7 +1387,7 @@ class AllTypes(
     ext_map_string_string: Map<String, String> = this.ext_map_string_string,
     ext_map_string_message: Map<String, NestedMessage> = this.ext_map_string_message,
     ext_map_string_enum: Map<String, NestedEnum> = this.ext_map_string_enum,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): AllTypes = AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
       opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
       opt_string, opt_bytes, opt_nested_enum, opt_nested_message, req_int32, req_uint32, req_sint32,
@@ -1617,7 +1617,7 @@ class AllTypes(
         ext_map_string_stringAdapter.encodedSizeWithTag(1402, value.ext_map_string_string) +
         ext_map_string_messageAdapter.encodedSizeWithTag(1503, value.ext_map_string_message) +
         ext_map_string_enumAdapter.encodedSizeWithTag(1504, value.ext_map_string_enum) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: AllTypes) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
@@ -1757,7 +1757,7 @@ class AllTypes(
         ext_map_string_stringAdapter.encodeWithTag(writer, 1402, value.ext_map_string_string)
         ext_map_string_messageAdapter.encodeWithTag(writer, 1503, value.ext_map_string_message)
         ext_map_string_enumAdapter.encodeWithTag(writer, 1504, value.ext_map_string_enum)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): AllTypes {
@@ -2237,7 +2237,7 @@ class AllTypes(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
           && a == other.a
     }
 
@@ -2256,7 +2256,7 @@ class AllTypes(
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    fun copy(a: Int? = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage =
+    fun copy(a: Int? = this.a, unknownFields: ByteString = this.unknownFields()): NestedMessage =
         NestedMessage(a, unknownFields)
 
     companion object {
@@ -2267,11 +2267,11 @@ class AllTypes(
       ) {
         override fun encodedSize(value: NestedMessage): Int = 
           ProtoAdapter.INT32.encodedSizeWithTag(1, value.a) +
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: NestedMessage) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): NestedMessage {

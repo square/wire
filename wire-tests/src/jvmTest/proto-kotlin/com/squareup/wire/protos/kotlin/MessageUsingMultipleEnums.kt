@@ -47,7 +47,7 @@ class MessageUsingMultipleEnums(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageUsingMultipleEnums) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && a == other.a
         && b == other.b
   }
@@ -73,7 +73,7 @@ class MessageUsingMultipleEnums(
   fun copy(
     a: MessageWithStatus.Status? = this.a,
     b: OtherMessageWithStatus.Status? = this.b,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): MessageUsingMultipleEnums = MessageUsingMultipleEnums(a, b, unknownFields)
 
   companion object {
@@ -86,12 +86,12 @@ class MessageUsingMultipleEnums(
       override fun encodedSize(value: MessageUsingMultipleEnums): Int = 
         MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a) +
         OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums) {
         MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
         OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {

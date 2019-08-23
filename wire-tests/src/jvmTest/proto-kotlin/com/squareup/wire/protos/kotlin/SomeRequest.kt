@@ -32,14 +32,15 @@ class SomeRequest(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is SomeRequest) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  override fun hashCode(): Int = unknownFields().hashCode()
 
   override fun toString(): String = "SomeRequest{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): SomeRequest = SomeRequest(unknownFields)
+  fun copy(unknownFields: ByteString = this.unknownFields()): SomeRequest =
+      SomeRequest(unknownFields)
 
   companion object {
     @JvmField
@@ -48,10 +49,10 @@ class SomeRequest(
       SomeRequest::class
     ) {
       override fun encodedSize(value: SomeRequest): Int = 
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: SomeRequest) {
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): SomeRequest {

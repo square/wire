@@ -68,7 +68,7 @@ class OneOfMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneOfMessage) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && foo == other.foo
         && bar == other.bar
         && baz == other.baz
@@ -97,7 +97,7 @@ class OneOfMessage(
     foo: Int? = this.foo,
     bar: String? = this.bar,
     baz: String? = this.baz,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): OneOfMessage = OneOfMessage(foo, bar, baz, unknownFields)
 
   companion object {
@@ -110,13 +110,13 @@ class OneOfMessage(
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
         ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) +
         ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: OneOfMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
         ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): OneOfMessage {

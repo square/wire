@@ -44,7 +44,7 @@ class FeatureDatabase(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FeatureDatabase) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && feature == other.feature
   }
 
@@ -63,7 +63,7 @@ class FeatureDatabase(
     return result.joinToString(prefix = "FeatureDatabase{", separator = ", ", postfix = "}")
   }
 
-  fun copy(feature: List<Feature> = this.feature, unknownFields: ByteString = this.unknownFields):
+  fun copy(feature: List<Feature> = this.feature, unknownFields: ByteString = this.unknownFields()):
       FeatureDatabase = FeatureDatabase(feature, unknownFields)
 
   companion object {
@@ -74,11 +74,11 @@ class FeatureDatabase(
     ) {
       override fun encodedSize(value: FeatureDatabase): Int = 
         Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: FeatureDatabase) {
         Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): FeatureDatabase {

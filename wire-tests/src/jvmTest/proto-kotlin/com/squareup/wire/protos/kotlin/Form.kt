@@ -103,7 +103,7 @@ class Form(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Form) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && button_element == other.button_element
         && local_image_element == other.local_image_element
         && remote_image_element == other.remote_image_element
@@ -171,7 +171,7 @@ class Form(
     detail_row_element: DetailRowElement? = this.detail_row_element,
     currency_conversion_flags_element: CurrencyConversionFlagsElement? =
         this.currency_conversion_flags_element,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): Form = Form(button_element, local_image_element, remote_image_element, money_element,
       spacer_element, text_element, customized_card_element, address_element, text_input_element,
       option_picker_element, detail_row_element, currency_conversion_flags_element, unknownFields)
@@ -196,7 +196,7 @@ class Form(
         DetailRowElement.ADAPTER.encodedSizeWithTag(11, value.detail_row_element) +
         CurrencyConversionFlagsElement.ADAPTER.encodedSizeWithTag(12,
             value.currency_conversion_flags_element) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: Form) {
         ButtonElement.ADAPTER.encodeWithTag(writer, 1, value.button_element)
@@ -212,7 +212,7 @@ class Form(
         DetailRowElement.ADAPTER.encodeWithTag(writer, 11, value.detail_row_element)
         CurrencyConversionFlagsElement.ADAPTER.encodeWithTag(writer, 12,
             value.currency_conversion_flags_element)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): Form {
@@ -298,14 +298,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ButtonElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "ButtonElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): ButtonElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): ButtonElement =
         ButtonElement(unknownFields)
 
     companion object {
@@ -315,10 +315,10 @@ class Form(
         ButtonElement::class
       ) {
         override fun encodedSize(value: ButtonElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: ButtonElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): ButtonElement {
@@ -349,14 +349,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is LocalImageElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "LocalImageElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): LocalImageElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): LocalImageElement =
         LocalImageElement(unknownFields)
 
     companion object {
@@ -366,10 +366,10 @@ class Form(
         LocalImageElement::class
       ) {
         override fun encodedSize(value: LocalImageElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: LocalImageElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): LocalImageElement {
@@ -400,14 +400,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is RemoteImageElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "RemoteImageElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): RemoteImageElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): RemoteImageElement =
         RemoteImageElement(unknownFields)
 
     companion object {
@@ -417,10 +417,10 @@ class Form(
         RemoteImageElement::class
       ) {
         override fun encodedSize(value: RemoteImageElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: RemoteImageElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): RemoteImageElement {
@@ -451,14 +451,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is MoneyElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "MoneyElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): MoneyElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): MoneyElement =
         MoneyElement(unknownFields)
 
     companion object {
@@ -468,10 +468,10 @@ class Form(
         MoneyElement::class
       ) {
         override fun encodedSize(value: MoneyElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: MoneyElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): MoneyElement {
@@ -502,14 +502,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is SpacerElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "SpacerElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): SpacerElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): SpacerElement =
         SpacerElement(unknownFields)
 
     companion object {
@@ -519,10 +519,10 @@ class Form(
         SpacerElement::class
       ) {
         override fun encodedSize(value: SpacerElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: SpacerElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): SpacerElement {
@@ -553,14 +553,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "TextElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): TextElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): TextElement =
         TextElement(unknownFields)
 
     companion object {
@@ -570,10 +570,10 @@ class Form(
         TextElement::class
       ) {
         override fun encodedSize(value: TextElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: TextElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): TextElement {
@@ -604,14 +604,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CustomizedCardElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "CustomizedCardElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): CustomizedCardElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): CustomizedCardElement =
         CustomizedCardElement(unknownFields)
 
     companion object {
@@ -622,10 +622,10 @@ class Form(
         CustomizedCardElement::class
       ) {
         override fun encodedSize(value: CustomizedCardElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: CustomizedCardElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): CustomizedCardElement {
@@ -656,14 +656,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is AddressElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "AddressElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): AddressElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): AddressElement =
         AddressElement(unknownFields)
 
     companion object {
@@ -673,10 +673,10 @@ class Form(
         AddressElement::class
       ) {
         override fun encodedSize(value: AddressElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: AddressElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): AddressElement {
@@ -707,14 +707,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextInputElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "TextInputElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): TextInputElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): TextInputElement =
         TextInputElement(unknownFields)
 
     companion object {
@@ -724,10 +724,10 @@ class Form(
         TextInputElement::class
       ) {
         override fun encodedSize(value: TextInputElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: TextInputElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): TextInputElement {
@@ -758,14 +758,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is OptionPickerElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "OptionPickerElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): OptionPickerElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): OptionPickerElement =
         OptionPickerElement(unknownFields)
 
     companion object {
@@ -775,10 +775,10 @@ class Form(
         OptionPickerElement::class
       ) {
         override fun encodedSize(value: OptionPickerElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: OptionPickerElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): OptionPickerElement {
@@ -809,14 +809,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is DetailRowElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "DetailRowElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): DetailRowElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): DetailRowElement =
         DetailRowElement(unknownFields)
 
     companion object {
@@ -826,10 +826,10 @@ class Form(
         DetailRowElement::class
       ) {
         override fun encodedSize(value: DetailRowElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: DetailRowElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): DetailRowElement {
@@ -860,14 +860,14 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CurrencyConversionFlagsElement) return false
-      return unknownFields == other.unknownFields
+      return unknownFields() == other.unknownFields()
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    override fun hashCode(): Int = unknownFields().hashCode()
 
     override fun toString(): String = "CurrencyConversionFlagsElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): CurrencyConversionFlagsElement =
+    fun copy(unknownFields: ByteString = this.unknownFields()): CurrencyConversionFlagsElement =
         CurrencyConversionFlagsElement(unknownFields)
 
     companion object {
@@ -878,10 +878,10 @@ class Form(
         CurrencyConversionFlagsElement::class
       ) {
         override fun encodedSize(value: CurrencyConversionFlagsElement): Int = 
-          value.unknownFields.size
+          value.unknownFields().size
 
         override fun encode(writer: ProtoWriter, value: CurrencyConversionFlagsElement) {
-          writer.writeBytes(value.unknownFields)
+          writer.writeBytes(value.unknownFields())
         }
 
         override fun decode(reader: ProtoReader): CurrencyConversionFlagsElement {

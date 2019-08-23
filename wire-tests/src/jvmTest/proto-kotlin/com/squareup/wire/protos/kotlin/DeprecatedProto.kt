@@ -40,7 +40,7 @@ class DeprecatedProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is DeprecatedProto) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && foo == other.foo
   }
 
@@ -59,8 +59,8 @@ class DeprecatedProto(
     return result.joinToString(prefix = "DeprecatedProto{", separator = ", ", postfix = "}")
   }
 
-  fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields): DeprecatedProto
-      = DeprecatedProto(foo, unknownFields)
+  fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields()):
+      DeprecatedProto = DeprecatedProto(foo, unknownFields)
 
   companion object {
     @JvmField
@@ -70,11 +70,11 @@ class DeprecatedProto(
     ) {
       override fun encodedSize(value: DeprecatedProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: DeprecatedProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): DeprecatedProto {

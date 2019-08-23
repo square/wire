@@ -55,7 +55,7 @@ class Feature(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Feature) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && name == other.name
         && location == other.location
   }
@@ -80,7 +80,7 @@ class Feature(
   fun copy(
     name: String? = this.name,
     location: Point? = this.location,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): Feature = Feature(name, location, unknownFields)
 
   companion object {
@@ -92,12 +92,12 @@ class Feature(
       override fun encodedSize(value: Feature): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
         Point.ADAPTER.encodedSizeWithTag(2, value.location) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: Feature) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         Point.ADAPTER.encodeWithTag(writer, 2, value.location)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): Feature {

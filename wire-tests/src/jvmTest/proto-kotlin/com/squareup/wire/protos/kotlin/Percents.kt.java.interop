@@ -31,14 +31,14 @@ class Percents(
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.text = text
-    builder.addUnknownFields(unknownFields)
+    builder.addUnknownFields(unknownFields())
     return builder
   }
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Percents) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && text == other.text
   }
 
@@ -57,7 +57,7 @@ class Percents(
     return result.joinToString(prefix = "Percents{", separator = ", ", postfix = "}")
   }
 
-  fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields): Percents =
+  fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields()): Percents =
       Percents(text, unknownFields)
 
   class Builder : Message.Builder<Percents, Builder>() {
@@ -86,11 +86,11 @@ class Percents(
     ) {
       override fun encodedSize(value: Percents): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.text) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: Percents) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): Percents {

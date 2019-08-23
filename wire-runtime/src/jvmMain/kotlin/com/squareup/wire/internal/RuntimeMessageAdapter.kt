@@ -43,7 +43,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
       val binding = fieldBinding[value] ?: continue
       size += fieldBinding.adapter().encodedSizeWithTag(fieldBinding.tag, binding)
     }
-    size += value.unknownFields.size
+    size += value.unknownFields().size
 
     value.cachedSerializedSize = size
     return size
@@ -55,7 +55,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
       val binding = fieldBinding[value] ?: continue
       fieldBinding.adapter().encodeWithTag(writer, fieldBinding.tag, binding)
     }
-    writer.writeBytes(value.unknownFields)
+    writer.writeBytes(value.unknownFields())
   }
 
   override fun redact(value: M): M {

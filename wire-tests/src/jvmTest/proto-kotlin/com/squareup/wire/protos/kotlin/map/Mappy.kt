@@ -41,7 +41,7 @@ class Mappy(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Mappy) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && things == other.things
   }
 
@@ -61,7 +61,7 @@ class Mappy(
   }
 
   fun copy(things: Map<String, Thing> = this.things, unknownFields: ByteString =
-      this.unknownFields): Mappy = Mappy(things, unknownFields)
+      this.unknownFields()): Mappy = Mappy(things, unknownFields)
 
   companion object {
     @JvmField
@@ -74,11 +74,11 @@ class Mappy(
 
       override fun encodedSize(value: Mappy): Int = 
         thingsAdapter.encodedSizeWithTag(1, value.things) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: Mappy) {
         thingsAdapter.encodeWithTag(writer, 1, value.things)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): Mappy {

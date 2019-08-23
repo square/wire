@@ -51,7 +51,7 @@ class RedactedRepeated(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedRepeated) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && a == other.a
         && b == other.b
   }
@@ -76,7 +76,7 @@ class RedactedRepeated(
   fun copy(
     a: List<String> = this.a,
     b: List<Redacted> = this.b,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): RedactedRepeated = RedactedRepeated(a, b, unknownFields)
 
   companion object {
@@ -88,12 +88,12 @@ class RedactedRepeated(
       override fun encodedSize(value: RedactedRepeated): Int = 
         ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a) +
         Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: RedactedRepeated) {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
         Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): RedactedRepeated {

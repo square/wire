@@ -39,7 +39,7 @@ class RedactedCycleB(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedCycleB) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && a == other.a
   }
 
@@ -58,7 +58,7 @@ class RedactedCycleB(
     return result.joinToString(prefix = "RedactedCycleB{", separator = ", ", postfix = "}")
   }
 
-  fun copy(a: RedactedCycleA? = this.a, unknownFields: ByteString = this.unknownFields):
+  fun copy(a: RedactedCycleA? = this.a, unknownFields: ByteString = this.unknownFields()):
       RedactedCycleB = RedactedCycleB(a, unknownFields)
 
   companion object {
@@ -69,11 +69,11 @@ class RedactedCycleB(
     ) {
       override fun encodedSize(value: RedactedCycleB): Int = 
         RedactedCycleA.ADAPTER.encodedSizeWithTag(1, value.a) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: RedactedCycleB) {
         RedactedCycleA.ADAPTER.encodeWithTag(writer, 1, value.a)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): RedactedCycleB {

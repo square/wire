@@ -50,7 +50,7 @@ class Point(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Point) return false
-    return unknownFields == other.unknownFields
+    return unknownFields() == other.unknownFields()
         && latitude == other.latitude
         && longitude == other.longitude
   }
@@ -75,7 +75,7 @@ class Point(
   fun copy(
     latitude: Int? = this.latitude,
     longitude: Int? = this.longitude,
-    unknownFields: ByteString = this.unknownFields
+    unknownFields: ByteString = this.unknownFields()
   ): Point = Point(latitude, longitude, unknownFields)
 
   companion object {
@@ -87,12 +87,12 @@ class Point(
       override fun encodedSize(value: Point): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.latitude) +
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.longitude) +
-        value.unknownFields.size
+        value.unknownFields().size
 
       override fun encode(writer: ProtoWriter, value: Point) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.latitude)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.longitude)
-        writer.writeBytes(value.unknownFields)
+        writer.writeBytes(value.unknownFields())
       }
 
       override fun decode(reader: ProtoReader): Point {
