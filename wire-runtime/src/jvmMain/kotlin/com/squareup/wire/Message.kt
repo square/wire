@@ -28,12 +28,22 @@ actual abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>>
 protected actual constructor(
   /** The [ProtoAdapter] for encoding and decoding messages of this type. */
   @field:Transient @get:JvmName("adapter") actual val adapter: ProtoAdapter<M>,
+  unknownFields: ByteString
+) : Serializable {
   /**
    * Returns a byte string containing the proto encoding of this message's unknown fields. Returns
    * an empty byte string if this message has no unknown fields.
    */
-  @field:Transient @get:JvmName("unknownFields") actual val unknownFields: ByteString
-) : Serializable {
+  @field:Transient @get:JvmName("unknownFields")
+  actual val unknownFields: ByteString = unknownFields
+    get() {
+      // Some naughty libraries construct Messages by reflection which causes this non-null field
+      // to have a null value. We defend against this with an otherwise-redundant null check.
+      @Suppress("SENSELESS_COMPARISON")
+      if (field == null) return ByteString.EMPTY
+      return field
+    }
+
   /** If not `0` then the serialized size of this message. */
   @Transient internal var cachedSerializedSize = 0
 
