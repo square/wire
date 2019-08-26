@@ -371,6 +371,29 @@ class WireRunTest {
         "generated/kt/com/squareup/polygons/Square.kt")
   }
 
+  @Test
+  fun proto3Skipped() {
+    writeBlueProto()
+    fs.add("colors/src/main/proto/squareup/colors/red.proto", """
+          |syntax = "proto3";
+          |package squareup.colors;
+          |message Red {
+          |  string oval = 1;
+          |}
+          """.trimMargin())
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+        "generated/kt/squareup/colors/Blue.kt")
+  }
+
   private fun writeRedProto() {
     fs.add("colors/src/main/proto/squareup/colors/red.proto", """
           |syntax = "proto2";
