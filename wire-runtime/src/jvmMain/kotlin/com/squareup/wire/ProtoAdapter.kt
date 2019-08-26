@@ -168,20 +168,20 @@ actual abstract class ProtoAdapter<E> actual constructor(
       }
     }
 
-    @JvmField actual val BOOL: ProtoAdapter<Boolean> = COMMON_BOOL
-    @JvmField actual val INT32: ProtoAdapter<Int> = COMMON_INT32
-    @JvmField actual val UINT32: ProtoAdapter<Int> = COMMON_UINT32
-    @JvmField actual val SINT32: ProtoAdapter<Int> = COMMON_SINT32
-    @JvmField actual val FIXED32: ProtoAdapter<Int> = COMMON_FIXED32
-    @JvmField actual val SFIXED32: ProtoAdapter<Int> = COMMON_SFIXED32
-    @JvmField actual val INT64: ProtoAdapter<Long> = COMMON_INT64
-    @JvmField actual val UINT64: ProtoAdapter<Long> = COMMON_UINT64
-    @JvmField actual val SINT64: ProtoAdapter<Long> = COMMON_SINT64
-    @JvmField actual val FIXED64: ProtoAdapter<Long> = COMMON_FIXED64
-    @JvmField actual val SFIXED64: ProtoAdapter<Long> = COMMON_SFIXED64
-    @JvmField actual val FLOAT: ProtoAdapter<Float> = COMMON_FLOAT
-    @JvmField actual val DOUBLE: ProtoAdapter<Double> = COMMON_DOUBLE
-    @JvmField actual val BYTES: ProtoAdapter<ByteString> = COMMON_BYTES
-    @JvmField actual val STRING: ProtoAdapter<String> = COMMON_STRING
+    @JvmField actual val BOOL: ProtoAdapter<Boolean> = commonBool()
+    @JvmField actual val INT32: ProtoAdapter<Int> = commonInt32()
+    @JvmField actual val UINT32: ProtoAdapter<Int> = commonUint32()
+    @JvmField actual val SINT32: ProtoAdapter<Int> = commonSint32()
+    @JvmField actual val FIXED32: ProtoAdapter<Int> = commonFixed32()
+    @JvmField actual val SFIXED32: ProtoAdapter<Int> = commonSfixed32()
+    @JvmField actual val INT64: ProtoAdapter<Long> = commonInt64()
+    @JvmField actual val UINT64: ProtoAdapter<Long> = commonUint64()
+    @JvmField actual val SINT64: ProtoAdapter<Long> = commonSint64()
+    @JvmField actual val FIXED64: ProtoAdapter<Long> = commonFixed64()
+    @JvmField actual val SFIXED64: ProtoAdapter<Long> = commonSfixed64()
+    @JvmField actual val FLOAT: ProtoAdapter<Float> = commonFloat()
+    @JvmField actual val DOUBLE: ProtoAdapter<Double> = commonDouble()
+    @JvmField actual val BYTES: ProtoAdapter<ByteString> = commonBytes()
+    @JvmField actual val STRING: ProtoAdapter<String> = commonString()
   }
 }
