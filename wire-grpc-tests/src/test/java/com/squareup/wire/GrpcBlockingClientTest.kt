@@ -18,6 +18,7 @@ package com.squareup.wire
 import com.squareup.wire.MockRouteGuideService.Action.Delay
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
+import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -275,6 +276,24 @@ class GrpcBlockingClientTest {
 
     responseChannel.close()
     assertThat(callReference.get()?.isCanceled()).isTrue()
+  }
+
+  /**
+   * This test is flaky. The root cause is OkHttp may send the cancel frame after the EOF frame,
+   * which is incorrect. https://github.com/square/okhttp/issues/5388
+   */
+  @Test
+  @Ignore
+  fun cancelOutboundStream() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "welcome")
+    mockService.enqueue(ReceiveError)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "welcome"))
+    requestChannel.cancel()
+    requestChannel.close()
+    mockService.awaitSuccessBlocking()
   }
 
   @ExperimentalCoroutinesApi

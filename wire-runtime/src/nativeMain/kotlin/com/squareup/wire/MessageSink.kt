@@ -23,5 +23,8 @@ actual interface MessageSink<in T : Any> {
   actual fun write(message: T)
 
   @Throws(IOException::class)
+  actual fun cancel()
+
+  @Throws(IOException::class)
   actual fun close()
 }

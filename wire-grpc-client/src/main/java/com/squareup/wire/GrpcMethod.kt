@@ -60,7 +60,7 @@ internal sealed class GrpcMethod<S : Any, R : Any>(
 
     val requestBody = newDuplexRequestBody()
     val call = grpcClient.newCall(path, requestBody)
-    requestChannel.writeToRequestBody(requestBody, requestAdapter)
+    requestChannel.writeToRequestBody(requestBody, requestAdapter, call)
     call.enqueue(responseChannel.readFromResponseBodyCallback(responseAdapter))
 
     responseChannel.invokeOnClose { cause ->
@@ -203,8 +203,10 @@ internal sealed class GrpcMethod<S : Any, R : Any>(
       grpcClient: GrpcClient, args: Array<Any>
     ): Pair<MessageSink<S>, MessageSource<R>> {
       val requestBody = newDuplexRequestBody()
-      val messageSink = requestBody.messageSink(requestAdapter)
-      val messageSource = super.callBlocking(grpcClient, requestBody)
+      val call = grpcClient.newCall(super.path, requestBody)
+      val messageSource = BlockingMessageSource(call, super.responseAdapter)
+      val messageSink = requestBody.messageSink(requestAdapter, call)
+      call.enqueue(messageSource.readFromResponseBodyCallback())
       return messageSink to messageSource
     }
   }

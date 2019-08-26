@@ -39,6 +39,9 @@ expect interface MessageSource<out T : Any> {
   /**
    * Read the next length-prefixed message on the stream and return it. Returns null if there are
    * no further messages on this stream.
+   *
+   * @throws IOException if the next message cannot be read, or if the stream was abnormally
+   *     terminated by its producer.
    */
   @Throws(IOException::class)
   fun read(): T?

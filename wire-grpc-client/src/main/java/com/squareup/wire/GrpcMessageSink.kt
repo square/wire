@@ -15,23 +15,27 @@
  */
 package com.squareup.wire
 
+import okhttp3.Call
 import okio.Buffer
 import okio.BufferedSink
-import java.io.Closeable
 
 /**
  * Writes a sequence of gRPC messages as an HTTP/2 stream.
  *
  * @param sink the HTTP/2 stream body.
  * @param messageAdapter a proto adapter for each message.
+ * @param callForCancel the HTTP call that can be canceled to signal abnormal termination.
  * @param grpcEncoding the content coding for the stream body.
  */
 internal class GrpcMessageSink<T : Any> constructor(
   private val sink: BufferedSink,
   private val messageAdapter: ProtoAdapter<T>,
+  private val callForCancel: Call?,
   private val grpcEncoding: String
-) : MessageSink<T>, Closeable by sink {
+) : MessageSink<T> {
+  private var closed = false
   override fun write(message: T) {
+    check(!closed) { "closed" }
     val messageEncoding = grpcEncoding.toGrpcEncoder()
     val encodingSink = messageEncoding.encode(sink)
 
@@ -46,5 +50,16 @@ internal class GrpcMessageSink<T : Any> constructor(
     encodingSink.writeAll(encodedMessage)
 
     sink.flush()
+  }
+
+  override fun cancel() {
+    check(!closed) { "closed" }
+    callForCancel?.cancel()
+  }
+
+  override fun close() {
+    if (closed) return
+    closed = true
+    sink.close()
   }
 }
