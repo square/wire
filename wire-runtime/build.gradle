@@ -12,6 +12,8 @@ kotlin {
         metaInfo = true
       }
     }
+    nodejs()
+    browser()
   }
   iosX64()
   iosArm64()
