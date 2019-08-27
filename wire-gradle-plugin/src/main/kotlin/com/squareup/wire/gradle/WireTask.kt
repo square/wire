@@ -28,10 +28,10 @@ open class WireTask : SourceTask() {
   @Input
   fun pluginVersion() = VERSION
 
-  @Internal
+  @get:Internal
   internal lateinit var sourceInput: WireInput
 
-  @Internal
+  @get:Internal
   internal lateinit var protoInput: WireInput
 
   @Input
