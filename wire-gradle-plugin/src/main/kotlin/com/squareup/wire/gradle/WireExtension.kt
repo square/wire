@@ -159,13 +159,13 @@ open class WireExtension(project: Project) {
   }
 
   fun java(action: Action<JavaOutput>) {
-    val javaOutput = objectFactory.newInstance(JavaOutput::class.java)!!
+    val javaOutput = objectFactory.newInstance(JavaOutput::class.java)
     action.execute(javaOutput)
     outputs += javaOutput
   }
 
   fun kotlin(action: Action<KotlinOutput>) {
-    val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)!!
+    val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)
     action.execute(kotlinOutput)
     outputs += kotlinOutput
   }
