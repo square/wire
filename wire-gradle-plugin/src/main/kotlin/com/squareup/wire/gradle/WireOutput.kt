@@ -73,6 +73,7 @@ open class JavaOutput @Inject constructor() : WireOutput() {
     wireTask: TaskProvider<WireTask>?,
     kotlin: Boolean
   ) {
+    @Suppress("UNCHECKED_CAST")
     val compileJavaTask = project.tasks.named("compileJava") as TaskProvider<JavaCompile>
     compileJavaTask.configure {
       it.source(out)
@@ -83,6 +84,7 @@ open class JavaOutput @Inject constructor() : WireOutput() {
       val mainSourceSet = sourceSetContainer.getByName("main") as SourceSet
       mainSourceSet.java.srcDirs(out)
 
+      @Suppress("UNCHECKED_CAST")
       val compileKotlinTask = project.tasks.named("compileKotlin") as TaskProvider<KotlinCompile>
       compileKotlinTask.configure {
         it.dependsOn(wireTask)
