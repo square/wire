@@ -25,8 +25,8 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 
 open class WireTask : SourceTask() {
-  @Input
-  fun pluginVersion() = VERSION
+  @get:Input
+  var pluginVersion: String = VERSION
 
   @get:Internal
   internal lateinit var sourceInput: WireInput
