@@ -23,10 +23,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 
-open class WireExtension(
-  project: Project,
-  private val sourceDirectorySetFactory: SourceDirectorySetFactory
-) {
+open class WireExtension(project: Project) {
   private val objectFactory = project.objects
 
   internal val sourcePaths = mutableSetOf<String>()
@@ -149,7 +146,7 @@ open class WireExtension(
 
     if (hasSrcDirs) {
       // map to SourceDirectorySet which does the work for us!
-      val protoTree = sourceDirectorySetFactory.create(name)
+      val protoTree = objectFactory.sourceDirectorySet(name, "Wire proto sources for $name.")
       protoTree.srcDirs(protoRootSet.srcDirs)
       protoTree.filter.include("**/*.proto")
       protoTree.filter.include(protoRootSet.includes)
@@ -162,13 +159,13 @@ open class WireExtension(
   }
 
   fun java(action: Action<JavaOutput>) {
-    val javaOutput = objectFactory.newInstance(JavaOutput::class.java)!!
+    val javaOutput = objectFactory.newInstance(JavaOutput::class.java)
     action.execute(javaOutput)
     outputs += javaOutput
   }
 
   fun kotlin(action: Action<KotlinOutput>) {
-    val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)!!
+    val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)
     action.execute(kotlinOutput)
     outputs += kotlinOutput
   }

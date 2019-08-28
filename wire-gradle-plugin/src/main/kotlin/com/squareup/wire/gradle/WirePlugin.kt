@@ -23,9 +23,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
 import javax.inject.Inject
 
-class WirePlugin @Inject constructor(
-  private val sourceDirectorySetFactory: SourceDirectorySetFactory
-) : Plugin<Project> {
+class WirePlugin : Plugin<Project> {
   private var kotlin = false
   private var java = false
 
@@ -35,7 +33,7 @@ class WirePlugin @Inject constructor(
     val logger = project.logger
 
     val extension = project.extensions.create(
-        "wire", WireExtension::class.java, project, sourceDirectorySetFactory
+        "wire", WireExtension::class.java, project
     )
 
     project.plugins.all {
