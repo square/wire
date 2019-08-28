@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.squareup.wire'
+
+android {
+  compileSdkVersion 29
+  defaultConfig {
+    applicationId "com.squareup.wire.whiteboard"
+    minSdkVersion 28
+    targetSdkVersion 29
+  }
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+}
+
+wire {
+  sourcePath {
+    srcDir "$rootDir/protos/src/main/proto"
+  }
+  kotlin {
+    out "src/main/java"
+    includes = ['com.squareup.wire.whiteboard.Whiteboard']
+    rpcCallStyle = 'suspending'
+    rpcRole = 'client'
+    singleMethodServices = false
+  }
+}
+
+dependencies {
+  implementation project(':protos')
+  implementation deps.kotlin.stdlib
+  implementation deps.kotlin.coroutines
+  implementation deps.kotlin.coroutinesAndroid
+  implementation deps.androidx.appcompat
+  implementation deps.androidx.ktx
+  implementation deps.wire.grpcClient
+  implementation deps.androidx.appcompat
+  implementation deps.androidx.constraintLayout
+}
