@@ -1,0 +1,13 @@
+web:
+  port: 8080
+  idle_timeout: 300000
+  ssl:
+    port: 8443
+    mutual_auth: DESIRED
+    cert_store:
+      resource: classpath:/ssl/server_cert_key_combo.pem
+      passphrase: doesntmatter
+      format: PEM
+    trust_store:
+      resource: classpath:/ssl/server_cert.pem
+      format: PEM

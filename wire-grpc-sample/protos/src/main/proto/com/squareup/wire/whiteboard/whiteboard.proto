@@ -1,0 +1,61 @@
+/*
+ * Copyright 2019 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+package com.squareup.wire.whiteboard;
+
+option java_package = "com.squareup.wire.whiteboard";
+
+message Point {
+  required int32 x = 1;
+  required int32 y = 2;
+  required int32 color = 3;
+}
+
+message WhiteboardCommand {
+  oneof one_whiteboard_command {
+    AddPoint add_point = 1;
+    ClearBoard clear_board = 2;
+  }
+
+  message AddPoint {
+    required Point point = 1;
+  }
+
+  message ClearBoard {
+  }
+}
+
+message WhiteboardUpdate {
+  oneof one_whiteboard_update {
+    InitialiseBoard initialise_board = 1;
+    UpdatePoints update_points = 2;
+  }
+
+  message InitialiseBoard {
+    required int32 width = 1;
+    required int32 height = 2;
+    required int32 color = 3;
+  }
+  message UpdatePoints {
+    repeated Point points = 1;
+  }
+}
+
+service Whiteboard {
+  rpc Whiteboard (stream WhiteboardCommand) returns (stream WhiteboardUpdate) {
+  }
+}
