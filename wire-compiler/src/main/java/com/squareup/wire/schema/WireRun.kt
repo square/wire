@@ -159,7 +159,12 @@ data class WireRun(
     // 5. Call each target.
     val typesToHandle = mutableListOf<Type>()
     val servicesToHandle = mutableListOf<Service>()
+    val skippedForSyntax = mutableListOf<ProtoFile>()
     for (protoFile in schema.protoFiles()) {
+      if (protoFile.syntax() != ProtoFile.Syntax.PROTO_2) {
+        skippedForSyntax += protoFile
+        continue
+      }
       if (schemaLoader.sourceLocationPaths.contains(protoFile.location().path)) {
         typesToHandle += protoFile.types()
         servicesToHandle += protoFile.services()
@@ -194,12 +199,24 @@ data class WireRun(
         }
       }
 
-      for (rule in identifierSet.unusedIncludes()) {
-        logger.info("Unused include in target: $rule")
+      if (identifierSet.unusedIncludes().isNotEmpty()) {
+        logger.info("""Unused includes in targets:
+            |  ${identifierSet.unusedExcludes().joinToString(separator = "\n  ")}
+            """.trimMargin())
       }
-      for (rule in identifierSet.unusedExcludes()) {
-        logger.info("Unused exclude in target: $rule")
+
+      if (identifierSet.unusedExcludes().isNotEmpty()) {
+        logger.info("""Unused exclude in targets:
+            |  ${identifierSet.unusedExcludes().joinToString(separator = "\n  ")}
+            """.trimMargin())
       }
+    }
+
+    if (skippedForSyntax.isNotEmpty()) {
+      logger.info("""Skipped .proto files with unsupported syntax. Add this line to fix:
+          |  syntax = "proto2";
+          |  ${skippedForSyntax.joinToString(separator = "\n  ") { it.location().toString() }}
+          """.trimMargin())
     }
   }
 

@@ -117,6 +117,10 @@ public final class ProtoFile {
     return packageName;
   }
 
+  public Syntax syntax() {
+    return syntax;
+  }
+
   public String javaPackage() {
     return javaPackage != null ? String.valueOf(javaPackage) : null;
   }
