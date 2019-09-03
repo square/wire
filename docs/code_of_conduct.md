@@ -1,4 +1,4 @@
-Open Source Code of Conduct
+OkOpen Source Code of Conduct
 ===========================
 
 At Square, we are committed to contributing to the open source community and simplifying the process
