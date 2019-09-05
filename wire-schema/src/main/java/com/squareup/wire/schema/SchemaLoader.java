@@ -115,7 +115,7 @@ public final class SchemaLoader {
           @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
               throws IOException {
             if (file.getFileName().toString().endsWith(".proto")) {
-              protos.add(entry.getValue().relativize(file).toString());
+              protos.add(entry.getValue().relativize(file).toString().replace(File.separator, "/"));
             }
             return FileVisitResult.CONTINUE;
           }
