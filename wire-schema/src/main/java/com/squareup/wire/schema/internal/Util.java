@@ -35,8 +35,14 @@ public final class Util {
   }
 
   public static void appendOptions(StringBuilder builder, List<OptionElement> options) {
+    int count = options.size();
+    if (count == 1) {
+      builder.append("[").append(options.get(0).toSchema()).append(']');
+      return;
+    }
+
     builder.append("[\n");
-    for (int i = 0, count = options.size(); i < count; i++) {
+    for (int i = 0; i < count; i++) {
       String endl = (i < count - 1) ? "," : "";
       appendIndented(builder, options.get(i).toSchema() + endl);
     }

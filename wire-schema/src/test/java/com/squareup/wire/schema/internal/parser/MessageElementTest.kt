@@ -578,7 +578,7 @@ class MessageElementTest {
   }
 
   @Test
-  fun fieldWithOptionsToSchema() {
+  fun fieldWithOneOptionToSchema() {
     val field = FieldElement(
         location = location,
         label = REQUIRED,
@@ -588,8 +588,26 @@ class MessageElementTest {
         options = listOf(OptionElement.create("kit", Kind.STRING, "kat"))
     )
     val expected =
+        """required string name = 1 [kit = "kat"];
+        |""".trimMargin()
+    assertThat(field.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
+  fun fieldWithMoreThanOneOptionToSchema() {
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1,
+        options = listOf(OptionElement.create("kit", Kind.STRING, "kat"),
+            OptionElement.create("dup", Kind.STRING, "lo"))
+    )
+    val expected =
         """required string name = 1 [
-        |  kit = "kat"
+        |  kit = "kat",
+        |  dup = "lo"
         |];
         |""".trimMargin()
     assertThat(field.toSchema()).isEqualTo(expected)

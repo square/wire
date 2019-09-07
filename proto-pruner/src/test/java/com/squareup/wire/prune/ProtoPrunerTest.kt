@@ -52,7 +52,7 @@ class ProtoPrunerTest {
     assertOutputs(outputs)
   }
 
-  @Test @Ignore("Failing because of wrong indention on the output files.")
+  @Test
   fun testSimpleMessage() {
     val sources = arrayOf("squareup.protos.simple.SimpleMessage")
     invokeProtoPruner(sources, "--excludes=google.protobuf.*")

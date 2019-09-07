@@ -82,7 +82,6 @@ class EnumElementTest {
     val expected = """
         |enum Enum {
         |  option kit = "kat";
-        |
         |  ONE = 1;
         |  TWO = 2;
         |  SIX = 6;
