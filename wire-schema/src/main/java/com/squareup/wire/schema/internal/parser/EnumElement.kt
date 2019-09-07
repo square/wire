@@ -33,14 +33,16 @@ data class EnumElement(
     appendDocumentation(this, documentation)
     append("enum $name {")
 
-    if (options.isNotEmpty()) {
+    if (options.isNotEmpty() || constants.isNotEmpty()) {
       append('\n')
+    }
+
+    if (options.isNotEmpty()) {
       for (option in options) {
         appendIndented(this, option.toSchemaDeclaration())
       }
     }
     if (constants.isNotEmpty()) {
-      append('\n')
       for (constant in constants) {
         appendIndented(this, constant.toSchema())
       }
