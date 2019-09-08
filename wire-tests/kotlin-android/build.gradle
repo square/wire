@@ -1,0 +1,8 @@
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+dependencies {
+  implementation project(':wire-runtime')
+  implementation deps.kotlin.stdlib.jdk8
+  compileOnly deps.android
+}
