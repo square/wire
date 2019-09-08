@@ -230,7 +230,7 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
           '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-          '--kotlin_out=wire-tests/src/jvmTest/proto-kotlin.java.interop',
+          '--kotlin_out=wire-tests/kotlin-interop/src/main/kotlin',
           '--java_interop',
           'all_types.proto',
           'person.proto',
@@ -242,12 +242,6 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
           'map.proto'
   ]
 }
-task copyKotlinJavaInteropFiles(type: Copy) {
-  from 'wire-tests/src/jvmTest/proto-kotlin.java.interop/com/squareup/wire/protos/kotlin'
-  into 'wire-tests/src/jvmTest/proto-kotlin/com/squareup/wire/protos/kotlin'
-  rename '(.+)', '$1.java.interop'
-}
-generateKotlinJavaInteropTests.finalizedBy copyKotlinJavaInteropFiles
 
 // GRPC
 

@@ -632,6 +632,12 @@ class WireCompilerTest {
     internal abstract fun protoFolderSuffix(): String
 
     internal fun expectedFile(path: String, suffix: String): File {
+      // TODO(egorand): Refactor once more targets are migrated to separate modules.
+      if (protoFolderSuffix() == "kotlin" && suffix == ".java.interop") {
+        return File("../wire-tests/kotlin-interop/src/main/kotlin/$path").also {
+          println("Comparing against expected output $name")
+        }
+      }
       val protoFolder = "/proto-${protoFolderSuffix()}/"
       // egorand: For now we assume that all pure-Kotlin tests (no suffix) live in commonTest, and
       // all JVM-specific Kotlin tests (.java, .android, etc.) live in jvmTest.
