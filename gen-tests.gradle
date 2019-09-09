@@ -208,18 +208,11 @@ task generateKotlinAndroidTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/src/jvmTest/proto-kotlin.android',
+      '--kotlin_out=wire-tests/kotlin-android/src/main/kotlin',
       '--android',
       'person.proto'
   ]
 }
-task copyKotlinAndroidFiles(type: Copy) {
-  from 'wire-tests/src/jvmTest/proto-kotlin.android/com/squareup/wire/protos/kotlin/person/Person.kt'
-  into 'wire-tests/src/jvmTest/proto-kotlin/com/squareup/wire/protos/kotlin/person'
-  rename '(.+)', '$1.android'
-}
-generateKotlinAndroidTests.finalizedBy copyKotlinAndroidFiles
-
 
 // KOTLIN JAVA INTEROP
 
