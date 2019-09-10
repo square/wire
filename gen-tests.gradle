@@ -208,7 +208,7 @@ task generateKotlinAndroidTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/src/jvmKotlinAndroidTest/kotlin',
+      '--kotlin_out=wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
       '--android',
       'person.proto'
   ]
@@ -223,7 +223,7 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/src/jvmKotlinInteropTest/kotlin',
+      '--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
       '--java_interop',
       'all_types.proto',
       'person.proto',

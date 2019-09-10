@@ -5,6 +5,7 @@ kotlin {
     withJava()
     compilations.create('kotlinInteropTest') {
       defaultSourceSet {
+        kotlin.srcDirs += 'src/jvmKotlinInteropTest/proto-kotlin'
         dependencies {
           implementation(compilations.main.compileDependencyFiles)
           implementation deps.kotlin.test.junit
@@ -19,6 +20,7 @@ kotlin {
     }
     compilations.create('kotlinAndroidTest') {
       defaultSourceSet {
+        kotlin.srcDirs += 'src/jvmKotlinAndroidTest/proto-kotlin'
         dependencies {
           implementation(compilations.main.compileDependencyFiles)
           compileOnly deps.android

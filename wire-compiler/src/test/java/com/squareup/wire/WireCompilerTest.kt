@@ -635,8 +635,8 @@ class WireCompilerTest {
       // TODO(egorand): Refactor once more targets are migrated to separate modules.
       if (protoFolderSuffix() == "kotlin" && suffix.isNotEmpty()) {
         val expectedFile = when (suffix) {
-          ".java.interop" -> File("../wire-tests/src/jvmKotlinInteropTest/kotlin/$path")
-          ".android" -> File("../wire-tests/src/jvmKotlinAndroidTest/kotlin/$path")
+          ".java.interop" -> File("../wire-tests/src/jvmKotlinInteropTest/proto-kotlin/$path")
+          ".android" -> File("../wire-tests/src/jvmKotlinAndroidTest/proto-kotlin/$path")
           else -> throw AssertionError("Unknown suffix: $suffix")
         }
         return expectedFile.also {
