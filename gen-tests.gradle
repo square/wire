@@ -202,7 +202,8 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
       'percents_in_kdoc.proto',
       'same_name_enum.proto',
       'redacted_one_of.proto',
-      'map.proto'
+      'map.proto',
+      'repeated.proto',
   ]
 }
 
