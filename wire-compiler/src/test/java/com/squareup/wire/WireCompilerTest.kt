@@ -632,41 +632,28 @@ class WireCompilerTest {
     internal abstract fun protoFolderSuffix(): String
 
     internal fun expectedFile(path: String, suffix: String): File {
-      // TODO(egorand): Refactor once more targets are migrated to separate modules.
-      if (protoFolderSuffix() == "kotlin" && suffix.isNotEmpty()) {
-        val expectedFile = when (suffix) {
-          ".java.interop" -> File("../wire-tests/src/jvmKotlinInteropTest/proto-kotlin/$path")
-          ".android" -> File("../wire-tests/src/jvmKotlinAndroidTest/proto-kotlin/$path")
+      val sourceSet = when (val protoFolderSuffix = protoFolderSuffix()) {
+        "kotlin" -> when (suffix) {
+          "" -> "commonTest"
+          ".java.interop" -> "jvmKotlinInteropTest"
+          ".android" -> "jvmKotlinAndroidTest"
           else -> throw AssertionError("Unknown suffix: $suffix")
         }
-        return expectedFile.also {
-          println("Comparing against expected output $name")
-        }
-      } else if (protoFolderSuffix() == "java") {
-        val expectedFile = when (suffix) {
-          "" -> File("../wire-tests/src/jvmJavaTest/proto-java/$path")
-          ".noOptions" -> File("../wire-tests/src/jvmJavaNoOptionsTest/proto-java/$path")
-          ".compact" -> File("../wire-tests/src/jvmJavaCompactTest/proto-java/$path")
-          ".pruned" -> File("../wire-tests/src/jvmJavaPrunedTest/proto-java/$path")
-          ".android" -> File("../wire-tests/src/jvmJavaAndroidTest/proto-java/$path")
-          ".android.compact" -> File("../wire-tests/src/jvmJavaAndroidCompactTest/proto-java/$path")
+        "java" -> when (suffix) {
+          "" -> "jvmJavaTest"
+          ".noOptions" -> "jvmJavaNoOptionsTest"
+          ".compact" -> "jvmJavaCompactTest"
+          ".pruned" -> "jvmJavaPrunedTest"
+          ".android" -> "jvmJavaAndroidTest"
+          ".android.compact" -> "jvmJavaAndroidCompactTest"
           else -> throw AssertionError("Unknown suffix: $suffix")
         }
-        return expectedFile.also {
-          println("Comparing against expected output $name")
-        }
+        else -> throw AssertionError("Unknown proto folder suffix: $protoFolderSuffix")
       }
-      val protoFolder = "/proto-${protoFolderSuffix()}/"
-      // egorand: For now we assume that all pure-Kotlin tests (no suffix) live in commonTest, and
-      // all JVM-specific Kotlin tests (.java, .android, etc.) live in jvmTest.
-      val sourceSet = if (suffix.isEmpty()) "commonTest" else "jvmTest"
-      var expectedFile = File("../wire-tests/src/$sourceSet$protoFolder$path$suffix")
-      if (expectedFile.exists()) {
-        println("Comparing against expected output ${expectedFile.name}")
-      } else {
-        expectedFile = File("../wire-tests/src/jvmTest$protoFolder$path")
+      val expectedFile = File("../wire-tests/src/$sourceSet/proto-${protoFolderSuffix()}/$path")
+      return expectedFile.also {
+        println("Comparing against expected output $name")
       }
-      return expectedFile
     }
   }
 }
