@@ -34,7 +34,6 @@ class KotlinMapTest {
     assertEquals(0, adapter.encode(EMPTY).size)
   }
 
-  @Ignore("TODO(egorand): java.lang.ClassCastException: kotlin.collections.EmptyMap cannot be cast to kotlin.collections.MutableMap")
   @Test fun deserialize() {
     assertEquals(THREE, adapter.decode(BYTES))
 
