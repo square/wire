@@ -31,8 +31,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?
 ) {
-  internal actual var packedAdapter: ProtoAdapter<List<E>>? = null
-  internal actual var repeatedAdapter: ProtoAdapter<List<E>>? = null
+  internal actual val packedAdapter: ProtoAdapter<List<E>> by lazy { commonCreatePacked() }
+  internal actual val repeatedAdapter: ProtoAdapter<List<E>> by lazy { commonCreateRepeated() }
 
   constructor(fieldEncoding: FieldEncoding, type: Class<*>): this(fieldEncoding, type.kotlin)
 
@@ -97,13 +97,9 @@ actual abstract class ProtoAdapter<E> actual constructor(
     return commonWithLabel(label)
   }
 
-  actual fun asPacked(): ProtoAdapter<List<E>> {
-    return commonAsPacked()
-  }
+  actual fun asPacked(): ProtoAdapter<List<E>> = packedAdapter
 
-  actual fun asRepeated(): ProtoAdapter<List<E>> {
-    return commonAsRepeated()
-  }
+  actual fun asRepeated(): ProtoAdapter<List<E>> = repeatedAdapter
 
   actual class EnumConstantNotFoundException actual constructor(
     @JvmField actual val value: Int,

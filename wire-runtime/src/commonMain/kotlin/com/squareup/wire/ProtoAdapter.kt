@@ -41,8 +41,8 @@ expect abstract class ProtoAdapter<E>(
   internal val fieldEncoding: FieldEncoding
   val type: KClass<*>?
 
-  internal var packedAdapter: ProtoAdapter<List<E>>?
-  internal var repeatedAdapter: ProtoAdapter<List<E>>?
+  internal val packedAdapter: ProtoAdapter<List<E>>
+  internal val repeatedAdapter: ProtoAdapter<List<E>>
 
   /** Returns the redacted form of `value`. */
   abstract fun redact(value: E): E
@@ -213,13 +213,6 @@ internal inline fun <E> ProtoAdapter<E>.commonWithLabel(label: WireField.Label):
 }
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonAsPacked(): ProtoAdapter<List<E>> {
-  return packedAdapter ?: commonCreatePacked().also {
-    packedAdapter = it
-  }
-}
-
-@Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonCreatePacked(): ProtoAdapter<List<E>> {
   require(fieldEncoding != FieldEncoding.LENGTH_DELIMITED) {
     "Unable to pack a length-delimited type."
@@ -256,13 +249,6 @@ internal inline fun <E> ProtoAdapter<E>.commonCreatePacked(): ProtoAdapter<List<
     override fun decode(reader: ProtoReader): List<E> = listOf(adapter.decode(reader))
 
     override fun redact(value: List<E>): List<E> = emptyList()
-  }
-}
-
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun <E> ProtoAdapter<E>.commonAsRepeated(): ProtoAdapter<List<E>> {
-  return repeatedAdapter ?: commonCreateRepeated().also {
-    repeatedAdapter = it
   }
 }
 

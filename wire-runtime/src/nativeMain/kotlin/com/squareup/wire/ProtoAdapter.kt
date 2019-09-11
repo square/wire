@@ -24,8 +24,13 @@ actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?
 ) {
-  internal actual var packedAdapter: ProtoAdapter<List<E>>? = null
-  internal actual var repeatedAdapter: ProtoAdapter<List<E>>? = null
+  // Using by lazy doesn't work on Native since it creates cyclic refs between objects
+  // (commonCreateXxx() is an extension function on ProtoAdapter), so we can't cache adapters here
+  // and will have to recreate them every time.
+  internal actual val packedAdapter: ProtoAdapter<List<E>>
+    get() = commonCreatePacked()
+  internal actual val repeatedAdapter: ProtoAdapter<List<E>>
+    get() = commonCreateRepeated()
 
   /** Returns the redacted form of `value`. */
   actual abstract fun redact(value: E): E
@@ -91,9 +96,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
   }
 
   /** Returns an adapter for `E` but as a packed, repeated value. */
-  actual fun asPacked(): ProtoAdapter<List<E>> {
-    return commonAsPacked()
-  }
+  actual fun asPacked(): ProtoAdapter<List<E>> = packedAdapter
 
   /**
    * Returns an adapter for `E` but as a repeated value.
@@ -102,9 +105,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
    * the returned adapter, only single-element lists will be returned and it is the caller's
    * responsibility to merge them into the final list.
    */
-  actual fun asRepeated(): ProtoAdapter<List<E>> {
-    return commonAsRepeated()
-  }
+  actual fun asRepeated(): ProtoAdapter<List<E>> = repeatedAdapter
 
   actual class EnumConstantNotFoundException actual constructor(
     actual val value: Int,
