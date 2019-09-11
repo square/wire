@@ -18,8 +18,8 @@ package com.squareup.wire
 import com.squareup.wire.internal.RuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.repeated.Repeated
 import com.squareup.wire.protos.kotlin.repeated.Thing
-import okio.ByteString
 import okio.ByteString.Companion.decodeHex
+import okio.ByteString.Companion.toByteString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
