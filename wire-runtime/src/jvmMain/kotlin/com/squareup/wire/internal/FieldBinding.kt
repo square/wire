@@ -92,8 +92,18 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
         list.add(value)
       }
       keyAdapterString.isNotEmpty() -> {
-        val map = getFromBuilder(builder) as MutableMap<Any, Any>
-        map.putAll(value as Map<Any, Any>)
+        when (val map = getFromBuilder(builder)) {
+          is MutableMap<*, *> -> map.putAll(value as Map<Nothing, Nothing>)
+          is Map<*, *> -> {
+            val mutableMap = map.toMutableMap()
+            mutableMap.putAll(value as Map<out Any?, Any?>)
+            set(builder, mutableMap)
+          }
+          else -> {
+            val type = map?.let { it::class.java }
+            throw ClassCastException("Expected a map type, got $type.")
+          }
+        }
       }
       else -> set(builder, value)
     }
