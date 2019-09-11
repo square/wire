@@ -28,7 +28,7 @@ class KotlinRepeatedTest {
   private val adapter = RuntimeMessageAdapter.create(Repeated::class.java)
 
   @Test fun serialize() {
-    assertEquals(BYTES, ByteString.of(*adapter.encode(THREE)))
+    assertEquals(BYTES, adapter.encode(THREE).toByteString())
 
     assertEquals(0, adapter.encode(EMPTY).size)
   }

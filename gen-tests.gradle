@@ -203,7 +203,7 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
       'same_name_enum.proto',
       'redacted_one_of.proto',
       'map.proto',
-      'repeated.proto'
+      'repeated.proto',
   ]
 }
 
