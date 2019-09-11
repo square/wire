@@ -24,13 +24,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?
 ) {
-  // Using by lazy doesn't work on Native since it creates cyclic refs between objects
-  // (commonCreateXxx() is an extension function on ProtoAdapter), so we can't cache adapters here
-  // and will have to recreate them every time.
-  internal actual val packedAdapter: ProtoAdapter<List<E>>
-    get() = commonCreatePacked()
-  internal actual val repeatedAdapter: ProtoAdapter<List<E>>
-    get() = commonCreateRepeated()
+  internal actual val packedAdapter: ProtoAdapter<List<E>> by lazy { commonCreatePacked() }
+  internal actual val repeatedAdapter: ProtoAdapter<List<E>> by lazy { commonCreateRepeated() }
 
   /** Returns the redacted form of `value`. */
   actual abstract fun redact(value: E): E
