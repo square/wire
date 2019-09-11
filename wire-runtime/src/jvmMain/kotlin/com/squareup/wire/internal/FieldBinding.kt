@@ -88,8 +88,18 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   internal fun value(builder: B, value: Any) {
     when {
       label.isRepeated -> {
-        val list = getFromBuilder(builder) as MutableList<Any>
-        list.add(value)
+        when (val list = getFromBuilder(builder)) {
+          is MutableList<*> -> (list as MutableList<Any>).add(value)
+          is List<*> -> {
+            val mutableList = list.toMutableList()
+            mutableList.add(value)
+            set(builder, mutableList)
+          }
+          else -> {
+            val type = list?.let { it::class.java }
+            throw ClassCastException("Expected a list type, got $type.")
+          }
+        }
       }
       keyAdapterString.isNotEmpty() -> {
         when (val map = getFromBuilder(builder)) {

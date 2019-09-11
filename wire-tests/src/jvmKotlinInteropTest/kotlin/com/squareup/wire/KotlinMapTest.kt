@@ -20,7 +20,6 @@ import com.squareup.wire.protos.kotlin.map.Mappy
 import com.squareup.wire.protos.kotlin.map.Thing
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
