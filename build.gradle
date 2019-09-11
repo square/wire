@@ -35,6 +35,9 @@ buildscript {
           japicmp: 'me.champeau.gradle:japicmp-gradle-plugin:0.2.8',
       ],
       'android': "com.google.android:android:${versions.android}",
+      'androidx': [
+          annotations: "androidx.annotation:annotation:1.1.0",
+      ],
       'guava': "com.google.guava:guava:${versions.guava}",
       'okio': [
           'jvm': "com.squareup.okio:okio:${versions.okio}",
@@ -114,6 +117,7 @@ allprojects {
 
   repositories {
     mavenCentral()
+    google()
   }
 }
 

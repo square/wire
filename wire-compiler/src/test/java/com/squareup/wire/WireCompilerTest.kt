@@ -642,6 +642,19 @@ class WireCompilerTest {
         return expectedFile.also {
           println("Comparing against expected output $name")
         }
+      } else if (protoFolderSuffix() == "java") {
+        val expectedFile = when (suffix) {
+          "" -> File("../wire-tests/src/jvmJavaTest/proto-java/$path")
+          ".noOptions" -> File("../wire-tests/src/jvmJavaNoOptionsTest/proto-java/$path")
+          ".compact" -> File("../wire-tests/src/jvmJavaCompactTest/proto-java/$path")
+          ".pruned" -> File("../wire-tests/src/jvmJavaPrunedTest/proto-java/$path")
+          ".android" -> File("../wire-tests/src/jvmJavaAndroidTest/proto-java/$path")
+          ".android.compact" -> File("../wire-tests/src/jvmJavaAndroidCompactTest/proto-java/$path")
+          else -> throw AssertionError("Unknown suffix: $suffix")
+        }
+        return expectedFile.also {
+          println("Comparing against expected output $name")
+        }
       }
       val protoFolder = "/proto-${protoFolderSuffix()}/"
       // egorand: For now we assume that all pure-Kotlin tests (no suffix) live in commonTest, and
