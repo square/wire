@@ -19,30 +19,24 @@ import com.squareup.wire.protos.kotlin.map.Mappy
 import com.squareup.wire.protos.kotlin.map.Thing
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameter
-import org.junit.runners.Parameterized.Parameters
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
-@RunWith(Parameterized::class)
 class KotlinMapTest {
-
-  @Parameter(0) lateinit var name: String
-  @Parameter(1) lateinit var adapter: ProtoAdapter<Mappy>
+  private val adapter = Mappy.ADAPTER
 
   @Test fun serialize() {
-    assertThat(ByteString.of(*adapter.encode(THREE))).isEqualTo(BYTES)
+    assertEquals(BYTES, ByteString.of(*adapter.encode(THREE)))
 
-    assertThat(adapter.encode(EMPTY)).hasSize(0)
+    assertEquals(0, adapter.encode(EMPTY).size)
   }
 
   @Test fun deserialize() {
-    assertThat(adapter.decode(BYTES)).isEqualTo(THREE)
+    assertEquals(THREE, adapter.decode(BYTES))
 
     val empty = adapter.decode(ByteArray(0))
-    assertThat(empty.things).isNotNull()
+    assertNotNull(empty.things)
   }
 
   companion object {
@@ -56,16 +50,5 @@ class KotlinMapTest {
             "three" to Thing("Three")
         )
     )
-
-    @JvmStatic
-    @Parameters(name = "{0}")
-    fun parameters(): List<Array<Any>> {
-      return listOf(
-          arrayOf("Generated", Mappy.ADAPTER)
-
-          // TODO(egorand): Add support for runtime adapters
-          // arrayOf("Runtime", RuntimeMessageAdapter.create(Mappy::class.java))
-      )
-    }
   }
 }
