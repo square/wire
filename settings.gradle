@@ -15,7 +15,5 @@ include ':wire-runtime:japicmp'
 include ':wire-schema'
 include ':wire-test-utils'
 include ':wire-tests'
-include ':wire-tests:kotlin-android'
-include ':wire-tests:kotlin-interop'
 
 enableFeaturePreview('GRADLE_METADATA')

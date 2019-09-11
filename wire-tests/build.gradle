@@ -3,6 +3,37 @@ apply plugin: 'org.jetbrains.kotlin.multiplatform'
 kotlin {
   jvm {
     withJava()
+    compilations.create('kotlinInteropTest') {
+      defaultSourceSet {
+        kotlin.srcDirs += 'src/jvmKotlinInteropTest/proto-kotlin'
+        dependencies {
+          implementation(compilations.main.compileDependencyFiles)
+          implementation deps.kotlin.test.junit
+          implementation deps.assertj
+        }
+      }
+      tasks.create('jvmKotlinInteropTest', Test) {
+        classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
+        testClassesDirs = output.classesDirs
+      }
+      jvmTest.dependsOn jvmKotlinInteropTest
+    }
+    compilations.create('kotlinAndroidTest') {
+      defaultSourceSet {
+        kotlin.srcDirs += 'src/jvmKotlinAndroidTest/proto-kotlin'
+        dependencies {
+          implementation(compilations.main.compileDependencyFiles)
+          compileOnly deps.android
+          implementation deps.kotlin.test.junit
+          implementation deps.assertj
+        }
+      }
+      tasks.create('jvmKotlinAndroidTest', Test) {
+        classpath = compileDependencyFiles + runtimeDependencyFiles + output.allOutputs
+        testClassesDirs = output.classesDirs
+      }
+      jvmTest.dependsOn jvmKotlinAndroidTest
+    }
   }
   js {
     configure([compilations.main, compilations.test]) {

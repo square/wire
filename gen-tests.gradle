@@ -208,7 +208,7 @@ task generateKotlinAndroidTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/kotlin-android/src/main/kotlin',
+      '--kotlin_out=wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
       '--android',
       'person.proto'
   ]
@@ -222,17 +222,17 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-          '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-          '--kotlin_out=wire-tests/kotlin-interop/src/main/kotlin',
-          '--java_interop',
-          'all_types.proto',
-          'person.proto',
-          'deprecated.proto',
-          'one_of.proto',
-          'percents_in_kdoc.proto',
-          'same_name_enum.proto',
-          'redacted_one_of.proto',
-          'map.proto'
+      '--proto_path=wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+      '--java_interop',
+      'all_types.proto',
+      'person.proto',
+      'deprecated.proto',
+      'one_of.proto',
+      'percents_in_kdoc.proto',
+      'same_name_enum.proto',
+      'redacted_one_of.proto',
+      'map.proto'
   ]
 }
 
