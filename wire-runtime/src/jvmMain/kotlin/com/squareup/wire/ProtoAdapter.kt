@@ -25,14 +25,19 @@ import okio.source
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?
 ) {
-  internal actual val packedAdapter: ProtoAdapter<List<E>> by lazy { commonCreatePacked() }
-  internal actual val repeatedAdapter: ProtoAdapter<List<E>> by lazy { commonCreateRepeated() }
+  internal actual val packedAdapter: ProtoAdapter<List<E>> by lazy(mode = NONE) {
+    commonCreatePacked()
+  }
+  internal actual val repeatedAdapter: ProtoAdapter<List<E>> by lazy(mode = NONE) {
+    commonCreateRepeated()
+  }
 
   constructor(fieldEncoding: FieldEncoding, type: Class<*>): this(fieldEncoding, type.kotlin)
 
