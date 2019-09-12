@@ -151,14 +151,12 @@ task generateKotlinTests(type: JavaExec) {
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
       '--kotlin_out=wire-tests/src/commonTest/proto-kotlin',
-      'all_types.proto',    
+      'all_types.proto',
       'person.proto',
       'optional_enum.proto',
       'map.proto',
       'one_of.proto',
       'same_name_enum.proto',
-      'service_kotlin.proto',
-      'service_without_package.proto',
       'redacted_test.proto',
       'redacted_one_of.proto',
       'deprecated_enum.proto',
@@ -166,6 +164,21 @@ task generateKotlinTests(type: JavaExec) {
       'form.proto',
       'no_fields.proto',
       'to_string.proto'
+  ]
+}
+
+// KOTLIN SERVICES
+
+task generateKotlinServicesTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes from the test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+      'service_kotlin.proto',
+      'service_without_package.proto',
   ]
 }
 
@@ -277,9 +290,10 @@ task generateMoshiAdapterKotlinTests(type: JavaExec) {
 
 task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generateNoOptionsTests, 
     generateGsonTests, generateIncludesExcludesTests, generateAndroidTests, 
-    generateAndroidCompactTests, generateKotlinTests, generateKotlinAndroidTests, 
-    generateKotlinJavaInteropTests, generateGrpcTests, generateMoshiAdapterJavaTests,
-    generateMoshiAdapterKotlinTests, generateMoshiAdapterInteropKotlinTests]) {
+    generateAndroidCompactTests, generateKotlinTests, generateKotlinServicesTests,
+    generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateGrpcTests,
+    generateMoshiAdapterJavaTests, generateMoshiAdapterKotlinTests,
+    generateMoshiAdapterInteropKotlinTests]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
 }

@@ -13,13 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package squareup.protos.kotlin;
+package com.squareup.wire.internal
 
-option java_package = "com.squareup.wire.protos.kotlin.services";
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import okio.BufferedSink
+import okio.Pipe
+import okio.buffer
 
-message SomeRequest {}
-message SomeResponse {}
+/**
+ * A duplex request body that provides early writes via a pipe.
+ */
+internal class PipeDuplexRequestBody(
+  private val contentType: MediaType?,
+  pipeMaxBufferSize: Long
+) : RequestBody() {
+  private val pipe = Pipe(pipeMaxBufferSize)
 
-service SomeService {
-  rpc SomeMethod (SomeRequest) returns (SomeResponse);
+  fun createSink() = pipe.sink.buffer()
+
+  override fun contentType() = contentType
+
+  override fun writeTo(sink: BufferedSink) {
+    pipe.fold(sink)
+  }
+
+  override fun isDuplex() = true
 }

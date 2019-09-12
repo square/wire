@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-option java_package = "com.squareup.wire.protos.kotlin";
+option java_package = "com.squareup.wire.protos.kotlin.services";
 
 message NoPackageRequest {}
 message NoPackageResponse {}

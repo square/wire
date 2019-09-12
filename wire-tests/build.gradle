@@ -8,6 +8,7 @@ kotlin {
         kotlin.srcDirs += 'src/jvmKotlinInteropTest/proto-kotlin'
         dependencies {
           implementation(compilations.main.compileDependencyFiles)
+          implementation project(':wire-grpc-client')
           implementation deps.kotlin.test.junit
           implementation deps.assertj
         }
@@ -73,7 +74,6 @@ kotlin {
       kotlin.srcDirs += 'src/jvmTest/proto-kotlin'
       kotlin.srcDirs += 'src/jvmTest/proto-java'
       dependencies {
-        implementation project(':wire-grpc-client')
         implementation project(':wire-test-utils')
         implementation deps.assertj
         implementation deps.kotlin.test.junit

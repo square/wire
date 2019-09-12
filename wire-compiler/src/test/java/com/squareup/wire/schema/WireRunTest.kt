@@ -89,7 +89,7 @@ class WireRunTest {
     assertThat(fs.find("generated")).containsExactly(
         "generated/kt/squareup/routes/RouteClient.kt")
     assertThat(fs.get("generated/kt/squareup/routes/RouteClient.kt"))
-        .contains("interface RouteClient : Service", "suspend fun GetUpdatedRed")
+        .contains("interface RouteClient : Service", "fun GetUpdatedBlue()")
   }
 
   @Test
