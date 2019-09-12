@@ -1,4 +1,4 @@
-// ../wire-tests/src/commonTest/proto/external_message.proto
+// ../wire-tests/src/commonTest/proto/java/external_message.proto
 package squareup.protos.simple;
 
 option java_package = "com.squareup.wire.protos.simple";

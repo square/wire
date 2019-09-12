@@ -617,7 +617,7 @@ class WireCompilerTest {
 
   private enum class TargetLanguage {
     JAVA {
-      override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto"
+      override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/java"
       override fun outArg(testDirPath: String) = "--java_out=$testDirPath"
       override fun protoFolderSuffix() = "java"
     },

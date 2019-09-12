@@ -1,4 +1,4 @@
-// ../wire-tests/src/commonTest/proto/bar.proto
+// ../wire-tests/src/commonTest/proto/java/bar.proto
 package squareup.foobar;
 
 option java_package = "com.squareup.foobar.protos.bar";

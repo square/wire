@@ -1,4 +1,4 @@
-// ../wire-tests/src/commonTest/proto/foreign.proto
+// ../wire-tests/src/commonTest/proto/java/foreign.proto
 package squareup.protos.foreign;
 
 import "google/protobuf/descriptor.proto";
