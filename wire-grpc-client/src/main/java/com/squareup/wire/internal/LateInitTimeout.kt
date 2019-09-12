@@ -13,30 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.internal
 
-import okhttp3.MediaType
-import okhttp3.RequestBody
-import okio.BufferedSink
-import okio.Pipe
-import okio.buffer
+import okio.ForwardingTimeout
+import okio.Timeout
+import java.util.concurrent.TimeUnit
 
-/**
- * A duplex request body that provides early writes via a pipe.
- */
-internal class PipeDuplexRequestBody(
-  private val contentType: MediaType?,
-  pipeMaxBufferSize: Long
-) : RequestBody() {
-  private val pipe = Pipe(pipeMaxBufferSize)
-
-  fun createSink() = pipe.sink.buffer()
-
-  override fun contentType() = contentType
-
-  override fun writeTo(sink: BufferedSink) {
-    pipe.fold(sink)
+internal class LateInitTimeout : ForwardingTimeout(Timeout()) {
+  fun init(newDelegate: Timeout) {
+    val oldDelegate = this.delegate
+    newDelegate.timeout(oldDelegate.timeoutNanos(), TimeUnit.NANOSECONDS)
+    if (oldDelegate.hasDeadline()) newDelegate.deadlineNanoTime(oldDelegate.deadlineNanoTime())
+    delegate = newDelegate
   }
-
-  override fun isDuplex() = true
 }

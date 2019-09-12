@@ -348,9 +348,9 @@ class WireCompilerTest {
     compileToKotlin(sources, "--includes=squareup.protos.kotlin.SomeService")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/SomeServiceClient.kt",
-        "com/squareup/wire/protos/kotlin/SomeResponse.kt",
-        "com/squareup/wire/protos/kotlin/SomeRequest.kt"
+        "com/squareup/wire/protos/kotlin/services/SomeServiceClient.kt",
+        "com/squareup/wire/protos/kotlin/services/SomeResponse.kt",
+        "com/squareup/wire/protos/kotlin/services/SomeRequest.kt"
     )
     assertKotlinOutputs(outputs)
   }
@@ -361,9 +361,9 @@ class WireCompilerTest {
     compileToKotlin(sources, "--includes=NoPackageService")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/NoPackageServiceClient.kt",
-        "com/squareup/wire/protos/kotlin/NoPackageResponse.kt",
-        "com/squareup/wire/protos/kotlin/NoPackageRequest.kt"
+        "com/squareup/wire/protos/kotlin/services/NoPackageServiceClient.kt",
+        "com/squareup/wire/protos/kotlin/services/NoPackageResponse.kt",
+        "com/squareup/wire/protos/kotlin/services/NoPackageRequest.kt"
     )
     assertKotlinOutputs(outputs)
   }
@@ -634,7 +634,7 @@ class WireCompilerTest {
     internal fun expectedFile(path: String, suffix: String): File {
       val sourceSet = when (val protoFolderSuffix = protoFolderSuffix()) {
         "kotlin" -> when (suffix) {
-          "" -> "commonTest"
+          "" -> if (path.contains("kotlin/services/")) "jvmKotlinInteropTest" else "commonTest"
           ".java.interop" -> "jvmKotlinInteropTest"
           ".android" -> "jvmKotlinAndroidTest"
           else -> throw AssertionError("Unknown suffix: $suffix")

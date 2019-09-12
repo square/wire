@@ -22,7 +22,6 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -30,7 +29,6 @@ import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -43,6 +41,7 @@ import routeguide.RouteGuideClient
 import routeguide.RouteNote
 import routeguide.RouteSummary
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
@@ -71,7 +70,7 @@ class GrpcClientTest {
   }
 
   @Test
-  fun requestResponse() {
+  fun requestResponseSuspend() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
     mockService.enqueue(ReceiveComplete)
@@ -79,13 +78,72 @@ class GrpcClientTest {
     mockService.enqueue(SendCompleted)
 
     runBlocking {
-      val feature = routeGuideService.GetFeature(Point(latitude = 5, longitude = 6))
+      val grpcCall = routeGuideService.GetFeature()
+      val feature = grpcCall.execute(Point(latitude = 5, longitude = 6))
+
       assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
     }
   }
 
   @Test
-  fun streamingRequest() {
+  fun requestResponseBlocking() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+  }
+
+  @Test
+  fun requestResponseCallback() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    var feature: Feature? = null
+    val latch = CountDownLatch(1)
+    grpcCall.enqueue(Point(latitude = 5, longitude = 6),
+        object : GrpcCall.Callback<Point, Feature> {
+          override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
+            throw AssertionError()
+          }
+
+          override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
+            feature = response
+            latch.countDown()
+          }
+        })
+
+    mockService.awaitSuccessBlocking()
+    latch.await()
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+  }
+
+  @Test @Ignore
+  fun cancelRequestResponseSuspending() {
+    TODO()
+  }
+
+  @Test @Ignore
+  fun cancelRequestResponseBlocking() {
+    TODO()
+  }
+
+  @Test @Ignore
+  fun cancelRequestResponseCallback() {
+    TODO()
+  }
+
+  @Test
+  fun streamingRequestSuspend() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
     mockService.enqueueReceivePoint(latitude = 3, longitude = 3)
     mockService.enqueueReceivePoint(latitude = 9, longitude = 6)
@@ -93,17 +151,60 @@ class GrpcClientTest {
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
-    val (requestChannel, deferredResponse) = routeGuideService.RecordRoute()
+    val (requestChannel, responseChannel) = routeGuideService.RecordRoute().execute()
     runBlocking {
       requestChannel.send(Point(3, 3))
       requestChannel.send(Point(9, 6))
       requestChannel.close()
-      assertThat(deferredResponse.await()).isEqualTo(RouteSummary(point_count = 2))
+      assertThat(responseChannel.receive()).isEqualTo(RouteSummary(point_count = 2))
     }
   }
 
   @Test
-  fun streamingResponse() {
+  fun streamingRequestBlocking() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
+    mockService.enqueueReceivePoint(latitude = 3, longitude = 3)
+    mockService.enqueueReceivePoint(latitude = 9, longitude = 6)
+    mockService.enqueueSendSummary(pointCount = 2)
+    mockService.enqueue(SendCompleted)
+    mockService.enqueue(ReceiveComplete)
+
+    val (requestChannel, deferredResponse) = routeGuideService.RecordRoute().executeBlocking()
+    requestChannel.write(Point(3, 3))
+    requestChannel.write(Point(9, 6))
+    requestChannel.close()
+    assertThat(deferredResponse.read()).isEqualTo(RouteSummary(point_count = 2))
+  }
+
+  @Test
+  fun cancelStreamingRequestSuspend() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
+
+    val (_, responseChannel) = routeGuideService.RecordRoute().execute()
+    runBlocking {
+      // TODO(benoit) Fix it so we don't have to wait.
+      // We wait for the request to proceed.
+      delay(200)
+      responseChannel.cancel()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelStreamingRequestBlocking() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
+
+    val (_, responseDeferred) = routeGuideService.RecordRoute().executeBlocking()
+    // We wait for the request to proceed.
+    Thread.sleep(200)
+    responseDeferred.close()
+    mockService.awaitSuccessBlocking()
+    assertThat(callReference.get()?.isCanceled()).isTrue()
+  }
+
+  @Test
+  fun streamingResponseSuspend() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
     mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
     mockService.enqueue(ReceiveComplete)
@@ -111,9 +212,10 @@ class GrpcClientTest {
     mockService.enqueueSendFeature(name = "house")
     mockService.enqueue(SendCompleted)
 
-    val responseChannel = routeGuideService.ListFeatures(
-        Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    val (requestChannel, responseChannel) = routeGuideService.ListFeatures().execute()
     runBlocking {
+      requestChannel.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+      requestChannel.close()
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "tree"))
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "house"))
       assertThat(responseChannel.receiveOrNull()).isNull()
@@ -121,7 +223,64 @@ class GrpcClientTest {
   }
 
   @Test
-  fun duplex_receiveDataAfterClosingRequest() {
+  fun streamingResponseBlocking() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree")
+    mockService.enqueueSendFeature(name = "house")
+    mockService.enqueue(SendCompleted)
+
+    val (requestChannel, responseChannel) = routeGuideService.ListFeatures().executeBlocking()
+    requestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requestChannel.close()
+    assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
+    assertThat(responseChannel.read()).isEqualTo(Feature(name = "house"))
+    assertThat(responseChannel.read()).isNull()
+  }
+
+  @Test
+  fun cancelStreamingResponseSuspend() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree")
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
+    mockService.enqueueSendFeature(name = "house")
+    mockService.enqueue(SendCompleted)
+
+    val (requestChannel, responseChannel) = routeGuideService.ListFeatures().execute()
+    runBlocking {
+      requestChannel.send(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+      requestChannel.close()
+      assertThat(responseChannel.receive()).isEqualTo(Feature(name = "tree"))
+      responseChannel.cancel()
+      mockService.awaitSuccess()
+      assertThat(callReference.get()?.isCanceled()).isTrue()
+    }
+  }
+
+  @Test
+  fun cancelStreamingResponseBlocking() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree")
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
+    mockService.enqueueSendFeature(name = "house")
+    mockService.enqueue(SendCompleted)
+
+    val (requestChannel, responseChannel) = routeGuideService.ListFeatures().executeBlocking()
+    requestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requestChannel.close()
+    assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
+    responseChannel.close()
+    mockService.awaitSuccessBlocking()
+    assertThat(callReference.get()?.isCanceled()).isTrue()
+  }
+
+  @Test
+  fun duplexSuspend_receiveDataAfterClosingRequest() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueReceiveNote(message = "marco")
     mockService.enqueueSendNote(message = "polo")
@@ -130,7 +289,7 @@ class GrpcClientTest {
     mockService.enqueue(ReceiveComplete)
     mockService.enqueue(SendCompleted)
 
-    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().execute()
     runBlocking {
       requestChannel.send(RouteNote(message = "marco"))
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
@@ -142,7 +301,26 @@ class GrpcClientTest {
   }
 
   @Test
-  fun duplex_receiveDataBeforeClosingRequest() {
+  fun duplexBlocking_receiveDataAfterClosingRequest() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueReceiveNote(message = "rené")
+    mockService.enqueueSendNote(message = "lacoste")
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(SendCompleted)
+
+    val (requestSink, responseSource) = routeGuideService.RouteChat().executeBlocking()
+    requestSink.write(RouteNote(message = "marco"))
+    assertThat(responseSource.read()).isEqualTo(RouteNote(message = "polo"))
+    requestSink.write(RouteNote(message = "rené"))
+    requestSink.close()
+    assertThat(responseSource.read()).isEqualTo(RouteNote(message = "lacoste"))
+    assertThat(responseSource.read()).isNull()
+  }
+
+  @Test
+  fun duplexSuspend_receiveDataBeforeClosingRequest() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueReceiveNote(message = "marco")
     mockService.enqueueSendNote(message = "polo")
@@ -153,7 +331,7 @@ class GrpcClientTest {
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
-    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().execute()
     runBlocking {
       requestChannel.send(RouteNote(message = "marco"))
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
@@ -164,70 +342,32 @@ class GrpcClientTest {
     }
   }
 
-  @Ignore("no good mechanism to cancel with blocking streams")
   @Test
-  fun cancelRequestResponse() {
-    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
-    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
-    mockService.enqueue(ReceiveComplete)
+  fun duplexBlocking_receiveDataBeforeClosingRequest() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueReceiveNote(message = "rené")
+    mockService.enqueueSendNote(message = "lacoste")
+    // We give time to the sender to read the response.
     mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
-    mockService.enqueueSendFeature(name = "tree at 5,6")
     mockService.enqueue(SendCompleted)
-
-    runBlocking {
-      val deferred = async {
-        routeGuideService.GetFeature(Point(latitude = 5, longitude = 6))
-        fail()
-      }
-      // We wait for the request to complete and cancel before the response is sent.
-      delay(200)
-      deferred.cancel()
-      mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
-    }
-  }
-
-  @Test
-  fun cancelStreamingRequest() {
-    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
-
-    val (_, responseDeferred) = routeGuideService.RecordRoute()
-    runBlocking {
-      // We wait for the request to proceed.
-      delay(200)
-      responseDeferred.cancel()
-      mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
-    }
-  }
-
-  // TODO(benoit) Maybe add backpressure test (tried and failed)
-
-  @Test
-  fun cancelStreamingResponse() {
-    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
-    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
     mockService.enqueue(ReceiveComplete)
-    mockService.enqueueSendFeature(name = "tree")
-    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
-    mockService.enqueueSendFeature(name = "house")
-    mockService.enqueue(SendCompleted)
 
-    val receiveChannel =
-        routeGuideService.ListFeatures(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
-    runBlocking {
-      receiveChannel.receive()
-      receiveChannel.cancel()
-      mockService.awaitSuccess()
-      assertThat(callReference.get()?.isCanceled()).isTrue()
-    }
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeBlocking()
+    requestChannel.write(RouteNote(message = "marco"))
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "polo"))
+    requestChannel.write(RouteNote(message = "rené"))
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "lacoste"))
+    assertThat(responseChannel.read()).isNull()
+    requestChannel.close()
   }
 
   @Test
-  fun cancelDuplexBeforeRequestCompletes() {
+  fun cancelDuplexSuspendBeforeRequestCompletes() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
 
-    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().execute()
     runBlocking {
       // We wait for mockService to process our actions.
       delay(500)
@@ -240,12 +380,12 @@ class GrpcClientTest {
   }
 
   @Test
-  fun cancelDuplexAfterRequestCompletes() {
+  fun cancelDuplexSuspendAfterRequestCompletes() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueReceiveNote(message = "marco")
     mockService.enqueue(ReceiveComplete)
 
-    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().execute()
     runBlocking {
       requestChannel.send(RouteNote(message = "marco"))
       requestChannel.close()
@@ -261,14 +401,14 @@ class GrpcClientTest {
   }
 
   @Test
-  fun cancelDuplexBeforeResponseCompletes() {
+  fun cancelDuplexSuspendBeforeResponseCompletes() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueReceiveNote(message = "marco")
     mockService.enqueueSendNote(message = "polo")
     mockService.enqueueReceiveNote(message = "rené")
     mockService.enqueue(ReceiveComplete)
 
-    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().execute()
     runBlocking {
       requestChannel.send(RouteNote(message = "marco"))
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
@@ -287,7 +427,7 @@ class GrpcClientTest {
   }
 
   @Test
-  fun cancelDuplexAfterResponseCompletes() {
+  fun cancelDuplexSuspendAfterResponseCompletes() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueReceiveNote(message = "marco")
     mockService.enqueueSendNote(message = "polo")
@@ -296,7 +436,7 @@ class GrpcClientTest {
     mockService.enqueue(ReceiveComplete)
     mockService.enqueue(SendCompleted)
 
-    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().execute()
     runBlocking {
       requestChannel.send(RouteNote(message = "marco"))
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
@@ -315,19 +455,96 @@ class GrpcClientTest {
     }
   }
 
+  @Test fun cancelDuplexBlockingBeforeRequestCompletes() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+
+    val (_, responseChannel) = routeGuideService.RouteChat().executeBlocking()
+    // We wait for mockService to process our actions.
+    Thread.sleep(500)
+    responseChannel.close()
+    mockService.awaitSuccessBlocking()
+    assertThat(callReference.get()?.isCanceled()).isTrue()
+  }
+
+  @Test fun cancelDuplexBlockingAfterRequestCompletes() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueue(ReceiveComplete)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeBlocking()
+    requestChannel.write(RouteNote(message = "marco"))
+    requestChannel.close()
+    // We wait for mockService to process our actions.
+    Thread.sleep(500)
+
+    responseChannel.close()
+    mockService.awaitSuccessBlocking()
+    assertThat(callReference.get()?.isCanceled()).isTrue()
+  }
+
+  @Test fun cancelDuplexBlockingBeforeResponseCompletes() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueReceiveNote(message = "rené")
+    mockService.enqueue(ReceiveComplete)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeBlocking()
+    requestChannel.write(RouteNote(message = "marco"))
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "polo"))
+    requestChannel.write(RouteNote(message = "rené"))
+    requestChannel.close()
+
+    // We wait for mockService to process our actions.
+    Thread.sleep(500)
+
+    responseChannel.close()
+    mockService.awaitSuccessBlocking()
+    assertThat(callReference.get()?.isCanceled()).isTrue()
+  }
+
+  @Test fun cancelDuplexBlockingAfterResponseCompletes() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueReceiveNote(message = "rené")
+    mockService.enqueueSendNote(message = "lacoste")
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(SendCompleted)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeBlocking()
+    requestChannel.write(RouteNote(message = "marco"))
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "polo"))
+    requestChannel.write(RouteNote(message = "rené"))
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "lacoste"))
+    requestChannel.close()
+    assertThat(responseChannel.read()).isNull()
+
+    // We wait for mockService to process our actions.
+    Thread.sleep(500)
+
+    responseChannel.close()
+    assertThat(callReference.get()?.isCanceled()).isTrue()
+  }
+
   @Test
-  fun duplexReceiveOnly() {
+  fun duplexSuspendReceiveOnly() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueSendNote(message = "welcome")
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
-    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().execute()
     runBlocking {
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "welcome"))
       requestChannel.close()
       assertThat(responseChannel.receiveOrNull()).isNull()
     }
+  }
+
+  @Test @Ignore
+  fun duplexBlockingReceiveOnly() {
+    TODO()
   }
 
   /**
@@ -341,11 +558,18 @@ class GrpcClientTest {
     mockService.enqueueSendNote(message = "welcome")
     mockService.enqueue(ReceiveError)
 
-    val (requestChannel, responseChannel) = routeGuideService.RouteChat()
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().execute()
     runBlocking {
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "welcome"))
       requestChannel.close(IOException("boom!"))
       mockService.awaitSuccess()
+    }
+  }
+
+  @ExperimentalCoroutinesApi
+  private fun MockRouteGuideService.awaitSuccessBlocking() {
+    runBlocking {
+      awaitSuccess()
     }
   }
 }

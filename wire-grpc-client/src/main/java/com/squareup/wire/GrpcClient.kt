@@ -15,7 +15,8 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.GrpcMethod.Companion.toGrpc
+import com.squareup.wire.internal.GrpcMethod
+import com.squareup.wire.internal.GrpcMethod.Companion.toGrpc
 import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull

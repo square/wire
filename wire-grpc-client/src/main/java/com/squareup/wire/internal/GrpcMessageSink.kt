@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.internal
 
+import com.squareup.wire.MessageSink
+import com.squareup.wire.ProtoAdapter
 import okhttp3.Call
 import okio.Buffer
 import okio.BufferedSink

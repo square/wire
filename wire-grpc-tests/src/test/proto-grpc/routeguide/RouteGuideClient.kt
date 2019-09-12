@@ -2,12 +2,10 @@
 // Source file: routeguide/RouteGuideProto.proto
 package routeguide
 
+import com.squareup.wire.GrpcCall
+import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.Service
 import com.squareup.wire.WireRpc
-import kotlin.Pair
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
 
 interface RouteGuideClient : Service {
   @WireRpc(
@@ -15,26 +13,26 @@ interface RouteGuideClient : Service {
     requestAdapter = "routeguide.Point#ADAPTER",
     responseAdapter = "routeguide.Feature#ADAPTER"
   )
-  suspend fun GetFeature(request: Point): Feature
+  fun GetFeature(): GrpcCall<Point, Feature>
 
   @WireRpc(
     path = "/routeguide.RouteGuide/ListFeatures",
     requestAdapter = "routeguide.Rectangle#ADAPTER",
     responseAdapter = "routeguide.Feature#ADAPTER"
   )
-  fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
+  fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature>
 
   @WireRpc(
     path = "/routeguide.RouteGuide/RecordRoute",
     requestAdapter = "routeguide.Point#ADAPTER",
     responseAdapter = "routeguide.RouteSummary#ADAPTER"
   )
-  fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
+  fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary>
 
   @WireRpc(
     path = "/routeguide.RouteGuide/RouteChat",
     requestAdapter = "routeguide.RouteNote#ADAPTER",
     responseAdapter = "routeguide.RouteNote#ADAPTER"
   )
-  fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+  fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
 }

@@ -15,9 +15,6 @@
  */
 package com.squareup.wire.internal
 
-import com.squareup.wire.GrpcMessageSink
-import com.squareup.wire.GrpcMessageSource
-import com.squareup.wire.PipeDuplexRequestBody
 import com.squareup.wire.ProtoAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

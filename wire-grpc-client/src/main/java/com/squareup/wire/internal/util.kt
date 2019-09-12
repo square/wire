@@ -17,48 +17,9 @@
 
 package com.squareup.wire.internal
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-
-internal val unconfinedCoroutineScope = CoroutineScope(Dispatchers.Unconfined)
-
-/**
- * Invokes `block` and returns its result to the continuation. Useful in reflection code when you
- * can't implement a `suspend fun` directly.
- */
-internal fun <T> Continuation<T>.invokeSuspending(
-  block: suspend () -> T
-): Any {
-  val deferred = CoroutineScope(this.context).async { block() }
-
-  deferred.invokeOnCompletion { cause: Throwable? ->
-    if (cause != null) {
-      resumeWithException(cause)
-    } else {
-      resume(deferred.getCompleted())
-    }
-  }
-
-  return kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
-}
-
-/**
- * Returns this type's first type parameter. For example, given `List<String>`, this returns
- * `String`. For Kotlin the returned type parameter is often a wildcard like `? extends Number`.
- */
-internal fun Type.genericParameterType(index: Int = 0): Type {
-  when (this) {
-    is ParameterizedType -> return actualTypeArguments[index]
-    else -> throw IllegalArgumentException("no generic parameter type: $this")
-  }
-}
 
 /**
  * Returns the raw type of this type. If this is a raw type already it is returned. For example,

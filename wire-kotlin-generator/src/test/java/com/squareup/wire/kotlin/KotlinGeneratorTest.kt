@@ -107,6 +107,7 @@ class KotlinGeneratorTest {
     val expected = """
           |package routeguide
           |
+          |import com.squareup.wire.GrpcCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
@@ -116,7 +117,7 @@ class KotlinGeneratorTest {
           |    requestAdapter = "routeguide.Point#ADAPTER",
           |    responseAdapter = "routeguide.Feature#ADAPTER"
           |  )
-          |  suspend fun GetFeature(request: Point): Feature
+          |  fun GetFeature(): GrpcCall<Point, Feature>
           |}
           |""".trimMargin()
 
@@ -299,6 +300,7 @@ class KotlinGeneratorTest {
 
   @Test fun noPackage() {
     val expected = """
+          |import com.squareup.wire.GrpcCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
@@ -308,7 +310,7 @@ class KotlinGeneratorTest {
           |    requestAdapter = "Point#ADAPTER",
           |    responseAdapter = "Feature#ADAPTER"
           |  )
-          |  suspend fun GetFeature(request: Point): Feature
+          |  fun GetFeature(): GrpcCall<Point, Feature>
           |}
           |""".trimMargin()
 
@@ -327,6 +329,7 @@ class KotlinGeneratorTest {
     val expected = """
           |package routeguide.grpc
           |
+          |import com.squareup.wire.GrpcCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
@@ -336,7 +339,7 @@ class KotlinGeneratorTest {
           |    requestAdapter = "routeguide.grpc.Point#ADAPTER",
           |    responseAdapter = "routeguide.grpc.Feature#ADAPTER"
           |  )
-          |  suspend fun GetFeature(request: Point): Feature
+          |  fun GetFeature(): GrpcCall<Point, Feature>
           |}
           |""".trimMargin()
 
@@ -357,11 +360,9 @@ class KotlinGeneratorTest {
     val expected = """
           |package routeguide
           |
+          |import com.squareup.wire.GrpcStreamingCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.Pair
-          |import kotlinx.coroutines.Deferred
-          |import kotlinx.coroutines.channels.SendChannel
           |
           |interface RouteGuideClient : Service {
           |  @WireRpc(
@@ -369,7 +370,7 @@ class KotlinGeneratorTest {
           |    requestAdapter = "routeguide.Point#ADAPTER",
           |    responseAdapter = "routeguide.RouteSummary#ADAPTER"
           |  )
-          |  fun RecordRoute(): Pair<SendChannel<Point>, Deferred<RouteSummary>>
+          |  fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary>
           |}
           |""".trimMargin()
 
@@ -390,9 +391,9 @@ class KotlinGeneratorTest {
     val expected = """
           |package routeguide
           |
+          |import com.squareup.wire.GrpcStreamingCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlinx.coroutines.channels.ReceiveChannel
           |
           |interface RouteGuideClient : Service {
           |  @WireRpc(
@@ -400,7 +401,7 @@ class KotlinGeneratorTest {
           |    requestAdapter = "routeguide.Rectangle#ADAPTER",
           |    responseAdapter = "routeguide.Feature#ADAPTER"
           |  )
-          |  fun ListFeatures(request: Rectangle): ReceiveChannel<Feature>
+          |  fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature>
           |}
           |""".trimMargin()
 
@@ -422,19 +423,17 @@ class KotlinGeneratorTest {
     val blockingClient = """
           |package routeguide
           |
-          |import com.squareup.wire.MessageSink
-          |import com.squareup.wire.MessageSource
+          |import com.squareup.wire.GrpcStreamingCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.Pair
           |
-          |interface RouteGuideBlockingClient : Service {
+          |interface RouteGuideClient : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
           |    responseAdapter = "routeguide.RouteNote#ADAPTER"
           |  )
-          |  fun RouteChat(): Pair<MessageSource<RouteNote>, MessageSink<RouteNote>>
+          |  fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
           |}
           |""".trimMargin()
     val blockingServer = """
@@ -457,11 +456,9 @@ class KotlinGeneratorTest {
     val suspendingClient = """
           |package routeguide
           |
+          |import com.squareup.wire.GrpcStreamingCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.Pair
-          |import kotlinx.coroutines.channels.ReceiveChannel
-          |import kotlinx.coroutines.channels.SendChannel
           |
           |interface RouteGuideClient : Service {
           |  @WireRpc(
@@ -469,7 +466,7 @@ class KotlinGeneratorTest {
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
           |    responseAdapter = "routeguide.RouteNote#ADAPTER"
           |  )
-          |  fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+          |  fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
           |}
           |""".trimMargin()
     val suspendingServer = """
@@ -514,11 +511,10 @@ class KotlinGeneratorTest {
     val expected = """
           |package routeguide
           |
+          |import com.squareup.wire.GrpcCall
+          |import com.squareup.wire.GrpcStreamingCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.Pair
-          |import kotlinx.coroutines.channels.ReceiveChannel
-          |import kotlinx.coroutines.channels.SendChannel
           |
           |interface RouteGuideClient : Service {
           |  @WireRpc(
@@ -526,14 +522,14 @@ class KotlinGeneratorTest {
           |    requestAdapter = "routeguide.Point#ADAPTER",
           |    responseAdapter = "routeguide.Feature#ADAPTER"
           |  )
-          |  suspend fun GetFeature(request: Point): Feature
+          |  fun GetFeature(): GrpcCall<Point, Feature>
           |
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
           |    responseAdapter = "routeguide.RouteNote#ADAPTER"
           |  )
-          |  fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+          |  fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
           |}
           |""".trimMargin()
 
@@ -569,6 +565,7 @@ class KotlinGeneratorTest {
     val expectedGetFeature = """
           |package routeguide
           |
+          |import com.squareup.wire.GrpcCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
@@ -578,7 +575,7 @@ class KotlinGeneratorTest {
           |    requestAdapter = "routeguide.Point#ADAPTER",
           |    responseAdapter = "routeguide.Feature#ADAPTER"
           |  )
-          |  suspend fun GetFeature(request: Point): Feature
+          |  fun GetFeature(): GrpcCall<Point, Feature>
           |}
           |""".trimMargin()
 
@@ -588,11 +585,9 @@ class KotlinGeneratorTest {
     val expectedRouteChat = """
           |package routeguide
           |
+          |import com.squareup.wire.GrpcStreamingCall
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
-          |import kotlin.Pair
-          |import kotlinx.coroutines.channels.ReceiveChannel
-          |import kotlinx.coroutines.channels.SendChannel
           |
           |interface RouteGuideRouteChatClient : Service {
           |  @WireRpc(
@@ -600,7 +595,7 @@ class KotlinGeneratorTest {
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
           |    responseAdapter = "routeguide.RouteNote#ADAPTER"
           |  )
-          |  fun RouteChat(): Pair<SendChannel<RouteNote>, ReceiveChannel<RouteNote>>
+          |  fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
           |}
           |""".trimMargin()
     assertEquals(expectedRouteChat,

@@ -33,8 +33,8 @@ import java.util.concurrent.LinkedBlockingDeque
  *  * Complete: enqueued when the stream completes normally.
  */
 internal class BlockingMessageSource<R : Any>(
-  val call: Call,
-  val responseAdapter: ProtoAdapter<R>
+  val responseAdapter: ProtoAdapter<R>,
+  val call: Call
 ) : MessageSource<R> {
   private val queue = LinkedBlockingDeque<Any>(1)
 

@@ -48,6 +48,8 @@ import com.squareup.kotlinpoet.jvm.jvmField
 import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.GrpcCall
+import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.Message
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
@@ -112,7 +114,9 @@ class KotlinGenerator private constructor(
       }
       when (rpcCallStyle) {
         RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
-        RpcCallStyle.BLOCKING -> append("Blocking")
+        RpcCallStyle.BLOCKING -> {
+          if (rpcRole == RpcRole.SERVER) append("Blocking")
+        }
       }
       when (rpcRole) {
         RpcRole.CLIENT -> append("Client")
@@ -195,34 +199,13 @@ class KotlinGenerator private constructor(
       }
     } else {
       when {
-        rpc.requestStreaming() && rpc.responseStreaming() -> {
+        rpc.requestStreaming() || rpc.responseStreaming() -> {
           funSpecBuilder.returns(
-              pairOf(
-                  readableStreamOf(requestType),
-                  writableStreamOf(responseType)
-              )
-          )
-        }
-        rpc.requestStreaming() -> {
-          funSpecBuilder.returns(
-              pairOf(
-                  readableStreamOf(requestType),
-                  readableSingleOf(responseType)
-              )
-          )
-        }
-        rpc.responseStreaming() -> {
-          funSpecBuilder
-              .addParameter("request", requestType)
-              .returns(writableStreamOf(responseType))
+              GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType))
         }
         else -> {
-          if (rpcCallStyle == RpcCallStyle.SUSPENDING) {
-            funSpecBuilder.addModifiers(KModifier.SUSPEND)
-          }
-          funSpecBuilder
-              .addParameter("request", requestType)
-              .returns(responseType)
+          funSpecBuilder.returns(
+              GrpcCall::class.asClassName().parameterizedBy(requestType, responseType))
         }
       }
     }
