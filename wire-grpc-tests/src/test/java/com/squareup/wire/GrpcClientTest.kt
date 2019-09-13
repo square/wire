@@ -204,6 +204,7 @@ class GrpcClientTest {
   }
 
   @Test
+  @Ignore("TODO: This test is flaky, please fix.")
   fun streamingResponseSuspend() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
     mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
