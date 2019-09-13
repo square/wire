@@ -69,6 +69,14 @@ class GrpcClientTest {
     routeGuideService = grpcClient.create(RouteGuideClient::class)
   }
 
+  @Suppress("ReplaceCallWithBinaryOperator") // We are explicitly testing this behavior.
+  @Test
+  fun objectMethodsStillWork() {
+    assertThat(routeGuideService.hashCode()).isNotZero()
+    assertThat(routeGuideService.equals(this)).isFalse()
+    assertThat(routeGuideService.toString()).isNotEmpty()
+  }
+
   @Test
   fun requestResponseSuspend() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
