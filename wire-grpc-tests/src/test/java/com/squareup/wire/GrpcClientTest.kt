@@ -86,6 +86,7 @@ class GrpcClientTest {
   }
 
   @Test
+  @Ignore("TODO: This test is flaky, please fix.")
   fun requestResponseBlocking() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
