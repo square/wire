@@ -25,18 +25,20 @@ import okio.source
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?
 ) {
-  internal actual val packedAdapter: ProtoAdapter<List<E>> by lazy(mode = NONE) {
-    commonCreatePacked()
+  internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
+    this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
+    fieldEncoding == FieldEncoding.LENGTH_DELIMITED -> null
+    else -> commonCreatePacked()
   }
-  internal actual val repeatedAdapter: ProtoAdapter<List<E>> by lazy(mode = NONE) {
-    commonCreateRepeated()
+  internal actual val repeatedAdapter: ProtoAdapter<List<E>>? = when {
+    this is RepeatedProtoAdapter<*> || this is PackedProtoAdapter<*> -> null
+    else -> commonCreateRepeated()
   }
 
   constructor(fieldEncoding: FieldEncoding, type: Class<*>): this(fieldEncoding, type.kotlin)
@@ -102,9 +104,18 @@ actual abstract class ProtoAdapter<E> actual constructor(
     return commonWithLabel(label)
   }
 
-  actual fun asPacked(): ProtoAdapter<List<E>> = packedAdapter
+  actual fun asPacked(): ProtoAdapter<List<E>> {
+    require(fieldEncoding != FieldEncoding.LENGTH_DELIMITED) {
+      "Unable to pack a length-delimited type."
+    }
+    return packedAdapter ?: throw UnsupportedOperationException(
+        "Can't create a packed adapter from a packed or repeated adapter.")
+  }
 
-  actual fun asRepeated(): ProtoAdapter<List<E>> = repeatedAdapter
+  actual fun asRepeated(): ProtoAdapter<List<E>> {
+    return repeatedAdapter ?: throw UnsupportedOperationException(
+        "Can't create a repeated adapter from a repeated or packed adapter.")
+  }
 
   actual class EnumConstantNotFoundException actual constructor(
     @JvmField actual val value: Int,
