@@ -1,4 +1,4 @@
-// ../wire-tests/src/commonTest/proto/foo.proto
+// ../wire-tests/src/commonTest/proto/java/foo.proto
 package squareup.foobar;
 
 import "bar.proto";

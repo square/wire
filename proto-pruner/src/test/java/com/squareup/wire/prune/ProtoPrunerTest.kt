@@ -82,7 +82,7 @@ class ProtoPrunerTest {
     vararg extraArgs: String
   ) {
     val args = ArrayList<String>()
-    args.add("--in=../wire-tests/src/commonTest/proto")
+    args.add("--in=../wire-tests/src/commonTest/proto/java")
     args.add("--out=${testDir.absolutePath}")
     Collections.addAll(args, sources.joinToString(prefix = "--includes=", separator = ","))
     Collections.addAll(args, *extraArgs)

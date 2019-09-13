@@ -1,4 +1,4 @@
-// ../wire-tests/src/commonTest/proto/simple_message.proto
+// ../wire-tests/src/commonTest/proto/java/simple_message.proto
 package squareup.protos.simple;
 
 import "external_message.proto";

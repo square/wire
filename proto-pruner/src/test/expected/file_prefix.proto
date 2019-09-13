@@ -1,4 +1,4 @@
-// ../wire-tests/src/commonTest/proto/letter.proto
+// ../wire-tests/src/commonTest/proto/java/letter.proto
 syntax = "proto2";
 
 import "google/protobuf/descriptor.proto";
