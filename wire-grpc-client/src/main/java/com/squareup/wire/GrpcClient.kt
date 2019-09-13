@@ -23,6 +23,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
@@ -37,11 +38,21 @@ class GrpcClient private constructor(
 
     return Proxy.newProxyInstance(
         service.java.classLoader,
-        arrayOf<Class<*>>(service.java)
-    ) { _, method, args ->
-      val grpcMethod = methodToService[method] as GrpcMethod<*, *>
-      grpcMethod.invoke(this@GrpcClient, args ?: emptyArray())
-    } as T
+        arrayOf<Class<*>>(service.java),
+        object : InvocationHandler {
+          override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any {
+            val self: InvocationHandler = this
+            val args = args ?: emptyArray()
+
+            if (method.declaringClass == Object::class.java) {
+              return method.invoke(self, *args)
+            }
+
+            val grpcMethod = methodToService[method] as GrpcMethod<*, *>
+            return grpcMethod.invoke(this@GrpcClient, args)
+          }
+        }
+    ) as T
   }
 
   internal fun newCall(path: String, requestBody: RequestBody): Call {
