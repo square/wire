@@ -41,8 +41,8 @@ expect abstract class ProtoAdapter<E>(
   internal val fieldEncoding: FieldEncoding
   val type: KClass<*>?
 
-  internal val packedAdapter: ProtoAdapter<List<E>>
-  internal val repeatedAdapter: ProtoAdapter<List<E>>
+  internal val packedAdapter: ProtoAdapter<List<E>>?
+  internal val repeatedAdapter: ProtoAdapter<List<E>>?
 
   /** Returns the redacted form of `value`. */
   abstract fun redact(value: E): E
@@ -217,75 +217,81 @@ internal inline fun <E> ProtoAdapter<E>.commonCreatePacked(): ProtoAdapter<List<
   require(fieldEncoding != FieldEncoding.LENGTH_DELIMITED) {
     "Unable to pack a length-delimited type."
   }
-  val adapter = this
-  return object : ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List::class) {
-    @Throws(IOException::class)
-    override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
-      if (value != null && value.isNotEmpty()) {
-        super.encodeWithTag(writer, tag, value)
-      }
+  return PackedProtoAdapter(originalAdapter = this)
+}
+
+internal class PackedProtoAdapter<E>(
+  private val originalAdapter: ProtoAdapter<E>
+) : ProtoAdapter<List<E>>(FieldEncoding.LENGTH_DELIMITED, List::class) {
+  @Throws(IOException::class)
+  override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
+    if (value != null && value.isNotEmpty()) {
+      super.encodeWithTag(writer, tag, value)
     }
-
-    override fun encodedSize(value: List<E>): Int {
-      var size = 0
-      for (i in 0 until value.size) {
-        size += adapter.encodedSize(value[i])
-      }
-      return size
-    }
-
-    override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
-      return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
-    }
-
-    @Throws(IOException::class)
-    override fun encode(writer: ProtoWriter, value: List<E>) {
-      for (i in 0 until value.size) {
-        adapter.encode(writer, value[i])
-      }
-    }
-
-    @Throws(IOException::class)
-    override fun decode(reader: ProtoReader): List<E> = listOf(adapter.decode(reader))
-
-    override fun redact(value: List<E>): List<E> = emptyList()
   }
+
+  override fun encodedSize(value: List<E>): Int {
+    var size = 0
+    for (i in 0 until value.size) {
+      size += originalAdapter.encodedSize(value[i])
+    }
+    return size
+  }
+
+  override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
+    return if (value == null || value.isEmpty()) 0 else super.encodedSizeWithTag(tag, value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ProtoWriter, value: List<E>) {
+    for (i in 0 until value.size) {
+      originalAdapter.encode(writer, value[i])
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader): List<E> = listOf(originalAdapter.decode(reader))
+
+  override fun redact(value: List<E>): List<E> = emptyList()
 }
 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E> ProtoAdapter<E>.commonCreateRepeated(): ProtoAdapter<List<E>> {
-  val adapter = this
-  return object : ProtoAdapter<List<E>>(fieldEncoding, List::class) {
-    override fun encodedSize(value: List<E>): Int {
-      throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
-    }
+  return RepeatedProtoAdapter(originalAdapter = this)
+}
 
-    override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
-      if (value == null) return 0
-      var size = 0
-      for (i in 0 until value.size) {
-        size += adapter.encodedSizeWithTag(tag, value[i])
-      }
-      return size
-    }
-
-    override fun encode(writer: ProtoWriter, value: List<E>) {
-      throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
-    }
-
-    @Throws(IOException::class)
-    override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
-      if (value == null) return
-      for (i in 0 until value.size) {
-        adapter.encodeWithTag(writer, tag, value[i])
-      }
-    }
-
-    @Throws(IOException::class)
-    override fun decode(reader: ProtoReader): List<E> = listOf(adapter.decode(reader))
-
-    override fun redact(value: List<E>): List<E> = emptyList()
+internal class RepeatedProtoAdapter<E>(
+  private val originalAdapter: ProtoAdapter<E>
+) : ProtoAdapter<List<E>>(originalAdapter.fieldEncoding, List::class) {
+  override fun encodedSize(value: List<E>): Int {
+    throw UnsupportedOperationException("Repeated values can only be sized with a tag.")
   }
+
+  override fun encodedSizeWithTag(tag: Int, value: List<E>?): Int {
+    if (value == null) return 0
+    var size = 0
+    for (i in 0 until value.size) {
+      size += originalAdapter.encodedSizeWithTag(tag, value[i])
+    }
+    return size
+  }
+
+  override fun encode(writer: ProtoWriter, value: List<E>) {
+    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
+  }
+
+  @Throws(IOException::class)
+  override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
+    if (value == null) return
+    for (i in 0 until value.size) {
+      originalAdapter.encodeWithTag(writer, tag, value[i])
+    }
+  }
+
+  @Throws(IOException::class)
+  override fun decode(reader: ProtoReader): List<E> = listOf(originalAdapter.decode(reader))
+
+  override fun redact(value: List<E>): List<E> = emptyList()
 }
 
 internal class MapProtoAdapter<K, V> internal constructor(

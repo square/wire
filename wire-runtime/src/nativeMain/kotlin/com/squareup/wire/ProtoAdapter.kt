@@ -18,18 +18,20 @@ package com.squareup.wire
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
-import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?
 ) {
-  internal actual val packedAdapter: ProtoAdapter<List<E>> by lazy(mode = NONE) {
-    commonCreatePacked()
+  internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
+    this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
+    fieldEncoding == FieldEncoding.LENGTH_DELIMITED -> null
+    else -> commonCreatePacked()
   }
-  internal actual val repeatedAdapter: ProtoAdapter<List<E>> by lazy(mode = NONE) {
-    commonCreateRepeated()
+  internal actual val repeatedAdapter: ProtoAdapter<List<E>>? = when {
+    this is RepeatedProtoAdapter<*> || this is PackedProtoAdapter<*> -> null
+    else -> commonCreateRepeated()
   }
 
   /** Returns the redacted form of `value`. */
@@ -96,7 +98,13 @@ actual abstract class ProtoAdapter<E> actual constructor(
   }
 
   /** Returns an adapter for `E` but as a packed, repeated value. */
-  actual fun asPacked(): ProtoAdapter<List<E>> = packedAdapter
+  actual fun asPacked(): ProtoAdapter<List<E>> {
+    require(fieldEncoding != FieldEncoding.LENGTH_DELIMITED) {
+      "Unable to pack a length-delimited type."
+    }
+    return packedAdapter ?: throw UnsupportedOperationException(
+        "Can't create a packed adapter from a packed or repeated adapter.")
+  }
 
   /**
    * Returns an adapter for `E` but as a repeated value.
@@ -105,7 +113,10 @@ actual abstract class ProtoAdapter<E> actual constructor(
    * the returned adapter, only single-element lists will be returned and it is the caller's
    * responsibility to merge them into the final list.
    */
-  actual fun asRepeated(): ProtoAdapter<List<E>> = repeatedAdapter
+  actual fun asRepeated(): ProtoAdapter<List<E>> {
+    return repeatedAdapter ?: throw UnsupportedOperationException(
+        "Can't create a repeated adapter from a repeated or packed adapter.")
+  }
 
   actual class EnumConstantNotFoundException actual constructor(
     actual val value: Int,
