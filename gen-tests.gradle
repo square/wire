@@ -165,7 +165,9 @@ task generateKotlinTests(type: JavaExec) {
       'deprecated.proto',
       'form.proto',
       'no_fields.proto',
-      'to_string.proto'
+      'to_string.proto',
+      'simple_message.proto',
+      'external_message.proto'
   ]
 }
 
