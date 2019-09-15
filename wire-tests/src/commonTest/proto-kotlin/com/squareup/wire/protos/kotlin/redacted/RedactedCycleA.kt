@@ -46,7 +46,8 @@ class RedactedCycleA(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = b.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + b.hashCode()
       super.hashCode = result
     }
     return result

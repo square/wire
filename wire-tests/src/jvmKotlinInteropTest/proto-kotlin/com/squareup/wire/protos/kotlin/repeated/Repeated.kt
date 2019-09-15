@@ -45,7 +45,8 @@ class Repeated(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = things.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + things.hashCode()
       super.hashCode = result
     }
     return result

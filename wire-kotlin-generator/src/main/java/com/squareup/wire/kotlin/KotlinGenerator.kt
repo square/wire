@@ -429,12 +429,10 @@ class KotlinGenerator private constructor(
       beginControlFlow("if (%N == 0)", resultName)
 
       val hashCode = MemberName("kotlin", "hashCode")
-      fields.forEachIndexed { index, field ->
+      addStatement("%N = unknownFields.hashCode()", resultName)
+      for (field in fields) {
         val fieldName = localNameAllocator[field]
-        add("%N = ", resultName)
-        if (index > 0) {
-          add("%N * 37 + ", resultName)
-        }
+        add("%1N = %1N * 37 + ", resultName)
         if (field.isRepeated || field.isRequired || field.isMap) {
           addStatement("%L.hashCode()", fieldName)
         } else {

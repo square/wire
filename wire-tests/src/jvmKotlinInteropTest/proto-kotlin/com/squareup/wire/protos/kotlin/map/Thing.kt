@@ -42,7 +42,8 @@ class Thing(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = name.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + name.hashCode()
       super.hashCode = result
     }
     return result

@@ -45,7 +45,8 @@ class Percents(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = text.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + text.hashCode()
       super.hashCode = result
     }
     return result

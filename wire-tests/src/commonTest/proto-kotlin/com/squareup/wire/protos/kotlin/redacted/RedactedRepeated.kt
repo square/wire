@@ -59,7 +59,8 @@ class RedactedRepeated(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = a.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + a.hashCode()
       result = result * 37 + b.hashCode()
       super.hashCode = result
     }

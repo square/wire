@@ -52,7 +52,8 @@ class ForeignMessage(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = i.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + i.hashCode()
       result = result * 37 + j.hashCode()
       super.hashCode = result
     }

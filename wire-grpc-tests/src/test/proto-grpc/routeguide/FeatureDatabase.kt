@@ -51,7 +51,8 @@ class FeatureDatabase(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = feature.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + feature.hashCode()
       super.hashCode = result
     }
     return result
