@@ -79,7 +79,8 @@ class ExternalMessage(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = f.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + f.hashCode()
       result = result * 37 + fooext.hashCode()
       result = result * 37 + barext.hashCode()
       result = result * 37 + bazext.hashCode()

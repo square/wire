@@ -44,7 +44,8 @@ class DeprecatedProto(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = foo.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + foo.hashCode()
       super.hashCode = result
     }
     return result

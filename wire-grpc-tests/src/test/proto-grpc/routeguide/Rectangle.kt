@@ -62,7 +62,8 @@ class Rectangle(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = lo.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + lo.hashCode()
       result = result * 37 + hi.hashCode()
       super.hashCode = result
     }

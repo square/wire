@@ -58,7 +58,8 @@ class Point(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = latitude.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + latitude.hashCode()
       result = result * 37 + longitude.hashCode()
       super.hashCode = result
     }

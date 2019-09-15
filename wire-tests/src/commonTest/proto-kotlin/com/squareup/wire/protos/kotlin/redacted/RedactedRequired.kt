@@ -49,7 +49,8 @@ class RedactedRequired(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = a.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + a.hashCode()
       super.hashCode = result
     }
     return result

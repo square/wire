@@ -80,7 +80,8 @@ class Dinosaur(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = name.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + name.hashCode()
       result = result * 37 + picture_urls.hashCode()
       result = result * 37 + length_meters.hashCode()
       result = result * 37 + mass_kilograms.hashCode()

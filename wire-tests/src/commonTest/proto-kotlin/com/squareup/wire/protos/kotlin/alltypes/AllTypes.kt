@@ -960,7 +960,8 @@ class AllTypes(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = opt_int32.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + opt_int32.hashCode()
       result = result * 37 + opt_uint32.hashCode()
       result = result * 37 + opt_sint32.hashCode()
       result = result * 37 + opt_fixed32.hashCode()
@@ -2244,7 +2245,8 @@ class AllTypes(
     override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
-        result = a.hashCode()
+        result = unknownFields.hashCode()
+        result = result * 37 + a.hashCode()
         super.hashCode = result
       }
       return result

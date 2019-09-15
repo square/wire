@@ -159,7 +159,8 @@ class SimpleMessage(
   override fun hashCode(): Int {
     var result_ = super.hashCode
     if (result_ == 0) {
-      result_ = optional_int32.hashCode()
+      result_ = unknownFields.hashCode()
+      result_ = result_ * 37 + optional_int32.hashCode()
       result_ = result_ * 37 + optional_nested_msg.hashCode()
       result_ = result_ * 37 + optional_external_msg.hashCode()
       result_ = result_ * 37 + default_nested_enum.hashCode()
@@ -344,7 +345,8 @@ class SimpleMessage(
     override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
-        result = bb.hashCode()
+        result = unknownFields.hashCode()
+        result = result * 37 + bb.hashCode()
         super.hashCode = result
       }
       return result

@@ -49,7 +49,8 @@ class OptionalEnumUser(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = optional_enum.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + optional_enum.hashCode()
       super.hashCode = result
     }
     return result
