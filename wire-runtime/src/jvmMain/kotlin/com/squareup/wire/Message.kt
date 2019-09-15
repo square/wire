@@ -56,7 +56,7 @@ protected actual constructor(
   actual abstract fun newBuilder(): B
 
   /** Returns this message with any unknown fields removed. */
-  actual fun withoutUnknownFields(): M = newBuilder().clearUnknownFields().build()
+  fun withoutUnknownFields(): M = newBuilder().clearUnknownFields().build()
 
   override fun toString(): String = adapter.toString(this as M)
 

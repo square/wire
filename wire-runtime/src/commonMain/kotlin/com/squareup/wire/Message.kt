@@ -38,11 +38,6 @@ expect abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> prot
   // TODO(egorand): Remove from common and not generate in Kotlin.
   abstract fun newBuilder(): B
 
-  /** Returns this message with any unknown fields removed. */
-  // TODO(egorand): Make abstract, KotlinGenerator should generate a call to copy(), while
-  // JavaGenerator would still use Builder
-  fun withoutUnknownFields(): M
-
   /** The [ProtoAdapter] for encoding and decoding messages of this type. */
   val adapter: ProtoAdapter<M>
 

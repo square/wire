@@ -37,9 +37,6 @@ protected actual constructor(
    */
   actual abstract fun newBuilder(): B
 
-  /** Returns this message with any unknown fields removed. */
-  actual fun withoutUnknownFields(): M = TODO()
-
   /** Encode this message and write it to `stream`. */
   actual fun encode(sink: BufferedSink) {
     adapter.encode(sink, this as M)
