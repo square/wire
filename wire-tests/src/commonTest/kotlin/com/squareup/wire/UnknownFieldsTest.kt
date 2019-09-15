@@ -19,6 +19,7 @@ import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne
 import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo
 import com.squareup.wire.protos.kotlin.unknownfields.VersionOne
 import com.squareup.wire.protos.kotlin.unknownfields.VersionTwo
+import okio.ByteString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -63,7 +64,7 @@ class UnknownFieldsTest {
     val v1 = v1Adapter.decode(v2Bytes)
     // v.1 fields are visible, v.2 fields are in unknownFieldSet
     assertEquals(111, v1.i)
-    assertEquals(v1_obj, v1.obj!!.withoutUnknownFields())
+    assertEquals(v1_obj, v1.obj!!.copy(unknownFields = ByteString.EMPTY))
     // Serialized output should still contain the v.2 fields
     val v1Bytes = v1Adapter.encode(v1)
 
@@ -71,13 +72,16 @@ class UnknownFieldsTest {
     val v1Simple = VersionOne(i = 111, obj = v1_obj)
     assertNotEquals(v1Simple, v1)
     assertNotEquals(v1Simple.hashCode(), v1.hashCode())
-    assertNotEquals(v1Adapter.encode(v1Simple), v1Adapter.encode(v1))
+    assertArrayNotEquals(v1Adapter.encode(v1Simple), v1Adapter.encode(v1))
 
     // Unknown fields can be removed for equals() and hashCode();
-    val v1Known = v1.withoutUnknownFields().copy(obj = v1.obj.withoutUnknownFields())
+    val v1Known = v1.copy(
+        obj = v1.obj.copy(unknownFields = ByteString.EMPTY),
+        unknownFields = ByteString.EMPTY
+    )
     assertEquals(v1Simple, v1Known)
     assertEquals(v1Simple.hashCode(), v1Known.hashCode())
-    assertEquals(v1Adapter.encode(v1Simple), v1Adapter.encode(v1Known))
+    assertArrayEquals(v1Adapter.encode(v1Simple), v1Adapter.encode(v1Known))
 
     // Re-parse
     val v2B = v2Adapter.decode(v1Bytes)
