@@ -552,9 +552,18 @@ class GrpcClientTest {
     }
   }
 
-  @Test @Ignore
+  @Test @Ignore("Flaky")
   fun duplexBlockingReceiveOnly() {
-    TODO()
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "welcome")
+    mockService.enqueue(SendCompleted)
+    mockService.enqueue(ReceiveComplete)
+
+    val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeBlocking()
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "welcome"))
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "polo"))
+    requestChannel.close()
+    assertThat(responseChannel.read()).isNull()
   }
 
   /**
@@ -574,6 +583,127 @@ class GrpcClientTest {
       requestChannel.close(IOException("boom!"))
       mockService.awaitSuccess()
     }
+  }
+
+  @Test
+  fun grpcCallIsCanceledWhenItShouldBe() {
+    val grpcCall = routeGuideService.GetFeature()
+    assertThat(grpcCall.isCanceled()).isFalse()
+
+    grpcCall.cancel()
+    assertThat(grpcCall.isCanceled()).isTrue()
+  }
+
+  @Test
+  fun grpcStreamingCallIsCanceledWhenItShouldBe() {
+    val grpcStreamingCall = routeGuideService.RouteChat()
+    assertThat(grpcStreamingCall.isCanceled()).isFalse()
+
+    grpcStreamingCall.cancel()
+    assertThat(grpcStreamingCall.isCanceled()).isTrue()
+  }
+
+  @Test
+  fun grpcCallIsExecutedAfterExecute() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    runBlocking {
+      val grpcCall = routeGuideService.GetFeature()
+      assertThat(grpcCall.isExecuted()).isFalse()
+
+      val feature = grpcCall.execute(Point(latitude = 5, longitude = 6))
+      assertThat(grpcCall.isExecuted()).isTrue()
+      assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+    }
+  }
+
+  @Test @Ignore("flaky")
+  fun grpcCallIsExecutedAfterExecuteBlocking() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    assertThat(grpcCall.isExecuted()).isFalse()
+
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+    assertThat(grpcCall.isExecuted()).isTrue()
+
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+  }
+
+  @Test
+  fun grpcCallIsExecutedAfterEnqueue() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    assertThat(grpcCall.isExecuted()).isFalse()
+
+    var feature: Feature? = null
+    val latch = CountDownLatch(1)
+    grpcCall.enqueue(Point(latitude = 5, longitude = 6),
+        object : GrpcCall.Callback<Point, Feature> {
+          override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
+            throw AssertionError()
+          }
+
+          override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
+            feature = response
+            latch.countDown()
+          }
+        })
+    assertThat(grpcCall.isExecuted()).isTrue()
+
+    mockService.awaitSuccessBlocking()
+    latch.await()
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+  }
+
+  @Test
+  fun grpcStreamingCallIsExecutedAfterExecute() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "welcome")
+    mockService.enqueue(SendCompleted)
+    mockService.enqueue(ReceiveComplete)
+
+    val grpcStreamingCall = routeGuideService.RouteChat()
+    assertThat(grpcStreamingCall.isExecuted()).isFalse()
+    val (requestChannel, responseChannel) = grpcStreamingCall.execute()
+    assertThat(grpcStreamingCall.isExecuted()).isTrue()
+
+    runBlocking {
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "welcome"))
+      requestChannel.close()
+      assertThat(responseChannel.receiveOrNull()).isNull()
+    }
+  }
+
+  @Test @Ignore("Timing out")
+  fun grpcStreamingCallIsExecutedAfterExecuteBlocking() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "welcome")
+    mockService.enqueue(SendCompleted)
+    mockService.enqueue(ReceiveComplete)
+
+    val grpcStreamingCall = routeGuideService.RouteChat()
+    assertThat(grpcStreamingCall.isExecuted()).isFalse()
+    val (requestChannel, responseChannel) = grpcStreamingCall.executeBlocking()
+    assertThat(grpcStreamingCall.isExecuted()).isTrue()
+
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "welcome"))
+    assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "polo"))
+    requestChannel.close()
+    assertThat(responseChannel.read()).isNull()
   }
 
   @ExperimentalCoroutinesApi

@@ -23,9 +23,10 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.Timeout
+import java.util.concurrent.TimeUnit
 
 internal class RealGrpcStreamingCall<S : Any, R : Any>(
-  grpcClient: GrpcClient,
+  private val grpcClient: GrpcClient,
   private val grpcMethod: GrpcMethod<S, R>
 ) : GrpcStreamingCall<S, R> {
   private val requestBody = newDuplexRequestBody()
@@ -37,6 +38,8 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   override fun cancel() {
     call.cancel()
   }
+
+  override fun isCanceled(): Boolean = call.isCanceled()
 
   override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> {
     val requestChannel = Channel<S>(1)
@@ -59,5 +62,17 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     call.enqueue(messageSource.readFromResponseBodyCallback())
 
     return messageSink to messageSource
+  }
+
+  override fun isExecuted(): Boolean = call.isExecuted()
+
+  override fun clone(): GrpcStreamingCall<S, R> {
+    val result = RealGrpcStreamingCall(grpcClient, grpcMethod)
+    val oldTimeout = this.timeout
+    result.timeout.also { newTimeout ->
+      newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
+      if (oldTimeout.hasDeadline()) newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
+    }
+    return result
   }
 }

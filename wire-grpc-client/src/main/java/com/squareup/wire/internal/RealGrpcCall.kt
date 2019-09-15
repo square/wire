@@ -24,6 +24,7 @@ import okhttp3.Response
 import okio.Timeout
 import java.io.IOException
 import java.net.ProtocolException
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -41,6 +42,8 @@ internal class RealGrpcCall<S : Any, R : Any>(
     canceled = true
     call?.cancel()
   }
+
+  override fun isCanceled(): Boolean = canceled
 
   override suspend fun execute(request: S): R {
     val call = initCall(request)
@@ -118,6 +121,18 @@ internal class RealGrpcCall<S : Any, R : Any>(
         }
       }
     })
+  }
+
+  override fun isExecuted(): Boolean = call?.isExecuted() ?: false
+
+  override fun clone(): GrpcCall<S, R> {
+    val result = RealGrpcCall(grpcClient, grpcMethod)
+    val oldTimeout = this.timeout
+    result.timeout.also { newTimeout ->
+      newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
+      if (oldTimeout.hasDeadline()) newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
+    }
+    return result
   }
 
   private fun initCall(request: S): Call {

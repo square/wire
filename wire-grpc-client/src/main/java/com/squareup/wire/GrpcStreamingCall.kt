@@ -55,6 +55,9 @@ interface GrpcStreamingCall<S : Any, R : Any> {
    */
   fun cancel()
 
+  /** True if [cancel] was called. */
+  fun isCanceled(): Boolean
+
   /**
    * Enqueues this call for execution and returns channels to send and receive the call's messages.
    * This uses the [Dispatchers.IO] to transmit outbound messages.
@@ -66,4 +69,16 @@ interface GrpcStreamingCall<S : Any, R : Any> {
    * Reads and writes on the returned streams are blocking.
    */
   fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>>
+
+  /**
+   * Returns true if [execute] or [executeBlocking] was called. It is an error to execute a call
+   * more than once.
+   */
+  fun isExecuted(): Boolean
+
+  /**
+   * Create a new, identical gRPC call to this one which can be enqueued or executed even if this
+   * call has already been.
+   */
+  fun clone(): GrpcStreamingCall<S, R>
 }
