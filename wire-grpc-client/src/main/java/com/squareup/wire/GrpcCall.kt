@@ -37,6 +37,9 @@ interface GrpcCall<S : Any, R : Any> {
    */
   fun cancel()
 
+  /** True if [cancel] was called. */
+  fun isCanceled(): Boolean
+
   /** Invokes the call immediately and suspends until its response is received. */
   @Throws(IOException::class)
   suspend fun execute(request: S): R
@@ -50,6 +53,18 @@ interface GrpcCall<S : Any, R : Any> {
    * dispatcher thread when the call completes.
    */
   fun enqueue(request: S, callback: Callback<S, R>)
+
+  /**
+   * Returns true if [execute], [executeBlocking], or [enqueue] was called. It is an error to
+   * execute or enqueue a call more than once.
+   */
+  fun isExecuted(): Boolean
+
+  /**
+   * Create a new, identical gRPC call to this one which can be enqueued or executed even if this
+   * call has already been.
+   */
+  fun clone(): GrpcCall<S, R>
 
   interface Callback<S : Any, R : Any> {
     fun onFailure(call: GrpcCall<S, R>, exception: IOException)
