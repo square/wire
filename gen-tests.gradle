@@ -1,8 +1,7 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 buildscript {
   dependencies {
@@ -13,19 +12,26 @@ buildscript {
   }
 }
 
-def PROTOS = Files.find(
-      Paths.get("${rootProject.rootDir}/wire-tests/src/commonTest/proto/java"),
-      Integer.MAX_VALUE,
-      { path, attrs -> attrs.isRegularFile() }
-    )
-    .map { path ->
-      Paths.get("${rootProject.rootDir}/wire-tests/src/commonTest/proto/java").relativize(path)
-    }
-    .filter { path -> !path.startsWith("kotlin") }
-    .map { path -> path.toString() }
-    .filter { path -> path.endsWith(".proto") }
-    .sorted()
-    .collect(Collectors.toList())
+def protos(String language) {
+  return Files
+      .find(
+          Paths.get("${rootProject.rootDir}/wire-tests/src/commonTest/proto/$language"),
+          Integer.MAX_VALUE,
+          { path, attrs -> attrs.isRegularFile() }
+      )
+      .map { path ->
+        Paths
+            .get("${rootProject.rootDir}/wire-tests/src/commonTest/proto/$language")
+            .relativize(path)
+      }
+      .map { path -> path.toString() }
+      .filter { path -> path.endsWith(".proto") }
+      .sorted()
+      .collect(Collectors.toList())
+}
+
+def JAVA_PROTOS = protos("java")
+def KOTLIN_PROTOS = protos("kotlin")
 
 configurations {
   wire.with {
@@ -49,7 +55,7 @@ task generateJavaTests(type: JavaExec) {
       '--proto_path=wire-tests/src/commonTest/proto/java',
       '--java_out=wire-tests/src/jvmJavaTest/proto-java',
       'google/protobuf/descriptor.proto'
-  ] + PROTOS
+  ] + JAVA_PROTOS
 }
 
 // NO OPTIONS
@@ -63,7 +69,7 @@ task generateNoOptionsTests(type: JavaExec) {
       '--proto_path=wire-tests/src/commonTest/proto/java',
       '--java_out=wire-tests/src/jvmJavaNoOptionsTest/proto-java',
       '--excludes=google.protobuf.*'
-  ] + PROTOS
+  ] + JAVA_PROTOS
 }
 
 // COMPACT
@@ -153,22 +159,7 @@ task generateKotlinTests(type: JavaExec) {
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
       '--kotlin_out=wire-tests/src/commonTest/proto-kotlin',
-      'all_types.proto',
-      'person.proto',
-      'optional_enum.proto',
-      'map.proto',
-      'one_of.proto',
-      'same_name_enum.proto',
-      'redacted_test.proto',
-      'redacted_one_of.proto',
-      'deprecated_enum.proto',
-      'deprecated.proto',
-      'form.proto',
-      'no_fields.proto',
-      'to_string.proto',
-      'simple_message.proto',
-      'external_message.proto'
-  ]
+  ] + KOTLIN_PROTOS
 }
 
 // KOTLIN SERVICES
