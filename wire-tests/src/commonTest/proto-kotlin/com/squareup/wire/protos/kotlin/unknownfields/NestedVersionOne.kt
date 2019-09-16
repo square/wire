@@ -46,7 +46,8 @@ class NestedVersionOne(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = i.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + i.hashCode()
       super.hashCode = result
     }
     return result
