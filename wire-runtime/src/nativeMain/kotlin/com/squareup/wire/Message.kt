@@ -30,7 +30,11 @@ protected actual constructor(
   actual val unknownFields: ByteString
 ) {
   /** If non-zero, the hash code of this message. Accessed by generated code. */
+  @Suppress("SetterBackingFieldAssignment")
   protected actual var hashCode = 0
+    set(value) {
+      // Do nothing to avoid IllegalImmutabilityException.
+    }
 
   /**
    * Returns a new builder initialized with the data in this message.
