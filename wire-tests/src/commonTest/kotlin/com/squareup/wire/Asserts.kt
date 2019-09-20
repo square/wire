@@ -26,3 +26,26 @@ fun assertFloatEquals(expected: Float, actual: Float, delta: Float = 0.01f) {
         " but was <$diff>.")
   }
 }
+
+fun assertArrayEquals(expected: ByteArray, actual: ByteArray) {
+  if (expected === actual) return
+  if (actual.size != expected.size) {
+    fail("Expected array of length <${expected.size}> but was <${actual.size}>.")
+  }
+  for (i in expected.indices) {
+    if (actual[i] != expected[i]) {
+      fail("Expected element at position <$i> to be <${expected[i]}> but was <${actual[i]}>.")
+    }
+  }
+}
+
+fun assertArrayNotEquals(expected: ByteArray, actual: ByteArray) {
+  if (expected === actual) {
+    fail("Expected $actual to not be equal to $expected.")
+  }
+  if (actual.size != expected.size) return
+  for (i in expected.indices) {
+    if (actual[i] != expected[i]) return
+  }
+  fail("Expected ${actual.contentToString()} to not be equal to ${expected.contentToString()}.")
+}

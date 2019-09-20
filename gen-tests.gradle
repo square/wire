@@ -167,7 +167,8 @@ task generateKotlinTests(type: JavaExec) {
       'no_fields.proto',
       'to_string.proto',
       'simple_message.proto',
-      'external_message.proto'
+      'external_message.proto',
+      'unknown_fields.proto',
   ]
 }
 

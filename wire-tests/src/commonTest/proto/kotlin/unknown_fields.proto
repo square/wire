@@ -1,0 +1,50 @@
+/*
+ * Copyright 2013 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package squareup.protos.kotlin.unknownfields;
+
+option java_package = "com.squareup.wire.protos.kotlin.unknownfields";
+
+message VersionOne {
+  optional int32 i = 1;
+
+  optional NestedVersionOne obj = 7;
+}
+
+message NestedVersionOne {
+  optional int32 i = 1;
+}
+
+message VersionTwo {
+  optional int32 i = 1;
+
+  optional int32 v2_i = 2;
+  optional string v2_s = 3;
+  optional fixed32 v2_f32 = 4;
+  optional fixed64 v2_f64 = 5;
+  repeated string v2_rs = 6;
+
+  optional NestedVersionTwo obj = 7;
+}
+
+message NestedVersionTwo {
+  optional int32 i = 1;
+
+  optional int32 v2_i = 2;
+  optional string v2_s = 3;
+  optional fixed32 v2_f32 = 4;
+  optional fixed64 v2_f64 = 5;
+  repeated string v2_rs = 6;
+}
