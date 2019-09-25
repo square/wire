@@ -35,6 +35,11 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   override val timeout: Timeout
     get() = call.timeout()
 
+  init {
+    timeout.clearTimeout()
+    timeout.clearDeadline()
+  }
+
   override fun cancel() {
     call.cancel()
   }
@@ -72,6 +77,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     result.timeout.also { newTimeout ->
       newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
       if (oldTimeout.hasDeadline()) newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
+      else newTimeout.clearDeadline()
     }
     return result
   }
