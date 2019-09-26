@@ -134,9 +134,7 @@ class SimpleMessage(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing {
-    throw AssertionError()
-  }
+  override fun newBuilder(): Nothing = throw AssertionError()
 
   override fun equals(other_: Any?): Boolean {
     if (other_ === this) return true
@@ -331,9 +329,7 @@ class SimpleMessage(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing {
-      throw AssertionError()
-    }
+    override fun newBuilder(): Nothing = throw AssertionError()
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
