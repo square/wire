@@ -62,9 +62,7 @@ class Dinosaur(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing {
-    throw AssertionError()
-  }
+  override fun newBuilder(): Nothing = throw AssertionError()
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
