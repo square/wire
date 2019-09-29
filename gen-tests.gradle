@@ -222,6 +222,7 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
       'redacted_one_of.proto',
       'map.proto',
       'repeated.proto',
+      'unknown_fields.proto',
   ]
 }
 
