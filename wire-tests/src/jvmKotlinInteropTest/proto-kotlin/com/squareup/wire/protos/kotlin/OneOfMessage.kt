@@ -116,6 +116,8 @@ class OneOfMessage(
      */
     fun foo(foo: Int): Builder {
       this.foo = foo
+      this.bar = null
+      this.baz = null
       return this
     }
 
@@ -124,6 +126,8 @@ class OneOfMessage(
      */
     fun bar(bar: String): Builder {
       this.bar = bar
+      this.foo = null
+      this.baz = null
       return this
     }
 
@@ -132,6 +136,8 @@ class OneOfMessage(
      */
     fun baz(baz: String): Builder {
       this.baz = baz
+      this.foo = null
+      this.bar = null
       return this
     }
 

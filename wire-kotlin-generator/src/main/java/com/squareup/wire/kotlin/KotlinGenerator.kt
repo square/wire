@@ -63,6 +63,7 @@ import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
+import com.squareup.wire.schema.OneOf
 import com.squareup.wire.schema.Options.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoMember
@@ -540,9 +541,17 @@ class KotlinGenerator private constructor(
         propertyBuilder.addAnnotation(JvmField::class)
       }
 
-      builder
-          .addProperty(propertyBuilder.build())
-          .addFunction(builderSetter(field, nameAllocator, builderClass))
+      builder.addProperty(propertyBuilder.build())
+    }
+
+    type.fields().forEach { field ->
+      builder.addFunction(builderSetter(field, nameAllocator, builderClass, oneOf = null))
+    }
+
+    type.oneOfs().forEach { oneOf ->
+      oneOf.fields().forEach { field ->
+        builder.addFunction(builderSetter(field, nameAllocator, builderClass, oneOf))
+      }
     }
 
     val buildFunction = FunSpec.builder("build")
@@ -558,7 +567,8 @@ class KotlinGenerator private constructor(
   private fun builderSetter(
     field: Field,
     nameAllocator: NameAllocator,
-    builderType: TypeName
+    builderType: TypeName,
+    oneOf: OneOf?
   ): FunSpec {
     val fieldName = nameAllocator[field]
     val funBuilder = FunSpec.builder(fieldName)
@@ -579,6 +589,15 @@ class KotlinGenerator private constructor(
 
     return funBuilder
         .addStatement("this.%1L = %1L", fieldName)
+        .apply {
+          if (oneOf != null) {
+            for (other in oneOf.fields()) {
+              if (field != other) {
+                addStatement("this.%L = null", nameAllocator[other])
+              }
+            }
+          }
+        }
         .addStatement("return this")
         .build()
   }
