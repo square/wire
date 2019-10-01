@@ -16,10 +16,10 @@ _2019-10-01_
 
  * Update: Total rewrite of the generated interfaces for clients:
 
- Introduce two interfaces, `GrpcCall` for simple RPCs, and `GrpcStreamingCall` fox duplex ones. Both
- will provide blocking and suspending API, including a reference to the underlying
- [OkHttp](https://github.com/square/okhttp)
- [Call](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-call/) object and its timeout.
+   Introduce two interfaces, `GrpcCall` for simple RPCs, and `GrpcStreamingCall` fox duplex ones. Both
+   will provide blocking and suspending API, including a reference to the underlying
+   [OkHttp](https://github.com/square/okhttp)
+   [Call](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-call/) object and its timeout.
 
  * Fix: Send stream cancels from clients.
 
