@@ -27,7 +27,7 @@ class Mappy(
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
   )
-  val things: Map<String, Thing>,
+  val things: Map<String, Thing> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Mappy, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(

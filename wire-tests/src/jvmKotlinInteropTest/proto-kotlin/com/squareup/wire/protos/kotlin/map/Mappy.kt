@@ -24,7 +24,7 @@ class Mappy(
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
   )
   @JvmField
-  val things: Map<String, Thing>,
+  val things: Map<String, Thing> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Mappy, Mappy.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {

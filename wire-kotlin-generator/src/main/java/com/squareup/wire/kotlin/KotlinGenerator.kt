@@ -623,10 +623,9 @@ class KotlinGenerator private constructor(
     fields.forEach { field ->
       val fieldClass = field.typeName
       val fieldName = nameAllocator[field]
-      val fieldType = field.type()
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      if (!field.isRequired && !fieldType.isMap) {
+      if (!field.isRequired) {
         parameterSpec.defaultValue(field.defaultValue)
       }
 

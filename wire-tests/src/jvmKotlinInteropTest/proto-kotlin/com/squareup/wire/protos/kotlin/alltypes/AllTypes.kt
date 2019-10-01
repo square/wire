@@ -569,28 +569,28 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val map_int32_int32: Map<Int, Int>,
+  val map_int32_int32: Map<Int, Int> = emptyMap(),
   @field:WireField(
     tag = 502,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val map_string_string: Map<String, String>,
+  val map_string_string: Map<String, String> = emptyMap(),
   @field:WireField(
     tag = 503,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
   )
   @JvmField
-  val map_string_message: Map<String, NestedMessage>,
+  val map_string_message: Map<String, NestedMessage> = emptyMap(),
   @field:WireField(
     tag = 504,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   @JvmField
-  val map_string_enum: Map<String, NestedEnum>,
+  val map_string_enum: Map<String, NestedEnum> = emptyMap(),
   @field:WireField(
     tag = 1001,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -916,28 +916,28 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val ext_map_int32_int32: Map<Int, Int>,
+  val ext_map_int32_int32: Map<Int, Int> = emptyMap(),
   @field:WireField(
     tag = 1402,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val ext_map_string_string: Map<String, String>,
+  val ext_map_string_string: Map<String, String> = emptyMap(),
   @field:WireField(
     tag = 1503,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
   )
   @JvmField
-  val ext_map_string_message: Map<String, NestedMessage>,
+  val ext_map_string_message: Map<String, NestedMessage> = emptyMap(),
   @field:WireField(
     tag = 1504,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   @JvmField
-  val ext_map_string_enum: Map<String, NestedEnum>,
+  val ext_map_string_enum: Map<String, NestedEnum> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<AllTypes, AllTypes.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
