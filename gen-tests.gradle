@@ -169,6 +169,7 @@ task generateKotlinTests(type: JavaExec) {
       'simple_message.proto',
       'external_message.proto',
       'unknown_fields.proto',
+      'edge_cases.proto',
   ]
 }
 
