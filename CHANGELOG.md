@@ -1,6 +1,38 @@
 Change Log
 ==========
 
+Version 3.0.0-rc02
+---------------------
+
+_2019-10-01_
+
+### Kotlin
+
+ * Fix: Nullify other oneof fields in Builder setters in Kotlin interop.
+ * Fix: Use unknownFields in `hashCode()`.
+ * Fix: Remove `withoutUnknownFields()` from Kotlin.
+
+### gRPC
+
+ * Update: Total rewrite of the generated interfaces for clients:
+
+ Introduce two interfaces, `GrpcCall` for simple RPCs, and `GrpcStreamingCall` fox duplex ones. Both
+ will provide blocking and suspending API, including a reference to the underlying
+ [OkHttp](https://github.com/square/okhttp)
+ [Call](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-call/) object and its timeout.
+
+ * Fix: Send stream cancels from clients.
+
+### Misc
+
+ * New: Changes printing of options and enums:
+   * No empty lines between options and fields for enums.
+   * Print options on new lines only when more than one.
+ * Fix: Don't cache Message's hash code on Native.
+ * Fix: Fix handling of map values in `FieldBinding`.
+ * Fix: Fix import fails on windows due to path separator.
+ * Fix: Don't emit proto2 sources for proto3 syntax.
+
 Version 3.0.0-rc01
 ---------------------
 
