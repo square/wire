@@ -88,11 +88,13 @@ class RedactedOneOf(
 
     fun b(b: Int): Builder {
       this.b = b
+      this.c = null
       return this
     }
 
     fun c(c: String): Builder {
       this.c = c
+      this.b = null
       return this
     }
 
