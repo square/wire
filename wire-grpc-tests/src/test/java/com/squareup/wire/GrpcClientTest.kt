@@ -94,7 +94,6 @@ class GrpcClientTest {
   }
 
   @Test
-  @Ignore("TODO: This test is flaky, please fix.")
   fun requestResponseBlocking() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
@@ -621,7 +620,7 @@ class GrpcClientTest {
     }
   }
 
-  @Test @Ignore("flaky")
+  @Test
   fun grpcCallIsExecutedAfterExecuteBlocking() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
@@ -688,7 +687,8 @@ class GrpcClientTest {
     }
   }
 
-  @Test @Ignore("Timing out")
+  @Test
+  @Ignore("Timing out")
   fun grpcStreamingCallIsExecutedAfterExecuteBlocking() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueSendNote(message = "welcome")

@@ -60,4 +60,13 @@ internal class GrpcMessageSource<T : Any>(
 
     return messageAdapter.decode(messageDecoding.decode(encodedMessage).buffer())
   }
+
+  fun readExactlyOneAndClose(): T {
+    use { reader ->
+      val result = reader.read() ?: throw ProtocolException("expected 1 message but got none")
+      val end = reader.read()
+      if (end != null) throw ProtocolException("expected 1 message but got multiple")
+      return result
+    }
+  }
 }

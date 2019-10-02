@@ -23,7 +23,6 @@ import okhttp3.Callback
 import okhttp3.Response
 import okio.Timeout
 import java.io.IOException
-import java.net.ProtocolException
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -62,19 +61,13 @@ internal class RealGrpcCall<S : Any, R : Any>(
           var message: R? = null
           var exception: IOException? = null
           try {
-            response.use {
-              response.messageSource(grpcMethod.responseAdapter).use { reader ->
-                message = reader.read()
-                    ?: throw ProtocolException("expected one message in response")
-                exception = response.grpcStatusToException()
-              }
-            }
+            message = response.messageSource(grpcMethod.responseAdapter).readExactlyOneAndClose()
           } catch (e: IOException) {
             exception = e
           }
 
           if (exception != null) {
-            continuation.resumeWithException(exception!!)
+            continuation.resumeWithException(exception)
           } else {
             continuation.resume(message!!)
           }
@@ -87,8 +80,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
     val call = initCall(request)
     val response = call.execute()
     response.use {
-      val message: R = response.messageSource(grpcMethod.responseAdapter).use { it.read() }
-          ?: throw ProtocolException("expected one message in response")
+      val message: R = response.messageSource(grpcMethod.responseAdapter).readExactlyOneAndClose()
       val exception: IOException? = response.grpcStatusToException()
       if (exception != null) throw exception
       return message
@@ -107,8 +99,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
           var message: R? = null
           var exception: IOException?
           try {
-            message = response.messageSource(grpcMethod.responseAdapter).use { it.read() }
-                ?: throw ProtocolException("expected one message in response")
+            message = response.messageSource(grpcMethod.responseAdapter).readExactlyOneAndClose()
             exception = response.grpcStatusToException()
           } catch (e: IOException) {
             exception = e
