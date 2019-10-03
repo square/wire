@@ -62,6 +62,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
           var exception: IOException? = null
           try {
             message = response.messageSource(grpcMethod.responseAdapter).readExactlyOneAndClose()
+            exception = response.grpcStatusToException()
           } catch (e: IOException) {
             exception = e
           }

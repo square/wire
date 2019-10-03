@@ -26,9 +26,13 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.Response
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -51,19 +55,27 @@ class GrpcClientTest {
   @JvmField @Rule val mockService = MockRouteGuideService()
   @JvmField @Rule val timeout = Timeout(30, TimeUnit.SECONDS)
 
+  private lateinit var okhttpClient: OkHttpClient
+  private lateinit var grpcClient: GrpcClient
   private lateinit var routeGuideService: RouteGuideClient
   private var callReference = AtomicReference<Call>()
 
+  /** This is a pass through interceptor that tests can replace without extra plumbing. */
+  private var interceptor: Interceptor = object : Interceptor {
+    override fun intercept(chain: Interceptor.Chain) = chain.proceed(chain.request())
+  }
+
   @Before
   fun setUp() {
-    val grpcClient = GrpcClient.Builder()
-        .client(OkHttpClient.Builder()
-            .addInterceptor { chain ->
-              callReference.set(chain.call())
-              chain.proceed(chain.request())
-            }
-            .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
-            .build())
+    okhttpClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+          callReference.set(chain.call())
+          interceptor.intercept(chain)
+        }
+        .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
+        .build()
+    grpcClient = GrpcClient.Builder()
+        .client(okhttpClient)
         .baseUrl(mockService.url)
         .build()
     routeGuideService = grpcClient.create(RouteGuideClient::class)
@@ -704,6 +716,108 @@ class GrpcClientTest {
     assertThat(responseChannel.read()).isEqualTo(RouteNote(message = "polo"))
     requestChannel.close()
     assertThat(responseChannel.read()).isNull()
+  }
+
+  @Test
+  fun requestResponseSuspendServerOmitsGrpcStatus() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+    interceptor = removeGrpcStatusInterceptor()
+
+    runBlocking {
+      val grpcCall = routeGuideService.GetFeature()
+      try {
+        grpcCall.execute(Point(latitude = 5, longitude = 6))
+        fail()
+      } catch (expected: IOException) {
+        assertThat(expected).hasMessage("unexpected or absent grpc-status: null")
+      }
+    }
+  }
+
+  @Test
+  fun requestResponseBlockingServerOmitsGrpcStatus() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+    interceptor = removeGrpcStatusInterceptor()
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage("unexpected or absent grpc-status: null")
+    }
+  }
+
+  @Test
+  fun requestResponseCallbackServerOmitsGrpcStatus() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+    interceptor = removeGrpcStatusInterceptor()
+
+    val grpcCall = routeGuideService.GetFeature()
+    val latch = CountDownLatch(1)
+    grpcCall.enqueue(Point(latitude = 5, longitude = 6),
+        object : GrpcCall.Callback<Point, Feature> {
+          override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
+            assertThat(exception).hasMessage("unexpected or absent grpc-status: null")
+            latch.countDown()
+          }
+
+          override fun onSuccess(call: GrpcCall<Point, Feature>, response: Feature) {
+            throw AssertionError()
+          }
+        })
+
+    mockService.awaitSuccessBlocking()
+    latch.await()
+  }
+
+  private fun removeGrpcStatusInterceptor(): Interceptor {
+    val noTrailersResponse = noTrailersResponse()
+    assertThat(noTrailersResponse.trailers().size).isEqualTo(0)
+
+    return object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        val response = chain.proceed(chain.request())
+        return noTrailersResponse.newBuilder()
+            .request(response.request)
+            .code(response.code)
+            .protocol(response.protocol)
+            .message(response.message)
+            .headers(response.headers)
+            .removeHeader("grpc-status")
+            .body(response.body)
+            .build()
+      }
+    }
+  }
+
+  /**
+   * OkHttp really tries to make it hard for us to strip out the trailers on a response. We
+   * accomplish it by taking a completely unrelated response and building upon it. This is ugly.
+   *
+   * https://github.com/square/okhttp/issues/5527
+   */
+  private fun noTrailersResponse(): Response {
+    val request = Request.Builder()
+        .url(mockService.url)
+        .build()
+    val response = okhttpClient.newCall(request).execute()
+    response.use {
+      response.body!!.bytes()
+    }
+    return response
   }
 
   @ExperimentalCoroutinesApi
