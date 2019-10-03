@@ -7,7 +7,7 @@ under the condition that the target is set to Kotlin.
 Getting Started
 ---------------
 
-You can configure how your services are generated via our [Gradle plugin][gradlePlugin]:
+You can configure how your services are generated via the [Gradle plugin][gradlePlugin]:
 
 ```groovy
 wire {
