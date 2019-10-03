@@ -27,7 +27,7 @@ wire {
 ```
 
 The generated code varies depending on your RPC role, namely client or server.  
-We'll use the following schema to understand how they differ:
+We'll use the following schema to demonstrate how they differ:
 
 ```proto
 syntax = "proto2";
