@@ -20,7 +20,7 @@ wire {
     // `blocking` to generate blocking APIs callable by Java and Kotlin.
     rpcCallStyle = 'suspending'
     // Server only
-    // True for emitted services to implement one interface per RPC. 
+    // True for emitted services to generate one interface per RPC. 
     singleMethodServices = false
   }
 }
