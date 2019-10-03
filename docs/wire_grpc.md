@@ -140,7 +140,7 @@ calls.
 ### Sample
 
 Check out our [sample project][sampleProject] demonstrating bidirectional communication between an
-Android and one server application.
+Android application and a server.
 
 ### Get it
 
