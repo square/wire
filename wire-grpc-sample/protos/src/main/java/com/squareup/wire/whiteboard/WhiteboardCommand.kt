@@ -45,9 +45,7 @@ class WhiteboardCommand(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing {
-    throw AssertionError()
-  }
+  override fun newBuilder(): Nothing = throw AssertionError()
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -60,7 +58,8 @@ class WhiteboardCommand(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = add_point.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + add_point.hashCode()
       result = result * 37 + clear_board.hashCode()
       super.hashCode = result
     }
@@ -135,9 +134,7 @@ class WhiteboardCommand(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing {
-      throw AssertionError()
-    }
+    override fun newBuilder(): Nothing = throw AssertionError()
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -149,7 +146,8 @@ class WhiteboardCommand(
     override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
-        result = point.hashCode()
+        result = unknownFields.hashCode()
+        result = result * 37 + point.hashCode()
         super.hashCode = result
       }
       return result
@@ -208,9 +206,7 @@ class WhiteboardCommand(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing {
-      throw AssertionError()
-    }
+    override fun newBuilder(): Nothing = throw AssertionError()
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true

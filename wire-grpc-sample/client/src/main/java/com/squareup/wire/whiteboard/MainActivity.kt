@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), OnBoardEventListener {
       withContext(Dispatchers.IO) {
         GrpcClientProvider.grpcClient.create(WhiteboardClient::class)
             .Whiteboard()
+            .execute()
             .let { (sendChannel, receiveChannel) ->
               sendCommandChannel = sendChannel
               receiveUpdateChannel = receiveChannel

@@ -47,9 +47,7 @@ class WhiteboardUpdate(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing {
-    throw AssertionError()
-  }
+  override fun newBuilder(): Nothing = throw AssertionError()
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -62,7 +60,8 @@ class WhiteboardUpdate(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = initialise_board.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + initialise_board.hashCode()
       result = result * 37 + update_points.hashCode()
       super.hashCode = result
     }
@@ -149,9 +148,7 @@ class WhiteboardUpdate(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing {
-      throw AssertionError()
-    }
+    override fun newBuilder(): Nothing = throw AssertionError()
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -165,7 +162,8 @@ class WhiteboardUpdate(
     override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
-        result = width.hashCode()
+        result = unknownFields.hashCode()
+        result = result * 37 + width.hashCode()
         result = result * 37 + height.hashCode()
         result = result * 37 + color.hashCode()
         super.hashCode = result
@@ -247,9 +245,7 @@ class WhiteboardUpdate(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing {
-      throw AssertionError()
-    }
+    override fun newBuilder(): Nothing = throw AssertionError()
 
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -261,7 +257,8 @@ class WhiteboardUpdate(
     override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
-        result = points.hashCode()
+        result = unknownFields.hashCode()
+        result = result * 37 + points.hashCode()
         super.hashCode = result
       }
       return result
