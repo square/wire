@@ -11,7 +11,8 @@ You can configure how your services are generated via the [Gradle plugin][gradle
 
 ```groovy
 wire {
-  kotlin { // Kotlin target will generate code for services.
+  // Kotlin target will generate code for services.
+  kotlin {
     // `client` to generate interfaces best suited to sending outbound calls.
     // `server` to generate interfaces best suited to receiving inbound calls.
     rpcRole = 'server'
@@ -137,12 +138,14 @@ interface RouteGuideServer : Service {
 The server can use Kotlin coroutines' suspend and Channels mechanisms to execute suspending network
 calls.
 
-### Sample
+Sample
+------
 
 Check out our [sample project][sampleProject] demonstrating bidirectional communication between an
 Android application and a server.
 
-### Get it
+Get it
+------
 
 Use Wire runtime Gradle coordinates:
 ```groovy
