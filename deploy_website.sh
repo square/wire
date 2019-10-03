@@ -31,6 +31,7 @@ cd $DIR
 # sed -i 's/docs\/wire_compiler.md/wire_compiler/' README.md
 # OSX
 sed -i "" 's/docs\/wire_compiler.md/wire_compiler/' README.md
+sed -i "" 's/docs\/wire_grpc.md/wire_grpc/' README.md
 
 # Copy in special files that GitHub wants in the project root.
 cat README.md | grep -v 'project website' > docs/index.md

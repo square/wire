@@ -493,6 +493,10 @@ val stegosaurus = stegosaurus.copy(
 println("Here are some photos of ${stegosaurus.name}: ${stegosaurus.picture_urls}")
 ```
 
+Wire gRPC
+-----------
+
+Since version 3.0.0, Wire supports [gRPC][grpc_docs].
 
 Generating Code With Wire
 -------------------------
@@ -585,14 +589,14 @@ With Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>3.0.0-rc01</version>
+  <version>3.0.0-rc02</version>
 </dependency>
 ```
 
 With Gradle:
 
 ```groovy
-api 'com.squareup.wire:wire-runtime:3.0.0-rc01'
+api 'com.squareup.wire:wire-runtime:3.0.0-rc02'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
@@ -618,6 +622,7 @@ See [Google's excellent documentation][schema_docs] on the structure and syntax 
  [effective_java]: https://www.amazon.ca/Effective-Java-3rd-Joshua-Bloch/dp/0134685997/
  [schema_docs]: https://developers.google.com/protocol-buffers/docs/proto
  [compiler_docs]: docs/wire_compiler.md
+ [grpc_docs]: docs/wire_grpc.md
  [dl_runtime]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-runtime&v=LATEST
  [dl_compiler]: https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&v=LATEST&c=jar-with-dependencies
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/

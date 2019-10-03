@@ -38,6 +38,7 @@ markdown_extensions:
 nav:
   - 'Overview': index.md
   - 'Gradle Plugin': wire_compiler.md
+  - 'gRPC': wire_grpc.md
   - 'Stack Overflow ⏏': https://stackoverflow.com/questions/tagged/wire?sort=active
   - '3.x API':
     - 'wire-grpc-client': 3.x/wire-grpc-client/com.squareup.wire/index.md
@@ -50,5 +51,4 @@ nav:
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md
   - 'Protocol Buffers ⏏': https://developers.google.com/protocol-buffers/docs/proto
-  - 'gRPC ⏏': https://www.grpc.io/docs/guides/
 
