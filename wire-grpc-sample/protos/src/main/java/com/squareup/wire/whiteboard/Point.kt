@@ -45,9 +45,7 @@ class Point(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing {
-    throw AssertionError()
-  }
+  override fun newBuilder(): Nothing = throw AssertionError()
 
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -61,7 +59,8 @@ class Point(
   override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
-      result = x.hashCode()
+      result = unknownFields.hashCode()
+      result = result * 37 + x.hashCode()
       result = result * 37 + y.hashCode()
       result = result * 37 + color.hashCode()
       super.hashCode = result
