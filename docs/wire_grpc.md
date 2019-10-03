@@ -134,7 +134,7 @@ interface RouteGuideServer : Service {
   fun RouteChat(request: ReceiveChannel<RouteNote>, response: SendChannel<RouteNote>)
 }
 ```
-The server can use Kotlin coroutines suspend and channels mechanism to execute suspending network
+The server can use Kotlin coroutines' suspend and Channels mechanisms to execute suspending network
 calls.
 
 ### Sample
