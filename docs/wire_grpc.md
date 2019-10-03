@@ -139,7 +139,7 @@ calls.
 
 ### Sample
 
-Check out our [sample project][sampleProject] demonstrating duplex communications between one
+Check out our [sample project][sampleProject] demonstrating bidirectional communication between an
 Android and one server application.
 
 ### Get it
