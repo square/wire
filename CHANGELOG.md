@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 3.0.0-rc03
+---------------------
+
+_2019-10-04_
+
+ * Fix: Update dependency to a stable version, `2.4.1` of Okio.
+
 Version 3.0.0-rc02
 ---------------------
 
