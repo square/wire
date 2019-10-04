@@ -32,9 +32,6 @@ buildscript {
   repositories {
     google()
     jcenter()
-    maven {
-      url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
   }
   dependencies {
     classpath deps.agp
@@ -47,7 +44,6 @@ allprojects { project ->
   repositories {
     google()
     jcenter()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
   }
   project.tasks.withType(KotlinCompile).all {
     kotlinOptions.jvmTarget = "1.8"
