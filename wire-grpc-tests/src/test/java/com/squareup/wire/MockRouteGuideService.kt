@@ -116,8 +116,8 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
           base.evaluate()
         } finally {
           server.shutdown()
-          server.awaitTermination()
         }
+        server.awaitTermination()
       }
     }
   }
