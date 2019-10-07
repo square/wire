@@ -13,6 +13,13 @@ animalsniffer {
   ignore 'com.squareup.wire.internal'
 }
 
+compileKotlin {
+  kotlinOptions {
+    freeCompilerArgs += "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+    freeCompilerArgs += "-Xexperimental=com.squareup.wire.WireGrpcExperimental"
+  }
+}
+
 dependencies {
   api project(':wire-runtime')
   api deps.okhttp
