@@ -32,6 +32,7 @@ import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Ignore
@@ -79,6 +80,11 @@ class GrpcClientTest {
         .baseUrl(mockService.url)
         .build()
     routeGuideService = grpcClient.create(RouteGuideClient::class)
+  }
+
+  @After
+  fun tearDown() {
+    okhttpClient.dispatcher.executorService.shutdown()
   }
 
   @Suppress("ReplaceCallWithBinaryOperator") // We are explicitly testing this behavior.
@@ -224,7 +230,6 @@ class GrpcClientTest {
   }
 
   @Test
-  @Ignore("TODO: This test is flaky, please fix.")
   fun streamingResponseSuspend() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
     mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
@@ -563,10 +568,11 @@ class GrpcClientTest {
     }
   }
 
-  @Test @Ignore("Flaky")
+  @Test
   fun duplexBlockingReceiveOnly() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueSendNote(message = "welcome")
+    mockService.enqueueSendNote(message = "polo")
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 
@@ -582,7 +588,6 @@ class GrpcClientTest {
    * which is incorrect. https://github.com/square/okhttp/issues/5388
    */
   @Test
-  @Ignore
   fun cancelOutboundStream() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueSendNote(message = "welcome")
@@ -700,10 +705,10 @@ class GrpcClientTest {
   }
 
   @Test
-  @Ignore("Timing out")
   fun grpcStreamingCallIsExecutedAfterExecuteBlocking() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
     mockService.enqueueSendNote(message = "welcome")
+    mockService.enqueueSendNote(message = "polo")
     mockService.enqueue(SendCompleted)
     mockService.enqueue(ReceiveComplete)
 

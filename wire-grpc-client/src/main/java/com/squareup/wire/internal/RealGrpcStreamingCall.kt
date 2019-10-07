@@ -53,9 +53,11 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     call.enqueue(responseChannel.readFromResponseBodyCallback(grpcMethod.responseAdapter))
 
     responseChannel.invokeOnClose {
-      call.cancel()
-      requestChannel.cancel()
-      responseChannel.cancel()
+      if (responseChannel.isClosedForReceive) {
+        // Short-circuit the request stream if it's still active.
+        call.cancel()
+        requestChannel.cancel()
+      }
     }
 
     return requestChannel to responseChannel
