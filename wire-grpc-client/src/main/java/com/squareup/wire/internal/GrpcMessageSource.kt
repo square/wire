@@ -55,10 +55,11 @@ internal class GrpcMessageSource<T : Any>(
 
     val encodedLength = source.readInt().toLong() and 0xffffffffL
 
-    val encodedMessage = Buffer()
-    encodedMessage.write(source, encodedLength)
+    val encodedMessage = Buffer().write(source, encodedLength)
 
-    return messageAdapter.decode(messageDecoding.decode(encodedMessage).buffer())
+    return messageDecoding.decode(encodedMessage).buffer().use {
+      messageAdapter.decode(it)
+    }
   }
 
   fun readExactlyOneAndClose(): T {

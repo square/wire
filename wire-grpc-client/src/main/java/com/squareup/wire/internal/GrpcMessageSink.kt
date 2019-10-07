@@ -38,19 +38,17 @@ internal class GrpcMessageSink<T : Any> constructor(
   private var closed = false
   override fun write(message: T) {
     check(!closed) { "closed" }
-    val messageEncoding = grpcEncoding.toGrpcEncoder()
-    val encodingSink = messageEncoding.encode(sink)
-
-    val compressedFlag = if (grpcEncoding == "identity") 0 else 1
-    encodingSink.writeByte(compressedFlag)
 
     val encodedMessage = Buffer()
-    messageAdapter.encode(encodedMessage, message)
+    grpcEncoding.toGrpcEncoder().encode(encodedMessage).use { encodingSink ->
+      messageAdapter.encode(encodingSink, message)
+    }
 
+    val compressedFlag = if (grpcEncoding == "identity") 0 else 1
+    sink.writeByte(compressedFlag)
     // TODO: fail if the message size is more than MAX_INT
-    encodingSink.writeInt(encodedMessage.size.toInt())
-    encodingSink.writeAll(encodedMessage)
-
+    sink.writeInt(encodedMessage.size.toInt())
+    sink.writeAll(encodedMessage)
     sink.flush()
   }
 
