@@ -571,32 +571,14 @@ With Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>2.2.0</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
 With Gradle:
 
 ```groovy
-compile 'com.squareup.wire:wire-runtime:2.2.0'
-```
-
-### Wire 3 Alpha
-
-With Maven:
-
-```xml
-<dependency>
-  <groupId>com.squareup.wire</groupId>
-  <artifactId>wire-runtime</artifactId>
-  <version>3.0.0-rc03</version>
-</dependency>
-```
-
-With Gradle:
-
-```groovy
-api 'com.squareup.wire:wire-runtime:3.0.0-rc03'
+api 'com.squareup.wire:wire-runtime:3.0.0'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].

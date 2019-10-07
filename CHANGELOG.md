@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 3.0.0
+---------------------
+
+_2019-10-07_
+
+ * Update: All gRPC networking calls are encoded in gzip.
+
 Version 3.0.0-rc03
 ---------------------
 
