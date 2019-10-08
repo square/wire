@@ -1136,13 +1136,13 @@ class KotlinGenerator private constructor(
     val fromValue = FunSpec.builder("fromValue")
         .jvmStatic()
         .addParameter(valueName, Int::class)
-        .returns(parentClassName)
+        .returns(parentClassName.copy(nullable = true))
         .apply {
           addCode("return when (value) {\n⇥")
           message.constants().forEach { constant ->
             addCode("%L -> %L\n", constant.tag, nameAllocator[constant])
           }
-          addCode("else -> throw IllegalArgumentException(%P)", "Unexpected value: \$value")
+          addCode("else -> null")
           addCode("\n⇤}\n") // close the block
         }
         .build()
@@ -1175,7 +1175,7 @@ class KotlinGenerator private constructor(
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
-            .returns(parentClassName)
+            .returns(parentClassName.copy(nullable = true))
             .addStatement("return %T.fromValue(value)", parentClassName)
             .build())
         .build()

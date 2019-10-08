@@ -49,6 +49,7 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("PhoneNumber::class"))
     assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))
     assertTrue(code.contains("enum class PhoneType(    override val value: Int  ) : WireEnum"))
+    assertTrue(code.contains("fun fromValue(value: Int): PhoneType?"))
     assertTrue(code.contains("WORK(1),"))
   }
 

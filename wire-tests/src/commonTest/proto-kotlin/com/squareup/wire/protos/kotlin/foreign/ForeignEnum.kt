@@ -21,14 +21,14 @@ enum class ForeignEnum(
     val ADAPTER: ProtoAdapter<ForeignEnum> = object : EnumAdapter<ForeignEnum>(
       ForeignEnum::class
     ) {
-      override fun fromValue(value: Int): ForeignEnum = ForeignEnum.fromValue(value)
+      override fun fromValue(value: Int): ForeignEnum? = ForeignEnum.fromValue(value)
     }
 
     @JvmStatic
-    fun fromValue(value: Int): ForeignEnum = when (value) {
+    fun fromValue(value: Int): ForeignEnum? = when (value) {
       0 -> BAV
       1 -> BAX
-      else -> throw IllegalArgumentException("""Unexpected value: $value""")
+      else -> null
     }
   }
 }

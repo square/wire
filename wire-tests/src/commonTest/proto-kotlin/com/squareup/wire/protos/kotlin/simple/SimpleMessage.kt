@@ -410,16 +410,16 @@ class SimpleMessage(
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class
       ) {
-        override fun fromValue(value: Int): NestedEnum = NestedEnum.fromValue(value)
+        override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): NestedEnum = when (value) {
+      fun fromValue(value: Int): NestedEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         3 -> BAZ
         3 -> BUZ
-        else -> throw IllegalArgumentException("""Unexpected value: $value""")
+        else -> null
       }
     }
   }

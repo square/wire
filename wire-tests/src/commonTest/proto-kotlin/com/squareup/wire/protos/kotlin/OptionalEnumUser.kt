@@ -110,14 +110,14 @@ class OptionalEnumUser(
       val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
         OptionalEnum::class
       ) {
-        override fun fromValue(value: Int): OptionalEnum = OptionalEnum.fromValue(value)
+        override fun fromValue(value: Int): OptionalEnum? = OptionalEnum.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): OptionalEnum = when (value) {
+      fun fromValue(value: Int): OptionalEnum? = when (value) {
         1 -> FOO
         2 -> BAR
-        else -> throw IllegalArgumentException("""Unexpected value: $value""")
+        else -> null
       }
     }
   }
