@@ -2206,13 +2206,13 @@ class AllTypes(
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class
       ) {
-        override fun fromValue(value: Int): NestedEnum = NestedEnum.fromValue(value)
+        override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): NestedEnum = when (value) {
+      fun fromValue(value: Int): NestedEnum? = when (value) {
         1 -> A
-        else -> throw IllegalArgumentException("""Unexpected value: $value""")
+        else -> null
       }
     }
   }

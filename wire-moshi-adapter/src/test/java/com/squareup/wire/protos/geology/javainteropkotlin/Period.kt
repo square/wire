@@ -32,15 +32,15 @@ enum class Period(
     val ADAPTER: ProtoAdapter<Period> = object : EnumAdapter<Period>(
       Period::class
     ) {
-      override fun fromValue(value: Int): Period = Period.fromValue(value)
+      override fun fromValue(value: Int): Period? = Period.fromValue(value)
     }
 
     @JvmStatic
-    fun fromValue(value: Int): Period = when (value) {
+    fun fromValue(value: Int): Period? = when (value) {
       1 -> CRETACEOUS
       2 -> JURASSIC
       3 -> TRIASSIC
-      else -> throw IllegalArgumentException("""Unexpected value: $value""")
+      else -> null
     }
   }
 }

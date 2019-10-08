@@ -28,16 +28,16 @@ enum class DeprecatedEnum(
     val ADAPTER: ProtoAdapter<DeprecatedEnum> = object : EnumAdapter<DeprecatedEnum>(
       DeprecatedEnum::class
     ) {
-      override fun fromValue(value: Int): DeprecatedEnum = DeprecatedEnum.fromValue(value)
+      override fun fromValue(value: Int): DeprecatedEnum? = DeprecatedEnum.fromValue(value)
     }
 
     @JvmStatic
-    fun fromValue(value: Int): DeprecatedEnum = when (value) {
+    fun fromValue(value: Int): DeprecatedEnum? = when (value) {
       1 -> DISABLED
       2 -> ENABLED
       3 -> ON
       4 -> OFF
-      else -> throw IllegalArgumentException("""Unexpected value: $value""")
+      else -> null
     }
   }
 }

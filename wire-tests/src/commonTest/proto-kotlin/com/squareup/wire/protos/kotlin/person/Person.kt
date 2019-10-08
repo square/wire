@@ -184,15 +184,15 @@ class Person(
       val ADAPTER: ProtoAdapter<PhoneType> = object : EnumAdapter<PhoneType>(
         PhoneType::class
       ) {
-        override fun fromValue(value: Int): PhoneType = PhoneType.fromValue(value)
+        override fun fromValue(value: Int): PhoneType? = PhoneType.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): PhoneType = when (value) {
+      fun fromValue(value: Int): PhoneType? = when (value) {
         0 -> MOBILE
         1 -> HOME
         2 -> WORK
-        else -> throw IllegalArgumentException("""Unexpected value: $value""")
+        else -> null
       }
     }
   }

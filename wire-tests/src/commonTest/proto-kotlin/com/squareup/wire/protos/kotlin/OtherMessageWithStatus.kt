@@ -80,13 +80,13 @@ class OtherMessageWithStatus(
       val ADAPTER: ProtoAdapter<Status> = object : EnumAdapter<Status>(
         Status::class
       ) {
-        override fun fromValue(value: Int): Status = Status.fromValue(value)
+        override fun fromValue(value: Int): Status? = Status.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): Status = when (value) {
+      fun fromValue(value: Int): Status? = when (value) {
         1 -> A
-        else -> throw IllegalArgumentException("""Unexpected value: $value""")
+        else -> null
       }
     }
   }
