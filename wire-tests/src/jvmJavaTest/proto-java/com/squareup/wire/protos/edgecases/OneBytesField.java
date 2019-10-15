@@ -68,7 +68,9 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 15;
+    length += 12 + opt_bytes.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (opt_bytes != null) builder.append(", opt_bytes=").append(opt_bytes);
     return builder.replace(0, 2, "OneBytesField{").append('}').toString();
   }

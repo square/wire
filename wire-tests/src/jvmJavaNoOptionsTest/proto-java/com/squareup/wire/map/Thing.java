@@ -68,7 +68,9 @@ public final class Thing extends Message<Thing, Thing.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 7;
+    length += 7 + name.length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     return builder.replace(0, 2, "Thing{").append('}').toString();
   }

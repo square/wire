@@ -49,7 +49,8 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 13;
+    StringBuilder builder = new StringBuilder(length);
     return builder.replace(0, 2, "TheResponse{").append('}').toString();
   }
 

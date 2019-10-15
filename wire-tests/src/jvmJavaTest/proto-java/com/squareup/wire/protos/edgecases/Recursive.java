@@ -79,7 +79,10 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 11;
+    length += 8 + value.toString().length();
+    length += 12 + recursive.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (value != null) builder.append(", value=").append(value);
     if (recursive != null) builder.append(", recursive=").append(recursive);
     return builder.replace(0, 2, "Recursive{").append('}').toString();

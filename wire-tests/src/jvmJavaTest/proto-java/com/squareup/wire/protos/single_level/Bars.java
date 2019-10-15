@@ -68,7 +68,9 @@ public final class Bars extends Message<Bars, Bars.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 6;
+    if (!bars.isEmpty()) length += 7 + bars.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!bars.isEmpty()) builder.append(", bars=").append(bars);
     return builder.replace(0, 2, "Bars{").append('}').toString();
   }

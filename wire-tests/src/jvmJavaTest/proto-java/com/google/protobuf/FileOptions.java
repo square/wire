@@ -419,7 +419,28 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 13;
+    length += 15 + java_package.length();
+    length += 23 + java_outer_classname.length();
+    length += 22 + java_multiple_files.toString().length();
+    length += 32 + java_generate_equals_and_hash.toString().length();
+    length += 25 + java_string_check_utf8.toString().length();
+    length += 15 + optimize_for.toString().length();
+    length += 13 + go_package.length();
+    length += 22 + cc_generic_services.toString().length();
+    length += 24 + java_generic_services.toString().length();
+    length += 22 + py_generic_services.toString().length();
+    length += 23 + php_generic_services.toString().length();
+    length += 13 + deprecated.toString().length();
+    length += 19 + cc_enable_arenas.toString().length();
+    length += 20 + objc_class_prefix.length();
+    length += 19 + csharp_namespace.length();
+    length += 15 + swift_prefix.length();
+    length += 19 + php_class_prefix.length();
+    length += 16 + php_namespace.length();
+    if (!uninterpreted_option.isEmpty()) length += 23 + uninterpreted_option.toString().length();
+    length += 14 + file_prefix.length();
+    StringBuilder builder = new StringBuilder(length);
     if (java_package != null) builder.append(", java_package=").append(java_package);
     if (java_outer_classname != null) builder.append(", java_outer_classname=").append(java_outer_classname);
     if (java_multiple_files != null) builder.append(", java_multiple_files=").append(java_multiple_files);

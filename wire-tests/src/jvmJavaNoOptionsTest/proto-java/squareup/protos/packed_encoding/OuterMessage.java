@@ -80,7 +80,10 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 14;
+    length += 22 + outer_number_before.toString().length();
+    length += 19 + embedded_message.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (outer_number_before != null) builder.append(", outer_number_before=").append(outer_number_before);
     if (embedded_message != null) builder.append(", embedded_message=").append(embedded_message);
     return builder.replace(0, 2, "OuterMessage{").append('}').toString();

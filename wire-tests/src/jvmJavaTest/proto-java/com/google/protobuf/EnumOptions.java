@@ -125,7 +125,12 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 13;
+    length += 14 + allow_alias.toString().length();
+    length += 13 + deprecated.toString().length();
+    if (!uninterpreted_option.isEmpty()) length += 23 + uninterpreted_option.toString().length();
+    length += 14 + enum_option.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (allow_alias != null) builder.append(", allow_alias=").append(allow_alias);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);

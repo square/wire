@@ -128,7 +128,13 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 21;
+    length += 7 + name.length();
+    if (!value.isEmpty()) length += 8 + value.toString().length();
+    length += 10 + options.toString().length();
+    if (!reserved_range.isEmpty()) length += 17 + reserved_range.toString().length();
+    if (!reserved_name.isEmpty()) length += 16 + reserved_name.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     if (!value.isEmpty()) builder.append(", value=").append(value);
     if (options != null) builder.append(", options=").append(options);
@@ -275,7 +281,10 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 19;
+      length += 8 + start.toString().length();
+      length += 6 + end.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (start != null) builder.append(", start=").append(start);
       if (end != null) builder.append(", end=").append(end);
       return builder.replace(0, 2, "EnumReservedRange{").append('}').toString();

@@ -68,7 +68,9 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 7;
+    if (!things.isEmpty()) length += 9 + things.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!things.isEmpty()) builder.append(", things=").append(things);
     return builder.replace(0, 2, "Mappy{").append('}').toString();
   }

@@ -110,7 +110,11 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 15;
+    length += 13 + deprecated.toString().length();
+    length += 20 + idempotency_level.toString().length();
+    if (!uninterpreted_option.isEmpty()) length += 23 + uninterpreted_option.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (idempotency_level != null) builder.append(", idempotency_level=").append(idempotency_level);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);

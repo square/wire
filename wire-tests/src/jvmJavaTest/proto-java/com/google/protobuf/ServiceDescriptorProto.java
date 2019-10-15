@@ -95,7 +95,11 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 24;
+    length += 7 + name.length();
+    if (!method.isEmpty()) length += 9 + method.toString().length();
+    length += 10 + options.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     if (!method.isEmpty()) builder.append(", method=").append(method);
     if (options != null) builder.append(", options=").append(options);

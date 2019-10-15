@@ -132,7 +132,14 @@ public final class NestedVersionTwo extends Message<NestedVersionTwo, NestedVers
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 18;
+    length += 4 + i.toString().length();
+    length += 7 + v2_i.toString().length();
+    length += 7 + v2_s.length();
+    length += 9 + v2_f32.toString().length();
+    length += 9 + v2_f64.toString().length();
+    if (!v2_rs.isEmpty()) length += 8 + v2_rs.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (i != null) builder.append(", i=").append(i);
     if (v2_i != null) builder.append(", v2_i=").append(v2_i);
     if (v2_s != null) builder.append(", v2_s=").append(v2_s);

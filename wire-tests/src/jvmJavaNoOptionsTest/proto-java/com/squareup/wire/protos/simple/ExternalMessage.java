@@ -146,7 +146,14 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 17;
+    length += 4 + f.toString().length();
+    if (!fooext.isEmpty()) length += 9 + fooext.toString().length();
+    length += 9 + barext.toString().length();
+    length += 9 + bazext.toString().length();
+    length += 21 + nested_message_ext.toString().length();
+    length += 18 + nested_enum_ext.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (f != null) builder.append(", f=").append(f);
     if (!fooext.isEmpty()) builder.append(", fooext=").append(fooext);
     if (barext != null) builder.append(", barext=").append(barext);

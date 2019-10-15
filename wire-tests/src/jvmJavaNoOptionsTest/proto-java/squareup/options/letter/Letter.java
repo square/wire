@@ -49,7 +49,8 @@ public final class Letter extends Message<Letter, Letter.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 8;
+    StringBuilder builder = new StringBuilder(length);
     return builder.replace(0, 2, "Letter{").append('}').toString();
   }
 

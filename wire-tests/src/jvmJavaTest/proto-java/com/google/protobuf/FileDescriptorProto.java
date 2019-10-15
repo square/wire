@@ -232,7 +232,20 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 21;
+    length += 7 + name.length();
+    length += 10 + package_.length();
+    if (!dependency.isEmpty()) length += 13 + dependency.toString().length();
+    if (!public_dependency.isEmpty()) length += 20 + public_dependency.toString().length();
+    if (!weak_dependency.isEmpty()) length += 18 + weak_dependency.toString().length();
+    if (!message_type.isEmpty()) length += 15 + message_type.toString().length();
+    if (!enum_type.isEmpty()) length += 12 + enum_type.toString().length();
+    if (!service.isEmpty()) length += 10 + service.toString().length();
+    if (!extension.isEmpty()) length += 12 + extension.toString().length();
+    length += 10 + options.toString().length();
+    length += 19 + source_code_info.toString().length();
+    length += 9 + syntax.length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     if (package_ != null) builder.append(", package=").append(package_);
     if (!dependency.isEmpty()) builder.append(", dependency=").append(dependency);

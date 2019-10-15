@@ -84,7 +84,10 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 16;
+    length += 4 + i.toString().length();
+    length += 4 + j.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (i != null) builder.append(", i=").append(i);
     if (j != null) builder.append(", j=").append(j);
     return builder.replace(0, 2, "ForeignMessage{").append('}').toString();

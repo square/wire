@@ -68,7 +68,9 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 24;
+    length += 7 + data.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (data != null) builder.append(", data=").append(data);
     return builder.replace(0, 2, "HeresAllTheDataRequest{").append('}').toString();
   }

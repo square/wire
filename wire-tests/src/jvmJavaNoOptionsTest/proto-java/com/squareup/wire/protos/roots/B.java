@@ -67,7 +67,9 @@ public final class B extends Message<B, B.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 3;
+    length += 4 + c.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     builder.append(", c=").append(c);
     return builder.replace(0, 2, "B{").append('}').toString();
   }

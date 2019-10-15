@@ -78,7 +78,9 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 19;
+    if (!annotation.isEmpty()) length += 13 + annotation.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!annotation.isEmpty()) builder.append(", annotation=").append(annotation);
     return builder.replace(0, 2, "GeneratedCodeInfo{").append('}').toString();
   }
@@ -210,7 +212,12 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 12;
+      if (!path.isEmpty()) length += 7 + path.toString().length();
+      length += 14 + source_file.length();
+      length += 8 + begin.toString().length();
+      length += 6 + end.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (!path.isEmpty()) builder.append(", path=").append(path);
       if (source_file != null) builder.append(", source_file=").append(source_file);
       if (begin != null) builder.append(", begin=").append(begin);

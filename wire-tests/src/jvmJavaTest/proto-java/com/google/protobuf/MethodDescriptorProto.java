@@ -143,7 +143,14 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 23;
+    length += 7 + name.length();
+    length += 13 + input_type.length();
+    length += 14 + output_type.length();
+    length += 10 + options.toString().length();
+    length += 19 + client_streaming.toString().length();
+    length += 19 + server_streaming.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     if (input_type != null) builder.append(", input_type=").append(input_type);
     if (output_type != null) builder.append(", output_type=").append(output_type);

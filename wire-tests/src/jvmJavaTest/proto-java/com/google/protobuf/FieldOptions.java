@@ -344,7 +344,24 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 14;
+    length += 8 + ctype.toString().length();
+    length += 9 + packed.toString().length();
+    length += 9 + jstype.toString().length();
+    length += 7 + lazy.toString().length();
+    length += 13 + deprecated.toString().length();
+    length += 7 + weak.toString().length();
+    if (!uninterpreted_option.isEmpty()) length += 23 + uninterpreted_option.toString().length();
+    length += 22 + my_field_option_one.toString().length();
+    length += 22 + my_field_option_two.toString().length();
+    length += 24 + my_field_option_three.toString().length();
+    length += 23 + my_field_option_four.toString().length();
+    length += 4 + squareup_protos_extension_collision_1_a.length();
+    length += 4 + b.length();
+    length += 4 + squareup_protos_extension_collision_2_a.length();
+    length += 4 + c.length();
+    length += 11 + redacted.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (ctype != null) builder.append(", ctype=").append(ctype);
     if (packed != null) builder.append(", packed=").append(packed);
     if (jstype != null) builder.append(", jstype=").append(jstype);

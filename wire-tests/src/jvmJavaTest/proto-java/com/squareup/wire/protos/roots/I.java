@@ -82,7 +82,10 @@ public final class I extends Message<I, I.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 3;
+    length += 4 + i.toString().length();
+    length += 4 + j.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (i != null) builder.append(", i=").append(i);
     if (j != null) builder.append(", j=").append(j);
     return builder.replace(0, 2, "I{").append('}').toString();

@@ -94,7 +94,11 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 22;
+    if (!rep_int32.isEmpty()) length += 12 + rep_int32.toString().length();
+    if (!pack_int32.isEmpty()) length += 13 + pack_int32.toString().length();
+    if (!map_int32_int32.isEmpty()) length += 18 + map_int32_int32.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!rep_int32.isEmpty()) builder.append(", rep_int32=").append(rep_int32);
     if (!pack_int32.isEmpty()) builder.append(", pack_int32=").append(pack_int32);
     if (!map_int32_int32.isEmpty()) builder.append(", map_int32_int32=").append(map_int32_int32);

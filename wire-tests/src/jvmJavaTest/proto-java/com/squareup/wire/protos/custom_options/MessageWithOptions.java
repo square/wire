@@ -108,7 +108,8 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 20;
+    StringBuilder builder = new StringBuilder(length);
     return builder.replace(0, 2, "MessageWithOptions{").append('}').toString();
   }
 

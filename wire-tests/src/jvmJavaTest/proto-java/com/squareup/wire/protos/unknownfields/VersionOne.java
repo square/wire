@@ -79,7 +79,10 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 12;
+    length += 4 + i.toString().length();
+    length += 6 + obj.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (i != null) builder.append(", i=").append(i);
     if (obj != null) builder.append(", obj=").append(obj);
     return builder.replace(0, 2, "VersionOne{").append('}').toString();

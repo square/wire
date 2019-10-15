@@ -84,7 +84,10 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 18;
+    length += 6;
+    if (!b.isEmpty()) length += 4 + b.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!a.isEmpty()) builder.append(", a=██");
     if (!b.isEmpty()) builder.append(", b=").append(b);
     return builder.replace(0, 2, "RedactedRepeated{").append('}').toString();

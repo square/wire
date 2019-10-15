@@ -183,7 +183,18 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 17;
+    length += 7 + name.length();
+    if (!field.isEmpty()) length += 8 + field.toString().length();
+    if (!extension.isEmpty()) length += 12 + extension.toString().length();
+    if (!nested_type.isEmpty()) length += 14 + nested_type.toString().length();
+    if (!enum_type.isEmpty()) length += 12 + enum_type.toString().length();
+    if (!extension_range.isEmpty()) length += 18 + extension_range.toString().length();
+    if (!oneof_decl.isEmpty()) length += 13 + oneof_decl.toString().length();
+    length += 10 + options.toString().length();
+    if (!reserved_range.isEmpty()) length += 17 + reserved_range.toString().length();
+    if (!reserved_name.isEmpty()) length += 16 + reserved_name.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     if (!field.isEmpty()) builder.append(", field=").append(field);
     if (!extension.isEmpty()) builder.append(", extension=").append(extension);
@@ -372,7 +383,11 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 16;
+      length += 8 + start.toString().length();
+      length += 6 + end.toString().length();
+      length += 10 + options.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (start != null) builder.append(", start=").append(start);
       if (end != null) builder.append(", end=").append(end);
       if (options != null) builder.append(", options=").append(options);
@@ -534,7 +549,10 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 15;
+      length += 8 + start.toString().length();
+      length += 6 + end.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (start != null) builder.append(", start=").append(start);
       if (end != null) builder.append(", end=").append(end);
       return builder.replace(0, 2, "ReservedRange{").append('}').toString();

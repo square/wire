@@ -91,7 +91,10 @@ public final class A extends Message<A, A.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 3;
+    length += 4 + c.toString().length();
+    length += 4 + d.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (c != null) builder.append(", c=").append(c);
     if (d != null) builder.append(", d=").append(d);
     return builder.replace(0, 2, "A{").append('}').toString();

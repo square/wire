@@ -66,7 +66,9 @@ public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 16;
+    length += 4 + a.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (a != null) builder.append(", a=").append(a);
     return builder.replace(0, 2, "RedactedCycleB{").append('}').toString();
   }

@@ -126,7 +126,13 @@ public final class Dinosaur extends Message<Dinosaur, Dinosaur.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 10;
+    length += 7 + name.length();
+    if (!picture_urls.isEmpty()) length += 15 + picture_urls.toString().length();
+    length += 16 + length_meters.toString().length();
+    length += 17 + mass_kilograms.toString().length();
+    length += 9 + period.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     if (!picture_urls.isEmpty()) builder.append(", picture_urls=").append(picture_urls);
     if (length_meters != null) builder.append(", length_meters=").append(length_meters);

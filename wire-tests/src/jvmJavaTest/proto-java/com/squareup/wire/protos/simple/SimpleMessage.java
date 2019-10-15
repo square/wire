@@ -250,7 +250,20 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 15;
+    length += 17 + optional_int32.toString().length();
+    length += 22 + optional_nested_msg.toString().length();
+    length += 24 + optional_external_msg.toString().length();
+    length += 22 + default_nested_enum.toString().length();
+    length += 17 + required_int32.toString().length();
+    if (!repeated_double.isEmpty()) length += 18 + repeated_double.toString().length();
+    length += 23 + default_foreign_enum.toString().length();
+    length += 26 + no_default_foreign_enum.toString().length();
+    length += 10 + package_.length();
+    length += 9 + result.length();
+    length += 8 + other.length();
+    length += 4 + o.length();
+    StringBuilder builder = new StringBuilder(length);
     if (optional_int32 != null) builder.append(", optional_int32=").append(optional_int32);
     if (optional_nested_msg != null) builder.append(", optional_nested_msg=").append(optional_nested_msg);
     if (optional_external_msg != null) builder.append(", optional_external_msg=").append(optional_external_msg);
@@ -455,7 +468,9 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 15;
+      length += 5 + bb.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (bb != null) builder.append(", bb=").append(bb);
       return builder.replace(0, 2, "NestedMessage{").append('}').toString();
     }

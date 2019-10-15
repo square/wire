@@ -69,7 +69,9 @@ public final class OneField extends Message<OneField, OneField.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 10;
+    length += 12 + opt_int32.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (opt_int32 != null) builder.append(", opt_int32=").append(opt_int32);
     return builder.replace(0, 2, "OneField{").append('}').toString();
   }

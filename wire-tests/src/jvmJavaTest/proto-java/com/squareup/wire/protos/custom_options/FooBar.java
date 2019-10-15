@@ -230,7 +230,17 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 8;
+    length += 6 + foo.toString().length();
+    length += 6 + bar.length();
+    length += 6 + baz.toString().length();
+    length += 6 + qux.toString().length();
+    if (!fred.isEmpty()) length += 7 + fred.toString().length();
+    length += 8 + daisy.toString().length();
+    length += 11;
+    length += 6 + ext.toString().length();
+    if (!rep.isEmpty()) length += 6 + rep.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (foo != null) builder.append(", foo=").append(foo);
     if (bar != null) builder.append(", bar=").append(bar);
     if (baz != null) builder.append(", baz=").append(baz);
@@ -374,7 +384,9 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 8;
+      length += 8 + value.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (value != null) builder.append(", value=").append(value);
       return builder.replace(0, 2, "Nested{").append('}').toString();
     }
@@ -496,7 +508,9 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 6;
+      if (!serial.isEmpty()) length += 9 + serial.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (!serial.isEmpty()) builder.append(", serial=").append(serial);
       return builder.replace(0, 2, "More{").append('}').toString();
     }

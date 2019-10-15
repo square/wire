@@ -71,7 +71,9 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 18;
+    length += 6;
+    StringBuilder builder = new StringBuilder(length);
     builder.append(", a=██");
     return builder.replace(0, 2, "RedactedRequired{").append('}').toString();
   }

@@ -51,7 +51,8 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 5;
+    StringBuilder builder = new StringBuilder(length);
     return builder.replace(0, 2, "Bar{").append('}').toString();
   }
 
@@ -100,7 +101,8 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 5;
+      StringBuilder builder = new StringBuilder(length);
       return builder.replace(0, 2, "Baz{").append('}').toString();
     }
 
@@ -166,7 +168,9 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       @Override
       public String toString() {
-        StringBuilder builder = new StringBuilder();
+        int length = 5;
+        length += 6 + boo.length();
+        StringBuilder builder = new StringBuilder(length);
         if (boo != null) builder.append(", boo=").append(boo);
         return builder.replace(0, 2, "Moo{").append('}').toString();
       }

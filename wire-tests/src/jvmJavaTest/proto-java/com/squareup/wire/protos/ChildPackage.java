@@ -69,7 +69,9 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 14;
+    length += 21 + inner_foreign_enum.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (inner_foreign_enum != null) builder.append(", inner_foreign_enum=").append(inner_foreign_enum);
     return builder.replace(0, 2, "ChildPackage{").append('}').toString();
   }

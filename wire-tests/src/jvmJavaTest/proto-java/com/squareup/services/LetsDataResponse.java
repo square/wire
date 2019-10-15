@@ -68,7 +68,9 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 18;
+    length += 7 + data.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (data != null) builder.append(", data=").append(data);
     return builder.replace(0, 2, "LetsDataResponse{").append('}').toString();
   }

@@ -95,7 +95,10 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 16;
+    length += 13 + deprecated.toString().length();
+    if (!uninterpreted_option.isEmpty()) length += 23 + uninterpreted_option.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     return builder.replace(0, 2, "ServiceOptions{").append('}').toString();

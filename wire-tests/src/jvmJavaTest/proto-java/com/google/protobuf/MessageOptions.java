@@ -282,7 +282,20 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 16;
+    length += 26 + message_set_wire_format.toString().length();
+    length += 34 + no_standard_descriptor_accessor.toString().length();
+    length += 13 + deprecated.toString().length();
+    length += 12 + map_entry.toString().length();
+    if (!uninterpreted_option.isEmpty()) length += 23 + uninterpreted_option.toString().length();
+    length += 24 + my_message_option_one.toString().length();
+    length += 24 + my_message_option_two.toString().length();
+    length += 26 + my_message_option_three.toString().length();
+    length += 25 + my_message_option_four.toString().length();
+    length += 25 + my_message_option_five.toString().length();
+    length += 24 + my_message_option_six.toString().length();
+    length += 25 + foreign_message_option.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (message_set_wire_format != null) builder.append(", message_set_wire_format=").append(message_set_wire_format);
     if (no_standard_descriptor_accessor != null) builder.append(", no_standard_descriptor_accessor=").append(no_standard_descriptor_accessor);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);

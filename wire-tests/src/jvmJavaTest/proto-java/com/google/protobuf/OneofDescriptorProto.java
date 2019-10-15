@@ -81,7 +81,10 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 22;
+    length += 7 + name.length();
+    length += 10 + options.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     if (options != null) builder.append(", options=").append(options);
     return builder.replace(0, 2, "OneofDescriptorProto{").append('}').toString();

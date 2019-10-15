@@ -72,7 +72,9 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 19;
+    if (!file.isEmpty()) length += 7 + file.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!file.isEmpty()) builder.append(", file=").append(file);
     return builder.replace(0, 2, "FileDescriptorSet{").append('}').toString();
   }

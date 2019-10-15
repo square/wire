@@ -86,7 +86,10 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 19;
+    length += 6;
+    length += 4 + e.length();
+    StringBuilder builder = new StringBuilder(length);
     if (d != null) builder.append(", d=██");
     if (e != null) builder.append(", e=").append(e);
     return builder.replace(0, 2, "RedactedExtension{").append('}').toString();

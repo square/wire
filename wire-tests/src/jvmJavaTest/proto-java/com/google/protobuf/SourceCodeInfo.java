@@ -120,7 +120,9 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 16;
+    if (!location.isEmpty()) length += 11 + location.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!location.isEmpty()) builder.append(", location=").append(location);
     return builder.replace(0, 2, "SourceCodeInfo{").append('}').toString();
   }
@@ -370,7 +372,13 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 10;
+      if (!path.isEmpty()) length += 7 + path.toString().length();
+      if (!span.isEmpty()) length += 7 + span.toString().length();
+      length += 19 + leading_comments.length();
+      length += 20 + trailing_comments.length();
+      if (!leading_detached_comments.isEmpty()) length += 28 + leading_detached_comments.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (!path.isEmpty()) builder.append(", path=").append(path);
       if (!span.isEmpty()) builder.append(", span=").append(span);
       if (leading_comments != null) builder.append(", leading_comments=").append(leading_comments);

@@ -49,7 +49,8 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 10;
+    StringBuilder builder = new StringBuilder(length);
     return builder.replace(0, 2, "NoFields{").append('}').toString();
   }
 

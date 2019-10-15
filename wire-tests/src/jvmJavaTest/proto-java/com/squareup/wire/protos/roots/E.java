@@ -79,7 +79,10 @@ public final class E extends Message<E, E.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 3;
+    length += 4 + f.toString().length();
+    length += 4 + g.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (f != null) builder.append(", f=").append(f);
     if (g != null) builder.append(", g=").append(g);
     return builder.replace(0, 2, "E{").append('}').toString();
@@ -161,7 +164,9 @@ public final class E extends Message<E, E.Builder> {
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 3;
+      length += 4 + i.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       if (i != null) builder.append(", i=").append(i);
       return builder.replace(0, 2, "F{").append('}').toString();
     }

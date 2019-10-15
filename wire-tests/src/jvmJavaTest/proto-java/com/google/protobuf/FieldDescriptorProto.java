@@ -216,7 +216,18 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 22;
+    length += 7 + name.length();
+    length += 9 + number.toString().length();
+    length += 8 + label.toString().length();
+    length += 7 + type.toString().length();
+    length += 12 + type_name.length();
+    length += 11 + extendee.length();
+    length += 16 + default_value.length();
+    length += 14 + oneof_index.toString().length();
+    length += 12 + json_name.length();
+    length += 10 + options.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (name != null) builder.append(", name=").append(name);
     if (number != null) builder.append(", number=").append(number);
     if (label != null) builder.append(", label=").append(label);

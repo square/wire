@@ -159,7 +159,15 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 21;
+    if (!name.isEmpty()) length += 7 + name.toString().length();
+    length += 19 + identifier_value.length();
+    length += 21 + positive_int_value.toString().length();
+    length += 21 + negative_int_value.toString().length();
+    length += 15 + double_value.toString().length();
+    length += 15 + string_value.toString().length();
+    length += 18 + aggregate_value.length();
+    StringBuilder builder = new StringBuilder(length);
     if (!name.isEmpty()) builder.append(", name=").append(name);
     if (identifier_value != null) builder.append(", identifier_value=").append(identifier_value);
     if (positive_int_value != null) builder.append(", positive_int_value=").append(positive_int_value);
@@ -308,7 +316,10 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 10;
+      length += 12 + name_part.length();
+      length += 15 + is_extension.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       builder.append(", name_part=").append(name_part);
       builder.append(", is_extension=").append(is_extension);
       return builder.replace(0, 2, "NamePart{").append('}').toString();

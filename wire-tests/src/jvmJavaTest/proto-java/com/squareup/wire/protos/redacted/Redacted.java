@@ -116,7 +116,12 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 10;
+    length += 6;
+    length += 4 + b.length();
+    length += 4 + c.length();
+    length += 12 + extension.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (a != null) builder.append(", a=██");
     if (b != null) builder.append(", b=").append(b);
     if (c != null) builder.append(", c=").append(c);

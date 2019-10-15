@@ -72,7 +72,9 @@ public final class ExtensionRangeOptions extends Message<ExtensionRangeOptions, 
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 23;
+    if (!uninterpreted_option.isEmpty()) length += 23 + uninterpreted_option.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     return builder.replace(0, 2, "ExtensionRangeOptions{").append('}').toString();
   }

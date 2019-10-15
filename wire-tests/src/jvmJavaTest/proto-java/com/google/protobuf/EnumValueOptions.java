@@ -139,7 +139,13 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 18;
+    length += 13 + deprecated.toString().length();
+    if (!uninterpreted_option.isEmpty()) length += 23 + uninterpreted_option.toString().length();
+    length += 20 + enum_value_option.toString().length();
+    length += 28 + complex_enum_value_option.toString().length();
+    length += 28 + foreign_enum_value_option.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     if (enum_value_option != null) builder.append(", enum_value_option=").append(enum_value_option);

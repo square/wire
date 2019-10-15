@@ -179,7 +179,18 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 9;
+    length += 16 + unknownFields.length();
+    length += 8 + other.length();
+    length += 4 + o.length();
+    length += 9 + result.length();
+    length += 11 + hashCode.length();
+    length += 19 + serialVersionUID_.length();
+    length += 10 + ADAPTER_.length();
+    length += 18 + MESSAGE_OPTIONS_.length();
+    length += 7 + this_.length();
+    length += 10 + message.length();
+    StringBuilder builder = new StringBuilder(length);
     if (unknownFields != null) builder.append(", unknownFields=").append(unknownFields);
     if (other != null) builder.append(", other=").append(other);
     if (o != null) builder.append(", o=").append(o);

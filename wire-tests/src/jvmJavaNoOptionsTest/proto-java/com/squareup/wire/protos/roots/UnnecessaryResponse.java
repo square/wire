@@ -49,7 +49,8 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 21;
+    StringBuilder builder = new StringBuilder(length);
     return builder.replace(0, 2, "UnnecessaryResponse{").append('}').toString();
   }
 

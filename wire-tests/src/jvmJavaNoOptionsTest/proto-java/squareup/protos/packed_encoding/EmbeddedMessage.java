@@ -82,7 +82,10 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 17;
+    if (!inner_repeated_number.isEmpty()) length += 24 + inner_repeated_number.toString().length();
+    length += 21 + inner_number_after.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (!inner_repeated_number.isEmpty()) builder.append(", inner_repeated_number=").append(inner_repeated_number);
     if (inner_number_after != null) builder.append(", inner_number_after=").append(inner_number_after);
     return builder.replace(0, 2, "EmbeddedMessage{").append('}').toString();

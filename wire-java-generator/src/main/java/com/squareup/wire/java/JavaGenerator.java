@@ -1443,8 +1443,8 @@ public final class JavaGenerator {
         .returns(String.class);
 
     // Some care is taken here to pre-allocate the memory used by the StringBuilder, as one large
-    // allocation is easier on the garbage collector than a bunch of little ones, and that difference
-    // has some noticeable impact at scale.
+    // allocation is easier on the garbage collector than a bunch of little ones, and that
+    // difference has some noticeable impact at scale.
     // The starting length covers the final "Name{...}" append.
     result.addStatement("int length = $L", 2 + type.type().simpleName().length());
 
@@ -1454,11 +1454,14 @@ public final class JavaGenerator {
         result.addStatement("length += $L",
             REDACTED_TOSTRING_ASSIGN_LENGTH + field.name().length());
       } else if (field.isRepeated() || field.type().isMap()) {
-        result.addStatement("if (!$2N.isEmpty()) length += $1L + $2N.toString().length()", TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
+        result.addStatement("if (!$2N.isEmpty()) length += $1L + $2N.toString().length()",
+            TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
       } else if (field.type().toString().equals("string")) {
-        result.addStatement("length += $L + $N.length()", TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
+        result.addStatement("length += $L + $N.length()",
+            TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
       } else {
-        result.addStatement("length += $L + $N.toString().length()", TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
+        result.addStatement("length += $L + $N.toString().length()",
+            TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
       }
     }
 
@@ -1473,9 +1476,11 @@ public final class JavaGenerator {
         result.addCode("if ($N != null) ", fieldName);
       }
       if (field.isRedacted()) {
-        result.addStatement("$N.append(\"" + REDACTED_TOSTRING_ASSIGN + "\")", builderName, field.name());
+        result.addStatement("$N.append(\"" + REDACTED_TOSTRING_ASSIGN + "\")",
+            builderName, field.name());
       } else {
-        result.addStatement("$N.append(\"" + TOSTRING_ASSIGN + "\").append($L)", builderName, field.name(),
+        result.addStatement("$N.append(\"" + TOSTRING_ASSIGN + "\").append($L)",
+            builderName, field.name(),
             fieldName);
       }
     }

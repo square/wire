@@ -76,7 +76,9 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 18;
+    length += 4 + f.length();
+    StringBuilder builder = new StringBuilder(length);
     if (f != null) builder.append(", f=").append(f);
     return builder.replace(0, 2, "CollisionSubject{").append('}').toString();
   }

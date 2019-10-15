@@ -49,7 +49,8 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 12;
+    StringBuilder builder = new StringBuilder(length);
     return builder.replace(0, 2, "TheRequest{").append('}').toString();
   }
 

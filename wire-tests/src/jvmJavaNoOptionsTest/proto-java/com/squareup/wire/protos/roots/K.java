@@ -69,7 +69,9 @@ public final class K extends Message<K, K.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 3;
+    length += 4 + i.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (i != null) builder.append(", i=").append(i);
     return builder.replace(0, 2, "K{").append('}').toString();
   }

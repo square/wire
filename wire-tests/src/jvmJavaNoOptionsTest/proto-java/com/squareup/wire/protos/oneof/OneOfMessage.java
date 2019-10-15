@@ -105,7 +105,11 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 14;
+    length += 6 + foo.toString().length();
+    length += 6 + bar.length();
+    length += 6 + baz.length();
+    StringBuilder builder = new StringBuilder(length);
     if (foo != null) builder.append(", foo=").append(foo);
     if (bar != null) builder.append(", bar=").append(bar);
     if (baz != null) builder.append(", baz=").append(baz);

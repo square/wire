@@ -122,7 +122,12 @@ public final class Person extends Message<Person, Person.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 8;
+    length += 7 + name.length();
+    length += 5 + id.toString().length();
+    length += 8 + email.length();
+    if (!phone.isEmpty()) length += 8 + phone.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     builder.append(", name=").append(name);
     builder.append(", id=").append(id);
     if (email != null) builder.append(", email=").append(email);
@@ -305,7 +310,10 @@ public final class Person extends Message<Person, Person.Builder> {
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      int length = 13;
+      length += 9 + number.length();
+      length += 7 + type.toString().length();
+      StringBuilder builder = new StringBuilder(length);
       builder.append(", number=").append(number);
       if (type != null) builder.append(", type=").append(type);
       return builder.replace(0, 2, "PhoneNumber{").append('}').toString();

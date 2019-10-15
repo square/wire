@@ -66,7 +66,9 @@ public final class H extends Message<H, H.Builder> {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 3;
+    length += 5 + ef.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (ef != null) builder.append(", ef=").append(ef);
     return builder.replace(0, 2, "H{").append('}').toString();
   }

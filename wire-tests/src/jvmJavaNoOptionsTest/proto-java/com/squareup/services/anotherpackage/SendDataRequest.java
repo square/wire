@@ -68,7 +68,9 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    int length = 17;
+    length += 7 + data.toString().length();
+    StringBuilder builder = new StringBuilder(length);
     if (data != null) builder.append(", data=").append(data);
     return builder.replace(0, 2, "SendDataRequest{").append('}').toString();
   }
