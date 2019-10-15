@@ -108,6 +108,14 @@ public final class JavaGenerator {
   static final ClassName NULLABLE = ClassName.get("androidx.annotation", "Nullable");
   static final ClassName CREATOR = ClassName.get("android.os", "Parcelable", "Creator");
 
+  static final String REDACTED_TOSTRING_ASSIGN = ", $N=██";
+  // Subtracting the length of the format string.
+  static final int REDACTED_TOSTRING_ASSIGN_LENGTH = REDACTED_TOSTRING_ASSIGN.length() - 2;
+
+  static final String TOSTRING_ASSIGN = ", $N=";
+  // Subtracting the length of the format string.
+  static final int TOSTRING_ASSIGN_LENGTH = TOSTRING_ASSIGN.length() - 2;
+
   private static final Ordering<Field> TAG_ORDERING = Ordering.from(new Comparator<Field>() {
     @Override public int compare(Field o1, Field o2) {
       return Integer.compare(o1.tag(), o2.tag());
@@ -1426,7 +1434,7 @@ public final class JavaGenerator {
     return result.build();
   }
 
-  private MethodSpec messageToString(NameAllocator nameAllocator, MessageType type) {
+  MethodSpec messageToString(NameAllocator nameAllocator, MessageType type) {
     NameAllocator localNameAllocator = nameAllocator.clone();
 
     MethodSpec.Builder result = MethodSpec.methodBuilder("toString")
@@ -1434,8 +1442,28 @@ public final class JavaGenerator {
         .addModifiers(PUBLIC)
         .returns(String.class);
 
+    // Some care is taken here to pre-allocate the memory used by the StringBuilder, as one large
+    // allocation is easier on the garbage collector than a bunch of little ones, and that difference
+    // has some noticeable impact at scale.
+    // The starting length covers the final "Name{...}" append.
+    result.addStatement("int length = $L", 2 + type.type().simpleName().length());
+
+    for (Field field : type.fieldsAndOneOfFields()) {
+      String fieldName = nameAllocator.get(field);
+      if (field.isRedacted()) {
+        result.addStatement("length += $L",
+            REDACTED_TOSTRING_ASSIGN_LENGTH + field.name().length());
+      } else if (field.isRepeated() || field.type().isMap()) {
+        result.addStatement("if (!$2N.isEmpty()) length += $1L + $2N.toString().length()", TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
+      } else if (field.type().toString().equals("string")) {
+        result.addStatement("length += $L + $N.length()", TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
+      } else {
+        result.addStatement("length += $L + $N.toString().length()", TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
+      }
+    }
+
     String builderName = localNameAllocator.newName("builder");
-    result.addStatement("$1T $2N = new $1T()", StringBuilder.class, builderName);
+    result.addStatement("$1T $2N = new $1T(length)", StringBuilder.class, builderName);
 
     for (Field field : type.fieldsAndOneOfFields()) {
       String fieldName = nameAllocator.get(field);
@@ -1445,9 +1473,9 @@ public final class JavaGenerator {
         result.addCode("if ($N != null) ", fieldName);
       }
       if (field.isRedacted()) {
-        result.addStatement("$N.append(\", $N=██\")", builderName, field.name());
+        result.addStatement("$N.append(\"" + REDACTED_TOSTRING_ASSIGN + "\")", builderName, field.name());
       } else {
-        result.addStatement("$N.append(\", $N=\").append($L)", builderName, field.name(),
+        result.addStatement("$N.append(\"" + TOSTRING_ASSIGN + "\").append($L)", builderName, field.name(),
             fieldName);
       }
     }

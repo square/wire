@@ -16,6 +16,7 @@
 package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.NameAllocator;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.wire.schema.IdentifierSet;
 import com.squareup.wire.schema.MessageType;
@@ -443,5 +444,29 @@ public final class JavaGeneratorTest {
             + "    throw new AssertionError();\n"
             + "  }")
         .contains("public static final class B extends Message<B, B.Builder> {");
+  }
+
+  @Test
+  public void toStringGeneration() throws IOException {
+    assertThat(new RepoBuilder()
+        .add("message.proto", ""
+            + "message Message {\n"
+            + "  required float long = 1;\n"
+            + "  required string str = 2;\n"
+            + "  repeated string things = 3;\n"
+            + "}\n")
+        .generateCode("Message"))
+        .contains("@Override\n"
+            + "  public String toString() {\n"
+            + "    int length = 9;\n"
+            + "    length += 7 + long_.toString().length();\n"
+            + "    length += 6 + str.length();\n"
+            + "    if (!things.isEmpty()) length += 9 + things.toString().length();\n"
+            + "    StringBuilder builder = new StringBuilder(length);\n"
+            + "    builder.append(\", long=\").append(long_);\n"
+            + "    builder.append(\", str=\").append(str);\n"
+            + "    if (!things.isEmpty()) builder.append(\", things=\").append(things);\n"
+            + "    return builder.replace(0, 2, \"Message{\").append('}').toString();\n"
+            + "  }");
   }
 }
