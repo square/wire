@@ -112,7 +112,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideClient : Service {
+          |  /**
+          |   * Returns the [Feature] for a [Point].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -126,7 +132,9 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |// RouteGuide service interface.
           |service RouteGuide {
+          |  // Returns the [Feature] for a [Point].
           |  rpc GetFeature(Point) returns (Feature) {}
           |}
           |$pointMessage
@@ -142,7 +150,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideBlockingServer : Service {
+          |  /**
+          |   * Returns the [Feature] for a [Point].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -156,7 +170,9 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |// RouteGuide service interface.
           |service RouteGuide {
+          |  // Returns the [Feature] for a [Point].
           |  rpc GetFeature(Point) returns (Feature) {}
           |}
           |$pointMessage
@@ -174,7 +190,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideBlockingServer : Service {
+          |  /**
+          |   * Creates a [RouteSummary] based on the provided [Point]s.
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RecordRoute",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -188,7 +210,9 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |// RouteGuide service interface.
           |service RouteGuide {
+          |  // Creates a [RouteSummary] based on the provided [Point]s.
           |  rpc RecordRoute(stream Point) returns (RouteSummary) {}
           |}
           |$pointMessage
@@ -206,7 +230,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideBlockingServer : Service {
+          |  /**
+          |   * Returns the [Feature]s within a [Rectangle].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/ListFeatures",
           |    requestAdapter = "routeguide.Rectangle#ADAPTER",
@@ -220,7 +250,9 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |// RouteGuide service interface.
           |service RouteGuide {
+          |  // Returns the [Feature]s within a [Rectangle].
           |  rpc ListFeatures(Rectangle) returns (stream Feature) {}
           |}
           |$pointMessage
@@ -240,7 +272,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideBlockingServer : Service {
+          |  /**
+          |   * Chat with someone using a [RouteNote].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
@@ -254,7 +292,11 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |service RouteGuide {
+          |  // Chat with someone using a [RouteNote].
           |  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
           |}
           |$pointMessage
@@ -273,7 +315,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideBlockingServer : Service {
+          |  /**
+          |   * Returns the [Feature] for a [Point].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "com.squareup.routeguide.Point#ADAPTER",
@@ -289,7 +337,13 @@ class KotlinGeneratorTest {
           |
           |option java_package = "com.squareup.routeguide";
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |service RouteGuide {
+          |  /**
+          |   * Returns the [Feature] for a [Point].
+          |   */
           |  rpc GetFeature(Point) returns (Feature) {}
           |}
           |$pointMessage
@@ -305,7 +359,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideClient : Service {
+          |  /**
+          |   * Returns the [Feature] for a [Point].
+          |   */
           |  @WireRpc(
           |    path = "/RouteGuide/GetFeature",
           |    requestAdapter = "Point#ADAPTER",
@@ -317,7 +377,11 @@ class KotlinGeneratorTest {
 
     val repoBuilder = RepoBuilder()
         .add("routeguide.proto", """
+          |/** RouteGuide service interface. */
           |service RouteGuide {
+          |  /**
+          |   * Returns the [Feature] for a [Point].
+          |   */
           |  rpc GetFeature(Point) returns (Feature) {}
           |}
           |$pointMessage
@@ -334,7 +398,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideClient : Service {
+          |  /**
+          |   * Returns the [Feature] at the given [Point].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.grpc.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.grpc.Point#ADAPTER",
@@ -348,7 +418,11 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide.grpc;
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |service RouteGuide {
+          |  // Returns the [Feature] at the given [Point].
           |  rpc GetFeature(Point) returns (Feature) {}
           |}
           |$pointMessage
@@ -365,7 +439,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideClient : Service {
+          |  /**
+          |   * Records a route made up of the provided [Point]s.
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RecordRoute",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -379,7 +459,11 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |service RouteGuide {
+          |  /** Records a route made up of the provided [Point]s. */
           |  rpc RecordRoute(stream Point) returns (RouteSummary) {}
           |}
           |$pointMessage
@@ -396,7 +480,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideClient : Service {
+          |  /**
+          |   * List the features available in the area defined by [Rectangle].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/ListFeatures",
           |    requestAdapter = "routeguide.Rectangle#ADAPTER",
@@ -410,7 +500,11 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |service RouteGuide {
+          |  // List the features available in the area defined by [Rectangle].
           |  rpc ListFeatures(Rectangle) returns (stream Feature) {}
           |}
           |$rectangeMessage
@@ -428,7 +522,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideClient : Service {
+          |  /**
+          |   * Chat with someone using a [RouteNote].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
@@ -445,7 +545,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideBlockingServer : Service {
+          |  /**
+          |   * Chat with someone using a [RouteNote].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
@@ -461,7 +567,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideClient : Service {
+          |  /**
+          |   * Chat with someone using a [RouteNote].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
@@ -478,7 +590,13 @@ class KotlinGeneratorTest {
           |import kotlinx.coroutines.channels.ReceiveChannel
           |import kotlinx.coroutines.channels.SendChannel
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideServer : Service {
+          |  /**
+          |   * Chat with someone using a [RouteNote].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
@@ -492,7 +610,11 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |service RouteGuide {
+          |  // Chat with someone using a [RouteNote].
           |  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
           |}
           |$pointMessage
@@ -517,7 +639,13 @@ class KotlinGeneratorTest {
           |import com.squareup.wire.Service
           |import com.squareup.wire.WireRpc
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |interface RouteGuideClient : Service {
+          |  /**
+          |   * Returns the [Feature] for a [Point].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
           |    requestAdapter = "routeguide.Point#ADAPTER",
@@ -525,6 +653,9 @@ class KotlinGeneratorTest {
           |  )
           |  fun GetFeature(): GrpcCall<Point, Feature>
           |
+          |  /**
+          |   * Chat with someone using a [RouteNote].
+          |   */
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/RouteChat",
           |    requestAdapter = "routeguide.RouteNote#ADAPTER",
@@ -538,8 +669,13 @@ class KotlinGeneratorTest {
         .add("routeguide.proto", """
           |package routeguide;
           |
+          |/**
+          | * RouteGuide service interface.
+          | */
           |service RouteGuide {
+          |  // Returns the [Feature] for a [Point].
           |  rpc GetFeature(Point) returns (Feature) {}
+          |  // Chat with someone using a [RouteNote].
           |  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
           |}
           |$pointMessage
