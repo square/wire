@@ -141,6 +141,7 @@ class KotlinGenerator private constructor(
   fun generateService(service: Service, onlyRpc: Rpc? = null): TypeSpec {
     val serviceName = generatedServiceName(service, onlyRpc)
     val builder = TypeSpec.interfaceBuilder(serviceName)
+        .apply { if (service.documentation().isNotBlank()) addKdoc("%L\n", service.documentation()) }
         .addSuperinterface(com.squareup.wire.Service::class.java)
 
     val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
@@ -168,6 +169,7 @@ class KotlinGenerator private constructor(
     val funSpecBuilder = FunSpec.builder(rpc.name())
         .addModifiers(KModifier.ABSTRACT)
         .addAnnotation(wireRpcAnnotationSpec)
+        .apply { if (rpc.documentation().isNotBlank()) addKdoc("%L\n", rpc.documentation()) }
 
     val requestType = rpc.requestType().typeName
     val responseType = rpc.responseType().typeName
