@@ -453,7 +453,8 @@ public final class JavaGeneratorTest {
             + "message Message {\n"
             + "  required float long = 1;\n"
             + "  required string str = 2;\n"
-            + "  repeated string things = 3;\n"
+            + "  optional string optstr = 3;\n"
+            + "  repeated string things = 4;\n"
             + "}\n")
         .generateCode("Message"))
         .contains("@Override\n"
@@ -461,10 +462,12 @@ public final class JavaGeneratorTest {
             + "    int length = 9;\n"
             + "    length += 7 + long_.toString().length();\n"
             + "    length += 6 + str.length();\n"
+            + "    if (optstr != null) length += 9 + optstr.length();\n"
             + "    if (!things.isEmpty()) length += 9 + things.toString().length();\n"
             + "    StringBuilder builder = new StringBuilder(length);\n"
             + "    builder.append(\", long=\").append(long_);\n"
             + "    builder.append(\", str=\").append(str);\n"
+            + "    if (optstr != null) builder.append(\", optstr=\").append(optstr);\n"
             + "    if (!things.isEmpty()) builder.append(\", things=\").append(things);\n"
             + "    return builder.replace(0, 2, \"Message{\").append('}').toString();\n"
             + "  }");

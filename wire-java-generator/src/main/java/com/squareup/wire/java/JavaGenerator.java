@@ -1450,13 +1450,16 @@ public final class JavaGenerator {
 
     for (Field field : type.fieldsAndOneOfFields()) {
       String fieldName = nameAllocator.get(field);
+      if (field.isRepeated() || field.type().isMap()) {
+        result.addCode("if (!$N.isEmpty()) ", fieldName);
+      } else if (!field.isRequired()) {
+        result.addCode("if ($N != null) ", fieldName);
+      }
+
       if (field.isRedacted()) {
         result.addStatement("length += $L",
             REDACTED_TOSTRING_ASSIGN_LENGTH + field.name().length());
-      } else if (field.isRepeated() || field.type().isMap()) {
-        result.addStatement("if (!$2N.isEmpty()) length += $1L + $2N.toString().length()",
-            TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
-      } else if (field.type().toString().equals("string")) {
+      } else if (!field.isRepeated() && !field.type().isMap() && field.type().toString().equals("string")) {
         result.addStatement("length += $L + $N.length()",
             TOSTRING_ASSIGN_LENGTH + field.name().length(), fieldName);
       } else {
