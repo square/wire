@@ -162,8 +162,8 @@ class KotlinGenerator private constructor(
     val wireRpcAnnotationSpec = AnnotationSpec.builder(WireRpc::class.asClassName())
         .addMember("path = %S", "/$packageName$serviceName/${rpc.name()}")
         // TODO(oldergod|jwilson) Lets' use Profile for this.
-        .addMember("requestAdapter = %S", "$packageName${rpc.requestType().simpleName()}#ADAPTER")
-        .addMember("responseAdapter = %S", "$packageName${rpc.responseType().simpleName()}#ADAPTER")
+        .addMember("requestAdapter = %S", rpc.requestType().adapterString())
+        .addMember("responseAdapter = %S", rpc.responseType().adapterString())
         .build()
     val funSpecBuilder = FunSpec.builder(rpc.name())
         .addModifiers(KModifier.ABSTRACT)
@@ -687,7 +687,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun ProtoType.adapterString() = when {
-    isScalar -> ProtoAdapter::class.qualifiedName + '#' + toString().toUpperCase(Locale.US)
+    isScalar -> ProtoAdapter::class.java.name + '#' + toString().toUpperCase(Locale.US)
     else -> typeName.reflectionName() + "#ADAPTER"
   }
 
