@@ -1,22 +1,33 @@
 Change Log
 ==========
 
+Version 3.0.1
+-------------
+
+_2019-10-18_
+
+ * Fix: Use the correct adapter path for gRPC endpoints that customize the Java package.
+ * Fix: Preserve documentation in generated services.
+ * Fix: Fail to generate code if the source directory doesn't exist.
+ * Fix: Make Kotlin consistent with Java for unknown enum constants. We now treat these as unknown
+   fields rather than failing to decode the enclosing message.
+
 Version 3.0.0
----------------------
+-------------
 
 _2019-10-07_
 
  * Update: All gRPC networking calls are encoded in gzip.
 
 Version 3.0.0-rc03
----------------------
+------------------
 
 _2019-10-04_
 
  * Fix: Update dependency to a stable version, `2.4.1` of Okio.
 
 Version 3.0.0-rc02
----------------------
+------------------
 
 _2019-10-01_
 
@@ -48,7 +59,7 @@ _2019-10-01_
  * Fix: Don't emit proto2 sources for proto3 syntax.
 
 Version 3.0.0-rc01
----------------------
+------------------
 
 _2019-08-02_
 
