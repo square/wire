@@ -44,6 +44,18 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourcePathSrcDirDoesNotExist() {
+    val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-srcdir")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+
+    assertThat(result.task(":generateProtos")).isNull()
+    assertThat(result.output).contains(
+        """Invalid path string: "src/main/proto". Path does not exist."""
+    )
+  }
+
+  @Test
   fun useDefaultSourcePath() {
     val fixtureRoot = File("src/test/projects/sourcepath-default")
 
