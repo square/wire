@@ -9,8 +9,8 @@ import com.squareup.wire.WireRpc
 interface SomeServiceClient : Service {
   @WireRpc(
     path = "/squareup.protos.kotlin.SomeService/SomeMethod",
-    requestAdapter = "squareup.protos.kotlin.SomeRequest#ADAPTER",
-    responseAdapter = "squareup.protos.kotlin.SomeResponse#ADAPTER"
+    requestAdapter = "com.squareup.wire.protos.kotlin.services.SomeRequest#ADAPTER",
+    responseAdapter = "com.squareup.wire.protos.kotlin.services.SomeResponse#ADAPTER"
   )
   fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse>
 }

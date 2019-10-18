@@ -9,8 +9,8 @@ import com.squareup.wire.WireRpc
 interface NoPackageServiceClient : Service {
   @WireRpc(
     path = "/NoPackageService/NoPackageMethod",
-    requestAdapter = "NoPackageRequest#ADAPTER",
-    responseAdapter = "NoPackageResponse#ADAPTER"
+    requestAdapter = "com.squareup.wire.protos.kotlin.services.NoPackageRequest#ADAPTER",
+    responseAdapter = "com.squareup.wire.protos.kotlin.services.NoPackageResponse#ADAPTER"
   )
   fun NoPackageMethod(): GrpcCall<NoPackageRequest, NoPackageResponse>
 }

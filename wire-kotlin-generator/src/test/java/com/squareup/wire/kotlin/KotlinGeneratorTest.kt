@@ -276,8 +276,8 @@ class KotlinGeneratorTest {
           |interface RouteGuideBlockingServer : Service {
           |  @WireRpc(
           |    path = "/routeguide.RouteGuide/GetFeature",
-          |    requestAdapter = "routeguide.Point#ADAPTER",
-          |    responseAdapter = "routeguide.Feature#ADAPTER"
+          |    requestAdapter = "com.squareup.routeguide.Point#ADAPTER",
+          |    responseAdapter = "com.squareup.routeguide.Feature#ADAPTER"
           |  )
           |  fun GetFeature(request: Point): Feature
           |}
