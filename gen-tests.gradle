@@ -170,6 +170,7 @@ task generateKotlinTests(type: JavaExec) {
       'external_message.proto',
       'unknown_fields.proto',
       'edge_cases.proto',
+      'packed_encoding.proto',
   ]
 }
 
@@ -224,6 +225,7 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
       'map.proto',
       'repeated.proto',
       'unknown_fields.proto',
+      'packed_encoding.proto',
   ]
 }
 
