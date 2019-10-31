@@ -752,6 +752,16 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("else -> reader.readUnknownField(tag_)"))
   }
 
+  @Test fun someFieldNameIsKeyword() {
+    val repoBuilder = RepoBuilder()
+        .add("message.proto", """
+        |message Message {
+        |  required float var  = 1;
+        |}""".trimMargin())
+    val code = repoBuilder.generateKotlin("Message")
+    assertTrue(code.contains("throw missingRequiredFields(var_, \"var\")"))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {
