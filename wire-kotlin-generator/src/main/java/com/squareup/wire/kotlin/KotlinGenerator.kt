@@ -938,7 +938,7 @@ class KotlinGenerator private constructor(
         val fieldName = nameAllocator[field]
 
         val throwExceptionBlock = if (!field.isRepeated && !field.isMap && field.isRequired) {
-          CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, field.name())
+          CodeBlock.of(" ?: throw %1M(%2L, %3S)", missingRequiredFields, fieldName, field.name())
         } else {
           CodeBlock.of("")
         }
