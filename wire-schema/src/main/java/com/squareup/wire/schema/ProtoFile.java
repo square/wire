@@ -133,6 +133,10 @@ public final class ProtoFile {
     return services;
   }
 
+  public boolean hasExtends() {
+    return !extendList.isEmpty();
+  }
+
   List<Extend> extendList() {
     return extendList;
   }

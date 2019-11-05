@@ -1,8 +1,0 @@
-// ../wire-tests/src/commonTest/proto/java/letter.proto
-syntax = "proto2";
-
-import "google/protobuf/descriptor.proto";
-
-extend google.protobuf.FileOptions {
-  optional string file_prefix = 6584;
-}

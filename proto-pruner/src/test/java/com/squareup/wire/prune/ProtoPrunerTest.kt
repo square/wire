@@ -17,7 +17,6 @@ package com.squareup.wire.prune
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -65,14 +64,14 @@ class ProtoPrunerTest {
     assertOutputs(outputs)
   }
 
-  @Test @Ignore("Failing because `file_prefix` is stripped out.")
+  @Test
   fun testOptions() {
     val sources = arrayOf("squareup.options.letter.Letter")
     invokeProtoPruner(sources, "--excludes=google.protobuf.*")
 
     val outputs = arrayOf(
         "letter.proto",
-        "file_prefix.proto"
+        "options.proto"
     )
     assertOutputs(outputs)
   }

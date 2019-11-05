@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 syntax = "proto2";
-package squareup.options.letter;
+package squareup.options.misc;
 
-import "options.proto";
+import "google/protobuf/descriptor.proto";
 
-message Letter {
-  optional string title = 1 [(squareup.options.misc.redacted) = true];
-  optional Style style = 2;
-  option (squareup.options.misc.message_export_enabled) = false;
+extend google.protobuf.FieldOptions {
+  optional bool redacted = 22300;
 }
 
-enum Style {
-  SHORT = 1 [(squareup.options.misc.text_alignment) = 3];
-  LONG = 2 [(squareup.options.misc.text_alignment) = 4];
+extend google.protobuf.MessageOptions {
+  optional bool message_export_enabled = 22213;
+}
+
+extend google.protobuf.EnumValueOptions {
+  optional int32 text_alignment = 54000;
 }

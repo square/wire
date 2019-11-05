@@ -1,0 +1,15 @@
+// ../wire-tests/src/commonTest/proto/java/options.proto
+syntax = "proto2";
+package squareup.options.misc;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional bool redacted = 22300;
+}
+extend google.protobuf.MessageOptions {
+  optional bool message_export_enabled = 22213;
+}
+extend google.protobuf.EnumValueOptions {
+  optional int32 text_alignment = 54000;
+}
