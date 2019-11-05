@@ -54,7 +54,9 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   public static final String DEFAULT_C = "";
 
-  public static final Boolean DEFAULT_REDACTED = false;
+  public static final Boolean DEFAULT_SQUAREUP_PROTOS_REDACTED_OPTION_REDACTED = false;
+
+  public static final Boolean DEFAULT_SQUAREUP_OPTIONS_MISC_REDACTED = false;
 
   /**
    * The ctype option instructs the C++ code generator to use a different
@@ -247,7 +249,16 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       tag = 22200,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
-  public final Boolean redacted;
+  public final Boolean squareup_protos_redacted_option_redacted;
+
+  /**
+   * Extension source: options.proto
+   */
+  @WireField(
+      tag = 22300,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean squareup_options_misc_redacted;
 
   public FieldOptions(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
@@ -266,7 +277,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     this.b = builder.b;
     this.squareup_protos_extension_collision_2_a = builder.squareup_protos_extension_collision_2_a;
     this.c = builder.c;
-    this.redacted = builder.redacted;
+    this.squareup_protos_redacted_option_redacted = builder.squareup_protos_redacted_option_redacted;
+    this.squareup_options_misc_redacted = builder.squareup_options_misc_redacted;
   }
 
   @Override
@@ -287,7 +299,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     builder.b = b;
     builder.squareup_protos_extension_collision_2_a = squareup_protos_extension_collision_2_a;
     builder.c = c;
-    builder.redacted = redacted;
+    builder.squareup_protos_redacted_option_redacted = squareup_protos_redacted_option_redacted;
+    builder.squareup_options_misc_redacted = squareup_options_misc_redacted;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -313,7 +326,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
         && Internal.equals(b, o.b)
         && Internal.equals(squareup_protos_extension_collision_2_a, o.squareup_protos_extension_collision_2_a)
         && Internal.equals(c, o.c)
-        && Internal.equals(redacted, o.redacted);
+        && Internal.equals(squareup_protos_redacted_option_redacted, o.squareup_protos_redacted_option_redacted)
+        && Internal.equals(squareup_options_misc_redacted, o.squareup_options_misc_redacted);
   }
 
   @Override
@@ -336,7 +350,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       result = result * 37 + (b != null ? b.hashCode() : 0);
       result = result * 37 + (squareup_protos_extension_collision_2_a != null ? squareup_protos_extension_collision_2_a.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);
-      result = result * 37 + (redacted != null ? redacted.hashCode() : 0);
+      result = result * 37 + (squareup_protos_redacted_option_redacted != null ? squareup_protos_redacted_option_redacted.hashCode() : 0);
+      result = result * 37 + (squareup_options_misc_redacted != null ? squareup_options_misc_redacted.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -360,7 +375,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     if (b != null) builder.append(", b=").append(b);
     if (squareup_protos_extension_collision_2_a != null) builder.append(", a=").append(squareup_protos_extension_collision_2_a);
     if (c != null) builder.append(", c=").append(c);
-    if (redacted != null) builder.append(", redacted=").append(redacted);
+    if (squareup_protos_redacted_option_redacted != null) builder.append(", redacted=").append(squareup_protos_redacted_option_redacted);
+    if (squareup_options_misc_redacted != null) builder.append(", redacted=").append(squareup_options_misc_redacted);
     return builder.replace(0, 2, "FieldOptions{").append('}').toString();
   }
 
@@ -395,7 +411,9 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     public String c;
 
-    public Boolean redacted;
+    public Boolean squareup_protos_redacted_option_redacted;
+
+    public Boolean squareup_options_misc_redacted;
 
     public Builder() {
       uninterpreted_option = Internal.newMutableList();
@@ -550,8 +568,14 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     /**
      * Fields marked with redacted are not to be logged, generally for PCI or PII.
      */
-    public Builder redacted(Boolean redacted) {
-      this.redacted = redacted;
+    public Builder squareup_protos_redacted_option_redacted(
+        Boolean squareup_protos_redacted_option_redacted) {
+      this.squareup_protos_redacted_option_redacted = squareup_protos_redacted_option_redacted;
+      return this;
+    }
+
+    public Builder squareup_options_misc_redacted(Boolean squareup_options_misc_redacted) {
+      this.squareup_options_misc_redacted = squareup_options_misc_redacted;
       return this;
     }
 
@@ -683,7 +707,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
           + ProtoAdapter.STRING.encodedSizeWithTag(22102, value.b)
           + ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a)
           + ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.squareup_protos_redacted_option_redacted)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(22300, value.squareup_options_misc_redacted)
           + value.unknownFields().size();
     }
 
@@ -704,7 +729,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       ProtoAdapter.STRING.encodeWithTag(writer, 22102, value.b);
       ProtoAdapter.STRING.encodeWithTag(writer, 22103, value.squareup_protos_extension_collision_2_a);
       ProtoAdapter.STRING.encodeWithTag(writer, 22104, value.c);
-      ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.redacted);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.squareup_protos_redacted_option_redacted);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 22300, value.squareup_options_misc_redacted);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -739,7 +765,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
           case 22102: builder.b(ProtoAdapter.STRING.decode(reader)); break;
           case 22103: builder.squareup_protos_extension_collision_2_a(ProtoAdapter.STRING.decode(reader)); break;
           case 22104: builder.c(ProtoAdapter.STRING.decode(reader)); break;
-          case 22200: builder.redacted(ProtoAdapter.BOOL.decode(reader)); break;
+          case 22200: builder.squareup_protos_redacted_option_redacted(ProtoAdapter.BOOL.decode(reader)); break;
+          case 22300: builder.squareup_options_misc_redacted(ProtoAdapter.BOOL.decode(reader)); break;
           case 60001: builder.my_field_option_one(ProtoAdapter.INT32.decode(reader)); break;
           case 60002: builder.my_field_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
           case 60003: {

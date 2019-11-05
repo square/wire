@@ -24,7 +24,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
-      .redacted(true)
+      .squareup_protos_redacted_option_redacted(true)
       .build();
 
   public static final String DEFAULT_A = "";

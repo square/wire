@@ -23,7 +23,7 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_D = new FieldOptions.Builder()
-      .redacted(true)
+      .squareup_protos_redacted_option_redacted(true)
       .build();
 
   public static final String DEFAULT_D = "";

@@ -23,11 +23,11 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
   private static final long serialVersionUID = 0L;
 
   public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
-      .redacted(true)
+      .squareup_protos_redacted_option_redacted(true)
       .build();
 
   public static final FieldOptions FIELD_OPTIONS_B = new FieldOptions.Builder()
-      .redacted(false)
+      .squareup_protos_redacted_option_redacted(false)
       .build();
 
   public static final String DEFAULT_A = "";

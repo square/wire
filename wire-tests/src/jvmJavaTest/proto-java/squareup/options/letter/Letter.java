@@ -2,11 +2,15 @@
 // Source file: letter.proto
 package squareup.options.letter;
 
+import com.google.protobuf.FieldOptions;
+import com.google.protobuf.MessageOptions;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.WireField;
+import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -19,17 +23,46 @@ public final class Letter extends Message<Letter, Letter.Builder> {
 
   private static final long serialVersionUID = 0L;
 
-  public Letter() {
-    this(ByteString.EMPTY);
+  public static final MessageOptions MESSAGE_OPTIONS = new MessageOptions.Builder()
+      .message_export_enabled(false)
+      .build();
+
+  public static final FieldOptions FIELD_OPTIONS_TITLE = new FieldOptions.Builder()
+      .squareup_options_misc_redacted(true)
+      .build();
+
+  public static final String DEFAULT_TITLE = "";
+
+  public static final Style DEFAULT_STYLE = Style.SHORT;
+
+  @WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      redacted = true
+  )
+  public final String title;
+
+  @WireField(
+      tag = 2,
+      adapter = "squareup.options.letter.Style#ADAPTER"
+  )
+  public final Style style;
+
+  public Letter(String title, Style style) {
+    this(title, style, ByteString.EMPTY);
   }
 
-  public Letter(ByteString unknownFields) {
+  public Letter(String title, Style style, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
+    this.title = title;
+    this.style = style;
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
+    builder.title = title;
+    builder.style = style;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -39,27 +72,52 @@ public final class Letter extends Message<Letter, Letter.Builder> {
     if (other == this) return true;
     if (!(other instanceof Letter)) return false;
     Letter o = (Letter) other;
-    return unknownFields().equals(o.unknownFields());
+    return unknownFields().equals(o.unknownFields())
+        && Internal.equals(title, o.title)
+        && Internal.equals(style, o.style);
   }
 
   @Override
   public int hashCode() {
-    return unknownFields().hashCode();
+    int result = super.hashCode;
+    if (result == 0) {
+      result = unknownFields().hashCode();
+      result = result * 37 + (title != null ? title.hashCode() : 0);
+      result = result * 37 + (style != null ? style.hashCode() : 0);
+      super.hashCode = result;
+    }
+    return result;
   }
 
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
+    if (title != null) builder.append(", title=██");
+    if (style != null) builder.append(", style=").append(style);
     return builder.replace(0, 2, "Letter{").append('}').toString();
   }
 
   public static final class Builder extends Message.Builder<Letter, Builder> {
+    public String title;
+
+    public Style style;
+
     public Builder() {
+    }
+
+    public Builder title(String title) {
+      this.title = title;
+      return this;
+    }
+
+    public Builder style(Style style) {
+      this.style = style;
+      return this;
     }
 
     @Override
     public Letter build() {
-      return new Letter(super.buildUnknownFields());
+      return new Letter(title, style, super.buildUnknownFields());
     }
   }
 
@@ -70,11 +128,15 @@ public final class Letter extends Message<Letter, Letter.Builder> {
 
     @Override
     public int encodedSize(Letter value) {
-      return value.unknownFields().size();
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.title)
+          + Style.ADAPTER.encodedSizeWithTag(2, value.style)
+          + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, Letter value) throws IOException {
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.title);
+      Style.ADAPTER.encodeWithTag(writer, 2, value.style);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -84,6 +146,15 @@ public final class Letter extends Message<Letter, Letter.Builder> {
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
+          case 1: builder.title(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: {
+            try {
+              builder.style(Style.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
           default: {
             reader.readUnknownField(tag);
           }
@@ -96,6 +167,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
     @Override
     public Letter redact(Letter value) {
       Builder builder = value.newBuilder();
+      builder.title = null;
       builder.clearUnknownFields();
       return builder.build();
     }
