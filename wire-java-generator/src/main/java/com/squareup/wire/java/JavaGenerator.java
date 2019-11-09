@@ -164,6 +164,7 @@ public final class JavaGenerator {
         Set<String> collidingNames = collidingFieldNames(fieldsAndOneOfFields);
         for (Field field : fieldsAndOneOfFields) {
           String suggestion = collidingNames.contains(field.name())
+            || field.name().equals(field.type().simpleName())
               ? field.qualifiedName()
               : field.name();
           nameAllocator.newName(suggestion, field);
