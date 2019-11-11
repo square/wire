@@ -73,6 +73,10 @@ public final class Extend {
     return fields;
   }
 
+  public String getName() {
+    return name;
+  }
+
   void link(Linker linker) {
     linker = linker.withContext(this);
     protoType = linker.resolveMessageType(name);
