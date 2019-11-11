@@ -133,7 +133,7 @@ public final class ProtoFile {
     return services;
   }
 
-  List<Extend> extendList() {
+  public List<Extend> extendList() {
     return extendList;
   }
 
@@ -159,8 +159,16 @@ public final class ProtoFile {
       }
     }
 
+    ImmutableList.Builder<Extend> retainedExtends = ImmutableList.builder();
+    for (Extend extend : extendList) {
+      Extend retainedExtend = extend.retainAll(schema, markSet);
+      if (retainedExtend != null) {
+        retainedExtends.add(retainedExtend);
+      }
+    }
+
     ProtoFile result = new ProtoFile(location, imports, publicImports, packageName,
-        retainedTypes.build(), retainedServices.build(), extendList,
+        retainedTypes.build(), retainedServices.build(), retainedExtends.build(),
         options.retainAll(schema, markSet), syntax);
     result.javaPackage = javaPackage;
     return result;
