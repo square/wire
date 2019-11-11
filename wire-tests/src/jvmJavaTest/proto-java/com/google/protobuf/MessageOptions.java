@@ -38,6 +38,8 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
 
   public static final FooBar.FooBarBazEnum DEFAULT_MY_MESSAGE_OPTION_FOUR = FooBar.FooBarBazEnum.FOO;
 
+  public static final Boolean DEFAULT_MESSAGE_EXPORT_ENABLED = false;
+
   /**
    * Set true to use the old proto1 MessageSet wire format for extensions.
    * This is provided for backwards-compatibility with the MessageSet wire
@@ -190,12 +192,22 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   )
   public final ForeignMessage foreign_message_option;
 
+  /**
+   * Extension source: options.proto
+   */
+  @WireField(
+      tag = 22213,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean message_export_enabled;
+
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor,
       Boolean deprecated, Boolean map_entry, List<UninterpretedOption> uninterpreted_option,
       FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three,
       FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five,
-      FooBar my_message_option_six, ForeignMessage foreign_message_option) {
-    this(message_set_wire_format, no_standard_descriptor_accessor, deprecated, map_entry, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, ByteString.EMPTY);
+      FooBar my_message_option_six, ForeignMessage foreign_message_option,
+      Boolean message_export_enabled) {
+    this(message_set_wire_format, no_standard_descriptor_accessor, deprecated, map_entry, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, message_export_enabled, ByteString.EMPTY);
   }
 
   public MessageOptions(Boolean message_set_wire_format, Boolean no_standard_descriptor_accessor,
@@ -203,7 +215,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       FooBar my_message_option_one, Float my_message_option_two, FooBar my_message_option_three,
       FooBar.FooBarBazEnum my_message_option_four, FooBar my_message_option_five,
       FooBar my_message_option_six, ForeignMessage foreign_message_option,
-      ByteString unknownFields) {
+      Boolean message_export_enabled, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.message_set_wire_format = message_set_wire_format;
     this.no_standard_descriptor_accessor = no_standard_descriptor_accessor;
@@ -217,6 +229,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     this.my_message_option_five = my_message_option_five;
     this.my_message_option_six = my_message_option_six;
     this.foreign_message_option = foreign_message_option;
+    this.message_export_enabled = message_export_enabled;
   }
 
   @Override
@@ -234,6 +247,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     builder.my_message_option_five = my_message_option_five;
     builder.my_message_option_six = my_message_option_six;
     builder.foreign_message_option = foreign_message_option;
+    builder.message_export_enabled = message_export_enabled;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -255,7 +269,8 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
         && Internal.equals(my_message_option_four, o.my_message_option_four)
         && Internal.equals(my_message_option_five, o.my_message_option_five)
         && Internal.equals(my_message_option_six, o.my_message_option_six)
-        && Internal.equals(foreign_message_option, o.foreign_message_option);
+        && Internal.equals(foreign_message_option, o.foreign_message_option)
+        && Internal.equals(message_export_enabled, o.message_export_enabled);
   }
 
   @Override
@@ -275,6 +290,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       result = result * 37 + (my_message_option_five != null ? my_message_option_five.hashCode() : 0);
       result = result * 37 + (my_message_option_six != null ? my_message_option_six.hashCode() : 0);
       result = result * 37 + (foreign_message_option != null ? foreign_message_option.hashCode() : 0);
+      result = result * 37 + (message_export_enabled != null ? message_export_enabled.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -295,6 +311,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     if (my_message_option_five != null) builder.append(", my_message_option_five=").append(my_message_option_five);
     if (my_message_option_six != null) builder.append(", my_message_option_six=").append(my_message_option_six);
     if (foreign_message_option != null) builder.append(", foreign_message_option=").append(foreign_message_option);
+    if (message_export_enabled != null) builder.append(", message_export_enabled=").append(message_export_enabled);
     return builder.replace(0, 2, "MessageOptions{").append('}').toString();
   }
 
@@ -322,6 +339,8 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     public FooBar my_message_option_six;
 
     public ForeignMessage foreign_message_option;
+
+    public Boolean message_export_enabled;
 
     public Builder() {
       uninterpreted_option = Internal.newMutableList();
@@ -446,9 +465,14 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       return this;
     }
 
+    public Builder message_export_enabled(Boolean message_export_enabled) {
+      this.message_export_enabled = message_export_enabled;
+      return this;
+    }
+
     @Override
     public MessageOptions build() {
-      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, deprecated, map_entry, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, super.buildUnknownFields());
+      return new MessageOptions(message_set_wire_format, no_standard_descriptor_accessor, deprecated, map_entry, uninterpreted_option, my_message_option_one, my_message_option_two, my_message_option_three, my_message_option_four, my_message_option_five, my_message_option_six, foreign_message_option, message_export_enabled, super.buildUnknownFields());
     }
   }
 
@@ -471,6 +495,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
           + FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five)
           + FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six)
           + ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(22213, value.message_export_enabled)
           + value.unknownFields().size();
     }
 
@@ -488,6 +513,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       FooBar.ADAPTER.encodeWithTag(writer, 50005, value.my_message_option_five);
       FooBar.ADAPTER.encodeWithTag(writer, 50006, value.my_message_option_six);
       ForeignMessage.ADAPTER.encodeWithTag(writer, 50007, value.foreign_message_option);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 22213, value.message_export_enabled);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -502,6 +528,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
           case 3: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
           case 7: builder.map_entry(ProtoAdapter.BOOL.decode(reader)); break;
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 22213: builder.message_export_enabled(ProtoAdapter.BOOL.decode(reader)); break;
           case 50001: builder.my_message_option_one(FooBar.ADAPTER.decode(reader)); break;
           case 50002: builder.my_message_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
           case 50003: builder.my_message_option_three(FooBar.ADAPTER.decode(reader)); break;
