@@ -56,6 +56,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   public static final Boolean DEFAULT_REDACTED = false;
 
+  public static final Boolean DEFAULT_RELEVANT = false;
+
+  public static final Boolean DEFAULT_UNUSED = false;
+
   /**
    * The ctype option instructs the C++ code generator to use a different
    * representation of the field than it normally would.  See the specific
@@ -249,6 +253,24 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   )
   public final Boolean redacted;
 
+  /**
+   * Extension source: options.proto
+   */
+  @WireField(
+      tag = 22301,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean relevant;
+
+  /**
+   * Extension source: options.proto
+   */
+  @WireField(
+      tag = 22302,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean unused;
+
   public FieldOptions(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.ctype = builder.ctype;
@@ -267,6 +289,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     this.squareup_protos_extension_collision_2_a = builder.squareup_protos_extension_collision_2_a;
     this.c = builder.c;
     this.redacted = builder.redacted;
+    this.relevant = builder.relevant;
+    this.unused = builder.unused;
   }
 
   @Override
@@ -288,6 +312,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     builder.squareup_protos_extension_collision_2_a = squareup_protos_extension_collision_2_a;
     builder.c = c;
     builder.redacted = redacted;
+    builder.relevant = relevant;
+    builder.unused = unused;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -313,7 +339,9 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
         && Internal.equals(b, o.b)
         && Internal.equals(squareup_protos_extension_collision_2_a, o.squareup_protos_extension_collision_2_a)
         && Internal.equals(c, o.c)
-        && Internal.equals(redacted, o.redacted);
+        && Internal.equals(redacted, o.redacted)
+        && Internal.equals(relevant, o.relevant)
+        && Internal.equals(unused, o.unused);
   }
 
   @Override
@@ -337,6 +365,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       result = result * 37 + (squareup_protos_extension_collision_2_a != null ? squareup_protos_extension_collision_2_a.hashCode() : 0);
       result = result * 37 + (c != null ? c.hashCode() : 0);
       result = result * 37 + (redacted != null ? redacted.hashCode() : 0);
+      result = result * 37 + (relevant != null ? relevant.hashCode() : 0);
+      result = result * 37 + (unused != null ? unused.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -361,6 +391,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     if (squareup_protos_extension_collision_2_a != null) builder.append(", a=").append(squareup_protos_extension_collision_2_a);
     if (c != null) builder.append(", c=").append(c);
     if (redacted != null) builder.append(", redacted=").append(redacted);
+    if (relevant != null) builder.append(", relevant=").append(relevant);
+    if (unused != null) builder.append(", unused=").append(unused);
     return builder.replace(0, 2, "FieldOptions{").append('}').toString();
   }
 
@@ -396,6 +428,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     public String c;
 
     public Boolean redacted;
+
+    public Boolean relevant;
+
+    public Boolean unused;
 
     public Builder() {
       uninterpreted_option = Internal.newMutableList();
@@ -555,6 +591,16 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       return this;
     }
 
+    public Builder relevant(Boolean relevant) {
+      this.relevant = relevant;
+      return this;
+    }
+
+    public Builder unused(Boolean unused) {
+      this.unused = unused;
+      return this;
+    }
+
     @Override
     public FieldOptions build() {
       return new FieldOptions(this, super.buildUnknownFields());
@@ -684,6 +730,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
           + ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a)
           + ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c)
           + ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(22301, value.relevant)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(22302, value.unused)
           + value.unknownFields().size();
     }
 
@@ -705,6 +753,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       ProtoAdapter.STRING.encodeWithTag(writer, 22103, value.squareup_protos_extension_collision_2_a);
       ProtoAdapter.STRING.encodeWithTag(writer, 22104, value.c);
       ProtoAdapter.BOOL.encodeWithTag(writer, 22200, value.redacted);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 22301, value.relevant);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 22302, value.unused);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -740,6 +790,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
           case 22103: builder.squareup_protos_extension_collision_2_a(ProtoAdapter.STRING.decode(reader)); break;
           case 22104: builder.c(ProtoAdapter.STRING.decode(reader)); break;
           case 22200: builder.redacted(ProtoAdapter.BOOL.decode(reader)); break;
+          case 22301: builder.relevant(ProtoAdapter.BOOL.decode(reader)); break;
+          case 22302: builder.unused(ProtoAdapter.BOOL.decode(reader)); break;
           case 60001: builder.my_field_option_one(ProtoAdapter.INT32.decode(reader)); break;
           case 60002: builder.my_field_option_two(ProtoAdapter.FLOAT.decode(reader)); break;
           case 60003: {

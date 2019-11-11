@@ -2,8 +2,15 @@
 syntax = "proto2";
 package squareup.options.letter;
 
-import "file_prefix.proto";
+import "options.proto";
 
-option (squareup.objc.file_prefix) = "CCAppProto";
+message Letter {
+  option (squareup.options.misc.message_export_enabled) = false;
 
-message Letter {}
+  optional string title = 1 [(squareup.options.misc.relevant) = true];
+  optional Style style = 2;
+}
+enum Style {
+  SHORT = 1 [(squareup.options.misc.text_alignment) = 3];
+  LONG = 2 [(squareup.options.misc.text_alignment) = 4];
+}
