@@ -1,8 +1,6 @@
 // ../wire-tests/src/commonTest/proto/java/foreign.proto
 package squareup.protos.foreign;
 
-import "google/protobuf/descriptor.proto";
-
 option java_package = "com.squareup.wire.protos.foreign";
 option java_outer_classname = "Foreign";
 
