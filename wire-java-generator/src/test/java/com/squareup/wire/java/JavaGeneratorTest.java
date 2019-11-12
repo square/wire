@@ -444,4 +444,19 @@ public final class JavaGeneratorTest {
             + "  }")
         .contains("public static final class B extends Message<B, B.Builder> {");
   }
+
+  @Test
+  public void generateTypeUsesPackageNameOnFieldAndClassNameClash() throws Exception {
+    RepoBuilder repoBuilder = new RepoBuilder()
+	    .add("person.proto", ""
+	        + "package common.proto;\n"
+	        + "enum Gender {\n"
+	        + "Gender_Male = 0;\n"
+	        + "Gender_Female = 1;\n"
+	        + "}\n"
+	        + "message Person {\n"
+	        + "optional Gender Gender = 1;\n"
+	        + "}\n");
+	    assertThat(repoBuilder.generateCode("common.proto.Person").contains("public final Gender common_proto_Gender;"));
+  }
 }
