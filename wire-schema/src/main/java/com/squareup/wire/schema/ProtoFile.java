@@ -187,7 +187,7 @@ public final class ProtoFile {
         // If we extend a google protobuf type, we should keep the import.
         if (path.startsWith("google/protobuf/")) {
           for (Extend extend : extendList) {
-            if (extend.getName().startsWith("google.protobuf")) {
+            if (extend.getName().startsWith("google.protobuf.")) {
               retainedImportsBuilder.add(path);
               break;
             }
