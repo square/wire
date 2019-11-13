@@ -46,19 +46,25 @@ final class Pruner {
     markRoots();
     markReachable();
 
-    // We do a first round to detect later unused imports.
-    ImmutableList.Builder<ProtoFile> retainedFirstRoundBuilder = ImmutableList.builder();
-    for (ProtoFile protoFile : schema.protoFiles()) {
-      retainedFirstRoundBuilder.add(protoFile.retainAll(schema, marks));
-    }
-    ImmutableList<ProtoFile> firstRound = retainedFirstRoundBuilder.build();
+    ImmutableList<ProtoFile> retained = retainImports(retainAll(schema, marks));
 
+    return new Schema(retained);
+  }
+
+  private ImmutableList<ProtoFile> retainAll(Schema schema, MarkSet marks) {
     ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
-    for (ProtoFile protoFile : firstRound) {
-      retained.add(protoFile.retainImports(firstRound));
+    for (ProtoFile protoFile : schema.protoFiles()) {
+      retained.add(protoFile.retainAll(schema, marks));
     }
+    return retained.build();
+  }
 
-    return new Schema(retained.build());
+  private ImmutableList<ProtoFile> retainImports(ImmutableList<ProtoFile> protoFiles) {
+    ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
+    for (ProtoFile protoFile : protoFiles) {
+      retained.add(protoFile.retainImports(protoFiles));
+    }
+    return retained.build();
   }
 
   private void markRoots() {
