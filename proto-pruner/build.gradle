@@ -11,11 +11,12 @@ jar {
 }
 
 dependencies {
+  implementation project(':wire-compiler')
   implementation project(':wire-schema')
   implementation deps.kotlin.stdlib.jdk8
   implementation deps.guava
-  testImplementation deps.junit
   testImplementation deps.assertj
+  testImplementation deps.junit
 }
 
 shadowJar {
