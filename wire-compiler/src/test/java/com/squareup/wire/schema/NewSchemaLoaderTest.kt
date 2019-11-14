@@ -81,6 +81,7 @@ class NewSchemaLoaderTest {
     val loader = NewSchemaLoader(fs, sourcePath, protoPath)
     val protoFiles = loader.use { it.load() }
     assertThat(protoFiles.map { it.location().path }).containsExactlyInAnyOrder(
+        "google/protobuf/descriptor.proto",
         "squareup/colors/blue.proto",
         "squareup/colors/red.proto",
         "squareup/curves/circle.proto",
@@ -153,6 +154,7 @@ class NewSchemaLoaderTest {
     val loader = NewSchemaLoader(fs, sourcePath, protoPath)
     val protoFiles = loader.use { it.load() }
     assertThat(protoFiles.map { it.location().path }).containsExactlyInAnyOrder(
+        "google/protobuf/descriptor.proto",
         "squareup/colors/blue.proto",
         "squareup/curves/circle.proto"
     )
@@ -175,6 +177,7 @@ class NewSchemaLoaderTest {
     val loader = NewSchemaLoader(fs, sourcePath)
     val protoFiles = loader.use { it.load() }
     assertThat(protoFiles.map { it.location() }).containsExactlyInAnyOrder(
+        Location.get("google/protobuf/descriptor.proto"),
         Location("colors/src/main/proto", "squareup/colors/blue.proto")
     )
   }
@@ -196,6 +199,7 @@ class NewSchemaLoaderTest {
     val loader = NewSchemaLoader(fs, sourcePath)
     val protoFiles = loader.use { it.load() }
     assertThat(protoFiles.map { it.location() }).containsExactlyInAnyOrder(
+        Location.get("google/protobuf/descriptor.proto"),
         Location("colors/src/main/proto", "squareup/colors/blue.proto")
     )
   }
