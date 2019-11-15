@@ -23,6 +23,8 @@ message Letter {
 
   optional string title = 1 [(squareup.options.misc.relevant) = true];
   optional Style style = 2;
+  optional bool about_love = 3 [default = true];
+  repeated int32 path = 4 [packed = true, deprecated = true];
 }
 enum Style {
   SHORT = 1 [(squareup.options.misc.text_alignment) = 3];
