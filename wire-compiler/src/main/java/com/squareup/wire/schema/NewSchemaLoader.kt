@@ -16,7 +16,6 @@
 package com.squareup.wire.schema
 
 import com.google.common.io.Closer
-import com.squareup.wire.schema.SchemaLoader.DESCRIPTOR_PROTO
 import com.squareup.wire.schema.internal.parser.ProtoParser
 import okio.buffer
 import okio.source
@@ -55,6 +54,8 @@ class NewSchemaLoader(
   @Throws(IOException::class)
   fun load(): List<ProtoFile> {
     check(loaded.isEmpty()) { "do not reuse instances of this class" }
+
+    loaded[DESCRIPTOR_PROTO] = loadDescriptorProto()
 
     // Load all of the sources, discovering imports as we go.
     val mutableSourceLocationPaths = mutableSetOf<String>()
@@ -159,6 +160,10 @@ class NewSchemaLoader(
 
   override fun close() {
     return closer.close()
+  }
+
+  companion object {
+    private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
   }
 }
 
