@@ -152,7 +152,11 @@ class ExternalMessage(
             126 -> barext = ProtoAdapter.INT32.decode(reader)
             127 -> bazext = ProtoAdapter.INT32.decode(reader)
             128 -> nested_message_ext = SimpleMessage.NestedMessage.ADAPTER.decode(reader)
-            129 -> nested_enum_ext = SimpleMessage.NestedEnum.ADAPTER.decode(reader)
+            129 -> try {
+              nested_enum_ext = SimpleMessage.NestedEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             else -> reader.readUnknownField(tag)
           }
         }

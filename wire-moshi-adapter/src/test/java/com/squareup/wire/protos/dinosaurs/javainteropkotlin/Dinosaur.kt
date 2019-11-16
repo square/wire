@@ -208,7 +208,11 @@ class Dinosaur(
             2 -> picture_urls.add(ProtoAdapter.STRING.decode(reader))
             3 -> length_meters = ProtoAdapter.DOUBLE.decode(reader)
             4 -> mass_kilograms = ProtoAdapter.DOUBLE.decode(reader)
-            5 -> period = Period.ADAPTER.decode(reader)
+            5 -> try {
+              period = Period.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             else -> reader.readUnknownField(tag)
           }
         }

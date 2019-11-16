@@ -179,6 +179,8 @@ class WireCompilerTest {
     compileToJava(sources)
 
     val outputs = arrayOf(
+        "com/squareup/wire/protos/unknownfields/EnumVersionOne.java",
+        "com/squareup/wire/protos/unknownfields/EnumVersionTwo.java",
         "com/squareup/wire/protos/unknownfields/VersionOne.java",
         "com/squareup/wire/protos/unknownfields/VersionTwo.java",
         "com/squareup/wire/protos/unknownfields/NestedVersionOne.java",

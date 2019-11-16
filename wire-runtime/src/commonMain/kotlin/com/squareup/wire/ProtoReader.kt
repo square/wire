@@ -426,10 +426,23 @@ class ProtoReader(private val source: BufferedSource) {
    * [endMessageAndGetUnknownFields] to retrieve unknown fields.
    */
   fun readUnknownField(tag: Int) {
-    val unknownFieldsWriter = ProtoWriter(bufferStack[recursionDepth - 1])
     val fieldEncoding = peekFieldEncoding()
     val protoAdapter = fieldEncoding!!.rawProtoAdapter()
     val value = protoAdapter.decode(this)
+    addUnknownField(tag, fieldEncoding, value)
+  }
+
+  /**
+   * Store an already read field temporarily. Once the entire message is read, call
+   * [endMessageAndGetUnknownFields] to retrieve unknown fields.
+   */
+  fun addUnknownField(
+    tag: Int,
+    fieldEncoding: FieldEncoding,
+    value: Any?
+  ) {
+    val unknownFieldsWriter = ProtoWriter(bufferStack[recursionDepth - 1])
+    val protoAdapter = fieldEncoding.rawProtoAdapter()
     @Suppress("UNCHECKED_CAST") // We encode and decode the same types.
     (protoAdapter as ProtoAdapter<Any>).encodeWithTag(unknownFieldsWriter, tag, value)
   }

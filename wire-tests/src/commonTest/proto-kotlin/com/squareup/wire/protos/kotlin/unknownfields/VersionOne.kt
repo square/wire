@@ -31,6 +31,11 @@ class VersionOne(
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne#ADAPTER"
   )
   val obj: NestedVersionOne? = null,
+  @field:WireField(
+    tag = 8,
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionOne#ADAPTER"
+  )
+  val en: EnumVersionOne? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<VersionOne, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
@@ -45,6 +50,7 @@ class VersionOne(
     return unknownFields == other.unknownFields
         && i == other.i
         && obj == other.obj
+        && en == other.en
   }
 
   override fun hashCode(): Int {
@@ -53,6 +59,7 @@ class VersionOne(
       result = unknownFields.hashCode()
       result = result * 37 + i.hashCode()
       result = result * 37 + obj.hashCode()
+      result = result * 37 + en.hashCode()
       super.hashCode = result
     }
     return result
@@ -62,14 +69,16 @@ class VersionOne(
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     if (obj != null) result += """obj=$obj"""
+    if (en != null) result += """en=$en"""
     return result.joinToString(prefix = "VersionOne{", separator = ", ", postfix = "}")
   }
 
   fun copy(
     i: Int? = this.i,
     obj: NestedVersionOne? = this.obj,
+    en: EnumVersionOne? = this.en,
     unknownFields: ByteString = this.unknownFields
-  ): VersionOne = VersionOne(i, obj, unknownFields)
+  ): VersionOne = VersionOne(i, obj, en, unknownFields)
 
   companion object {
     @JvmField
@@ -80,27 +89,36 @@ class VersionOne(
       override fun encodedSize(value: VersionOne): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) +
         NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj) +
+        EnumVersionOne.ADAPTER.encodedSizeWithTag(8, value.en) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: VersionOne) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         NestedVersionOne.ADAPTER.encodeWithTag(writer, 7, value.obj)
+        EnumVersionOne.ADAPTER.encodeWithTag(writer, 8, value.en)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun decode(reader: ProtoReader): VersionOne {
         var i: Int? = null
         var obj: NestedVersionOne? = null
+        var en: EnumVersionOne? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> i = ProtoAdapter.INT32.decode(reader)
             7 -> obj = NestedVersionOne.ADAPTER.decode(reader)
+            8 -> try {
+              en = EnumVersionOne.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             else -> reader.readUnknownField(tag)
           }
         }
         return VersionOne(
           i = i,
           obj = obj,
+          en = en,
           unknownFields = unknownFields
         )
       }

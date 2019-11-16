@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo
 import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne
 import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo
 import com.squareup.wire.protos.kotlin.unknownfields.VersionOne
@@ -23,6 +24,8 @@ import okio.ByteString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class UnknownFieldsTest {
   private val v1Adapter = VersionOne.ADAPTER
@@ -107,5 +110,15 @@ class UnknownFieldsTest {
     assertEquals(98765L, v2C.v2_f64)
     assertEquals(NestedVersionTwo(i = 777), v2C.obj)
     assertEquals(listOf("1", "2"), v2C.v2_rs)
+  }
+
+  @Test fun unknownEnumFields() {
+    val v2 = VersionTwo(en = EnumVersionTwo.PUSS_IN_BOOTS_V2)
+    val v2Serialized = VersionTwo.ADAPTER.encode(v2)
+    val v1 = VersionOne.ADAPTER.decode(v2Serialized)
+    assertNull(v1.en)
+    // Missing value stored in unknownFields
+    assertNotNull(v1.unknownFields)
+    assertNotEquals(ByteString.EMPTY, v1.unknownFields)
   }
 }

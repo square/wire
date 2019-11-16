@@ -276,11 +276,23 @@ class SimpleMessage(
             1 -> optional_int32 = ProtoAdapter.INT32.decode(reader)
             2 -> optional_nested_msg = NestedMessage.ADAPTER.decode(reader)
             3 -> optional_external_msg = ExternalMessage.ADAPTER.decode(reader)
-            4 -> default_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            4 -> try {
+              default_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             5 -> required_int32 = ProtoAdapter.INT32.decode(reader)
             6 -> repeated_double.add(ProtoAdapter.DOUBLE.decode(reader))
-            7 -> default_foreign_enum = ForeignEnum.ADAPTER.decode(reader)
-            8 -> no_default_foreign_enum = ForeignEnum.ADAPTER.decode(reader)
+            7 -> try {
+              default_foreign_enum = ForeignEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
+            8 -> try {
+              no_default_foreign_enum = ForeignEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             9 -> package_ = ProtoAdapter.STRING.decode(reader)
             10 -> result = ProtoAdapter.STRING.decode(reader)
             11 -> other = ProtoAdapter.STRING.decode(reader)

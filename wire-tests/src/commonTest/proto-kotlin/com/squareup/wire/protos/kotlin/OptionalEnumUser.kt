@@ -82,7 +82,11 @@ class OptionalEnumUser(
         var optional_enum: OptionalEnum? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> optional_enum = OptionalEnum.ADAPTER.decode(reader)
+            1 -> try {
+              optional_enum = OptionalEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             else -> reader.readUnknownField(tag)
           }
         }

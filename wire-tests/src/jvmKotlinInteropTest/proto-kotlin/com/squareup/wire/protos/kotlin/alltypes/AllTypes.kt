@@ -3488,7 +3488,11 @@ class AllTypes(
             13 -> opt_double = ProtoAdapter.DOUBLE.decode(reader)
             14 -> opt_string = ProtoAdapter.STRING.decode(reader)
             15 -> opt_bytes = ProtoAdapter.BYTES.decode(reader)
-            16 -> opt_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            16 -> try {
+              opt_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             17 -> opt_nested_message = NestedMessage.ADAPTER.decode(reader)
             101 -> req_int32 = ProtoAdapter.INT32.decode(reader)
             102 -> req_uint32 = ProtoAdapter.UINT32.decode(reader)
@@ -3505,7 +3509,11 @@ class AllTypes(
             113 -> req_double = ProtoAdapter.DOUBLE.decode(reader)
             114 -> req_string = ProtoAdapter.STRING.decode(reader)
             115 -> req_bytes = ProtoAdapter.BYTES.decode(reader)
-            116 -> req_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            116 -> try {
+              req_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             117 -> req_nested_message = NestedMessage.ADAPTER.decode(reader)
             201 -> rep_int32.add(ProtoAdapter.INT32.decode(reader))
             202 -> rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
@@ -3522,7 +3530,11 @@ class AllTypes(
             213 -> rep_double.add(ProtoAdapter.DOUBLE.decode(reader))
             214 -> rep_string.add(ProtoAdapter.STRING.decode(reader))
             215 -> rep_bytes.add(ProtoAdapter.BYTES.decode(reader))
-            216 -> rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+            216 -> try {
+              rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             217 -> rep_nested_message.add(NestedMessage.ADAPTER.decode(reader))
             301 -> pack_int32.add(ProtoAdapter.INT32.decode(reader))
             302 -> pack_uint32.add(ProtoAdapter.UINT32.decode(reader))
@@ -3537,7 +3549,11 @@ class AllTypes(
             311 -> pack_bool.add(ProtoAdapter.BOOL.decode(reader))
             312 -> pack_float.add(ProtoAdapter.FLOAT.decode(reader))
             313 -> pack_double.add(ProtoAdapter.DOUBLE.decode(reader))
-            316 -> pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+            316 -> try {
+              pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             401 -> default_int32 = ProtoAdapter.INT32.decode(reader)
             402 -> default_uint32 = ProtoAdapter.UINT32.decode(reader)
             403 -> default_sint32 = ProtoAdapter.SINT32.decode(reader)
@@ -3553,7 +3569,11 @@ class AllTypes(
             413 -> default_double = ProtoAdapter.DOUBLE.decode(reader)
             414 -> default_string = ProtoAdapter.STRING.decode(reader)
             415 -> default_bytes = ProtoAdapter.BYTES.decode(reader)
-            416 -> default_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            416 -> try {
+              default_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             501 -> map_int32_int32.putAll(map_int32_int32Adapter.decode(reader))
             502 -> map_string_string.putAll(map_string_stringAdapter.decode(reader))
             503 -> map_string_message.putAll(map_string_messageAdapter.decode(reader))
@@ -3573,7 +3593,11 @@ class AllTypes(
             1013 -> ext_opt_double = ProtoAdapter.DOUBLE.decode(reader)
             1014 -> ext_opt_string = ProtoAdapter.STRING.decode(reader)
             1015 -> ext_opt_bytes = ProtoAdapter.BYTES.decode(reader)
-            1016 -> ext_opt_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            1016 -> try {
+              ext_opt_nested_enum = NestedEnum.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             1017 -> ext_opt_nested_message = NestedMessage.ADAPTER.decode(reader)
             1101 -> ext_rep_int32.add(ProtoAdapter.INT32.decode(reader))
             1102 -> ext_rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
@@ -3590,7 +3614,11 @@ class AllTypes(
             1113 -> ext_rep_double.add(ProtoAdapter.DOUBLE.decode(reader))
             1114 -> ext_rep_string.add(ProtoAdapter.STRING.decode(reader))
             1115 -> ext_rep_bytes.add(ProtoAdapter.BYTES.decode(reader))
-            1116 -> ext_rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+            1116 -> try {
+              ext_rep_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             1117 -> ext_rep_nested_message.add(NestedMessage.ADAPTER.decode(reader))
             1201 -> ext_pack_int32.add(ProtoAdapter.INT32.decode(reader))
             1202 -> ext_pack_uint32.add(ProtoAdapter.UINT32.decode(reader))
@@ -3605,7 +3633,11 @@ class AllTypes(
             1211 -> ext_pack_bool.add(ProtoAdapter.BOOL.decode(reader))
             1212 -> ext_pack_float.add(ProtoAdapter.FLOAT.decode(reader))
             1213 -> ext_pack_double.add(ProtoAdapter.DOUBLE.decode(reader))
-            1216 -> ext_pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+            1216 -> try {
+              ext_pack_nested_enum.add(NestedEnum.ADAPTER.decode(reader))
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             1301 -> ext_map_int32_int32.putAll(ext_map_int32_int32Adapter.decode(reader))
             1402 -> ext_map_string_string.putAll(ext_map_string_stringAdapter.decode(reader))
             1503 -> ext_map_string_message.putAll(ext_map_string_messageAdapter.decode(reader))

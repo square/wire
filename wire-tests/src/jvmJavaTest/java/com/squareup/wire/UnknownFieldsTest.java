@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.squareup.wire.protos.unknownfields.EnumVersionTwo;
 import com.squareup.wire.protos.unknownfields.NestedVersionOne;
 import com.squareup.wire.protos.unknownfields.NestedVersionTwo;
 import com.squareup.wire.protos.unknownfields.VersionOne;
@@ -249,5 +250,16 @@ public class UnknownFieldsTest {
         .clearUnknownFields()
         .build();
     assertThat(emptyV1.unknownFields()).isEqualTo(ByteString.EMPTY);
+  }
+
+  @Test
+  public void unknownEnumFields() throws IOException {
+    VersionTwo v2 = new VersionTwo.Builder().en(EnumVersionTwo.PUSS_IN_BOOTS_V2).build();
+    byte[] v2Serialized = VersionTwo.ADAPTER.encode(v2);
+    VersionOne v1 = VersionOne.ADAPTER.decode(v2Serialized);
+    assertThat(v1.en).isNull();
+    // Missing value stored in unknownFields
+    assertThat(v1.unknownFields()).isNotNull();
+    assertThat(v1.unknownFields()).isNotEqualTo(ByteString.EMPTY);
   }
 }
