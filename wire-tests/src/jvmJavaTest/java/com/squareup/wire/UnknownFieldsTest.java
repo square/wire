@@ -254,12 +254,16 @@ public class UnknownFieldsTest {
 
   @Test
   public void unknownEnumFields() throws IOException {
-    VersionTwo v2 = new VersionTwo.Builder().en(EnumVersionTwo.PUSS_IN_BOOTS_V2).build();
+    VersionTwo v2 = new VersionTwo.Builder()
+        .en(EnumVersionTwo.PUSS_IN_BOOTS_V2)
+        .i(100)
+        .build();
     byte[] v2Serialized = VersionTwo.ADAPTER.encode(v2);
     VersionOne v1 = VersionOne.ADAPTER.decode(v2Serialized);
+    assertThat(v1.i).isEqualTo(100);
     assertThat(v1.en).isNull();
-    // Missing value stored in unknownFields
-    assertThat(v1.unknownFields()).isNotNull();
-    assertThat(v1.unknownFields()).isNotEqualTo(ByteString.EMPTY);
+    // 40 = 8 << 3 | 0 (tag: 8, field encoding: VARINT(0))
+    // 04 = PUSS_IN_BOOTS(4)
+    assertThat(v1.unknownFields()).isEqualTo(ByteString.decodeHex("4004"));
   }
 }

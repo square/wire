@@ -21,10 +21,10 @@ import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo
 import com.squareup.wire.protos.kotlin.unknownfields.VersionOne
 import com.squareup.wire.protos.kotlin.unknownfields.VersionTwo
 import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class UnknownFieldsTest {
@@ -113,12 +113,13 @@ class UnknownFieldsTest {
   }
 
   @Test fun unknownEnumFields() {
-    val v2 = VersionTwo(en = EnumVersionTwo.PUSS_IN_BOOTS_V2)
+    val v2 = VersionTwo(en = EnumVersionTwo.PUSS_IN_BOOTS_V2, i = 100)
     val v2Serialized = VersionTwo.ADAPTER.encode(v2)
     val v1 = VersionOne.ADAPTER.decode(v2Serialized)
+    assertEquals(100, v1.i)
     assertNull(v1.en)
-    // Missing value stored in unknownFields
-    assertNotNull(v1.unknownFields)
-    assertNotEquals(ByteString.EMPTY, v1.unknownFields)
+    // 40 = 8 << 3 | 0 (tag: 8, field encoding: VARINT(0))
+    // 04 = PUSS_IN_BOOTS(4)
+    assertEquals("4004".decodeHex(), v1.unknownFields)
   }
 }
