@@ -94,8 +94,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
   public static final String DEFAULT_PHP_NAMESPACE = "";
 
-  public static final String DEFAULT_FILE_PREFIX = "";
-
   /**
    * Sets the Java package where classes generated from this .proto will be
    * placed.  By default, the proto package is used, but this is often
@@ -299,15 +297,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  /**
-   * Extension source: file_prefix.proto
-   */
-  @WireField(
-      tag = 6584,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
-  public final String file_prefix;
-
   public FileOptions(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.java_package = builder.java_package;
@@ -329,7 +318,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     this.php_class_prefix = builder.php_class_prefix;
     this.php_namespace = builder.php_namespace;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", builder.uninterpreted_option);
-    this.file_prefix = builder.file_prefix;
   }
 
   @Override
@@ -354,7 +342,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     builder.php_class_prefix = php_class_prefix;
     builder.php_namespace = php_namespace;
     builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
-    builder.file_prefix = file_prefix;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -383,8 +370,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
         && Internal.equals(swift_prefix, o.swift_prefix)
         && Internal.equals(php_class_prefix, o.php_class_prefix)
         && Internal.equals(php_namespace, o.php_namespace)
-        && uninterpreted_option.equals(o.uninterpreted_option)
-        && Internal.equals(file_prefix, o.file_prefix);
+        && uninterpreted_option.equals(o.uninterpreted_option);
   }
 
   @Override
@@ -411,7 +397,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       result = result * 37 + (php_class_prefix != null ? php_class_prefix.hashCode() : 0);
       result = result * 37 + (php_namespace != null ? php_namespace.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
-      result = result * 37 + (file_prefix != null ? file_prefix.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -439,7 +424,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     if (php_class_prefix != null) builder.append(", php_class_prefix=").append(php_class_prefix);
     if (php_namespace != null) builder.append(", php_namespace=").append(php_namespace);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
-    if (file_prefix != null) builder.append(", file_prefix=").append(file_prefix);
     return builder.replace(0, 2, "FileOptions{").append('}').toString();
   }
 
@@ -481,8 +465,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     public String php_namespace;
 
     public List<UninterpretedOption> uninterpreted_option;
-
-    public String file_prefix;
 
     public Builder() {
       uninterpreted_option = Internal.newMutableList();
@@ -672,11 +654,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       return this;
     }
 
-    public Builder file_prefix(String file_prefix) {
-      this.file_prefix = file_prefix;
-      return this;
-    }
-
     @Override
     public FileOptions build() {
       return new FileOptions(this, super.buildUnknownFields());
@@ -766,7 +743,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
           + ProtoAdapter.STRING.encodedSizeWithTag(40, value.php_class_prefix)
           + ProtoAdapter.STRING.encodedSizeWithTag(41, value.php_namespace)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + ProtoAdapter.STRING.encodedSizeWithTag(6584, value.file_prefix)
           + value.unknownFields().size();
     }
 
@@ -791,7 +767,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       ProtoAdapter.STRING.encodeWithTag(writer, 40, value.php_class_prefix);
       ProtoAdapter.STRING.encodeWithTag(writer, 41, value.php_namespace);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
-      ProtoAdapter.STRING.encodeWithTag(writer, 6584, value.file_prefix);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -827,7 +802,6 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
           case 41: builder.php_namespace(ProtoAdapter.STRING.decode(reader)); break;
           case 42: builder.php_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
-          case 6584: builder.file_prefix(ProtoAdapter.STRING.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }

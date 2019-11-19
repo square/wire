@@ -878,4 +878,40 @@ class PrunerTest {
     val enumType = pruned.getType("Enum") as EnumType
     assertThat(enumType.allowAlias()).isTrue()
   }
+
+  @Test
+  fun excludeUnusedImports() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |import 'footer.proto';
+             |import 'title.proto';
+             |
+             |message Message {
+             |  optional Title title = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("title.proto", """
+             |message Title {
+             |  optional string label = 1;
+             |}
+             """.trimMargin()
+        )
+        .add("footer.proto", """
+             |message Footer {
+             |  optional string label = 1;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
+        .include("Message")
+        .build())
+
+    assertThat(pruned.protoFile("footer.proto").types()).isEmpty()
+    assertThat(pruned.protoFile("title.proto").types()).isNotEmpty
+
+    val message = pruned.protoFile("message.proto")
+    assertThat(message.imports()).containsExactly("title.proto")
+  }
 }

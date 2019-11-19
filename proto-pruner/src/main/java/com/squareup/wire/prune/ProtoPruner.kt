@@ -33,7 +33,11 @@ class ProtoPruner(
         .prune(identifierSet)
 
     schema.protoFiles()
-        .filter { it.types().isNotEmpty() || it.services().isNotEmpty() }
+        .filter {
+          it.types().isNotEmpty() ||
+          it.services().isNotEmpty() ||
+          it.extendList().isNotEmpty()
+        }
         .forEach { protoFile ->
           val relativePath = protoFile.location()?.path
               ?.substringBeforeLast("/", missingDelimiterValue = ".")

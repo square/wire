@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 syntax = "proto2";
+package squareup.options.misc;
 
 import "google/protobuf/descriptor.proto";
 
-extend google.protobuf.FileOptions {
-  optional string file_prefix = 6584;
+extend google.protobuf.FieldOptions {
+  optional bool relevant = 22301;
+  optional bool unused = 22302;
+}
+
+extend google.protobuf.MessageOptions {
+  optional bool message_export_enabled = 22213;
+}
+
+extend google.protobuf.EnumValueOptions {
+  optional int32 text_alignment = 54000;
 }

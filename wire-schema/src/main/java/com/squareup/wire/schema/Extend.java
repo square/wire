@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.ExtendElement;
 import java.util.List;
 
-final class Extend {
+public final class Extend {
   private final Location location;
   private final String documentation;
   private final String name;
@@ -73,6 +73,10 @@ final class Extend {
     return fields;
   }
 
+  public String getName() {
+    return name;
+  }
+
   void link(Linker linker) {
     linker = linker.withContext(this);
     protoType = linker.resolveMessageType(name);
@@ -85,5 +89,11 @@ final class Extend {
   void validate(Linker linker) {
     linker = linker.withContext(this);
     linker.validateImport(location(), type());
+  }
+
+  public Extend retainAll(Schema schema, MarkSet markSet) {
+    ImmutableList<Field> retainedFields = Field.retainAll(schema, markSet, protoType, fields);
+    if (retainedFields.isEmpty()) return null;
+    else return new Extend(location, documentation, name, retainedFields);
   }
 }

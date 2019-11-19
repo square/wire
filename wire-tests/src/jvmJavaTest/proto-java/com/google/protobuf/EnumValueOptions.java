@@ -31,6 +31,8 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
 
   public static final Boolean DEFAULT_FOREIGN_ENUM_VALUE_OPTION = false;
 
+  public static final Integer DEFAULT_TEXT_ALIGNMENT = 0;
+
   /**
    * Is this enum value deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
@@ -80,21 +82,31 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   )
   public final Boolean foreign_enum_value_option;
 
+  /**
+   * Extension source: options.proto
+   */
+  @WireField(
+      tag = 54000,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer text_alignment;
+
   public EnumValueOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option,
       Integer enum_value_option, FooBar.More complex_enum_value_option,
-      Boolean foreign_enum_value_option) {
-    this(deprecated, uninterpreted_option, enum_value_option, complex_enum_value_option, foreign_enum_value_option, ByteString.EMPTY);
+      Boolean foreign_enum_value_option, Integer text_alignment) {
+    this(deprecated, uninterpreted_option, enum_value_option, complex_enum_value_option, foreign_enum_value_option, text_alignment, ByteString.EMPTY);
   }
 
   public EnumValueOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option,
       Integer enum_value_option, FooBar.More complex_enum_value_option,
-      Boolean foreign_enum_value_option, ByteString unknownFields) {
+      Boolean foreign_enum_value_option, Integer text_alignment, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.deprecated = deprecated;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
     this.enum_value_option = enum_value_option;
     this.complex_enum_value_option = complex_enum_value_option;
     this.foreign_enum_value_option = foreign_enum_value_option;
+    this.text_alignment = text_alignment;
   }
 
   @Override
@@ -105,6 +117,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     builder.enum_value_option = enum_value_option;
     builder.complex_enum_value_option = complex_enum_value_option;
     builder.foreign_enum_value_option = foreign_enum_value_option;
+    builder.text_alignment = text_alignment;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -119,7 +132,8 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
         && uninterpreted_option.equals(o.uninterpreted_option)
         && Internal.equals(enum_value_option, o.enum_value_option)
         && Internal.equals(complex_enum_value_option, o.complex_enum_value_option)
-        && Internal.equals(foreign_enum_value_option, o.foreign_enum_value_option);
+        && Internal.equals(foreign_enum_value_option, o.foreign_enum_value_option)
+        && Internal.equals(text_alignment, o.text_alignment);
   }
 
   @Override
@@ -132,6 +146,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
       result = result * 37 + (enum_value_option != null ? enum_value_option.hashCode() : 0);
       result = result * 37 + (complex_enum_value_option != null ? complex_enum_value_option.hashCode() : 0);
       result = result * 37 + (foreign_enum_value_option != null ? foreign_enum_value_option.hashCode() : 0);
+      result = result * 37 + (text_alignment != null ? text_alignment.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -145,6 +160,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     if (enum_value_option != null) builder.append(", enum_value_option=").append(enum_value_option);
     if (complex_enum_value_option != null) builder.append(", complex_enum_value_option=").append(complex_enum_value_option);
     if (foreign_enum_value_option != null) builder.append(", foreign_enum_value_option=").append(foreign_enum_value_option);
+    if (text_alignment != null) builder.append(", text_alignment=").append(text_alignment);
     return builder.replace(0, 2, "EnumValueOptions{").append('}').toString();
   }
 
@@ -158,6 +174,8 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
     public FooBar.More complex_enum_value_option;
 
     public Boolean foreign_enum_value_option;
+
+    public Integer text_alignment;
 
     public Builder() {
       uninterpreted_option = Internal.newMutableList();
@@ -198,9 +216,14 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
       return this;
     }
 
+    public Builder text_alignment(Integer text_alignment) {
+      this.text_alignment = text_alignment;
+      return this;
+    }
+
     @Override
     public EnumValueOptions build() {
-      return new EnumValueOptions(deprecated, uninterpreted_option, enum_value_option, complex_enum_value_option, foreign_enum_value_option, super.buildUnknownFields());
+      return new EnumValueOptions(deprecated, uninterpreted_option, enum_value_option, complex_enum_value_option, foreign_enum_value_option, text_alignment, super.buildUnknownFields());
     }
   }
 
@@ -216,6 +239,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
           + ProtoAdapter.INT32.encodedSizeWithTag(70000, value.enum_value_option)
           + FooBar.More.ADAPTER.encodedSizeWithTag(70001, value.complex_enum_value_option)
           + ProtoAdapter.BOOL.encodedSizeWithTag(70002, value.foreign_enum_value_option)
+          + ProtoAdapter.INT32.encodedSizeWithTag(54000, value.text_alignment)
           + value.unknownFields().size();
     }
 
@@ -226,6 +250,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
       ProtoAdapter.INT32.encodeWithTag(writer, 70000, value.enum_value_option);
       FooBar.More.ADAPTER.encodeWithTag(writer, 70001, value.complex_enum_value_option);
       ProtoAdapter.BOOL.encodeWithTag(writer, 70002, value.foreign_enum_value_option);
+      ProtoAdapter.INT32.encodeWithTag(writer, 54000, value.text_alignment);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -237,6 +262,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
         switch (tag) {
           case 1: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 54000: builder.text_alignment(ProtoAdapter.INT32.decode(reader)); break;
           case 70000: builder.enum_value_option(ProtoAdapter.INT32.decode(reader)); break;
           case 70001: builder.complex_enum_value_option(FooBar.More.ADAPTER.decode(reader)); break;
           case 70002: builder.foreign_enum_value_option(ProtoAdapter.BOOL.decode(reader)); break;

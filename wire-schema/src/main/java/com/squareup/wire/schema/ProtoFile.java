@@ -133,7 +133,7 @@ public final class ProtoFile {
     return services;
   }
 
-  List<Extend> extendList() {
+  public List<Extend> extendList() {
     return extendList;
   }
 
@@ -159,11 +159,63 @@ public final class ProtoFile {
       }
     }
 
+    ImmutableList.Builder<Extend> retainedExtends = ImmutableList.builder();
+    for (Extend extend : extendList) {
+      Extend retainedExtend = extend.retainAll(schema, markSet);
+      if (retainedExtend != null) {
+        retainedExtends.add(retainedExtend);
+      }
+    }
+
     ProtoFile result = new ProtoFile(location, imports, publicImports, packageName,
-        retainedTypes.build(), retainedServices.build(), extendList,
+        retainedTypes.build(), retainedServices.build(), retainedExtends.build(),
         options.retainAll(schema, markSet), syntax);
     result.javaPackage = javaPackage;
     return result;
+  }
+
+  public ProtoFile retainImports(List<ProtoFile> retained) {
+    ImmutableList.Builder<String> retainedImportsBuilder = ImmutableList.builder();
+    for (String path : imports) {
+      ProtoFile importedProtoFile = findProtoFile(retained, path);
+      if (importedProtoFile == null) continue;
+
+      if (importedProtoFile.types().isEmpty()
+          && importedProtoFile.services().isEmpty()
+          && importedProtoFile.extendList().isEmpty()) {
+
+        // If we extend a google protobuf type, we should keep the import.
+        if (path.equals("google/protobuf/descriptor.proto")) {
+          for (Extend extend : extendList) {
+            if (extend.getName().startsWith("google.protobuf.")) {
+              retainedImportsBuilder.add(path);
+              break;
+            }
+          }
+        }
+      } else {
+        retainedImportsBuilder.add(path);
+      }
+    }
+    ImmutableList<String> retainedImports = retainedImportsBuilder.build();
+
+    if (imports.size() != retainedImports.size()) {
+      ProtoFile result = new ProtoFile(location, retainedImports, publicImports, packageName,
+          types, services, extendList, options, syntax);
+      result.javaPackage = javaPackage;
+      return result;
+    } else {
+      return this;
+    }
+  }
+
+  private static ProtoFile findProtoFile(List<ProtoFile> protoFiles, String path) {
+    for (ProtoFile protoFile : protoFiles) {
+      if (protoFile.location().getPath().equals(path)) {
+        return protoFile;
+      }
+    }
+    return null;
   }
 
   void linkOptions(Linker linker) {

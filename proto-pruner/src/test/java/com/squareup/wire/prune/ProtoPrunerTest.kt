@@ -65,14 +65,14 @@ class ProtoPrunerTest {
     assertOutputs(outputs)
   }
 
-  @Test @Ignore("Failing because `file_prefix` is stripped out.")
+  @Test
   fun testOptions() {
     val sources = arrayOf("squareup.options.letter.Letter")
     invokeProtoPruner(sources, "--excludes=google.protobuf.*")
 
     val outputs = arrayOf(
         "letter.proto",
-        "file_prefix.proto"
+        "options.proto"
     )
     assertOutputs(outputs)
   }

@@ -189,11 +189,15 @@ public final class Field {
     linker.validateImport(location(), type);
   }
 
-  Field retainAll(Schema schema, MarkSet markSet) {
-    // For map types only the value can participate in pruning as the key will always be scalar.
-    if (type.isMap() && !markSet.contains(type.valueType())) return null;
+  Field retainAll(Schema schema, MarkSet markSet, ProtoType enclosingType) {
+    if (!isUsedAsOption(schema, markSet, enclosingType)) {
+      // For map types only the value can participate in pruning as the key will always be scalar.
+      if (type.isMap() && !markSet.contains(type.valueType())) return null;
 
-    if (!markSet.contains(type)) return null;
+      if (!markSet.contains(type)) return null;
+
+      if (!markSet.contains(ProtoMember.get(enclosingType, this.name()))) return null;
+    }
 
     Field result = new Field(packageName, location, label, name, documentation, tag, defaultValue,
         elementType, options.retainAll(schema, markSet), extension);
@@ -208,12 +212,50 @@ public final class Field {
       Schema schema, MarkSet markSet, ProtoType enclosingType, Collection<Field> fields) {
     ImmutableList.Builder<Field> result = ImmutableList.builder();
     for (Field field : fields) {
-      Field retainedField = field.retainAll(schema, markSet);
-      if (retainedField != null && markSet.contains(ProtoMember.get(enclosingType, field.name()))) {
+      Field retainedField = field.retainAll(schema, markSet, enclosingType);
+      if (retainedField != null) {
         result.add(retainedField);
       }
     }
     return result.build();
+  }
+
+  private boolean isUsedAsOption(Schema schema, MarkSet markSet, ProtoType enclosingType) {
+    for (ProtoFile protoFile : schema.protoFiles()) {
+      for (Type type : protoFile.types()) {
+        if (isUsedAsOption(markSet, enclosingType, type)) return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isUsedAsOption(MarkSet markSet, ProtoType enclosingType, Type type) {
+    if (!markSet.contains(type.type())) return false;
+
+    ProtoMember protoMember = ProtoMember.get(enclosingType, this.qualifiedName());
+    if (type instanceof MessageType) {
+      if (type.options().map().containsKey(protoMember)) {
+        return true;
+      }
+      for (Field messageField : ((MessageType) type).fields()) {
+        if (messageField.options().map().containsKey(protoMember)) {
+          return true;
+        }
+      }
+    } else if (type instanceof EnumType) {
+      if (type.options().map().containsKey(protoMember)) {
+        return true;
+      }
+      for (EnumConstant constant : ((EnumType) type).constants()) {
+        if (constant.getOptions().map().containsKey(protoMember)) {
+          return true;
+        }
+      }
+    }
+    for (Type nestedType : type.nestedTypes()) {
+      if (isUsedAsOption(markSet, enclosingType, nestedType)) return true;
+    }
+    return false;
   }
 
   @Override public String toString() {

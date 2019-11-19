@@ -46,12 +46,25 @@ final class Pruner {
     markRoots();
     markReachable();
 
+    ImmutableList<ProtoFile> retained = retainImports(retainAll(schema, marks));
+
+    return new Schema(retained);
+  }
+
+  private ImmutableList<ProtoFile> retainAll(Schema schema, MarkSet marks) {
     ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
     for (ProtoFile protoFile : schema.protoFiles()) {
       retained.add(protoFile.retainAll(schema, marks));
     }
+    return retained.build();
+  }
 
-    return new Schema(retained.build());
+  private ImmutableList<ProtoFile> retainImports(ImmutableList<ProtoFile> protoFiles) {
+    ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
+    for (ProtoFile protoFile : protoFiles) {
+      retained.add(protoFile.retainImports(protoFiles));
+    }
+    return retained.build();
   }
 
   private void markRoots() {
