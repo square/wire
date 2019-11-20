@@ -262,7 +262,10 @@ class KotlinGenerator private constructor(
               newName("CREATOR", "CREATOR")
             }
             message.fieldsAndOneOfFields().forEach { field ->
-              newName(field.name(), field)
+              if (field.name().equals(field.type().simpleName()))
+                newName(field.qualifiedName(), field)
+              else
+                newName(field.name(), field)
             }
           }
         }
