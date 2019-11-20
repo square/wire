@@ -16,20 +16,24 @@
 package com.squareup.wire.prune
 
 import com.squareup.wire.schema.IdentifierSet
-import com.squareup.wire.schema.SchemaLoader
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.NewSchemaLoader
+import com.squareup.wire.schema.Schema
 import java.io.File
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
 
 class ProtoPruner(
+  private val fs : FileSystem,
   private val inPaths: List<String>,
   private val outPath: String,
   private val identifierSet: IdentifierSet
 ) : Runnable {
   override fun run() {
-    val schema = SchemaLoader()
-        .apply {
-          inPaths.forEach { addSource(File(it)) }
-        }
-        .load()
+    val schema = Schema
+        .fromFiles(
+            NewSchemaLoader(fs, inPaths.map { Location.get(it) }).load()
+        )
         .prune(identifierSet)
 
     schema.protoFiles()
@@ -102,7 +106,7 @@ class ProtoPruner(
         throw IllegalArgumentException("No output path specified")
       }
 
-      ProtoPruner(inPaths, outPath, identifierSetBuilder.build()).run()
+      ProtoPruner(FileSystems.getDefault(), inPaths, outPath, identifierSetBuilder.build()).run()
     }
   }
 }

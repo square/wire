@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.internal.Util
 import com.squareup.wire.schema.internal.Util.appendDocumentation
 import java.util.Locale
@@ -39,11 +40,46 @@ data class FieldElement(
     }
     append("$type $name = $tag")
 
-    if (options.isNotEmpty()) {
+    val optionsWithDefault = optionsWithDefaultValue()
+    if (optionsWithDefault.isNotEmpty()) {
       append(' ')
-      Util.appendOptions(this, options)
+      Util.appendOptions(this, optionsWithDefault)
     }
 
     append(";\n")
+  }
+
+  private fun optionsWithDefaultValue(): List<OptionElement> {
+    if (defaultValue == null) return options
+
+    val protoType = ProtoType.get(type)
+    // TODO(benoit) Supports non-scalar types.
+    if (!protoType.isScalar) return options
+
+    val kind = protoType.toKind()
+    if (kind == null) return options
+
+    return options + OptionElement.create("default", kind, defaultValue)
+  }
+
+  private fun ProtoType.toKind(): OptionElement.Kind? {
+    return when (simpleName()) {
+      "bool" -> OptionElement.Kind.BOOLEAN
+      "string" -> OptionElement.Kind.STRING
+      "bytes",
+      "double",
+      "float",
+      "fixed32",
+      "fixed64",
+      "int32",
+      "int64",
+      "sfixed32",
+      "sfixed64",
+      "sint32",
+      "sint64",
+      "uint32",
+      "uint64" -> OptionElement.Kind.NUMBER
+      else -> null
+    }
   }
 }
