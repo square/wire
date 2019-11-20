@@ -17,8 +17,9 @@ package com.squareup.wire.schema;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Creates a new schema that contains only the types selected by an identifier set, including their
@@ -75,200 +76,168 @@ final class Pruner {
 
   private void markRoots(ProtoFile protoFile) {
     for (Type type : protoFile.types()) {
-      markRoots(type);
+      markRootsIncludingNested(type);
     }
     for (Service service : protoFile.services()) {
-      markRoots(service);
+      markRoots(service.type());
     }
   }
 
-  private void markRoots(Type type) {
-    ProtoType protoType = type.type();
-    if (identifierSet.includes(protoType)) {
-      marks.root(protoType);
-      queue.add(protoType);
-    } else {
-      if (type instanceof MessageType) {
-        for (Field field : ((MessageType) type).fieldsAndOneOfFields()) {
-          markRoots(ProtoMember.get(protoType, field.name()));
-        }
-      } else if (type instanceof EnumType) {
-        for (EnumConstant enumConstant : ((EnumType) type).constants()) {
-          markRoots(ProtoMember.get(protoType, enumConstant.getName()));
-        }
-      } else {
-        throw new AssertionError();
-      }
-    }
+  private void markRootsIncludingNested(Type type) {
+    markRoots(type.type());
 
     for (Type nested : type.nestedTypes()) {
-      markRoots(nested);
+      markRootsIncludingNested(nested);
     }
   }
 
-  private void markRoots(Service service) {
-    ProtoType protoType = service.type();
+  private void markRoots(ProtoType protoType) {
     if (identifierSet.includes(protoType)) {
       marks.root(protoType);
       queue.add(protoType);
-    } else {
-      for (Rpc rpc : service.rpcs()) {
-        markRoots(ProtoMember.get(protoType, rpc.name()));
+      return;
+    }
+
+    // The top-level type isn't a root, search for root members inside.
+    for (Object reachable : reachableObjects(protoType)) {
+      if (reachable instanceof ProtoMember) {
+        ProtoMember member = (ProtoMember) reachable;
+        if (identifierSet.includes(member)) {
+          marks.root(member);
+          marks.mark(member.type()); // Consider this type as visited.
+          queue.add(member);
+        }
       }
     }
   }
 
-  private void markRoots(ProtoMember protoMember) {
-    if (identifierSet.includes(protoMember)) {
-      marks.root(protoMember);
-      queue.add(protoMember);
-    }
-  }
-
+  /**
+   * Mark everything transitively reachable from the queue, adding to the queue whenever a reachable
+   * object brings along more reachable objects.
+   */
   private void markReachable() {
-    // Mark everything reachable by what's enqueued, queueing new things as we go.
     for (Object root; (root = queue.poll()) != null;) {
-      if (root instanceof ProtoMember) {
-        ProtoMember protoMember = (ProtoMember) root;
-        mark(protoMember.type());
-        String member = ((ProtoMember) root).member();
-        Type type = schema.getType(protoMember.type());
-        if (type instanceof MessageType) {
-          Field field = ((MessageType) type).field(member);
-          if (field == null) {
-            field = ((MessageType) type).extensionField(member);
+      List<Object> reachableMembers = reachableObjects(root);
+
+      for (Object reachable : reachableMembers) {
+        if (reachable instanceof ProtoType) {
+          if (marks.mark((ProtoType) reachable)) {
+            queue.add(reachable);
           }
-          if (field != null) {
-            markField(type.type(), field);
-            continue;
+        } else if (reachable instanceof ProtoMember) {
+          if (marks.mark((ProtoMember) reachable)) {
+            queue.add(reachable);
           }
-        } else if (type instanceof EnumType) {
-          EnumConstant constant = ((EnumType) type).constant(member);
-          if (constant != null) {
-            markOptions(constant.getOptions());
-            continue;
-          }
+        } else {
+          throw new IllegalStateException("unexpected object: " + reachable);
         }
-
-        Service service = schema.getService(protoMember.type());
-        if (service != null) {
-          Rpc rpc = service.rpc(member);
-          if (rpc != null) {
-            markRpc(service.type(), rpc);
-            continue;
-          }
-        }
-
-        throw new IllegalArgumentException("Unexpected member: " + root);
-
-      } else if (root instanceof ProtoType) {
-        ProtoType protoType = (ProtoType) root;
-        if (protoType.isScalar()) {
-          continue; // Skip scalar types.
-        }
-
-        Type type = schema.getType(protoType);
-        if (type != null) {
-          markType(type);
-          continue;
-        }
-
-        Service service = schema.getService(protoType);
-        if (service != null) {
-          markService(service);
-          continue;
-        }
-
-        throw new IllegalArgumentException("Unexpected type: " + root);
-
-      } else {
-        throw new AssertionError();
       }
     }
   }
 
-  private void mark(ProtoType type) {
-    // Mark the map type as it's non-scalar and transitively reachable.
-    if (type.isMap()) {
-      marks.mark(type);
-      // Map key type is always scalar. No need to mark it.
-      type = type.valueType();
-    }
+  /**
+   * Returns everything reachable from {@code root} when traversing the graph. The returned list
+   * contains instances of type {@link ProtoMember} and {@link ProtoType}.
+   *
+   * @param root either a {@link ProtoMember} or {@link ProtoType}.
+   */
+  private List<Object> reachableObjects(Object root) {
+    List<Object> result = new ArrayList<>();
+    Options options;
 
-    if (marks.mark(type)) {
-      queue.add(type); // The transitive dependencies of this type must be visited.
-    }
-  }
+    if (root instanceof ProtoMember) {
+      ProtoMember protoMember = (ProtoMember) root;
+      String member = ((ProtoMember) root).member();
+      Type type = schema.getType(protoMember.type());
+      Service service = schema.getService(protoMember.type());
 
-  private void mark(ProtoMember protoMember) {
-    if (marks.mark(protoMember)) {
-      queue.add(protoMember); // The transitive dependencies of this member must be visited.
-    }
-  }
-
-  private void markType(Type type) {
-    markOptions(type.options());
-
-    if (marks.containsAllMembers(type.type())) {
       if (type instanceof MessageType) {
-        markMessage((MessageType) type);
-      } else if (type instanceof EnumType) {
-        markEnum((EnumType) type);
-      }
-    }
-  }
-
-  private void markMessage(MessageType message) {
-    markFields(message.type(), message.fields());
-    for (OneOf oneOf : message.oneOfs()) {
-      markFields(message.type(), oneOf.fields());
-    }
-  }
-
-  private void markEnum(EnumType wireEnum) {
-    markOptions(wireEnum.options());
-    if (marks.containsAllMembers(wireEnum.type())) {
-      for (EnumConstant constant : wireEnum.constants()) {
-        if (marks.contains(ProtoMember.get(wireEnum.type(), constant.getName()))) {
-          markOptions(constant.getOptions());
+        Field field = ((MessageType) type).field(member);
+        if (field == null) {
+          field = ((MessageType) type).extensionField(member);
         }
+        if (field == null) {
+          throw new IllegalStateException("unexpected member: " + member);
+        }
+        result.add(field.type());
+        options = field.options();
+      } else if (type instanceof EnumType) {
+        EnumConstant constant = ((EnumType) type).constant(member);
+        if (constant == null) {
+          throw new IllegalStateException("unexpected member: " + member);
+        }
+        options = constant.getOptions();
+      } else if (service != null) {
+        Rpc rpc = service.rpc(member);
+        if (rpc == null) {
+          throw new IllegalStateException("unexpected rpc: " + member);
+        }
+        result.add(rpc.requestType());
+        result.add(rpc.responseType());
+        options = rpc.options();
+      } else {
+        throw new IllegalStateException("unexpected member: " + member);
       }
-    }
-  }
+    } else if (root instanceof ProtoType) {
+      ProtoType protoType = (ProtoType) root;
 
-  private void markFields(ProtoType declaringType, ImmutableList<Field> fields) {
-    for (Field field : fields) {
-      markField(declaringType, field);
-    }
-  }
-
-  private void markField(ProtoType declaringType, Field field) {
-    if (marks.contains(ProtoMember.get(declaringType, field.name()))) {
-      markOptions(field.options());
-      mark(field.type());
-    }
-  }
-
-  private void markOptions(Options options) {
-    for (Map.Entry<ProtoType, ProtoMember> entry : options.fields().entries()) {
-      mark(entry.getValue());
-    }
-  }
-
-  private void markService(Service service) {
-    markOptions(service.options());
-    if (marks.containsAllMembers(service.type())) {
-      for (Rpc rpc : service.rpcs()) {
-        markRpc(service.type(), rpc);
+      if (protoType.isMap()) {
+        result.add(protoType.keyType());
+        result.add(protoType.valueType());
+        return result;
       }
+
+      if (protoType.isScalar()) {
+        return result; // Skip scalar types.
+      }
+
+      Type type = schema.getType(protoType);
+      Service service = schema.getService(protoType);
+
+      if (type instanceof MessageType) {
+        options = type.options();
+        MessageType messageType = (MessageType) type;
+        for (Field field : messageType.declaredFields()) {
+          result.add(ProtoMember.get(protoType, field.name()));
+        }
+        for (Field field : messageType.extensionFields()) {
+          result.add(ProtoMember.get(protoType, field.qualifiedName()));
+        }
+        for (OneOf oneOf : messageType.oneOfs()) {
+          for (Field field : oneOf.fields()) {
+            result.add(ProtoMember.get(protoType, field.name()));
+          }
+        }
+      } else if (type instanceof EnumType) {
+        options = type.options();
+        EnumType wireEnum = (EnumType) type;
+        for (EnumConstant constant : wireEnum.constants()) {
+          result.add(ProtoMember.get(wireEnum.type(), constant.getName()));
+        }
+      } else if (service != null) {
+        options = service.options();
+        for (Rpc rpc : service.rpcs()) {
+          result.add(ProtoMember.get(service.type(), rpc.name()));
+        }
+      } else {
+        throw new IllegalStateException("unexpected type: " + protoType);
+      }
+    } else {
+      throw new IllegalStateException("unexpected root: " + root);
     }
+
+    for (ProtoMember member : options.fields().values()) {
+      // If it's an extension, don't consider the entire enclosing type to be reachable.
+      if (isExtensionField(member)) {
+        result.add(member.type());
+      }
+      result.add(member);
+    }
+    return result;
   }
 
-  private void markRpc(ProtoType declaringType, Rpc rpc) {
-    if (marks.contains(ProtoMember.get(declaringType, rpc.name()))) {
-      markOptions(rpc.options());
-      mark(rpc.requestType());
-      mark(rpc.responseType());
-    }
+  private boolean isExtensionField(ProtoMember protoMember) {
+    Type type = schema.getType(protoMember.type());
+    return type instanceof MessageType && ((MessageType) type).field(protoMember.member()) != null;
   }
 }

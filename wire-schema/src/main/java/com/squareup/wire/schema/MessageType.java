@@ -84,6 +84,10 @@ public final class MessageType extends Type {
         .build();
   }
 
+  public ImmutableList<Field> declaredFields() {
+    return ImmutableList.copyOf(declaredFields);
+  }
+
   public ImmutableList<Field> extensionFields() {
     return ImmutableList.copyOf(extensionFields);
   }

@@ -196,7 +196,11 @@ public final class Field {
 
       if (!markSet.contains(type)) return null;
 
-      if (!markSet.contains(ProtoMember.get(enclosingType, this.name()))) return null;
+      ProtoMember protoMember = ProtoMember.get(
+          enclosingType,
+          isExtension() ? this.qualifiedName() : this.name()
+      );
+      if (!markSet.contains(protoMember)) return null;
     }
 
     Field result = new Field(packageName, location, label, name, documentation, tag, defaultValue,
