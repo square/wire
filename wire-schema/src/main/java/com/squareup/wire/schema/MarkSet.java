@@ -37,7 +37,11 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 final class MarkSet {
   final IdentifierSet identifierSet;
+
+  /** The types to retain. We may retain a type but not all of its members. */
   final Set<ProtoType> types = new LinkedHashSet<>();
+
+  /** The members to retain. Any member not in here should be pruned! */
   final Multimap<ProtoType, ProtoMember> members = LinkedHashMultimap.create();
 
   MarkSet(IdentifierSet identifierSet) {
@@ -45,30 +49,26 @@ final class MarkSet {
   }
 
   /**
-   * Marks {@code protoMember}, throwing if it is explicitly excluded, or if its enclosing type is
-   * also specifically included. This implicitly excludes other members of the same type.
+   * Marks {@code protoMember}, throwing if it is explicitly excluded. This implicitly excludes
+   * other members of the same type.
    */
   void root(ProtoMember protoMember) {
     if (protoMember == null) throw new NullPointerException("protoMember == null");
     checkArgument(!identifierSet.excludes(protoMember));
-    checkArgument(!types.contains(protoMember.type()));
+    types.add(protoMember.type());
     members.put(protoMember.type(), protoMember);
   }
 
-  /**
-   * Marks {@code type}, throwing if it is explicitly excluded, or if any of its members are also
-   * specifically included.
-   */
+  /** Marks {@code type}, throwing if it is explicitly excluded. */
   void root(ProtoType type) {
     if (type == null) throw new NullPointerException("type == null");
     checkArgument(!identifierSet.excludes(type));
-    checkArgument(!members.containsKey(type));
     types.add(type);
   }
 
   /**
    * Marks a type as transitively reachable by the includes set. Returns true if the mark is new,
-   * the type will be retained, and its own dependencies should be traversed.
+   * the type will be retained, and reachable objects should be traversed.
    */
   boolean mark(ProtoType type) {
     if (type == null) throw new NullPointerException("type == null");
@@ -78,20 +78,13 @@ final class MarkSet {
 
   /**
    * Marks a member as transitively reachable by the includes set. Returns true if the mark is new,
-   * the member will be retained, and its own dependencies should be traversed.
+   * the member will be retained, and reachable objects should be traversed.
    */
   boolean mark(ProtoMember protoMember) {
     if (protoMember == null) throw new NullPointerException("type == null");
     if (identifierSet.excludes(protoMember)) return false;
-    return members.containsKey(protoMember.type())
-        ? members.put(protoMember.type(), protoMember)
-        : types.add(protoMember.type());
-  }
-
-  /** Returns true if all members of {@code type} are marked and should be retained. */
-  boolean containsAllMembers(ProtoType type) {
-    if (type == null) throw new NullPointerException("type == null");
-    return types.contains(type) && !members.containsKey(type);
+    types.add(protoMember.type());
+    return members.put(protoMember.type(), protoMember);
   }
 
   /** Returns true if {@code type} is marked and should be retained. */
@@ -104,8 +97,6 @@ final class MarkSet {
   boolean contains(ProtoMember protoMember) {
     if (protoMember == null) throw new NullPointerException("protoMember == null");
     if (identifierSet.excludes(protoMember)) return false;
-    return members.containsKey(protoMember.type())
-        ? members.containsEntry(protoMember.type(), protoMember)
-        : types.contains(protoMember.type());
+    return members.containsEntry(protoMember.type(), protoMember);
   }
 }
