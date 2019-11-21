@@ -399,7 +399,7 @@ class SchemaTest {
   }
 
   @Test
-  fun oneofFieldTypeUnknown() {
+  fun oneOfFieldTypeUnknown() {
     try {
       RepoBuilder()
           .add("message.proto", """
@@ -707,7 +707,7 @@ class SchemaTest {
   }
 
   @Test
-  fun messsageAndExtensionNameCollision() {
+  fun messageAndExtensionNameCollision() {
     val schema = RepoBuilder()
         .add("message.proto", """
              |message Message {
@@ -849,7 +849,7 @@ class SchemaTest {
   }
 
   @Test
-  fun oneofLabelDisallowed() {
+  fun oneOfLabelDisallowed() {
     try {
       RepoBuilder()
           .add("message.proto", """
