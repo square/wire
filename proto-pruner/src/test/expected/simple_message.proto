@@ -14,13 +14,13 @@ message SimpleMessage {
   optional NestedMessage optional_nested_msg = 2 [deprecated = true];
   // An optional ExternalMessage
   optional ExternalMessage optional_external_msg = 3;
-  optional NestedEnum default_nested_enum = 4;
+  optional NestedEnum default_nested_enum = 4 [default = BAZ];
   // A required int32
   required int32 required_int32 = 5 [default = 456];
   // A repeated double, deprecated
   repeated double repeated_double = 6 [deprecated = true];
   // enum from another package with an explicit default
-  optional squareup.protos.foreign.ForeignEnum default_foreign_enum = 7;
+  optional squareup.protos.foreign.ForeignEnum default_foreign_enum = 7 [default = BAX];
   // enum from another package without an explicit default
   optional squareup.protos.foreign.ForeignEnum no_default_foreign_enum = 8;
   // field with the same name as a Java keyword
