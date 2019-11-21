@@ -37,9 +37,11 @@ public final class Letter extends Message<Letter, Letter.Builder> {
 
   public static final String DEFAULT_TITLE = "";
 
-  public static final Style DEFAULT_STYLE = Style.SHORT;
+  public static final Style DEFAULT_STYLE = Style.LONG;
 
   public static final Boolean DEFAULT_ABOUT_LOVE = true;
+
+  public static final String DEFAULT_SIGNATURE = "BQ";
 
   @WireField(
       tag = 1,
@@ -67,17 +69,25 @@ public final class Letter extends Message<Letter, Letter.Builder> {
   @Deprecated
   public final List<Integer> path;
 
-  public Letter(String title, Style style, Boolean about_love, List<Integer> path) {
-    this(title, style, about_love, path, ByteString.EMPTY);
-  }
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String signature;
 
   public Letter(String title, Style style, Boolean about_love, List<Integer> path,
+      String signature) {
+    this(title, style, about_love, path, signature, ByteString.EMPTY);
+  }
+
+  public Letter(String title, Style style, Boolean about_love, List<Integer> path, String signature,
       ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.title = title;
     this.style = style;
     this.about_love = about_love;
     this.path = Internal.immutableCopyOf("path", path);
+    this.signature = signature;
   }
 
   @Override
@@ -87,6 +97,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
     builder.style = style;
     builder.about_love = about_love;
     builder.path = Internal.copyOf(path);
+    builder.signature = signature;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -100,7 +111,8 @@ public final class Letter extends Message<Letter, Letter.Builder> {
         && Internal.equals(title, o.title)
         && Internal.equals(style, o.style)
         && Internal.equals(about_love, o.about_love)
-        && path.equals(o.path);
+        && path.equals(o.path)
+        && Internal.equals(signature, o.signature);
   }
 
   @Override
@@ -112,6 +124,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
       result = result * 37 + (style != null ? style.hashCode() : 0);
       result = result * 37 + (about_love != null ? about_love.hashCode() : 0);
       result = result * 37 + path.hashCode();
+      result = result * 37 + (signature != null ? signature.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -124,6 +137,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
     if (style != null) builder.append(", style=").append(style);
     if (about_love != null) builder.append(", about_love=").append(about_love);
     if (!path.isEmpty()) builder.append(", path=").append(path);
+    if (signature != null) builder.append(", signature=").append(signature);
     return builder.replace(0, 2, "Letter{").append('}').toString();
   }
 
@@ -135,6 +149,8 @@ public final class Letter extends Message<Letter, Letter.Builder> {
     public Boolean about_love;
 
     public List<Integer> path;
+
+    public String signature;
 
     public Builder() {
       path = Internal.newMutableList();
@@ -162,9 +178,14 @@ public final class Letter extends Message<Letter, Letter.Builder> {
       return this;
     }
 
+    public Builder signature(String signature) {
+      this.signature = signature;
+      return this;
+    }
+
     @Override
     public Letter build() {
-      return new Letter(title, style, about_love, path, super.buildUnknownFields());
+      return new Letter(title, style, about_love, path, signature, super.buildUnknownFields());
     }
   }
 
@@ -179,6 +200,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
           + Style.ADAPTER.encodedSizeWithTag(2, value.style)
           + ProtoAdapter.BOOL.encodedSizeWithTag(3, value.about_love)
           + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(4, value.path)
+          + ProtoAdapter.STRING.encodedSizeWithTag(5, value.signature)
           + value.unknownFields().size();
     }
 
@@ -188,6 +210,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
       Style.ADAPTER.encodeWithTag(writer, 2, value.style);
       ProtoAdapter.BOOL.encodeWithTag(writer, 3, value.about_love);
       ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 4, value.path);
+      ProtoAdapter.STRING.encodeWithTag(writer, 5, value.signature);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -208,6 +231,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
           }
           case 3: builder.about_love(ProtoAdapter.BOOL.decode(reader)); break;
           case 4: builder.path.add(ProtoAdapter.INT32.decode(reader)); break;
+          case 5: builder.signature(ProtoAdapter.STRING.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }

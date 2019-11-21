@@ -53,16 +53,12 @@ data class FieldElement(
     if (defaultValue == null) return options
 
     val protoType = ProtoType.get(type)
-    // TODO(benoit) Supports non-scalar types.
-    if (!protoType.isScalar) return options
 
-    val kind = protoType.toKind()
-    if (kind == null) return options
-
-    return options + OptionElement.create("default", kind, defaultValue)
+    return options + OptionElement.create("default", protoType.toKind(), defaultValue)
   }
 
-  private fun ProtoType.toKind(): OptionElement.Kind? {
+  // Only non-repeated scalar types and Enums support default values.
+  private fun ProtoType.toKind(): OptionElement.Kind {
     return when (simpleName()) {
       "bool" -> OptionElement.Kind.BOOLEAN
       "string" -> OptionElement.Kind.STRING
@@ -79,7 +75,7 @@ data class FieldElement(
       "sint64",
       "uint32",
       "uint64" -> OptionElement.Kind.NUMBER
-      else -> null
+      else -> OptionElement.Kind.ENUM
     }
   }
 }
