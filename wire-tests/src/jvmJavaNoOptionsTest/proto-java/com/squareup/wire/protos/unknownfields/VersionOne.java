@@ -24,6 +24,8 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
 
   public static final Integer DEFAULT_I = 0;
 
+  public static final EnumVersionOne DEFAULT_EN = EnumVersionOne.SHREK_V1;
+
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -36,14 +38,21 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
   )
   public final NestedVersionOne obj;
 
-  public VersionOne(Integer i, NestedVersionOne obj) {
-    this(i, obj, ByteString.EMPTY);
+  @WireField(
+      tag = 8,
+      adapter = "com.squareup.wire.protos.unknownfields.EnumVersionOne#ADAPTER"
+  )
+  public final EnumVersionOne en;
+
+  public VersionOne(Integer i, NestedVersionOne obj, EnumVersionOne en) {
+    this(i, obj, en, ByteString.EMPTY);
   }
 
-  public VersionOne(Integer i, NestedVersionOne obj, ByteString unknownFields) {
+  public VersionOne(Integer i, NestedVersionOne obj, EnumVersionOne en, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.i = i;
     this.obj = obj;
+    this.en = en;
   }
 
   @Override
@@ -51,6 +60,7 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     Builder builder = new Builder();
     builder.i = i;
     builder.obj = obj;
+    builder.en = en;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -62,7 +72,8 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     VersionOne o = (VersionOne) other;
     return unknownFields().equals(o.unknownFields())
         && Internal.equals(i, o.i)
-        && Internal.equals(obj, o.obj);
+        && Internal.equals(obj, o.obj)
+        && Internal.equals(en, o.en);
   }
 
   @Override
@@ -72,6 +83,7 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
       result = unknownFields().hashCode();
       result = result * 37 + (i != null ? i.hashCode() : 0);
       result = result * 37 + (obj != null ? obj.hashCode() : 0);
+      result = result * 37 + (en != null ? en.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -82,6 +94,7 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     StringBuilder builder = new StringBuilder();
     if (i != null) builder.append(", i=").append(i);
     if (obj != null) builder.append(", obj=").append(obj);
+    if (en != null) builder.append(", en=").append(en);
     return builder.replace(0, 2, "VersionOne{").append('}').toString();
   }
 
@@ -89,6 +102,8 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     public Integer i;
 
     public NestedVersionOne obj;
+
+    public EnumVersionOne en;
 
     public Builder() {
     }
@@ -103,9 +118,14 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
       return this;
     }
 
+    public Builder en(EnumVersionOne en) {
+      this.en = en;
+      return this;
+    }
+
     @Override
     public VersionOne build() {
-      return new VersionOne(i, obj, super.buildUnknownFields());
+      return new VersionOne(i, obj, en, super.buildUnknownFields());
     }
   }
 
@@ -118,6 +138,7 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     public int encodedSize(VersionOne value) {
       return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
           + NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj)
+          + EnumVersionOne.ADAPTER.encodedSizeWithTag(8, value.en)
           + value.unknownFields().size();
     }
 
@@ -125,6 +146,7 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
     public void encode(ProtoWriter writer, VersionOne value) throws IOException {
       ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
       NestedVersionOne.ADAPTER.encodeWithTag(writer, 7, value.obj);
+      EnumVersionOne.ADAPTER.encodeWithTag(writer, 8, value.en);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -136,6 +158,14 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
         switch (tag) {
           case 1: builder.i(ProtoAdapter.INT32.decode(reader)); break;
           case 7: builder.obj(NestedVersionOne.ADAPTER.decode(reader)); break;
+          case 8: {
+            try {
+              builder.en(EnumVersionOne.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
           default: {
             reader.readUnknownField(tag);
           }

@@ -15,14 +15,17 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo
 import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne
 import com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo
 import com.squareup.wire.protos.kotlin.unknownfields.VersionOne
 import com.squareup.wire.protos.kotlin.unknownfields.VersionTwo
 import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
 
 class UnknownFieldsTest {
   private val v1Adapter = VersionOne.ADAPTER
@@ -107,5 +110,16 @@ class UnknownFieldsTest {
     assertEquals(98765L, v2C.v2_f64)
     assertEquals(NestedVersionTwo(i = 777), v2C.obj)
     assertEquals(listOf("1", "2"), v2C.v2_rs)
+  }
+
+  @Test fun unknownEnumFields() {
+    val v2 = VersionTwo(en = EnumVersionTwo.PUSS_IN_BOOTS_V2, i = 100)
+    val v2Serialized = VersionTwo.ADAPTER.encode(v2)
+    val v1 = VersionOne.ADAPTER.decode(v2Serialized)
+    assertEquals(100, v1.i)
+    assertNull(v1.en)
+    // 40 = 8 << 3 | 0 (tag: 8, field encoding: VARINT(0))
+    // 04 = PUSS_IN_BOOTS(4)
+    assertEquals("4004".decodeHex(), v1.unknownFields)
   }
 }

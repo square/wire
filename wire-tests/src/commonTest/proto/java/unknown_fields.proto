@@ -21,10 +21,17 @@ message VersionOne {
   optional int32 i = 1;
 
   optional NestedVersionOne obj = 7;
+  optional EnumVersionOne en = 8;
 }
 
 message NestedVersionOne {
   optional int32 i = 1;
+}
+
+enum EnumVersionOne {
+  SHREK_V1 = 1;
+  DONKEY_V1 = 2;
+  FIONA_V1 = 3;
 }
 
 message VersionTwo {
@@ -37,6 +44,7 @@ message VersionTwo {
   repeated string v2_rs = 6;
 
   optional NestedVersionTwo obj = 7;
+  optional EnumVersionTwo en = 8;
 }
 
 message NestedVersionTwo {
@@ -47,4 +55,11 @@ message NestedVersionTwo {
   optional fixed32 v2_f32 = 4;
   optional fixed64 v2_f64 = 5;
   repeated string v2_rs = 6;
+}
+
+enum EnumVersionTwo {
+  SHREK_V2 = 1;
+  DONKEY_V2 = 2;
+  FIONA_V2 = 3;
+  PUSS_IN_BOOTS_V2 = 4;
 }

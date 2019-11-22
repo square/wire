@@ -59,6 +59,11 @@ class VersionTwo(
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo#ADAPTER"
   )
   val obj: NestedVersionTwo? = null,
+  @field:WireField(
+    tag = 8,
+    adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo#ADAPTER"
+  )
+  val en: EnumVersionTwo? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<VersionTwo, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
@@ -78,6 +83,7 @@ class VersionTwo(
         && v2_f64 == other.v2_f64
         && v2_rs == other.v2_rs
         && obj == other.obj
+        && en == other.en
   }
 
   override fun hashCode(): Int {
@@ -91,6 +97,7 @@ class VersionTwo(
       result = result * 37 + v2_f64.hashCode()
       result = result * 37 + v2_rs.hashCode()
       result = result * 37 + obj.hashCode()
+      result = result * 37 + en.hashCode()
       super.hashCode = result
     }
     return result
@@ -105,6 +112,7 @@ class VersionTwo(
     if (v2_f64 != null) result += """v2_f64=$v2_f64"""
     if (v2_rs.isNotEmpty()) result += """v2_rs=$v2_rs"""
     if (obj != null) result += """obj=$obj"""
+    if (en != null) result += """en=$en"""
     return result.joinToString(prefix = "VersionTwo{", separator = ", ", postfix = "}")
   }
 
@@ -116,8 +124,9 @@ class VersionTwo(
     v2_f64: Long? = this.v2_f64,
     v2_rs: List<String> = this.v2_rs,
     obj: NestedVersionTwo? = this.obj,
+    en: EnumVersionTwo? = this.en,
     unknownFields: ByteString = this.unknownFields
-  ): VersionTwo = VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, obj, unknownFields)
+  ): VersionTwo = VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, obj, en, unknownFields)
 
   companion object {
     @JvmField
@@ -133,6 +142,7 @@ class VersionTwo(
         ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64) +
         ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs) +
         NestedVersionTwo.ADAPTER.encodedSizeWithTag(7, value.obj) +
+        EnumVersionTwo.ADAPTER.encodedSizeWithTag(8, value.en) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: VersionTwo) {
@@ -143,6 +153,7 @@ class VersionTwo(
         ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs)
         NestedVersionTwo.ADAPTER.encodeWithTag(writer, 7, value.obj)
+        EnumVersionTwo.ADAPTER.encodeWithTag(writer, 8, value.en)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -154,6 +165,7 @@ class VersionTwo(
         var v2_f64: Long? = null
         val v2_rs = mutableListOf<String>()
         var obj: NestedVersionTwo? = null
+        var en: EnumVersionTwo? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> i = ProtoAdapter.INT32.decode(reader)
@@ -163,6 +175,11 @@ class VersionTwo(
             5 -> v2_f64 = ProtoAdapter.FIXED64.decode(reader)
             6 -> v2_rs.add(ProtoAdapter.STRING.decode(reader))
             7 -> obj = NestedVersionTwo.ADAPTER.decode(reader)
+            8 -> try {
+              en = EnumVersionTwo.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             else -> reader.readUnknownField(tag)
           }
         }
@@ -174,6 +191,7 @@ class VersionTwo(
           v2_f64 = v2_f64,
           v2_rs = v2_rs,
           obj = obj,
+          en = en,
           unknownFields = unknownFields
         )
       }

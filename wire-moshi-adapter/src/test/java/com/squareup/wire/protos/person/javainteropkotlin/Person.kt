@@ -375,7 +375,11 @@ class Person(
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
               1 -> number = ProtoAdapter.STRING.decode(reader)
-              2 -> type = PhoneType.ADAPTER.decode(reader)
+              2 -> try {
+                type = PhoneType.ADAPTER.decode(reader)
+              } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+                reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+              }
               else -> reader.readUnknownField(tag)
             }
           }

@@ -122,8 +122,16 @@ class MessageUsingMultipleEnums(
         var b: OtherMessageWithStatus.Status? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> a = MessageWithStatus.Status.ADAPTER.decode(reader)
-            2 -> b = OtherMessageWithStatus.Status.ADAPTER.decode(reader)
+            1 -> try {
+              a = MessageWithStatus.Status.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
+            2 -> try {
+              b = OtherMessageWithStatus.Status.ADAPTER.decode(reader)
+            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
+              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
+            }
             else -> reader.readUnknownField(tag)
           }
         }

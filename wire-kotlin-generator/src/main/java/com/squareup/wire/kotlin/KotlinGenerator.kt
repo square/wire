@@ -955,23 +955,26 @@ class KotlinGenerator private constructor(
       if (fields.isEmpty()) {
         addStatement("val unknownFields = reader.forEachTag(reader::readUnknownField)")
       } else {
-        val readerTagParamName = nameAllocator.newName("tag")
-        addStatement("val unknownFields = reader.forEachTag { $readerTagParamName ->")
-        addStatement("⇥when ($readerTagParamName) {⇥")
+        val tag = nameAllocator.newName("tag")
+        addStatement("val unknownFields = reader.forEachTag { %L ->", tag)
+        addStatement("⇥when (%L) {⇥", tag)
 
         message.fieldsAndOneOfFields().forEach { field ->
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
 
-          val decodeBodyTemplate = when {
-            field.isRepeated -> "%L -> %L.add(%L.decode(reader))"
-            field.isMap -> "%L -> %L.putAll(%L.decode(reader))"
-            else -> "%L -> %L = %L.decode(reader)"
+          if (field.type().isEnum) {
+            beginControlFlow("%L -> try", field.tag())
+            addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
+            nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
+            addStatement("reader.addUnknownField(%L, %T.VARINT, e.value.toLong())", tag,
+                FieldEncoding::class)
+            endControlFlow()
+          } else {
+            addStatement("%L -> %L", field.tag(), decodeAndAssign(field, fieldName, adapterName))
           }
-
-          addStatement(decodeBodyTemplate, field.tag(), fieldName, adapterName)
         }
-        addStatement("else -> reader.readUnknownField($readerTagParamName)")
+        addStatement("else -> reader.readUnknownField(%L)", tag)
         add("⇤}\n⇤}\n") // close the block
       }
     }
@@ -984,6 +987,15 @@ class KotlinGenerator private constructor(
         .addCode(returnBody)
         .addModifiers(OVERRIDE)
         .build()
+  }
+
+  private fun decodeAndAssign(field: Field, fieldName: String, adapterName: CodeBlock): CodeBlock {
+    val decode = CodeBlock.of("%L.decode(reader)", adapterName)
+    return CodeBlock.of(when {
+      field.isRepeated -> "%L.add(%L)"
+      field.isMap -> "%L.putAll(%L)"
+      else -> "%L = %L"
+    }, fieldName, decode)
   }
 
   private fun redactFun(message: MessageType): FunSpec {
