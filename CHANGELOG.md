@@ -1,6 +1,20 @@
 Change Log
 ==========
 
+Version 3.0.2
+-------------
+
+_2019-11-22_
+
+ * Fix: Generate correct unknownFields code if a message field's name is a Kotlin keyword.
+ * Fix: Properly handle unknown enum values in Kotlin.
+ * Fix: ProtoPruner: retain used extends.
+ * Fix: ProtoPruner: retain only used imports.
+ * Fix: ProtoPruner: use NewSchemaLoader that correctly loads google.protobuf.descriptor.
+ * Fix: ProtoPruner: print default values for scalar types for proto target within the options.
+ * Fix: ProtoPruner: fix handling of options.
+ * Fix: ProtoPruner: print default values for enums.
+
 Version 3.0.1
 -------------
 
