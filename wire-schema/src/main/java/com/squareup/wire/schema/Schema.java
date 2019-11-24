@@ -109,8 +109,13 @@ public final class Schema {
     return field;
   }
 
-  public static Schema fromFiles(Iterable<ProtoFile> files) {
-    return new Linker(files).link();
+  public static Schema fromFiles(Iterable<ProtoFile> sourceFiles) {
+    return new Linker().link(sourceFiles, ImmutableList.of());
+  }
+
+  // TODO(jwilson): replace with an interface that loads path files on-demand.
+  static Schema fromFiles(Iterable<ProtoFile> sourceFiles, Iterable<ProtoFile> pathFiles) {
+    return new Linker().link(sourceFiles, pathFiles);
   }
 
   private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles) {

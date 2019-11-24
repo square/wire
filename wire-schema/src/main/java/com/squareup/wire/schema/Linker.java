@@ -28,117 +28,79 @@ import java.util.Map;
 
 /** Links local field types and option types to the corresponding declarations. */
 final class Linker {
-  private final ImmutableList<ProtoFile> protoFiles;
+  private final Map<String, FileLinker> fileLinkers;
   private final Map<String, Type> protoTypeNames;
+  private final Multimap<String, String> publicImports;
   private final Multimap<String, String> imports;
   private final List<String> errors;
   private final List<Object> contextStack;
 
-  Linker(Iterable<ProtoFile> protoFiles) {
-    this.protoFiles = ImmutableList.copyOf(protoFiles);
+  Linker() {
+    this.fileLinkers = new LinkedHashMap<>();
     this.protoTypeNames = new LinkedHashMap<>();
+    this.publicImports = LinkedHashMultimap.create();
     this.imports = LinkedHashMultimap.create();
     this.contextStack = Collections.emptyList();
     this.errors = new ArrayList<>();
   }
 
   private Linker(Linker enclosing, Object additionalContext) {
-    this.protoFiles = enclosing.protoFiles;
+    this.fileLinkers = enclosing.fileLinkers;
     this.protoTypeNames = enclosing.protoTypeNames;
+    this.publicImports = enclosing.publicImports;
     this.imports = enclosing.imports;
     this.contextStack = Util.concatenate(enclosing.contextStack, additionalContext);
     this.errors = enclosing.errors;
   }
 
-  public Schema link() {
-    // Register the types.
-    for (ProtoFile protoFile : protoFiles) {
-      for (Type type : protoFile.types()) {
-        register(type);
-      }
+  // TODO(jwilson): replace Iterables with an interface that loads path files on-demand.
+  public Schema link(Iterable<ProtoFile> sourceFiles, Iterable<ProtoFile> pathFiles) {
+    for (ProtoFile protoFile : sourceFiles) {
+      fileLinkers.put(protoFile.location().getPath(),
+          new FileLinker(protoFile, withContext(protoFile)));
+    }
+    for (ProtoFile protoFile : pathFiles) {
+      fileLinkers.put(protoFile.location().getPath(),
+          new FileLinker(protoFile, withContext(protoFile)));
     }
 
-    // Link extensions. This depends on type registration.
-    for (ProtoFile protoFile : protoFiles) {
-      Linker linker = withContext(protoFile);
-      for (Extend extend : protoFile.extendList()) {
-        extend.link(linker);
-      }
+    for (FileLinker fileLinker : fileLinkers.values()) {
+      fileLinker.registerDirectPublicImports();
     }
 
-    // Link proto types and services.
-    for (ProtoFile protoFile : protoFiles) {
-      Linker linker = withContext(protoFile);
-      for (Type type : protoFile.types()) {
-        type.link(linker);
-      }
-      for (Service service : protoFile.services()) {
-        service.link(linker);
-      }
+    for (FileLinker fileLinker : fileLinkers.values()) {
+      fileLinker.registerTransitiveImports();
     }
 
-    // Link options. We can't link any options until we've linked all fields!
-    for (ProtoFile protoFile : protoFiles) {
-      Linker linker = withContext(protoFile);
-      protoFile.linkOptions(linker);
-      for (Type type : protoFile.types()) {
-        type.linkOptions(linker);
-      }
-      for (Service service : protoFile.services()) {
-        service.linkOptions(linker);
-      }
+    for (FileLinker fileLinker : fileLinkers.values()) {
+      fileLinker.registerTypes();
     }
 
-    // Compute public imports so we know that importing a.proto also imports b.proto and c.proto.
-    Multimap<String, String> publicImports = LinkedHashMultimap.create();
-    for (ProtoFile protoFile : protoFiles) {
-      publicImports.putAll(protoFile.location().getPath(), protoFile.publicImports());
-    }
-    // For each proto, gather its imports and its transitive imports.
-    for (ProtoFile protoFile : protoFiles) {
-      Collection<String> sink = imports.get(protoFile.location().getPath());
-      addImports(sink, protoFile.imports(), publicImports);
-      addImports(sink, protoFile.publicImports(), publicImports);
+    for (FileLinker fileLinker : fileLinkers.values()) {
+      fileLinker.linkExtensions();
     }
 
-    // Validate the linked schema.
-    for (ProtoFile protoFile : protoFiles) {
-      Linker linker = withContext(protoFile);
-      protoFile.validate(linker);
+    for (FileLinker fileLinker : fileLinkers.values()) {
+      fileLinker.linkMembers();
+    }
 
-      for (Type type : protoFile.types()) {
-        type.validate(linker);
-      }
-      for (Service service : protoFile.services()) {
-        service.validate(linker);
-      }
-      for (Extend extend : protoFile.extendList()) {
-        extend.validate(linker);
-      }
+    for (FileLinker fileLinker : fileLinkers.values()) {
+      fileLinker.linkOptions();
+    }
+
+    for (FileLinker fileLinker : fileLinkers.values()) {
+      fileLinker.validate();
     }
 
     if (!errors.isEmpty()) {
       throw new SchemaException(errors);
     }
 
-    return new Schema(protoFiles);
-  }
-
-  /** Add all paths in {@code paths} to {@code sink}, plus their public imports, recursively. */
-  private void addImports(Collection<String> sink,
-      Collection<String> paths, Multimap<String, String> publicImports) {
-    for (String path : paths) {
-      if (sink.add(path)) {
-        addImports(sink, publicImports.get(path), publicImports);
-      }
+    ImmutableList.Builder<ProtoFile> result = ImmutableList.builder();
+    for (FileLinker fileLinker : fileLinkers.values()) {
+      result.add(fileLinker.protoFile());
     }
-  }
-
-  private void register(Type type) {
-    protoTypeNames.put(type.type().toString(), type);
-    for (Type nestedType : type.nestedTypes()) {
-      register(nestedType);
-    }
+    return new Schema(result.build());
   }
 
   /** Returns the type name for the scalar, relative or fully-qualified name {@code name}. */
@@ -228,6 +190,11 @@ final class Linker {
       if (context instanceof ProtoFile) return ((ProtoFile) context).packageName();
     }
     return null;
+  }
+
+  /** Adds {@code type}. */
+  void addType(ProtoType protoType, Type type) {
+    protoTypeNames.put(protoType.toString(), type);
   }
 
   /** Returns the type or null if it doesn't exist. */
@@ -331,6 +298,27 @@ final class Linker {
         addError("%s", error);
       }
     }
+  }
+
+  /**
+   * Registers a public import from {@code location} to {@code path}. Returns true if the import was
+   * not previously registered.
+   */
+  boolean addPublicImport(Location location, String path) {
+    return publicImports.put(location.getPath(), path);
+  }
+
+  /** Returns the public imports made by {@code path}. */
+  Collection<String> getPublicImports(String path) {
+    return publicImports.get(path);
+  }
+
+  /**
+   * Registers an import (direct or via a public import) from {@code location} to {@code path}.
+   * Returns true if the import was not previously registered.
+   */
+  boolean addImport(Location location, String path) {
+    return imports.put(location.getPath(), path);
   }
 
   void validateImport(Location location, ProtoType type) {
