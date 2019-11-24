@@ -21,6 +21,7 @@ import com.squareup.wire.StringWireLogger
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 
 class WireRunTest {
@@ -392,6 +393,36 @@ class WireRunTest {
 
     assertThat(fs.find("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Blue.kt")
+  }
+
+  /**
+   * If Wire loaded (and therefore validated) members of dependencies this would fail with a
+   * [SchemaException]. But we no longer do this to make Wire both faster and to eliminate the need
+   * to place all transitive dependencies in the proto path.
+   */
+  @Ignore("WireRun currently evaluates path files entirely")
+  @Test
+  fun onlyDirectDependenciesOfSourcePathRequired() {
+    writeBlueProto()
+    fs.add("polygons/src/main/proto/squareup/polygons/triangle.proto", """
+          |syntax = "proto2";
+          |package squareup.polygons;
+          |message Triangle {
+          |  repeated squareup.geometry.Angle angles = 2; // No such type!
+          |}
+          """.trimMargin())
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(JavaTarget(outDirectory = "generated/java"))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/java/squareup/colors/Blue.java")
+    assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
+        .contains("public final class Blue extends Message")
   }
 
   private fun writeRedProto() {

@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closer;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ProtoParser;
@@ -49,7 +50,7 @@ import static com.google.common.collect.Iterables.getOnlyElement;
  * relative to the root of the archive.
  */
 public final class SchemaLoader {
-  static final String DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto";
+  private static final String DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto";
 
   private final List<Path> sources = new ArrayList<>();
   private final List<String> protos = new ArrayList<>();
@@ -164,7 +165,7 @@ public final class SchemaLoader {
       }
     }
 
-    return new Linker(loaded.values()).link();
+    return new Linker().link(loaded.values(), ImmutableList.of());
   }
 
   /**
