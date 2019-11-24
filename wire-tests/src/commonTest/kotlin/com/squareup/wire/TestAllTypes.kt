@@ -319,6 +319,7 @@ class TestAllTypes {
     assertEquals(allTypes, parsed)
   }
 
+  @IgnoreJs // https://youtrack.jetbrains.com/issue/KT-35078
   @Test fun testToString() {
     val data = adapter.encode(allTypes)
     val parsed = adapter.decode(data)
