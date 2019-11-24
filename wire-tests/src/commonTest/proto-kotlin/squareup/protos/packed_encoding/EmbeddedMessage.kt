@@ -81,12 +81,12 @@ class EmbeddedMessage(
       EmbeddedMessage::class
     ) {
       override fun encodedSize(value: EmbeddedMessage): Int = 
-        ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.inner_repeated_number) +
+        ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number) +
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: EmbeddedMessage) {
-        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.inner_repeated_number)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after)
         writer.writeBytes(value.unknownFields)
       }

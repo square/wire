@@ -875,13 +875,8 @@ class KotlinGenerator private constructor(
     val body = buildCodeBlock {
       add("return \n⇥")
       message.fieldsAndOneOfFields().forEach { field ->
-        val adapterName = field.getAdapterName()
         val fieldName = nameAllocator[field]
-        add("%L.%LencodedSizeWithTag(%L, value.%L) +\n",
-            adapterName,
-            if (field.isRepeated) "asRepeated()." else "",
-            field.tag(),
-            fieldName)
+        add("%L.encodedSizeWithTag(%L, value.%L) +\n", adapterFor(field), field.tag(), fieldName)
       }
       add("value.unknownFields.size⇤\n")
     }
@@ -893,17 +888,24 @@ class KotlinGenerator private constructor(
         .build()
   }
 
+  private fun adapterFor(field: Field) = buildCodeBlock {
+    add("%L", field.getAdapterName())
+    if (field.isPacked) {
+      add(".asPacked()")
+    } else if (field.isRepeated) {
+      add(".asRepeated()")
+    }
+  }
+
   private fun encodeFun(message: MessageType): FunSpec {
     val className = generatedTypeName(message)
     val body = buildCodeBlock {
       val nameAllocator = nameAllocator(message)
 
       message.fieldsAndOneOfFields().forEach { field ->
-        val adapterName = field.getAdapterName()
         val fieldName = nameAllocator[field]
-        addStatement("%L.%LencodeWithTag(writer, %L, value.%L)",
-            adapterName,
-            if (field.isRepeated) "asRepeated()." else "",
+        addStatement("%L.encodeWithTag(writer, %L, value.%L)",
+            adapterFor(field),
             field.tag(),
             fieldName)
       }
