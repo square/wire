@@ -103,6 +103,11 @@ kotlin {
     configure([iosX64Test, iosArm64Test, linuxX64Test, macosX64Test]) {
       dependsOn nativeTest
     }
+    all {
+      languageSettings {
+        useExperimentalAnnotation 'kotlin.Experimental'
+      }
+    }
   }
 }
 
