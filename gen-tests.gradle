@@ -226,6 +226,8 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
       'repeated.proto',
       'unknown_fields.proto',
       'packed_encoding.proto',
+      'simple_message.proto',
+      'no_fields.proto',
   ]
 }
 
