@@ -16,118 +16,90 @@
 package com.squareup.wire.schema
 
 import com.google.common.io.Closer
-import com.squareup.wire.schema.internal.parser.ProtoParser
-import okio.buffer
-import okio.source
+import com.squareup.wire.schema.internal.parser.ProtoFileElement
 import java.io.Closeable
 import java.io.IOException
 import java.nio.file.FileSystem
-import java.util.ArrayDeque
+import java.util.TreeSet
 
 /**
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
  * loaded from where so that we can use that information later when deciding what to generate.
  */
 class NewSchemaLoader(
-  private val fs: FileSystem,
-
-  /** See [com.squareup.wire.WireRun.sourcePath]. */
-  private val sourcePath: List<Location>,
-
-  /** See [com.squareup.wire.WireRun.protoPath]. */
-  private val protoPath: List<Location> = listOf()
-) : Closeable {
+  private val fs: FileSystem
+) : Closeable, Loader {
   private val closer = Closer.create()
 
   /** Errors accumulated by this load. */
   private val errors = mutableListOf<String>()
 
-  /** Files loaded by their relative paths. This is the same path that we use in imports! */
-  private val loaded = mutableMapOf<String, ProtoFile>()
+  /** Paths accumulated that we failed to load. */
+  private val missingImports = TreeSet<String>()
 
-  /** Source files that were loaded. Used to differentiate sources from protoPath elements. */
-  lateinit var sourceLocationPaths: Set<String>
+  /** Source path roots that need to be closed */
+  private var sourcePathRoots: List<Root>? = null
 
-  /** Working backlog of imported .proto files to load. */
-  private val imports = ArrayDeque<String>()
+  /** Proto path roots that need to be closed */
+  private var protoPathRoots: List<Root>? = null
 
+  /** Initialize the [WireRun.sourcePath] and [WireRun.protoPath] from which files are loaded. */
+  fun initRoots(
+    sourcePath: List<Location>,
+    protoPath: List<Location> = listOf()
+  ) {
+    check(sourcePathRoots == null && protoPathRoots == null)
+    sourcePathRoots = allRoots(closer, sourcePath)
+    protoPathRoots = allRoots(closer, protoPath)
+  }
+
+  /** Returns the files in the source path. */
   @Throws(IOException::class)
-  fun load(): List<ProtoFile> {
-    check(loaded.isEmpty()) { "do not reuse instances of this class" }
+  fun loadSourcePathFiles(): List<ProtoFile> {
+    check(sourcePathRoots != null && protoPathRoots != null) {
+      "call initRoots() before calling loadSourcePathFiles()"
+    }
 
-    loaded[DESCRIPTOR_PROTO] = loadDescriptorProto()
-
-    // Load all of the sources, discovering imports as we go.
-    val mutableSourceLocationPaths = mutableSetOf<String>()
-    val sourceRoots = allRoots(closer, sourcePath)
-    for (sourceRoot in sourceRoots) {
+    val result = mutableListOf<ProtoFile>()
+    for (sourceRoot in sourcePathRoots!!) {
       for (locationAndPath in sourceRoot.allProtoFiles()) {
-        load(locationAndPath)
-        mutableSourceLocationPaths += locationAndPath.location.path
+        result += load(locationAndPath)
       }
     }
-    if (mutableSourceLocationPaths.isEmpty()) {
+
+    if (result.isEmpty()) {
       errors += "no sources"
     }
-    sourceLocationPaths = mutableSourceLocationPaths.toSet()
 
-    // Load the imported files next.
-    val protoPathRoots = allRoots(closer, protoPath)
-    val missingImports = mutableListOf<String>()
-    while (true) {
-      val import = imports.poll() ?: break
-      if (loaded[import] != null) continue // Already loaded.
+    checkForErrors()
 
-      var loadedFrom: Location? = null
-      for (protoPathRoot in protoPathRoots) {
-        val locationAndPath = protoPathRoot.resolve(import) ?: continue
-        if (loadedFrom != null) {
-          errors += "$import is ambiguous:\n  $locationAndPath\n  $loadedFrom"
-          continue
-        }
-        loadedFrom = locationAndPath.location
-        load(locationAndPath)
-      }
+    return result
+  }
 
-      if (loadedFrom == null) {
-        missingImports += import
+  override fun load(path: String): ProtoFile {
+    // Traverse roots in search of the one that has this path.
+    var loadFrom: ProtoFilePath? = null
+    for (protoPathRoot in protoPathRoots!!) {
+      val locationAndPath: ProtoFilePath = protoPathRoot.resolve(path) ?: continue
+      if (loadFrom != null) {
+        errors += "$path is ambiguous:\n  $locationAndPath\n  $loadFrom"
         continue
       }
+      loadFrom = locationAndPath
     }
 
-    if (missingImports.isNotEmpty()) {
-      errors += """
-          |unable to resolve ${missingImports.size} imports:
-          |  ${missingImports.joinToString(separator = "\n  ")}
-          |searching ${protoPathRoots.size} proto paths:
-          |  ${protoPathRoots.joinToString(separator = "\n  ")}
-          """.trimMargin()
-    }
-
-    if (errors.isNotEmpty()) {
-      throw IllegalArgumentException(errors.joinToString(separator = "\n"))
-    }
-
-    return loaded.values.toList()
-  }
-
-  /**
-   * Returns Google's protobuf descriptor, which defines standard options like default, deprecated,
-   * and java_package. If the user has provided their own version of the descriptor proto, that is
-   * preferred.
-   */
-  @Throws(IOException::class)
-  fun loadDescriptorProto(): ProtoFile {
-    val resourceAsStream = SchemaLoader::class.java.getResourceAsStream("/$DESCRIPTOR_PROTO")
-    resourceAsStream.source().buffer().use { source ->
-      val data = source.readUtf8()
-      val location = Location.get(DESCRIPTOR_PROTO)
-      val element = ProtoParser.parse(location, data)
-      return ProtoFile.get(element)
+    if (loadFrom == null) {
+      if (path == CoreLoader.DESCRIPTOR_PROTO) {
+        return CoreLoader.load(path)
+      }
+      missingImports += path
+      return ProtoFile.get(ProtoFileElement.empty(path))
+    } else {
+      return load(loadFrom)
     }
   }
 
-  private fun load(protoFilePath: ProtoFilePath) {
+  private fun load(protoFilePath: ProtoFilePath): ProtoFile {
     val protoFile = protoFilePath.parse()
     val importPath = protoFile.importPath(protoFilePath.location)
 
@@ -139,8 +111,7 @@ class NewSchemaLoader(
       errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
     }
 
-    loaded[importPath] = protoFile
-    imports.addAll(protoFile.imports())
+    return protoFile
   }
 
   /** Convert `pathStrings` into roots that can be searched. */
@@ -158,12 +129,24 @@ class NewSchemaLoader(
     return result
   }
 
-  override fun close() {
-    return closer.close()
+  fun reportLoadingErrors() {
+    if (missingImports.isNotEmpty()) {
+      errors += """
+          |unable to resolve ${missingImports.size} imports:
+          |  ${missingImports.joinToString(separator = "\n  ")}
+          |searching ${protoPathRoots!!.size} proto paths:
+          |  ${protoPathRoots!!.joinToString(separator = "\n  ")}
+          """.trimMargin()
+    }
+    checkForErrors()
   }
 
-  companion object {
-    private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
+  private fun checkForErrors() {
+    require(errors.isEmpty()) { errors.joinToString(separator = "\n") }
+  }
+
+  override fun close() {
+    return closer.close()
   }
 }
 

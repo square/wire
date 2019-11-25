@@ -128,6 +128,9 @@ final class Pruner {
           if (marks.mark((ProtoMember) reachable)) {
             queue.add(reachable);
           }
+        } else if (reachable == null) {
+          // Skip nulls.
+          // TODO(jwilson): create a dedicated UNLINKED type as a placeholder.
         } else {
           throw new IllegalStateException("unexpected object: " + reachable);
         }

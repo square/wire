@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.schema.internal.parser.EnumElement
 import com.squareup.wire.schema.Options.ENUM_OPTIONS
+import com.squareup.wire.schema.internal.parser.EnumElement
 
 class EnumType private constructor(
   private val protoType: ProtoType,
@@ -46,7 +46,7 @@ class EnumType private constructor(
 
   fun constants() = constants
 
-  internal override fun link(linker: Linker) {}
+  internal override fun linkMembers(linker: Linker) {}
 
   internal override fun linkOptions(linker: Linker) {
     options.link(linker)

@@ -75,4 +75,12 @@ data class ProtoFileElement(
       }
     }
   }
+
+  companion object {
+    /** Returns an empty proto file to serve as a null object when a file cannot be found. */
+    @JvmStatic
+    fun empty(path: String): ProtoFileElement {
+      return ProtoFileElement(location = Location.get(path))
+    }
+  }
 }

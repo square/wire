@@ -110,12 +110,11 @@ public final class Schema {
   }
 
   public static Schema fromFiles(Iterable<ProtoFile> sourceFiles) {
-    return new Linker().link(sourceFiles, ImmutableList.of());
+    return new Linker(CoreLoader.INSTANCE).link(sourceFiles);
   }
 
-  // TODO(jwilson): replace with an interface that loads path files on-demand.
-  static Schema fromFiles(Iterable<ProtoFile> sourceFiles, Iterable<ProtoFile> pathFiles) {
-    return new Linker().link(sourceFiles, pathFiles);
+  static Schema fromFiles(Iterable<ProtoFile> sourceProtoFiles, Loader pathFilesLoader) {
+    return new Linker(pathFilesLoader).link(sourceProtoFiles);
   }
 
   private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles) {

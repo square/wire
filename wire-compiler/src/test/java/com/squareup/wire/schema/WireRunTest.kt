@@ -400,7 +400,6 @@ class WireRunTest {
    * [SchemaException]. But we no longer do this to make Wire both faster and to eliminate the need
    * to place all transitive dependencies in the proto path.
    */
-  @Ignore("WireRun currently evaluates path files entirely")
   @Test
   fun onlyDirectDependenciesOfSourcePathRequired() {
     writeBlueProto()
