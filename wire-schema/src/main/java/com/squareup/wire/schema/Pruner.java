@@ -231,7 +231,7 @@ final class Pruner {
 
     for (ProtoMember member : options.fields().values()) {
       // If it's an extension, don't consider the entire enclosing type to be reachable.
-      if (isExtensionField(member)) {
+      if (!isExtensionField(member)) {
         result.add(member.type());
       }
       result.add(member);
@@ -241,6 +241,7 @@ final class Pruner {
 
   private boolean isExtensionField(ProtoMember protoMember) {
     Type type = schema.getType(protoMember.type());
-    return type instanceof MessageType && ((MessageType) type).field(protoMember.member()) != null;
+    return type instanceof MessageType
+        && ((MessageType) type).extensionField(protoMember.member()) != null;
   }
 }
