@@ -15,11 +15,24 @@
  */
 package com.squareup.wire.schema;
 
+import com.google.common.collect.ImmutableSet;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 final class FileLinker {
   private final ProtoFile protoFile;
   private final Linker linker;
+
+  /** Lazily computed set of files used to reference other types and options. */
+  private ImmutableSet<String> effectiveImports;
+
+  /** True once this linker has registered its types with the enclosing linker. */
+  private boolean typesRegistered;
+
+  /** The set of types defined in this file whose members have been linked. */
+  private final Set<ProtoType> typesWithMembersLinked = new LinkedHashSet<>();
 
   FileLinker(ProtoFile protoFile, Linker linker) {
     this.protoFile = protoFile;
@@ -30,32 +43,34 @@ final class FileLinker {
     return protoFile;
   }
 
-  /** Register public imports so we know that importing a.proto also imports b.proto and c.proto. */
-  void registerDirectPublicImports() {
-    for (String path : protoFile.publicImports()) {
-      linker.addPublicImport(protoFile.location(), path);
-    }
-  }
-
   /**
-   * Register the effective set of imports for this file, which includes the direct imports plus
-   * the recursive traversal of public imports.
+   * Returns all effective imports. This is computed on-demand by unioning all direct imports plus
+   * the recursive set of all public imports.
    */
-  void registerTransitiveImports() {
-    addImports(protoFile.location(), protoFile.imports());
-    addImports(protoFile.location(), protoFile.publicImports());
+  ImmutableSet<String> effectiveImports() {
+    if (effectiveImports == null) {
+      Set<String> sink = new LinkedHashSet<>();
+      addImportsRecursive(sink, protoFile.imports());
+      addImportsRecursive(sink, protoFile.publicImports());
+      effectiveImports = ImmutableSet.copyOf(sink);
+    }
+    return effectiveImports;
+
   }
 
-  /** Configures {@code location} to import {@code paths}, plus their public imports recursively. */
-  private void addImports(Location location, Collection<String> paths) {
+  private void addImportsRecursive(Set<String> sink, Collection<String> paths) {
     for (String path : paths) {
-      if (linker.addImport(location, path)) {
-        addImports(location, linker.getPublicImports(path));
+      if (sink.add(path)) {
+        FileLinker fileLinker = linker.getFileLinker(path);
+        addImportsRecursive(sink, fileLinker.protoFile.publicImports());
       }
     }
   }
 
-  void registerTypes() {
+  void requireTypesRegistered() {
+    if (typesRegistered) return;
+    typesRegistered = true;
+
     for (Type type : protoFile.types()) {
       addTypes(type);
     }
@@ -75,11 +90,24 @@ final class FileLinker {
   }
 
   void linkMembers() {
-    for (Type type : protoFile.types()) {
-      type.link(linker);
-    }
+    linkMembersRecursive(protoFile.types());
     for (Service service : protoFile.services()) {
       service.link(linker);
+    }
+  }
+
+  /** Link the members of {@code types} and their nested types. */
+  private void linkMembersRecursive(List<Type> types) {
+    for (Type type : types) {
+      requireMembersLinked(type);
+      linkMembersRecursive(type.nestedTypes());
+    }
+  }
+
+  /** Link the members of {@code type} that haven't been linked already. */
+  void requireMembersLinked(Type type) {
+    if (typesWithMembersLinked.add(type.type())) {
+      type.linkMembers(linker);
     }
   }
 

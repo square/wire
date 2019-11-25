@@ -28,67 +28,72 @@ import java.util.Map;
 
 /** Links local field types and option types to the corresponding declarations. */
 final class Linker {
+  private final Loader loader;
   private final Map<String, FileLinker> fileLinkers;
   private final Map<String, Type> protoTypeNames;
-  private final Multimap<String, String> publicImports;
-  private final Multimap<String, String> imports;
   private final List<String> errors;
   private final List<Object> contextStack;
 
-  Linker() {
+  Linker(Loader loader) {
+    this.loader = loader;
     this.fileLinkers = new LinkedHashMap<>();
     this.protoTypeNames = new LinkedHashMap<>();
-    this.publicImports = LinkedHashMultimap.create();
-    this.imports = LinkedHashMultimap.create();
     this.contextStack = Collections.emptyList();
     this.errors = new ArrayList<>();
   }
 
   private Linker(Linker enclosing, Object additionalContext) {
+    this.loader = enclosing.loader;
     this.fileLinkers = enclosing.fileLinkers;
     this.protoTypeNames = enclosing.protoTypeNames;
-    this.publicImports = enclosing.publicImports;
-    this.imports = enclosing.imports;
     this.contextStack = Util.concatenate(enclosing.contextStack, additionalContext);
     this.errors = enclosing.errors;
   }
 
-  // TODO(jwilson): replace Iterables with an interface that loads path files on-demand.
-  public Schema link(Iterable<ProtoFile> sourceFiles, Iterable<ProtoFile> pathFiles) {
-    for (ProtoFile protoFile : sourceFiles) {
-      fileLinkers.put(protoFile.location().getPath(),
-          new FileLinker(protoFile, withContext(protoFile)));
-    }
-    for (ProtoFile protoFile : pathFiles) {
-      fileLinkers.put(protoFile.location().getPath(),
-          new FileLinker(protoFile, withContext(protoFile)));
+  /** Returns a linker for {@code path}, loading the file if necessary. */
+  FileLinker getFileLinker(String path) {
+    FileLinker existing = fileLinkers.get(path);
+    if (existing != null) return existing;
+
+    ProtoFile protoFile = loader.load(path);
+    FileLinker result = new FileLinker(protoFile, withContext(protoFile));
+    fileLinkers.put(path, result);
+    return result;
+  }
+
+  /**
+   * Link all features of all files in {@code sourceProtoFiles} to create a schema. This will also
+   * partially link any imported files necessary.
+   */
+  public Schema link(Iterable<ProtoFile> sourceProtoFiles) {
+    List<FileLinker> sourceFiles = new ArrayList<>();
+    for (ProtoFile sourceFile : sourceProtoFiles) {
+      FileLinker fileLinker = new FileLinker(sourceFile, withContext(sourceFile));
+      fileLinkers.put(sourceFile.location().getPath(), fileLinker);
+      sourceFiles.add(fileLinker);
     }
 
-    for (FileLinker fileLinker : fileLinkers.values()) {
-      fileLinker.registerDirectPublicImports();
+    for (FileLinker fileLinker : sourceFiles) {
+      fileLinker.requireTypesRegistered();
     }
 
-    for (FileLinker fileLinker : fileLinkers.values()) {
-      fileLinker.registerTransitiveImports();
-    }
+    // Also link descriptor.proto's types, which are necessary for options.
+    FileLinker descriptorProto = getFileLinker("google/protobuf/descriptor.proto");
+    descriptorProto.requireTypesRegistered();
 
-    for (FileLinker fileLinker : fileLinkers.values()) {
-      fileLinker.registerTypes();
-    }
-
-    for (FileLinker fileLinker : fileLinkers.values()) {
+    for (FileLinker fileLinker : sourceFiles) {
       fileLinker.linkExtensions();
     }
 
-    for (FileLinker fileLinker : fileLinkers.values()) {
+    for (FileLinker fileLinker : sourceFiles) {
       fileLinker.linkMembers();
     }
 
-    for (FileLinker fileLinker : fileLinkers.values()) {
+    for (FileLinker fileLinker : sourceFiles) {
       fileLinker.linkOptions();
     }
 
-    for (FileLinker fileLinker : fileLinkers.values()) {
+    for (FileLinker fileLinker : sourceFiles) {
       fileLinker.validate();
     }
 
@@ -132,6 +137,15 @@ final class Linker {
     }
 
     Type resolved = resolve(name, protoTypeNames);
+
+    // If no type could be resolved, load imported files and try again.
+    if (resolved == null) {
+      for (FileLinker fileLinker : contextImportedTypes()) {
+        fileLinker.requireTypesRegistered();
+      }
+      resolved = resolve(name, protoTypeNames);
+    }
+
     if (resolved == null) {
       addError("unable to resolve %s", name);
       return ProtoType.BYTES; // Just return any placeholder.
@@ -192,14 +206,55 @@ final class Linker {
     return null;
   }
 
+  /**
+   * Returns the files imported in the current context. These files declare the types that may be
+   * resolved.
+   */
+  private List<FileLinker> contextImportedTypes() {
+    ImmutableList.Builder<FileLinker> result = ImmutableList.builder();
+
+    for (int i = contextStack.size() - 1; i >= 0; i--) {
+      Object context = contextStack.get(i);
+      if (context instanceof ProtoFile) {
+        String path = ((ProtoFile) context).location().getPath();
+        FileLinker fileLinker = getFileLinker(path);
+        for (String effectiveImport : fileLinker.effectiveImports()) {
+          result.add(getFileLinker(effectiveImport));
+        }
+      }
+    }
+
+    return result.build();
+  }
+
   /** Adds {@code type}. */
   void addType(ProtoType protoType, Type type) {
     protoTypeNames.put(protoType.toString(), type);
   }
 
   /** Returns the type or null if it doesn't exist. */
-  public Type get(ProtoType protoType) {
+  Type get(ProtoType protoType) {
+    Type result = protoTypeNames.get(protoType.toString());
+    if (result != null) return result;
+
+    // If no type could be resolved, load imported files and try again.
+    for (FileLinker fileLinker : contextImportedTypes()) {
+      fileLinker.requireTypesRegistered();
+    }
     return protoTypeNames.get(protoType.toString());
+  }
+
+  /**
+   * Returns the type or null if it doesn't exist. Before this returns it ensures members are linked
+   * so that options may dereference them.
+   */
+  Type getForOptions(ProtoType protoType) {
+    Type result = get(protoType);
+    if (result == null) return null;
+
+    FileLinker fileLinker = getFileLinker(result.location().getPath());
+    fileLinker.requireMembersLinked(result);
+    return result;
   }
 
   /** Returns the field named {@code field} on the message type of {@code self}. */
@@ -300,27 +355,6 @@ final class Linker {
     }
   }
 
-  /**
-   * Registers a public import from {@code location} to {@code path}. Returns true if the import was
-   * not previously registered.
-   */
-  boolean addPublicImport(Location location, String path) {
-    return publicImports.put(location.getPath(), path);
-  }
-
-  /** Returns the public imports made by {@code path}. */
-  Collection<String> getPublicImports(String path) {
-    return publicImports.get(path);
-  }
-
-  /**
-   * Registers an import (direct or via a public import) from {@code location} to {@code path}.
-   * Returns true if the import was not previously registered.
-   */
-  boolean addImport(Location location, String path) {
-    return imports.put(location.getPath(), path);
-  }
-
   void validateImport(Location location, ProtoType type) {
     // Map key type is always scalar. No need to validate it.
     if (type.isMap()) type = type.valueType();
@@ -329,7 +363,8 @@ final class Linker {
 
     String path = location.getPath();
     String requiredImport = get(type).location().getPath();
-    if (!path.equals(requiredImport) && !imports.containsEntry(path, requiredImport)) {
+    FileLinker fileLinker = getFileLinker(path);
+    if (!path.equals(requiredImport) && !fileLinker.effectiveImports().contains(requiredImport)) {
       addError("%s needs to import %s", path, requiredImport);
     }
   }

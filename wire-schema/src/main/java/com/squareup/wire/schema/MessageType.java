@@ -178,7 +178,7 @@ public final class MessageType extends Type {
     extensionFields.addAll(fields);
   }
 
-  void link(Linker linker) {
+  void linkMembers(Linker linker) {
     linker = linker.withContext(this);
     for (Field field : declaredFields) {
       field.link(linker);
@@ -188,9 +188,6 @@ public final class MessageType extends Type {
     }
     for (OneOf oneOf : oneOfs) {
       oneOf.link(linker);
-    }
-    for (Type type : nestedTypes) {
-      type.link(linker);
     }
   }
 

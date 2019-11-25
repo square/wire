@@ -31,7 +31,7 @@ class EnclosingType internal constructor(
   override fun options() = throw UnsupportedOperationException()
   override fun nestedTypes() = nestedTypes
 
-  internal override fun link(linker: Linker) = nestedTypes.forEach { it.link(linker) }
+  internal override fun linkMembers(linker: Linker) {}
   internal override fun linkOptions(linker: Linker) = nestedTypes.forEach { it.linkOptions(linker) }
   internal override fun validate(linker: Linker) = nestedTypes.forEach { it.validate(linker) }
 

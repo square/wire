@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closer;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import com.squareup.wire.schema.internal.parser.ProtoParser;
@@ -165,7 +164,7 @@ public final class SchemaLoader {
       }
     }
 
-    return new Linker().link(loaded.values(), ImmutableList.of());
+    return new Linker(CoreLoader.INSTANCE).link(loaded.values());
   }
 
   /**

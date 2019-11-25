@@ -105,7 +105,7 @@ public final class Options {
 
   Map<ProtoMember, Object> canonicalizeOption(
       Linker linker, ProtoType extensionType, OptionElement option) {
-    Type type = linker.get(extensionType);
+    Type type = linker.getForOptions(extensionType);
     if (!(type instanceof MessageType)) {
       return null; // No known extensions for the given extension type.
     }
@@ -284,7 +284,7 @@ public final class Options {
   }
 
   Options retainAll(Schema schema, MarkSet markSet) {
-    if (map.isEmpty()) return this; // Nothing to prune.
+    if (map == null || map.isEmpty()) return this; // Nothing to prune.
     Options result = new Options(optionType, optionElements);
     Object mapOrNull = retainAll(schema, markSet, optionType, map);
     result.map = mapOrNull != null
@@ -326,5 +326,10 @@ public final class Options {
     } else {
       return o;
     }
+  }
+
+  /** Returns true if these options assigns a value to {@code protoMember}. */
+  boolean assignsMember(ProtoMember protoMember) {
+    return map != null && map.containsKey(protoMember);
   }
 }

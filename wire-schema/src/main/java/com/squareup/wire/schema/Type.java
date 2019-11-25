@@ -27,7 +27,7 @@ public abstract class Type {
   public abstract String documentation();
   public abstract Options options();
   public abstract List<Type> nestedTypes();
-  abstract void link(Linker linker);
+  abstract void linkMembers(Linker linker);
   abstract void linkOptions(Linker linker);
   abstract void validate(Linker linker);
   abstract Type retainAll(Schema schema, MarkSet markSet);

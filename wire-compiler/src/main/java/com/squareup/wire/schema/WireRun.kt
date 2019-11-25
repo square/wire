@@ -143,24 +143,26 @@ data class WireRun(
 ) {
 
   fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
-    // 1. Read source `.proto` files.
-    val schemaLoader = NewSchemaLoader(fs, sourcePath, protoPath)
-    val protoFiles = schemaLoader.load()
+    val (fullSchema, sourceLocationPaths) = NewSchemaLoader(fs).use { schemaLoader ->
+      schemaLoader.initRoots(sourcePath, protoPath)
 
-    // 2. Split source files (completely linked) from path files (linked as necessary).
-    // TODO(jwilson): replace with an interface that loads path files on-demand.
-    val sourceFiles = mutableListOf<ProtoFile>()
-    val pathFiles = mutableListOf<ProtoFile>()
-    for (protoFile in protoFiles) {
-      if (schemaLoader.sourceLocationPaths.contains(protoFile.location().path)) {
-        sourceFiles += protoFile
-      } else {
-        pathFiles += protoFile
+      // 1. Read source `.proto` files.
+      val sourceProtoFiles = schemaLoader.loadSourcePathFiles()
+
+      // 2. Identify source files separately from path files.
+      val sourceLocationPaths = sourceProtoFiles.map { it.location().path }
+
+      // 3. Validate the schema and resolve references
+      val fullSchema = try {
+        Schema.fromFiles(sourceProtoFiles, schemaLoader)
+      } catch (e: Exception) {
+        // TODO(jwilson): collect a single set of errors.
+        schemaLoader.reportLoadingErrors()
+        throw e
       }
-    }
 
-    // 3. Validate the schema and resolve references
-    val fullSchema = Schema.fromFiles(sourceFiles, pathFiles)
+      return@use fullSchema to sourceLocationPaths
+    }
 
     // 4. Optionally prune the schema.
     val schema = treeShake(fullSchema, logger)
@@ -174,7 +176,7 @@ data class WireRun(
         skippedForSyntax += protoFile
         continue
       }
-      if (schemaLoader.sourceLocationPaths.contains(protoFile.location().path)) {
+      if (sourceLocationPaths.contains(protoFile.location().path)) {
         typesToHandle += protoFile.types()
         servicesToHandle += protoFile.services()
       }

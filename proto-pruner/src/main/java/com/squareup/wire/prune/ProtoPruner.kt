@@ -24,16 +24,19 @@ import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 
 class ProtoPruner(
-  private val fs : FileSystem,
+  private val fs: FileSystem,
   private val inPaths: List<String>,
   private val outPath: String,
   private val identifierSet: IdentifierSet
 ) : Runnable {
   override fun run() {
+    val sourcePathFiles = NewSchemaLoader(fs).use { loader ->
+      loader.initRoots(inPaths.map { Location.get(it) })
+      loader.loadSourcePathFiles()
+    }
+
     val schema = Schema
-        .fromFiles(
-            NewSchemaLoader(fs, inPaths.map { Location.get(it) }).load()
-        )
+        .fromFiles(sourcePathFiles)
         .prune(identifierSet)
 
     schema.protoFiles()

@@ -191,6 +191,10 @@ public final class Field {
 
   Field retainAll(Schema schema, MarkSet markSet, ProtoType enclosingType) {
     if (!isUsedAsOption(schema, markSet, enclosingType)) {
+      // If the type is null this field was never linked. Prune it.
+      // TODO(jwilson): perform this transformation in the Linker.
+      if (type == null) return null;
+
       // For map types only the value can participate in pruning as the key will always be scalar.
       if (type.isMap() && !markSet.contains(type.valueType())) return null;
 
@@ -238,20 +242,20 @@ public final class Field {
 
     ProtoMember protoMember = ProtoMember.get(enclosingType, this.qualifiedName());
     if (type instanceof MessageType) {
-      if (type.options().map().containsKey(protoMember)) {
+      if (type.options().assignsMember(protoMember)) {
         return true;
       }
       for (Field messageField : ((MessageType) type).fields()) {
-        if (messageField.options().map().containsKey(protoMember)) {
+        if (messageField.options().assignsMember(protoMember)) {
           return true;
         }
       }
     } else if (type instanceof EnumType) {
-      if (type.options().map().containsKey(protoMember)) {
+      if (type.options().assignsMember(protoMember)) {
         return true;
       }
       for (EnumConstant constant : ((EnumType) type).constants()) {
-        if (constant.getOptions().map().containsKey(protoMember)) {
+        if (constant.getOptions().assignsMember(protoMember)) {
           return true;
         }
       }
