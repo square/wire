@@ -13,158 +13,137 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.io.Closer;
-import com.squareup.wire.schema.internal.parser.ProtoFileElement;
-import com.squareup.wire.schema.internal.parser.ProtoParser;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import okio.BufferedSource;
-import okio.Okio;
-import okio.Source;
-
-import static com.google.common.collect.Iterables.getOnlyElement;
+import com.google.common.io.Closer
+import com.squareup.wire.schema.internal.parser.ProtoFileElement
+import com.squareup.wire.schema.internal.parser.ProtoParser
+import okio.Source
+import okio.buffer
+import okio.source
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.nio.file.FileSystems
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
+import java.util.ArrayDeque
 
 /**
  * Load proto files and their transitive dependencies, parse them, and link them together.
  *
- * <p>To find proto files to load, a non-empty set of sources are searched. Each source is
- * either a regular directory or a ZIP file. Within ZIP files, proto files are expected to be found
- * relative to the root of the archive.
+ * To find proto files to load, a non-empty set of sources are searched. Each source is either a
+ * regular directory or a ZIP file. Within ZIP files, proto files are expected to be found relative
+ * to the root of the archive.
  */
-public final class SchemaLoader {
-  private static final String DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto";
-
-  private final List<Path> sources = new ArrayList<>();
-  private final List<String> protos = new ArrayList<>();
+class SchemaLoader {
+  private val sources = mutableListOf<Path>()
+  private val protos = mutableListOf<String>()
 
   /** Add directory or zip file source from which proto files will be loaded. */
-  public SchemaLoader addSource(File file) {
-    return addSource(file.toPath());
+  fun addSource(file: File) = apply {
+    addSource(file.toPath())
   }
 
   /** Add directory or zip file source from which proto files will be loaded. */
-  public SchemaLoader addSource(Path path) {
-    sources.add(path);
-    return this;
+  fun addSource(path: Path) = apply {
+    sources.add(path)
   }
 
   /** Returns a mutable list of the sources that this loader will load from. */
-  public List<Path> sources() {
-    return sources;
-  }
+  fun sources(): List<Path> = sources
 
   /**
    * Add a proto file to load. Dependencies will be loaded automatically from the configured
    * sources.
    */
-  public SchemaLoader addProto(String proto) {
-    protos.add(proto);
-    return this;
+  fun addProto(proto: String) = apply {
+    protos.add(proto)
   }
 
   /** Returns a mutable list of the protos that this loader will load. */
-  public List<String> protos() {
-    return protos;
-  }
+  fun protos(): List<String> = protos
 
-  public Schema load() throws IOException {
-    if (sources.isEmpty()) {
-      throw new IllegalStateException("No sources added.");
-    }
+  @Throws(IOException::class)
+  fun load(): Schema {
+    check(sources.isNotEmpty()) { "No sources added." }
 
-    try (Closer closer = Closer.create()) {
+    Closer.create().use { closer ->
       // Map the physical path to the file system root. For regular directories the key and the
       // value are equal. For ZIP files the key is the path to the .zip, and the value is the root
       // of the file system within it.
-      Map<Path, Path> directories = new LinkedHashMap<>();
-      for (Path source : sources) {
-        if (Files.isRegularFile(source)) {
-          FileSystem sourceFs = FileSystems.newFileSystem(source, getClass().getClassLoader());
-          closer.register(sourceFs);
-          directories.put(source, getOnlyElement(sourceFs.getRootDirectories()));
-        } else {
-          directories.put(source, source);
+      val directories = mutableMapOf<Path, Path>()
+      for (source in sources) {
+        directories[source] = when {
+          Files.isRegularFile(source) -> {
+            val sourceFs = FileSystems.newFileSystem(source, javaClass.classLoader)
+                .also { closer.register(it) }
+            sourceFs.rootDirectories.single()
+          }
+          else -> {
+            source
+          }
         }
       }
-      return loadFromDirectories(directories);
+      return loadFromDirectories(directories)
     }
   }
 
-  private Schema loadFromDirectories(Map<Path, Path> directories) throws IOException {
-    final Deque<String> protos = new ArrayDeque<>(this.protos);
+  @Throws(IOException::class)
+  private fun loadFromDirectories(directories: Map<Path, Path>): Schema {
+    val protos = ArrayDeque(this.protos)
     if (protos.isEmpty()) {
-      for (final Map.Entry<Path, Path> entry : directories.entrySet()) {
-        Files.walkFileTree(entry.getValue(), new SimpleFileVisitor<Path>() {
-          @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-              throws IOException {
-            if (file.getFileName().toString().endsWith(".proto")) {
-              protos.add(entry.getValue().relativize(file).toString().replace(File.separator, "/"));
+      for (value in directories.values) {
+        Files.walkFileTree(value, object : SimpleFileVisitor<Path>() {
+          @Throws(IOException::class)
+          override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+            if (file.fileName.toString().endsWith(".proto")) {
+              protos.add(value.relativize(file).toString().replace(File.separator, "/"))
             }
-            return FileVisitResult.CONTINUE;
+            return FileVisitResult.CONTINUE
           }
-        });
+        })
       }
     }
 
-    Map<String, ProtoFile> loaded = new LinkedHashMap<>();
-    loaded.put(DESCRIPTOR_PROTO, loadDescriptorProto());
+    val loaded = mutableMapOf<String, ProtoFile>()
+    loaded[DESCRIPTOR_PROTO] = loadDescriptorProto()
 
     while (!protos.isEmpty()) {
-      String proto = protos.removeFirst();
-      if (loaded.containsKey(proto)) {
-        continue;
-      }
+      val proto = protos.removeFirst()
+      if (loaded.containsKey(proto)) continue
 
-      ProtoFileElement element = null;
-      for (Map.Entry<Path, Path> entry : directories.entrySet()) {
-        Source source = source(entry.getValue(), proto);
-        if (source == null) {
-          continue;
-        }
+      var element: ProtoFileElement? = null
+      for ((base, value) in directories) {
+        val source = source(value, proto) ?: continue
 
-        Path base = entry.getKey();
         try {
-          Location location = Location.get(base.toString(), proto);
-          String data = Okio.buffer(source).readUtf8();
-          element = ProtoParser.parse(location, data);
-          break;
-        } catch (IOException e) {
-          throw new IOException("Failed to load " + proto + " from " + base, e);
+          val location = Location.get(base.toString(), proto)
+          val data = source.buffer().readUtf8()
+          element = ProtoParser.parse(location, data)
+          break
+        } catch (e: IOException) {
+          throw IOException("Failed to load $proto from $base", e)
         } finally {
-          source.close();
+          source.close()
         }
       }
       if (element == null) {
-        throw new FileNotFoundException("Failed to locate " + proto + " in " + sources);
+        throw FileNotFoundException("Failed to locate $proto in $sources")
       }
 
-      ProtoFile protoFile = ProtoFile.get(element);
-      loaded.put(proto, protoFile);
+      loaded[proto] = ProtoFile.get(element)
 
       // Queue dependencies to be loaded.
-      for (String importPath : element.getImports()) {
-        protos.addLast(importPath);
+      for (importPath in element.imports) {
+        protos.addLast(importPath)
       }
     }
 
-    return new Linker(CoreLoader.INSTANCE).link(loaded.values());
+    return Linker(CoreLoader).link(loaded.values)
   }
 
   /**
@@ -172,21 +151,26 @@ public final class SchemaLoader {
    * and java_package. If the user has provided their own version of the descriptor proto, that is
    * preferred.
    */
-  private ProtoFile loadDescriptorProto() throws IOException {
-    InputStream resourceAsStream = SchemaLoader.class.getResourceAsStream("/" + DESCRIPTOR_PROTO);
-    try (BufferedSource buffer = Okio.buffer(Okio.source(resourceAsStream))) {
-      String data = buffer.readUtf8();
-      Location location = Location.get("", DESCRIPTOR_PROTO);
-      ProtoFileElement element = ProtoParser.parse(location, data);
-      return ProtoFile.get(element);
+  @Throws(IOException::class)
+  private fun loadDescriptorProto(): ProtoFile {
+    SchemaLoader::class.java.getResourceAsStream("/$DESCRIPTOR_PROTO").source().buffer().use {
+      val data = it.readUtf8()
+      val location = Location.get("", DESCRIPTOR_PROTO)
+      val element = ProtoParser.parse(location, data)
+      return ProtoFile.get(element)
     }
   }
 
-  private static Source source(Path base, String path) throws IOException {
-    Path resolvedPath = base.resolve(path);
-    if (Files.exists(resolvedPath)) {
-      return Okio.source(resolvedPath);
+  companion object {
+    private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
+
+    @Throws(IOException::class)
+    private fun source(base: Path, path: String): Source? {
+      val resolvedPath = base.resolve(path)
+      return when {
+        Files.exists(resolvedPath) -> resolvedPath.source()
+        else -> null
+      }
     }
-    return null;
   }
 }
