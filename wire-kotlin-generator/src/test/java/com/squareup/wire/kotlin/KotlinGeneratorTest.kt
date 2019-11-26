@@ -762,6 +762,21 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("throw missingRequiredFields(var_, \"var\")"))
   }
 
+  @Test fun generateTypeUsesPackageNameOnFieldAndClassNameClash() {
+    val repoBuilder = RepoBuilder()
+        .add("person.proto", """
+        |package common.proto;
+        |enum Gender {
+        |  Gender_Male = 0;
+        |  Gender_Female = 1;
+        |}
+        |message Person {
+        |  optional Gender Gender = 1;
+        |}""".trimMargin())
+    val code = repoBuilder.generateKotlin("common.proto.Person")
+    assertTrue(code.contains("val common_proto_Gender: Gender"))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {
