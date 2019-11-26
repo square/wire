@@ -1060,7 +1060,7 @@ class PrunerTest {
         .include("CurrencyCode")
         .build())
 
-    assertThat(pruned.getType("RoundingMode")).isNotNull() // TODO
+    assertThat(pruned.getType("RoundingMode")).isNotNull()
   }
 
   /**
@@ -1182,5 +1182,110 @@ class PrunerTest {
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("a")).isNotNull()
     assertThat(message.field("b")).isNull()
+  }
+
+  @Test
+  fun excludingGoogleProtobufPrunesAllOptionsOnEnums() {
+    val schema = RepoBuilder()
+        .add("currency_code.proto", """
+             |package squareup;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |message MessageOption {
+             |  optional string a = 1;
+             |  optional string b = 2;
+             |  optional string c = 3;
+             |}
+             |
+             |enum Style {
+             |  VERBOSE = 0;
+             |  POETIC = 1;
+             |  RUDE = 2;
+             |}
+             |
+             |extend google.protobuf.EnumValueOptions {
+             |  optional int32 max_length = 54000;
+             |  optional MessageOption message_option = 54001;
+             |  optional Style style = 54002;
+             |}
+             |
+             |enum Author {
+             |  ZEUS = 1 [(style) = POETIC, (max_length) = 12];
+             |  ARTEMIS = 2;
+             |  APOLLO = 3 [(style) = RUDE, (message_option) = {a: "some", c: "things"}];
+             |  POSEIDON = 4 [deprecated = true];
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
+        .include("squareup.Author")
+        .exclude("google.protobuf.*")
+        .build())
+
+    assertThat(pruned.getType("squareup.Style")).isNull()
+    assertThat(pruned.getType("squareup.MessageOption")).isNull()
+    val authorType = pruned.getType("squareup.Author") as EnumType
+    assertThat(authorType.constant("ZEUS")!!.options.fields().isEmpty()).isTrue()
+    assertThat(authorType.constant("ARTEMIS")!!.options.fields().isEmpty()).isTrue()
+    assertThat(authorType.constant("APOLLO")!!.options.fields().isEmpty()).isTrue()
+    assertThat(authorType.constant("POSEIDON")!!.options.fields().isEmpty()).isTrue()
+  }
+
+  @Test
+  fun excludingGoogleProtobufPrunesAllOptionsOnMessages() {
+    val schema = RepoBuilder()
+        .add("currency_code.proto", """
+             |package squareup;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |message MessageOption {
+             |  optional string a = 1;
+             |  optional string b = 2;
+             |  optional string c = 3;
+             |}
+             |
+             |enum Style {
+             |  VERBOSE = 0;
+             |  POETIC = 1;
+             |  RUDE = 2;
+             |}
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional int32 max_length = 54000;
+             |  optional MessageOption message_option = 54001;
+             |  optional Style style = 54002;
+             |}
+             |
+             |message Letter {
+             |  optional string header = 1 [(max_length) = 20];
+             |  optional bool add_margin = 2 [deprecated = true];
+             |  optional string author = 3 [(style) = RUDE, (message_option) = {a: "some", c: "things"}];
+             |  optional string signature = 4 [default = "Sent from Wire"];
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val pruned = schema.prune(IdentifierSet.Builder()
+        .include("squareup.Letter")
+        .exclude("google.protobuf.*")
+        .build())
+
+    assertThat(pruned.getType("squareup.Style")).isNull()
+    assertThat(pruned.getType("squareup.MessageOption")).isNull()
+
+    val letterType = pruned.getType("squareup.Letter") as MessageType
+    assertThat(letterType.field("header").options().fields().isEmpty()).isTrue()
+
+    assertThat(letterType.field("add_margin").options().fields().isEmpty()).isTrue()
+    assertThat(letterType.field("add_margin").isDeprecated).isTrue()
+
+    assertThat(letterType.field("author").options().fields().isEmpty()).isTrue()
+
+    // Default are not options.
+    assertThat(letterType.field("signature").default).isEqualTo("Sent from Wire")
+    assertThat(letterType.field("signature").options().fields().isEmpty()).isTrue()
   }
 }
