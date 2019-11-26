@@ -265,20 +265,28 @@ public final class Options {
 
   Multimap<ProtoType, ProtoMember> fields() {
     Multimap<ProtoType, ProtoMember> result = LinkedHashMultimap.create();
-    gatherFields(result, optionType, map);
+    gatherFields(result, optionType, map, new IdentifierSet.Builder().build());
     return result;
   }
 
-  private void gatherFields(Multimap<ProtoType, ProtoMember> sink, ProtoType type, Object o) {
+  Multimap<ProtoType, ProtoMember> fields(IdentifierSet identifierSet) {
+    Multimap<ProtoType, ProtoMember> result = LinkedHashMultimap.create();
+    gatherFields(result, optionType, map, identifierSet);
+    return result;
+  }
+
+  private void gatherFields(Multimap<ProtoType, ProtoMember> sink, ProtoType type, Object o,
+      IdentifierSet identifierSet) {
     if (o instanceof Map) {
       for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet()) {
         ProtoMember protoMember = (ProtoMember) entry.getKey();
+        if (identifierSet.excludes(protoMember)) continue;
         sink.put(type, protoMember);
-        gatherFields(sink, protoMember.type(), entry.getValue());
+        gatherFields(sink, protoMember.type(), entry.getValue(), identifierSet);
       }
     } else if (o instanceof List) {
       for (Object e : (List) o) {
-        gatherFields(sink, type, e);
+        gatherFields(sink, type, e, identifierSet);
       }
     }
   }

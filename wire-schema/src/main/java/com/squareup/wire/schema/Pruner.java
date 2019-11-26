@@ -229,7 +229,7 @@ final class Pruner {
       throw new IllegalStateException("unexpected root: " + root);
     }
 
-    for (ProtoMember member : options.fields().values()) {
+    for (ProtoMember member : options.fields(identifierSet).values()) {
       // If it's an extension, don't consider the entire enclosing type to be reachable.
       if (isExtensionField(member)) {
         result.add(member.type());
