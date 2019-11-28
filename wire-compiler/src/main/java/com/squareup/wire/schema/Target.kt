@@ -249,3 +249,50 @@ data class NullTarget(
     }
   }
 }
+
+/**
+ * Generate something custom defined by an external class.
+ *
+ * This API is currently unstable. We will be changing this API in the future.
+ */
+data class CustomTargetBeta(
+  override val includes: List<String> = listOf("*"),
+  override val excludes: List<String> = listOf(),
+  override val exclusive: Boolean = true,
+  val outDirectory: String,
+  /**
+   * A fully qualified class name for a class that implements [CustomHandlerBeta]. The class must
+   * have a no-arguments public constructor.
+   */
+  val customHandlerClass: String
+) : Target() {
+  override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+    val customHandlerType = try {
+      Class.forName(customHandlerClass)
+    } catch (exception: ClassNotFoundException) {
+      throw IllegalArgumentException("Couldn't find CustomHandlerClass '$customHandlerClass'")
+    }
+
+    val constructor = try {
+      customHandlerType.getConstructor()
+    } catch (exception: NoSuchMethodException) {
+      throw IllegalArgumentException("No public constructor on $customHandlerClass")
+    }
+
+    val instance = constructor.newInstance() as? CustomHandlerBeta
+        ?: throw IllegalArgumentException(
+            "$customHandlerClass does not implement CustomHandlerBeta")
+
+    return instance.newHandler(schema, fs, outDirectory, logger)
+  }
+}
+
+/**
+ * Implementations of this interface must have a no-arguments public constructor.
+ *
+ * This API is currently unstable. We will be changing this API in the future.
+ */
+interface CustomHandlerBeta {
+  fun newHandler(schema: Schema, fs: FileSystem, outDirectory: String, logger: WireLogger):
+      Target.SchemaHandler
+}

@@ -17,6 +17,7 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.schema.CustomTargetBeta
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.Target
@@ -139,5 +140,30 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       it.source(out)
       it.dependsOn(wireTask)
     }
+  }
+}
+
+open class CustomOutput @Inject constructor() : WireOutput() {
+  var includes: List<String>? = null
+  var excludes: List<String>? = null
+  var exclusive: Boolean = true
+  var customHandlerClass: String? = null
+
+  override fun toTarget(): CustomTargetBeta {
+    return CustomTargetBeta(
+        includes = includes ?: listOf("*"),
+        excludes = excludes ?: listOf(),
+        exclusive = exclusive,
+        outDirectory = out!!,
+        customHandlerClass = customHandlerClass
+            ?: throw IllegalArgumentException("customHandlerClass required")
+    )
+  }
+
+  override fun applyToProject(
+    project: Project,
+    wireTask: TaskProvider<WireTask>?,
+    kotlin: Boolean
+  ) {
   }
 }
