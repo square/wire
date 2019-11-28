@@ -527,7 +527,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     BAZ(3),
 
-    BUZ(3);
+    BUZ(4);
 
     public static final ProtoAdapter<NestedEnum> ADAPTER = new ProtoAdapter_NestedEnum();
 
@@ -545,6 +545,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
         case 1: return FOO;
         case 2: return BAR;
         case 3: return BAZ;
+        case 4: return BUZ;
         default: return null;
       }
     }

@@ -608,7 +608,7 @@ class SimpleMessage(
     BAZ(3),
 
     @Deprecated(message = "BUZ is deprecated")
-    BUZ(3);
+    BUZ(4);
 
     companion object {
       @JvmField
@@ -623,7 +623,7 @@ class SimpleMessage(
         1 -> FOO
         2 -> BAR
         3 -> BAZ
-        3 -> BUZ
+        4 -> BUZ
         else -> null
       }
     }
