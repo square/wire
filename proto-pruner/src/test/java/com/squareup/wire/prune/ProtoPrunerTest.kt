@@ -67,7 +67,7 @@ class ProtoPrunerTest {
 
   @Test
   fun testOptions() {
-    val sources = arrayOf("squareup.options.letter.Letter")
+    val sources = arrayOf("squareup.options.letter.Letter", "squareup.options.letter.Post")
     invokeProtoPruner(sources, "--excludes=google.protobuf.*")
 
     val outputs = arrayOf(

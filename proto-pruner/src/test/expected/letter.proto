@@ -20,3 +20,11 @@ enum Style {
   SHORT = 1 [(squareup.options.misc.text_alignment) = 3];
   LONG = 2 [(squareup.options.misc.text_alignment) = 4];
 }
+
+service Post {
+  option (squareup.options.misc.httpOneOnly) = false;
+
+  rpc ExchangeLetter (stream Letter) returns (stream Letter) {
+    option (squareup.options.misc.hide) = true;
+  };
+}

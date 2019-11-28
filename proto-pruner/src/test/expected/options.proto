@@ -13,3 +13,9 @@ extend google.protobuf.MessageOptions {
 extend google.protobuf.EnumValueOptions {
   optional int32 text_alignment = 54000;
 }
+extend google.protobuf.ServiceOptions {
+  optional bool httpOneOnly = 56000;
+}
+extend google.protobuf.MethodOptions {
+  optional bool hide = 56001;
+}
