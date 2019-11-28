@@ -233,6 +233,22 @@ public final class Field {
       for (Type type : protoFile.types()) {
         if (isUsedAsOption(markSet, enclosingType, type)) return true;
       }
+      for (Service service : protoFile.services()) {
+        if (isUsedAsOption(markSet, enclosingType, service)) return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isUsedAsOption(MarkSet markSet, ProtoType enclosingType, Service service) {
+    if (!markSet.contains(service.type())) return false;
+
+    ProtoMember protoMember = ProtoMember.get(enclosingType, this.qualifiedName());
+    if (service.options().assignsMember(protoMember)) {
+      return true;
+    }
+    for (Rpc rpc : service.rpcs()) {
+      if (rpc.options().assignsMember(protoMember)) return true;
     }
     return false;
   }

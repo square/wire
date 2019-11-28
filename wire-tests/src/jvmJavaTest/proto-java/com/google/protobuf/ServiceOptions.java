@@ -25,6 +25,8 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
 
   public static final Boolean DEFAULT_DEPRECATED = false;
 
+  public static final Boolean DEFAULT_HTTPONEONLY = false;
+
   /**
    * Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
    *   framework.  We apologize for hoarding these numbers to ourselves, but
@@ -51,15 +53,26 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
   )
   public final List<UninterpretedOption> uninterpreted_option;
 
-  public ServiceOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option) {
-    this(deprecated, uninterpreted_option, ByteString.EMPTY);
+  /**
+   * Extension source: options.proto
+   */
+  @WireField(
+      tag = 56000,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public final Boolean httpOneOnly;
+
+  public ServiceOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option,
+      Boolean httpOneOnly) {
+    this(deprecated, uninterpreted_option, httpOneOnly, ByteString.EMPTY);
   }
 
   public ServiceOptions(Boolean deprecated, List<UninterpretedOption> uninterpreted_option,
-      ByteString unknownFields) {
+      Boolean httpOneOnly, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.deprecated = deprecated;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.httpOneOnly = httpOneOnly;
   }
 
   @Override
@@ -67,6 +80,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     Builder builder = new Builder();
     builder.deprecated = deprecated;
     builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
+    builder.httpOneOnly = httpOneOnly;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -78,7 +92,8 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     ServiceOptions o = (ServiceOptions) other;
     return unknownFields().equals(o.unknownFields())
         && Internal.equals(deprecated, o.deprecated)
-        && uninterpreted_option.equals(o.uninterpreted_option);
+        && uninterpreted_option.equals(o.uninterpreted_option)
+        && Internal.equals(httpOneOnly, o.httpOneOnly);
   }
 
   @Override
@@ -88,6 +103,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
       result = unknownFields().hashCode();
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
+      result = result * 37 + (httpOneOnly != null ? httpOneOnly.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -98,6 +114,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     StringBuilder builder = new StringBuilder();
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (httpOneOnly != null) builder.append(", httpOneOnly=").append(httpOneOnly);
     return builder.replace(0, 2, "ServiceOptions{").append('}').toString();
   }
 
@@ -105,6 +122,8 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     public Boolean deprecated;
 
     public List<UninterpretedOption> uninterpreted_option;
+
+    public Boolean httpOneOnly;
 
     public Builder() {
       uninterpreted_option = Internal.newMutableList();
@@ -134,9 +153,14 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
       return this;
     }
 
+    public Builder httpOneOnly(Boolean httpOneOnly) {
+      this.httpOneOnly = httpOneOnly;
+      return this;
+    }
+
     @Override
     public ServiceOptions build() {
-      return new ServiceOptions(deprecated, uninterpreted_option, super.buildUnknownFields());
+      return new ServiceOptions(deprecated, uninterpreted_option, httpOneOnly, super.buildUnknownFields());
     }
   }
 
@@ -149,6 +173,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     public int encodedSize(ServiceOptions value) {
       return ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
+          + ProtoAdapter.BOOL.encodedSizeWithTag(56000, value.httpOneOnly)
           + value.unknownFields().size();
     }
 
@@ -156,6 +181,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
     public void encode(ProtoWriter writer, ServiceOptions value) throws IOException {
       ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 56000, value.httpOneOnly);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -167,6 +193,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
         switch (tag) {
           case 33: builder.deprecated(ProtoAdapter.BOOL.decode(reader)); break;
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
+          case 56000: builder.httpOneOnly(ProtoAdapter.BOOL.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
