@@ -604,6 +604,15 @@ class WirePluginTest {
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
   }
 
+  @Test
+  fun customOutput() {
+    val fixtureRoot = File("src/test/projects/custom-output")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    assertThat(result.output)
+        .contains("Couldn't find CustomHandlerClass 'NoSuchClass'")
+  }
+
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
     val protoFieldPattern = "@field:WireField.*?(val .*?):"
     val matchedFields = protoFieldPattern.toRegex(setOf(MULTILINE, DOT_MATCHES_ALL))

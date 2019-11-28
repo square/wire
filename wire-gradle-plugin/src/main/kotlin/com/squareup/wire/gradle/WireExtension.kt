@@ -18,7 +18,6 @@ package com.squareup.wire.gradle
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
-import org.gradle.api.internal.file.SourceDirectorySetFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
@@ -168,6 +167,12 @@ open class WireExtension(project: Project) {
     val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)
     action.execute(kotlinOutput)
     outputs += kotlinOutput
+  }
+
+  fun custom(action: Action<CustomOutput>) {
+    val customOutput = objectFactory.newInstance(CustomOutput::class.java)
+    action.execute(customOutput)
+    outputs += customOutput
   }
 
   open class ProtoRootSet {

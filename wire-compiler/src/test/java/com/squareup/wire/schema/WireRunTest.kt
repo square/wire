@@ -21,7 +21,7 @@ import com.squareup.wire.StringWireLogger
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
+import org.junit.Assert.fail
 import org.junit.Test
 
 class WireRunTest {
@@ -424,10 +424,99 @@ class WireRunTest {
         .contains("public final class Blue extends Message")
   }
 
+  @Test
+  fun customOnly() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(CustomTargetBeta(
+            outDirectory = "generated/markdown",
+            customHandlerClass = MarkdownHandler::class.qualifiedName!!
+        ))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/markdown/squareup/colors/Blue.md",
+        "generated/markdown/squareup/colors/Red.md")
+    assertThat(fs.get("generated/markdown/squareup/colors/Blue.md")).isEqualTo("""
+            |# Blue
+            |
+            |This is the color of the sky.
+            |""".trimMargin())
+    assertThat(fs.get("generated/markdown/squareup/colors/Red.md")).isEqualTo("""
+            |# Red
+            |
+            |This is the color of the sky when the sky is lava.
+            |""".trimMargin())
+  }
+
+  @Test
+  fun noSuchClass() {
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(CustomTargetBeta(
+            outDirectory = "generated/markdown",
+            customHandlerClass = "foo"
+        ))
+    )
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (expected: IllegalArgumentException) {
+      assertThat(expected).hasMessage("Couldn't find CustomHandlerClass 'foo'")
+    }
+  }
+
+  @Test
+  fun noPublicConstructor() {
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(CustomTargetBeta(
+            outDirectory = "generated/markdown",
+            customHandlerClass = "java.lang.Void"
+        ))
+    )
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (expected: IllegalArgumentException) {
+      assertThat(expected).hasMessage("No public constructor on java.lang.Void")
+    }
+  }
+
+  @Test
+  fun classDoesNotImplementCustomHandlerInterface() {
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(CustomTargetBeta(
+            outDirectory = "generated/markdown",
+            customHandlerClass = "java.lang.Object"
+        ))
+    )
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (expected: IllegalArgumentException) {
+      assertThat(expected).hasMessage("java.lang.Object does not implement CustomHandlerBeta")
+    }
+  }
+
   private fun writeRedProto() {
     fs.add("colors/src/main/proto/squareup/colors/red.proto", """
           |syntax = "proto2";
           |package squareup.colors;
+          |/** This is the color of the sky when the sky is lava. */
           |message Red {
           |  optional string oval = 1;
           |}
@@ -452,6 +541,7 @@ class WireRunTest {
           |syntax = "proto2";
           |package squareup.colors;
           |import "squareup/polygons/triangle.proto";
+          |/** This is the color of the sky. */
           |message Blue {
           |  optional string circle = 1;
           |  optional squareup.polygons.Triangle triangle = 2;
