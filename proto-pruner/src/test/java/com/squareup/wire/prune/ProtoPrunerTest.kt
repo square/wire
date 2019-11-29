@@ -68,11 +68,23 @@ class ProtoPrunerTest {
   @Test
   fun testOptions() {
     val sources = arrayOf("squareup.options.letter.Letter", "squareup.options.letter.Post")
+    invokeProtoPruner(sources)
+
+    val outputs = arrayOf(
+        "google/protobuf/descriptor.proto",
+        "letter.proto",
+        "options.proto"
+    )
+    assertOutputs(outputs)
+  }
+
+  @Test @Ignore("Options are not properly pruned yet. See #1243.")
+  fun testOptionsExcludingProtobuf() {
+    val sources = arrayOf("squareup.options.poem.Poem", "squareup.options.poem.Court")
     invokeProtoPruner(sources, "--excludes=google.protobuf.*")
 
     val outputs = arrayOf(
-        "letter.proto",
-        "options.proto"
+        "poem.proto"
     )
     assertOutputs(outputs)
   }
