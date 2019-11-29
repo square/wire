@@ -1,0 +1,50 @@
+// google/protobuf/descriptor.proto
+syntax = "proto2";
+package google.protobuf;
+
+option go_package = "github.com/golang/protobuf/protoc-gen-go/descriptor;descriptor";
+option java_package = "com.google.protobuf";
+option java_outer_classname = "DescriptorProtos";
+option csharp_namespace = "Google.Protobuf.Reflection";
+option objc_class_prefix = "GPB";
+option cc_enable_arenas = true;
+option optimize_for = SPEED;
+
+message MessageOptions {
+  reserved 8;
+  // javalite_serializable
+  reserved 9;
+
+  // Clients can define custom options in extensions of this message. See above.
+  extensions 1000 to max;
+}
+message FieldOptions {
+  reserved 4;
+
+  // The packed option can be enabled for repeated primitive fields to enable
+  // a more efficient representation on the wire. Rather than repeatedly
+  // writing the tag and type for each element, the entire array is encoded as
+  // a single length-delimited blob. In proto3, only explicit setting it to
+  // false will avoid using packed encoding.
+  optional bool packed = 2;
+  // Is this field deprecated?
+  // Depending on the target platform, this can emit Deprecated annotations
+  // for accessors, or it will be completely ignored; in the very least, this
+  // is a formalization for deprecating fields.
+  optional bool deprecated = 3 [default = false];
+
+  // Clients can define custom options in extensions of this message. See above.
+  extensions 1000 to max;
+}
+message EnumValueOptions {
+  // Clients can define custom options in extensions of this message. See above.
+  extensions 1000 to max;
+}
+message ServiceOptions {
+  // Clients can define custom options in extensions of this message. See above.
+  extensions 1000 to max;
+}
+message MethodOptions {
+  // Clients can define custom options in extensions of this message. See above.
+  extensions 1000 to max;
+}
