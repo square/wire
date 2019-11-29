@@ -48,7 +48,8 @@ task generateJavaTests(type: JavaExec) {
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/java',
       '--java_out=wire-tests/src/jvmJavaTest/proto-java',
-      'google/protobuf/descriptor.proto'
+      'google/protobuf/descriptor.proto',
+      '--excludes=squareup.options.*',
   ] + PROTOS
 }
 
@@ -62,7 +63,8 @@ task generateNoOptionsTests(type: JavaExec) {
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/java',
       '--java_out=wire-tests/src/jvmJavaNoOptionsTest/proto-java',
-      '--excludes=google.protobuf.*'
+      '--excludes=google.protobuf.*',
+      '--excludes=squareup.options.*',
   ] + PROTOS
 }
 
