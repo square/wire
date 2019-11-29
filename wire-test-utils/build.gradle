@@ -13,6 +13,7 @@ dependencies {
   api project(':wire-runtime')
   implementation project(':wire-java-generator')
   implementation project(':wire-kotlin-generator')
+  implementation project(':wire-compiler')
   implementation deps.okio.jvm
   implementation deps.guava
   implementation deps.jimfs

@@ -20,6 +20,9 @@ import com.google.common.jimfs.Jimfs
 import com.squareup.wire.StringWireLogger
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.testing.add
+import com.squareup.wire.testing.find
+import com.squareup.wire.testing.get
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test

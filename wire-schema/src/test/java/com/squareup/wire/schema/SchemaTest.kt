@@ -26,27 +26,21 @@ class SchemaTest {
   @Test
   fun linkService() {
     val schema = RepoBuilder()
-        .add("service.proto",
-            """
+        .add("service.proto", """
             |import "request.proto";
             |import "response.proto";
             |service Service {
             |  rpc Call (Request) returns (Response);
             |}
-            """.trimMargin()
-        )
-        .add("request.proto",
-            """
+            """.trimMargin())
+        .add("request.proto", """
             |message Request {
             |}
-            """.trimMargin()
-        )
-        .add("response.proto",
-            """
+            """.trimMargin())
+        .add("response.proto", """
             |message Response {
             |}
-            """.trimMargin()
-        )
+            """.trimMargin())
         .schema()
 
     val service = schema.getService("Service")
@@ -58,24 +52,20 @@ class SchemaTest {
   @Test
   fun linkMessage() {
     val schema = RepoBuilder()
-        .add("message.proto",
-            """
+        .add("message.proto", """
             |import "foo.proto";
             |message Message {
             |  optional foo_package.Foo field = 1;
             |  map<string, foo_package.Bar> bars = 2;
             |}
-            """.trimMargin()
-        )
-        .add("foo.proto",
-            """
+            """.trimMargin())
+        .add("foo.proto", """
             |package foo_package;
             |message Foo {
             |}
             |message Bar {
             |}
-            """.trimMargin()
-        )
+            """.trimMargin())
         .schema()
 
     val message = schema.getType("Message") as MessageType
@@ -90,8 +80,7 @@ class SchemaTest {
   @Test
   fun linkExtendTypeInOuterMessage() {
     val schema = RepoBuilder()
-        .add("foo.proto",
-            """
+        .add("foo.proto", """
             |message Other {
             |  extensions 1;
             |}
@@ -104,8 +93,7 @@ class SchemaTest {
             |  extend Other {
             |    optional Choice choice = 1;
             |  }
-            """.trimMargin()
-        )
+            """.trimMargin())
         .schema()
 
     val message = schema.getType("Other") as MessageType
@@ -139,8 +127,7 @@ class SchemaTest {
             |  optional int32 g = 536870911;
             |  optional int32 h = 536870912;
             |}
-            """.trimMargin()
-          )
+            """.trimMargin())
           .schema()
       fail()
     } catch (expected: SchemaException) {

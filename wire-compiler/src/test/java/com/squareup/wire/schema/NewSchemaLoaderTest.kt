@@ -17,6 +17,9 @@ package com.squareup.wire.schema
 
 import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
+import com.squareup.wire.testing.add
+import com.squareup.wire.testing.addZip
+import com.squareup.wire.testing.symlink
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import kotlin.test.assertFailsWith

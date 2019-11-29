@@ -18,21 +18,12 @@ package com.squareup.wire.schema
 import com.google.common.io.Closer
 import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
-import okio.buffer
-import okio.sink
+import com.squareup.wire.testing.add
+import com.squareup.wire.testing.addZip
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Test
-import java.nio.file.FileSystem
-import java.nio.file.FileVisitResult
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.SimpleFileVisitor
-import java.nio.file.attribute.BasicFileAttributes
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 import kotlin.test.assertFailsWith
-import kotlin.text.Charsets.UTF_8
 
 class RootTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
@@ -130,56 +121,5 @@ class RootTest {
     }
     assertThat(exception)
         .hasMessage("expected a directory, archive (.zip / .jar / etc.), or .proto: $onlyFile")
-  }
-}
-
-fun FileSystem.add(pathString: String, contents: String) {
-  val path = getPath(pathString)
-  if (path.parent != null) {
-    Files.createDirectories(path.parent)
-  }
-  Files.write(path, contents.toByteArray(UTF_8))
-}
-
-fun FileSystem.symlink(linkPathString: String, targetPathString: String) {
-  val linkPath = getPath(linkPathString)
-  if (linkPath.parent != null) {
-    Files.createDirectories(linkPath.parent)
-  }
-  val targetPath = getPath(targetPathString)
-  Files.createSymbolicLink(linkPath, targetPath)
-}
-
-fun FileSystem.get(pathString: String): String {
-  val path = getPath(pathString)
-  return String(Files.readAllBytes(path), UTF_8)
-}
-
-fun FileSystem.find(path: String): Set<String> {
-  val result = mutableSetOf<String>()
-  Files.walkFileTree(getPath(path), object : SimpleFileVisitor<Path>() {
-    override fun visitFile(path: Path, attrs: BasicFileAttributes): FileVisitResult {
-      if (!Files.isDirectory(path)) {
-        result.add(path.toString())
-      }
-      return FileVisitResult.CONTINUE
-    }
-  })
-  return result
-}
-
-fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>) {
-  val path = getPath(pathString)
-  if (path.parent != null) {
-    Files.createDirectories(path.parent)
-  }
-
-  ZipOutputStream(Files.newOutputStream(path)).use { zipOut ->
-    val zipSink = zipOut.sink().buffer()
-    for ((elementPath, elementContents) in contents) {
-      zipOut.putNextEntry(ZipEntry(elementPath))
-      zipSink.writeUtf8(elementContents)
-      zipSink.flush()
-    }
   }
 }
