@@ -20,6 +20,7 @@ import com.squareup.wire.schema.internal.parser.EnumElement;
 import com.squareup.wire.schema.internal.parser.MessageElement;
 import com.squareup.wire.schema.internal.parser.TypeElement;
 import java.util.List;
+import java.util.Set;
 
 public abstract class Type {
   public abstract Location location();
@@ -31,6 +32,16 @@ public abstract class Type {
   abstract void linkOptions(Linker linker);
   abstract void validate(Linker linker);
   abstract Type retainAll(Schema schema, MarkSet markSet);
+
+  /**
+   * Returns a copy of this containing only the types in {@code linkedTypes}, or null if that set
+   * is empty. This will return an {@code EnclosingType} if it is itself not linked, but its
+   * nested types are linked.
+   *
+   * The returned type is a shadow of its former self. It it useful for linking against, but lacks
+   * most of the members of the original type.
+   */
+  abstract Type retainLinked(Set<ProtoType> linkedTypes);
 
   public static Type get(String packageName, ProtoType protoType, TypeElement type) {
     if (type instanceof EnumElement) {

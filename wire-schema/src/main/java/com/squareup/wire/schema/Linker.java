@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** Links local field types and option types to the corresponding declarations. */
 final class Linker {
@@ -33,6 +35,7 @@ final class Linker {
   private final Map<String, Type> protoTypeNames;
   private final List<String> errors;
   private final List<Object> contextStack;
+  private final Set<ProtoType> requestedTypes;
 
   Linker(Loader loader) {
     this.loader = loader;
@@ -40,6 +43,7 @@ final class Linker {
     this.protoTypeNames = new LinkedHashMap<>();
     this.contextStack = Collections.emptyList();
     this.errors = new ArrayList<>();
+    this.requestedTypes = new LinkedHashSet<>();
   }
 
   private Linker(Linker enclosing, Object additionalContext) {
@@ -48,6 +52,7 @@ final class Linker {
     this.protoTypeNames = enclosing.protoTypeNames;
     this.contextStack = Util.concatenate(enclosing.contextStack, additionalContext);
     this.errors = enclosing.errors;
+    this.requestedTypes = enclosing.requestedTypes;
   }
 
   /** Returns a linker for {@code path}, loading the file if necessary. */
@@ -82,7 +87,11 @@ final class Linker {
     descriptorProto.requireTypesRegistered();
 
     for (FileLinker fileLinker : sourceFiles) {
-      fileLinker.linkExtensions();
+      fileLinker.requireExtensionsLinked();
+    }
+
+    for (FileLinker fileLinker : sourceFiles) {
+      fileLinker.requireImportedExtensionsRegistered();
     }
 
     for (FileLinker fileLinker : sourceFiles) {
@@ -103,8 +112,25 @@ final class Linker {
 
     ImmutableList.Builder<ProtoFile> result = ImmutableList.builder();
     for (FileLinker fileLinker : fileLinkers.values()) {
-      result.add(fileLinker.protoFile());
+      if (sourceFiles.contains(fileLinker)) {
+        result.add(fileLinker.protoFile());
+        continue;
+      }
+
+      // Retain this type if it's used by anything in the source path.
+      boolean anyTypeIsUsed = false;
+      for (Type type : fileLinker.protoFile().types()) {
+        if (requestedTypes.contains(type.type())) {
+          anyTypeIsUsed = true;
+          break;
+        }
+      }
+
+      if (anyTypeIsUsed) {
+        result.add(fileLinker.protoFile().retainLinked(requestedTypes));
+      }
     }
+
     return new Schema(result.build());
   }
 
@@ -155,6 +181,8 @@ final class Linker {
       addError("expected a message but was %s", name);
       return ProtoType.BYTES; // Just return any placeholder.
     }
+
+    requestedTypes.add(resolved.type());
 
     return resolved.type();
   }
@@ -210,7 +238,7 @@ final class Linker {
    * Returns the files imported in the current context. These files declare the types that may be
    * resolved.
    */
-  private List<FileLinker> contextImportedTypes() {
+  List<FileLinker> contextImportedTypes() {
     ImmutableList.Builder<FileLinker> result = ImmutableList.builder();
 
     for (int i = contextStack.size() - 1; i >= 0; i--) {
@@ -235,13 +263,20 @@ final class Linker {
   /** Returns the type or null if it doesn't exist. */
   Type get(ProtoType protoType) {
     Type result = protoTypeNames.get(protoType.toString());
-    if (result != null) return result;
 
     // If no type could be resolved, load imported files and try again.
-    for (FileLinker fileLinker : contextImportedTypes()) {
-      fileLinker.requireTypesRegistered();
+    if (result == null) {
+      for (FileLinker fileLinker : contextImportedTypes()) {
+        fileLinker.requireTypesRegistered();
+      }
+      result = protoTypeNames.get(protoType.toString());
     }
-    return protoTypeNames.get(protoType.toString());
+
+    if (result != null) {
+      requestedTypes.add(protoType);
+    }
+
+    return result;
   }
 
   /**
@@ -263,7 +298,7 @@ final class Linker {
       field = field.substring(1, field.length() - 1);
     }
 
-    Type type = protoTypeNames.get(self.type().toString());
+    Type type = get(self.type());
     if (type instanceof MessageType) {
       MessageType messageType = (MessageType) type;
       Field messageField = messageType.field(field);

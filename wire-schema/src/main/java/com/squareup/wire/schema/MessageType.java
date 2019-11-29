@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -255,6 +256,44 @@ public final class MessageType extends Type {
         Field.retainAll(schema, markSet, protoType, declaredFields),
         Field.retainAll(schema, markSet, protoType, extensionFields), retainedOneOfs,
         retainedNestedTypes, extensionsList, reserveds, options.retainAll(schema, markSet));
+  }
+
+  @Override Type retainLinked(Set<ProtoType> linkedTypes) {
+    ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
+    for (Type nestedType : nestedTypes) {
+      Type retainedNestedType = nestedType.retainLinked(linkedTypes);
+      if (retainedNestedType != null) {
+        retainedNestedTypesBuilder.add(retainedNestedType);
+      }
+    }
+
+    ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
+    if (!linkedTypes.contains(protoType)) {
+      // If this type is not retained, and none of its nested types are retained, prune it.
+      if (retainedNestedTypes.isEmpty()) {
+        return null;
+      }
+
+      // If this type is not retained but retained nested types, replace it with an enclosing type.
+      return new EnclosingType(location, protoType, documentation, retainedNestedTypes);
+    }
+
+    // We're retaining this type. Retain its fields and oneofs.
+    ImmutableList.Builder<OneOf> retainedOneOfsBuilder = ImmutableList.builder();
+    for (OneOf oneOf : oneOfs) {
+      OneOf retainedOneOf = oneOf.retainLinked();
+      if (retainedOneOf != null) {
+        retainedOneOfsBuilder.add(retainedOneOf);
+      }
+    }
+    ImmutableList<OneOf> retainedOneOfs = retainedOneOfsBuilder.build();
+
+    Options retainedOptions = options.retainLinked();
+    ImmutableList<Field> retainedDeclaredFields = Field.retainLinked(this.declaredFields);
+    ImmutableList<Field> retainedExtensionFields = Field.retainLinked(this.extensionFields);
+    return new MessageType(protoType, location, documentation, name, retainedDeclaredFields,
+        retainedExtensionFields, retainedOneOfs, retainedNestedTypes, ImmutableList.of(),
+        ImmutableList.of(), retainedOptions);
   }
 
   static MessageType fromElement(String packageName, ProtoType protoType,

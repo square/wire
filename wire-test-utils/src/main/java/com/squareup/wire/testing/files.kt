@@ -48,6 +48,11 @@ fun FileSystem.get(pathString: String): String {
   return String(Files.readAllBytes(path), Charsets.UTF_8)
 }
 
+fun FileSystem.exists(pathString: String): Boolean {
+  val path = getPath(pathString)
+  return Files.exists(path)
+}
+
 fun FileSystem.find(path: String): Set<String> {
   val result = mutableSetOf<String>()
   Files.walkFileTree(getPath(path), object : SimpleFileVisitor<Path>() {

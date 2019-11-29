@@ -34,6 +34,9 @@ class EnumConstant private constructor(
     markSet: MarkSet
   ) = EnumConstant(location, name, tag, documentation, options.retainAll(schema, markSet))
 
+  internal fun retainLinked() =
+      EnumConstant(location, name, tag, documentation, options.retainLinked())
+
   companion object {
     internal fun fromElements(elements: List<EnumConstantElement>) =
       elements.map {

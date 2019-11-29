@@ -18,6 +18,7 @@ package com.squareup.wire.schema;
 import com.google.common.collect.ImmutableList;
 import com.squareup.wire.schema.internal.parser.ProtoFileElement;
 import java.util.List;
+import java.util.Set;
 
 import static com.squareup.wire.schema.Options.FILE_OPTIONS;
 
@@ -170,6 +171,30 @@ public final class ProtoFile {
     ProtoFile result = new ProtoFile(location, imports, publicImports, packageName,
         retainedTypes.build(), retainedServices.build(), retainedExtends.build(),
         options.retainAll(schema, markSet), syntax);
+    result.javaPackage = javaPackage;
+    return result;
+  }
+
+  /** Return a copy of this file with only the marked types. */
+  ProtoFile retainLinked(Set<ProtoType> linkedTypes) {
+    ImmutableList.Builder<Type> retainedTypes = ImmutableList.builder();
+    for (Type type : types) {
+      Type retained = type.retainLinked(linkedTypes);
+      if (retained != null) {
+        retainedTypes.add(retained);
+      }
+    }
+
+    // Other .proto files can't link to our services so strip them unconditionally.
+    ImmutableList<Service> retainedServices = ImmutableList.of();
+
+    // Strip the extends. They've already been applied to their target types.
+    ImmutableList<Extend> retainedExtends = ImmutableList.of();
+
+    Options retainedOptions = options.retainLinked();
+
+    ProtoFile result = new ProtoFile(location, imports, publicImports, packageName,
+        retainedTypes.build(), retainedServices, retainedExtends, retainedOptions, syntax);
     result.javaPackage = javaPackage;
     return result;
   }

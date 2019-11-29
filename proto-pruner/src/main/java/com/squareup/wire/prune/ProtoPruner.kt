@@ -18,6 +18,7 @@ package com.squareup.wire.prune
 import com.squareup.wire.schema.IdentifierSet
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.NewSchemaLoader
+import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.Schema
 import java.io.File
 import java.nio.file.FileSystem
@@ -25,15 +26,18 @@ import java.nio.file.FileSystems
 
 class ProtoPruner(
   private val fs: FileSystem,
-  private val inPaths: List<String>,
+  private val sourcePath: List<Location>,
+  private val protoPath: List<Location>,
   private val outPath: String,
   private val identifierSet: IdentifierSet
 ) : Runnable {
   override fun run() {
     val sourcePathFiles = NewSchemaLoader(fs).use { loader ->
-      loader.initRoots(inPaths.map { Location.get(it) })
+      loader.initRoots(sourcePath, protoPath)
       loader.loadSourcePathFiles()
     }
+
+    val sourcePaths = sourcePathFiles.map { it.location().path }.toSet()
 
     val schema = Schema
         .fromFiles(sourcePathFiles)
@@ -41,9 +45,7 @@ class ProtoPruner(
 
     schema.protoFiles()
         .filter {
-          it.types().isNotEmpty() ||
-          it.services().isNotEmpty() ||
-          it.extendList().isNotEmpty()
+          (it.location().path in sourcePaths) && it.isNotEmpty()
         }
         .forEach { protoFile ->
           val relativePath = protoFile.location()?.path
@@ -57,10 +59,13 @@ class ProtoPruner(
         }
   }
 
+  private fun ProtoFile.isNotEmpty() =
+      types().isNotEmpty() || services().isNotEmpty() || extendList().isNotEmpty()
+
   companion object {
     @JvmStatic fun main(vararg args: String) {
       var outPath: String? = null
-      val inPaths = mutableListOf<String>()
+      val inLocations = mutableListOf<Location>()
       val identifierSetBuilder = IdentifierSet.Builder()
 
       for (arg in args) {
@@ -84,7 +89,7 @@ class ProtoPruner(
         if (arg.startsWith("--out=")) {
           outPath = arg.substringAfter('=')
         } else if (arg.startsWith("--in=")) {
-          inPaths.add(arg.substringAfter('='))
+          inLocations.add(Location.get(arg.substringAfter('=')))
         } else if (arg.startsWith("--includes=")) {
           identifierSetBuilder.include(arg.substringAfter('=').split(',').map(String::trim))
         } else if (arg.startsWith("--excludes=")) {
@@ -102,14 +107,20 @@ class ProtoPruner(
         }
       }
 
-      if (inPaths.isEmpty()) {
+      if (inLocations.isEmpty()) {
         throw IllegalArgumentException("No input path specified")
       }
       if (outPath == null) {
         throw IllegalArgumentException("No output path specified")
       }
 
-      ProtoPruner(FileSystems.getDefault(), inPaths, outPath, identifierSetBuilder.build()).run()
+      ProtoPruner(
+          fs = FileSystems.getDefault(),
+          sourcePath = inLocations,
+          protoPath = listOf(),
+          outPath = outPath,
+          identifierSet = identifierSetBuilder.build()
+      ).run()
     }
   }
 }

@@ -109,6 +109,14 @@ public final class Schema {
     return field;
   }
 
+  public Field getField(String typeName, String memberName) {
+    return getField(ProtoType.get(typeName), memberName);
+  }
+
+  public Field getField(ProtoType protoType, String memberName) {
+    return getField(ProtoMember.get(protoType, memberName));
+  }
+
   public static Schema fromFiles(Iterable<ProtoFile> sourceFiles) {
     return new Linker(CoreLoader.INSTANCE).link(sourceFiles);
   }

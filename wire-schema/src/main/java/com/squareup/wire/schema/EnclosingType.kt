@@ -44,6 +44,12 @@ class EnclosingType internal constructor(
     else EnclosingType(location, type, documentation, retainedNestedTypes)
   }
 
+  override fun retainLinked(linkedTypes: MutableSet<ProtoType>?): Type? {
+    val retainedNestedTypes = nestedTypes.mapNotNull { it.retainLinked(linkedTypes) }
+    return if (retainedNestedTypes.isEmpty()) null
+    else EnclosingType(location, type, documentation, retainedNestedTypes)
+  }
+
   fun toElement() = MessageElement(
       location = location,
       name = type.simpleName(),

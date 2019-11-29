@@ -62,6 +62,12 @@ public final class OneOf {
     return new OneOf(name, documentation, retainedFields);
   }
 
+  OneOf retainLinked() {
+    ImmutableList<Field> retainedFields = Field.retainLinked(fields);
+    if (retainedFields.isEmpty()) return null;
+    return new OneOf(name, documentation, retainedFields);
+  }
+
   static ImmutableList<OneOf> fromElements(String packageName, List<OneOfElement> elements,
       boolean extension) {
     ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();

@@ -106,6 +106,20 @@ class EnumType private constructor(
     return result
   }
 
+  override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
+    if (!linkedTypes.contains(type())) {
+      return null
+    }
+
+    val retainedConstants = constants.map { it.retainLinked() }
+
+    return EnumType(
+        protoType, location, documentation, name,
+        retainedConstants,
+        options.retainLinked()
+    )
+  }
+
   fun toElement(): EnumElement {
     return EnumElement(
         location,
