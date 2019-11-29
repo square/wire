@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.prune
 
+import com.squareup.wire.schema.IdentifierSet
+import com.squareup.wire.schema.Location
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Ignore
@@ -22,8 +24,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
-import java.util.ArrayList
-import java.util.Collections
+import java.nio.file.FileSystems
 
 class ProtoPrunerTest {
   @Rule @JvmField val temp = TemporaryFolder()
@@ -43,8 +44,11 @@ class ProtoPrunerTest {
 
   @Test
   fun testFooBar() {
-    val sources = arrayOf("squareup.foobar.Foo", "squareup.foobar.Bar")
-    invokeProtoPruner(sources)
+    val identifierSet = IdentifierSet.Builder()
+        .include("squareup.foobar.Foo")
+        .include("squareup.foobar.Bar")
+        .build()
+    invokeProtoPruner(identifierSet)
 
     val outputs = arrayOf(
         "bar.proto",
@@ -54,8 +58,11 @@ class ProtoPrunerTest {
 
   @Test
   fun testSimpleMessage() {
-    val sources = arrayOf("squareup.protos.simple.SimpleMessage")
-    invokeProtoPruner(sources, "--excludes=google.protobuf.*")
+    val identifierSet = IdentifierSet.Builder()
+        .include("squareup.protos.simple.SimpleMessage")
+        .exclude("google.protobuf.*")
+        .build()
+    invokeProtoPruner(identifierSet)
 
     val outputs = arrayOf(
         "simple_message.proto",
@@ -67,11 +74,13 @@ class ProtoPrunerTest {
 
   @Test
   fun testOptions() {
-    val sources = arrayOf("squareup.options.letter.Letter", "squareup.options.letter.Post")
-    invokeProtoPruner(sources)
+    val identifierSet = IdentifierSet.Builder()
+        .include("squareup.options.letter.Letter")
+        .include("squareup.options.letter.Post")
+        .build()
+    invokeProtoPruner(identifierSet)
 
     val outputs = arrayOf(
-        "google/protobuf/descriptor.proto",
         "letter.proto",
         "options.proto"
     )
@@ -80,8 +89,12 @@ class ProtoPrunerTest {
 
   @Test @Ignore("Options are not properly pruned yet. See #1243.")
   fun testOptionsExcludingProtobuf() {
-    val sources = arrayOf("squareup.options.poem.Poem", "squareup.options.poem.Court")
-    invokeProtoPruner(sources, "--excludes=google.protobuf.*")
+    val identifierSet = IdentifierSet.Builder()
+        .include("squareup.options.poem.Poem")
+        .include("squareup.options.poem.Court")
+        .exclude("google.protobuf.*")
+        .build()
+    invokeProtoPruner(identifierSet)
 
     val outputs = arrayOf(
         "poem.proto"
@@ -89,23 +102,21 @@ class ProtoPrunerTest {
     assertOutputs(outputs)
   }
 
-  private fun invokeProtoPruner(
-    sources: Array<String>,
-    vararg extraArgs: String
-  ) {
-    val args = ArrayList<String>()
-    args.add("--in=../wire-tests/src/commonTest/proto/java")
-    args.add("--out=${testDir.absolutePath}")
-    Collections.addAll(args, sources.joinToString(prefix = "--includes=", separator = ","))
-    Collections.addAll(args, *extraArgs)
-
-    ProtoPruner.main(*args.toTypedArray())
+  private fun invokeProtoPruner(identifierSet: IdentifierSet) {
+    val protoPruner = ProtoPruner(
+        fs = FileSystems.getDefault(),
+        sourcePath = listOf(Location.get("../wire-tests/src/commonTest/proto/java")),
+        protoPath = listOf(),
+        outPath = testDir.absolutePath,
+        identifierSet = identifierSet
+    )
+    protoPruner.run()
   }
 
   private fun assertOutputs(outputs: Array<String>) {
     val filesAfter = paths
     assertThat(filesAfter.size)
-        .overridingErrorMessage(filesAfter.toString())
+        .overridingErrorMessage("${outputs.contentToString()} != $filesAfter")
         .isEqualTo(outputs.size)
 
     for (output in outputs) {

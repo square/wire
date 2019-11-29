@@ -31,6 +31,9 @@ final class FileLinker {
   /** True once this linker has registered its types with the enclosing linker. */
   private boolean typesRegistered;
 
+  private boolean extensionsLinked;
+  private boolean importedExtensionsRegistered;
+
   /** The set of types defined in this file whose members have been linked. */
   private final Set<ProtoType> typesWithMembersLinked = new LinkedHashSet<>();
 
@@ -83,9 +86,26 @@ final class FileLinker {
     }
   }
 
-  void linkExtensions() {
+  void requireExtensionsLinked() {
+    if (extensionsLinked) return;
+    extensionsLinked = true;
+
+    requireTypesRegistered();
     for (Extend extend : protoFile.extendList()) {
       extend.link(linker);
+    }
+  }
+
+  /**
+   * This file might use extensions defined on one of the files we import. Make sure those
+   * extensions are registered before we try to use our extensions.
+   */
+  void requireImportedExtensionsRegistered() {
+    if (importedExtensionsRegistered) return;
+    importedExtensionsRegistered = true;
+
+    for (FileLinker importedFileLinker : linker.contextImportedTypes()) {
+      importedFileLinker.requireExtensionsLinked();
     }
   }
 

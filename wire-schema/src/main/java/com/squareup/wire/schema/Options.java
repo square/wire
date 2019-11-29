@@ -55,6 +55,10 @@ public final class Options {
     this.optionElements = ImmutableList.copyOf(elements);
   }
 
+  public Options retainLinked() {
+    return new Options(optionType, ImmutableList.of());
+  }
+
   /**
    * Returns a map with the values for these options. Map values may be either a single entry, like
    * {@code {deprecated: "true"}}, or more sophisticated, with nested maps and lists.
@@ -140,6 +144,7 @@ public final class Options {
       Map<ProtoMember, Object> nested = new LinkedHashMap<>();
       last.put(ProtoMember.get(lastProtoType, field), nested);
       lastProtoType = field.type();
+      if (lastProtoType != null) linker.getForOptions(lastProtoType); // Force members linking.
       last = nested;
       field = linker.dereference(field, path[i]);
       if (field == null) {

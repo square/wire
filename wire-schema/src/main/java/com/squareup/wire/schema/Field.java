@@ -207,13 +207,29 @@ public final class Field {
       if (!markSet.contains(protoMember)) return null;
     }
 
+    return withOptions(options.retainAll(schema, markSet));
+  }
+
+  /** Returns a copy of this whose options is {@code options}. */
+  private Field withOptions(Options options) {
     Field result = new Field(packageName, location, label, name, documentation, tag, defaultValue,
-        elementType, options.retainAll(schema, markSet), extension);
+        elementType, options, extension);
     result.type = type;
     result.deprecated = deprecated;
     result.packed = packed;
     result.redacted = redacted;
     return result;
+  }
+
+  static ImmutableList<Field> retainLinked(List<Field> fields) {
+    ImmutableList.Builder<Field> result = ImmutableList.builder();
+    for (Field field : fields) {
+      // If the type is non-null, then the field has been linked.
+      if (field.type != null) {
+        result.add(field.withOptions(field.options.retainLinked()));
+      }
+    }
+    return result.build();
   }
 
   static ImmutableList<Field> retainAll(
