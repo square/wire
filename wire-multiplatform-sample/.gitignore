@@ -1,0 +1,12 @@
+# IDEA
+.idea
+*.iml
+classes
+
+# Gradle
+.gradle
+build
+generated
+
+# Xcode
+**/xcuserdata/*

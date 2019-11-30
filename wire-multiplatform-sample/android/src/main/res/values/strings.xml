@@ -1,0 +1,7 @@
+<resources>
+  <string name="app_name">Dinosaurs</string>
+  <string name="name_template">Name: %s</string>
+  <string name="period_template">Period: %s</string>
+  <string name="length_template">Length: %.1f</string>
+  <string name="mass_template">Mass: %.1f</string>
+</resources>

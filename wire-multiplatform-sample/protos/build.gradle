@@ -1,0 +1,99 @@
+/*
+ * Copyright 2019 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'java'
+
+kotlin {
+  jvm("android")
+
+  def sdkName = System.getenv("SDK_NAME")
+  if (sdkName != null && sdkName.startsWith("iphoneos")) {
+    iosArm64("ios") {
+      binaries {
+        framework {
+          baseName = "protos"
+        }
+      }
+    }
+  } else {
+    iosX64("ios") {
+      binaries {
+        framework {
+          baseName = "protos"
+        }
+      }
+    }
+  }
+  sourceSets {
+    commonMain {
+      dependencies {
+        api deps.kotlin.stdlib.common
+        api deps.wire.runtime
+      }
+    }
+  }
+}
+
+kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
+  target.project.configurations {
+    def platformAttr = Attribute.of('org.jetbrains.kotlin.platform.type', KotlinPlatformType.class)
+    wireCompiler.with { attributes.attribute(platformAttr, KotlinPlatformType.jvm) }
+  }
+  target.project.dependencies {
+    wireCompiler deps.wire.compiler
+  }
+  target.project.tasks.register("generateProtos", JavaExec) {
+    classpath = target.project.configurations.wireCompiler
+    main = 'com.squareup.wire.WireCompiler'
+    args = [
+        '--proto_path=src/commonMain/proto',
+        '--kotlin_out=src/commonMain/kotlin',
+        '--excludes=google.*',
+    ]
+  }
+}
+
+def packForXcode = tasks.register("packForXcode", Sync) {
+  def targetDir = new File(buildDir, "xcode-frameworks")
+
+  // Select the right configuration for the iOS framework depending on the environment
+  // variables set by Xcode build.
+  def mode = System.getenv("CONFIGURATION")
+  if (mode == null) mode = "DEBUG"
+  def framework = kotlin.targets.getByName("ios").binaries.getFramework(mode)
+
+  from framework.outputDirectory
+  into targetDir
+
+  doLast {
+    // Generate a helpful ./gradlew wrapper with embedded Java path.
+    def gradlew = new File(targetDir, "gradlew")
+    gradlew.executable = true
+    gradlew.text = """
+# !/bin/bash
+export 'JAVA_HOME=${System.getProperty("java.home")}'
+cd '${rootProject.rootDir}'
+./gradlew \$@
+"""
+  }
+}
+
+def generateProtos = tasks.getByName("generateProtos")
+def assemble = tasks.getByName("assemble")
+assemble.dependsOn(generateProtos)
+assemble.finalizedBy(packForXcode)

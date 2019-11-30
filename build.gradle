@@ -21,7 +21,7 @@ buildscript {
       'animalSniffer': '1.16',
       'animalSnifferGradle': '1.5.0',
       'mavenPublish': '0.8.0',
-      'releasedWire': '3.0.2'
+      'releasedWire': '3.0.2',
   ]
 
   ext.deps = [
@@ -30,7 +30,7 @@ buildscript {
           shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
           releasedWire: "com.squareup.wire:wire-gradle-plugin:${versions.releasedWire}",
           japicmp: 'me.champeau.gradle:japicmp-gradle-plugin:0.2.8',
-          mavenPublish: "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}"
+          mavenPublish: "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}",
       ],
       'android': "com.google.android:android:${versions.android}",
       'androidx': [
