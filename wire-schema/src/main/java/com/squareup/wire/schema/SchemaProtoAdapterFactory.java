@@ -82,9 +82,9 @@ final class SchemaProtoAdapterFactory {
 
       for (com.squareup.wire.schema.Field field : ((MessageType) type).fields()) {
         Field fieldAdapter = new Field(
-            field.name(), field.tag(), field.isRepeated(), get(field.type()));
-        messageAdapter.fieldsByName.put(field.name(), fieldAdapter);
-        messageAdapter.fieldsByTag.put(field.tag(), fieldAdapter);
+            field.getName(), field.getTag(), field.isRepeated(), get(field.getType()));
+        messageAdapter.fieldsByName.put(field.getName(), fieldAdapter);
+        messageAdapter.fieldsByTag.put(field.getTag(), fieldAdapter);
       }
       return (ProtoAdapter) messageAdapter;
     }

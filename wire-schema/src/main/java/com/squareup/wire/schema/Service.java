@@ -68,7 +68,7 @@ public final class Service {
   /** Returns the RPC named {@code name}, or null if this service has no such method. */
   public Rpc rpc(String name) {
     for (Rpc rpc : rpcs) {
-      if (rpc.name().equals(name)) {
+      if (rpc.getName().equals(name)) {
         return rpc;
       }
     }
@@ -110,7 +110,7 @@ public final class Service {
     ImmutableList.Builder<Rpc> retainedRpcs = ImmutableList.builder();
     for (Rpc rpc : rpcs) {
       Rpc retainedRpc = rpc.retainAll(schema, markSet);
-      if (retainedRpc != null && markSet.contains(ProtoMember.get(protoType, rpc.name()))) {
+      if (retainedRpc != null && markSet.contains(ProtoMember.get(protoType, rpc.getName()))) {
         retainedRpcs.add(retainedRpc);
       }
     }

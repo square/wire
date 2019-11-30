@@ -100,11 +100,11 @@ public final class Schema {
   }
 
   public Field getField(ProtoMember protoMember) {
-    Type type = getType(protoMember.type());
+    Type type = getType(protoMember.getType());
     if (!(type instanceof MessageType)) return null;
-    Field field = ((MessageType) type).field(protoMember.member());
+    Field field = ((MessageType) type).field(protoMember.getMember());
     if (field == null) {
-      field = ((MessageType) type).extensionField(protoMember.member());
+      field = ((MessageType) type).extensionField(protoMember.getMember());
     }
     return field;
   }

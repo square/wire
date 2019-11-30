@@ -13,61 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
 /**
  * Identifies a field, enum or RPC on a declaring type. Members are encoded as strings containing a
- * type name, a hash, and a member name, like {@code squareup.dinosaurs.Dinosaur#length_meters}.
+ * type name, a hash, and a member name, like `squareup.dinosaurs.Dinosaur#length_meters`.
  *
- * <p>A member's name is typically a simple name like "length_meters" or "packed". If the member
+ * A member's name is typically a simple name like "length_meters" or "packed". If the member
  * field is an extension to its type, that name is prefixed with its enclosing package. This yields
- * a member name with two packages, like {@code google.protobuf.FieldOptions#squareup.units.unit}.
+ * a member name with two packages, like `google.protobuf.FieldOptions#squareup.units.unit`.
  */
-public final class ProtoMember {
-  private final ProtoType type;
-  private final String member;
+class ProtoMember private constructor(
+  val type: ProtoType,
+  val member: String
+) {
+  override fun equals(other: Any?) =
+      other is ProtoMember && type == other.type && member == other.member
 
-  private ProtoMember(ProtoType type, String member) {
-    this.type = type;
-    this.member = member;
-  }
+  override fun hashCode() = type.hashCode() * 37 + member.hashCode()
 
-  public static ProtoMember get(String typeAndMember) {
-    int hash = typeAndMember.indexOf('#');
-    if (hash == -1) throw new IllegalArgumentException("expected a '#' in " + typeAndMember);
-    ProtoType type = ProtoType.get(typeAndMember.substring(0, hash));
-    String member = typeAndMember.substring(hash + 1);
-    return new ProtoMember(type, member);
-  }
+  override fun toString() = "$type#$member"
 
-  public static ProtoMember get(ProtoType type, String member) {
-    return new ProtoMember(type, member);
-  }
+  companion object {
+    @JvmStatic
+    fun get(typeAndMember: String): ProtoMember {
+      val hash = typeAndMember.indexOf('#')
+      require(hash != -1) { "expected a '#' in $typeAndMember" }
+      val type = ProtoType.get(typeAndMember.substring(0, hash))
+      val member = typeAndMember.substring(hash + 1)
+      return ProtoMember(type, member)
+    }
 
-  public static ProtoMember get(ProtoType type, Field field) {
-    String member = field.isExtension() ? field.qualifiedName() : field.name();
-    return new ProtoMember(type, member);
-  }
+    @JvmStatic
+    fun get(type: ProtoType, member: String) = ProtoMember(type, member)
 
-  public ProtoType type() {
-    return type;
-  }
-
-  public String member() {
-    return member;
-  }
-
-  @Override public boolean equals(Object o) {
-    return o instanceof ProtoMember
-        && type.equals(((ProtoMember) o).type)
-        && member.equals(((ProtoMember) o).member);
-  }
-
-  @Override public int hashCode() {
-    return type.hashCode() * 37 + member.hashCode();
-  }
-
-  @Override public String toString() {
-    return type + "#" + member;
+    @JvmStatic
+    fun get(type: ProtoType, field: Field): ProtoMember {
+      val member = if (field.isExtension) field.qualifiedName else field.name
+      return ProtoMember(type, member)
+    }
   }
 }

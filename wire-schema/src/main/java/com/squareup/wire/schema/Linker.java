@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Links local field types and option types to the corresponding declarations. */
-final class Linker {
+public final class Linker {
   private final Loader loader;
   private final Map<String, FileLinker> fileLinkers;
   private final Map<String, Type> protoTypeNames;
@@ -145,7 +145,7 @@ final class Linker {
   }
 
   private ProtoType resolveType(String name, boolean messageOnly) {
-    ProtoType type = ProtoType.get(name);
+    ProtoType type = ProtoType.Companion.get(name);
     if (type.isScalar()) {
       if (messageOnly) {
         addError("expected a message but was %s", name);
@@ -157,9 +157,9 @@ final class Linker {
       if (messageOnly) {
         addError("expected a message but was %s", name);
       }
-      ProtoType keyType = resolveType(type.keyType().toString(), false);
-      ProtoType valueType = resolveType(type.valueType().toString(), false);
-      return new ProtoType(keyType, valueType, name);
+      ProtoType keyType = resolveType(type.getKeyType().toString(), false);
+      ProtoType valueType = resolveType(type.getValueType().toString(), false);
+      return ProtoType.get(keyType, valueType, name);
     }
 
     Type resolved = resolve(name, protoTypeNames);
@@ -219,7 +219,7 @@ final class Linker {
         String packageName = ((ProtoFile) context).packageName();
         return packageName != null ? packageName : "";
       } else if (context instanceof Field && ((Field) context).isExtension()) {
-        String packageName = ((Field) context).packageName();
+        String packageName = ((Field) context).getPackageName();
         return packageName != null ? packageName : "";
       }
     }
@@ -298,7 +298,7 @@ final class Linker {
       field = field.substring(1, field.length() - 1);
     }
 
-    Type type = get(self.type());
+    Type type = get(self.getType());
     if (type instanceof MessageType) {
       MessageType messageType = (MessageType) type;
       Field messageField = messageType.field(field);
@@ -317,7 +317,7 @@ final class Linker {
     Multimap<Integer, Field> tagToField = LinkedHashMultimap.create();
     Multimap<String, Field> nameToField = LinkedHashMultimap.create();
     for (Field field : fields) {
-      int tag = field.tag();
+      int tag = field.getTag();
       if (!Util.isValidTag(tag)) {
         withContext(field).addError("tag is out of range: %s", tag);
       }
@@ -326,14 +326,14 @@ final class Linker {
         if (reserved.matchesTag(tag)) {
           withContext(field).addError("tag %s is reserved (%s)", tag, reserved.getLocation());
         }
-        if (reserved.matchesName(field.name())) {
-          withContext(field).addError("name '%s' is reserved (%s)", field.name(),
+        if (reserved.matchesName(field.getName())) {
+          withContext(field).addError("name '%s' is reserved (%s)", field.getName(),
               reserved.getLocation());
         }
       }
 
       tagToField.put(tag, field);
-      nameToField.put(field.qualifiedName(), field);
+      nameToField.put(field.getQualifiedName(), field);
     }
 
     for (Map.Entry<Integer, Collection<Field>> entry : tagToField.asMap().entrySet()) {
@@ -343,7 +343,7 @@ final class Linker {
         int index = 1;
         for (Field field : entry.getValue()) {
           error.append(String.format("\n  %s. %s (%s)",
-              index++, field.name(), field.location()));
+              index++, field.getName(), field.getLocation()));
         }
         addError("%s", error);
       }
@@ -353,11 +353,11 @@ final class Linker {
       if (collidingFields.size() > 1) {
         Field first = collidingFields.iterator().next();
         StringBuilder error = new StringBuilder();
-        error.append(String.format("multiple fields share name %s:", first.name()));
+        error.append(String.format("multiple fields share name %s:", first.getName()));
         int index = 1;
         for (Field field : collidingFields) {
           error.append(String.format("\n  %s. %s (%s)",
-              index++, field.name(), field.location()));
+              index++, field.getName(), field.getLocation()));
         }
         addError("%s", error);
       }
@@ -392,7 +392,7 @@ final class Linker {
 
   void validateImport(Location location, ProtoType type) {
     // Map key type is always scalar. No need to validate it.
-    if (type.isMap()) type = type.valueType();
+    if (type.isMap()) type = type.getValueType();
 
     if (type.isScalar()) return;
 
@@ -419,7 +419,7 @@ final class Linker {
 
       if (context instanceof Rpc) {
         Rpc rpc = (Rpc) context;
-        error.append(String.format("%s rpc %s (%s)", prefix, rpc.name(), rpc.location()));
+        error.append(String.format("%s rpc %s (%s)", prefix, rpc.getName(), rpc.getLocation()));
 
       } else if (context instanceof Extend) {
         Extend extend = (Extend) context;
@@ -430,7 +430,8 @@ final class Linker {
 
       } else if (context instanceof Field) {
         Field field = (Field) context;
-        error.append(String.format("%s field %s (%s)", prefix, field.name(), field.location()));
+        error.append(String.format(
+            "%s field %s (%s)", prefix, field.getName(), field.getLocation()));
 
       } else if (context instanceof MessageType) {
         MessageType message = (MessageType) context;

@@ -83,7 +83,7 @@ public final class Options {
     Matcher nameMatcher = Pattern.compile(namePattern).matcher("");
     Matcher valueMatcher = Pattern.compile(valuePattern).matcher("");
     for (Map.Entry<ProtoMember, Object> entry : map.entrySet()) {
-      if (nameMatcher.reset(entry.getKey().member()).matches()
+      if (nameMatcher.reset(entry.getKey().getMember()).matches()
           && valueMatcher.reset(String.valueOf(entry.getValue())).matches()) {
         return true;
       }
@@ -143,7 +143,7 @@ public final class Options {
     for (int i = 1; i < path.length; i++) {
       Map<ProtoMember, Object> nested = new LinkedHashMap<>();
       last.put(ProtoMember.get(lastProtoType, field), nested);
-      lastProtoType = field.type();
+      lastProtoType = field.getType();
       if (lastProtoType != null) linker.getForOptions(lastProtoType); // Force members linking.
       last = nested;
       field = linker.dereference(field, path[i]);
@@ -193,9 +193,9 @@ public final class Options {
       OptionElement option = (OptionElement) value;
       Field field = linker.dereference(context, option.getName());
       if (field == null) {
-        linker.addError("unable to resolve option %s on %s", option.getName(), context.type());
+        linker.addError("unable to resolve option %s on %s", option.getName(), context.getType());
       } else {
-        ProtoMember protoMember = ProtoMember.get(context.type(), field);
+        ProtoMember protoMember = ProtoMember.get(context.getType(), field);
         result.put(protoMember, canonicalizeValue(linker, field, option.getValue()));
       }
       return coerceValueForField(context, result.build());
@@ -207,9 +207,9 @@ public final class Options {
         String name = (String) entry.getKey();
         Field field = linker.dereference(context, name);
         if (field == null) {
-          linker.addError("unable to resolve option %s on %s", name, context.type());
+          linker.addError("unable to resolve option %s on %s", name, context.getType());
         } else {
-          ProtoMember protoMember = ProtoMember.get(context.type(), field);
+          ProtoMember protoMember = ProtoMember.get(context.getType(), field);
           result.put(protoMember, canonicalizeValue(linker, field, entry.getValue()));
         }
       }
@@ -287,7 +287,7 @@ public final class Options {
         ProtoMember protoMember = (ProtoMember) entry.getKey();
         if (identifierSet.excludes(protoMember)) continue;
         sink.put(type, protoMember);
-        gatherFields(sink, protoMember.type(), entry.getValue(), identifierSet);
+        gatherFields(sink, protoMember.getType(), entry.getValue(), identifierSet);
       }
     } else if (o instanceof List) {
       for (Object e : (List) o) {
@@ -317,7 +317,7 @@ public final class Options {
         ProtoMember protoMember = (ProtoMember) entry.getKey();
         if (!markSet.contains(protoMember)) continue; // Prune this field.
         Field field = schema.getField(protoMember);
-        Object retainedValue = retainAll(schema, markSet, field.type(), entry.getValue());
+        Object retainedValue = retainAll(schema, markSet, field.getType(), entry.getValue());
         if (retainedValue != null) {
           builder.put(protoMember, retainedValue); // This retained field is non-empty.
         }

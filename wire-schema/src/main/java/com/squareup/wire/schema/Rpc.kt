@@ -13,122 +13,98 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.RpcElement;
-import java.util.List;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.internal.parser.RpcElement
 
-public final class Rpc {
-  private final Location location;
-  private final String name;
-  private final String documentation;
-  private final String requestTypeElement;
-  private final String responseTypeElement;
-  private final Options options;
-  private ProtoType requestType;
-  private ProtoType responseType;
-  private final boolean requestStreaming;
-  private final boolean responseStreaming;
+class Rpc private constructor(
+  val location: Location,
+  val name: String,
+  val documentation: String,
+  private val requestTypeElement: String,
+  private val responseTypeElement: String,
+  val requestStreaming: Boolean,
+  val responseStreaming: Boolean,
+  val options: Options
+) {
+  // Null until this RPC is linked.
+  var requestType: ProtoType? = null
+    private set
 
-  private Rpc(Location location, String name, String documentation, String requestType,
-      String responseType, boolean requestStreaming, boolean responseStreaming, Options options) {
-    this.location = location;
-    this.name = name;
-    this.documentation = documentation;
-    this.requestTypeElement = requestType;
-    this.responseTypeElement = responseType;
-    this.requestStreaming = requestStreaming;
-    this.responseStreaming = responseStreaming;
-    this.options = options;
+  // Null until this RPC is linked.
+  var responseType: ProtoType? = null
+    private set
+
+  fun link(linker: Linker) {
+    val linker = linker.withContext(this)
+    requestType = linker.resolveMessageType(requestTypeElement)
+    responseType = linker.resolveMessageType(responseTypeElement)
   }
 
-  public Location location() {
-    return location;
+  fun linkOptions(linker: Linker) {
+    val linker = linker.withContext(this)
+    options.link(linker)
   }
 
-  public String name() {
-    return name;
+  fun validate(linker: Linker) {
+    val linker = linker.withContext(this)
+    linker.validateImport(location, requestType!!)
+    linker.validateImport(location, responseType!!)
   }
 
-  public String documentation() {
-    return documentation;
+  fun retainAll(schema: Schema, markSet: MarkSet): Rpc? {
+    if (requestType!! !in markSet || responseType!! !in markSet) return null
+    val result = Rpc(
+        location = location,
+        name = name,
+        documentation = documentation,
+        requestTypeElement = requestTypeElement,
+        responseTypeElement = responseTypeElement,
+        requestStreaming = requestStreaming,
+        responseStreaming = responseStreaming,
+        options = options.retainAll(schema, markSet)
+    )
+    result.requestType = requestType
+    result.responseType = responseType
+    return result
   }
 
-  public ProtoType requestType() {
-    return requestType;
-  }
-
-  public ProtoType responseType() {
-    return responseType;
-  }
-
-  public boolean requestStreaming() {
-    return requestStreaming;
-  }
-
-  public boolean responseStreaming() {
-    return responseStreaming;
-  }
-
-  public Options options() {
-    return options;
-  }
-
-  void link(Linker linker) {
-    linker = linker.withContext(this);
-    requestType = linker.resolveMessageType(requestTypeElement);
-    responseType = linker.resolveMessageType(responseTypeElement);
-  }
-
-  void linkOptions(Linker linker) {
-    linker = linker.withContext(this);
-    options.link(linker);
-  }
-
-  void validate(Linker linker) {
-    linker = linker.withContext(this);
-    linker.validateImport(location(), requestType);
-    linker.validateImport(location(), responseType);
-  }
-
-  Rpc retainAll(Schema schema, MarkSet markSet) {
-    if (!markSet.contains(requestType) || !markSet.contains(responseType)) return null;
-    Rpc result = new Rpc(location, name, documentation, requestTypeElement, responseTypeElement,
-        requestStreaming, responseStreaming, options.retainAll(schema, markSet));
-    result.requestType = requestType;
-    result.responseType = responseType;
-    return result;
-  }
-
-  static ImmutableList<Rpc> fromElements(List<RpcElement> elements) {
-    ImmutableList.Builder<Rpc> rpcs = new ImmutableList.Builder<>();
-    for (RpcElement rpcElement : elements) {
-      rpcs.add(new Rpc(rpcElement.getLocation(), rpcElement.getName(),
-          rpcElement.getDocumentation(),
-          rpcElement.getRequestType(), rpcElement.getResponseType(),
-          rpcElement.getRequestStreaming(), rpcElement.getResponseStreaming(),
-          new Options(Options.METHOD_OPTIONS, rpcElement.getOptions())));
+  companion object {
+    @JvmStatic
+    fun fromElements(elements: List<RpcElement>): ImmutableList<Rpc> {
+      val rpcs = ImmutableList.Builder<Rpc>()
+      for (element in elements) {
+        rpcs.add(Rpc(
+            location = element.location,
+            name = element.name,
+            documentation = element.documentation,
+            requestTypeElement = element.requestType,
+            responseTypeElement = element.responseType,
+            requestStreaming = element.requestStreaming,
+            responseStreaming = element.responseStreaming,
+            options = Options(Options.METHOD_OPTIONS, element.options)
+        ))
+      }
+      return rpcs.build()
     }
-    return rpcs.build();
-  }
 
-  static ImmutableList<RpcElement> toElements(ImmutableList<Rpc> rpcs) {
-    ImmutableList.Builder<RpcElement> elements = new ImmutableList.Builder<>();
-    for (Rpc rpc : rpcs) {
-      elements.add(
-          new RpcElement(
-              rpc.location,
-              rpc.name,
-              rpc.documentation,
-              rpc.requestTypeElement,
-              rpc.responseTypeElement,
-              rpc.requestStreaming,
-              rpc.responseStreaming,
-              rpc.options.toElements()
-          )
-      );
+    @JvmStatic
+    fun toElements(rpcs: ImmutableList<Rpc>): ImmutableList<RpcElement> {
+      val elements = ImmutableList.Builder<RpcElement>()
+      for (rpc in rpcs) {
+        elements.add(RpcElement(
+            location = rpc.location,
+            name = rpc.name,
+            documentation = rpc.documentation,
+            requestType = rpc.requestTypeElement,
+            responseType = rpc.responseTypeElement,
+            requestStreaming = rpc.requestStreaming,
+            responseStreaming = rpc.responseStreaming,
+            options = rpc.options.toElements()
+        ))
+      }
+      return elements.build()
     }
-    return elements.build();
   }
 }

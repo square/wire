@@ -13,298 +13,249 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.FieldElement;
-import java.util.Collection;
-import java.util.List;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.Options.FIELD_OPTIONS
+import com.squareup.wire.schema.internal.parser.FieldElement
 
-import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
+class Field private constructor(
+  val packageName: String?,
 
-public final class Field {
-  static final ProtoMember DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated");
-  static final ProtoMember PACKED = ProtoMember.get(FIELD_OPTIONS, "packed");
+  val location: Location,
 
-  private final String packageName;
-  private final Location location;
-  private final Label label;
-  private final String name;
-  private final String documentation;
-  private final int tag;
-  private final String defaultValue;
-  private final String elementType;
-  private final boolean extension;
-  private final Options options;
-  private ProtoType type;
-  private Object deprecated;
-  private Object packed;
-  private boolean redacted;
+  /** May be null for proto3 fields. */
+  val label: Label?,
 
-  private Field(String packageName, Location location, Label label, String name,
-      String documentation, int tag, String defaultValue, String elementType, Options options,
-      boolean extension) {
-    this.packageName = packageName;
-    this.location = location;
-    this.label = label;
-    this.name = name;
-    this.documentation = documentation;
-    this.tag = tag;
-    this.defaultValue = defaultValue;
-    this.elementType = elementType;
-    this.extension = extension;
-    this.options = options;
-  }
+  val name: String,
 
-  static ImmutableList<Field> fromElements(String packageName, List<FieldElement> fieldElements,
-      boolean extension) {
-    ImmutableList.Builder<Field> fields = ImmutableList.builder();
-    for (FieldElement field : fieldElements) {
-      fields.add(new Field(packageName, field.getLocation(), field.getLabel(), field.getName(),
-          field.getDocumentation(), field.getTag(), field.getDefaultValue(), field.getType(),
-          new Options(Options.FIELD_OPTIONS, field.getOptions()), extension));
-    }
-    return fields.build();
-  }
+  val documentation: String,
 
-  static ImmutableList<FieldElement> toElements(List<Field> fields) {
-    ImmutableList.Builder<FieldElement> elements = new ImmutableList.Builder<>();
-    for (Field field : fields) {
-      elements.add(new FieldElement(
-          field.location,
-          field.label,
-          field.elementType,
-          field.name,
-          field.defaultValue,
-          field.tag,
-          field.documentation,
-          field.options.toElements()
-      ));
-    }
-    return elements.build();
-  }
+  val tag: Int,
 
-  public Location location() {
-    return location;
-  }
+  val default: String?,
 
-  public String packageName() {
-    return packageName;
-  }
+  private val elementType: String,
 
-  public Label label() {
-    return label;
-  }
+  val options: Options,
 
-  public boolean isRepeated() {
-    return label() == Label.REPEATED;
-  }
+  val isExtension: Boolean
+) {
+  // Null until this field is linked.
+  var type: ProtoType? = null
+    private set
 
-  public boolean isOptional() {
-    return label() == Label.OPTIONAL;
-  }
+  // Null until this field is linked.
+  private var deprecated: Any? = null
 
-  public boolean isRequired() {
-    return label() == Label.REQUIRED;
-  }
+  // Null until this field is linked.
+  private var packed: Any? = null
 
-  public ProtoType type() {
-    return type;
-  }
+  // Null until this field is linked.
+  var isRedacted: Boolean = false
+    private set
 
-  public String name() {
-    return name;
-  }
+  val isRepeated: Boolean
+    get() = label == Label.REPEATED
+
+  val isOptional: Boolean
+    get() = label == Label.OPTIONAL
+
+  val isRequired: Boolean
+    get() = label == Label.REQUIRED
 
   /**
    * Returns this field's name, prefixed with its package name. Uniquely identifies extension
    * fields, such as in options.
    */
-  public String qualifiedName() {
-    return packageName != null
-        ? packageName + '.' + name
-        : name;
+  val qualifiedName: String
+    get() {
+      return when {
+        packageName != null -> "$packageName.$name"
+        else -> name
+      }
+    }
+
+  val isDeprecated: Boolean
+    get() = "true" == deprecated
+
+  val isPacked: Boolean
+    get() = "true" == packed
+
+  private fun isPackable(linker: Linker, type: ProtoType): Boolean {
+    return type != ProtoType.STRING &&
+        type != ProtoType.BYTES &&
+        linker.get(type) !is MessageType
   }
 
-  public int tag() {
-    return tag;
+  fun link(linker: Linker) {
+    type = linker.withContext(this).resolveType(elementType)
   }
 
-  public String documentation() {
-    return documentation;
-  }
-
-  public Options options() {
-    return options;
-  }
-
-  public boolean isDeprecated() {
-    return "true".equals(deprecated);
-  }
-
-  public boolean isPacked() {
-    return "true".equals(packed);
-  }
-
-  public boolean isRedacted() {
-    return redacted;
-  }
-
-  public String getDefault() {
-    return defaultValue;
-  }
-
-  private boolean isPackable(Linker linker, ProtoType type) {
-    return !type.equals(ProtoType.STRING)
-        && !type.equals(ProtoType.BYTES)
-        && !(linker.get(type) instanceof MessageType);
-  }
-
-  public boolean isExtension() {
-    return extension;
-  }
-
-  void link(Linker linker) {
-    linker = linker.withContext(this);
-    type = linker.resolveType(elementType);
-  }
-
-  void linkOptions(Linker linker) {
-    linker = linker.withContext(this);
-    options.link(linker);
-    deprecated = options().get(DEPRECATED);
-    packed = options().get(PACKED);
+  fun linkOptions(linker: Linker) {
+    val linker = linker.withContext(this)
+    options.link(linker)
+    deprecated = options.get(DEPRECATED)
+    packed = options.get(PACKED)
     // We allow any package name to be used as long as it ends with '.redacted'.
-    redacted = options().optionMatches(".*\\.redacted", "true");
+    isRedacted = options.optionMatches(".*\\.redacted", "true")
   }
 
-  void validate(Linker linker) {
-    linker = linker.withContext(this);
-    if (isPacked() && !isPackable(linker, type)) {
-      linker.addError("packed=true not permitted on %s", type);
+  fun validate(linker: Linker) {
+    val linker = linker.withContext(this)
+    if (isPacked && !isPackable(linker, type!!)) {
+      linker.addError("packed=true not permitted on %s", type)
     }
-    if (extension && isRequired()) {
-      linker.addError("extension fields cannot be required", type);
+    if (isExtension && isRequired) {
+      linker.addError("extension fields cannot be required", type)
     }
-    linker.validateImport(location(), type);
+    linker.validateImport(location, type!!)
   }
 
-  Field retainAll(Schema schema, MarkSet markSet, ProtoType enclosingType) {
+  fun retainAll(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Field? {
     if (!isUsedAsOption(schema, markSet, enclosingType)) {
       // If the type is null this field was never linked. Prune it.
       // TODO(jwilson): perform this transformation in the Linker.
-      if (type == null) return null;
+      val type = type ?: return null
 
       // For map types only the value can participate in pruning as the key will always be scalar.
-      if (type.isMap() && !markSet.contains(type.valueType())) return null;
+      if (type.isMap && type.valueType!! !in markSet) return null
 
-      if (!markSet.contains(type)) return null;
+      if (!markSet.contains(type)) return null
 
-      ProtoMember protoMember = ProtoMember.get(
-          enclosingType,
-          isExtension() ? this.qualifiedName() : this.name()
-      );
-      if (!markSet.contains(protoMember)) return null;
+      val memberName = if (isExtension) qualifiedName else name
+      val protoMember = ProtoMember.get(enclosingType, memberName)
+      if (!markSet.contains(protoMember)) return null
     }
 
-    return withOptions(options.retainAll(schema, markSet));
+    return withOptions(options.retainAll(schema, markSet))
   }
 
-  /** Returns a copy of this whose options is {@code options}. */
-  private Field withOptions(Options options) {
-    Field result = new Field(packageName, location, label, name, documentation, tag, defaultValue,
-        elementType, options, extension);
-    result.type = type;
-    result.deprecated = deprecated;
-    result.packed = packed;
-    result.redacted = redacted;
-    return result;
+  /** Returns a copy of this whose options is `options`.  */
+  private fun withOptions(options: Options): Field {
+    val result = Field(packageName, location, label, name, documentation, tag, default,
+        elementType, options, isExtension)
+    result.type = type
+    result.deprecated = deprecated
+    result.packed = packed
+    result.isRedacted = isRedacted
+    return result
   }
 
-  static ImmutableList<Field> retainLinked(List<Field> fields) {
-    ImmutableList.Builder<Field> result = ImmutableList.builder();
-    for (Field field : fields) {
-      // If the type is non-null, then the field has been linked.
-      if (field.type != null) {
-        result.add(field.withOptions(field.options.retainLinked()));
+  private fun isUsedAsOption(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Boolean {
+    for (protoFile in schema.protoFiles()) {
+      if (protoFile.types().any { isUsedAsOption(markSet, enclosingType, it) }) return true
+      if (protoFile.services().any { isUsedAsOption(markSet, enclosingType, it) }) return true
+    }
+    return false
+  }
+
+  private fun isUsedAsOption(
+    markSet: MarkSet,
+    enclosingType: ProtoType,
+    service: Service
+  ): Boolean {
+    if (service.type() !in markSet) return false
+
+    val protoMember = ProtoMember.get(enclosingType, qualifiedName)
+    if (service.options().assignsMember(protoMember)) return true
+    if (service.rpcs().any { it.options.assignsMember(protoMember) }) return true
+
+    return false
+  }
+
+  private fun isUsedAsOption(markSet: MarkSet, enclosingType: ProtoType, type: Type): Boolean {
+    if (type.type() !in markSet) return false
+
+    val protoMember = ProtoMember.get(enclosingType, qualifiedName)
+
+    when (type) {
+      is MessageType -> {
+        if (type.options().assignsMember(protoMember)) return true
+        if (type.fields().any { it.options.assignsMember(protoMember) }) return true
+      }
+      is EnumType -> {
+        if (type.options().assignsMember(protoMember)) return true
+        if (type.constants().any { it.options.assignsMember(protoMember) }) return true
       }
     }
-    return result.build();
+
+    if (type.nestedTypes().any { isUsedAsOption(markSet, enclosingType, it) }) return true
+
+    return false
   }
 
-  static ImmutableList<Field> retainAll(
-      Schema schema, MarkSet markSet, ProtoType enclosingType, Collection<Field> fields) {
-    ImmutableList.Builder<Field> result = ImmutableList.builder();
-    for (Field field : fields) {
-      Field retainedField = field.retainAll(schema, markSet, enclosingType);
-      if (retainedField != null) {
-        result.add(retainedField);
-      }
-    }
-    return result.build();
-  }
+  override fun toString() = name
 
-  private boolean isUsedAsOption(Schema schema, MarkSet markSet, ProtoType enclosingType) {
-    for (ProtoFile protoFile : schema.protoFiles()) {
-      for (Type type : protoFile.types()) {
-        if (isUsedAsOption(markSet, enclosingType, type)) return true;
-      }
-      for (Service service : protoFile.services()) {
-        if (isUsedAsOption(markSet, enclosingType, service)) return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isUsedAsOption(MarkSet markSet, ProtoType enclosingType, Service service) {
-    if (!markSet.contains(service.type())) return false;
-
-    ProtoMember protoMember = ProtoMember.get(enclosingType, this.qualifiedName());
-    if (service.options().assignsMember(protoMember)) {
-      return true;
-    }
-    for (Rpc rpc : service.rpcs()) {
-      if (rpc.options().assignsMember(protoMember)) return true;
-    }
-    return false;
-  }
-
-  private boolean isUsedAsOption(MarkSet markSet, ProtoType enclosingType, Type type) {
-    if (!markSet.contains(type.type())) return false;
-
-    ProtoMember protoMember = ProtoMember.get(enclosingType, this.qualifiedName());
-    if (type instanceof MessageType) {
-      if (type.options().assignsMember(protoMember)) {
-        return true;
-      }
-      for (Field messageField : ((MessageType) type).fields()) {
-        if (messageField.options().assignsMember(protoMember)) {
-          return true;
-        }
-      }
-    } else if (type instanceof EnumType) {
-      if (type.options().assignsMember(protoMember)) {
-        return true;
-      }
-      for (EnumConstant constant : ((EnumType) type).constants()) {
-        if (constant.getOptions().assignsMember(protoMember)) {
-          return true;
-        }
-      }
-    }
-    for (Type nestedType : type.nestedTypes()) {
-      if (isUsedAsOption(markSet, enclosingType, nestedType)) return true;
-    }
-    return false;
-  }
-
-  @Override public String toString() {
-    return name();
-  }
-
-  public enum Label {
-    OPTIONAL, REQUIRED, REPEATED,
-    /** Indicates the field is a member of a {@code oneof} block. */
+  enum class Label {
+    OPTIONAL,
+    REQUIRED,
+    REPEATED,
+    /** Indicates the field is a member of a `oneof` block.  */
     ONE_OF
+  }
+
+  companion object {
+    internal val DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated")
+    internal val PACKED = ProtoMember.get(FIELD_OPTIONS, "packed")
+
+    @JvmStatic
+    fun fromElements(
+      packageName: String?,
+      fieldElements: List<FieldElement>,
+      extension: Boolean
+    ): ImmutableList<Field> {
+      val fields = ImmutableList.builder<Field>()
+      for (element in fieldElements) {
+        fields.add(Field(packageName, element.location, element.label, element.name,
+            element.documentation, element.tag, element.defaultValue, element.type,
+            Options(FIELD_OPTIONS, element.options), extension))
+      }
+      return fields.build()
+    }
+
+    @JvmStatic
+    fun toElements(fields: List<Field>): ImmutableList<FieldElement> {
+      val elements = ImmutableList.Builder<FieldElement>()
+      for (field in fields) {
+        elements.add(FieldElement(
+            field.location,
+            field.label,
+            field.elementType,
+            field.name,
+            field.default,
+            field.tag,
+            field.documentation,
+            field.options.toElements()
+        ))
+      }
+      return elements.build()
+    }
+
+    @JvmStatic
+    fun retainLinked(fields: List<Field>): ImmutableList<Field> {
+      val result = ImmutableList.builder<Field>()
+      for (field in fields) {
+        // If the type is non-null, then the field has been linked.
+        if (field.type != null) {
+          result.add(field.withOptions(field.options.retainLinked()))
+        }
+      }
+      return result.build()
+    }
+
+    @JvmStatic
+    fun retainAll(
+      schema: Schema, markSet: MarkSet, enclosingType: ProtoType, fields: Collection<Field>
+    ): ImmutableList<Field> {
+      val result = ImmutableList.builder<Field>()
+      for (field in fields) {
+        val retainedField = field.retainAll(schema, markSet, enclosingType)
+        if (retainedField != null) {
+          result.add(retainedField)
+        }
+      }
+      return result.build()
+    }
   }
 }

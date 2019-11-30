@@ -181,7 +181,7 @@ public final class ProfileLoader {
   /** Returns the type to import for {@code type}. */
   private @Nullable ProtoType importedType(ProtoType type) {
     // Map key type is always scalar.
-    if (type.isMap()) type = type.valueType();
+    if (type.isMap()) type = type.getValueType();
     return type.isScalar() ? null : type;
   }
 

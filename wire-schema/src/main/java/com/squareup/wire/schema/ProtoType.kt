@@ -13,165 +13,142 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Preconditions.checkNotNull
+import java.util.Collections
+import java.util.LinkedHashMap
 
 /**
  * Names a protocol buffer message, enumerated type, service, map, or a scalar. This class models a
  * fully-qualified name using the protocol buffer package.
  */
-public final class ProtoType {
-  public static final ProtoType BOOL = new ProtoType(true, "bool");
-  public static final ProtoType BYTES = new ProtoType(true, "bytes");
-  public static final ProtoType DOUBLE = new ProtoType(true, "double");
-  public static final ProtoType FLOAT = new ProtoType(true, "float");
-  public static final ProtoType FIXED32 = new ProtoType(true, "fixed32");
-  public static final ProtoType FIXED64 = new ProtoType(true, "fixed64");
-  public static final ProtoType INT32 = new ProtoType(true, "int32");
-  public static final ProtoType INT64 = new ProtoType(true, "int64");
-  public static final ProtoType SFIXED32 = new ProtoType(true, "sfixed32");
-  public static final ProtoType SFIXED64 = new ProtoType(true, "sfixed64");
-  public static final ProtoType SINT32 = new ProtoType(true, "sint32");
-  public static final ProtoType SINT64 = new ProtoType(true, "sint64");
-  public static final ProtoType STRING = new ProtoType(true, "string");
-  public static final ProtoType UINT32 = new ProtoType(true, "uint32");
-  public static final ProtoType UINT64 = new ProtoType(true, "uint64");
+class ProtoType {
+  val isScalar: Boolean
 
-  private static final Map<String, ProtoType> SCALAR_TYPES;
-  static {
-    Map<String, ProtoType> scalarTypes = new LinkedHashMap<>();
-    scalarTypes.put(BOOL.string, BOOL);
-    scalarTypes.put(BYTES.string, BYTES);
-    scalarTypes.put(DOUBLE.string, DOUBLE);
-    scalarTypes.put(FLOAT.string, FLOAT);
-    scalarTypes.put(FIXED32.string, FIXED32);
-    scalarTypes.put(FIXED64.string, FIXED64);
-    scalarTypes.put(INT32.string, INT32);
-    scalarTypes.put(INT64.string, INT64);
-    scalarTypes.put(SFIXED32.string, SFIXED32);
-    scalarTypes.put(SFIXED64.string, SFIXED64);
-    scalarTypes.put(SINT32.string, SINT32);
-    scalarTypes.put(SINT64.string, SINT64);
-    scalarTypes.put(STRING.string, STRING);
-    scalarTypes.put(UINT32.string, UINT32);
-    scalarTypes.put(UINT64.string, UINT64);
-    SCALAR_TYPES = Collections.unmodifiableMap(scalarTypes);
-  }
+  private val string: String
 
-  private final boolean isScalar;
-  private final String string;
-  private final boolean isMap;
-  private final ProtoType keyType;
-  private final ProtoType valueType;
+  val isMap: Boolean
 
-  /** Creates a scalar or message type. */
-  private ProtoType(boolean isScalar, String string) {
-    checkNotNull(string, "string == null");
-    this.isScalar = isScalar;
-    this.string = string;
-    this.isMap = false;
-    this.keyType = null;
-    this.valueType = null;
-  }
+  /** The type of the map's keys. Only present when [isMap] is true.  */
+  val keyType: ProtoType?
 
-  /** Creates a map type. */
-  ProtoType(ProtoType keyType, ProtoType valueType, String string) {
-    checkNotNull(keyType, "keyType == null");
-    checkNotNull(valueType, "valueType == null");
-    checkNotNull(string, "string == null");
-    checkArgument(
-        keyType.isScalar() && !keyType.equals(BYTES) && !keyType.equals(DOUBLE) && !keyType.equals(
-            FLOAT), "map key must be non-byte, non-floating point scalar: %s", keyType);
-    this.isScalar = false;
-    this.string = string;
-    this.isMap = true;
-    this.keyType = keyType; // TODO restrict what's allowed here
-    this.valueType = valueType;
-  }
+  /** The type of the map's values. Only present when [isMap] is true.  */
+  val valueType: ProtoType?
 
-  public String simpleName() {
-    int dot = string.lastIndexOf('.');
-    return string.substring(dot + 1);
-  }
-
-  /** Returns the enclosing type, or null if this type is not nested in another type. */
-  public String enclosingTypeOrPackage() {
-    int dot = string.lastIndexOf('.');
-    return dot == -1 ? null : string.substring(0, dot);
-  }
-
-  public boolean isScalar() {
-    return isScalar;
-  }
-
-  public boolean isMap() {
-    return isMap;
-  }
-
-  /** The type of the map's keys. Only present when {@link #isMap} is true. */
-  public ProtoType keyType() {
-    return keyType;
-  }
-
-  /** The type of the map's values. Only present when {@link #isMap} is true. */
-  public ProtoType valueType() {
-    return valueType;
-  }
-
-  public static ProtoType get(String enclosingTypeOrPackage, String typeName) {
-    return enclosingTypeOrPackage != null
-        ? get(enclosingTypeOrPackage + '.' + typeName)
-        : get(typeName);
-  }
-
-  public static ProtoType get(String name) {
-    ProtoType scalar = SCALAR_TYPES.get(name);
-    if (scalar != null) return scalar;
-
-    if (name == null || name.isEmpty() || name.contains("#")) {
-      throw new IllegalArgumentException("unexpected name: " + name);
+  val simpleName: String
+    get() {
+      val dot = string.lastIndexOf('.')
+      return string.substring(dot + 1)
     }
 
-    if (name.startsWith("map<") && name.endsWith(">")) {
-      int comma = name.indexOf(',');
-      if (comma == -1) throw new IllegalArgumentException("expected ',' in map type: " + name);
-      ProtoType key = get(name.substring(4, comma).trim());
-      ProtoType value = get(name.substring(comma + 1, name.length() - 1).trim());
-      return new ProtoType(key, value, name);
+  /** Returns the enclosing type, or null if this type is not nested in another type.  */
+  val enclosingTypeOrPackage: String?
+    get() {
+      val dot = string.lastIndexOf('.')
+      return if (dot == -1) null else string.substring(0, dot)
     }
 
-    return new ProtoType(false, name);
+  /** Creates a scalar or message type.  */
+  private constructor(isScalar: Boolean, string: String) {
+    this.isScalar = isScalar
+    this.string = string
+    this.isMap = false
+    this.keyType = null
+    this.valueType = null
   }
 
-  public ProtoType nestedType(String name) {
-    if (isScalar) {
-      throw new UnsupportedOperationException("scalar cannot have a nested type");
+  /** Creates a map type.  */
+  private constructor(keyType: ProtoType, valueType: ProtoType, string: String) {
+    require(keyType.isScalar && keyType != BYTES && keyType != DOUBLE && keyType != FLOAT) {
+      "map key must be non-byte, non-floating point scalar: $keyType"
     }
-    if (isMap) {
-      throw new UnsupportedOperationException("map cannot have a nested type");
+    this.isScalar = false
+    this.string = string
+    this.isMap = true
+    this.keyType = keyType // TODO restrict what's allowed here
+    this.valueType = valueType
+  }
+
+  fun nestedType(name: String?): ProtoType {
+    check(!isScalar) { "scalar cannot have a nested type" }
+    check(!isMap) { "map cannot have a nested type" }
+    require(name != null && !name.contains(".") && name.isNotEmpty()) { "unexpected name: $name" }
+    return ProtoType(false, "$string.$name")
+  }
+
+  override fun equals(other: Any?) = other is ProtoType && string == other.string
+
+  override fun hashCode() = string.hashCode()
+
+  override fun toString() = string
+
+  companion object {
+    @JvmField val BOOL = ProtoType(true, "bool")
+    @JvmField val BYTES = ProtoType(true, "bytes")
+    @JvmField val DOUBLE = ProtoType(true, "double")
+    @JvmField val FLOAT = ProtoType(true, "float")
+    @JvmField val FIXED32 = ProtoType(true, "fixed32")
+    @JvmField val FIXED64 = ProtoType(true, "fixed64")
+    @JvmField val INT32 = ProtoType(true, "int32")
+    @JvmField val INT64 = ProtoType(true, "int64")
+    @JvmField val SFIXED32 = ProtoType(true, "sfixed32")
+    @JvmField val SFIXED64 = ProtoType(true, "sfixed64")
+    @JvmField val SINT32 = ProtoType(true, "sint32")
+    @JvmField val SINT64 = ProtoType(true, "sint64")
+    @JvmField val STRING = ProtoType(true, "string")
+    @JvmField val UINT32 = ProtoType(true, "uint32")
+    @JvmField val UINT64 = ProtoType(true, "uint64")
+
+    private val SCALAR_TYPES: Map<String, ProtoType>
+
+    init {
+      val scalarTypes = LinkedHashMap<String, ProtoType>()
+      scalarTypes[BOOL.string] = BOOL
+      scalarTypes[BYTES.string] = BYTES
+      scalarTypes[DOUBLE.string] = DOUBLE
+      scalarTypes[FLOAT.string] = FLOAT
+      scalarTypes[FIXED32.string] = FIXED32
+      scalarTypes[FIXED64.string] = FIXED64
+      scalarTypes[INT32.string] = INT32
+      scalarTypes[INT64.string] = INT64
+      scalarTypes[SFIXED32.string] = SFIXED32
+      scalarTypes[SFIXED64.string] = SFIXED64
+      scalarTypes[SINT32.string] = SINT32
+      scalarTypes[SINT64.string] = SINT64
+      scalarTypes[STRING.string] = STRING
+      scalarTypes[UINT32.string] = UINT32
+      scalarTypes[UINT64.string] = UINT64
+      SCALAR_TYPES = Collections.unmodifiableMap(scalarTypes)
     }
-    if (name == null || name.contains(".") || name.isEmpty()) {
-      throw new IllegalArgumentException("unexpected name: " + name);
+
+    @JvmStatic
+    fun get(enclosingTypeOrPackage: String?, typeName: String): ProtoType {
+      return when {
+        enclosingTypeOrPackage != null -> get("$enclosingTypeOrPackage.$typeName")
+        else -> get(typeName)
+      }
     }
-    return new ProtoType(false, string + '.' + name);
-  }
 
-  @Override public boolean equals(Object o) {
-    return o instanceof ProtoType
-        && string.equals(((ProtoType) o).string);
-  }
+    @JvmStatic
+    fun get(name: String?): ProtoType {
+      val scalar = SCALAR_TYPES[name]
+      if (scalar != null) return scalar
 
-  @Override public int hashCode() {
-    return string.hashCode();
-  }
+      require(name != null && name.isNotEmpty() && !name.contains("#")) { "unexpected name: $name" }
 
-  @Override public String toString() {
-    return string;
+      if (name.startsWith("map<") && name.endsWith(">")) {
+        val comma = name.indexOf(',')
+        require(comma != -1) { "expected ',' in map type: $name" }
+        val key = get(name.substring(4, comma).trim())
+        val value = get(name.substring(comma + 1, name.length - 1).trim())
+        return ProtoType(key, value, name)
+      }
+
+      return ProtoType(false, name)
+    }
+
+    @JvmStatic fun get(keyType: ProtoType, valueType: ProtoType, name: String) =
+        ProtoType(keyType, valueType, name)
   }
 }

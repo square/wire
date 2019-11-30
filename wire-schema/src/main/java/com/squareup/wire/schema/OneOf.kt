@@ -13,85 +13,78 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.GroupElement;
-import com.squareup.wire.schema.internal.parser.OneOfElement;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.internal.parser.OneOfElement
 
-public final class OneOf {
-  private final String name;
-  private final String documentation;
-  private final ImmutableList<Field> fields;
-
-  private OneOf(String name, String documentation, ImmutableList<Field> fields) {
-    this.name = name;
-    this.documentation = documentation;
-    this.fields = fields;
-  }
-
-  public String name() {
-    return name;
-  }
-
-  public String documentation() {
-    return documentation;
-  }
-
-  public ImmutableList<Field> fields() {
-    return fields;
-  }
-
-  void link(Linker linker) {
-    for (Field field : fields) {
-      field.link(linker);
+class OneOf private constructor(
+  val name: String,
+  val documentation: String,
+  val fields: ImmutableList<Field>
+) {
+  fun link(linker: Linker) {
+    for (field in fields) {
+      field.link(linker)
     }
   }
 
-  void linkOptions(Linker linker) {
-    for (Field field : fields) {
-      field.linkOptions(linker);
+  fun linkOptions(linker: Linker) {
+    for (field in fields) {
+      field.linkOptions(linker)
     }
   }
 
-  OneOf retainAll(Schema schema, MarkSet markSet, ProtoType enclosingType) {
-    ImmutableList<Field> retainedFields = Field.retainAll(schema, markSet, enclosingType, fields);
-    if (retainedFields.isEmpty()) return null;
-    return new OneOf(name, documentation, retainedFields);
+  fun retainAll(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): OneOf? {
+    val retainedFields = Field.retainAll(schema, markSet, enclosingType, fields)
+    return when {
+      retainedFields.isEmpty() -> null
+      else -> OneOf(name, documentation, retainedFields)
+    }
   }
 
-  OneOf retainLinked() {
-    ImmutableList<Field> retainedFields = Field.retainLinked(fields);
-    if (retainedFields.isEmpty()) return null;
-    return new OneOf(name, documentation, retainedFields);
+  fun retainLinked(): OneOf? {
+    val retainedFields = Field.retainLinked(fields)
+    return when {
+      retainedFields.isEmpty() -> null
+      else -> OneOf(name, documentation, retainedFields)
+    }
   }
 
-  static ImmutableList<OneOf> fromElements(String packageName, List<OneOfElement> elements,
-      boolean extension) {
-    ImmutableList.Builder<OneOf> oneOfs = ImmutableList.builder();
-    for (OneOfElement oneOf : elements) {
-      if (!oneOf.getGroups().isEmpty()) {
-        GroupElement group = oneOf.getGroups().get(0);
-        throw new IllegalStateException(group.getLocation() + ": 'group' is not supported");
+  companion object {
+    @JvmStatic
+    fun fromElements(
+      packageName: String?,
+      elements: List<OneOfElement>,
+      extension: Boolean
+    ): ImmutableList<OneOf> {
+      val oneOfs = ImmutableList.builder<OneOf>()
+      for (element in elements) {
+        if (element.groups.isNotEmpty()) {
+          val (_, location) = element.groups[0]
+          throw IllegalStateException("$location: 'group' is not supported")
+        }
+        oneOfs.add(OneOf(
+            name = element.name,
+            documentation = element.documentation,
+            fields = Field.fromElements(packageName, element.fields, extension)
+        ))
       }
-      oneOfs.add(new OneOf(oneOf.getName(), oneOf.getDocumentation(),
-          Field.fromElements(packageName, oneOf.getFields(), extension)));
+      return oneOfs.build()
     }
-    return oneOfs.build();
-  }
 
-  static ImmutableList<OneOfElement> toElements(ImmutableList<OneOf> oneOfs) {
-    ImmutableList.Builder<OneOfElement> elements = new ImmutableList.Builder<>();
-    for (OneOf oneOf : oneOfs) {
-      elements.add(new OneOfElement(
-          oneOf.name,
-          oneOf.documentation,
-          Field.toElements(oneOf.fields),
-          Collections.emptyList() // groups
-      ));
+    @JvmStatic
+    fun toElements(oneOfs: ImmutableList<OneOf>): ImmutableList<OneOfElement> {
+      val elements = ImmutableList.Builder<OneOfElement>()
+      for (oneOf in oneOfs) {
+        elements.add(OneOfElement(
+            name = oneOf.name,
+            documentation = oneOf.documentation,
+            fields = Field.toElements(oneOf.fields),
+            groups = emptyList()
+        ))
+      }
+      return elements.build()
     }
-    return elements.build();
   }
 }
