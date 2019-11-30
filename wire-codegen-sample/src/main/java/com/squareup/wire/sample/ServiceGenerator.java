@@ -45,19 +45,19 @@ final class ServiceGenerator {
     }
 
     for (Rpc rpc : service.rpcs()) {
-      ProtoType requestType = rpc.requestType();
+      ProtoType requestType = rpc.getRequestType();
       TypeName requestJavaType = javaGenerator.typeName(requestType);
 
-      ProtoType responseType = rpc.responseType();
+      ProtoType responseType = rpc.getResponseType();
       TypeName responseJavaType = javaGenerator.typeName(responseType);
 
-      MethodSpec.Builder rpcBuilder = MethodSpec.methodBuilder(rpc.name());
+      MethodSpec.Builder rpcBuilder = MethodSpec.methodBuilder(rpc.getName());
       rpcBuilder.addModifiers(PUBLIC, ABSTRACT);
       rpcBuilder.returns(responseJavaType);
       rpcBuilder.addParameter(requestJavaType, "request");
 
-      if (!rpc.documentation().isEmpty()) {
-        rpcBuilder.addJavadoc("$L\n", rpc.documentation());
+      if (!rpc.getDocumentation().isEmpty()) {
+        rpcBuilder.addJavadoc("$L\n", rpc.getDocumentation());
       }
 
       typeBuilder.addMethod(rpcBuilder.build());

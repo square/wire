@@ -30,7 +30,7 @@ import com.google.common.collect.Multimap
  *     member already marked.
  *  3. Retaining which members and types have been marked.
  */
-internal class MarkSet(
+class MarkSet(
   val identifierSet: IdentifierSet
 ) {
   /** The types to retain. We may retain a type but not all of its members. */
@@ -45,8 +45,8 @@ internal class MarkSet(
    */
   fun root(protoMember: ProtoMember) {
     check(!identifierSet.excludes(protoMember))
-    types.add(protoMember.type())
-    members.put(protoMember.type(), protoMember)
+    types.add(protoMember.type)
+    members.put(protoMember.type, protoMember)
   }
 
   /** Marks `type`, throwing if it is explicitly excluded. */
@@ -70,8 +70,8 @@ internal class MarkSet(
    */
   fun mark(protoMember: ProtoMember): Boolean {
     if (identifierSet.excludes(protoMember)) return false
-    types.add(protoMember.type())
-    return members.put(protoMember.type(), protoMember)
+    types.add(protoMember.type)
+    return members.put(protoMember.type, protoMember)
   }
 
   /** Returns true if `type` is marked and should be retained. */
@@ -82,6 +82,6 @@ internal class MarkSet(
   /** Returns true if `member` is marked and should be retained. */
   operator fun contains(protoMember: ProtoMember): Boolean {
     if (identifierSet.excludes(protoMember)) return false
-    return members.containsEntry(protoMember.type(), protoMember)
+    return members.containsEntry(protoMember.type, protoMember)
   }
 }

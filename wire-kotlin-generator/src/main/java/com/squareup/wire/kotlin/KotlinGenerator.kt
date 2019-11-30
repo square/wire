@@ -111,7 +111,7 @@ class KotlinGenerator private constructor(
     val simpleName = buildString {
       append(typeName.simpleName)
       if (rpc != null) {
-        append(rpc.name())
+        append(rpc.name)
       }
       when (rpcCallStyle) {
         RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
@@ -147,7 +147,7 @@ class KotlinGenerator private constructor(
     val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
     for (rpc in rpcs) {
       builder.addFunction(generateRpcFunction(
-          rpc, service.name(), service.type().enclosingTypeOrPackage()))
+          rpc, service.name(), service.type().enclosingTypeOrPackage))
     }
 
     return builder.build()
@@ -161,35 +161,35 @@ class KotlinGenerator private constructor(
     val packageName = if (servicePackageName.isNullOrBlank()) "" else "$servicePackageName."
 
     val wireRpcAnnotationSpec = AnnotationSpec.builder(WireRpc::class.asClassName())
-        .addMember("path = %S", "/$packageName$serviceName/${rpc.name()}")
+        .addMember("path = %S", "/$packageName$serviceName/${rpc.name}")
         // TODO(oldergod|jwilson) Lets' use Profile for this.
-        .addMember("requestAdapter = %S", rpc.requestType().adapterString())
-        .addMember("responseAdapter = %S", rpc.responseType().adapterString())
+        .addMember("requestAdapter = %S", rpc.requestType!!.adapterString())
+        .addMember("responseAdapter = %S", rpc.responseType!!.adapterString())
         .build()
-    val funSpecBuilder = FunSpec.builder(rpc.name())
+    val funSpecBuilder = FunSpec.builder(rpc.name)
         .addModifiers(KModifier.ABSTRACT)
         .addAnnotation(wireRpcAnnotationSpec)
-        .apply { if (rpc.documentation().isNotBlank()) addKdoc("%L\n", rpc.documentation()) }
+        .apply { if (rpc.documentation.isNotBlank()) addKdoc("%L\n", rpc.documentation) }
 
-    val requestType = rpc.requestType().typeName
-    val responseType = rpc.responseType().typeName
+    val requestType = rpc.requestType!!.typeName
+    val responseType = rpc.responseType!!.typeName
 
     if (rpcRole == RpcRole.SERVER) {
       if (rpcCallStyle == RpcCallStyle.SUSPENDING) {
         funSpecBuilder.addModifiers(KModifier.SUSPEND)
       }
       when {
-        rpc.requestStreaming() && rpc.responseStreaming() -> {
+        rpc.requestStreaming && rpc.responseStreaming -> {
           funSpecBuilder
               .addParameter("request", readableStreamOf(requestType))
               .addParameter("response", writableStreamOf(responseType))
         }
-        rpc.requestStreaming() -> {
+        rpc.requestStreaming -> {
           funSpecBuilder
               .addParameter("request", readableStreamOf(requestType))
               .returns(responseType)
         }
-        rpc.responseStreaming() -> {
+        rpc.responseStreaming -> {
           funSpecBuilder
               .addParameter("request", requestType)
               .addParameter("response", writableStreamOf(responseType))
@@ -202,7 +202,7 @@ class KotlinGenerator private constructor(
       }
     } else {
       when {
-        rpc.requestStreaming() || rpc.responseStreaming() -> {
+        rpc.requestStreaming || rpc.responseStreaming -> {
           funSpecBuilder.returns(
               GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType))
         }
@@ -262,10 +262,11 @@ class KotlinGenerator private constructor(
               newName("CREATOR", "CREATOR")
             }
             message.fieldsAndOneOfFields().forEach { field ->
-              if (field.name().equals(field.type().simpleName()))
-                newName(field.qualifiedName(), field)
-              else
-                newName(field.name(), field)
+              if (field.name == field.type!!.simpleName) {
+                newName(field.qualifiedName, field)
+              } else {
+                newName(field.name, field)
+              }
             }
           }
         }
@@ -326,10 +327,10 @@ class KotlinGenerator private constructor(
     return buildCodeBlock {
       val nameAllocator = nameAllocator(type)
       type.oneOfs()
-          .filter { oneOf -> oneOf.fields().size >= 2 }
+          .filter { oneOf -> oneOf.fields.size >= 2 }
           .forEach { oneOf ->
             val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
-            val fieldNames = oneOf.fields().joinToString(", ", transform = nameAllocator::get)
+            val fieldNames = oneOf.fields.joinToString(", ", transform = nameAllocator::get)
             beginControlFlow("require(%M(%L) <= 1)", countNonNull, fieldNames)
             addStatement("%S", "At most one of $fieldNames may be non-null")
             endControlFlow()
@@ -524,7 +525,7 @@ class KotlinGenerator private constructor(
         val fieldName = nameAllocator[field]
 
         val throwExceptionBlock = if (!field.isRepeated && field.isRequired) {
-          CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, field.name())
+          CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, field.name)
         } else {
           CodeBlock.of("")
         }
@@ -554,7 +555,7 @@ class KotlinGenerator private constructor(
     }
 
     type.oneOfs().forEach { oneOf ->
-      oneOf.fields().forEach { field ->
+      oneOf.fields.forEach { field ->
         builder.addFunction(builderSetter(field, nameAllocator, builderClass, oneOf))
       }
     }
@@ -579,8 +580,8 @@ class KotlinGenerator private constructor(
     val funBuilder = FunSpec.builder(fieldName)
         .addParameter(fieldName, field.getClass())
         .returns(builderType)
-    if (field.documentation().isNotBlank()) {
-      funBuilder.addKdoc("%L\n", field.documentation())
+    if (field.documentation.isNotBlank()) {
+      funBuilder.addKdoc("%L\n", field.documentation)
     }
     if (field.isDeprecated) {
       funBuilder.addAnnotation(AnnotationSpec.builder(Deprecated::class)
@@ -596,7 +597,7 @@ class KotlinGenerator private constructor(
         .addStatement("this.%1L = %1L", fieldName)
         .apply {
           if (oneOf != null) {
-            for (other in oneOf.fields()) {
+            for (other in oneOf.fields) {
               if (field != other) {
                 addStatement("this.%L = null", nameAllocator[other])
               }
@@ -650,8 +651,8 @@ class KotlinGenerator private constructor(
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
           .initializer(fieldName)
           .apply {
-            if (field.documentation().isNotBlank()) {
-              addKdoc("%L\n", field.documentation())
+            if (field.documentation.isNotBlank()) {
+              addKdoc("%L\n", field.documentation)
             }
           }
           .build())
@@ -669,21 +670,21 @@ class KotlinGenerator private constructor(
   private fun wireFieldAnnotation(field: Field): AnnotationSpec {
     return AnnotationSpec.builder(WireField::class)
         .useSiteTarget(FIELD)
-        .addMember("tag = %L", field.tag())
+        .addMember("tag = %L", field.tag)
         .apply {
-          if (field.type().isMap) {
-            addMember("keyAdapter = %S", field.type().keyType().adapterString())
-            addMember("adapter = %S", field.type().valueType().adapterString())
+          if (field.type!!.isMap) {
+            addMember("keyAdapter = %S", field.type!!.keyType!!.adapterString())
+            addMember("adapter = %S", field.type!!.valueType!!.adapterString())
           } else {
-            addMember("adapter = %S", field.type().adapterString())
+            addMember("adapter = %S", field.type!!.adapterString())
           }
         }
         .apply {
           if (!field.isOptional) {
             if (field.isPacked) {
               addMember("label = %T.PACKED", WireField.Label::class)
-            } else if (field.label() != null) {
-              addMember("label = %T.%L", WireField.Label::class, field.label())
+            } else if (field.label != null) {
+              addMember("label = %T.%L", WireField.Label::class, field.label!!)
             }
           }
         }
@@ -744,14 +745,16 @@ class KotlinGenerator private constructor(
     companionBuilder: TypeSpec.Builder,
     nameAllocator: NameAllocator
   ) {
-    type.fieldsAndOneOfFields().filter { it.default != null }.forEach { field ->
+    for (field in type.fieldsAndOneOfFields()) {
+      val default = field.default ?: continue
+
       val fieldName = "DEFAULT_" + nameAllocator[field].toUpperCase(Locale.US)
       val fieldType = field.getClass().copy(nullable = false)
-      val fieldValue = defaultFieldInitializer(field.type(), field.default)
+      val fieldValue = defaultFieldInitializer(field.type!!, default)
       companionBuilder.addProperty(
           PropertySpec.builder(fieldName, fieldType)
               .apply {
-                if (field.type().isScalar && field.type() != ProtoType.BYTES) {
+                if (field.type!!.isScalar && field.type != ProtoType.BYTES) {
                   addModifiers(KModifier.CONST)
                 } else {
                   jvmField()
@@ -862,7 +865,7 @@ class KotlinGenerator private constructor(
         .parameterizedBy(Map::class.asTypeName()
             .parameterizedBy(keyType.typeName, valueType.typeName))
 
-    return PropertySpec.builder("${name()}Adapter", adapterType, PRIVATE)
+    return PropertySpec.builder("${name}Adapter", adapterType, PRIVATE)
         .initializer(
             "%T.newMapAdapter(%L, %L)",
             ProtoAdapter::class,
@@ -879,7 +882,7 @@ class KotlinGenerator private constructor(
       add("return \n⇥")
       message.fieldsAndOneOfFields().forEach { field ->
         val fieldName = nameAllocator[field]
-        add("%L.encodedSizeWithTag(%L, value.%L) +\n", adapterFor(field), field.tag(), fieldName)
+        add("%L.encodedSizeWithTag(%L, value.%L) +\n", adapterFor(field), field.tag, fieldName)
       }
       add("value.unknownFields.size⇤\n")
     }
@@ -909,7 +912,7 @@ class KotlinGenerator private constructor(
         val fieldName = nameAllocator[field]
         addStatement("%L.encodeWithTag(writer, %L, value.%L)",
             adapterFor(field),
-            field.tag(),
+            field.tag,
             fieldName)
       }
       addStatement("writer.writeBytes(value.unknownFields)")
@@ -943,7 +946,7 @@ class KotlinGenerator private constructor(
         val fieldName = nameAllocator[field]
 
         val throwExceptionBlock = if (!field.isRepeated && !field.isMap && field.isRequired) {
-          CodeBlock.of(" ?: throw %1M(%2L, %3S)", missingRequiredFields, fieldName, field.name())
+          CodeBlock.of(" ?: throw %1M(%2L, %3S)", missingRequiredFields, fieldName, field.name)
         } else {
           CodeBlock.of("")
         }
@@ -968,15 +971,15 @@ class KotlinGenerator private constructor(
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
 
-          if (field.type().isEnum) {
-            beginControlFlow("%L -> try", field.tag())
+          if (field.type!!.isEnum) {
+            beginControlFlow("%L -> try", field.tag)
             addStatement("%L", decodeAndAssign(field, fieldName, adapterName))
             nextControlFlow("catch (e: %T)", ProtoAdapter.EnumConstantNotFoundException::class)
             addStatement("reader.addUnknownField(%L, %T.VARINT, e.value.toLong())", tag,
                 FieldEncoding::class)
             endControlFlow()
           } else {
-            addStatement("%L -> %L", field.tag(), decodeAndAssign(field, fieldName, adapterName))
+            addStatement("%L -> %L", field.tag, decodeAndAssign(field, fieldName, adapterName))
           }
         }
         addStatement("else -> reader.readUnknownField(%L)", tag)
@@ -1051,7 +1054,7 @@ class KotlinGenerator private constructor(
         isMap -> CodeBlock.of("emptyMap()")
         else -> CodeBlock.of("null")
       }
-    } else if (!type().isScalar && !type().isEnum) {
+    } else if (!type!!.isScalar && !type!!.isEnum) {
       val redactElements = MemberName("com.squareup.wire.internal", "redactElements")
       if (isRepeated) {
         return CodeBlock.of("value.%N.%M(%L)", fieldName, redactElements, getAdapterName())
@@ -1075,10 +1078,10 @@ class KotlinGenerator private constructor(
 
   // TODO add support for custom adapters.
   private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
-    return if (type().isMap) {
-      CodeBlock.of("%NAdapter", name())
+    return if (type!!.isMap) {
+      CodeBlock.of("%NAdapter", name)
     } else {
-      type().getAdapterName(nameDelimiter)
+      type!!.getAdapterName(nameDelimiter)
     }
   }
 
@@ -1086,7 +1089,7 @@ class KotlinGenerator private constructor(
     return when {
       isScalar -> CodeBlock.of(
           "%T$adapterFieldDelimiterName%L",
-          ProtoAdapter::class, simpleName().toUpperCase(Locale.US)
+          ProtoAdapter::class, simpleName.toUpperCase(Locale.US)
       )
       isMap -> throw IllegalArgumentException("Can't create single adapter for map type $this")
       else -> CodeBlock.of("%T${adapterFieldDelimiterName}ADAPTER", typeName)
@@ -1114,7 +1117,7 @@ class KotlinGenerator private constructor(
 
     val valueName = nameAllocator["value"]
 
-    val builder = TypeSpec.enumBuilder(type.simpleName())
+    val builder = TypeSpec.enumBuilder(type.simpleName)
         .apply {
           if (message.documentation().isNotBlank()) {
             addKdoc("%L\n", message.documentation())
@@ -1237,7 +1240,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getDeclaration(allocatedName: String) = when {
-    isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type().typeName)
+    isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of("val $allocatedName = mutableMapOf<%T, %T>()",
         keyType.typeName, valueType.typeName)
     else -> CodeBlock.of("var $allocatedName: %T = %L", declarationClass, defaultValue)
@@ -1251,11 +1254,11 @@ class KotlinGenerator private constructor(
 
   private fun ProtoType.asTypeName(): TypeName = when {
     isMap -> Map::class.asTypeName()
-        .parameterizedBy(keyType().asTypeName(), valueType().asTypeName())
+        .parameterizedBy(keyType!!.asTypeName(), valueType!!.asTypeName())
     else -> nameToKotlinName.getValue(this)
   }
 
-  private fun Field.getClass(baseClass: TypeName = type().asTypeName()) = when {
+  private fun Field.getClass(baseClass: TypeName = type!!.asTypeName()) = when {
     isRepeated -> List::class.asClassName().parameterizedBy(baseClass)
     isOptional -> baseClass.copy(nullable = true)
     else -> baseClass.copy(nullable = false)
@@ -1263,10 +1266,10 @@ class KotlinGenerator private constructor(
 
   private val Field.typeName: TypeName
     get() = when {
-      isRepeated -> List::class.asClassName().parameterizedBy(type().typeName)
+      isRepeated -> List::class.asClassName().parameterizedBy(type!!.typeName)
       isMap -> Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
-      !isRequired -> type().typeName.copy(nullable = true)
-      else -> type().typeName
+      !isRequired -> type!!.typeName.copy(nullable = true)
+      else -> type!!.typeName
     }
 
   private val Field.defaultValue: CodeBlock
@@ -1311,8 +1314,8 @@ class KotlinGenerator private constructor(
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
-          val className = enclosingClassName?.nestedClass(type.type().simpleName())
-              ?: ClassName(kotlinPackage, type.type().simpleName())
+          val className = enclosingClassName?.nestedClass(type.type().simpleName)
+              ?: ClassName(kotlinPackage, type.type().simpleName)
           map[type.type()] = className
           putAll(kotlinPackage, className, type.nestedTypes())
         }
@@ -1323,7 +1326,7 @@ class KotlinGenerator private constructor(
         putAll(kotlinPackage, null, protoFile.types())
 
         for (service in protoFile.services()) {
-          val className = ClassName(kotlinPackage, service.type().simpleName())
+          val className = ClassName(kotlinPackage, service.type().simpleName)
           map[service.type()] = className
         }
       }

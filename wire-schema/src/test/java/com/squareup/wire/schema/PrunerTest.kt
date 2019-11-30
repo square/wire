@@ -223,7 +223,7 @@ class PrunerTest {
         .build())
     val oneOfs = (pruned.getType("oneof.OneOfMessage") as MessageType).oneOfs()
     assertThat(oneOfs).isNotEmpty()
-    assertThat(oneOfs.first().fields()).hasSize(3)
+    assertThat(oneOfs.first().fields).hasSize(3)
   }
 
   @Test
@@ -263,8 +263,8 @@ class PrunerTest {
         .build())
     val message = pruned.getType("Message") as MessageType
     val onlyOneOf = message.oneOfs().single()
-    assertThat(onlyOneOf.name()).isEqualTo("selection")
-    assertThat(onlyOneOf.fields().single().name()).isEqualTo("b")
+    assertThat(onlyOneOf.name).isEqualTo("selection")
+    assertThat(onlyOneOf.fields.single().name).isEqualTo("b")
     assertThat(message.field("a")).isNull()
     assertThat(message.field("c")).isNull()
   }
@@ -765,8 +765,8 @@ class PrunerTest {
         .exclude("google.protobuf.FieldOptions#b")
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")!!
-    assertThat(field.options().get(ProtoMember.get(FIELD_OPTIONS, "a"))).isEqualTo("a")
-    assertThat(field.options().get(ProtoMember.get(FIELD_OPTIONS, "b"))).isNull()
+    assertThat(field.options.get(ProtoMember.get(FIELD_OPTIONS, "a"))).isEqualTo("a")
+    assertThat(field.options.get(ProtoMember.get(FIELD_OPTIONS, "b"))).isNull()
   }
 
   @Test
@@ -791,9 +791,9 @@ class PrunerTest {
         .exclude("SomeFieldOptions")
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")
-    val map = field!!.options().map()
+    val map = field!!.options.map()
     val onlyOption = map.entries.single()
-    assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("b")
+    assertThat((onlyOption.key as ProtoMember).member).isEqualTo("b")
     assertThat(onlyOption.value).isEqualTo("b")
   }
 
@@ -819,10 +819,10 @@ class PrunerTest {
         .exclude("SomeFieldOptions#b")
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")
-    val map = field!!.options().get(
+    val map = field!!.options.get(
         ProtoMember.get(FIELD_OPTIONS, "some_field_options")) as Map<*, *>
     val onlyOption = map.entries.single()
-    assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("a")
+    assertThat((onlyOption.key as ProtoMember).member).isEqualTo("a")
     assertThat(onlyOption.value).isEqualTo("a")
   }
 
@@ -857,9 +857,9 @@ class PrunerTest {
         .exclude("Dimensions")
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")
-    val map = field!!.options().map()
+    val map = field!!.options.map()
     val onlyOption = map.entries.single()
-    assertThat((onlyOption.key as ProtoMember).member()).isEqualTo("b")
+    assertThat((onlyOption.key as ProtoMember).member).isEqualTo("b")
     assertThat(onlyOption.value).isEqualTo("b")
   }
 
@@ -882,7 +882,7 @@ class PrunerTest {
         .exclude("google.protobuf.FieldOptions")
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")
-    assertThat(field!!.options().map()).isEmpty()
+    assertThat(field!!.options.map()).isEmpty()
   }
 
   @Test
@@ -1277,15 +1277,15 @@ class PrunerTest {
     assertThat(pruned.getType("squareup.MessageOption")).isNull()
 
     val letterType = pruned.getType("squareup.Letter") as MessageType
-    assertThat(letterType.field("header").options().fields().isEmpty()).isTrue()
+    assertThat(letterType.field("header").options.fields().isEmpty()).isTrue()
 
-    assertThat(letterType.field("add_margin").options().fields().isEmpty()).isTrue()
+    assertThat(letterType.field("add_margin").options.fields().isEmpty()).isTrue()
     assertThat(letterType.field("add_margin").isDeprecated).isTrue()
 
-    assertThat(letterType.field("author").options().fields().isEmpty()).isTrue()
+    assertThat(letterType.field("author").options.fields().isEmpty()).isTrue()
 
     // Default are not options.
     assertThat(letterType.field("signature").default).isEqualTo("Sent from Wire")
-    assertThat(letterType.field("signature").options().fields().isEmpty()).isTrue()
+    assertThat(letterType.field("signature").options.fields().isEmpty()).isTrue()
   }
 }

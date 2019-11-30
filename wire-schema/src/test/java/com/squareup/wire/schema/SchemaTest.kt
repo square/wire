@@ -45,8 +45,8 @@ class SchemaTest {
 
     val service = schema.getService("Service")
     val call = service.rpc("Call")!!
-    assertThat(call.requestType()).isEqualTo(schema.getType("Request").type())
-    assertThat(call.responseType()).isEqualTo(schema.getType("Response").type())
+    assertThat(call.requestType).isEqualTo(schema.getType("Request").type())
+    assertThat(call.responseType).isEqualTo(schema.getType("Response").type())
   }
 
   @Test
@@ -70,10 +70,10 @@ class SchemaTest {
 
     val message = schema.getType("Message") as MessageType
     val field = message.field("field")
-    assertThat(field!!.type()).isEqualTo(schema.getType("foo_package.Foo").type())
-    val bars = message.field("bars")!!.type()
-    assertThat(bars.keyType()).isEqualTo(ProtoType.STRING)
-    assertThat(bars.valueType()).isEqualTo(schema.getType("foo_package.Bar").type())
+    assertThat(field!!.type).isEqualTo(schema.getType("foo_package.Foo").type())
+    val bars = message.field("bars")!!.type
+    assertThat(bars!!.keyType).isEqualTo(ProtoType.STRING)
+    assertThat(bars!!.valueType).isEqualTo(schema.getType("foo_package.Bar").type())
   }
 
   @Ignore("Resolution happens from the root not from inside Outer and so this fails.")
@@ -98,7 +98,7 @@ class SchemaTest {
 
     val message = schema.getType("Other") as MessageType
     val field = message.field("choice")
-    assertThat(field!!.type()).isEqualTo(schema.getType("Outer.Choice").type())
+    assertThat(field!!.type).isEqualTo(schema.getType("Outer.Choice").type())
   }
 
   @Test
@@ -326,12 +326,12 @@ class SchemaTest {
         .schema()
     val message = schema.getType("Message") as MessageType
 
-    val aOptions = message.field("a")!!.options()
+    val aOptions = message.field("a")!!.options
     assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isNull()
     assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isNull()
     assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isNull()
 
-    val bOptions = message.field("b")!!.options()
+    val bOptions = message.field("b")!!.options
     assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isEqualTo("red")
     assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isEqualTo("true")
     assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isEqualTo("true")
@@ -713,8 +713,8 @@ class SchemaTest {
         .schema()
     val messageType = schema.getType("Message") as MessageType
 
-    assertThat(messageType.field("a")!!.tag()).isEqualTo(1)
-    assertThat(messageType.extensionField("p.a")!!.tag()).isEqualTo(2)
+    assertThat(messageType.field("a")!!.tag).isEqualTo(1)
+    assertThat(messageType.extensionField("p.a")!!.tag).isEqualTo(2)
   }
 
   @Test
@@ -778,8 +778,8 @@ class SchemaTest {
     val messageType = schema.getType("Message") as MessageType
 
     assertThat(messageType.field("a")).isNull()
-    assertThat(messageType.extensionField("p1.a")!!.packageName()).isEqualTo("p1")
-    assertThat(messageType.extensionField("p2.a")!!.packageName()).isEqualTo("p2")
+    assertThat(messageType.extensionField("p1.a")!!.packageName).isEqualTo("p1")
+    assertThat(messageType.extensionField("p2.a")!!.packageName).isEqualTo("p2")
   }
 
   @Test
@@ -966,7 +966,7 @@ class SchemaTest {
         .schema()
     val a = schema.getType("pa.A") as MessageType
     val b = schema.getType("pb.B") as MessageType
-    assertThat(a.field("b")!!.type()).isEqualTo(b.type())
+    assertThat(a.field("b")!!.type).isEqualTo(b.type())
   }
 
   @Test
@@ -989,7 +989,7 @@ class SchemaTest {
         .schema()
     val a = schema.getType("pa.A") as MessageType
     val b = schema.getType("pb.B") as MessageType
-    assertThat(a.field("b")!!.type().valueType()).isEqualTo(b.type())
+    assertThat(a.field("b")!!.type!!.valueType).isEqualTo(b.type())
   }
 
   @Test
@@ -1070,8 +1070,8 @@ class SchemaTest {
         .schema()
     val service = schema.getService("pa.Service")
     val b = schema.getType("pb.B") as MessageType
-    assertThat(service.rpcs()[0].requestType()).isEqualTo(b.type())
-    assertThat(service.rpcs()[0].responseType()).isEqualTo(b.type())
+    assertThat(service.rpcs()[0].requestType).isEqualTo(b.type())
+    assertThat(service.rpcs()[0].responseType).isEqualTo(b.type())
   }
 
   @Test
@@ -1223,7 +1223,7 @@ class SchemaTest {
         .schema()
     val a = schema.getType("pa.A") as MessageType
     val c = schema.getType("pc.C") as MessageType
-    assertThat(a.field("c")!!.type()).isEqualTo(c.type())
+    assertThat(a.field("c")!!.type).isEqualTo(c.type())
   }
 
   @Test
@@ -1251,10 +1251,10 @@ class SchemaTest {
         )
         .schema()
     val messageC = schema.getType("a.b.MessageB") as MessageType
-    assertThat(messageC.field("c1")!!.type()).isEqualTo(ProtoType.get("a.b.MessageC"))
-    assertThat(messageC.field("c2")!!.type()).isEqualTo(ProtoType.get("a.b.MessageC"))
-    assertThat(messageC.field("c3")!!.type()).isEqualTo(ProtoType.get("a.b.MessageC"))
-    assertThat(messageC.field("c4")!!.type()).isEqualTo(ProtoType.get("a.b.MessageC"))
+    assertThat(messageC.field("c1")!!.type).isEqualTo(ProtoType.get("a.b.MessageC"))
+    assertThat(messageC.field("c2")!!.type).isEqualTo(ProtoType.get("a.b.MessageC"))
+    assertThat(messageC.field("c3")!!.type).isEqualTo(ProtoType.get("a.b.MessageC"))
+    assertThat(messageC.field("c4")!!.type).isEqualTo(ProtoType.get("a.b.MessageC"))
   }
 
   @Test
@@ -1279,7 +1279,7 @@ class SchemaTest {
         )
         .schema()
     val messageC = schema.getType("a.b.c.MessageC") as MessageType
-    assertThat(messageC.field("message_b")!!.type()).isEqualTo(ProtoType.get("a.b.MessageB"))
+    assertThat(messageC.field("message_b")!!.type).isEqualTo(ProtoType.get("a.b.MessageB"))
   }
 
   @Test
@@ -1304,7 +1304,7 @@ class SchemaTest {
         )
         .schema()
     val messageC = schema.getType("a.b.MessageB") as MessageType
-    assertThat(messageC.field("message_c")!!.type()).isEqualTo(ProtoType.get("a.b.c.MessageC"))
+    assertThat(messageC.field("message_c")!!.type).isEqualTo(ProtoType.get("a.b.c.MessageC"))
   }
 
   @Test
@@ -1337,7 +1337,7 @@ class SchemaTest {
         )
         .schema()
     val messageC = schema.getType("a.b.MessageB") as MessageType
-    assertThat(messageC.field("message_a")!!.type()).isEqualTo(ProtoType.get("a.b.a.MessageA"))
+    assertThat(messageC.field("message_a")!!.type).isEqualTo(ProtoType.get("a.b.a.MessageA"))
   }
 
   @Test
@@ -1370,7 +1370,7 @@ class SchemaTest {
         )
         .schema()
     val messageC = schema.getType("a.b.MessageB") as MessageType
-    assertThat(messageC.field("message_a")!!.type()).isEqualTo(ProtoType.get("a.MessageA"))
+    assertThat(messageC.field("message_a")!!.type).isEqualTo(ProtoType.get("a.MessageA"))
   }
 
   @Test

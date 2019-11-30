@@ -23,10 +23,10 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.ProtoType
 
 internal val Field.isMap: Boolean
-  get() = type().isMap
+  get() = type!!.isMap
 
 internal val Field.keyType: ProtoType
-  get() = type().keyType()
+  get() = type!!.keyType!!
 
 internal val Field.valueType: ProtoType
-  get() = type().valueType()
+  get() = type!!.valueType!!

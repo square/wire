@@ -26,7 +26,7 @@ data class Location(
   /** The base of this location; typically a directory or .jar file.  */
   val base: String,
 
-  /** The path to this location relative to [.base].  */
+  /** The path to this location relative to [base].  */
   val path: String,
 
   /** The line number of this location, or -1 for no specific line number.  */

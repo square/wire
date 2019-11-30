@@ -104,7 +104,7 @@ final class Pruner {
         ProtoMember member = (ProtoMember) reachable;
         if (identifierSet.includes(member)) {
           marks.root(member);
-          marks.mark(member.type()); // Consider this type as visited.
+          marks.mark(member.getType()); // Consider this type as visited.
           queue.add(member);
         }
       }
@@ -150,9 +150,9 @@ final class Pruner {
 
     if (root instanceof ProtoMember) {
       ProtoMember protoMember = (ProtoMember) root;
-      String member = ((ProtoMember) root).member();
-      Type type = schema.getType(protoMember.type());
-      Service service = schema.getService(protoMember.type());
+      String member = ((ProtoMember) root).getMember();
+      Type type = schema.getType(protoMember.getType());
+      Service service = schema.getService(protoMember.getType());
 
       if (type instanceof MessageType) {
         Field field = ((MessageType) type).field(member);
@@ -162,8 +162,8 @@ final class Pruner {
         if (field == null) {
           throw new IllegalStateException("unexpected member: " + member);
         }
-        result.add(field.type());
-        options = field.options();
+        result.add(field.getType());
+        options = field.getOptions();
       } else if (type instanceof EnumType) {
         EnumConstant constant = ((EnumType) type).constant(member);
         if (constant == null) {
@@ -175,9 +175,9 @@ final class Pruner {
         if (rpc == null) {
           throw new IllegalStateException("unexpected rpc: " + member);
         }
-        result.add(rpc.requestType());
-        result.add(rpc.responseType());
-        options = rpc.options();
+        result.add(rpc.getRequestType());
+        result.add(rpc.getResponseType());
+        options = rpc.getOptions();
       } else {
         throw new IllegalStateException("unexpected member: " + member);
       }
@@ -185,8 +185,8 @@ final class Pruner {
       ProtoType protoType = (ProtoType) root;
 
       if (protoType.isMap()) {
-        result.add(protoType.keyType());
-        result.add(protoType.valueType());
+        result.add(protoType.getKeyType());
+        result.add(protoType.getValueType());
         return result;
       }
 
@@ -201,14 +201,14 @@ final class Pruner {
         options = type.options();
         MessageType messageType = (MessageType) type;
         for (Field field : messageType.declaredFields()) {
-          result.add(ProtoMember.get(protoType, field.name()));
+          result.add(ProtoMember.get(protoType, field.getName()));
         }
         for (Field field : messageType.extensionFields()) {
-          result.add(ProtoMember.get(protoType, field.qualifiedName()));
+          result.add(ProtoMember.get(protoType, field.getQualifiedName()));
         }
         for (OneOf oneOf : messageType.oneOfs()) {
-          for (Field field : oneOf.fields()) {
-            result.add(ProtoMember.get(protoType, field.name()));
+          for (Field field : oneOf.getFields()) {
+            result.add(ProtoMember.get(protoType, field.getName()));
           }
         }
       } else if (type instanceof EnumType) {
@@ -220,7 +220,7 @@ final class Pruner {
       } else if (service != null) {
         options = service.options();
         for (Rpc rpc : service.rpcs()) {
-          result.add(ProtoMember.get(service.type(), rpc.name()));
+          result.add(ProtoMember.get(service.type(), rpc.getName()));
         }
       } else {
         throw new IllegalStateException("unexpected type: " + protoType);
@@ -232,7 +232,7 @@ final class Pruner {
     for (ProtoMember member : options.fields(identifierSet).values()) {
       // If it's an extension, don't consider the entire enclosing type to be reachable.
       if (!isExtensionField(member)) {
-        result.add(member.type());
+        result.add(member.getType());
       }
       result.add(member);
     }
@@ -240,8 +240,8 @@ final class Pruner {
   }
 
   private boolean isExtensionField(ProtoMember protoMember) {
-    Type type = schema.getType(protoMember.type());
+    Type type = schema.getType(protoMember.getType());
     return type instanceof MessageType
-        && ((MessageType) type).extensionField(protoMember.member()) != null;
+        && ((MessageType) type).extensionField(protoMember.getMember()) != null;
   }
 }

@@ -27,7 +27,7 @@ annotation class WireField(
   val tag: Int,
   /**
    * Reference to the static field that holds a [ProtoAdapter] that can encode and decode this
-   * field's keys. This only applies to maps. See [.adapter] for a description of the value format.
+   * field's keys. This only applies to maps. See [adapter] for a description of the value format.
    */
   val keyAdapter: String = "",
   /**

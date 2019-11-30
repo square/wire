@@ -47,7 +47,7 @@ class OptionsLinkingTest {
     val schema = loadAndLinkSchema()
 
     val typeA = schema.getType("A") as MessageType
-    assertThat(typeA.field("s").options().map()).isEqualTo(
+    assertThat(typeA.field("s").options.map()).isEqualTo(
         mapOf(
             formattingOptionsField to mapOf(
                 languageField to "English"
@@ -78,7 +78,7 @@ class OptionsLinkingTest {
     val schema = loadAndLinkSchema()
 
     val typeA = schema.getType("A") as MessageType
-    assertThat(typeA.field("s").options().map()).isEqualTo(
+    assertThat(typeA.field("s").options.map()).isEqualTo(
         mapOf(
             formattingOptionsField to mapOf(
                 languageField to "English"
@@ -121,7 +121,7 @@ class OptionsLinkingTest {
     val schema = loadAndLinkSchema()
 
     val typeA = schema.getType("A") as MessageType
-    assertThat(typeA.field("s").options().map()).isEqualTo(
+    assertThat(typeA.field("s").options.map()).isEqualTo(
         mapOf(
             formattingOptionsField to mapOf(
                 languageField to mapOf(

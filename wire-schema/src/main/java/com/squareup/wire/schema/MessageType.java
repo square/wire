@@ -108,7 +108,7 @@ public final class MessageType extends Type {
     result.addAll(declaredFields);
     result.addAll(extensionFields);
     for (OneOf oneOf : oneOfs) {
-      result.addAll(oneOf.fields());
+      result.addAll(oneOf.getFields());
     }
     return result.build();
   }
@@ -116,13 +116,13 @@ public final class MessageType extends Type {
   /** Returns the field named {@code name}, or null if this type has no such field. */
   public Field field(String name) {
     for (Field field : declaredFields) {
-      if (field.name().equals(name)) {
+      if (field.getName().equals(name)) {
         return field;
       }
     }
     for (OneOf oneOf : oneOfs) {
-      for (Field field : oneOf.fields()) {
-        if (field.name().equals(name)) {
+      for (Field field : oneOf.getFields()) {
+        if (field.getName().equals(name)) {
           return field;
         }
       }
@@ -136,7 +136,7 @@ public final class MessageType extends Type {
    */
   public Field extensionField(String qualifiedName) {
     for (Field field : extensionFields) {
-      if (field.qualifiedName().equals(qualifiedName)) {
+      if (field.getQualifiedName().equals(qualifiedName)) {
         return field;
       }
     }
@@ -146,12 +146,12 @@ public final class MessageType extends Type {
   /** Returns the field tagged {@code tag}, or null if this type has no such field. */
   public Field field(int tag) {
     for (Field field : declaredFields) {
-      if (field.tag() == tag) {
+      if (field.getTag() == tag) {
         return field;
       }
     }
     for (Field field : extensionFields) {
-      if (field.tag() == tag) {
+      if (field.getTag() == tag) {
         return field;
       }
     }
@@ -170,7 +170,7 @@ public final class MessageType extends Type {
     // TODO(jwilson): simplify this to just resolve field values directly.
     Map<String, Field> extensionsForType = new LinkedHashMap<>();
     for (Field field : extensionFields) {
-      extensionsForType.put(field.qualifiedName(), field);
+      extensionsForType.put(field.getQualifiedName(), field);
     }
     return extensionsForType;
   }
@@ -253,8 +253,8 @@ public final class MessageType extends Type {
     ImmutableList<OneOf> retainedOneOfs = retainedOneOfsBuilder.build();
 
     return new MessageType(protoType, location, documentation, name,
-        Field.retainAll(schema, markSet, protoType, declaredFields),
-        Field.retainAll(schema, markSet, protoType, extensionFields), retainedOneOfs,
+        Field.Companion.retainAll(schema, markSet, protoType, declaredFields),
+        Field.Companion.retainAll(schema, markSet, protoType, extensionFields), retainedOneOfs,
         retainedNestedTypes, extensionsList, reserveds, options.retainAll(schema, markSet));
   }
 

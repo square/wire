@@ -62,7 +62,7 @@ class MarkdownHandler : CustomHandlerBeta {
 
   private fun toMarkdown(type: Type): String {
     return """
-        |# ${type.type().simpleName()}
+        |# ${type.type().simpleName}
         |
         |${type.documentation()}
         |""".trimMargin()
@@ -70,7 +70,7 @@ class MarkdownHandler : CustomHandlerBeta {
 
   private fun toMarkdown(service: Service): String {
     return """
-        |# ${service.type().simpleName()}
+        |# ${service.type().simpleName}
         |
         |${service.documentation()}
         |""".trimMargin()

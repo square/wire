@@ -48,9 +48,9 @@ class OptionsTest {
     val opt2 = ProtoMember.get(ProtoType.get("FooOptions"), "opt2")
 
     val bar = schema.getType("Bar") as MessageType
-    assertThat(bar.field("a")!!.options().map())
+    assertThat(bar.field("a")!!.options.map())
         .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "123", opt2 to "baz")))
-    assertThat(bar.field("b")!!.options().map())
+    assertThat(bar.field("b")!!.options.map())
         .isEqualTo(mapOf(fooOptions to mapOf(opt1 to "456", opt2 to "quux")))
   }
 
@@ -83,7 +83,7 @@ class OptionsTest {
     val baz = ProtoMember.get(ProtoType.get("BarOptions"), "baz")
 
     val message = schema.getType("Message") as MessageType
-    assertThat(message.field("b")!!.options().map())
+    assertThat(message.field("b")!!.options.map())
         .isEqualTo(mapOf(foo to mapOf(bar to mapOf(baz to "123"))))
   }
 

@@ -52,7 +52,7 @@ class EnclosingType internal constructor(
 
   fun toElement() = MessageElement(
       location = location,
-      name = type.simpleName(),
+      name = type.simpleName,
       nestedTypes = Type.toElements(nestedTypes)
   )
 }

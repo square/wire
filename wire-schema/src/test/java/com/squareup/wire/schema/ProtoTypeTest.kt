@@ -31,7 +31,7 @@ class ProtoTypeTest {
   @Test
   fun simpleName() {
     val person = ProtoType.get("squareup.protos.person.Person")
-    assertThat(person.simpleName()).isEqualTo("Person")
+    assertThat(person.simpleName).isEqualTo("Person")
   }
 
   @Test
@@ -52,7 +52,7 @@ class ProtoTypeTest {
     try {
       ProtoType.INT32.nestedType("PhoneType")
       fail()
-    } catch (expected: UnsupportedOperationException) {
+    } catch (expected: IllegalStateException) {
     }
   }
 
@@ -61,7 +61,7 @@ class ProtoTypeTest {
     try {
       ProtoType.get("map<string, string>").nestedType("PhoneType")
       fail()
-    } catch (expected: UnsupportedOperationException) {
+    } catch (expected: IllegalStateException) {
     }
   }
 
@@ -113,13 +113,13 @@ class ProtoTypeTest {
 
   @Test
   fun enclosingTypeOrPackage() {
-    assertThat(ProtoType.STRING.enclosingTypeOrPackage()).isNull()
+    assertThat(ProtoType.STRING.enclosingTypeOrPackage).isNull()
 
     val person = ProtoType.get("squareup.protos.person.Person")
-    assertThat(person.enclosingTypeOrPackage()).isEqualTo("squareup.protos.person")
+    assertThat(person.enclosingTypeOrPackage).isEqualTo("squareup.protos.person")
 
     val phoneType = person.nestedType("PhoneType")
-    assertThat(phoneType.enclosingTypeOrPackage()).isEqualTo("squareup.protos.person.Person")
+    assertThat(phoneType.enclosingTypeOrPackage).isEqualTo("squareup.protos.person.Person")
   }
 
   @Test
