@@ -34,10 +34,10 @@ class ProfileParser(
 
   fun read(): ProfileFileElement {
     val label = reader.readWord()
-    if (label != "syntax") throw reader.unexpected("expected 'syntax'")
+    reader.expect(label == "syntax") { "expected 'syntax'" }
     reader.require('=')
     val syntaxString = reader.readQuotedString()
-    if (syntaxString != "wire2") throw reader.unexpected("expected 'wire2'")
+    reader.expect(syntaxString == "wire2") { "expected 'wire2'" }
     reader.require(';')
 
     while (true) {
@@ -61,7 +61,7 @@ class ProfileParser(
 
     when (label) {
       "package" -> {
-        if (packageName != null) throw reader.unexpected(location, "too many package names")
+        reader.expect(packageName == null, location) { "too many package names" }
         packageName = reader.readName()
         reader.require(';')
       }
@@ -71,7 +71,7 @@ class ProfileParser(
         reader.require(';')
       }
       "type" -> typeConfigs.add(readTypeConfig(location, documentation))
-      else -> throw reader.unexpected(location, "unexpected label: $label")
+      else -> throw reader.unexpected("unexpected label: $label", location)
     }
   }
 
@@ -91,14 +91,14 @@ class ProfileParser(
       val word = reader.readWord()
       when (word) {
         "target" -> {
-          if (target != null) throw reader.unexpected(wordLocation, "too many targets")
+          reader.expect(target == null, wordLocation) { "too many targets" }
           target = reader.readWord()
-          if (reader.readWord() != "using") throw reader.unexpected("expected 'using'")
+          reader.expect(reader.readWord() == "using") { "expected 'using'" }
           val adapterType = reader.readWord()
           reader.require('#')
           val adapterConstant = reader.readWord()
           reader.require(';')
-          adapter = adapterType + '#'.toString() + adapterConstant
+          adapter = "$adapterType#$adapterConstant"
         }
 
         "with" -> {
@@ -106,7 +106,7 @@ class ProfileParser(
           reader.require(';')
         }
 
-        else -> throw reader.unexpected(wordLocation, "unexpected label: $word")
+        else -> throw reader.unexpected("unexpected label: $word", wordLocation)
       }
     }
 

@@ -13,403 +13,402 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.squareup.wire.schema.Location;
+import com.squareup.wire.schema.Location
 
-/** A general purpose reader for formats like {@code .proto}. */
-public final class SyntaxReader {
-  private final Location location;
+/** A general purpose reader for formats like `.proto`. */
+class SyntaxReader(
+  private val data: CharArray,
+  private val location: Location
+) {
+  /** Our cursor within the document. `data[pos]` is the next character to be read. */
+  private var pos = 0
 
-  private final char[] data;
-  /** Our cursor within the document. {@code data[pos]} is the next character to be read. */
-  private int pos;
   /** The number of newline characters encountered thus far. */
-  private int line;
+  private var line = 0
+
   /** The index of the most recent newline character. */
-  private int lineStart;
+  private var lineStart = 0
 
-  public SyntaxReader(char[] data, Location location) {
-    this.data = data;
-    this.location = location;
-  }
-
-  public boolean exhausted() {
-    return pos == data.length;
-  }
+  fun exhausted(): Boolean = pos == data.size
 
   /** Reads a non-whitespace character and returns it. */
-  public char readChar() {
-    char result = peekChar();
-    pos++;
-    return result;
-  }
+  fun readChar(): Char = peekChar().also { pos++ }
 
   /** Reads a non-whitespace character 'c', or throws an exception. */
-  public void require(char c) {
-    if (readChar() != c) throw unexpected("expected '" + c + "'");
+  fun require(c: Char) {
+    expect(readChar() == c) { "expected '$c'" }
   }
 
   /**
-   * Peeks a non-whitespace character and returns it. The only difference
-   * between this and {@code readChar} is that this doesn't consume the char.
+   * Peeks a non-whitespace character and returns it. The only difference between this and
+   * [readChar] is that this doesn't consume the char.
    */
-  public char peekChar() {
-    skipWhitespace(true);
-    if (pos == data.length) throw unexpected("unexpected end of file");
-    return data[pos];
+  fun peekChar(): Char {
+    skipWhitespace(skipComments = true)
+    expect(pos < data.size) { "unexpected end of file" }
+    return data[pos]
   }
 
-  public boolean peekChar(char c) {
-    if (peekChar() == c) {
-      pos++;
-      return true;
-    } else {
-      return false;
+  fun peekChar(c: Char): Boolean {
+    return when (peekChar()) {
+      c -> {
+        pos++
+        true
+      }
+      else -> false
     }
   }
 
   /** Push back the most recently read character. */
-  public void pushBack(char c) {
-    if (data[pos - 1] != c) throw new IllegalArgumentException();
-    pos--;
+  fun pushBack(c: Char) {
+    require(data[pos - 1] == c)
+    pos--
   }
 
   /** Reads a quoted or unquoted string and returns it. */
-  public String readString() {
-    skipWhitespace(true);
-    char c = peekChar();
-    return c == '"' || c == '\'' ? readQuotedString() : readWord();
+  fun readString(): String {
+    skipWhitespace(skipComments = true)
+    return when (peekChar()) {
+      '"', '\'' -> readQuotedString()
+      else -> readWord()
+    }
   }
 
-  public String readQuotedString() {
-    char startQuote = readChar();
-    if (startQuote != '"' && startQuote != '\'') throw new AssertionError();
-    StringBuilder result = new StringBuilder();
-    while (pos < data.length) {
-      char c = data[pos++];
+  fun readQuotedString(): String {
+    var startQuote = readChar()
+    assert(startQuote == '"' || startQuote == '\'')
+    val result = StringBuilder()
+    while (pos < data.size) {
+      var c = data[pos++]
       if (c == startQuote) {
+        // Adjacent strings are concatenated. Consume new quote and continue reading.
         if (peekChar() == '"' || peekChar() == '\'') {
-          // Adjacent strings are concatenated. Consume new quote and continue reading.
-          startQuote = readChar();
-          continue;
+          startQuote = readChar()
+          continue
         }
-        return result.toString();
+        return result.toString()
       }
-
       if (c == '\\') {
-        if (pos == data.length) throw unexpected("unexpected end of file");
-        c = data[pos++];
-        switch (c) {
-          case 'a': c = 0x7; break;
-          case 'b': c = '\b'; break;
-          case 'f': c = '\f'; break;
-          case 'n': c = '\n'; break;
-          case 'r': c = '\r'; break;
-          case 't': c = '\t'; break;
-          case 'v': c = 0xb; break;
-          case 'x':case 'X':
-            c = readNumericEscape(16, 2);
-            break;
-          case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':
-            --pos;
-            c = readNumericEscape(8, 3);
-            break;
-          default:
-            // use char as-is
-            break;
+        expect(pos < data.size) { "unexpected end of file" }
+        c = data[pos++]
+        when (c) {
+          'a' -> c = '\u0007' // Alert.
+          'b' -> c = '\b'     // Backspace.
+          'f' -> c = '\u000c' // Form feed.
+          'n' -> c = '\n'     // Newline.
+          'r' -> c = '\r'     // Carriage return.
+          't' -> c = '\t'     // Horizontal tab.
+          'v' -> c = '\u000b' // Vertical tab.
+          'x', 'X' -> c = readNumericEscape(16, 2)
+          '0', '1', '2', '3', '4', '5', '6', '7' -> {
+            --pos
+            c = readNumericEscape(8, 3)
+          }
         }
       }
-
-      result.append(c);
-      if (c == '\n') newline();
+      result.append(c)
+      if (c == '\n') newline()
     }
-    throw unexpected("unterminated string");
+    throw unexpected("unterminated string")
   }
 
-  private char readNumericEscape(int radix, int len) {
-    int value = -1;
-    for (int endPos = Math.min(pos + len, data.length); pos < endPos; pos++) {
-      int digit = hexDigit(data[pos]);
-      if (digit == -1 || digit >= radix) break;
-      if (value < 0) {
-        value = digit;
-      } else {
-        value = value * radix + digit;
+  private fun readNumericEscape(radix: Int, len: Int): Char {
+    var value = -1
+    val endPos = minOf(pos + len, data.size)
+    while (pos < endPos) {
+      val digit = hexDigit(data[pos])
+      if (digit == -1 || digit >= radix) break
+      value = when {
+        value < 0 -> digit
+        else -> value * radix + digit
       }
+      pos++
     }
-    if (value < 0) throw unexpected("expected a digit after \\x or \\X");
-    return (char) value;
+    expect(value >= 0) { "expected a digit after \\x or \\X" }
+    return value.toChar()
   }
 
-  private int hexDigit(char c) {
-    if (c >= '0' && c <= '9') return c - '0';
-    else if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-    else if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-    else return -1;
+  private fun hexDigit(c: Char): Int {
+    return when (c) {
+      in '0'..'9' -> c - '0'
+      in 'a'..'f' -> c - 'a' + 10
+      in 'A'..'F' -> c - 'A' + 10
+      else -> -1
+    }
   }
 
   /** Reads a (paren-wrapped), [square-wrapped] or naked symbol name. */
-  public String readName() {
-    String optionName;
-    char c = peekChar();
-    if (c == '(') {
-      pos++;
-      optionName = readWord();
-      if (readChar() != ')') throw unexpected("expected ')'");
-    } else if (c == '[') {
-      pos++;
-      optionName = readWord();
-      if (readChar() != ']') throw unexpected("expected ']'");
-    } else {
-      optionName = readWord();
+  fun readName(): String {
+    return when (peekChar()) {
+      '(' -> {
+        pos++
+        readWord().also {
+          expect(readChar() == ')') { "expected ')'" }
+        }
+      }
+
+      '[' -> {
+        pos++
+        readWord().also {
+          expect(readChar() == ']') { "expected ']'" }
+        }
+      }
+
+      else -> readWord()
     }
-    return optionName;
   }
 
   /** Reads a scalar, map, or type name. */
-  public String readDataType() {
-    String name = readWord();
-    return readDataType(name);
+  fun readDataType(): String {
+    val name = readWord()
+    return readDataType(name)
   }
 
-  /** Reads a scalar, map, or type name with {@code name} as a prefix word. */
-  public String readDataType(String name) {
-    if (name.equals("map")) {
-      if (readChar() != '<') throw unexpected("expected '<'");
-      String keyType = readDataType();
-      if (readChar() != ',') throw unexpected("expected ','");
-      String valueType = readDataType();
-      if (readChar() != '>') throw unexpected("expected '>'");
-      return String.format("map<%s, %s>", keyType, valueType);
-    } else {
-      return name;
+  /** Reads a scalar, map, or type name with `name` as a prefix word. */
+  fun readDataType(name: String): String {
+    return when (name) {
+      "map" -> {
+        expect(readChar() == '<') { "expected '<'" }
+        val keyType = readDataType()
+
+        expect(readChar() == ',') { "expected ','" }
+        val valueType = readDataType()
+
+        expect(readChar() == '>') { "expected '>'" }
+        String.format("map<%s, %s>", keyType, valueType)
+      }
+
+      else -> name
     }
   }
 
   /** Reads a non-empty word and returns it. */
-  public String readWord() {
-    skipWhitespace(true);
-    int start = pos;
-    while (pos < data.length) {
-      char c = data[pos];
-      if ((c >= 'a' && c <= 'z')
-          || (c >= 'A' && c <= 'Z')
-          || (c >= '0' && c <= '9')
-          || (c == '_')
-          || (c == '-')
-          || (c == '.')) {
-        pos++;
-      } else {
-        break;
+  fun readWord(): String {
+    skipWhitespace(skipComments = true)
+    val start = pos
+    loop@ while (pos < data.size) {
+      when (data[pos]) {
+        in 'a'..'z', in 'A'..'Z', in '0'..'9', '_', '-', '.' -> pos++
+        else -> break@loop
       }
     }
-    if (start == pos) {
-      throw unexpected("expected a word");
-    }
-    return new String(data, start, pos - start);
+    expect(start < pos) { "expected a word" }
+    return String(data, start, pos - start)
   }
 
   /** Reads an integer and returns it. */
-  public int readInt() {
-    String tag = readWord();
+  fun readInt(): Int {
+    var tag = readWord()
     try {
-      int radix = 10;
+      var radix = 10
       if (tag.startsWith("0x") || tag.startsWith("0X")) {
-        tag = tag.substring("0x".length());
-        radix = 16;
+        tag = tag.substring("0x".length)
+        radix = 16
       }
-      return Integer.valueOf(tag, radix);
-    } catch (Exception e) {
-      throw unexpected("expected an integer but was " + tag);
+      return Integer.valueOf(tag, radix)
+    } catch (_: Exception) {
+      throw unexpected("expected an integer but was $tag")
     }
   }
 
   /**
-   * Like {@link #skipWhitespace}, but this returns a string containing all
-   * comment text. By convention, comments before a declaration document that
-   * declaration.
+   * Like [skipWhitespace], but this returns a string containing all comment text. By convention,
+   * comments before a declaration document that declaration.
    */
-  public String readDocumentation() {
-    String result = null;
+  fun readDocumentation(): String {
+    var result: String? = null
     while (true) {
-      skipWhitespace(false);
-      if (pos == data.length || data[pos] != '/') {
-        return result != null ? result : "";
+      skipWhitespace(skipComments = false)
+      if (pos == data.size || data[pos] != '/') return result ?: ""
+      val comment = readComment()
+      result = when (result) {
+        null -> comment
+        else -> "$result\n$comment"
       }
-      String comment = readComment();
-      result = (result == null) ? comment : (result + "\n" + comment);
     }
   }
 
   /** Reads a comment and returns its body. */
-  private String readComment() {
-    if (pos == data.length || data[pos] != '/') throw new AssertionError();
-    pos++;
-    int commentType = pos < data.length ? data[pos++] : -1;
-    if (commentType == '*') {
-      StringBuilder result = new StringBuilder();
-      boolean startOfLine = true;
+  private fun readComment(): String {
+    assert(pos != data.size && data[pos] == '/')
+    pos++
+    val commentType = if (pos < data.size) data[pos++].toInt() else -1
+    when (commentType) {
+      '*'.toInt() -> {
+        val result = StringBuilder()
+        var startOfLine = true
+        while (pos + 1 < data.size) {
+          val c = data[pos]
+          when {
+            c == '*' && data[pos + 1] == '/' -> {
+              pos += 2
+              return result.toString().trim()
+            }
 
-      for (; pos + 1 < data.length; pos++) {
-        char c = data[pos];
-        if (c == '*' && data[pos + 1] == '/') {
-          pos += 2;
-          return result.toString().trim();
-        }
-        if (c == '\n') {
-          result.append('\n');
-          newline();
-          startOfLine = true;
-        } else if (!startOfLine) {
-          result.append(c);
-        } else if (c == '*') {
-          if (data[pos + 1] == ' ') {
-            pos += 1; // Skip a single leading space, if present.
+            c == '\n' -> {
+              result.append('\n')
+              newline()
+              startOfLine = true
+            }
+
+            !startOfLine -> {
+              result.append(c)
+            }
+
+            c == '*' -> {
+              if (data[pos + 1] == ' ') {
+                pos += 1 // Skip a single leading space, if present.
+              }
+              startOfLine = false
+            }
+
+            !Character.isWhitespace(c) -> {
+              result.append(c)
+              startOfLine = false
+            }
           }
-          startOfLine = false;
-        } else if (!Character.isWhitespace(c)) {
-          result.append(c);
-          startOfLine = false;
+          pos++
         }
+        throw unexpected("unterminated comment")
       }
-      throw unexpected("unterminated comment");
-    } else if (commentType == '/') {
-      if (pos < data.length && data[pos] == ' ') {
-        pos += 1; // Skip a single leading space, if present.
-      }
-      int start = pos;
-      while (pos < data.length) {
-        char c = data[pos++];
-        if (c == '\n') {
-          newline();
-          break;
+
+      '/'.toInt() -> {
+        if (pos < data.size && data[pos] == ' ') {
+          pos++ // Skip a single leading space, if present.
         }
+        val start = pos
+        while (pos < data.size) {
+          val c = data[pos++]
+          if (c == '\n') {
+            newline()
+            break
+          }
+        }
+        return String(data, start, pos - 1 - start)
       }
-      return new String(data, start, pos - 1 - start);
-    } else {
-      throw unexpected("unexpected '/'");
+
+      else -> throw unexpected("unexpected '/'")
     }
   }
 
-  public String tryAppendTrailingDocumentation(String documentation) {
+  fun tryAppendTrailingDocumentation(documentation: String): String {
     // Search for a '/' character ignoring spaces and tabs.
-    while (pos < data.length) {
-      char c = data[pos];
-      if (c == ' ' || c == '\t') {
-        pos++;
-      } else if (c == '/') {
-        pos++;
-        break;
-      } else {
+    loop@ while (pos < data.size) {
+      when (data[pos]) {
+        ' ', '\t' -> pos++
+
+        '/' -> {
+          pos++
+          break@loop
+        }
+
         // Not a whitespace or comment-starting character. Return original documentation.
-        return documentation;
+        else -> return documentation
       }
     }
 
-    if (pos == data.length || (data[pos] != '/' && data[pos] != '*')) {
-      pos--; // Backtrack to start of comment.
-      throw unexpected("expected '//' or '/*'");
-    }
-    boolean isStar = data[pos] == '*';
-    pos++;
-
-    if (pos < data.length && data[pos] == ' ') {
-      pos++; // Skip a single leading space, if present.
+    expect(pos < data.size && (data[pos] == '/' || data[pos] == '*')) {
+      pos-- // Backtrack to start of comment.
+      "expected '//' or '/*'"
     }
 
-    int start = pos;
-    int end;
+    val isStar = data[pos] == '*'
+    pos++
 
-    if (isStar) {
-      // Consume star comment until it closes on the same line.
-      while (true) {
-        if (pos == data.length) {
-          throw unexpected("trailing comment must be closed");
+    // Skip a single leading space, if present.
+    if (pos < data.size && data[pos] == ' ') pos++
+
+    val start = pos
+    var end: Int
+    when {
+      isStar -> {
+        // Consume star comment until it closes on the same line.
+        while (true) {
+          expect(pos < data.size) { "trailing comment must be closed" }
+          if (data[pos] == '*' && pos + 1 < data.size && data[pos + 1] == '/') {
+            end = pos - 1 // The character before '*'.
+            pos += 2 // Skip to the character after '/'.
+            break
+          }
+          pos++
         }
-        if (data[pos] == '*' && pos + 1 < data.length && data[pos + 1] == '/') {
-          end = pos - 1; // The character before '*'.
-          pos += 2; // Skip to the character after '/'.
-          break;
+
+        // Ensure nothing follows a trailing star comment.
+        while (pos < data.size) {
+          val c = data[pos++]
+          if (c == '\n') {
+            newline()
+            break
+          }
+          expect(c == ' ' || c == '\t') { "no syntax may follow trailing comment" }
         }
-        pos++;
       }
-      // Ensure nothing follows a trailing star comment.
-      while (pos < data.length) {
-        char c = data[pos++];
-        if (c == '\n') {
-          newline();
-          break;
-        }
-        if (c != ' ' && c != '\t') {
-          throw unexpected("no syntax may follow trailing comment");
-        }
-      }
-    } else {
-      // Consume comment until newline.
-      while (true) {
-        if (pos == data.length) {
-          end = pos - 1;
-          break;
-        }
-        char c = data[pos++];
-        if (c == '\n') {
-          newline();
-          end = pos - 2; // Account for stepping past the newline.
-          break;
+
+      else -> {
+        // Consume comment until newline.
+        while (true) {
+          if (pos == data.size) {
+            end = pos - 1
+            break
+          }
+          val c = data[pos++]
+          if (c == '\n') {
+            newline()
+            end = pos - 2 // Account for stepping past the newline.
+            break
+          }
         }
       }
     }
 
     // Remove trailing whitespace.
     while (end > start && (data[end] == ' ' || data[end] == '\t')) {
-      end--;
+      end--
     }
 
-    if (end == start) {
-      return documentation;
-    }
+    if (end == start) return documentation
 
-    String trailingDocumentation = new String(data, start, end - start + 1);
-
-    return documentation.isEmpty()
-        ? trailingDocumentation
-        : documentation + '\n' + trailingDocumentation;
+    val trailingDocumentation = String(data, start, end - start + 1)
+    if (documentation.isEmpty()) return trailingDocumentation
+    return "$documentation\n$trailingDocumentation"
   }
 
   /**
-   * Skips whitespace characters and optionally comments. When this returns,
-   * either {@code pos == data.length} or a non-whitespace character.
+   * Skips whitespace characters and optionally comments. When this returns, either
+   * `pos == data.length` or a non-whitespace character.
    */
-  private void skipWhitespace(boolean skipComments) {
-    while (pos < data.length) {
-      char c = data[pos];
-      if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
-        pos++;
-        if (c == '\n') newline();
-      } else if (skipComments && c == '/') {
-        readComment();
-      } else {
-        break;
+  private fun skipWhitespace(skipComments: Boolean) {
+    while (pos < data.size) {
+      val c = data[pos]
+      when {
+        c == ' ' || c == '\t' || c == '\r' || c == '\n' -> {
+          pos++
+          if (c == '\n') newline()
+        }
+
+        skipComments && c == '/' -> readComment()
+
+        else -> return
       }
     }
   }
 
   /** Call this every time a '\n' is encountered. */
-  private void newline() {
-    line++;
-    lineStart = pos;
+  private fun newline() {
+    line++
+    lineStart = pos
   }
 
-  public Location location() {
-    return location.at(line + 1, pos - lineStart + 1);
+  fun location() = location.at(line + 1, pos - lineStart + 1)
+
+  inline fun expect(condition: Boolean, location: Location = location(), message: () -> String) {
+    if (!condition) throw unexpected(message(), location)
   }
 
-  public RuntimeException unexpected(String message) {
-    return unexpected(location(), message);
-  }
-
-  public RuntimeException unexpected(Location location, String message) {
-    throw new IllegalStateException(String.format("Syntax error in %s: %s", location, message));
-  }
+  fun unexpected(
+    message: String,
+    location: Location? = location()
+  ): RuntimeException = throw IllegalStateException("Syntax error in $location: $message")
 }

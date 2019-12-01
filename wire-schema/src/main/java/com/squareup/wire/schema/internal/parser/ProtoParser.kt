@@ -13,557 +13,569 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal.parser;
+package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Range;
-import com.squareup.wire.schema.Field;
-import com.squareup.wire.schema.Location;
-import com.squareup.wire.schema.ProtoFile;
-import com.squareup.wire.schema.internal.Util;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.collect.ImmutableList
+import com.google.common.collect.Range
+import com.squareup.wire.schema.Field
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.ProtoFile
+import com.squareup.wire.schema.internal.Util
 
-/** Basic parser for {@code .proto} schema declarations. */
-public final class ProtoParser {
-  private final SyntaxReader reader;
-  private final Location location;
-
-  /** Parse a named {@code .proto} schema. */
-  public static ProtoFileElement parse(Location location, String data) {
-    return new ProtoParser(location, data.toCharArray()).readProtoFile();
-  }
-
-  private final ImmutableList.Builder<String> publicImports = ImmutableList.builder();
-  private final ImmutableList.Builder<String> imports = ImmutableList.builder();
-  private final ImmutableList.Builder<TypeElement> nestedTypes = ImmutableList.builder();
-  private final ImmutableList.Builder<ServiceElement> services = ImmutableList.builder();
-  private final ImmutableList.Builder<ExtendElement> extendsList = ImmutableList.builder();
-  private final ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
+/** Basic parser for `.proto` schema declarations. */
+class ProtoParser internal constructor(
+  private val location: Location,
+  data: CharArray
+) {
+  private val reader: SyntaxReader = SyntaxReader(data, location)
+  private val publicImports = ImmutableList.builder<String>()
+  private val imports = ImmutableList.builder<String>()
+  private val nestedTypes = ImmutableList.builder<TypeElement>()
+  private val services = ImmutableList.builder<ServiceElement>()
+  private val extendsList = ImmutableList.builder<ExtendElement>()
+  private val options = ImmutableList.builder<OptionElement>()
 
   /** The number of declarations defined in the current file. */
-  private int declarationCount = 0;
+  private var declarationCount = 0
 
   /** The syntax of the file, or null if none is defined. */
-  private ProtoFile.Syntax syntax;
+  private var syntax: ProtoFile.Syntax? = null
 
   /** Output package name, or null if none yet encountered. */
-  private String packageName;
+  private var packageName: String? = null
 
   /** The current package name + nested type names, separated by dots. */
-  private String prefix = "";
+  private var prefix = ""
 
-  ProtoParser(Location location, char[] data) {
-    this.reader = new SyntaxReader(data, location);
-    this.location = location;
-  }
-
-  ProtoFileElement readProtoFile() {
+  fun readProtoFile(): ProtoFileElement {
     while (true) {
-      String documentation = reader.readDocumentation();
+      val documentation = reader.readDocumentation()
       if (reader.exhausted()) {
-        return new ProtoFileElement(
-            location,
-            packageName,
-            syntax,
-            imports.build(),
-            publicImports.build(),
-            nestedTypes.build(),
-            services.build(),
-            extendsList.build(),
-            options.build()
-        );
+        return ProtoFileElement(
+            location = location,
+            packageName = packageName,
+            syntax = syntax,
+            imports = imports.build(),
+            publicImports = publicImports.build(),
+            types = nestedTypes.build(),
+            services = services.build(),
+            extendDeclarations = extendsList.build(),
+            options = options.build()
+        )
       }
-      Object declaration = readDeclaration(documentation, Context.FILE);
-      if (declaration instanceof TypeElement) {
-        nestedTypes.add((TypeElement) declaration);
-      } else if (declaration instanceof ServiceElement) {
-        services.add((ServiceElement) declaration);
-      } else if (declaration instanceof OptionElement) {
-        options.add((OptionElement) declaration);
-      } else if (declaration instanceof ExtendElement) {
-        extendsList.add((ExtendElement) declaration);
+
+      when (val declaration = readDeclaration(documentation, Context.FILE)) {
+        is TypeElement -> nestedTypes.add(declaration)
+        is ServiceElement -> services.add(declaration)
+        is OptionElement -> options.add(declaration)
+        is ExtendElement -> extendsList.add(declaration)
       }
     }
   }
 
-  private Object readDeclaration(String documentation, Context context) {
-    int index = declarationCount++;
+  private fun readDeclaration(documentation: String, context: Context): Any? {
+    val index = declarationCount++
 
     // Skip unnecessary semicolons, occasionally used after a nested message declaration.
-    if (reader.peekChar(';')) return null;
+    if (reader.peekChar(';')) return null
 
-    Location location = reader.location();
-    String label = reader.readWord();
+    val location = reader.location()
+    val label = reader.readWord()
 
-    if (label.equals("package")) {
-      if (!context.permitsPackage()) throw reader.unexpected(location, "'package' in " + context);
-      if (packageName != null) throw reader.unexpected(location, "too many package names");
-      packageName = reader.readName();
-      prefix = packageName + ".";
-      reader.require(';');
-      return null;
-    } else if (label.equals("import")) {
-      if (!context.permitsImport()) throw reader.unexpected(location, "'import' in " + context);
-      String importString = reader.readString();
-      if ("public".equals(importString)) {
-        publicImports.add(reader.readString());
-      } else {
-        imports.add(importString);
+    return when {
+      label == "package" -> {
+        reader.expect(context.permitsPackage(), location) { "'package' in $context" }
+        reader.expect(packageName == null, location) { "too many package names" }
+        packageName = reader.readName()
+        prefix = "$packageName."
+        reader.require(';')
+        null
       }
-      reader.require(';');
-      return null;
-    } else if (label.equals("syntax")) {
-      if (!context.permitsSyntax()) throw reader.unexpected(location, "'syntax' in " + context);
-      reader.require('=');
-      if (index != 0) {
-        throw reader.unexpected(
-            location, "'syntax' element must be the first declaration in a file");
+
+      label == "import" -> {
+        reader.expect(context.permitsImport(), location) { "'import' in $context" }
+        when (val importString = reader.readString()) {
+          "public" -> publicImports.add(reader.readString())
+          else -> imports.add(importString)
+        }
+        reader.require(';')
+        null
       }
-      String syntaxString = reader.readQuotedString();
-      try {
-        syntax = ProtoFile.Syntax.get(syntaxString);
-      } catch (IllegalArgumentException e) {
-        throw reader.unexpected(location, e.getMessage());
+
+      label == "syntax" -> {
+        reader.expect(context.permitsSyntax(), location) { "'syntax' in $context" }
+        reader.require('=')
+        reader.expect(index == 0, location) {
+          "'syntax' element must be the first declaration in a file"
+        }
+        val syntaxString = reader.readQuotedString()
+        try {
+          syntax = ProtoFile.Syntax.get(syntaxString)
+        } catch (e: IllegalArgumentException) {
+          throw reader.unexpected(e.message!!, location)
+        }
+        reader.require(';')
+        null
       }
-      reader.require(';');
-      return null;
-    } else if (label.equals("option")) {
-      OptionElement result = new OptionReader(reader).readOption('=');
-      reader.require(';');
-      return result;
-    } else if (label.equals("reserved")) {
-      return readReserved(location, documentation);
-    } else if (label.equals("message")) {
-      return readMessage(location, documentation);
-    } else if (label.equals("enum")) {
-      return readEnumElement(location, documentation);
-    } else if (label.equals("service")) {
-      return readService(location, documentation);
-    } else if (label.equals("extend")) {
-      return readExtend(location, documentation);
-    } else if (label.equals("rpc")) {
-      if (!context.permitsRpc()) throw reader.unexpected(location, "'rpc' in " + context);
-      return readRpc(location, documentation);
-    } else if (label.equals("oneof")) {
-      if (!context.permitsOneOf()) {
-        throw reader.unexpected(location, "'oneof' must be nested in message");
+
+      label == "option" -> {
+        OptionReader(reader).readOption('=').also {
+          reader.require(';')
+        }
       }
-      return readOneOf(documentation);
-    } else if (label.equals("extensions")) {
-      if (!context.permitsExtensions()) {
-        throw reader.unexpected(location, "'extensions' must be nested");
+
+      label == "reserved" -> readReserved(location, documentation)
+      label == "message" -> readMessage(location, documentation)
+      label == "enum" -> readEnumElement(location, documentation)
+      label == "service" -> readService(location, documentation)
+      label == "extend" -> readExtend(location, documentation)
+
+      label == "rpc" -> {
+        reader.expect(context.permitsRpc(), location) { "'rpc' in $context" }
+        readRpc(location, documentation)
       }
-      return readExtensions(location, documentation);
-    } else if (context == Context.MESSAGE || context == Context.EXTEND) {
-      return readField(documentation, location, label);
-    } else if (context == Context.ENUM) {
-      return readEnumConstant(documentation, location, label);
-    } else {
-      throw reader.unexpected(location, "unexpected label: " + label);
+
+      label == "oneof" -> {
+        reader.expect(context.permitsOneOf(), location) { "'oneof' must be nested in message" }
+        readOneOf(documentation)
+      }
+
+      label == "extensions" -> {
+        reader.expect(context.permitsExtensions(), location) { "'extensions' must be nested" }
+        readExtensions(location, documentation)
+      }
+
+      context == Context.MESSAGE || context == Context.EXTEND -> {
+        readField(documentation, location, label)
+      }
+
+      context == Context.ENUM -> {
+        readEnumConstant(documentation, location, label)
+      }
+
+      else -> throw reader.unexpected("unexpected label: $label", location)
     }
   }
 
   /** Reads a message declaration. */
-  private MessageElement readMessage(Location location, String documentation) {
-    String name = reader.readName();
+  private fun readMessage(
+    location: Location,
+    documentation: String
+  ): MessageElement {
+    val name = reader.readName()
+    val fields = ImmutableList.builder<FieldElement>()
+    val oneOfs = ImmutableList.builder<OneOfElement>()
+    val nestedTypes = ImmutableList.builder<TypeElement>()
+    val extensions = ImmutableList.builder<ExtensionsElement>()
+    val options = ImmutableList.builder<OptionElement>()
+    val reserveds = ImmutableList.builder<ReservedElement>()
+    val groups = ImmutableList.builder<GroupElement>()
 
-    String previousPrefix = prefix;
-    prefix = prefix + name + ".";
+    val previousPrefix = prefix
+    prefix = "$prefix$name."
 
-    ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
-    ImmutableList.Builder<OneOfElement> oneOfs = ImmutableList.builder();
-    ImmutableList.Builder<TypeElement> nestedTypes = ImmutableList.builder();
-    ImmutableList.Builder<ExtensionsElement> extensions = ImmutableList.builder();
-    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
-    ImmutableList.Builder<ReservedElement> reserveds = ImmutableList.builder();
-    ImmutableList.Builder<GroupElement> groups = ImmutableList.builder();
-
-    reader.require('{');
+    reader.require('{')
     while (true) {
-      String nestedDocumentation = reader.readDocumentation();
-      if (reader.peekChar('}')) break;
+      val nestedDocumentation = reader.readDocumentation()
+      if (reader.peekChar('}')) break
 
-      Object declared = readDeclaration(nestedDocumentation, Context.MESSAGE);
-      if (declared instanceof FieldElement) {
-        fields.add((FieldElement) declared);
-      } else if (declared instanceof OneOfElement) {
-        oneOfs.add((OneOfElement) declared);
-      } else if (declared instanceof GroupElement) {
-        groups.add((GroupElement) declared);
-      } else if (declared instanceof TypeElement) {
-        nestedTypes.add((TypeElement) declared);
-      } else if (declared instanceof ExtensionsElement) {
-        extensions.add((ExtensionsElement) declared);
-      } else if (declared instanceof OptionElement) {
-        options.add((OptionElement) declared);
-      } else if (declared instanceof ExtendElement) {
+      when (val declared = readDeclaration(nestedDocumentation, Context.MESSAGE)) {
+        is FieldElement -> fields.add(declared)
+        is OneOfElement -> oneOfs.add(declared)
+        is GroupElement -> groups.add(declared)
+        is TypeElement -> nestedTypes.add(declared)
+        is ExtensionsElement -> extensions.add(declared)
+        is OptionElement -> options.add(declared)
         // Extend declarations always add in a global scope regardless of nesting.
-        extendsList.add((ExtendElement) declared);
-      } else if (declared instanceof ReservedElement) {
-        reserveds.add((ReservedElement) declared);
+        is ExtendElement -> extendsList.add(declared)
+        is ReservedElement -> reserveds.add(declared)
       }
     }
-    prefix = previousPrefix;
 
-    return new MessageElement(
-        location,
-        name,
-        documentation,
-        nestedTypes.build(),
-        options.build(),
-        reserveds.build(),
-        fields.build(),
-        oneOfs.build(),
-        extensions.build(),
-        groups.build()
-    );
+    prefix = previousPrefix
+
+    return MessageElement(
+        location = location,
+        name = name,
+        documentation = documentation,
+        nestedTypes = nestedTypes.build(),
+        options = options.build(),
+        reserveds = reserveds.build(),
+        fields = fields.build(),
+        oneOfs = oneOfs.build(),
+        extensions = extensions.build(),
+        groups = groups.build()
+    )
   }
 
   /** Reads an extend declaration. */
-  private ExtendElement readExtend(Location location, String documentation) {
-    String name = reader.readName();
+  private fun readExtend(location: Location, documentation: String): ExtendElement {
+    val name = reader.readName()
+    val fields = ImmutableList.builder<FieldElement>()
 
-    reader.require('{');
-    ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
+    reader.require('{')
     while (true) {
-      String nestedDocumentation = reader.readDocumentation();
-      if (reader.peekChar('}')) break;
+      val nestedDocumentation = reader.readDocumentation()
+      if (reader.peekChar('}')) break
 
-      Object declared = readDeclaration(nestedDocumentation, Context.EXTEND);
-      if (declared instanceof FieldElement) {
-        fields.add((FieldElement) declared);
+      when (val declared = readDeclaration(nestedDocumentation, Context.EXTEND)) {
+        is FieldElement -> fields.add(declared)
+        // TODO: add else clause to catch unexpected declarations.
       }
     }
-    return new ExtendElement(location, name, documentation, fields.build());
+
+    return ExtendElement(
+        location = location,
+        name = name,
+        documentation = documentation,
+        fields = fields.build()
+    )
   }
 
   /** Reads a service declaration and returns it. */
-  private ServiceElement readService(Location location, String documentation) {
-    String name = reader.readName();
+  private fun readService(location: Location, documentation: String): ServiceElement {
+    val name = reader.readName()
+    val rpcs = ImmutableList.builder<RpcElement>()
+    val options = ImmutableList.builder<OptionElement>()
 
-    reader.require('{');
-    ImmutableList.Builder<RpcElement> rpcs = ImmutableList.builder();
-    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
+    reader.require('{')
     while (true) {
-      String rpcDocumentation = reader.readDocumentation();
-      if (reader.peekChar('}')) break;
+      val rpcDocumentation = reader.readDocumentation()
+      if (reader.peekChar('}')) break
 
-      Object declared = readDeclaration(rpcDocumentation, Context.SERVICE);
-      if (declared instanceof RpcElement) {
-        rpcs.add((RpcElement) declared);
-      } else if (declared instanceof OptionElement) {
-        options.add((OptionElement) declared);
+      when (val declared = readDeclaration(rpcDocumentation, Context.SERVICE)) {
+        is RpcElement -> rpcs.add(declared)
+        is OptionElement -> options.add(declared)
+        // TODO: add else clause to catch unexpected declarations.
       }
     }
-    return new ServiceElement(
-        location,
-        name,
-        documentation,
-        rpcs.build(),
-        options.build()
-    );
+
+    return ServiceElement(
+        location = location,
+        name = name,
+        documentation = documentation,
+        rpcs = rpcs.build(),
+        options = options.build()
+    )
   }
 
   /** Reads an enumerated type declaration and returns it. */
-  private EnumElement readEnumElement(Location location, String documentation) {
-    String name = reader.readName();
+  private fun readEnumElement(
+    location: Location,
+    documentation: String
+  ): EnumElement {
+    val name = reader.readName()
+    val constants = ImmutableList.builder<EnumConstantElement>()
+    val options = ImmutableList.builder<OptionElement>()
 
-    ImmutableList.Builder<EnumConstantElement> constants = ImmutableList.builder();
-    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
-    reader.require('{');
+    reader.require('{')
     while (true) {
-      String valueDocumentation = reader.readDocumentation();
-      if (reader.peekChar('}')) break;
+      val valueDocumentation = reader.readDocumentation()
+      if (reader.peekChar('}')) break
 
-      Object declared = readDeclaration(valueDocumentation, Context.ENUM);
-      if (declared instanceof EnumConstantElement) {
-        constants.add((EnumConstantElement) declared);
-      } else if (declared instanceof OptionElement) {
-        options.add((OptionElement) declared);
+      when (val declared = readDeclaration(valueDocumentation, Context.ENUM)) {
+        is EnumConstantElement -> constants.add(declared)
+        is OptionElement -> options.add(declared)
+        // TODO: add else clause to catch unexpected declarations.
       }
     }
-    return new EnumElement(location, name, documentation, options.build(), constants.build());
+
+    return EnumElement(location, name, documentation, options.build(), constants.build())
   }
 
-  private Object readField(String documentation, Location location, String word) {
-    Field.Label label;
-    String type;
-    switch (word) {
-      case "required":
-        if (syntax == ProtoFile.Syntax.PROTO_3) {
-          throw reader.unexpected(
-              location, "'required' label forbidden in proto3 field declarations");
+  private fun readField(documentation: String, location: Location, word: String): Any {
+    val label: Field.Label?
+    val type: String
+    when (word) {
+      "required" -> {
+        reader.expect(syntax != ProtoFile.Syntax.PROTO_3, location) {
+          "'required' label forbidden in proto3 field declarations"
         }
-        label = Field.Label.REQUIRED;
-        type = reader.readDataType();
-        break;
+        label = Field.Label.REQUIRED
+        type = reader.readDataType()
+      }
 
-      case "optional":
-        if (syntax == ProtoFile.Syntax.PROTO_3) {
-          throw reader.unexpected(
-              location, "'optional' label forbidden in proto3 field declarations");
+      "optional" -> {
+        reader.expect(syntax != ProtoFile.Syntax.PROTO_3, location) {
+          "'optional' label forbidden in proto3 field declarations"
         }
-        label = Field.Label.OPTIONAL;
-        type = reader.readDataType();
-        break;
+        label = Field.Label.OPTIONAL
+        type = reader.readDataType()
+      }
 
-      case "repeated":
-        label = Field.Label.REPEATED;
-        type = reader.readDataType();
-        break;
+      "repeated" -> {
+        label = Field.Label.REPEATED
+        type = reader.readDataType()
+      }
 
-      default:
-        if (syntax != ProtoFile.Syntax.PROTO_3
-            && (!word.equals("map") || reader.peekChar() != '<')) {
-          throw reader.unexpected(location, "unexpected label: " + word);
+      else -> {
+        reader.expect(syntax == ProtoFile.Syntax.PROTO_3 ||
+            (word == "map" && reader.peekChar() == '<'), location) {
+          "unexpected label: $word"
         }
-        label = null;
-        type = reader.readDataType(word);
-        break;
+        label = null
+        type = reader.readDataType(word)
+      }
     }
 
-    if (type.startsWith("map<") && label != null) {
-      throw reader.unexpected(location, "'map' type cannot have label");
-    }
-    if (type.equals("group")) {
-      return readGroup(location, documentation, label);
+    reader.expect(!type.startsWith("map<") || label == null, location) {
+      "'map' type cannot have label"
     }
 
-    return readField(location, documentation, label, type);
+    return when (type) {
+      "group" -> readGroup(location, documentation, label)
+      else -> readField(location, documentation, label, type)
+    }
   }
 
   /** Reads an field declaration and returns it. */
-  private FieldElement readField(
-      Location location, String documentation, @Nullable Field.Label label, String type) {
-    String name = reader.readName();
-    reader.require('=');
-    int tag = reader.readInt();
+  private fun readField(
+    location: Location,
+    documentation: String,
+    label: Field.Label?,
+    type: String
+  ): FieldElement {
+    var documentation = documentation
 
-    List<OptionElement> options = new OptionReader(reader).readOptions();
-    reader.require(';');
+    val name = reader.readName()
+    reader.require('=')
+    val tag = reader.readInt()
 
-    options = new ArrayList<>(options); // Mutable copy for extractDefault.
-    String defaultValue = stripDefault(options);
+    var options = OptionReader(reader).readOptions()
+    options = options.toMutableList() // Mutable copy for extractDefault.
+    val defaultValue = stripDefault(options)
+    reader.require(';')
 
-    documentation = reader.tryAppendTrailingDocumentation(documentation);
-    return new FieldElement(
-        location,
-        label,
-        type,
-        name,
-        defaultValue,
-        tag,
-        documentation,
-        new ArrayList<>(options));
+    documentation = reader.tryAppendTrailingDocumentation(documentation)
+
+    return FieldElement(
+        location = location,
+        label = label,
+        type = type,
+        name = name,
+        defaultValue = defaultValue,
+        tag = tag,
+        documentation = documentation,
+        options = options.toList()
+    )
   }
 
   /**
    * Defaults aren't options. This finds an option named "default", removes, and returns it. Returns
    * null if no default option is present.
    */
-  private @Nullable String stripDefault(List<OptionElement> options) {
-    String result = null;
-    for (Iterator<OptionElement> i = options.iterator(); i.hasNext();) {
-      OptionElement option = i.next();
-      if (option.getName().equals("default")) {
-        i.remove();
-        result = String.valueOf(option.getValue()); // Defaults aren't options!
+  private fun stripDefault(options: MutableList<OptionElement>): String? {
+    var result: String? = null
+    val i = options.iterator()
+    while (i.hasNext()) {
+      val element = i.next()
+      if (element.name == "default") {
+        i.remove()
+        result = element.value.toString() // Defaults aren't options!
       }
     }
-    return result;
+    return result
   }
 
-  private OneOfElement readOneOf(String documentation) {
-    String name = reader.readName();
+  private fun readOneOf(documentation: String): OneOfElement {
+    val name = reader.readName()
+    val fields = ImmutableList.builder<FieldElement>()
+    val groups = ImmutableList.builder<GroupElement>()
 
-    ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
-    ImmutableList.Builder<GroupElement> groups = ImmutableList.builder();
-
-    reader.require('{');
+    reader.require('{')
     while (true) {
-      String nestedDocumentation = reader.readDocumentation();
-      if (reader.peekChar('}')) break;
+      val nestedDocumentation = reader.readDocumentation()
+      if (reader.peekChar('}')) break
 
-      Location location = reader.location();
-      String type = reader.readDataType();
-      if (type.equals("group")) {
-        groups.add(readGroup(location, nestedDocumentation, null));
-      } else {
-        fields.add(readField(location, nestedDocumentation, null, type));
+      val location = reader.location()
+      when (val type = reader.readDataType()) {
+        "group" -> groups.add(readGroup(location, nestedDocumentation, null))
+        else -> fields.add(readField(location, nestedDocumentation, null, type))
       }
     }
-    return new OneOfElement(
-        name,
-        documentation,
-        fields.build(),
-        groups.build()
-    );
+
+    return OneOfElement(
+        name = name,
+        documentation = documentation,
+        fields = fields.build(),
+        groups = groups.build()
+    )
   }
 
-  private GroupElement readGroup(Location location, String documentation, Field.Label label) {
-    String name = reader.readWord();
-    reader.require('=');
-    int tag = reader.readInt();
+  private fun readGroup(
+    location: Location,
+    documentation: String,
+    label: Field.Label?
+  ): GroupElement {
+    val name = reader.readWord()
+    reader.require('=')
+    val tag = reader.readInt()
+    val fields = ImmutableList.builder<FieldElement>()
 
-    ImmutableList.Builder<FieldElement> fields = ImmutableList.builder();
-
-    reader.require('{');
+    reader.require('{')
     while (true) {
-      String nestedDocumentation = reader.readDocumentation();
-      if (reader.peekChar('}')) break;
+      val nestedDocumentation = reader.readDocumentation()
+      if (reader.peekChar('}')) break
 
-      Location fieldLocation = reader.location();
-      String fieldLabel = reader.readWord();
-      Object field = readField(nestedDocumentation, fieldLocation, fieldLabel);
-      if (!(field instanceof FieldElement)) {
-        throw reader.unexpected("expected field declaration, was " + field);
+      val fieldLocation = reader.location()
+      val fieldLabel = reader.readWord()
+      when (val field = readField(nestedDocumentation, fieldLocation, fieldLabel)) {
+        is FieldElement -> fields.add(field)
+        else -> throw reader.unexpected("expected field declaration, was $field")
       }
-      fields.add((FieldElement) field);
     }
 
-    return new GroupElement(
-        label,
-        location,
-        name,
-        tag,
-        documentation,
-        fields.build()
-    );
+    return GroupElement(
+        label = label,
+        location = location,
+        name = name,
+        tag = tag,
+        documentation = documentation,
+        fields = fields.build()
+    )
   }
 
   /** Reads a reserved tags and names list like "reserved 10, 12 to 14, 'foo';". */
-  private ReservedElement readReserved(Location location, String documentation) {
-    ImmutableList.Builder<Object> valuesBuilder = ImmutableList.builder();
+  private fun readReserved(location: Location, documentation: String): ReservedElement {
+    val valuesBuilder = ImmutableList.builder<Any>()
 
-    while (true) {
-      char c = reader.peekChar();
-      if (c == '"' || c == '\'') {
-        valuesBuilder.add(reader.readQuotedString());
-      } else {
-        int tagStart = reader.readInt();
+    loop@ while (true) {
+      when (reader.peekChar()) {
+        '"', '\'' -> {
+          valuesBuilder.add(reader.readQuotedString())
+        }
 
-        c = reader.peekChar();
-        if (c != ',' && c != ';') {
-          if (!reader.readWord().equals("to")) {
-            throw reader.unexpected("expected ',', ';', or 'to'");
+        else -> {
+          val tagStart = reader.readInt()
+          when (reader.peekChar()) {
+            ',', ';' -> valuesBuilder.add(tagStart)
+
+            else -> {
+              reader.expect(reader.readWord() == "to", location) { "expected ',', ';', or 'to'" }
+              val tagEnd = reader.readInt()
+              valuesBuilder.add(Range.closed(tagStart, tagEnd))
+            }
           }
-          int tagEnd = reader.readInt();
-          valuesBuilder.add(Range.closed(tagStart, tagEnd));
-        } else {
-          valuesBuilder.add(tagStart);
         }
       }
-      c = reader.readChar();
-      if (c == ';') break;
-      if (c != ',') throw reader.unexpected("expected ',' or ';'");
+
+      when (reader.readChar()) {
+        ';' -> break@loop
+        ',' -> continue@loop
+        else -> throw reader.unexpected("expected ',' or ';'")
+      }
     }
 
-    ImmutableList<Object> values = valuesBuilder.build();
-    if (values.isEmpty()) {
-      throw reader.unexpected("'reserved' must have at least one field name or tag");
+    val values = valuesBuilder.build()
+    reader.expect(values.isNotEmpty(), location) {
+      "'reserved' must have at least one field name or tag"
     }
-    return new ReservedElement(location, documentation, values);
+
+    return ReservedElement(
+        location = location,
+        documentation = documentation,
+        values = values
+    )
   }
 
   /** Reads extensions like "extensions 101;" or "extensions 101 to max;". */
-  private ExtensionsElement readExtensions(Location location, String documentation) {
-    int start = reader.readInt(); // Range start.
-    int end = start;
+  private fun readExtensions(
+    location: Location,
+    documentation: String
+  ): ExtensionsElement {
+    val start = reader.readInt() // Range start.
+    var end = start
+
     if (reader.peekChar() != ';') {
-      if (!"to".equals(reader.readWord())) throw reader.unexpected("expected ';' or 'to'");
-      String s = reader.readWord(); // Range end.
-      if (s.equals("max")) {
-        end = Util.MAX_TAG_VALUE;
-      } else {
-        end = Integer.parseInt(s);
+      reader.expect(reader.readWord() == "to", location) { "expected ';' or 'to'" }
+      end = when (val s = reader.readWord()) {
+        "max" -> Util.MAX_TAG_VALUE
+        else -> s.toInt()
       }
     }
-    reader.require(';');
-    return new ExtensionsElement(location, documentation, start, end);
+    reader.require(';')
+
+    return ExtensionsElement(
+        location = location,
+        documentation = documentation,
+        start = start,
+        end = end
+    )
   }
 
   /** Reads an enum constant like "ROCK = 0;". The label is the constant name. */
-  private EnumConstantElement readEnumConstant(
-      String documentation, Location location, String label) {
-    reader.require('=');
+  private fun readEnumConstant(
+    documentation: String, location: Location, label: String
+  ): EnumConstantElement {
+    var documentation = documentation
 
-    int tag = reader.readInt();
+    reader.require('=')
+    val tag = reader.readInt()
 
-    List<OptionElement> options = new OptionReader(reader).readOptions();
-    reader.require(';');
-    documentation = reader.tryAppendTrailingDocumentation(documentation);
+    val options = OptionReader(reader).readOptions()
+    reader.require(';')
 
-    return new EnumConstantElement(
-        location,
-        label,
-        tag,
-        documentation,
-        options);
+    documentation = reader.tryAppendTrailingDocumentation(documentation)
+
+    return EnumConstantElement(
+        location = location,
+        name = label,
+        tag = tag,
+        documentation = documentation,
+        options = options
+    )
   }
 
   /** Reads an rpc and returns it. */
-  private RpcElement readRpc(Location location, String documentation) {
-    String name = reader.readName();
+  private fun readRpc(location: Location, documentation: String): RpcElement {
+    val name = reader.readName()
 
-    reader.require('(');
-
-    boolean requestStreaming = false;
-    String requestType;
-    String word = reader.readWord();
-    if (word.equals("stream")) {
-      requestStreaming = true;
-      requestType = reader.readDataType();
-    } else {
-      requestType = reader.readDataType(word);
+    reader.require('(')
+    var requestStreaming = false
+    val requestType = when (val word = reader.readWord()) {
+      "stream" -> reader.readDataType().also { requestStreaming = true }
+      else -> reader.readDataType(word)
     }
-    reader.require(')');
+    reader.require(')')
 
-    if (!reader.readWord().equals("returns")) throw reader.unexpected("expected 'returns'");
+    reader.expect(reader.readWord() == "returns", location) { "expected 'returns'" }
 
-    reader.require('(');
-
-    boolean responseStreaming = false;
-    String responseType;
-    word = reader.readWord();
-    if (word.equals("stream")) {
-      responseStreaming = true;
-      responseType = reader.readDataType();
-    } else {
-      responseType = reader.readDataType(word);
+    reader.require('(')
+    var responseStreaming = false
+    val responseType = when (val word = reader.readWord()) {
+      "stream" -> reader.readDataType().also { responseStreaming = true }
+      else -> reader.readDataType(word)
     }
-    reader.require(')');
+    reader.require(')')
 
-    ImmutableList.Builder<OptionElement> options = ImmutableList.builder();
+    val options = ImmutableList.builder<OptionElement>()
     if (reader.peekChar('{')) {
       while (true) {
-        String rpcDocumentation = reader.readDocumentation();
-        if (reader.peekChar('}')) {
-          break;
-        }
-        Object declared = readDeclaration(rpcDocumentation, Context.RPC);
-        if (declared instanceof OptionElement) {
-          options.add((OptionElement) declared);
+        val rpcDocumentation = reader.readDocumentation()
+        if (reader.peekChar('}')) break
+
+        when (val declared = readDeclaration(rpcDocumentation, Context.RPC)) {
+          is OptionElement -> options.add(declared)
+          // TODO: add else clause to catch unexpected declarations.
         }
       }
     } else {
-      reader.require(';');
+      reader.require(';')
     }
 
-    return new RpcElement(
-        location,
-        name,
-        documentation,
-        requestType,
-        responseType,
-        requestStreaming,
-        responseStreaming,
-        options.build()
-    );
+    return RpcElement(
+        location = location,
+        name = name,
+        documentation = documentation,
+        requestType = requestType,
+        responseType = responseType,
+        requestStreaming = requestStreaming,
+        responseStreaming = responseStreaming,
+        options = options.build()
+    )
   }
 
-  enum Context {
+  internal enum class Context {
     FILE,
     MESSAGE,
     ENUM,
@@ -571,28 +583,22 @@ public final class ProtoParser {
     EXTEND,
     SERVICE;
 
-    public boolean permitsPackage() {
-      return this == FILE;
-    }
+    fun permitsPackage() = this == FILE
 
-    public boolean permitsSyntax() {
-      return this == FILE;
-    }
+    fun permitsSyntax() = this == FILE
 
-    public boolean permitsImport() {
-      return this == FILE;
-    }
+    fun permitsImport() = this == FILE
 
-    public boolean permitsExtensions() {
-      return this != FILE;
-    }
+    fun permitsExtensions() = this != FILE
 
-    public boolean permitsRpc() {
-      return this == SERVICE;
-    }
+    fun permitsRpc() = this == SERVICE
 
-    public boolean permitsOneOf() {
-      return this == MESSAGE;
-    }
+    fun permitsOneOf() = this == MESSAGE
+  }
+
+  companion object {
+    /** Parse a named `.proto` schema. */
+    fun parse(location: Location, data: String) =
+        ProtoParser(location, data.toCharArray()).readProtoFile()
   }
 }

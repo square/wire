@@ -42,7 +42,7 @@ class OptionReader(internal val reader: SyntaxReader) {
       if (reader.peekChar(']')) break
 
       // Discard optional ','.
-      if (!reader.peekChar(',')) throw reader.unexpected("Expected ',' or ']")
+      reader.expect(reader.peekChar(',')) { "Expected ',' or ']" }
     }
     return result
   }
@@ -64,8 +64,8 @@ class OptionReader(internal val reader: SyntaxReader) {
     if (keyValueSeparator == ':' && c == '{') {
       // In text format, values which are maps can omit a separator. Backtrack so it can be re-read.
       reader.pushBack('{')
-    } else if (c != keyValueSeparator) {
-      throw reader.unexpected("expected '$keyValueSeparator' in option")
+    } else {
+      reader.expect(c == keyValueSeparator) { "expected '$keyValueSeparator' in option" }
     }
     val kindAndValue = readKindAndValue()
     var kind = kindAndValue.kind
@@ -172,7 +172,7 @@ class OptionReader(internal val reader: SyntaxReader) {
       result.add(readKindAndValue().value)
 
       if (reader.peekChar(',')) continue
-      if (reader.peekChar() != ']') throw reader.unexpected("expected ',' or ']'")
+      reader.expect(reader.peekChar() == ']') { "expected ',' or ']'" }
     }
   }
 
