@@ -62,12 +62,12 @@ public final class CodegenSample {
     JavaGenerator javaGenerator = JavaGenerator.get(schema);
     ServiceGenerator serviceGenerator = new ServiceGenerator(javaGenerator);
 
-    for (ProtoFile protoFile : schema.protoFiles()) {
+    for (ProtoFile protoFile : schema.getProtoFiles()) {
       for (Type type : protoFile.types()) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         TypeSpec typeSpec = javaGenerator.generateType(type);
-        ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.type());
-        writeJavaFile(javaTypeName, typeSpec, type.location(), stopwatch);
+        ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.getType());
+        writeJavaFile(javaTypeName, typeSpec, type.getLocation(), stopwatch);
       }
 
       for (Service service : protoFile.services()) {
@@ -89,7 +89,7 @@ public final class CodegenSample {
       loader.addProto(proto);
     }
     Schema schema = loader.load();
-    log.info("Loaded %s proto files in %s", schema.protoFiles().size(), stopwatch);
+    log.info("Loaded %s proto files in %s", schema.getProtoFiles().size(), stopwatch);
     return schema;
   }
 
@@ -124,7 +124,7 @@ public final class CodegenSample {
 
   private int countTypes(Schema prunedSchema) {
     int result = 0;
-    for (ProtoFile protoFile : prunedSchema.protoFiles()) {
+    for (ProtoFile protoFile : prunedSchema.getProtoFiles()) {
       result += protoFile.types().size();
     }
     return result;

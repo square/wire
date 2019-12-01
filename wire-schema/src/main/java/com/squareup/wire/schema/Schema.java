@@ -45,7 +45,7 @@ public final class Schema {
     this.servicesIndex = buildServicesIndex(protoFiles);
   }
 
-  public ImmutableList<ProtoFile> protoFiles() {
+  public ImmutableList<ProtoFile> getProtoFiles() {
     return protoFiles;
   }
 
@@ -136,8 +136,8 @@ public final class Schema {
   }
 
   private static void index(Map<String, Type> typesByName, Type type) {
-    typesByName.put(type.type().toString(), type);
-    for (Type nested : type.nestedTypes()) {
+    typesByName.put(type.getType().toString(), type);
+    for (Type nested : type.getNestedTypes()) {
       index(typesByName, nested);
     }
   }
@@ -170,6 +170,6 @@ public final class Schema {
   public ProtoAdapter<Object> protoAdapter(String typeName, boolean includeUnknown) {
     Type type = getType(typeName);
     if (type == null) throw new IllegalArgumentException("unexpected type " + typeName);
-    return new SchemaProtoAdapterFactory(this, includeUnknown).get(type.type());
+    return new SchemaProtoAdapterFactory(this, includeUnknown).get(type.getType());
   }
 }

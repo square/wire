@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import com.squareup.wire.schema.internal.parser.OptionElement;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Iterables.getOnlyElement;
+import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
+import com.google.common.collect.Iterables
+import com.google.common.collect.LinkedHashMultimap
+import com.google.common.collect.Multimap
+import com.squareup.wire.schema.ProtoMember.Companion.get
+import com.squareup.wire.schema.internal.parser.OptionElement
+import java.util.LinkedHashMap
+import java.util.regex.Pattern
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 /**
  * A set of options declared on a message declaration, field declaration, enum declaration, enum
@@ -36,313 +34,323 @@ import static com.google.common.collect.Iterables.getOnlyElement;
  * Options values may be arbitrary protocol buffer messages, but must be valid protocol buffer
  * messages.
  */
-public final class Options {
-  public static final ProtoType FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions");
-  public static final ProtoType MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions");
-  public static final ProtoType FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions");
-  public static final ProtoType ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions");
-  public static final ProtoType ENUM_VALUE_OPTIONS
-      = ProtoType.get("google.protobuf.EnumValueOptions");
-  public static final ProtoType SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions");
-  public static final ProtoType METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions");
+class Options(
+  private val optionType: ProtoType,
+  elements: List<OptionElement>
+) {
+  val elements: ImmutableList<OptionElement> = ImmutableList.copyOf(elements)
 
-  private final ProtoType optionType;
-  private final ImmutableList<OptionElement> optionElements;
-  private ImmutableMap<ProtoMember, Object> map;
+  // Null until this options is linked.
+  var map: ImmutableMap<ProtoMember, Any?>? = null
+    private set
 
-  public Options(ProtoType optionType, List<OptionElement> elements) {
-    this.optionType = optionType;
-    this.optionElements = ImmutableList.copyOf(elements);
-  }
+  fun retainLinked() = Options(optionType, ImmutableList.of())
 
-  public Options retainLinked() {
-    return new Options(optionType, ImmutableList.of());
-  }
+  operator fun get(protoMember: ProtoMember): Any? = map!![protoMember]
 
   /**
-   * Returns a map with the values for these options. Map values may be either a single entry, like
-   * {@code {deprecated: "true"}}, or more sophisticated, with nested maps and lists.
-   *
-   * <p>The map keys are always {@link ProtoMember} instances, even for nested maps. The values are
-   * always either lists, maps, or strings.
-   */
-  public Map<ProtoMember, Object> map() {
-    return map;
-  }
-
-  public Object get(ProtoMember protoMember) {
-    checkNotNull(protoMember, "protoMember");
-    return map.get(protoMember);
-  }
-
-  /**
-   * Returns true if any of the options in {@code options} matches both of the regular expressions
+   * Returns true if any of the options in `options` matches both of the regular expressions
    * provided: its name matches the option's name and its value matches the option's value.
    */
-  public boolean optionMatches(String namePattern, String valuePattern) {
-    Matcher nameMatcher = Pattern.compile(namePattern).matcher("");
-    Matcher valueMatcher = Pattern.compile(valuePattern).matcher("");
-    for (Map.Entry<ProtoMember, Object> entry : map.entrySet()) {
-      if (nameMatcher.reset(entry.getKey().getMember()).matches()
-          && valueMatcher.reset(String.valueOf(entry.getValue())).matches()) {
-        return true;
-      }
+  fun optionMatches(namePattern: String, valuePattern: String): Boolean {
+    val nameMatcher = Pattern.compile(namePattern).matcher("")
+    val valueMatcher = Pattern.compile(valuePattern).matcher("")
+    return map!!.any { entry ->
+      nameMatcher.reset(entry.key.member).matches() &&
+          valueMatcher.reset(entry.value.toString()).matches()
     }
-    return false;
   }
 
-  ImmutableList<OptionElement> toElements() {
-    return optionElements;
+  fun link(linker: Linker) {
+    var map = ImmutableMap.of<ProtoMember, Any?>()
+    for (option in elements) {
+      val canonicalOption = canonicalizeOption(linker, optionType, option) ?: continue
+      map = union(linker, map, canonicalOption)
+    }
+    this.map = map
   }
 
-  void link(Linker linker) {
-    ImmutableMap<ProtoMember, Object> map = ImmutableMap.of();
-    for (OptionElement option : optionElements) {
-      Map<ProtoMember, Object> canonicalOption = canonicalizeOption(linker, optionType, option);
-      if (canonicalOption != null) {
-        map = union(linker, map, canonicalOption);
-      }
-    }
+  private fun canonicalizeOption(
+    linker: Linker,
+    extensionType: ProtoType?,
+    option: OptionElement
+  ): Map<ProtoMember, Any>? {
+    val type = linker.getForOptions(extensionType) as? MessageType
+        ?: return null // No known extensions for the given extension type.
 
-    this.map = map;
-  }
+    var path: Array<String>?
+    var field = type.field(option.name)
 
-  Map<ProtoMember, Object> canonicalizeOption(
-      Linker linker, ProtoType extensionType, OptionElement option) {
-    Type type = linker.getForOptions(extensionType);
-    if (!(type instanceof MessageType)) {
-      return null; // No known extensions for the given extension type.
-    }
-    MessageType messageType = (MessageType) type;
-
-    String[] path;
-    Field field = messageType.field(option.getName());
     if (field != null) {
       // This is an option declared by descriptor.proto.
-      path = new String[] {option.getName()};
+      path = arrayOf(option.name)
     } else {
       // This is an option declared by an extension.
-      Map<String, Field> extensionsForType = messageType.extensionFieldsMap();
-
-      path = resolveFieldPath(option.getName(), extensionsForType.keySet());
-      String packageName = linker.packageName();
+      val extensionsForType = type.extensionFieldsMap()
+      path = resolveFieldPath(option.name, extensionsForType.keys)
+      val packageName = linker.packageName()
       if (path == null && packageName != null) {
         // If the path couldn't be resolved, attempt again by prefixing it with the package name.
-        path = resolveFieldPath(packageName + "." + option.getName(), extensionsForType.keySet());
+        path = resolveFieldPath(packageName + "." + option.name, extensionsForType.keys)
       }
       if (path == null) {
-        return null; // Unable to find the root of this field path.
+        return null // Unable to find the root of this field path.
       }
-
-      field = extensionsForType.get(path[0]);
+      field = extensionsForType[path[0]]
     }
 
-    Map<ProtoMember, Object> result = new LinkedHashMap<>();
-    Map<ProtoMember, Object> last = result;
-    ProtoType lastProtoType = messageType.type();
-    for (int i = 1; i < path.length; i++) {
-      Map<ProtoMember, Object> nested = new LinkedHashMap<>();
-      last.put(ProtoMember.get(lastProtoType, field), nested);
-      lastProtoType = field.getType();
-      if (lastProtoType != null) linker.getForOptions(lastProtoType); // Force members linking.
-      last = nested;
-      field = linker.dereference(field, path[i]);
-      if (field == null) {
-        return null; // Unable to dereference this path segment.
+    val result = mutableMapOf<ProtoMember, Any>()
+    var last = result
+    var lastProtoType: ProtoType? = type.type
+    for (i in 1 until path.size) {
+      val nested = mutableMapOf<ProtoMember, Any>()
+      last[get(lastProtoType!!, field!!)] = nested
+      lastProtoType = field.type
+
+      // Force members linking.
+      if (lastProtoType != null) {
+        linker.getForOptions(lastProtoType)
       }
+
+      last = nested
+      field = linker.dereference(field, path[i]) ?: return null // Unable to dereference segment.
     }
 
-    last.put(ProtoMember.get(lastProtoType, field),
-        canonicalizeValue(linker, field, option.getValue()));
-    return result;
+    last[get(lastProtoType!!, field!!)] = canonicalizeValue(linker, field, option.value)
+    return result
   }
 
-  /**
-   * Given a path like {@code a.b.c.d} and a set of paths like {@code {a.b.c, a.f.g, h.j}}, this
-   * returns the original path split on dots such that the first element is in the set. For the
-   * above example it would return the array {@code [a.b.c, d]}.
-   *
-   * <p>Typically the input path is a package name like {@code a.b}, followed by a dot and a
-   * sequence of field names. The first field name is an extension field; subsequent field names
-   * make a path within that extension.
-   *
-   * <p>Note that a single input may yield multiple possible answers, such as when package names
-   * and field names collide. This method prefers shorter package names though that is an
-   * implementation detail.
-   */
-  static String[] resolveFieldPath(String name, Set<String> fullyQualifiedNames) {
-    // Try to resolve a local name.
-    for (int i = 0; i < name.length(); i++) {
-      i = name.indexOf('.', i);
-      if (i == -1) i = name.length();
-
-      String candidate = name.substring(0, i);
-      if (fullyQualifiedNames.contains(candidate)) {
-        String[] path = name.substring(i).split("\\.", -1);
-        path[0] = name.substring(0, i);
-        return path;
-      }
-    }
-
-    return null;
-  }
-
-  private Object canonicalizeValue(Linker linker, Field context, Object value) {
-    if (value instanceof OptionElement) {
-      ImmutableMap.Builder<ProtoMember, Object> result = ImmutableMap.builder();
-      OptionElement option = (OptionElement) value;
-      Field field = linker.dereference(context, option.getName());
-      if (field == null) {
-        linker.addError("unable to resolve option %s on %s", option.getName(), context.getType());
-      } else {
-        ProtoMember protoMember = ProtoMember.get(context.getType(), field);
-        result.put(protoMember, canonicalizeValue(linker, field, option.getValue()));
-      }
-      return coerceValueForField(context, result.build());
-    }
-
-    if (value instanceof Map) {
-      ImmutableMap.Builder<ProtoMember, Object> result = ImmutableMap.builder();
-      for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-        String name = (String) entry.getKey();
-        Field field = linker.dereference(context, name);
+  private fun canonicalizeValue(
+    linker: Linker,
+    context: Field,
+    value: Any
+  ): Any {
+    when (value) {
+      is OptionElement -> {
+        val result = ImmutableMap.builder<ProtoMember, Any>()
+        val field = linker.dereference(context, value.name)
         if (field == null) {
-          linker.addError("unable to resolve option %s on %s", name, context.getType());
+          linker.addError("unable to resolve option %s on %s", value.name, context.type)
         } else {
-          ProtoMember protoMember = ProtoMember.get(context.getType(), field);
-          result.put(protoMember, canonicalizeValue(linker, field, entry.getValue()));
+          val protoMember = get(context.type!!, field)
+          result.put(protoMember, canonicalizeValue(linker, field, value.value))
+        }
+        return coerceValueForField(context, result.build())
+      }
+
+      is Map<*, *> -> {
+        val result = ImmutableMap.builder<ProtoMember, Any>()
+        for (entry in value) {
+          val name = entry.key as String
+          val field = linker.dereference(context, name)
+          if (field == null) {
+            linker.addError("unable to resolve option %s on %s", name, context.type)
+          } else {
+            val protoMember = get(context.type!!, field)
+            result.put(protoMember, canonicalizeValue(linker, field, entry.value!!))
+          }
+        }
+        return coerceValueForField(context, result.build())
+      }
+
+      is List<*> -> {
+        val result = ImmutableList.builder<Any>()
+        for (element in value) {
+          result.addAll(canonicalizeValue(linker, context, element!!) as List<*>)
+        }
+        return coerceValueForField(context, result.build())
+      }
+
+      is String -> {
+        return coerceValueForField(context, value)
+      }
+
+      else -> {
+        throw IllegalArgumentException("Unexpected option value: $value")
+      }
+    }
+  }
+
+  private fun coerceValueForField(context: Field, value: Any): Any {
+    return when {
+      context.isRepeated -> value as? List<*> ?: ImmutableList.of(value)
+      value is List<*> -> Iterables.getOnlyElement<Any>(value)
+      else -> value
+    }
+  }
+
+  /** Combine values for the same key, resolving conflicts based on their type.  */
+  private fun union(linker: Linker, a: Any, b: Any): Any {
+    return when (a) {
+      is List<*> -> {
+        union(a, b as List<*>)
+      }
+
+      is Map<*, *> -> {
+        @Suppress("UNCHECKED_CAST") // All maps have this type.
+        union(linker, a as Map<ProtoMember, Any?>, b as Map<ProtoMember, Any>)
+      }
+
+      else -> {
+        linker.addError("conflicting options: %s, %s", a, b)
+        a // Just return any placeholder.
+      }
+    }
+  }
+
+  private fun union(
+    linker: Linker, a: Map<ProtoMember, Any?>, b: Map<ProtoMember, Any>
+  ): ImmutableMap<ProtoMember, Any?> {
+    val result: MutableMap<ProtoMember, Any?> = LinkedHashMap(a)
+    for (entry in b) {
+      val bValue = entry.value
+      val aValue = result[entry.key]
+      result[entry.key] = when {
+        aValue != null -> union(linker, aValue, bValue)
+        else -> bValue
+      }
+    }
+    return ImmutableMap.copyOf(result)
+  }
+
+  private fun union(a: List<*>, b: List<*>): ImmutableList<Any> {
+    return ImmutableList.builder<Any>()
+        .addAll(a)
+        .addAll(b)
+        .build()
+  }
+
+  fun fields(): Multimap<ProtoType, ProtoMember> {
+    return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
+      gatherFields(it, optionType, map, IdentifierSet.Builder().build())
+    }
+  }
+
+  fun fields(identifierSet: IdentifierSet): Multimap<ProtoType, ProtoMember> {
+    return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
+      gatherFields(it, optionType, map, identifierSet)
+    }
+  }
+
+  private fun gatherFields(
+    sink: Multimap<ProtoType, ProtoMember>,
+    type: ProtoType,
+    o: Any?,
+    identifierSet: IdentifierSet
+  ) {
+    when (o) {
+      is Map<*, *> -> {
+        for ((key, value) in o) {
+          val protoMember = key as ProtoMember
+          if (identifierSet.excludes(protoMember)) continue
+          sink.put(type, protoMember)
+          gatherFields(sink, protoMember.type, value!!, identifierSet)
         }
       }
-      return coerceValueForField(context, result.build());
-    }
-
-    if (value instanceof List) {
-      ImmutableList.Builder<Object> result = ImmutableList.builder();
-      for (Object element : (List<?>) value) {
-        result.addAll((List) canonicalizeValue(linker, context, element));
-      }
-      return coerceValueForField(context, result.build());
-    }
-
-    if (value instanceof String) {
-      return coerceValueForField(context, value);
-    }
-
-    throw new IllegalArgumentException("Unexpected option value: " + value);
-  }
-
-  private Object coerceValueForField(Field context, Object value) {
-    if (context.isRepeated()) {
-      return value instanceof List ? value : ImmutableList.of(value);
-    } else {
-      return value instanceof List ? getOnlyElement((List) value) : value;
-    }
-  }
-
-  /** Combine values for the same key, resolving conflicts based on their type. */
-  @SuppressWarnings("unchecked")
-  private Object union(Linker linker, Object a, Object b) {
-    if (a instanceof List) {
-      return union((List<?>) a, (List<?>) b);
-    } else if (a instanceof Map) {
-      return union(linker, (Map<ProtoMember, Object>) a, (Map<ProtoMember, Object>) b);
-    } else {
-      linker.addError("conflicting options: %s, %s", a, b);
-      return a; // Just return any placeholder.
-    }
-  }
-
-  private ImmutableMap<ProtoMember, Object> union(
-      Linker linker, Map<ProtoMember, Object> a, Map<ProtoMember, Object> b) {
-    Map<ProtoMember, Object> result = new LinkedHashMap<>(a);
-    for (Map.Entry<ProtoMember, Object> entry : b.entrySet()) {
-      Object aValue = result.get(entry.getKey());
-      Object bValue = entry.getValue();
-      Object union = aValue != null ? union(linker, aValue, bValue) : bValue;
-      result.put(entry.getKey(), union);
-    }
-    return ImmutableMap.copyOf(result);
-  }
-
-  private ImmutableList<Object> union(List<?> a, List<?> b) {
-    return ImmutableList.builder().addAll(a).addAll(b).build();
-  }
-
-  Multimap<ProtoType, ProtoMember> fields() {
-    Multimap<ProtoType, ProtoMember> result = LinkedHashMultimap.create();
-    gatherFields(result, optionType, map, new IdentifierSet.Builder().build());
-    return result;
-  }
-
-  Multimap<ProtoType, ProtoMember> fields(IdentifierSet identifierSet) {
-    Multimap<ProtoType, ProtoMember> result = LinkedHashMultimap.create();
-    gatherFields(result, optionType, map, identifierSet);
-    return result;
-  }
-
-  private void gatherFields(Multimap<ProtoType, ProtoMember> sink, ProtoType type, Object o,
-      IdentifierSet identifierSet) {
-    if (o instanceof Map) {
-      for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet()) {
-        ProtoMember protoMember = (ProtoMember) entry.getKey();
-        if (identifierSet.excludes(protoMember)) continue;
-        sink.put(type, protoMember);
-        gatherFields(sink, protoMember.getType(), entry.getValue(), identifierSet);
-      }
-    } else if (o instanceof List) {
-      for (Object e : (List) o) {
-        gatherFields(sink, type, e, identifierSet);
-      }
-    }
-  }
-
-  Options retainAll(Schema schema, MarkSet markSet) {
-    if (map == null || map.isEmpty()) return this; // Nothing to prune.
-    Options result = new Options(optionType, optionElements);
-    Object mapOrNull = retainAll(schema, markSet, optionType, map);
-    result.map = mapOrNull != null
-        ? (ImmutableMap<ProtoMember, Object>) mapOrNull
-        : ImmutableMap.<ProtoMember, Object>of();
-    return result;
-  }
-
-  /** Returns an object of the same type as {@code o}, or null if it is not retained. */
-  private Object retainAll(Schema schema, MarkSet markSet, ProtoType type, Object o) {
-    if (!markSet.contains(type)) {
-      return null; // Prune this type.
-
-    } else if (o instanceof Map) {
-      ImmutableMap.Builder<ProtoMember, Object> builder = ImmutableMap.builder();
-      for (Map.Entry<?, ?> entry : ((Map<?, ?>) o).entrySet()) {
-        ProtoMember protoMember = (ProtoMember) entry.getKey();
-        if (!markSet.contains(protoMember)) continue; // Prune this field.
-        Field field = schema.getField(protoMember);
-        Object retainedValue = retainAll(schema, markSet, field.getType(), entry.getValue());
-        if (retainedValue != null) {
-          builder.put(protoMember, retainedValue); // This retained field is non-empty.
+      is List<*> -> {
+        for (e in o) {
+          gatherFields(sink, type, e!!, identifierSet)
         }
       }
-      ImmutableMap<ProtoMember, Object> map = builder.build();
-      return !map.isEmpty() ? map : null;
-
-    } else if (o instanceof List) {
-      ImmutableList.Builder<Object> builder = ImmutableList.builder();
-      for (Object value : ((List) o)) {
-        Object retainedValue = retainAll(schema, markSet, type, value);
-        if (retainedValue != null) {
-          builder.add(retainedValue); // This retained value is non-empty.
-        }
-      }
-      ImmutableList<Object> list = builder.build();
-      return !list.isEmpty() ? list : null;
-
-    } else {
-      return o;
     }
   }
 
-  /** Returns true if these options assigns a value to {@code protoMember}. */
-  boolean assignsMember(ProtoMember protoMember) {
-    return map != null && map.containsKey(protoMember);
+  fun retainAll(schema: Schema, markSet: MarkSet): Options {
+    if (map == null || map!!.isEmpty()) return this // Nothing to prune.
+
+    val result = Options(optionType, elements)
+    @Suppress("UNCHECKED_CAST") // All maps have these type parameters.
+    result.map = retainAll(schema, markSet, optionType, map!!) as ImmutableMap<ProtoMember, Any?>?
+        ?: ImmutableMap.of<ProtoMember, Any>()
+    return result
+  }
+
+  /** Returns an object of the same type as `o`, or null if it is not retained.  */
+  private fun retainAll(
+    schema: Schema,
+    markSet: MarkSet,
+    type: ProtoType?,
+    o: Any
+  ): Any? {
+    return when {
+      !markSet.contains(type!!) -> null // Prune this type.
+
+      o is Map<*, *> -> {
+        val builder = ImmutableMap.builder<ProtoMember, Any>()
+        for ((key, value) in o) {
+          val protoMember = key as ProtoMember
+          if (!markSet.contains(protoMember)) continue  // Prune this field.
+          val field = schema.getField(protoMember)
+          val retainedValue = retainAll(schema, markSet, field.type, value!!)
+          if (retainedValue != null) {
+            builder.put(protoMember, retainedValue) // This retained field is non-empty.
+          }
+        }
+        val map = builder.build()
+        if (map.isNotEmpty()) map else null
+      }
+
+      o is List<*> -> {
+        val builder = ImmutableList.builder<Any>()
+        for (value in o) {
+          val retainedValue = retainAll(schema, markSet, type, value!!)
+          if (retainedValue != null) {
+            builder.add(retainedValue) // This retained value is non-empty.
+          }
+        }
+        val list = builder.build()
+        if (list.isNotEmpty()) list else null
+      }
+
+      else -> o
+    }
+  }
+
+  /** Returns true if these options assigns a value to `protoMember`.  */
+  fun assignsMember(protoMember: ProtoMember?): Boolean {
+    // TODO(jwilson): remove the null check; this shouldn't be called until linking completes.
+    return map != null && map!!.containsKey(protoMember)
+  }
+
+  companion object {
+    @JvmField val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
+    @JvmField val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
+    @JvmField val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
+    @JvmField val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
+    @JvmField val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
+    @JvmField val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
+    @JvmField val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
+
+    /**
+     * Given a path like `a.b.c.d` and a set of paths like `{a.b.c, a.f.g, h.j}`, this returns the
+     * original path split on dots such that the first element is in the set. For the above example
+     * it would return the array `[a.b.c, d]`.
+     *
+     * Typically the input path is a package name like `a.b`, followed by a dot and a sequence of
+     * field names. The first field name is an extension field; subsequent field names make a path
+     * within that extension.
+     *
+     * Note that a single input may yield multiple possible answers, such as when package names
+     * and field names collide. This method prefers shorter package names though that is an
+     * implementation detail.
+     */
+    fun resolveFieldPath(
+      name: String,
+      fullyQualifiedNames: Set<String?>
+    ): Array<String>? { // Try to resolve a local name.
+      var pos = 0
+      while (pos < name.length) {
+        pos = name.indexOf('.', pos)
+        if (pos == -1) pos = name.length
+        val candidate = name.substring(0, pos)
+        if (fullyQualifiedNames.contains(candidate)) {
+          val path = name.substring(pos).split('.').toTypedArray()
+          path[0] = name.substring(0, pos)
+          return path
+        }
+        pos++
+      }
+      return null
+    }
   }
 }

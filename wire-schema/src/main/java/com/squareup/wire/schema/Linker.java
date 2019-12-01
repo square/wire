@@ -120,7 +120,7 @@ public final class Linker {
       // Retain this type if it's used by anything in the source path.
       boolean anyTypeIsUsed = false;
       for (Type type : fileLinker.protoFile().types()) {
-        if (requestedTypes.contains(type.type())) {
+        if (requestedTypes.contains(type.getType())) {
           anyTypeIsUsed = true;
           break;
         }
@@ -182,9 +182,9 @@ public final class Linker {
       return ProtoType.BYTES; // Just return any placeholder.
     }
 
-    requestedTypes.add(resolved.type());
+    requestedTypes.add(resolved.getType());
 
-    return resolved.type();
+    return resolved.getType();
   }
 
   <T> T resolve(String name, Map<String, T> map) {
@@ -214,7 +214,7 @@ public final class Linker {
     for (int i = contextStack.size() - 1; i >= 0; i--) {
       Object context = contextStack.get(i);
       if (context instanceof Type) {
-        return ((Type) context).type().toString();
+        return ((Type) context).getType().toString();
       } else if (context instanceof ProtoFile) {
         String packageName = ((ProtoFile) context).packageName();
         return packageName != null ? packageName : "";
@@ -287,7 +287,7 @@ public final class Linker {
     Type result = get(protoType);
     if (result == null) return null;
 
-    FileLinker fileLinker = getFileLinker(result.location().getPath());
+    FileLinker fileLinker = getFileLinker(result.getLocation().getPath());
     fileLinker.requireMembersLinked(result);
     return result;
   }
@@ -369,7 +369,7 @@ public final class Linker {
     for (Type type : nestedTypes) {
       if (type instanceof EnumType) {
         EnumType enumType = (EnumType) type;
-        for (EnumConstant enumConstant : enumType.constants()) {
+        for (EnumConstant enumConstant : enumType.getConstants()) {
           nameToType.put(enumConstant.getName(), enumType);
         }
       }
@@ -383,7 +383,7 @@ public final class Linker {
         error.append(String.format("multiple enums share constant %s:", constant));
         for (EnumType enumType : entry.getValue()) {
           error.append(String.format("\n  %s. %s.%s (%s)",
-              index++, enumType.type(), constant, enumType.constant(constant).getLocation()));
+              index++, enumType.getType(), constant, enumType.constant(constant).getLocation()));
         }
         addError("%s", error);
       }
@@ -397,7 +397,7 @@ public final class Linker {
     if (type.isScalar()) return;
 
     String path = location.getPath();
-    String requiredImport = get(type).location().getPath();
+    String requiredImport = get(type).getLocation().getPath();
     FileLinker fileLinker = getFileLinker(path);
     if (!path.equals(requiredImport) && !fileLinker.effectiveImports().contains(requiredImport)) {
       addError("%s needs to import %s", path, requiredImport);
@@ -423,10 +423,10 @@ public final class Linker {
 
       } else if (context instanceof Extend) {
         Extend extend = (Extend) context;
-        ProtoType type = extend.type();
+        ProtoType type = extend.getType();
         error.append(type != null
-            ? String.format("%s extend %s (%s)", prefix, type, extend.location())
-            : String.format("%s extend (%s)", prefix, extend.location()));
+            ? String.format("%s extend %s (%s)", prefix, type, extend.getLocation())
+            : String.format("%s extend (%s)", prefix, extend.getLocation()));
 
       } else if (context instanceof Field) {
         Field field = (Field) context;
@@ -436,12 +436,12 @@ public final class Linker {
       } else if (context instanceof MessageType) {
         MessageType message = (MessageType) context;
         error.append(String.format("%s message %s (%s)",
-            prefix, message.type(), message.location()));
+            prefix, message.getType(), message.getLocation()));
 
       } else if (context instanceof EnumType) {
         EnumType enumType = (EnumType) context;
         error.append(String.format("%s enum %s (%s)",
-            prefix, enumType.type(), enumType.location()));
+            prefix, enumType.getType(), enumType.getLocation()));
 
       } else if (context instanceof Service) {
         Service service = (Service) context;

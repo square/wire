@@ -19,40 +19,33 @@ import com.squareup.wire.schema.internal.parser.MessageElement
 
 /** An empty type which only holds nested types.  */
 class EnclosingType internal constructor(
-  private val location: Location,
-  private val type: ProtoType,
-  private val documentation: String,
-  private val nestedTypes: List<Type>
+  override val location: Location,
+  override val type: ProtoType,
+  override val documentation: String,
+  override val nestedTypes: List<Type>
 ) : Type() {
-  // TODO(jrodbx): Konvert to overridden vals, once Type is konverted
-  override fun location() = location
-  override fun type() = type
-  override fun documentation() = documentation
-  override fun options() = throw UnsupportedOperationException()
-  override fun nestedTypes() = nestedTypes
+  override val options
+    get() = throw UnsupportedOperationException()
 
-  internal override fun linkMembers(linker: Linker) {}
-  internal override fun linkOptions(linker: Linker) = nestedTypes.forEach { it.linkOptions(linker) }
-  internal override fun validate(linker: Linker) = nestedTypes.forEach { it.validate(linker) }
+  override fun linkMembers(linker: Linker) {}
+  override fun linkOptions(linker: Linker) = nestedTypes.forEach { it.linkOptions(linker) }
+  override fun validate(linker: Linker) = nestedTypes.forEach { it.validate(linker) }
 
-  internal override fun retainAll(
-    schema: Schema,
-    markSet: MarkSet
-  ): Type? {
+  override fun retainAll(schema: Schema, markSet: MarkSet): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
-    return if (retainedNestedTypes.isEmpty()) null
-    else EnclosingType(location, type, documentation, retainedNestedTypes)
+    if (retainedNestedTypes.isEmpty()) return null
+    return EnclosingType(location, type, documentation, retainedNestedTypes)
   }
 
-  override fun retainLinked(linkedTypes: MutableSet<ProtoType>?): Type? {
+  override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainLinked(linkedTypes) }
-    return if (retainedNestedTypes.isEmpty()) null
-    else EnclosingType(location, type, documentation, retainedNestedTypes)
+    if (retainedNestedTypes.isEmpty()) return null
+    return EnclosingType(location, type, documentation, retainedNestedTypes)
   }
 
   fun toElement() = MessageElement(
       location = location,
       name = type.simpleName,
-      nestedTypes = Type.toElements(nestedTypes)
+      nestedTypes = toElements(nestedTypes)
   )
 }

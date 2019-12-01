@@ -33,7 +33,7 @@ class MarkdownHandler : CustomHandlerBeta {
   ): Target.SchemaHandler {
     return object : Target.SchemaHandler {
       override fun handle(type: Type) {
-        writeMarkdownFile(type.type(), toMarkdown(type))
+        writeMarkdownFile(type.type!!, toMarkdown(type))
       }
 
       override fun handle(service: Service) {
@@ -62,9 +62,9 @@ class MarkdownHandler : CustomHandlerBeta {
 
   private fun toMarkdown(type: Type): String {
     return """
-        |# ${type.type().simpleName}
+        |# ${type.type!!.simpleName}
         |
-        |${type.documentation()}
+        |${type.documentation}
         |""".trimMargin()
   }
 

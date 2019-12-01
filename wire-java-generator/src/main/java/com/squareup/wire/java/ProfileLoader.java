@@ -72,7 +72,7 @@ public final class ProfileLoader {
 
   public Profile load() throws IOException {
     Set<Location> protoLocations = new LinkedHashSet<>();
-    for (ProtoFile protoFile : schema.protoFiles()) {
+    for (ProtoFile protoFile : schema.getProtoFiles()) {
       protoLocations.add(protoFile.location());
     }
     Multimap<Path, String> pathsToAttempt = pathsToAttempt(protoLocations);
@@ -165,7 +165,7 @@ public final class ProfileLoader {
           continue;
         }
 
-        String requiredImport = resolvedType.location().getPath();
+        String requiredImport = resolvedType.getLocation().getPath();
         if (!profileFile.getImports().contains(requiredImport)) {
           errors.add(String.format("%s needs to import %s (%s)",
               typeConfig.getLocation().getPath(), requiredImport, typeConfig.getLocation()));

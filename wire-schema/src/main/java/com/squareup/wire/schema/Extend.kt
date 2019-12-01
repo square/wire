@@ -13,87 +13,73 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.ExtendElement;
-import java.util.List;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.Field.Companion.fromElements
+import com.squareup.wire.schema.Field.Companion.retainAll
+import com.squareup.wire.schema.Field.Companion.toElements
+import com.squareup.wire.schema.internal.parser.ExtendElement
 
-public final class Extend {
-  private final Location location;
-  private final String documentation;
-  private final String name;
-  private final List<Field> fields;
-  private ProtoType protoType;
+class Extend private constructor(
+  val location: Location,
+  val documentation: String,
+  val name: String,
+  val fields: List<Field>
+) {
+  // Null until this extend is linked.
+  var type: ProtoType? = null
+    private set
 
-  private Extend(Location location, String documentation, String name,
-      List<Field> fields) {
-    this.location = location;
-    this.documentation = documentation;
-    this.name = name;
-    this.fields = fields;
-  }
-
-  static ImmutableList<Extend> fromElements(String packageName,
-      List<ExtendElement> extendElements) {
-    ImmutableList.Builder<Extend> extendBuilder = new ImmutableList.Builder<>();
-    for (ExtendElement extendElement : extendElements) {
-      extendBuilder.add(new Extend(extendElement.getLocation(), extendElement.getDocumentation(),
-          extendElement.getName(),
-          Field.fromElements(packageName, extendElement.getFields(), true)));
-    }
-    return extendBuilder.build();
-  }
-
-  static ImmutableList<ExtendElement> toElements(List<Extend> extendList) {
-    ImmutableList.Builder<ExtendElement> elements = new ImmutableList.Builder<>();
-    for (Extend extend : extendList) {
-      elements.add(new ExtendElement(
-          extend.location,
-          extend.name,
-          extend.documentation,
-          Field.toElements(extend.fields)));
-    }
-    return elements.build();
-  }
-
-  public Location location() {
-    return location;
-  }
-
-  public ProtoType type() {
-    return protoType;
-  }
-
-  public String documentation() {
-    return documentation;
-  }
-
-  public List<Field> fields() {
-    return fields;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  void link(Linker linker) {
-    linker = linker.withContext(this);
-    protoType = linker.resolveMessageType(name);
-    Type type = linker.get(protoType);
+  fun link(linker: Linker) {
+    val linker = linker.withContext(this)
+    type = linker.resolveMessageType(name)
+    val type = linker[type]
     if (type != null) {
-      ((MessageType) type).addExtensionFields(fields);
+      (type as MessageType).addExtensionFields(fields)
     }
   }
 
-  void validate(Linker linker) {
-    linker = linker.withContext(this);
-    linker.validateImport(location(), type());
+  fun validate(linker: Linker) {
+    val linker = linker.withContext(this)
+    linker.validateImport(location, type)
   }
 
-  public Extend retainAll(Schema schema, MarkSet markSet) {
-    ImmutableList<Field> retainedFields = Field.retainAll(schema, markSet, protoType, fields);
-    if (retainedFields.isEmpty()) return null;
-    else return new Extend(location, documentation, name, retainedFields);
+  fun retainAll(schema: Schema?, markSet: MarkSet?): Extend? {
+    val retainedFields = retainAll(schema!!, markSet!!, type!!, fields)
+    if (retainedFields.isEmpty()) return null
+    return Extend(location, documentation, name, retainedFields)
+  }
+
+  companion object {
+    @JvmStatic
+    fun fromElements(
+      packageName: String?,
+      extendElements: List<ExtendElement>
+    ): ImmutableList<Extend> {
+      val extendBuilder = ImmutableList.Builder<Extend>()
+      for (element in extendElements) {
+        extendBuilder.add(Extend(
+            location = element.location,
+            documentation = element.documentation,
+            name = element.name,
+            fields = fromElements(packageName, element.fields, true)
+        ))
+      }
+      return extendBuilder.build()
+    }
+
+    @JvmStatic
+    fun toElements(extendList: List<Extend>): ImmutableList<ExtendElement> {
+      val elements = ImmutableList.Builder<ExtendElement>()
+      for (extend in extendList) {
+        elements.add(ExtendElement(
+            location = extend.location,
+            name = extend.name,
+            documentation = extend.documentation,
+            fields = toElements(extend.fields)))
+      }
+      return elements.build()
+    }
   }
 }

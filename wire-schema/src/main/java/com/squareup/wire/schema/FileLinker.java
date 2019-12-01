@@ -80,8 +80,8 @@ final class FileLinker {
   }
 
   private void addTypes(Type type) {
-    linker.addType(type.type(), type);
-    for (Type nestedType : type.nestedTypes()) {
+    linker.addType(type.getType(), type);
+    for (Type nestedType : type.getNestedTypes()) {
       addTypes(nestedType);
     }
   }
@@ -120,13 +120,13 @@ final class FileLinker {
   private void linkMembersRecursive(List<Type> types) {
     for (Type type : types) {
       requireMembersLinked(type);
-      linkMembersRecursive(type.nestedTypes());
+      linkMembersRecursive(type.getNestedTypes());
     }
   }
 
   /** Link the members of {@code type} that haven't been linked already. */
   void requireMembersLinked(Type type) {
-    if (typesWithMembersLinked.add(type.type())) {
+    if (typesWithMembersLinked.add(type.getType())) {
       type.linkMembers(linker);
     }
   }

@@ -171,7 +171,7 @@ data class WireRun(
     val typesToHandle = mutableListOf<Type>()
     val servicesToHandle = mutableListOf<Service>()
     val skippedForSyntax = mutableListOf<ProtoFile>()
-    for (protoFile in schema.protoFiles()) {
+    for (protoFile in schema.protoFiles) {
       if (protoFile.syntax() != ProtoFile.Syntax.PROTO_2) {
         skippedForSyntax += protoFile
         continue
@@ -193,7 +193,7 @@ data class WireRun(
       val i = typesToHandle.iterator()
       while (i.hasNext()) {
         val type = i.next()
-        if (identifierSet.includes(type.type())) {
+        if (identifierSet.includes(type.type!!)) {
           schemaHandler.handle(type)
           // We don't let other targets handle this one.
           if (target.exclusive) i.remove()

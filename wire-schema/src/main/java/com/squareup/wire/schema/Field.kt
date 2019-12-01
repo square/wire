@@ -16,7 +16,7 @@
 package com.squareup.wire.schema
 
 import com.google.common.collect.ImmutableList
-import com.squareup.wire.schema.Options.FIELD_OPTIONS
+import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.internal.parser.FieldElement
 
 class Field private constructor(
@@ -133,8 +133,18 @@ class Field private constructor(
 
   /** Returns a copy of this whose options is `options`.  */
   private fun withOptions(options: Options): Field {
-    val result = Field(packageName, location, label, name, documentation, tag, default,
-        elementType, options, isExtension)
+    val result = Field(
+        packageName = packageName,
+        location = location,
+        label = label,
+        name = name,
+        documentation = documentation,
+        tag = tag,
+        default = default,
+        elementType = elementType,
+        options = options,
+        isExtension = isExtension
+    )
     result.type = type
     result.deprecated = deprecated
     result.packed = packed
@@ -143,7 +153,7 @@ class Field private constructor(
   }
 
   private fun isUsedAsOption(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Boolean {
-    for (protoFile in schema.protoFiles()) {
+    for (protoFile in schema.getProtoFiles()) {
       if (protoFile.types().any { isUsedAsOption(markSet, enclosingType, it) }) return true
       if (protoFile.services().any { isUsedAsOption(markSet, enclosingType, it) }) return true
     }
@@ -165,22 +175,22 @@ class Field private constructor(
   }
 
   private fun isUsedAsOption(markSet: MarkSet, enclosingType: ProtoType, type: Type): Boolean {
-    if (type.type() !in markSet) return false
+    if (type.type!! !in markSet) return false
 
     val protoMember = ProtoMember.get(enclosingType, qualifiedName)
 
     when (type) {
       is MessageType -> {
-        if (type.options().assignsMember(protoMember)) return true
+        if (type.options.assignsMember(protoMember)) return true
         if (type.fields().any { it.options.assignsMember(protoMember) }) return true
       }
       is EnumType -> {
-        if (type.options().assignsMember(protoMember)) return true
-        if (type.constants().any { it.options.assignsMember(protoMember) }) return true
+        if (type.options.assignsMember(protoMember)) return true
+        if (type.constants.any { it.options.assignsMember(protoMember) }) return true
       }
     }
 
-    if (type.nestedTypes().any { isUsedAsOption(markSet, enclosingType, it) }) return true
+    if (type.nestedTypes.any { isUsedAsOption(markSet, enclosingType, it) }) return true
 
     return false
   }
@@ -207,9 +217,18 @@ class Field private constructor(
     ): ImmutableList<Field> {
       val fields = ImmutableList.builder<Field>()
       for (element in fieldElements) {
-        fields.add(Field(packageName, element.location, element.label, element.name,
-            element.documentation, element.tag, element.defaultValue, element.type,
-            Options(FIELD_OPTIONS, element.options), extension))
+        fields.add(Field(
+            packageName = packageName,
+            location = element.location,
+            label = element.label,
+            name = element.name,
+            documentation = element.documentation,
+            tag = element.tag,
+            default = element.defaultValue,
+            elementType = element.type,
+            options = Options(FIELD_OPTIONS, element.options),
+            isExtension = extension
+        ))
       }
       return fields.build()
     }
@@ -219,14 +238,14 @@ class Field private constructor(
       val elements = ImmutableList.Builder<FieldElement>()
       for (field in fields) {
         elements.add(FieldElement(
-            field.location,
-            field.label,
-            field.elementType,
-            field.name,
-            field.default,
-            field.tag,
-            field.documentation,
-            field.options.toElements()
+            location = field.location,
+            label = field.label,
+            type = field.elementType,
+            name = field.name,
+            defaultValue = field.default,
+            tag = field.tag,
+            documentation = field.documentation,
+            options = field.options.elements
         ))
       }
       return elements.build()

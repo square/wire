@@ -18,7 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.internal.Util
 import com.squareup.wire.schema.internal.parser.ExtensionsElement
 
-internal class Extensions private constructor(
+class Extensions private constructor(
   val location: Location,
   val documentation: String,
   val start: Int,

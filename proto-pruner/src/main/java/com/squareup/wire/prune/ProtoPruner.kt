@@ -43,7 +43,7 @@ class ProtoPruner(
         .fromFiles(sourcePathFiles)
         .prune(identifierSet)
 
-    schema.protoFiles()
+    schema.getProtoFiles()
         .filter {
           (it.location().path in sourcePaths) && it.isNotEmpty()
         }

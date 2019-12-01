@@ -137,7 +137,7 @@ public final class Service {
               service.name,
               service.documentation,
               Rpc.toElements(service.rpcs),
-              service.options.toElements()
+              service.options.getElements()
           )
       );
     }

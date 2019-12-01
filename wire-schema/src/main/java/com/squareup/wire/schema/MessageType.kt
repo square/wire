@@ -13,334 +13,284 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.GroupElement;
-import com.squareup.wire.schema.internal.parser.MessageElement;
-import com.squareup.wire.schema.internal.parser.TypeElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.ImmutableList
+import com.squareup.wire.schema.Extensions.Companion.fromElements
+import com.squareup.wire.schema.Extensions.Companion.toElements
+import com.squareup.wire.schema.Field.Companion.fromElements
+import com.squareup.wire.schema.Field.Companion.retainAll
+import com.squareup.wire.schema.Field.Companion.retainLinked
+import com.squareup.wire.schema.Field.Companion.toElements
+import com.squareup.wire.schema.OneOf.Companion.fromElements
+import com.squareup.wire.schema.OneOf.Companion.toElements
+import com.squareup.wire.schema.Reserved.Companion.fromElements
+import com.squareup.wire.schema.Reserved.Companion.toElements
+import com.squareup.wire.schema.internal.parser.MessageElement
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-public final class MessageType extends Type {
-  private final ProtoType protoType;
-  private final Location location;
-  private final String documentation;
-  private final String name;
-  private final ImmutableList<Field> declaredFields;
-  private final List<Field> extensionFields;
-  private final ImmutableList<OneOf> oneOfs;
-  private final ImmutableList<Type> nestedTypes;
-  private final List<Extensions> extensionsList;
-  private final List<Reserved> reserveds;
-  private final Options options;
-
-  private MessageType(ProtoType protoType, Location location, String documentation, String name,
-      ImmutableList<Field> declaredFields, List<Field> extensionFields, ImmutableList<OneOf> oneOfs,
-      ImmutableList<Type> nestedTypes, List<Extensions> extensionsList,
-      List<Reserved> reserveds, Options options) {
-    this.protoType = protoType;
-    this.location = location;
-    this.documentation = documentation;
-    this.name = name;
-    this.declaredFields = declaredFields;
-    this.extensionFields = extensionFields;
-    this.oneOfs = oneOfs;
-    this.nestedTypes = nestedTypes;
-    this.extensionsList = extensionsList;
-    this.reserveds = reserveds;
-    this.options = checkNotNull(options);
-  }
-
-  @Override public Location location() {
-    return location;
-  }
-
-  @Override public ProtoType type() {
-    return protoType;
-  }
-
-  @Override public String documentation() {
-    return documentation;
-  }
-
-  @Override public ImmutableList<Type> nestedTypes() {
-    return nestedTypes;
-  }
-
-  @Override public Options options() {
-    return options;
-  }
-
-  public ImmutableList<Field> fields() {
-    return ImmutableList.<Field>builder()
+class MessageType private constructor(
+  override val type: ProtoType,
+  override val location: Location,
+  override val documentation: String,
+  private val name: String,
+  val declaredFields: ImmutableList<Field>,
+  val extensionFields: MutableList<Field>,
+  val oneOfs: ImmutableList<OneOf>,
+  override val nestedTypes: ImmutableList<Type>,
+  private val extensionsList: List<Extensions>,
+  private val reserveds: List<Reserved>,
+  override val options: Options
+) : Type() {
+  fun fields(): ImmutableList<Field> {
+    return ImmutableList.builder<Field>()
         .addAll(declaredFields)
         .addAll(extensionFields)
-        .build();
+        .build()
   }
 
-  public ImmutableList<Field> declaredFields() {
-    return ImmutableList.copyOf(declaredFields);
-  }
+  val requiredFields: ImmutableList<Field>
+    get() {
+      val required = ImmutableList.builder<Field>()
+      for (field in fieldsAndOneOfFields) {
+        if (field.isRequired) {
+          required.add(field)
+        }
+      }
+      return required.build()
+    }
 
-  public ImmutableList<Field> extensionFields() {
-    return ImmutableList.copyOf(extensionFields);
-  }
+  val fieldsAndOneOfFields: ImmutableList<Field>
+    get() {
+      val result = ImmutableList.builder<Field>()
+          .addAll(declaredFields)
+          .addAll(extensionFields)
+      for (oneOf in oneOfs) {
+        result.addAll(oneOf.fields)
+      }
+      return result.build()
+    }
 
-  public ImmutableList<Field> getRequiredFields() {
-    ImmutableList.Builder<Field> required = ImmutableList.builder();
-    for (Field field : fieldsAndOneOfFields()) {
-      if (field.isRequired()) {
-        required.add(field);
+  /** Returns the field named `name`, or null if this type has no such field. */
+  fun field(name: String): Field? {
+    for (field in declaredFields) {
+      if (field.name == name) {
+        return field
       }
     }
-    return required.build();
-  }
-
-  public ImmutableList<Field> fieldsAndOneOfFields() {
-    ImmutableList.Builder<Field> result = ImmutableList.builder();
-    result.addAll(declaredFields);
-    result.addAll(extensionFields);
-    for (OneOf oneOf : oneOfs) {
-      result.addAll(oneOf.getFields());
-    }
-    return result.build();
-  }
-
-  /** Returns the field named {@code name}, or null if this type has no such field. */
-  public Field field(String name) {
-    for (Field field : declaredFields) {
-      if (field.getName().equals(name)) {
-        return field;
-      }
-    }
-    for (OneOf oneOf : oneOfs) {
-      for (Field field : oneOf.getFields()) {
-        if (field.getName().equals(name)) {
-          return field;
+    for (oneOf in oneOfs) {
+      for (field in oneOf.fields) {
+        if (field.name == name) {
+          return field
         }
       }
     }
-    return null;
+    return null
   }
 
   /**
-   * Returns the field with the qualified name {@code qualifiedName}, or null if this type has no
+   * Returns the field with the qualified name `qualifiedName`, or null if this type has no
    * such field.
    */
-  public Field extensionField(String qualifiedName) {
-    for (Field field : extensionFields) {
-      if (field.getQualifiedName().equals(qualifiedName)) {
-        return field;
+  fun extensionField(qualifiedName: String): Field? =
+      extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
+
+  /** Returns the field tagged `tag`, or null if this type has no such field.  */
+  fun field(tag: Int): Field? {
+    for (field in declaredFields) {
+      if (field.tag == tag) {
+        return field
       }
     }
-    return null;
-  }
-
-  /** Returns the field tagged {@code tag}, or null if this type has no such field. */
-  public Field field(int tag) {
-    for (Field field : declaredFields) {
-      if (field.getTag() == tag) {
-        return field;
+    for (field in extensionFields) {
+      if (field.tag == tag) {
+        return field
       }
     }
-    for (Field field : extensionFields) {
-      if (field.getTag() == tag) {
-        return field;
-      }
-    }
-    return null;
+    return null
   }
 
-  public ImmutableList<OneOf> oneOfs() {
-    return oneOfs;
-  }
-
-  public List<Extensions> extensions() {
-    return extensionsList;
-  }
-
-  Map<String, Field> extensionFieldsMap() {
+  fun extensionFieldsMap(): Map<String, Field> {
     // TODO(jwilson): simplify this to just resolve field values directly.
-    Map<String, Field> extensionsForType = new LinkedHashMap<>();
-    for (Field field : extensionFields) {
-      extensionsForType.put(field.getQualifiedName(), field);
+    val extensionsForType = mutableMapOf<String, Field>()
+    for (field in extensionFields) {
+      extensionsForType[field.qualifiedName] = field
     }
-    return extensionsForType;
+    return extensionsForType
   }
 
-  void addExtensionFields(List<Field> fields) {
-    extensionFields.addAll(fields);
+  fun addExtensionFields(fields: List<Field>) {
+    extensionFields.addAll(fields)
   }
 
-  void linkMembers(Linker linker) {
-    linker = linker.withContext(this);
-    for (Field field : declaredFields) {
-      field.link(linker);
+  override fun linkMembers(linker: Linker) {
+    val linker = linker.withContext(this)
+    for (field in declaredFields) {
+      field.link(linker)
     }
-    for (Field field : extensionFields) {
-      field.link(linker);
+    for (field in extensionFields) {
+      field.link(linker)
     }
-    for (OneOf oneOf : oneOfs) {
-      oneOf.link(linker);
-    }
-  }
-
-  void linkOptions(Linker linker) {
-    linker = linker.withContext(this);
-    for (Type type : nestedTypes) {
-      type.linkOptions(linker);
-    }
-    for (Field field : declaredFields) {
-      field.linkOptions(linker);
-    }
-    for (Field field : extensionFields) {
-      field.linkOptions(linker);
-    }
-    for (OneOf oneOf : oneOfs) {
-      oneOf.linkOptions(linker);
-    }
-    options.link(linker);
-  }
-
-  void validate(Linker linker) {
-    linker = linker.withContext(this);
-    linker.validateFields(fieldsAndOneOfFields(), reserveds);
-    linker.validateEnumConstantNameUniqueness(nestedTypes);
-    for (Field field : fieldsAndOneOfFields()) {
-      field.validate(linker);
-    }
-    for (Type type : nestedTypes) {
-      type.validate(linker);
-    }
-    for (Extensions extensions : extensionsList) {
-      extensions.validate(linker);
+    for (oneOf in oneOfs) {
+      oneOf.link(linker)
     }
   }
 
-  @Override Type retainAll(Schema schema, MarkSet markSet) {
-    ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
-    for (Type nestedType : nestedTypes) {
-      Type retainedNestedType = nestedType.retainAll(schema, markSet);
+  override fun linkOptions(linker: Linker) {
+    val linker = linker.withContext(this)
+    for (nestedType in nestedTypes) {
+      nestedType.linkOptions(linker)
+    }
+    for (field in declaredFields) {
+      field.linkOptions(linker)
+    }
+    for (field in extensionFields) {
+      field.linkOptions(linker)
+    }
+    for (oneOf in oneOfs) {
+      oneOf.linkOptions(linker)
+    }
+    options.link(linker)
+  }
+
+  override fun validate(linker: Linker) {
+    val linker = linker.withContext(this)
+    linker.validateFields(fieldsAndOneOfFields, reserveds)
+    linker.validateEnumConstantNameUniqueness(nestedTypes)
+    for (field in fieldsAndOneOfFields) {
+      field.validate(linker)
+    }
+    for (nestedType in nestedTypes) {
+      nestedType.validate(linker)
+    }
+    for (extensions in extensionsList) {
+      extensions.validate(linker)
+    }
+  }
+
+  override fun retainAll(
+    schema: Schema,
+    markSet: MarkSet
+  ): Type? {
+    val retainedNestedTypesBuilder = ImmutableList.builder<Type>()
+    for (nestedType in nestedTypes) {
+      val retainedNestedType = nestedType.retainAll(schema, markSet)
       if (retainedNestedType != null) {
-        retainedNestedTypesBuilder.add(retainedNestedType);
+        retainedNestedTypesBuilder.add(retainedNestedType)
       }
     }
-
-    ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (!markSet.contains(protoType)) {
-      // If this type is not retained, and none of its nested types are retained, prune it.
-      if (retainedNestedTypes.isEmpty()) {
-        return null;
+    val retainedNestedTypes = retainedNestedTypesBuilder.build()
+    if (!markSet.contains(type)) {
+      return when {
+        // This type is not retained, and none of its nested types are retained, prune it.
+        retainedNestedTypes.isEmpty() -> null
+        // This type is not retained but retained nested types, replace it with an enclosing type.
+        else -> EnclosingType(location, type, documentation, retainedNestedTypes)
       }
-      // If this type is not retained but retained nested types, replace it with an enclosing type.
-      return new EnclosingType(location, protoType, documentation, retainedNestedTypes);
     }
-
-    ImmutableList.Builder<OneOf> retainedOneOfsBuilder = ImmutableList.builder();
-    for (OneOf oneOf : oneOfs) {
-      OneOf retainedOneOf = oneOf.retainAll(schema, markSet, protoType);
+    val retainedOneOfsBuilder = ImmutableList.builder<OneOf>()
+    for (oneOf in oneOfs) {
+      val retainedOneOf = oneOf.retainAll(schema, markSet, type)
       if (retainedOneOf != null) {
-        retainedOneOfsBuilder.add(retainedOneOf);
+        retainedOneOfsBuilder.add(retainedOneOf)
       }
     }
-    ImmutableList<OneOf> retainedOneOfs = retainedOneOfsBuilder.build();
-
-    return new MessageType(protoType, location, documentation, name,
-        Field.Companion.retainAll(schema, markSet, protoType, declaredFields),
-        Field.Companion.retainAll(schema, markSet, protoType, extensionFields), retainedOneOfs,
-        retainedNestedTypes, extensionsList, reserveds, options.retainAll(schema, markSet));
+    val retainedOneOfs = retainedOneOfsBuilder.build()
+    return MessageType(
+        type = type,
+        location = location,
+        documentation = documentation,
+        name = name,
+        declaredFields = retainAll(schema, markSet, type, declaredFields),
+        extensionFields = retainAll(schema, markSet, type, extensionFields),
+        oneOfs = retainedOneOfs,
+        nestedTypes = retainedNestedTypes,
+        extensionsList = extensionsList,
+        reserveds = reserveds,
+        options = options.retainAll(schema, markSet)
+    )
   }
 
-  @Override Type retainLinked(Set<ProtoType> linkedTypes) {
-    ImmutableList.Builder<Type> retainedNestedTypesBuilder = ImmutableList.builder();
-    for (Type nestedType : nestedTypes) {
-      Type retainedNestedType = nestedType.retainLinked(linkedTypes);
+  override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
+    val retainedNestedTypesBuilder = ImmutableList.builder<Type>()
+    for (nestedType in nestedTypes) {
+      val retainedNestedType = nestedType.retainLinked(linkedTypes)
       if (retainedNestedType != null) {
-        retainedNestedTypesBuilder.add(retainedNestedType);
+        retainedNestedTypesBuilder.add(retainedNestedType)
       }
     }
-
-    ImmutableList<Type> retainedNestedTypes = retainedNestedTypesBuilder.build();
-    if (!linkedTypes.contains(protoType)) {
-      // If this type is not retained, and none of its nested types are retained, prune it.
-      if (retainedNestedTypes.isEmpty()) {
-        return null;
+    val retainedNestedTypes = retainedNestedTypesBuilder.build()
+    if (!linkedTypes.contains(type)) {
+      return when {
+        // This type is not retained, and none of its nested types are retained, prune it.
+        retainedNestedTypes.isEmpty() -> null
+        // This type is not retained but retained nested types, replace it with an enclosing type.
+        else -> EnclosingType(location, type, documentation, retainedNestedTypes)
       }
-
-      // If this type is not retained but retained nested types, replace it with an enclosing type.
-      return new EnclosingType(location, protoType, documentation, retainedNestedTypes);
     }
-
     // We're retaining this type. Retain its fields and oneofs.
-    ImmutableList.Builder<OneOf> retainedOneOfsBuilder = ImmutableList.builder();
-    for (OneOf oneOf : oneOfs) {
-      OneOf retainedOneOf = oneOf.retainLinked();
+    val retainedOneOfsBuilder = ImmutableList.builder<OneOf>()
+    for (oneOf in oneOfs) {
+      val retainedOneOf = oneOf.retainLinked()
       if (retainedOneOf != null) {
-        retainedOneOfsBuilder.add(retainedOneOf);
+        retainedOneOfsBuilder.add(retainedOneOf)
       }
     }
-    ImmutableList<OneOf> retainedOneOfs = retainedOneOfsBuilder.build();
-
-    Options retainedOptions = options.retainLinked();
-    ImmutableList<Field> retainedDeclaredFields = Field.retainLinked(this.declaredFields);
-    ImmutableList<Field> retainedExtensionFields = Field.retainLinked(this.extensionFields);
-    return new MessageType(protoType, location, documentation, name, retainedDeclaredFields,
-        retainedExtensionFields, retainedOneOfs, retainedNestedTypes, ImmutableList.of(),
-        ImmutableList.of(), retainedOptions);
+    return MessageType(
+        type = type,
+        location = location,
+        documentation = documentation,
+        name = name,
+        declaredFields = retainLinked(declaredFields),
+        extensionFields = retainLinked(extensionFields),
+        oneOfs = retainedOneOfsBuilder.build(),
+        nestedTypes = retainedNestedTypes,
+        extensionsList = ImmutableList.of(),
+        reserveds = ImmutableList.of(),
+        options = options.retainLinked()
+    )
   }
 
-  static MessageType fromElement(String packageName, ProtoType protoType,
-      MessageElement messageElement) {
-    if (!messageElement.getGroups().isEmpty()) {
-      GroupElement group = messageElement.getGroups().get(0);
-      throw new IllegalStateException(group.getLocation() + ": 'group' is not supported");
-    }
-
-    ImmutableList<Field> declaredFields =
-        Field.fromElements(packageName, messageElement.getFields(), false);
-
-    // Extension fields be populated during linking.
-    List<Field> extensionFields = new ArrayList<>();
-
-    ImmutableList<OneOf> oneOfs =
-        OneOf.fromElements(packageName, messageElement.getOneOfs(), false);
-
-    ImmutableList.Builder<Type> nestedTypes = ImmutableList.builder();
-    for (TypeElement nestedType : messageElement.getNestedTypes()) {
-      nestedTypes.add(
-          Type.get(packageName, protoType.nestedType(nestedType.getName()), nestedType));
-    }
-
-    List<Extensions> extensionsList = Extensions.fromElements(messageElement.getExtensions());
-
-    List<Reserved> reserveds = Reserved.fromElements(messageElement.getReserveds());
-
-    Options options = new Options(Options.MESSAGE_OPTIONS, messageElement.getOptions());
-
-    return new MessageType(protoType, messageElement.getLocation(),
-        messageElement.getDocumentation(),
-        messageElement.getName(), declaredFields, extensionFields, oneOfs, nestedTypes.build(),
-        extensionsList, reserveds, options);
+  fun toElement(): MessageElement {
+    return MessageElement(
+        location = location,
+        name = name,
+        documentation = documentation,
+        nestedTypes = toElements(nestedTypes),
+        options = options.elements,
+        reserveds = toElements(reserveds),
+        fields = toElements(declaredFields),
+        oneOfs = toElements(oneOfs),
+        extensions = toElements(extensionsList),
+        groups = emptyList()
+    )
   }
 
-  MessageElement toElement() {
-    return new MessageElement(location,
-        name,
-        documentation,
-        Type.toElements(nestedTypes),
-        options.toElements(),
-        Reserved.toElements(reserveds),
-        Field.toElements(declaredFields),
-        OneOf.toElements(oneOfs),
-        Extensions.toElements(extensionsList),
-        Collections.emptyList() // groups
-    );
+  companion object {
+    @JvmStatic fun fromElement(
+      packageName: String?,
+      protoType: ProtoType,
+      messageElement: MessageElement
+    ): MessageType {
+      check(messageElement.groups.isEmpty()) {
+        "${messageElement.groups[0].location}: 'group' is not supported"
+      }
+      val nestedTypes = ImmutableList.builder<Type>()
+      for (nestedType in messageElement.nestedTypes) {
+        nestedTypes.add(get(packageName, protoType.nestedType(nestedType.name), nestedType))
+      }
+      return MessageType(
+          type = protoType,
+          location = messageElement.location,
+          documentation = messageElement.documentation,
+          name = messageElement.name,
+          declaredFields = fromElements(packageName, messageElement.fields, false),
+          extensionFields = mutableListOf(), // Extension fields are populated during linking.
+          oneOfs = fromElements(packageName, messageElement.oneOfs, false),
+          nestedTypes = nestedTypes.build(),
+          extensionsList = fromElements(messageElement.extensions),
+          reserveds = fromElements(messageElement.reserveds),
+          options = Options(Options.MESSAGE_OPTIONS, messageElement.options)
+      )
+    }
   }
 }

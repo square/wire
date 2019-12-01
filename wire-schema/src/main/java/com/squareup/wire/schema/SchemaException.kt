@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.base.Joiner;
-import java.util.List;
-
-public final class SchemaException extends RuntimeException {
-  public SchemaException(List<String> errors) {
-    super(Joiner.on('\n').join(errors));
-  }
-}
+class SchemaException(errors: List<String>) : RuntimeException(
+    errors.joinToString(separator = "\n"))

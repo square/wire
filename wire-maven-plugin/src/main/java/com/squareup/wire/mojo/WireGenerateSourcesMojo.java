@@ -90,7 +90,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           .withCompact(emitCompact)
           .withProfile(profile);
 
-      for (ProtoFile protoFile : schema.protoFiles()) {
+      for (ProtoFile protoFile : schema.getProtoFiles()) {
         if (!protoFilesList.isEmpty() && !protoFilesList.contains(protoFile.location().getPath())) {
           continue; // Don't emit anything for files not explicitly compiled.
         }
@@ -99,7 +99,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           Stopwatch stopwatch = Stopwatch.createStarted();
           TypeSpec typeSpec = javaGenerator.generateType(type);
           ClassName javaTypeName = javaGenerator.generatedTypeName(type);
-          writeJavaFile(javaTypeName, typeSpec, type.location().withPathOnly());
+          writeJavaFile(javaTypeName, typeSpec, type.getLocation().withPathOnly());
           getLog().info(String.format("Generated %s in %s", javaTypeName, stopwatch));
         }
       }
@@ -145,7 +145,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
 
   private int countTypes(Schema prunedSchema) {
     int result = 0;
-    for (ProtoFile protoFile : prunedSchema.protoFiles()) {
+    for (ProtoFile protoFile : prunedSchema.getProtoFiles()) {
       result += protoFile.types().size();
     }
     return result;
@@ -164,7 +164,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     Schema schema = schemaLoader.load();
 
     getLog().info(String.format("Loaded %s proto files in %s",
-        schema.protoFiles().size(), stopwatch));
+        schema.getProtoFiles().size(), stopwatch));
 
     return schema;
   }

@@ -68,7 +68,7 @@ internal class KotlinFileWriter(
     return generateFile(
         packageName = kotlinGenerator.generatedTypeName(type).packageName,
         typeSpec = kotlinGenerator.generateType(type),
-        location = type.location()
+        location = type.location
     )
   }
 
