@@ -64,7 +64,7 @@ import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
-import com.squareup.wire.schema.Options.ENUM_VALUE_OPTIONS
+import com.squareup.wire.schema.Options.Companion.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
@@ -95,7 +95,7 @@ class KotlinGenerator private constructor(
   private val ProtoType.isEnum
     get() = schema.getType(this) is EnumType
   private val Type.typeName
-    get() = type().typeName
+    get() = type!!.typeName
   private val Service.serviceName
     get() = type().typeName
 
@@ -247,7 +247,7 @@ class KotlinGenerator private constructor(
           is EnumType -> {
             newName("value", "value")
             newName("ADAPTER", "ADAPTER")
-            message.constants().forEach { constant ->
+            message.constants.forEach { constant ->
               newName(constant.name, constant)
             }
           }
@@ -261,7 +261,7 @@ class KotlinGenerator private constructor(
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
             }
-            message.fieldsAndOneOfFields().forEach { field ->
+            message.fieldsAndOneOfFields.forEach { field ->
               if (field.name == field.type!!.simpleName) {
                 newName(field.qualifiedName, field)
               } else {
@@ -287,7 +287,7 @@ class KotlinGenerator private constructor(
     addAdapter(type, companionBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
-        .apply { if (type.documentation().isNotBlank()) addKdoc("%L\n", type.documentation()) }
+        .apply { if (type.documentation.isNotBlank()) addKdoc("%L\n", type.documentation) }
         .superclass(if (javaInterOp) {
           superclass.parameterizedBy(className, builderClassName)
         } else {
@@ -310,7 +310,7 @@ class KotlinGenerator private constructor(
       addAndroidCreator(type, companionBuilder)
     }
 
-    if (type.oneOfs().isNotEmpty()) {
+    if (type.oneOfs.isNotEmpty()) {
       classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
     }
 
@@ -318,7 +318,7 @@ class KotlinGenerator private constructor(
 
     addMessageConstructor(type, classBuilder)
 
-    type.nestedTypes().forEach { classBuilder.addType(generateType(it)) }
+    type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
 
     return classBuilder.build()
   }
@@ -326,7 +326,7 @@ class KotlinGenerator private constructor(
   private fun generateInitializerOneOfBlock(type: MessageType): CodeBlock {
     return buildCodeBlock {
       val nameAllocator = nameAllocator(type)
-      type.oneOfs()
+      type.oneOfs
           .filter { oneOf -> oneOf.fields.size >= 2 }
           .forEach { oneOf ->
             val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
@@ -359,7 +359,7 @@ class KotlinGenerator private constructor(
 
     funBuilder.addStatement("val builder = Builder()")
 
-    type.fieldsAndOneOfFields().forEach { field ->
+    type.fieldsAndOneOfFields.forEach { field ->
       val fieldName = nameAllocator[field]
       funBuilder.addStatement("builder.%1L = %1L", fieldName)
     }
@@ -391,7 +391,7 @@ class KotlinGenerator private constructor(
       addStatement("if (%N === this) return true", otherName)
       addStatement("if (%N !is %T) return false", otherName, kotlinType)
       add("«return unknownFields == %N.unknownFields", otherName)
-      val fields = type.fieldsAndOneOfFields()
+      val fields = type.fieldsAndOneOfFields
       for (field in fields) {
         val fieldName = localNameAllocator[field]
         add("\n&& %1L == %2N.%1L", fieldName, otherName)
@@ -425,7 +425,7 @@ class KotlinGenerator private constructor(
         .addModifiers(OVERRIDE)
         .returns(INT)
 
-    val fields = type.fieldsAndOneOfFields()
+    val fields = type.fieldsAndOneOfFields
     if (fields.isEmpty()) {
       result.addStatement("return unknownFields.hashCode()")
       return result.build()
@@ -472,7 +472,7 @@ class KotlinGenerator private constructor(
     val result = FunSpec.builder("copy")
         .returns(type.typeName)
     val fieldNames = mutableListOf<String>()
-    for (field in type.fieldsAndOneOfFields()) {
+    for (field in type.fieldsAndOneOfFields) {
       val fieldName = nameAllocator[field]
       result.addParameter(ParameterSpec.builder(fieldName, field.typeName)
           .defaultValue("this.%N", fieldName)
@@ -521,7 +521,7 @@ class KotlinGenerator private constructor(
       add("return %T(⇥\n", className)
 
       val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
-      type.fieldsAndOneOfFields().forEach { field ->
+      type.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
 
         val throwExceptionBlock = if (!field.isRepeated && field.isRequired) {
@@ -536,7 +536,7 @@ class KotlinGenerator private constructor(
       add("⇤\n)\n") // close the block
     }
 
-    type.fieldsAndOneOfFields().forEach { field ->
+    type.fieldsAndOneOfFields.forEach { field ->
       val fieldName = nameAllocator[field]
 
       val propertyBuilder = PropertySpec.builder(fieldName, field.declarationClass)
@@ -554,7 +554,7 @@ class KotlinGenerator private constructor(
       builder.addFunction(builderSetter(field, nameAllocator, builderClass, oneOf = null))
     }
 
-    type.oneOfs().forEach { oneOf ->
+    type.oneOfs.forEach { oneOf ->
       oneOf.fields.forEach { field ->
         builder.addFunction(builderSetter(field, nameAllocator, builderClass, oneOf))
       }
@@ -624,7 +624,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val byteClass = ProtoType.BYTES.typeName
 
-    val fields = message.fieldsAndOneOfFields()
+    val fields = message.fieldsAndOneOfFields
 
     fields.forEach { field ->
       val fieldClass = field.typeName
@@ -700,7 +700,7 @@ class KotlinGenerator private constructor(
   private fun generateToStringMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val localNameAllocator = nameAllocator.copy()
     val className = generatedTypeName(type)
-    val fields = type.fieldsAndOneOfFields()
+    val fields = type.fieldsAndOneOfFields
     val body = buildCodeBlock {
       if (fields.isEmpty()) {
         addStatement("return %S", className.simpleName + "{}")
@@ -745,7 +745,7 @@ class KotlinGenerator private constructor(
     companionBuilder: TypeSpec.Builder,
     nameAllocator: NameAllocator
   ) {
-    for (field in type.fieldsAndOneOfFields()) {
+    for (field in type.fieldsAndOneOfFields) {
       val default = field.default ?: continue
 
       val fieldName = "DEFAULT_" + nameAllocator[field].toUpperCase(Locale.US)
@@ -880,7 +880,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val body = buildCodeBlock {
       add("return \n⇥")
-      message.fieldsAndOneOfFields().forEach { field ->
+      message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
         add("%L.encodedSizeWithTag(%L, value.%L) +\n", adapterFor(field), field.tag, fieldName)
       }
@@ -908,7 +908,7 @@ class KotlinGenerator private constructor(
     val body = buildCodeBlock {
       val nameAllocator = nameAllocator(message)
 
-      message.fieldsAndOneOfFields().forEach { field ->
+      message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
         addStatement("%L.encodeWithTag(writer, %L, value.%L)",
             adapterFor(field),
@@ -927,11 +927,11 @@ class KotlinGenerator private constructor(
   }
 
   private fun decodeFun(message: MessageType): FunSpec {
-    val className = nameToKotlinName.getValue(message.type())
+    val className = nameToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message).copy()
 
     val declarationBody = buildCodeBlock {
-      message.fieldsAndOneOfFields().forEach { field ->
+      message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
         val fieldDeclaration: CodeBlock = field.getDeclaration(fieldName)
         addStatement("%L", fieldDeclaration)
@@ -942,7 +942,7 @@ class KotlinGenerator private constructor(
       addStatement("return %T(⇥", className)
 
       val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
-      message.fieldsAndOneOfFields().forEach { field ->
+      message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
 
         val throwExceptionBlock = if (!field.isRepeated && !field.isMap && field.isRequired) {
@@ -959,7 +959,7 @@ class KotlinGenerator private constructor(
     }
 
     val decodeBlock = buildCodeBlock {
-      val fields = message.fieldsAndOneOfFields()
+      val fields = message.fieldsAndOneOfFields
       if (fields.isEmpty()) {
         addStatement("val unknownFields = reader.forEachTag(reader::readUnknownField)")
       } else {
@@ -967,7 +967,7 @@ class KotlinGenerator private constructor(
         addStatement("val unknownFields = reader.forEachTag { %L ->", tag)
         addStatement("⇥when (%L) {⇥", tag)
 
-        message.fieldsAndOneOfFields().forEach { field ->
+        message.fieldsAndOneOfFields.forEach { field ->
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
 
@@ -1007,7 +1007,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun redactFun(message: MessageType): FunSpec {
-    val className = nameToKotlinName.getValue(message.type())
+    val className = nameToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message)
     val result = FunSpec.builder("redact")
         .addModifiers(OVERRIDE)
@@ -1031,7 +1031,7 @@ class KotlinGenerator private constructor(
     }
 
     val redactedFields = mutableListOf<CodeBlock>()
-    for (field in message.fieldsAndOneOfFields()) {
+    for (field in message.fieldsAndOneOfFields) {
       val fieldName = nameAllocator[field]
       val redactedField = field.redact(fieldName)
       if (redactedField != null) {
@@ -1112,15 +1112,15 @@ class KotlinGenerator private constructor(
    * }
    */
   private fun generateEnum(message: EnumType): TypeSpec {
-    val type = message.type()
+    val type = message.type
     val nameAllocator = nameAllocator(message)
 
     val valueName = nameAllocator["value"]
 
     val builder = TypeSpec.enumBuilder(type.simpleName)
         .apply {
-          if (message.documentation().isNotBlank()) {
-            addKdoc("%L\n", message.documentation())
+          if (message.documentation.isNotBlank()) {
+            addKdoc("%L\n", message.documentation)
           }
         }
         .addSuperinterface(WireEnum::class)
@@ -1132,7 +1132,7 @@ class KotlinGenerator private constructor(
             .build())
         .addType(generateEnumCompanion(message))
 
-    message.constants().forEach { constant ->
+    message.constants.forEach { constant ->
       builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
           .addSuperclassConstructorParameter("%L", constant.tag)
           .apply {
@@ -1152,7 +1152,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateEnumCompanion(message: EnumType): TypeSpec {
-    val parentClassName = nameToKotlinName.getValue(message.type())
+    val parentClassName = nameToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message)
     val valueName = nameAllocator["value"]
     val fromValue = FunSpec.builder("fromValue")
@@ -1161,7 +1161,7 @@ class KotlinGenerator private constructor(
         .returns(parentClassName.copy(nullable = true))
         .apply {
           addCode("return when (value) {\n⇥")
-          message.constants().forEach { constant ->
+          message.constants.forEach { constant ->
             addCode("%L -> %L\n", constant.tag, nameAllocator[constant])
           }
           addCode("else -> null")
@@ -1184,7 +1184,7 @@ class KotlinGenerator private constructor(
    * ```
    */
   private fun generateEnumAdapter(message: EnumType): PropertySpec {
-    val parentClassName = nameToKotlinName.getValue(message.type())
+    val parentClassName = nameToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message)
 
     val adapterName = nameAllocator["ADAPTER"]
@@ -1233,8 +1233,7 @@ class KotlinGenerator private constructor(
   private fun generateEnclosing(type: EnclosingType): TypeSpec {
     val classBuilder = TypeSpec.objectBuilder(type.typeName)
 
-    type.nestedTypes()
-        .forEach { classBuilder.addType(generateType(it)) }
+    type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
 
     return classBuilder.build()
   }
@@ -1314,14 +1313,14 @@ class KotlinGenerator private constructor(
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
-          val className = enclosingClassName?.nestedClass(type.type().simpleName)
-              ?: ClassName(kotlinPackage, type.type().simpleName)
-          map[type.type()] = className
-          putAll(kotlinPackage, className, type.nestedTypes())
+          val className = enclosingClassName?.nestedClass(type.type!!.simpleName)
+              ?: ClassName(kotlinPackage, type.type!!.simpleName)
+          map[type.type!!] = className
+          putAll(kotlinPackage, className, type.nestedTypes)
         }
       }
 
-      for (protoFile in schema.protoFiles()) {
+      for (protoFile in schema.getProtoFiles()) {
         val kotlinPackage = protoFile.kotlinPackage()
         putAll(kotlinPackage, null, protoFile.types())
 

@@ -79,7 +79,7 @@ public final class ProtoFile {
         Type.toElements(types),
         Service.toElements(services),
         Extend.toElements(extendList),
-        options.toElements()
+        options.getElements()
     );
   }
 

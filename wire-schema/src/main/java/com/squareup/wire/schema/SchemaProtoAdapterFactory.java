@@ -111,7 +111,7 @@ final class SchemaProtoAdapterFactory {
       } else if (value instanceof Integer) {
         writer.writeVarint32((Integer) value);
       } else {
-        throw new IllegalArgumentException("unexpected " + enumType.type() + ": " + value);
+        throw new IllegalArgumentException("unexpected " + enumType.getType() + ": " + value);
       }
     }
 

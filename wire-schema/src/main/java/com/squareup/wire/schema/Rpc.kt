@@ -101,7 +101,7 @@ class Rpc private constructor(
             responseType = rpc.responseTypeElement,
             requestStreaming = rpc.requestStreaming,
             responseStreaming = rpc.responseStreaming,
-            options = rpc.options.toElements()
+            options = rpc.options.elements
         ))
       }
       return elements.build()

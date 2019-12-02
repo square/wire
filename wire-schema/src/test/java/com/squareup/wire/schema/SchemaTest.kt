@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.schema.Options.FIELD_OPTIONS
+import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.internal.Util
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
@@ -45,8 +45,8 @@ class SchemaTest {
 
     val service = schema.getService("Service")
     val call = service.rpc("Call")!!
-    assertThat(call.requestType).isEqualTo(schema.getType("Request").type())
-    assertThat(call.responseType).isEqualTo(schema.getType("Response").type())
+    assertThat(call.requestType).isEqualTo(schema.getType("Request").type)
+    assertThat(call.responseType).isEqualTo(schema.getType("Response").type)
   }
 
   @Test
@@ -70,10 +70,10 @@ class SchemaTest {
 
     val message = schema.getType("Message") as MessageType
     val field = message.field("field")
-    assertThat(field!!.type).isEqualTo(schema.getType("foo_package.Foo").type())
+    assertThat(field!!.type).isEqualTo(schema.getType("foo_package.Foo").type)
     val bars = message.field("bars")!!.type
     assertThat(bars!!.keyType).isEqualTo(ProtoType.STRING)
-    assertThat(bars!!.valueType).isEqualTo(schema.getType("foo_package.Bar").type())
+    assertThat(bars.valueType).isEqualTo(schema.getType("foo_package.Bar").type)
   }
 
   @Ignore("Resolution happens from the root not from inside Outer and so this fails.")
@@ -98,7 +98,7 @@ class SchemaTest {
 
     val message = schema.getType("Other") as MessageType
     val field = message.field("choice")
-    assertThat(field!!.type).isEqualTo(schema.getType("Outer.Choice").type())
+    assertThat(field!!.type).isEqualTo(schema.getType("Outer.Choice").type)
   }
 
   @Test
@@ -966,7 +966,7 @@ class SchemaTest {
         .schema()
     val a = schema.getType("pa.A") as MessageType
     val b = schema.getType("pb.B") as MessageType
-    assertThat(a.field("b")!!.type).isEqualTo(b.type())
+    assertThat(a.field("b")!!.type).isEqualTo(b.type)
   }
 
   @Test
@@ -989,7 +989,7 @@ class SchemaTest {
         .schema()
     val a = schema.getType("pa.A") as MessageType
     val b = schema.getType("pb.B") as MessageType
-    assertThat(a.field("b")!!.type!!.valueType).isEqualTo(b.type())
+    assertThat(a.field("b")!!.type!!.valueType).isEqualTo(b.type)
   }
 
   @Test
@@ -1070,8 +1070,8 @@ class SchemaTest {
         .schema()
     val service = schema.getService("pa.Service")
     val b = schema.getType("pb.B") as MessageType
-    assertThat(service.rpcs()[0].requestType).isEqualTo(b.type())
-    assertThat(service.rpcs()[0].responseType).isEqualTo(b.type())
+    assertThat(service.rpcs()[0].requestType).isEqualTo(b.type)
+    assertThat(service.rpcs()[0].responseType).isEqualTo(b.type)
   }
 
   @Test
@@ -1125,9 +1125,9 @@ class SchemaTest {
              """.trimMargin()
         )
         .schema()
-    val extendB = schema.protoFiles()[0].extendList()[0]
+    val extendB = schema.protoFiles[0].extendList()[0]
     val b = schema.getType("pb.B") as MessageType
-    assertThat(extendB.type()).isEqualTo(b.type())
+    assertThat(extendB.type).isEqualTo(b.type)
   }
 
   @Test
@@ -1223,7 +1223,7 @@ class SchemaTest {
         .schema()
     val a = schema.getType("pa.A") as MessageType
     val c = schema.getType("pc.C") as MessageType
-    assertThat(a.field("c")!!.type).isEqualTo(c.type())
+    assertThat(a.field("c")!!.type).isEqualTo(c.type)
   }
 
   @Test

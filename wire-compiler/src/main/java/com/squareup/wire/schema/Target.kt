@@ -104,13 +104,9 @@ data class JavaTarget(
         val typeSpec = javaGenerator.generateType(type)
         val javaTypeName = javaGenerator.generatedTypeName(type)
         val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
-            .addFileComment("\$L",
-                WireCompiler.CODE_GENERATED_BY_WIRE)
+            .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
             .apply {
-              val location = type.location()
-              if (location != null) {
-                addFileComment("\nSource file: \$L", location.withPathOnly())
-              }
+              addFileComment("\nSource file: \$L", type.location.withPathOnly())
             }.build()
 
         val path = fs.getPath(outDirectory)
@@ -170,10 +166,7 @@ data class KotlinTarget(
         val kotlinFile = FileSpec.builder(className.packageName, typeSpec.name!!)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
             .apply {
-              val location = type.location()
-              if (location != null) {
-                addComment("\nSource file: %L", location.withPathOnly())
-              }
+              addComment("\nSource file: %L", type.location.withPathOnly())
             }
             .addType(typeSpec)
             .build()
@@ -240,7 +233,7 @@ data class NullTarget(
   override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
     return object : SchemaHandler {
       override fun handle(type: Type) {
-        logger.artifactSkipped(type.type())
+        logger.artifactSkipped(type.type!!)
       }
 
       override fun handle(service: Service) {

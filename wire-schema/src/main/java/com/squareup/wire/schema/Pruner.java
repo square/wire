@@ -54,7 +54,7 @@ final class Pruner {
 
   private ImmutableList<ProtoFile> retainAll(Schema schema, MarkSet marks) {
     ImmutableList.Builder<ProtoFile> retained = ImmutableList.builder();
-    for (ProtoFile protoFile : schema.protoFiles()) {
+    for (ProtoFile protoFile : schema.getProtoFiles()) {
       retained.add(protoFile.retainAll(schema, marks));
     }
     return retained.build();
@@ -69,7 +69,7 @@ final class Pruner {
   }
 
   private void markRoots() {
-    for (ProtoFile protoFile : schema.protoFiles()) {
+    for (ProtoFile protoFile : schema.getProtoFiles()) {
       markRoots(protoFile);
     }
   }
@@ -84,9 +84,9 @@ final class Pruner {
   }
 
   private void markRootsIncludingNested(Type type) {
-    markRoots(type.type());
+    markRoots(type.getType());
 
-    for (Type nested : type.nestedTypes()) {
+    for (Type nested : type.getNestedTypes()) {
       markRootsIncludingNested(nested);
     }
   }
@@ -198,24 +198,24 @@ final class Pruner {
       Service service = schema.getService(protoType);
 
       if (type instanceof MessageType) {
-        options = type.options();
+        options = type.getOptions();
         MessageType messageType = (MessageType) type;
-        for (Field field : messageType.declaredFields()) {
+        for (Field field : messageType.getDeclaredFields()) {
           result.add(ProtoMember.get(protoType, field.getName()));
         }
-        for (Field field : messageType.extensionFields()) {
+        for (Field field : messageType.getExtensionFields()) {
           result.add(ProtoMember.get(protoType, field.getQualifiedName()));
         }
-        for (OneOf oneOf : messageType.oneOfs()) {
+        for (OneOf oneOf : messageType.getOneOfs()) {
           for (Field field : oneOf.getFields()) {
             result.add(ProtoMember.get(protoType, field.getName()));
           }
         }
       } else if (type instanceof EnumType) {
-        options = type.options();
+        options = type.getOptions();
         EnumType wireEnum = (EnumType) type;
-        for (EnumConstant constant : wireEnum.constants()) {
-          result.add(ProtoMember.get(wireEnum.type(), constant.getName()));
+        for (EnumConstant constant : wireEnum.getConstants()) {
+          result.add(ProtoMember.get(wireEnum.getType(), constant.getName()));
         }
       } else if (service != null) {
         options = service.options();

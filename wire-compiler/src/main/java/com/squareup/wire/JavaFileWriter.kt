@@ -36,16 +36,12 @@ internal class JavaFileWriter(
     while (true) {
       val type = queue.poll()?.type ?: return
 
-
       val typeSpec = javaGenerator.generateType(type)
       val javaTypeName = javaGenerator.generatedTypeName(type)
       val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
           .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
           .apply {
-            val location = type.location()
-            if (location != null) {
-              addFileComment("\nSource file: \$L", location.withPathOnly())
-            }
+            addFileComment("\nSource file: \$L", type.location.withPathOnly())
           }.build()
 
       val path = fs.getPath(destination)
