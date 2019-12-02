@@ -13,448 +13,445 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import com.squareup.wire.schema.internal.Util;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.LinkedHashMultimap
+import com.google.common.collect.Multimap
+import com.squareup.wire.schema.ProtoType.Companion.get
+import com.squareup.wire.schema.internal.Util
+import java.util.ArrayList
+import java.util.LinkedHashMap
+import java.util.LinkedHashSet
 
 /** Links local field types and option types to the corresponding declarations. */
-public final class Linker {
-  private final Loader loader;
-  private final Map<String, FileLinker> fileLinkers;
-  private final Map<String, Type> protoTypeNames;
-  private final List<String> errors;
-  private final List<Object> contextStack;
-  private final Set<ProtoType> requestedTypes;
+class Linker {
+  private val loader: Loader
+  private val fileLinkers: MutableMap<String, FileLinker>
+  private val protoTypeNames: MutableMap<String, Type>
+  private val errors: MutableList<String>
+  private val contextStack: List<Any>
+  private val requestedTypes: MutableSet<ProtoType?>
 
-  Linker(Loader loader) {
-    this.loader = loader;
-    this.fileLinkers = new LinkedHashMap<>();
-    this.protoTypeNames = new LinkedHashMap<>();
-    this.contextStack = Collections.emptyList();
-    this.errors = new ArrayList<>();
-    this.requestedTypes = new LinkedHashSet<>();
+  internal constructor(loader: Loader) {
+    this.loader = loader
+    fileLinkers = LinkedHashMap()
+    protoTypeNames = LinkedHashMap()
+    contextStack = emptyList()
+    errors = ArrayList()
+    requestedTypes = LinkedHashSet()
   }
 
-  private Linker(Linker enclosing, Object additionalContext) {
-    this.loader = enclosing.loader;
-    this.fileLinkers = enclosing.fileLinkers;
-    this.protoTypeNames = enclosing.protoTypeNames;
-    this.contextStack = Util.concatenate(enclosing.contextStack, additionalContext);
-    this.errors = enclosing.errors;
-    this.requestedTypes = enclosing.requestedTypes;
+  private constructor(enclosing: Linker, additionalContext: Any) {
+    loader = enclosing.loader
+    fileLinkers = enclosing.fileLinkers
+    protoTypeNames = enclosing.protoTypeNames
+    contextStack =
+        Util.concatenate(enclosing.contextStack,
+            additionalContext)
+    errors = enclosing.errors
+    requestedTypes = enclosing.requestedTypes
   }
 
-  /** Returns a linker for {@code path}, loading the file if necessary. */
-  FileLinker getFileLinker(String path) {
-    FileLinker existing = fileLinkers.get(path);
-    if (existing != null) return existing;
+  /** Returns a linker for `path`, loading the file if necessary. */
+  internal fun getFileLinker(path: String): FileLinker {
+    val existing = fileLinkers[path]
+    if (existing != null) return existing
 
-    ProtoFile protoFile = loader.load(path);
-    FileLinker result = new FileLinker(protoFile, withContext(protoFile));
-    fileLinkers.put(path, result);
-    return result;
+    val protoFile = loader.load(path)
+    val result = FileLinker(protoFile, withContext(protoFile))
+    fileLinkers[path] = result
+    return result
   }
 
   /**
-   * Link all features of all files in {@code sourceProtoFiles} to create a schema. This will also
+   * Link all features of all files in `sourceProtoFiles` to create a schema. This will also
    * partially link any imported files necessary.
    */
-  public Schema link(Iterable<ProtoFile> sourceProtoFiles) {
-    List<FileLinker> sourceFiles = new ArrayList<>();
-    for (ProtoFile sourceFile : sourceProtoFiles) {
-      FileLinker fileLinker = new FileLinker(sourceFile, withContext(sourceFile));
-      fileLinkers.put(sourceFile.location().getPath(), fileLinker);
-      sourceFiles.add(fileLinker);
+  fun link(sourceProtoFiles: Iterable<ProtoFile>): Schema {
+    val sourceFiles = sourceProtoFiles.map { sourceFile ->
+      FileLinker(sourceFile, withContext(sourceFile))
+          .also { fileLinker ->
+            fileLinkers[sourceFile.location().path] = fileLinker
+          }
     }
 
-    for (FileLinker fileLinker : sourceFiles) {
-      fileLinker.requireTypesRegistered();
+    for (fileLinker in sourceFiles) {
+      fileLinker.requireTypesRegistered()
     }
 
     // Also link descriptor.proto's types, which are necessary for options.
-    FileLinker descriptorProto = getFileLinker("google/protobuf/descriptor.proto");
-    descriptorProto.requireTypesRegistered();
+    val descriptorProto = getFileLinker("google/protobuf/descriptor.proto")
+    descriptorProto.requireTypesRegistered()
 
-    for (FileLinker fileLinker : sourceFiles) {
-      fileLinker.requireExtensionsLinked();
+    for (fileLinker in sourceFiles) {
+      fileLinker.requireExtensionsLinked()
     }
 
-    for (FileLinker fileLinker : sourceFiles) {
-      fileLinker.requireImportedExtensionsRegistered();
+    for (fileLinker in sourceFiles) {
+      fileLinker.requireImportedExtensionsRegistered()
     }
 
-    for (FileLinker fileLinker : sourceFiles) {
-      fileLinker.linkMembers();
+    for (fileLinker in sourceFiles) {
+      fileLinker.linkMembers()
     }
 
-    for (FileLinker fileLinker : sourceFiles) {
-      fileLinker.linkOptions();
+    for (fileLinker in sourceFiles) {
+      fileLinker.linkOptions()
     }
 
-    for (FileLinker fileLinker : sourceFiles) {
-      fileLinker.validate();
+    for (fileLinker in sourceFiles) {
+      fileLinker.validate()
     }
 
-    if (!errors.isEmpty()) {
-      throw new SchemaException(errors);
+    if (errors.isNotEmpty()) {
+      throw SchemaException(errors)
     }
 
-    ImmutableList.Builder<ProtoFile> result = ImmutableList.builder();
-    for (FileLinker fileLinker : fileLinkers.values()) {
+    val result = mutableListOf<ProtoFile>()
+    for (fileLinker in fileLinkers.values) {
       if (sourceFiles.contains(fileLinker)) {
-        result.add(fileLinker.protoFile());
-        continue;
+        result.add(fileLinker.protoFile())
+        continue
       }
 
       // Retain this type if it's used by anything in the source path.
-      boolean anyTypeIsUsed = false;
-      for (Type type : fileLinker.protoFile().types()) {
-        if (requestedTypes.contains(type.getType())) {
-          anyTypeIsUsed = true;
-          break;
-        }
-      }
-
+      val anyTypeIsUsed = fileLinker.protoFile().types()
+          .any { type ->
+            requestedTypes.contains(type.type)
+          }
       if (anyTypeIsUsed) {
-        result.add(fileLinker.protoFile().retainLinked(requestedTypes));
+        result.add(fileLinker.protoFile().retainLinked(requestedTypes))
       }
     }
 
-    return new Schema(result.build());
+    return Schema(result)
   }
 
-  /** Returns the type name for the scalar, relative or fully-qualified name {@code name}. */
-  ProtoType resolveType(String name) {
-    return resolveType(name, false);
+  /** Returns the type name for the scalar, relative or fully-qualified name `name`. */
+  fun resolveType(name: String): ProtoType {
+    return resolveType(name, false)
   }
 
-  /** Returns the type name for the relative or fully-qualified name {@code name}. */
-  ProtoType resolveMessageType(String name) {
-    return resolveType(name, true);
+  /** Returns the type name for the relative or fully-qualified name `name`. */
+  fun resolveMessageType(name: String): ProtoType {
+    return resolveType(name, true)
   }
 
-  private ProtoType resolveType(String name, boolean messageOnly) {
-    ProtoType type = ProtoType.Companion.get(name);
-    if (type.isScalar()) {
+  private fun resolveType(name: String, messageOnly: Boolean): ProtoType {
+    val type = get(name)
+
+    if (type.isScalar) {
       if (messageOnly) {
-        addError("expected a message but was %s", name);
+        addError("expected a message but was %s", name)
       }
-      return type;
+      return type
     }
 
-    if (type.isMap()) {
+    if (type.isMap) {
       if (messageOnly) {
-        addError("expected a message but was %s", name);
+        addError("expected a message but was %s", name)
       }
-      ProtoType keyType = resolveType(type.getKeyType().toString(), false);
-      ProtoType valueType = resolveType(type.getValueType().toString(), false);
-      return ProtoType.get(keyType, valueType, name);
+      val keyType = resolveType(type.keyType.toString(), false)
+      val valueType = resolveType(type.valueType.toString(), false)
+      return get(keyType, valueType, name)
     }
 
-    Type resolved = resolve(name, protoTypeNames);
-
+    var resolved: Type? = resolve(name, protoTypeNames)
     // If no type could be resolved, load imported files and try again.
     if (resolved == null) {
-      for (FileLinker fileLinker : contextImportedTypes()) {
-        fileLinker.requireTypesRegistered();
+      for (fileLinker in contextImportedTypes()) {
+        fileLinker.requireTypesRegistered()
       }
-      resolved = resolve(name, protoTypeNames);
+      resolved = resolve(name, protoTypeNames)
     }
 
     if (resolved == null) {
-      addError("unable to resolve %s", name);
-      return ProtoType.BYTES; // Just return any placeholder.
+      addError("unable to resolve %s", name)
+      return ProtoType.BYTES // Just return any placeholder.
     }
 
-    if (messageOnly && !(resolved instanceof MessageType)) {
-      addError("expected a message but was %s", name);
-      return ProtoType.BYTES; // Just return any placeholder.
+    if (messageOnly && resolved !is MessageType) {
+      addError("expected a message but was %s", name)
+      return ProtoType.BYTES // Just return any placeholder.
     }
 
-    requestedTypes.add(resolved.getType());
+    requestedTypes.add(resolved.type)
 
-    return resolved.getType();
+    return resolved.type!!
   }
 
-  <T> T resolve(String name, Map<String, T> map) {
+  fun <T> resolve(name: String, map: Map<String, T>): T? {
     if (name.startsWith(".")) {
       // If name starts with a '.', the rest of it is fully qualified.
-      T result = map.get(name.substring(1));
-      if (result != null) return result;
+      val result = map[name.substring(1)]
+      if (result != null) return result
     } else {
       // We've got a name suffix, like 'Person' or 'protos.Person'. Start the search from with the
       // longest prefix like foo.bar.Baz.Quux, shortening the prefix until we find a match.
-      String prefix = resolveContext();
-      while (!prefix.isEmpty()) {
-        T result = map.get(prefix + '.' + name);
-        if (result != null) return result;
+      var prefix = resolveContext()
+      while (prefix.isNotEmpty()) {
+        val result = map["$prefix.$name"]
+        if (result != null) return result
 
         // Strip the last nested class name or package name from the end and try again.
-        int dot = prefix.lastIndexOf('.');
-        prefix = dot != -1 ? prefix.substring(0, dot) : "";
+        val dot = prefix.lastIndexOf('.')
+        prefix = if (dot != -1) prefix.substring(0, dot) else ""
       }
-      T result = map.get(name);
-      if (result != null) return result;
+      val result = map[name]
+      if (result != null) return result
     }
-    return null;
+    return null
   }
 
-  private String resolveContext() {
-    for (int i = contextStack.size() - 1; i >= 0; i--) {
-      Object context = contextStack.get(i);
-      if (context instanceof Type) {
-        return ((Type) context).getType().toString();
-      } else if (context instanceof ProtoFile) {
-        String packageName = ((ProtoFile) context).packageName();
-        return packageName != null ? packageName : "";
-      } else if (context instanceof Field && ((Field) context).isExtension()) {
-        String packageName = ((Field) context).getPackageName();
-        return packageName != null ? packageName : "";
+  private fun resolveContext(): String {
+    for (i in contextStack.indices.reversed()) {
+      val context = contextStack[i]
+      when {
+        context is Type -> {
+          return context.type.toString()
+        }
+        context is ProtoFile -> {
+          val packageName = context.packageName()
+          return packageName ?: ""
+        }
+        context is Field && context.isExtension -> {
+          return context.packageName ?: ""
+        }
       }
     }
-    throw new IllegalStateException();
+    throw IllegalStateException()
   }
 
   /** Returns the current package name from the context stack. */
-  String packageName() {
-    for (Object context : contextStack) {
-      if (context instanceof ProtoFile) return ((ProtoFile) context).packageName();
+  fun packageName(): String? {
+    for (context in contextStack) {
+      if (context is ProtoFile) return context.packageName()
     }
-    return null;
+    return null
   }
 
   /**
    * Returns the files imported in the current context. These files declare the types that may be
    * resolved.
    */
-  List<FileLinker> contextImportedTypes() {
-    ImmutableList.Builder<FileLinker> result = ImmutableList.builder();
-
-    for (int i = contextStack.size() - 1; i >= 0; i--) {
-      Object context = contextStack.get(i);
-      if (context instanceof ProtoFile) {
-        String path = ((ProtoFile) context).location().getPath();
-        FileLinker fileLinker = getFileLinker(path);
-        for (String effectiveImport : fileLinker.effectiveImports()) {
-          result.add(getFileLinker(effectiveImport));
+  internal fun contextImportedTypes(): List<FileLinker> {
+    val result = mutableListOf<FileLinker>()
+    for (i in contextStack.indices.reversed()) {
+      val context = contextStack[i]
+      if (context is ProtoFile) {
+        val path = context.location().path
+        val fileLinker = getFileLinker(path)
+        for (effectiveImport in fileLinker.effectiveImports()) {
+          result.add(getFileLinker(effectiveImport))
         }
       }
     }
-
-    return result.build();
+    return result
   }
 
-  /** Adds {@code type}. */
-  void addType(ProtoType protoType, Type type) {
-    protoTypeNames.put(protoType.toString(), type);
+  /** Adds `type`. */
+  fun addType(protoType: ProtoType, type: Type) {
+    protoTypeNames[protoType.toString()] = type
   }
 
   /** Returns the type or null if it doesn't exist. */
-  Type get(ProtoType protoType) {
-    Type result = protoTypeNames.get(protoType.toString());
+  operator fun get(protoType: ProtoType): Type? {
+    var result = protoTypeNames[protoType.toString()]
 
     // If no type could be resolved, load imported files and try again.
     if (result == null) {
-      for (FileLinker fileLinker : contextImportedTypes()) {
-        fileLinker.requireTypesRegistered();
+      for (fileLinker in contextImportedTypes()) {
+        fileLinker.requireTypesRegistered()
       }
-      result = protoTypeNames.get(protoType.toString());
+      result = protoTypeNames[protoType.toString()]
     }
 
     if (result != null) {
-      requestedTypes.add(protoType);
+      requestedTypes.add(protoType)
     }
 
-    return result;
+    return result
   }
 
   /**
    * Returns the type or null if it doesn't exist. Before this returns it ensures members are linked
    * so that options may dereference them.
    */
-  Type getForOptions(ProtoType protoType) {
-    Type result = get(protoType);
-    if (result == null) return null;
+  fun getForOptions(protoType: ProtoType): Type? {
+    val result = get(protoType) ?: return null
 
-    FileLinker fileLinker = getFileLinker(result.getLocation().getPath());
-    fileLinker.requireMembersLinked(result);
-    return result;
+    val fileLinker = getFileLinker(result.location.path)
+    fileLinker.requireMembersLinked(result)
+    return result
   }
 
-  /** Returns the field named {@code field} on the message type of {@code self}. */
-  Field dereference(Field self, String field) {
+  /** Returns the field named `field` on the message type of `self`. */
+  fun dereference(
+    self: Field,
+    field: String
+  ): Field? {
+    @Suppress("NAME_SHADOWING") var field = field
     if (field.startsWith("[") && field.endsWith("]")) {
-      field = field.substring(1, field.length() - 1);
+      field = field.substring(1, field.length - 1)
     }
 
-    Type type = get(self.getType());
-    if (type instanceof MessageType) {
-      MessageType messageType = (MessageType) type;
-      Field messageField = messageType.field(field);
-      if (messageField != null) return messageField;
+    val type = get(self.type!!)
+    if (type is MessageType) {
+      val messageField = type.field(field)
+      if (messageField != null) return messageField
 
-      Map<String, Field> typeExtensions = messageType.extensionFieldsMap();
-      Field extensionField = resolve(field, typeExtensions);
-      if (extensionField != null) return extensionField;
+      val typeExtensions = type.extensionFieldsMap()
+      val extensionField = resolve(field, typeExtensions)
+      if (extensionField != null) return extensionField
     }
 
-    return null; // Unable to traverse this field path.
+    return null // Unable to traverse this field path.
   }
 
-  /** Validate that the tags of {@code fields} are unique and in range. */
-  void validateFields(Iterable<Field> fields, List<Reserved> reserveds) {
-    Multimap<Integer, Field> tagToField = LinkedHashMultimap.create();
-    Multimap<String, Field> nameToField = LinkedHashMultimap.create();
-    for (Field field : fields) {
-      int tag = field.getTag();
+  /** Validate that the tags of `fields` are unique and in range. */
+  fun validateFields(
+    fields: Iterable<Field>,
+    reserveds: List<Reserved>
+  ) {
+    val tagToField: Multimap<Int, Field> = LinkedHashMultimap.create()
+    val nameToField: Multimap<String, Field> = LinkedHashMultimap.create()
+
+    for (field in fields) {
+      val tag = field.tag
       if (!Util.isValidTag(tag)) {
-        withContext(field).addError("tag is out of range: %s", tag);
+        withContext(field).addError("tag is out of range: %s", tag)
       }
 
-      for (Reserved reserved : reserveds) {
+      for (reserved in reserveds) {
         if (reserved.matchesTag(tag)) {
-          withContext(field).addError("tag %s is reserved (%s)", tag, reserved.getLocation());
+          withContext(field).addError("tag %s is reserved (%s)", tag, reserved.location)
         }
-        if (reserved.matchesName(field.getName())) {
-          withContext(field).addError("name '%s' is reserved (%s)", field.getName(),
-              reserved.getLocation());
+        if (reserved.matchesName(field.name)) {
+          withContext(field).addError("name '%s' is reserved (%s)", field.name, reserved.location)
         }
       }
 
-      tagToField.put(tag, field);
-      nameToField.put(field.getQualifiedName(), field);
+      tagToField.put(tag, field)
+      nameToField.put(field.qualifiedName, field)
     }
 
-    for (Map.Entry<Integer, Collection<Field>> entry : tagToField.asMap().entrySet()) {
-      if (entry.getValue().size() > 1) {
-        StringBuilder error = new StringBuilder();
-        error.append(String.format("multiple fields share tag %s:", entry.getKey()));
-        int index = 1;
-        for (Field field : entry.getValue()) {
-          error.append(String.format("\n  %s. %s (%s)",
-              index++, field.getName(), field.getLocation()));
+    for ((key, value) in tagToField.asMap()) {
+      if (value.size > 1) {
+        val error = StringBuilder()
+        error.append("multiple fields share tag $key:")
+        var index = 1
+        for (field in value) {
+          error.append(String.format("\n  %s. %s (%s)", index++, field.name, field.location))
         }
-        addError("%s", error);
+        addError("%s", error)
       }
     }
 
-    for (Collection<Field> collidingFields : nameToField.asMap().values()) {
-      if (collidingFields.size() > 1) {
-        Field first = collidingFields.iterator().next();
-        StringBuilder error = new StringBuilder();
-        error.append(String.format("multiple fields share name %s:", first.getName()));
-        int index = 1;
-        for (Field field : collidingFields) {
-          error.append(String.format("\n  %s. %s (%s)",
-              index++, field.getName(), field.getLocation()));
+    for (collidingFields in nameToField.asMap().values) {
+      if (collidingFields.size > 1) {
+        val first = collidingFields.iterator().next()
+        val error = StringBuilder()
+        error.append(String.format("multiple fields share name %s:", first.name))
+        var index = 1
+        for (field in collidingFields) {
+          error.append(String.format("\n  %s. %s (%s)", index++, field.name, field.location))
         }
-        addError("%s", error);
+        addError("%s", error)
       }
     }
   }
 
-  void validateEnumConstantNameUniqueness(Iterable<Type> nestedTypes) {
-    Multimap<String, EnumType> nameToType = LinkedHashMultimap.create();
-    for (Type type : nestedTypes) {
-      if (type instanceof EnumType) {
-        EnumType enumType = (EnumType) type;
-        for (EnumConstant enumConstant : enumType.getConstants()) {
-          nameToType.put(enumConstant.getName(), enumType);
+  fun validateEnumConstantNameUniqueness(nestedTypes: Iterable<Type>) {
+    val nameToType: Multimap<String, EnumType> = LinkedHashMultimap.create()
+    for (type in nestedTypes) {
+      if (type is EnumType) {
+        for (enumConstant in type.constants) {
+          nameToType.put(enumConstant.name, type)
         }
       }
     }
 
-    for (Map.Entry<String, Collection<EnumType>> entry : nameToType.asMap().entrySet()) {
-      if (entry.getValue().size() > 1) {
-        StringBuilder error = new StringBuilder();
-        String constant = entry.getKey();
-        int index = 1;
-        error.append(String.format("multiple enums share constant %s:", constant));
-        for (EnumType enumType : entry.getValue()) {
-          error.append(String.format("\n  %s. %s.%s (%s)",
-              index++, enumType.getType(), constant, enumType.constant(constant).getLocation()));
+    for ((constant, value) in nameToType.asMap()) {
+      if (value.size > 1) {
+        val error = buildString {
+          var index = 1
+          append("multiple enums share constant $constant:")
+          for (enumType in value) {
+            append(String.format("\n  %s. %s.%s (%s)",
+                index++, enumType.type, constant, enumType.constant(constant)!!.location))
+          }
         }
-        addError("%s", error);
+        addError("%s", error)
       }
     }
   }
 
-  void validateImport(Location location, ProtoType type) {
+  fun validateImport(
+    location: Location,
+    type: ProtoType
+  ) {
+    @Suppress("NAME_SHADOWING") var type = type
+
     // Map key type is always scalar. No need to validate it.
-    if (type.isMap()) type = type.getValueType();
+    if (type.isMap) type = type.valueType!!
 
-    if (type.isScalar()) return;
+    if (type.isScalar) return
 
-    String path = location.getPath();
-    String requiredImport = get(type).getLocation().getPath();
-    FileLinker fileLinker = getFileLinker(path);
-    if (!path.equals(requiredImport) && !fileLinker.effectiveImports().contains(requiredImport)) {
-      addError("%s needs to import %s", path, requiredImport);
+    val path = location.path
+    val requiredImport = get(type)!!.location.path
+    val fileLinker = getFileLinker(path)
+    if (path != requiredImport && !fileLinker.effectiveImports().contains(requiredImport)) {
+      addError("%s needs to import %s", path, requiredImport)
     }
   }
 
-  /** Returns a new linker that uses {@code context} to resolve type names and report errors. */
-  Linker withContext(Object context) {
-    return new Linker(this, context);
+  /** Returns a new linker that uses `context` to resolve type names and report errors. */
+  fun withContext(context: Any): Linker {
+    return Linker(this, context)
   }
 
-  void addError(String format, Object... args) {
-    StringBuilder error = new StringBuilder();
-    error.append(String.format(format, args));
+  fun addError(format: String, vararg args: Any) {
+    val error = StringBuilder()
+    error.append(String.format(format, *args))
 
-    for (int i = contextStack.size() - 1; i >= 0; i--) {
-      Object context = contextStack.get(i);
-      String prefix = (i == contextStack.size() - 1) ? "\n  for" : "\n  in";
+    for (i in contextStack.indices.reversed()) {
+      val context = contextStack[i]
+      val prefix = if (i == contextStack.size - 1) "\n  for" else "\n  in"
 
-      if (context instanceof Rpc) {
-        Rpc rpc = (Rpc) context;
-        error.append(String.format("%s rpc %s (%s)", prefix, rpc.getName(), rpc.getLocation()));
+      when (context) {
+        is Rpc -> {
+          error.append(String.format("%s rpc %s (%s)", prefix, context.name, context.location))
+        }
 
-      } else if (context instanceof Extend) {
-        Extend extend = (Extend) context;
-        ProtoType type = extend.getType();
-        error.append(type != null
-            ? String.format("%s extend %s (%s)", prefix, type, extend.getLocation())
-            : String.format("%s extend (%s)", prefix, extend.getLocation()));
+        is Extend -> {
+          val type = context.type
+          error.append(
+              if (type != null) String.format("%s extend %s (%s)", prefix, type, context.location)
+              else String.format("%s extend (%s)", prefix, context.location))
+        }
 
-      } else if (context instanceof Field) {
-        Field field = (Field) context;
-        error.append(String.format(
-            "%s field %s (%s)", prefix, field.getName(), field.getLocation()));
+        is Field -> {
+          error.append(String.format("%s field %s (%s)", prefix, context.name, context.location))
+        }
 
-      } else if (context instanceof MessageType) {
-        MessageType message = (MessageType) context;
-        error.append(String.format("%s message %s (%s)",
-            prefix, message.getType(), message.getLocation()));
+        is MessageType -> {
+          error.append(String.format("%s message %s (%s)", prefix, context.type, context.location))
+        }
 
-      } else if (context instanceof EnumType) {
-        EnumType enumType = (EnumType) context;
-        error.append(String.format("%s enum %s (%s)",
-            prefix, enumType.getType(), enumType.getLocation()));
+        is EnumType -> {
+          error.append(String.format("%s enum %s (%s)", prefix, context.type, context.location))
+        }
 
-      } else if (context instanceof Service) {
-        Service service = (Service) context;
-        error.append(String.format("%s service %s (%s)",
-            prefix, service.type(), service.location()));
+        is Service -> {
+          error.append(
+              String.format("%s service %s (%s)", prefix, context.type(), context.location()))
+        }
 
-      } else if (context instanceof Extensions) {
-        Extensions extensions = (Extensions) context;
-        error.append(String.format("%s extensions (%s)",
-            prefix, extensions.getLocation()));
+        is Extensions -> {
+          error.append(String.format("%s extensions (%s)", prefix, context.location))
+        }
       }
     }
-
-    errors.add(error.toString());
+    errors.add(error.toString())
   }
 }

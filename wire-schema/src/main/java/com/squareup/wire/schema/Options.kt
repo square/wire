@@ -72,7 +72,7 @@ class Options(
 
   private fun canonicalizeOption(
     linker: Linker,
-    extensionType: ProtoType?,
+    extensionType: ProtoType,
     option: OptionElement
   ): Map<ProtoMember, Any>? {
     val type = linker.getForOptions(extensionType) as? MessageType
@@ -130,7 +130,7 @@ class Options(
         val result = ImmutableMap.builder<ProtoMember, Any>()
         val field = linker.dereference(context, value.name)
         if (field == null) {
-          linker.addError("unable to resolve option %s on %s", value.name, context.type)
+          linker.addError("unable to resolve option %s on %s", value.name, context.type!!)
         } else {
           val protoMember = get(context.type!!, field)
           result.put(protoMember, canonicalizeValue(linker, field, value.value))
@@ -144,7 +144,7 @@ class Options(
           val name = entry.key as String
           val field = linker.dereference(context, name)
           if (field == null) {
-            linker.addError("unable to resolve option %s on %s", name, context.type)
+            linker.addError("unable to resolve option %s on %s", name, context.type!!)
           } else {
             val protoMember = get(context.type!!, field)
             result.put(protoMember, canonicalizeValue(linker, field, entry.value!!))
