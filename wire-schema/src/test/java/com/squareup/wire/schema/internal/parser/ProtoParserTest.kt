@@ -512,7 +512,7 @@ class ProtoParserTest {
       ProtoParser.parse(location, proto)
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage(
-          "Syntax error in file.proto at 2:12: expected '//' or '/*'"
+          "Syntax error in file.proto at 2:13: expected '//' or '/*'"
       )
     }
   }
