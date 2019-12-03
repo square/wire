@@ -15,9 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableSet
-import com.google.common.collect.Sets
-
 /**
  * A heterogeneous set of rules to include and exclude types and members. If a member is included in
  * the set, its type is implicitly also included. A type that is included without a specific member
@@ -48,8 +45,8 @@ import com.google.common.collect.Sets
  * Despite the builder, instances of this class are not safe for concurrent use.
  */
 class IdentifierSet private constructor(builder: Builder) {
-  private val includes: ImmutableSet<String> = builder.includes.build()
-  private val excludes: ImmutableSet<String> = builder.excludes.build()
+  private val includes = builder.includes.toSet()
+  private val excludes = builder.excludes.toSet()
   private val usedIncludes = mutableSetOf<String>()
   private val usedExcludes = mutableSetOf<String>()
 
@@ -128,13 +125,13 @@ class IdentifierSet private constructor(builder: Builder) {
     }
   }
 
-  fun unusedIncludes(): Set<String> = Sets.difference(includes, usedIncludes)
+  fun unusedIncludes() = includes - usedIncludes
 
-  fun unusedExcludes(): Set<String> = Sets.difference(excludes, usedExcludes)
+  fun unusedExcludes() = excludes - usedExcludes
 
   class Builder {
-    internal val includes = ImmutableSet.builder<String>()
-    internal val excludes = ImmutableSet.builder<String>()
+    internal val includes = mutableSetOf<String>()
+    internal val excludes = mutableSetOf<String>()
 
     fun include(identifier: String) = apply {
       includes.add(identifier)
