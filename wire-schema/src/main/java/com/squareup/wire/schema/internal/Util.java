@@ -13,61 +13,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema.internal;
+package com.squareup.wire.schema.internal
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.OptionElement;
-import java.util.List;
+import com.squareup.wire.schema.internal.parser.OptionElement
 
-public final class Util {
-  public static final int MIN_TAG_VALUE = 1;
-  public static final int MAX_TAG_VALUE = (1 << 29) - 1; // 536,870,911
-  private static final int RESERVED_TAG_VALUE_START = 19000;
-  private static final int RESERVED_TAG_VALUE_END = 19999;
+object Util {
+  const val MIN_TAG_VALUE = 1
+  const val MAX_TAG_VALUE = (1 shl 29) - 1 // 536,870,911
 
-  public static void appendDocumentation(StringBuilder builder, String documentation) {
+  private const val RESERVED_TAG_VALUE_START = 19000
+  private const val RESERVED_TAG_VALUE_END = 19999
+
+  fun appendDocumentation(
+    builder: StringBuilder,
+    documentation: String
+  ) {
     if (documentation.isEmpty()) {
-      return;
+      return
     }
-    for (String line : documentation.split("\n")) {
-      builder.append("// ").append(line).append('\n');
+    for (line in documentation.split("\n")) {
+      builder.append("// ")
+          .append(line)
+          .append('\n')
     }
   }
 
-  public static void appendOptions(StringBuilder builder, List<OptionElement> options) {
-    int count = options.size();
+  fun appendOptions(
+    builder: StringBuilder,
+    options: List<OptionElement>
+  ) {
+    val count = options.size
     if (count == 1) {
-      builder.append("[").append(options.get(0).toSchema()).append(']');
-      return;
+      builder.append("[")
+          .append(options[0].toSchema())
+          .append(']')
+      return
     }
-
-    builder.append("[\n");
-    for (int i = 0; i < count; i++) {
-      String endl = (i < count - 1) ? "," : "";
-      appendIndented(builder, options.get(i).toSchema() + endl);
+    builder.append("[\n")
+    for (i in 0 until count) {
+      val endl = if (i < count - 1) "," else ""
+      appendIndented(builder, options[i].toSchema() + endl)
     }
-    builder.append(']');
+    builder.append(']')
   }
 
-  public static void appendIndented(StringBuilder builder, String value) {
-    for (String line : value.split("\n")) {
-      builder.append("  ").append(line).append('\n');
+  fun appendIndented(
+    builder: StringBuilder,
+    value: String
+  ) {
+    for (line in value.split("\n")) {
+      builder.append("  ")
+          .append(line)
+          .append('\n')
     }
   }
 
-  /** True if the supplied value is in the valid tag range and not reserved. */
-  public static boolean isValidTag(int value) {
-    return (value >= MIN_TAG_VALUE && value < RESERVED_TAG_VALUE_START)
-        || (value > RESERVED_TAG_VALUE_END && value <= MAX_TAG_VALUE);
-  }
+  /** True if the supplied value is in the valid tag range and not reserved.  */
+  fun isValidTag(value: Int) =
+    value in MIN_TAG_VALUE until RESERVED_TAG_VALUE_START ||
+        value in (RESERVED_TAG_VALUE_END + 1)..MAX_TAG_VALUE
 
-  public static <T> ImmutableList<T> concatenate(List<T> a, T b) {
-    return ImmutableList.<T>builder()
-        .addAll(a)
-        .add(b)
-        .build();
-  }
-
-  private Util() {
-  }
 }
