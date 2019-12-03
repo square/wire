@@ -150,7 +150,7 @@ data class WireRun(
       val sourceProtoFiles = schemaLoader.loadSourcePathFiles()
 
       // 2. Identify source files separately from path files.
-      val sourceLocationPaths = sourceProtoFiles.map { it.location().path }
+      val sourceLocationPaths = sourceProtoFiles.map { it.location.path }
 
       // 3. Validate the schema and resolve references
       val fullSchema = try {
@@ -172,13 +172,13 @@ data class WireRun(
     val servicesToHandle = mutableListOf<Service>()
     val skippedForSyntax = mutableListOf<ProtoFile>()
     for (protoFile in schema.protoFiles) {
-      if (protoFile.syntax() != ProtoFile.Syntax.PROTO_2) {
+      if (protoFile.syntax != ProtoFile.Syntax.PROTO_2) {
         skippedForSyntax += protoFile
         continue
       }
-      if (sourceLocationPaths.contains(protoFile.location().path)) {
-        typesToHandle += protoFile.types()
-        servicesToHandle += protoFile.services()
+      if (sourceLocationPaths.contains(protoFile.location.path)) {
+        typesToHandle += protoFile.types
+        servicesToHandle += protoFile.services
       }
     }
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
@@ -226,7 +226,7 @@ data class WireRun(
     if (skippedForSyntax.isNotEmpty()) {
       logger.info("""Skipped .proto files with unsupported syntax. Add this line to fix:
           |  syntax = "proto2";
-          |  ${skippedForSyntax.joinToString(separator = "\n  ") { it.location().toString() }}
+          |  ${skippedForSyntax.joinToString(separator = "\n  ") { it.location.toString() }}
           """.trimMargin())
     }
   }

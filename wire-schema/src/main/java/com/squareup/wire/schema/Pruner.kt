@@ -65,10 +65,10 @@ internal class Pruner(
   }
 
   private fun markRoots(protoFile: ProtoFile) {
-    for (type in protoFile.types()) {
+    for (type in protoFile.types) {
       markRootsIncludingNested(type)
     }
-    for (service in protoFile.services()) {
+    for (service in protoFile.services) {
       markRoots(service.type())
     }
   }

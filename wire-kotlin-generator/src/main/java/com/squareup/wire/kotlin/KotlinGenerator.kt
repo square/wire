@@ -1322,9 +1322,9 @@ class KotlinGenerator private constructor(
 
       for (protoFile in schema.getProtoFiles()) {
         val kotlinPackage = protoFile.kotlinPackage()
-        putAll(kotlinPackage, null, protoFile.types())
+        putAll(kotlinPackage, null, protoFile.types)
 
-        for (service in protoFile.services()) {
+        for (service in protoFile.services) {
           val className = ClassName(kotlinPackage, service.type().simpleName)
           map[service.type()] = className
         }
@@ -1335,4 +1335,4 @@ class KotlinGenerator private constructor(
   }
 }
 
-private fun ProtoFile.kotlinPackage() = javaPackage() ?: packageName() ?: ""
+private fun ProtoFile.kotlinPackage() = javaPackage() ?: packageName ?: ""

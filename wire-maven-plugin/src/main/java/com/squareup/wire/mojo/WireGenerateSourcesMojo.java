@@ -91,11 +91,12 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
           .withProfile(profile);
 
       for (ProtoFile protoFile : schema.getProtoFiles()) {
-        if (!protoFilesList.isEmpty() && !protoFilesList.contains(protoFile.location().getPath())) {
+        if (!protoFilesList.isEmpty()
+            && !protoFilesList.contains(protoFile.getLocation().getPath())) {
           continue; // Don't emit anything for files not explicitly compiled.
         }
 
-        for (Type type : protoFile.types()) {
+        for (Type type : protoFile.getTypes()) {
           Stopwatch stopwatch = Stopwatch.createStarted();
           TypeSpec typeSpec = javaGenerator.generateType(type);
           ClassName javaTypeName = javaGenerator.generatedTypeName(type);
@@ -146,7 +147,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
   private int countTypes(Schema prunedSchema) {
     int result = 0;
     for (ProtoFile protoFile : prunedSchema.getProtoFiles()) {
-      result += protoFile.types().size();
+      result += protoFile.getTypes().size();
     }
     return result;
   }

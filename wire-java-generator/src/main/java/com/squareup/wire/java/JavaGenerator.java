@@ -227,9 +227,9 @@ public final class JavaGenerator {
 
     for (ProtoFile protoFile : schema.getProtoFiles()) {
       String javaPackage = javaPackage(protoFile);
-      putAll(nameToJavaName, javaPackage, null, protoFile.types());
+      putAll(nameToJavaName, javaPackage, null, protoFile.getTypes());
 
-      for (Service service : protoFile.services()) {
+      for (Service service : protoFile.getServices()) {
         ClassName className = ClassName.get(javaPackage, service.type().getSimpleName());
         nameToJavaName.put(service.type(), className);
       }
@@ -319,8 +319,8 @@ public final class JavaGenerator {
     String javaPackage = protoFile.javaPackage();
     if (javaPackage != null) {
       return javaPackage;
-    } else if (protoFile.packageName() != null) {
-      return protoFile.packageName();
+    } else if (protoFile.getPackageName() != null) {
+      return protoFile.getPackageName();
     } else {
       return "";
     }

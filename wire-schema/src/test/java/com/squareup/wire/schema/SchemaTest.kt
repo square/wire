@@ -1125,7 +1125,7 @@ class SchemaTest {
              """.trimMargin()
         )
         .schema()
-    val extendB = schema.protoFiles[0].extendList()[0]
+    val extendB = schema.protoFiles[0].extendList[0]
     val b = schema.getType("pb.B") as MessageType
     assertThat(extendB.type).isEqualTo(b.type)
   }

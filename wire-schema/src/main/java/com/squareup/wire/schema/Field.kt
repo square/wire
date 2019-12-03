@@ -154,8 +154,8 @@ class Field private constructor(
 
   private fun isUsedAsOption(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Boolean {
     for (protoFile in schema.getProtoFiles()) {
-      if (protoFile.types().any { isUsedAsOption(markSet, enclosingType, it) }) return true
-      if (protoFile.services().any { isUsedAsOption(markSet, enclosingType, it) }) return true
+      if (protoFile.types.any { isUsedAsOption(markSet, enclosingType, it) }) return true
+      if (protoFile.services.any { isUsedAsOption(markSet, enclosingType, it) }) return true
     }
     return false
   }

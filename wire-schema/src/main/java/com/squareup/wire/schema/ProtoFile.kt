@@ -22,28 +22,17 @@ import com.squareup.wire.schema.Type.Companion.fromElements
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 
 class ProtoFile private constructor(
-  private val location: Location,
-  private val imports: List<String>,
-  private val publicImports: List<String>,
-  private val packageName: String?,
-  private val types: List<Type>,
-  private val services: List<Service>,
-  private val extendList: List<Extend>,
-  private val options: Options,
-  private val syntax: Syntax?
+  val location: Location,
+  val imports: List<String>,
+  val publicImports: List<String>,
+  val packageName: String?,
+  val types: List<Type>,
+  val services: List<Service>,
+  val extendList: List<Extend>,
+  val options: Options,
+  val syntax: Syntax?
 ) {
   private var javaPackage: Any? = null
-
-  // TODO(Benoit) Set all `val` as public and remove the redundant getters.
-  fun location(): Location = location
-  fun imports(): List<String> = imports
-  fun publicImports(): List<String> = publicImports
-  fun packageName(): String? = packageName
-  fun types(): List<Type> = types
-  fun services(): List<Service> = services
-  fun extendList(): List<Extend> = extendList
-  fun options(): Options = options
-  fun syntax(): Syntax? = syntax
 
   fun toElement(): ProtoFileElement {
     return ProtoFileElement(

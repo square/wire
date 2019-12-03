@@ -73,7 +73,7 @@ public final class ProfileLoader {
   public Profile load() throws IOException {
     Set<Location> protoLocations = new LinkedHashSet<>();
     for (ProtoFile protoFile : schema.getProtoFiles()) {
-      protoLocations.add(protoFile.location());
+      protoLocations.add(protoFile.getLocation());
     }
     Multimap<Path, String> pathsToAttempt = pathsToAttempt(protoLocations);
 
