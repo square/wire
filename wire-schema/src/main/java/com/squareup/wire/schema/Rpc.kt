@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.internal.parser.RpcElement
 
 class Rpc private constructor(
@@ -72,10 +71,9 @@ class Rpc private constructor(
 
   companion object {
     @JvmStatic
-    fun fromElements(elements: List<RpcElement>): ImmutableList<Rpc> {
-      val rpcs = ImmutableList.Builder<Rpc>()
-      for (element in elements) {
-        rpcs.add(Rpc(
+    fun fromElements(elements: List<RpcElement>): List<Rpc> {
+      return elements.map { element ->
+        Rpc(
             location = element.location,
             name = element.name,
             documentation = element.documentation,
@@ -84,16 +82,14 @@ class Rpc private constructor(
             requestStreaming = element.requestStreaming,
             responseStreaming = element.responseStreaming,
             options = Options(Options.METHOD_OPTIONS, element.options)
-        ))
+        )
       }
-      return rpcs.build()
     }
 
     @JvmStatic
-    fun toElements(rpcs: ImmutableList<Rpc>): ImmutableList<RpcElement> {
-      val elements = ImmutableList.Builder<RpcElement>()
-      for (rpc in rpcs) {
-        elements.add(RpcElement(
+    fun toElements(rpcs: List<Rpc>): List<RpcElement> {
+      return rpcs.map { rpc ->
+        RpcElement(
             location = rpc.location,
             name = rpc.name,
             documentation = rpc.documentation,
@@ -102,9 +98,8 @@ class Rpc private constructor(
             requestStreaming = rpc.requestStreaming,
             responseStreaming = rpc.responseStreaming,
             options = rpc.options.elements
-        ))
+        )
       }
-      return elements.build()
     }
   }
 }

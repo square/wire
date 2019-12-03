@@ -120,7 +120,7 @@ class Linker {
             requestedTypes.contains(type.type)
           }
       if (anyTypeIsUsed) {
-        result.add(fileLinker.protoFile.retainLinked(requestedTypes))
+        result.add(fileLinker.protoFile.retainLinked(requestedTypes as Set<ProtoType>))
       }
     }
 
