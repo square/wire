@@ -71,6 +71,6 @@ object Util {
   /** True if the supplied value is in the valid tag range and not reserved.  */
   fun isValidTag(value: Int) =
     value in MIN_TAG_VALUE until RESERVED_TAG_VALUE_START ||
-        value in (RESERVED_TAG_VALUE_END + 1)..MAX_TAG_VALUE
+        value in (RESERVED_TAG_VALUE_END + 1) until MAX_TAG_VALUE + 1
 
 }
