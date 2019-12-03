@@ -110,17 +110,17 @@ class Linker {
     val result = mutableListOf<ProtoFile>()
     for (fileLinker in fileLinkers.values) {
       if (sourceFiles.contains(fileLinker)) {
-        result.add(fileLinker.protoFile())
+        result.add(fileLinker.protoFile)
         continue
       }
 
       // Retain this type if it's used by anything in the source path.
-      val anyTypeIsUsed = fileLinker.protoFile().types()
+      val anyTypeIsUsed = fileLinker.protoFile.types()
           .any { type ->
             requestedTypes.contains(type.type)
           }
       if (anyTypeIsUsed) {
-        result.add(fileLinker.protoFile().retainLinked(requestedTypes))
+        result.add(fileLinker.protoFile.retainLinked(requestedTypes))
       }
     }
 
