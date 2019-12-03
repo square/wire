@@ -15,10 +15,8 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.EnumType.Companion.fromElement
 import com.squareup.wire.schema.MessageType.Companion.fromElement
-import com.squareup.wire.schema.ProtoType.Companion.get
 import com.squareup.wire.schema.internal.parser.EnumElement
 import com.squareup.wire.schema.internal.parser.MessageElement
 import com.squareup.wire.schema.internal.parser.TypeElement
@@ -57,13 +55,9 @@ abstract class Type {
     fun fromElements(
       packageName: String?,
       elements: List<TypeElement>
-    ): ImmutableList<Type> {
-      val types = ImmutableList.Builder<Type>()
-      for (element in elements) {
-        val protoType = get(packageName, element.name)
-        types.add(get(packageName, protoType, element))
-      }
-      return types.build()
+    ) = elements.map {
+      val protoType = ProtoType.get(packageName, it.name)
+      return@map this[packageName, protoType, it]
     }
 
     private fun toElement(type: Type): TypeElement {
@@ -76,12 +70,6 @@ abstract class Type {
     }
 
     @JvmStatic
-    fun toElements(types: List<Type>): ImmutableList<TypeElement> {
-      val elements = ImmutableList.Builder<TypeElement>()
-      for (type in types) {
-        elements.add(toElement(type))
-      }
-      return elements.build()
-    }
+    fun toElements(types: List<Type>) = types.map { toElement(it) }
   }
 }
