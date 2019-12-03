@@ -34,7 +34,7 @@ class Extend private constructor(
   fun link(linker: Linker) {
     val linker = linker.withContext(this)
     type = linker.resolveMessageType(name)
-    val type = linker[type]
+    val type = linker[type!!]
     if (type != null) {
       (type as MessageType).addExtensionFields(fields)
     }
@@ -42,7 +42,7 @@ class Extend private constructor(
 
   fun validate(linker: Linker) {
     val linker = linker.withContext(this)
-    linker.validateImport(location, type)
+    linker.validateImport(location, type!!)
   }
 
   fun retainAll(schema: Schema?, markSet: MarkSet?): Extend? {

@@ -64,7 +64,7 @@ final class FileLinker {
   private void addImportsRecursive(Set<String> sink, Collection<String> paths) {
     for (String path : paths) {
       if (sink.add(path)) {
-        FileLinker fileLinker = linker.getFileLinker(path);
+        FileLinker fileLinker = linker.getFileLinker$wire_schema(path);
         addImportsRecursive(sink, fileLinker.protoFile.publicImports());
       }
     }
@@ -104,7 +104,7 @@ final class FileLinker {
     if (importedExtensionsRegistered) return;
     importedExtensionsRegistered = true;
 
-    for (FileLinker importedFileLinker : linker.contextImportedTypes()) {
+    for (FileLinker importedFileLinker : linker.contextImportedTypes$wire_schema()) {
       importedFileLinker.requireExtensionsLinked();
     }
   }
