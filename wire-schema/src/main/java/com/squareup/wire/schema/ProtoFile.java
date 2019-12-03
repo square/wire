@@ -13,64 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.ProtoFileElement;
-import java.util.List;
-import java.util.Set;
+import com.squareup.wire.schema.Extend.Companion.fromElements
+import com.squareup.wire.schema.ProtoMember.Companion.get
+import com.squareup.wire.schema.Service.Companion.fromElements
+import com.squareup.wire.schema.Type.Companion.fromElements
+import com.squareup.wire.schema.internal.parser.ProtoFileElement
 
-import static com.squareup.wire.schema.Options.FILE_OPTIONS;
+class ProtoFile private constructor(
+  private val location: Location,
+  private val imports: List<String>,
+  private val publicImports: List<String>,
+  private val packageName: String?,
+  private val types: List<Type>,
+  private val services: List<Service>,
+  private val extendList: List<Extend>,
+  private val options: Options,
+  private val syntax: Syntax?
+) {
+  private var javaPackage: Any? = null
 
-public final class ProtoFile {
-  static final ProtoMember JAVA_PACKAGE = ProtoMember.get(FILE_OPTIONS, "java_package");
+  // TODO(Benoit) Set all `val` as public and remove the redundant getters.
+  fun location(): Location = location
+  fun imports(): List<String> = imports
+  fun publicImports(): List<String> = publicImports
+  fun packageName(): String? = packageName
+  fun types(): List<Type> = types
+  fun services(): List<Service> = services
+  fun extendList(): List<Extend> = extendList
+  fun options(): Options = options
+  fun syntax(): Syntax? = syntax
 
-  private final Location location;
-  private final List<String> imports;
-  private final List<String> publicImports;
-  private final String packageName;
-  private final List<Type> types;
-  private final List<Service> services;
-  private final List<Extend> extendList;
-  private final Options options;
-  private final Syntax syntax;
-  private Object javaPackage;
-
-  private ProtoFile(Location location, List<String> imports,
-      List<String> publicImports, String packageName, List<Type> types,
-      List<Service> services, List<Extend> extendList, Options options,
-      Syntax syntax) {
-    this.location = location;
-    this.imports = imports;
-    this.publicImports = publicImports;
-    this.packageName = packageName;
-    this.types = types;
-    this.services = services;
-    this.extendList = extendList;
-    this.options = options;
-    this.syntax = syntax;
-  }
-
-  static ProtoFile get(ProtoFileElement protoFileElement) {
-    String packageName = protoFileElement.getPackageName();
-
-    ImmutableList<Type> types = Type.fromElements(packageName, protoFileElement.getTypes());
-
-    ImmutableList<Service> services =
-        Service.fromElements(packageName, protoFileElement.getServices());
-
-    ImmutableList<Extend> wireExtends =
-        Extend.fromElements(packageName, protoFileElement.getExtendDeclarations());
-
-    Options options = new Options(Options.FILE_OPTIONS, protoFileElement.getOptions());
-
-    return new ProtoFile(protoFileElement.getLocation(), protoFileElement.getImports(),
-        protoFileElement.getPublicImports(), packageName, types, services, wireExtends, options,
-        protoFileElement.getSyntax());
-  }
-
-  ProtoFileElement toElement() {
-    return new ProtoFileElement(
+  fun toElement(): ProtoFileElement {
+    return ProtoFileElement(
         location,
         packageName,
         syntax,
@@ -79,207 +55,157 @@ public final class ProtoFile {
         Type.toElements(types),
         Service.toElements(services),
         Extend.toElements(extendList),
-        options.getElements()
-    );
-  }
-
-  public Location location() {
-    return location;
-  }
-
-  List<String> imports() {
-    return imports;
-  }
-
-  List<String> publicImports() {
-    return publicImports;
+        options.elements
+    )
   }
 
   /**
-   * Returns the name of this proto file, like {@code simple_message} for {@code
-   * squareup/protos/person/simple_message.proto}.
+   * Returns the name of this proto file, like `simple_message` for
+   * `squareup/protos/person/simple_message.proto`.
    */
-  public String name() {
-    String result = location().getPath();
+  fun name(): String {
+    var result = location.path
 
-    int slashIndex = result.lastIndexOf('/');
+    val slashIndex = result.lastIndexOf('/')
     if (slashIndex != -1) {
-      result = result.substring(slashIndex + 1);
+      result = result.substring(slashIndex + 1)
     }
 
     if (result.endsWith(".proto")) {
-      result = result.substring(0, result.length() - ".proto".length());
+      result = result.substring(0, result.length - ".proto".length)
     }
 
-    return result;
+    return result
   }
 
-  public String packageName() {
-    return packageName;
+  fun javaPackage(): String? {
+    return javaPackage?.toString()
   }
 
-  public Syntax syntax() {
-    return syntax;
-  }
+  /** Returns a new proto file that omits types and services not in `identifiers`. */
+  fun retainAll(schema: Schema, markSet: MarkSet): ProtoFile {
+    val retainedTypes = types.mapNotNull { it.retainAll(schema, markSet) }
 
-  public String javaPackage() {
-    return javaPackage != null ? String.valueOf(javaPackage) : null;
-  }
+    val retainedServices = services.mapNotNull { it.retainAll(schema, markSet) }
 
-  public List<Type> types() {
-    return types;
-  }
+    val retainedExtends = extendList.mapNotNull { it.retainAll(schema, markSet) }
 
-  public List<Service> services() {
-    return services;
-  }
+    val retainedOptions = options.retainAll(schema, markSet)
 
-  public List<Extend> extendList() {
-    return extendList;
-  }
-
-  public Options options() {
-    return options;
-  }
-
-  /** Returns a new proto file that omits types and services not in {@code identifiers}. */
-  ProtoFile retainAll(Schema schema, MarkSet markSet) {
-    ImmutableList.Builder<Type> retainedTypes = ImmutableList.builder();
-    for (Type type : types) {
-      Type retainedType = type.retainAll(schema, markSet);
-      if (retainedType != null) {
-        retainedTypes.add(retainedType);
-      }
-    }
-
-    ImmutableList.Builder<Service> retainedServices = ImmutableList.builder();
-    for (Service service : services) {
-      Service retainedService = service.retainAll(schema, markSet);
-      if (retainedService != null) {
-        retainedServices.add(retainedService);
-      }
-    }
-
-    ImmutableList.Builder<Extend> retainedExtends = ImmutableList.builder();
-    for (Extend extend : extendList) {
-      Extend retainedExtend = extend.retainAll(schema, markSet);
-      if (retainedExtend != null) {
-        retainedExtends.add(retainedExtend);
-      }
-    }
-
-    ProtoFile result = new ProtoFile(location, imports, publicImports, packageName,
-        retainedTypes.build(), retainedServices.build(), retainedExtends.build(),
-        options.retainAll(schema, markSet), syntax);
-    result.javaPackage = javaPackage;
-    return result;
+    val result = ProtoFile(location, imports, publicImports, packageName, retainedTypes,
+        retainedServices, retainedExtends, retainedOptions, syntax)
+    result.javaPackage = javaPackage
+    return result
   }
 
   /** Return a copy of this file with only the marked types. */
-  ProtoFile retainLinked(Set<ProtoType> linkedTypes) {
-    ImmutableList.Builder<Type> retainedTypes = ImmutableList.builder();
-    for (Type type : types) {
-      Type retained = type.retainLinked(linkedTypes);
-      if (retained != null) {
-        retainedTypes.add(retained);
-      }
-    }
+  fun retainLinked(linkedTypes: Set<ProtoType>): ProtoFile {
+    val retainedTypes = types.mapNotNull { it.retainLinked(linkedTypes) }
 
     // Other .proto files can't link to our services so strip them unconditionally.
-    ImmutableList<Service> retainedServices = ImmutableList.of();
+    val retainedServices = emptyList<Service>()
 
     // Strip the extends. They've already been applied to their target types.
-    ImmutableList<Extend> retainedExtends = ImmutableList.of();
+    val retainedExtends = emptyList<Extend>()
 
-    Options retainedOptions = options.retainLinked();
+    val retainedOptions = options.retainLinked()
 
-    ProtoFile result = new ProtoFile(location, imports, publicImports, packageName,
-        retainedTypes.build(), retainedServices, retainedExtends, retainedOptions, syntax);
-    result.javaPackage = javaPackage;
-    return result;
+    val result = ProtoFile(location, imports, publicImports, packageName, retainedTypes,
+        retainedServices, retainedExtends, retainedOptions, syntax)
+    result.javaPackage = javaPackage
+    return result
   }
 
-  public ProtoFile retainImports(List<ProtoFile> retained) {
-    ImmutableList.Builder<String> retainedImportsBuilder = ImmutableList.builder();
-    for (String path : imports) {
-      ProtoFile importedProtoFile = findProtoFile(retained, path);
-      if (importedProtoFile == null) continue;
+  fun retainImports(retained: List<ProtoFile>): ProtoFile {
+    val retainedImports = mutableListOf<String>()
+    for (path in imports) {
+      val importedProtoFile = findProtoFile(retained, path) ?: continue
 
-      if (importedProtoFile.types().isEmpty()
-          && importedProtoFile.services().isEmpty()
-          && importedProtoFile.extendList().isEmpty()) {
+      if (importedProtoFile.types.isEmpty() &&
+          importedProtoFile.services.isEmpty() &&
+          importedProtoFile.extendList.isEmpty()) {
 
         // If we extend a google protobuf type, we should keep the import.
-        if (path.equals("google/protobuf/descriptor.proto")) {
-          for (Extend extend : extendList) {
-            if (extend.getName().startsWith("google.protobuf.")) {
-              retainedImportsBuilder.add(path);
-              break;
+        if (path == "google/protobuf/descriptor.proto") {
+          for (extend in extendList) {
+            if (extend.name.startsWith("google.protobuf.")) {
+              retainedImports.add(path)
+              break
             }
           }
         }
+
       } else {
-        retainedImportsBuilder.add(path);
+        retainedImports.add(path)
       }
     }
-    ImmutableList<String> retainedImports = retainedImportsBuilder.build();
 
-    if (imports.size() != retainedImports.size()) {
-      ProtoFile result = new ProtoFile(location, retainedImports, publicImports, packageName,
-          types, services, extendList, options, syntax);
-      result.javaPackage = javaPackage;
-      return result;
+    return if (imports.size != retainedImports.size) {
+      val result = ProtoFile(location, retainedImports, publicImports, packageName, types, services,
+          extendList, options, syntax)
+      result.javaPackage = javaPackage
+      result
     } else {
-      return this;
+      this
     }
   }
 
-  private static ProtoFile findProtoFile(List<ProtoFile> protoFiles, String path) {
-    for (ProtoFile protoFile : protoFiles) {
-      if (protoFile.location().getPath().equals(path)) {
-        return protoFile;
-      }
-    }
-    return null;
+  fun linkOptions(linker: Linker) {
+    options.link(linker)
+    javaPackage = options[JAVA_PACKAGE]
   }
 
-  void linkOptions(Linker linker) {
-    options.link(linker);
-    javaPackage = options().get(JAVA_PACKAGE);
+  override fun toString(): String {
+    return location.path
   }
 
-  @Override public String toString() {
-    return location().getPath();
+  fun toSchema(): String {
+    return toElement().toSchema()
   }
 
-  public String toSchema() {
-    return toElement().toSchema();
-  }
-
-  void validate(Linker linker) {
-    linker.validateEnumConstantNameUniqueness(types);
+  fun validate(linker: Linker) {
+    linker.validateEnumConstantNameUniqueness(types)
   }
 
   /** Syntax version. */
-  public enum Syntax {
+  enum class Syntax(private val string: String) {
     PROTO_2("proto2"),
     PROTO_3("proto3");
 
-    private final String string;
+    override fun toString(): String = string
 
-    Syntax(String string) {
-      this.string = string;
-    }
-
-    public static Syntax get(String string) {
-      for (Syntax syntax : values()) {
-        if (syntax.string.equals(string)) return syntax;
+    companion object {
+      operator fun get(string: String): Syntax {
+        for (syntax in values()) {
+          if (syntax.string == string) return syntax
+        }
+        throw IllegalArgumentException("unexpected syntax: $string")
       }
-      throw new IllegalArgumentException("unexpected syntax: " + string);
     }
 
-    @Override public String toString() {
-      return string;
+  }
+
+  companion object {
+    val JAVA_PACKAGE = get(Options.FILE_OPTIONS, "java_package")
+
+    operator fun get(protoFileElement: ProtoFileElement): ProtoFile {
+      val packageName = protoFileElement.packageName
+
+      val types = fromElements(packageName, protoFileElement.types)
+
+      val services = fromElements(packageName, protoFileElement.services)
+
+      val wireExtends = fromElements(packageName, protoFileElement.extendDeclarations)
+
+      val options = Options(Options.FILE_OPTIONS, protoFileElement.options)
+
+      return ProtoFile(protoFileElement.location, protoFileElement.imports,
+          protoFileElement.publicImports, packageName, types, services, wireExtends, options,
+          protoFileElement.syntax)
+    }
+
+    private fun findProtoFile(protoFiles: List<ProtoFile>, path: String): ProtoFile? {
+      return protoFiles.find { it.location.path == path }
     }
   }
 }

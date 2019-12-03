@@ -13,134 +13,130 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+@file:Suppress("NAME_SHADOWING")
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.wire.schema.internal.parser.ServiceElement;
-import java.util.List;
+package com.squareup.wire.schema
 
-public final class Service {
-  private final ProtoType protoType;
-  private final Location location;
-  private final String name;
-  private final String documentation;
-  private final ImmutableList<Rpc> rpcs;
-  private final Options options;
+import com.squareup.wire.schema.ProtoMember.Companion.get
+import com.squareup.wire.schema.ProtoType.Companion.get
+import com.squareup.wire.schema.Rpc.Companion.fromElements
+import com.squareup.wire.schema.internal.parser.ServiceElement
 
-  private Service(ProtoType protoType, Location location, String documentation, String name,
-      ImmutableList<Rpc> rpcs, Options options) {
-    this.protoType = protoType;
-    this.location = location;
-    this.documentation = documentation;
-    this.name = name;
-    this.rpcs = rpcs;
-    this.options = options;
+class Service private constructor(
+  private val protoType: ProtoType,
+  private val location: Location,
+  private val documentation: String,
+  private val name: String,
+  private val rpcs: List<Rpc>,
+  private val options: Options
+) {
+  fun location(): Location {
+    return location
   }
 
-  static Service fromElement(ProtoType protoType, ServiceElement element) {
-    ImmutableList<Rpc> rpcs = Rpc.fromElements(element.getRpcs());
-    Options options = new Options(Options.SERVICE_OPTIONS, element.getOptions());
-
-    return new Service(protoType, element.getLocation(), element.getDocumentation(),
-        element.getName(), rpcs, options);
+  fun type(): ProtoType {
+    return protoType
   }
 
-  public Location location() {
-    return location;
+  fun documentation(): String {
+    return documentation
   }
 
-  public ProtoType type() {
-    return protoType;
+  fun name(): String {
+    return name
   }
 
-  public String documentation() {
-    return documentation;
+  fun rpcs(): List<Rpc> {
+    return rpcs
   }
 
-  public String name() {
-    return name;
+  /** Returns the RPC named `name`, or null if this service has no such method.  */
+  fun rpc(name: String): Rpc? {
+    return rpcs.find { it.name == name }
   }
 
-  public ImmutableList<Rpc> rpcs() {
-    return rpcs;
+  fun options(): Options {
+    return options
   }
 
-  /** Returns the RPC named {@code name}, or null if this service has no such method. */
-  public Rpc rpc(String name) {
-    for (Rpc rpc : rpcs) {
-      if (rpc.getName().equals(name)) {
-        return rpc;
-      }
-    }
-    return null;
-  }
-
-  public Options options() {
-    return options;
-  }
-
-  void link(Linker linker) {
-    linker = linker.withContext(this);
-    for (Rpc rpc : rpcs) {
-      rpc.link(linker);
+  fun link(linker: Linker) {
+    var linker = linker
+    linker = linker.withContext(this)
+    for (rpc in rpcs) {
+      rpc.link(linker)
     }
   }
 
-  void linkOptions(Linker linker) {
-    linker = linker.withContext(this);
-    for (Rpc rpc : rpcs) {
-      rpc.linkOptions(linker);
+  fun linkOptions(linker: Linker) {
+    var linker = linker
+    linker = linker.withContext(this)
+    for (rpc in rpcs) {
+      rpc.linkOptions(linker)
     }
-    options.link(linker);
+    options.link(linker)
   }
 
-  void validate(Linker linker) {
-    linker = linker.withContext(this);
-    for (Rpc rpc : rpcs) {
-      rpc.validate(linker);
+  fun validate(linker: Linker) {
+    var linker = linker
+    linker = linker.withContext(this)
+    for (rpc in rpcs) {
+      rpc.validate(linker)
     }
   }
 
-  Service retainAll(Schema schema, MarkSet markSet) {
+  fun retainAll(
+    schema: Schema,
+    markSet: MarkSet
+  ): Service? {
     // If this service is not retained, prune it.
     if (!markSet.contains(protoType)) {
-      return null;
+      return null
     }
 
-    ImmutableList.Builder<Rpc> retainedRpcs = ImmutableList.builder();
-    for (Rpc rpc : rpcs) {
-      Rpc retainedRpc = rpc.retainAll(schema, markSet);
-      if (retainedRpc != null && markSet.contains(ProtoMember.get(protoType, rpc.getName()))) {
-        retainedRpcs.add(retainedRpc);
+    val retainedRpcs = mutableListOf<Rpc>()
+    for (rpc in rpcs) {
+      val retainedRpc = rpc.retainAll(schema, markSet)
+      if (retainedRpc != null && markSet.contains(get(protoType, rpc.name))) {
+        retainedRpcs.add(retainedRpc)
       }
     }
 
-    return new Service(protoType, location, documentation, name, retainedRpcs.build(),
-        options.retainAll(schema, markSet));
+    return Service(protoType, location, documentation, name, retainedRpcs,
+        options.retainAll(schema, markSet))
   }
 
-  static ImmutableList<Service> fromElements(String packageName, List<ServiceElement> elements) {
-    ImmutableList.Builder<Service> services = ImmutableList.builder();
-    for (ServiceElement service : elements) {
-      ProtoType protoType = ProtoType.get(packageName, service.getName());
-      services.add(Service.fromElement(protoType, service));
-    }
-    return services.build();
-  }
+  companion object {
+    internal fun fromElement(
+      protoType: ProtoType,
+      element: ServiceElement
+    ): Service {
+      val rpcs = fromElements(element.rpcs)
+      val options = Options(Options.SERVICE_OPTIONS, element.options)
 
-  static ImmutableList<ServiceElement> toElements(List<Service> services) {
-    ImmutableList.Builder<ServiceElement> elements = new ImmutableList.Builder<>();
-    for (Service service : services) {
-      elements.add(
-          new ServiceElement(
-              service.location,
-              service.name,
-              service.documentation,
-              Rpc.toElements(service.rpcs),
-              service.options.getElements()
-          )
-      );
+      return Service(protoType, element.location, element.documentation, element.name, rpcs,
+          options)
     }
-    return elements.build();
+
+    @JvmStatic internal fun fromElements(
+      packageName: String?,
+      elements: List<ServiceElement>
+    ): List<Service> {
+      return elements.map { service ->
+        val protoType = get(packageName, service.name)
+        fromElement(protoType, service)
+      }
+    }
+
+    @JvmStatic internal fun toElements(services: List<Service>): List<ServiceElement> {
+      return services.map { service ->
+        ServiceElement(
+            service.location,
+            service.name,
+            service.documentation,
+            Rpc.toElements(service.rpcs),
+            service.options.elements
+        )
+      }
+    }
   }
 }
