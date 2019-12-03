@@ -21,7 +21,7 @@ import com.squareup.wire.schema.internal.parser.OneOfElement
 class OneOf private constructor(
   val name: String,
   val documentation: String,
-  val fields: ImmutableList<Field>
+  val fields: List<Field>
 ) {
   fun link(linker: Linker) {
     for (field in fields) {

@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.internal.parser.FieldElement
 
@@ -214,67 +213,46 @@ class Field private constructor(
       packageName: String?,
       fieldElements: List<FieldElement>,
       extension: Boolean
-    ): ImmutableList<Field> {
-      val fields = ImmutableList.builder<Field>()
-      for (element in fieldElements) {
-        fields.add(Field(
-            packageName = packageName,
-            location = element.location,
-            label = element.label,
-            name = element.name,
-            documentation = element.documentation,
-            tag = element.tag,
-            default = element.defaultValue,
-            elementType = element.type,
-            options = Options(FIELD_OPTIONS, element.options),
-            isExtension = extension
-        ))
-      }
-      return fields.build()
+    ) = fieldElements.map {
+      Field(
+          packageName = packageName,
+          location = it.location,
+          label = it.label,
+          name = it.name,
+          documentation = it.documentation,
+          tag = it.tag,
+          default = it.defaultValue,
+          elementType = it.type,
+          options = Options(FIELD_OPTIONS, it.options),
+          isExtension = extension
+      )
     }
 
     @JvmStatic
-    fun toElements(fields: List<Field>): ImmutableList<FieldElement> {
-      val elements = ImmutableList.Builder<FieldElement>()
-      for (field in fields) {
-        elements.add(FieldElement(
-            location = field.location,
-            label = field.label,
-            type = field.elementType,
-            name = field.name,
-            defaultValue = field.default,
-            tag = field.tag,
-            documentation = field.documentation,
-            options = field.options.elements
-        ))
-      }
-      return elements.build()
+    fun toElements(fields: List<Field>) = fields.map {
+      FieldElement(
+          location = it.location,
+          label = it.label,
+          type = it.elementType,
+          name = it.name,
+          defaultValue = it.default,
+          tag = it.tag,
+          documentation = it.documentation,
+          options = it.options.elements
+      )
     }
 
     @JvmStatic
-    fun retainLinked(fields: List<Field>): ImmutableList<Field> {
-      val result = ImmutableList.builder<Field>()
-      for (field in fields) {
-        // If the type is non-null, then the field has been linked.
-        if (field.type != null) {
-          result.add(field.withOptions(field.options.retainLinked()))
-        }
-      }
-      return result.build()
-    }
+    fun retainLinked(fields: List<Field>) = fields
+        .filter { it.type != null } // If the type is non-null, then the field has been linked.
+        .map { it.withOptions(it.options.retainLinked()) }
 
     @JvmStatic
     fun retainAll(
-      schema: Schema, markSet: MarkSet, enclosingType: ProtoType, fields: Collection<Field>
-    ): ImmutableList<Field> {
-      val result = ImmutableList.builder<Field>()
-      for (field in fields) {
-        val retainedField = field.retainAll(schema, markSet, enclosingType)
-        if (retainedField != null) {
-          result.add(retainedField)
-        }
-      }
-      return result.build()
-    }
+      schema: Schema,
+      markSet: MarkSet,
+      enclosingType: ProtoType,
+      fields: Collection<Field>
+    ) = fields.mapNotNull { it.retainAll(schema, markSet, enclosingType) }
   }
 }
