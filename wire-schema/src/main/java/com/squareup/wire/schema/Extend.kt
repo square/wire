@@ -15,10 +15,7 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
-import com.squareup.wire.schema.Field.Companion.fromElements
 import com.squareup.wire.schema.Field.Companion.retainAll
-import com.squareup.wire.schema.Field.Companion.toElements
 import com.squareup.wire.schema.internal.parser.ExtendElement
 
 class Extend private constructor(
@@ -56,30 +53,23 @@ class Extend private constructor(
     fun fromElements(
       packageName: String?,
       extendElements: List<ExtendElement>
-    ): ImmutableList<Extend> {
-      val extendBuilder = ImmutableList.Builder<Extend>()
-      for (element in extendElements) {
-        extendBuilder.add(Extend(
-            location = element.location,
-            documentation = element.documentation,
-            name = element.name,
-            fields = fromElements(packageName, element.fields, true)
-        ))
-      }
-      return extendBuilder.build()
+    ) = extendElements.map {
+      Extend(
+          location = it.location,
+          documentation = it.documentation,
+          name = it.name,
+          fields = Field.fromElements(packageName, it.fields, true)
+      )
     }
 
     @JvmStatic
-    fun toElements(extendList: List<Extend>): ImmutableList<ExtendElement> {
-      val elements = ImmutableList.Builder<ExtendElement>()
-      for (extend in extendList) {
-        elements.add(ExtendElement(
-            location = extend.location,
-            name = extend.name,
-            documentation = extend.documentation,
-            fields = toElements(extend.fields)))
-      }
-      return elements.build()
+    fun toElements(extendList: List<Extend>) = extendList.map {
+      ExtendElement(
+          location = it.location,
+          name = it.name,
+          documentation = it.documentation,
+          fields = Field.toElements(it.fields)
+      )
     }
   }
 }
