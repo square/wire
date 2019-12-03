@@ -40,7 +40,8 @@ class LinkerTest {
 
     assertThat(schema.getProtoFiles().map { it.location() }).containsExactly(
         Location.get("source-path", "a.proto"),
-        Location.get("proto-path", "b.proto")
+        Location.get("proto-path", "b.proto"),
+        Location.get("google/protobuf/descriptor.proto")
     )
   }
 
@@ -57,8 +58,10 @@ class LinkerTest {
             """.trimMargin())
     val schema = loadAndLinkSchema()
 
-    assertThat(schema.getProtoFiles().map { it.location() })
-        .containsExactly(Location.get("source-path", "a.proto"))
+    assertThat(schema.getProtoFiles().map { it.location() }).containsExactly(
+        Location.get("source-path", "a.proto"),
+        Location.get("google/protobuf/descriptor.proto")
+    )
   }
 
   @Test
@@ -146,6 +149,24 @@ class LinkerTest {
     assertThat(schema.getType("B")).isNotNull()
     assertThat(schema.getType("C")).isNull()
     assertThat(schema.getField("B", "c")).isNull()
+  }
+
+  @Test
+  fun javaPackageIsSetOnProtoPathFiles() {
+    fs.add("source-path/a.proto", """
+            |import "b.proto";
+            |message A {
+            |  optional B b = 1;
+            |}
+            """.trimMargin())
+    fs.add("proto-path/b.proto", """
+            |option java_package = "com.squareup.b";
+            |message B {
+            |}
+            """.trimMargin())
+    val schema = loadAndLinkSchema()
+
+    assertThat(schema.protoFile("b.proto").javaPackage()).isEqualTo("com.squareup.b")
   }
 
   private fun loadAndLinkSchema(): Schema {

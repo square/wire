@@ -19,14 +19,13 @@ import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoType.Companion.get
 import com.squareup.wire.schema.internal.Util
-import java.util.ArrayList
-import java.util.LinkedHashMap
-import java.util.LinkedHashSet
+import java.util.ArrayDeque
 
 /** Links local field types and option types to the corresponding declarations. */
 class Linker {
   private val loader: Loader
   private val fileLinkers: MutableMap<String, FileLinker>
+  private val fileOptionsQueue: ArrayDeque<FileLinker>
   private val protoTypeNames: MutableMap<String, Type>
   private val errors: MutableList<String>
   private val contextStack: List<Any>
@@ -34,20 +33,20 @@ class Linker {
 
   internal constructor(loader: Loader) {
     this.loader = loader
-    fileLinkers = LinkedHashMap()
-    protoTypeNames = LinkedHashMap()
+    fileLinkers = mutableMapOf()
+    fileOptionsQueue = ArrayDeque()
+    protoTypeNames = mutableMapOf()
     contextStack = emptyList()
-    errors = ArrayList()
-    requestedTypes = LinkedHashSet()
+    errors = mutableListOf()
+    requestedTypes = mutableSetOf()
   }
 
   private constructor(enclosing: Linker, additionalContext: Any) {
     loader = enclosing.loader
     fileLinkers = enclosing.fileLinkers
+    fileOptionsQueue = enclosing.fileOptionsQueue
     protoTypeNames = enclosing.protoTypeNames
-    contextStack =
-        Util.concatenate(enclosing.contextStack,
-            additionalContext)
+    contextStack = enclosing.contextStack + additionalContext
     errors = enclosing.errors
     requestedTypes = enclosing.requestedTypes
   }
@@ -60,6 +59,7 @@ class Linker {
     val protoFile = loader.load(path)
     val result = FileLinker(protoFile, withContext(protoFile))
     fileLinkers[path] = result
+    fileOptionsQueue += result
     return result
   }
 
@@ -97,6 +97,13 @@ class Linker {
 
     for (fileLinker in sourceFiles) {
       fileLinker.linkOptions()
+    }
+
+    // For compactness we'd prefer to link the options of source files only. But we link file
+    // options on referenced files to make sure that java_package is populated.
+    while (fileOptionsQueue.isNotEmpty()) {
+      val fileLinker = fileOptionsQueue.poll()
+      fileLinker.requireFileOptionsLinked()
     }
 
     for (fileLinker in sourceFiles) {

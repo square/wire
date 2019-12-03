@@ -27,6 +27,7 @@ internal class FileLinker(
   private var typesRegistered = false
   private var extensionsLinked = false
   private var importedExtensionsRegistered = false
+  private var fileOptionsLinked = false
   /** The set of types defined in this file whose members have been linked. */
   private val typesWithMembersLinked: MutableSet<ProtoType> = LinkedHashSet()
 
@@ -122,13 +123,20 @@ internal class FileLinker(
    * dependencies!
    */
   fun linkOptions() {
-    protoFile.linkOptions(linker)
+    requireFileOptionsLinked()
     for (type in protoFile.types()) {
       type.linkOptions(linker)
     }
     for (service in protoFile.services()) {
       service.linkOptions(linker)
     }
+  }
+
+  fun requireFileOptionsLinked() {
+    if (fileOptionsLinked) return
+    fileOptionsLinked = true
+
+    protoFile.linkOptions(linker)
   }
 
   fun validate() {
