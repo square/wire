@@ -17,7 +17,6 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.ProtoMember.Companion.get
 import java.util.ArrayDeque
-import java.util.ArrayList
 import java.util.Deque
 
 /**
@@ -28,7 +27,7 @@ internal class Pruner(
   private val schema: Schema,
   private val identifierSet: IdentifierSet
 ) {
-  private val marks: MarkSet = MarkSet(identifierSet)
+  private val marks = MarkSet(identifierSet)
   /**
    * [types][ProtoType] and [members][ProtoMember] whose immediate dependencies have not
    * yet been visited.
@@ -106,9 +105,8 @@ internal class Pruner(
    * object brings along more reachable objects.
    */
   private fun markReachable() {
-    var root: Any? = queue.poll()
-
-    while (root != null) {
+    while (true) {
+      val root: Any = queue.poll() ?: break
       val reachableMembers: List<Any?> = reachableObjects(root)
 
       for (reachable in reachableMembers) {
@@ -135,7 +133,6 @@ internal class Pruner(
           }
         }
       }
-      root = queue.poll()
     }
   }
 
@@ -146,7 +143,7 @@ internal class Pruner(
    * @param root either a [ProtoMember] or [ProtoType].
    */
   private fun reachableObjects(root: Any): List<Any?> {
-    val result: MutableList<Any?> = ArrayList()
+    val result = mutableListOf<Any?>()
     val options: Options
 
     when (root) {
@@ -238,6 +235,6 @@ internal class Pruner(
 
   private fun isExtensionField(protoMember: ProtoMember): Boolean {
     val type = schema.getType(protoMember.type)
-    return (type is MessageType && type.extensionField(protoMember.member) != null)
+    return type is MessageType && type.extensionField(protoMember.member) != null
   }
 }
