@@ -104,10 +104,10 @@ class Field private constructor(
   fun validate(linker: Linker) {
     val linker = linker.withContext(this)
     if (isPacked && !isPackable(linker, type!!)) {
-      linker.addError("packed=true not permitted on %s", type)
+      linker.addError("packed=true not permitted on %s", type!!)
     }
     if (isExtension && isRequired) {
-      linker.addError("extension fields cannot be required", type)
+      linker.addError("extension fields cannot be required", type!!)
     }
     linker.validateImport(location, type!!)
   }
