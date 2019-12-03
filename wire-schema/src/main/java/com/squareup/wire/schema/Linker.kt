@@ -71,7 +71,7 @@ class Linker {
     val sourceFiles = sourceProtoFiles.map { sourceFile ->
       FileLinker(sourceFile, withContext(sourceFile))
           .also { fileLinker ->
-            fileLinkers[sourceFile.location().path] = fileLinker
+            fileLinkers[sourceFile.location.path] = fileLinker
           }
     }
 
@@ -122,7 +122,7 @@ class Linker {
       }
 
       // Retain this type if it's used by anything in the source path.
-      val anyTypeIsUsed = fileLinker.protoFile.types()
+      val anyTypeIsUsed = fileLinker.protoFile.types
           .any { type ->
             requestedTypes.contains(type.type)
           }
@@ -218,7 +218,7 @@ class Linker {
           return context.type.toString()
         }
         context is ProtoFile -> {
-          val packageName = context.packageName()
+          val packageName = context.packageName
           return packageName ?: ""
         }
         context is Field && context.isExtension -> {
@@ -232,7 +232,7 @@ class Linker {
   /** Returns the current package name from the context stack. */
   fun packageName(): String? {
     for (context in contextStack) {
-      if (context is ProtoFile) return context.packageName()
+      if (context is ProtoFile) return context.packageName
     }
     return null
   }
@@ -246,7 +246,7 @@ class Linker {
     for (i in contextStack.indices.reversed()) {
       val context = contextStack[i]
       if (context is ProtoFile) {
-        val path = context.location().path
+        val path = context.location.path
         val fileLinker = getFileLinker(path)
         for (effectiveImport in fileLinker.effectiveImports()) {
           result.add(getFileLinker(effectiveImport))

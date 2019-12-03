@@ -37,7 +37,7 @@ class ProtoPruner(
       loader.loadSourcePathFiles()
     }
 
-    val sourcePaths = sourcePathFiles.map { it.location().path }.toSet()
+    val sourcePaths = sourcePathFiles.map { it.location.path }.toSet()
 
     val schema = Schema
         .fromFiles(sourcePathFiles)
@@ -45,11 +45,11 @@ class ProtoPruner(
 
     schema.getProtoFiles()
         .filter {
-          (it.location().path in sourcePaths) && it.isNotEmpty()
+          (it.location.path in sourcePaths) && it.isNotEmpty()
         }
         .forEach { protoFile ->
-          val relativePath = protoFile.location()?.path
-              ?.substringBeforeLast("/", missingDelimiterValue = ".")
+          val relativePath = protoFile.location.path
+              .substringBeforeLast("/", missingDelimiterValue = ".")
           val outFolder = File(outPath, relativePath)
           outFolder.mkdirs() // Ensure the directories to the file have been created.
 
@@ -60,7 +60,7 @@ class ProtoPruner(
   }
 
   private fun ProtoFile.isNotEmpty() =
-      types().isNotEmpty() || services().isNotEmpty() || extendList().isNotEmpty()
+      types.isNotEmpty() || services.isNotEmpty() || extendList.isNotEmpty()
 
   companion object {
     @JvmStatic fun main(vararg args: String) {

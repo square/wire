@@ -31,7 +31,7 @@ import java.util.Map;
 public final class Schema {
   private static final Ordering<ProtoFile> PATH_ORDER = new Ordering<ProtoFile>() {
     @Override public int compare(ProtoFile left, ProtoFile right) {
-      return left.location().getPath().compareTo(right.location().getPath());
+      return left.getLocation().getPath().compareTo(right.getLocation().getPath());
     }
   };
 
@@ -52,7 +52,7 @@ public final class Schema {
   /** Returns the proto file at {@code path}, or null if this schema has no such file. */
   public ProtoFile protoFile(String path) {
     for (ProtoFile protoFile : protoFiles) {
-      if (protoFile.location().getPath().equals(path)) {
+      if (protoFile.getLocation().getPath().equals(path)) {
         return protoFile;
       }
     }
@@ -128,7 +128,7 @@ public final class Schema {
   private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles) {
     Map<String, Type> result = new LinkedHashMap<>();
     for (ProtoFile protoFile : protoFiles) {
-      for (Type type : protoFile.types()) {
+      for (Type type : protoFile.getTypes()) {
         index(result, type);
       }
     }
@@ -145,7 +145,7 @@ public final class Schema {
   private static ImmutableMap<String, Service> buildServicesIndex(Iterable<ProtoFile> protoFiles) {
     ImmutableMap.Builder<String, Service> result = ImmutableMap.builder();
     for (ProtoFile protoFile : protoFiles) {
-      for (Service service : protoFile.services()) {
+      for (Service service : protoFile.getServices()) {
         result.put(service.type().toString(), service);
       }
     }

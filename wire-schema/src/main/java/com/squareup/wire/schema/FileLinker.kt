@@ -38,8 +38,8 @@ internal class FileLinker(
   fun effectiveImports(): Set<String> {
     if (effectiveImports == null) {
       val sink: MutableSet<String> = LinkedHashSet()
-      addImportsRecursive(sink, protoFile.imports())
-      addImportsRecursive(sink, protoFile.publicImports())
+      addImportsRecursive(sink, protoFile.imports)
+      addImportsRecursive(sink, protoFile.publicImports)
       effectiveImports = LinkedHashSet(sink)
     }
     return effectiveImports!!
@@ -52,7 +52,7 @@ internal class FileLinker(
     for (path in paths) {
       if (sink.add(path)) {
         val fileLinker = linker.getFileLinker(path)
-        addImportsRecursive(sink, fileLinker.protoFile.publicImports())
+        addImportsRecursive(sink, fileLinker.protoFile.publicImports)
       }
     }
   }
@@ -61,7 +61,7 @@ internal class FileLinker(
     if (typesRegistered) return
     typesRegistered = true
 
-    for (type in protoFile.types()) {
+    for (type in protoFile.types) {
       addTypes(type)
     }
   }
@@ -78,7 +78,7 @@ internal class FileLinker(
     extensionsLinked = true
 
     requireTypesRegistered()
-    for (extend in protoFile.extendList()) {
+    for (extend in protoFile.extendList) {
       extend.link(linker)
     }
   }
@@ -97,8 +97,8 @@ internal class FileLinker(
   }
 
   fun linkMembers() {
-    linkMembersRecursive(protoFile.types())
-    for (service in protoFile.services()) {
+    linkMembersRecursive(protoFile.types)
+    for (service in protoFile.services) {
       service.link(linker)
     }
   }
@@ -124,10 +124,10 @@ internal class FileLinker(
    */
   fun linkOptions() {
     requireFileOptionsLinked()
-    for (type in protoFile.types()) {
+    for (type in protoFile.types) {
       type.linkOptions(linker)
     }
-    for (service in protoFile.services()) {
+    for (service in protoFile.services) {
       service.linkOptions(linker)
     }
   }
@@ -142,13 +142,13 @@ internal class FileLinker(
   fun validate() {
     protoFile.validate(linker)
 
-    for (type in protoFile.types()) {
+    for (type in protoFile.types) {
       type.validate(linker)
     }
-    for (service in protoFile.services()) {
+    for (service in protoFile.services) {
       service.validate(linker)
     }
-    for (extend in protoFile.extendList()) {
+    for (extend in protoFile.extendList) {
       extend.validate(linker)
     }
   }

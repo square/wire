@@ -38,7 +38,7 @@ class LinkerTest {
             """.trimMargin())
     val schema = loadAndLinkSchema()
 
-    assertThat(schema.getProtoFiles().map { it.location() }).containsExactly(
+    assertThat(schema.getProtoFiles().map { it.location }).containsExactly(
         Location.get("source-path", "a.proto"),
         Location.get("proto-path", "b.proto"),
         Location.get("google/protobuf/descriptor.proto")
@@ -58,7 +58,7 @@ class LinkerTest {
             """.trimMargin())
     val schema = loadAndLinkSchema()
 
-    assertThat(schema.getProtoFiles().map { it.location() }).containsExactly(
+    assertThat(schema.getProtoFiles().map { it.location }).containsExactly(
         Location.get("source-path", "a.proto"),
         Location.get("google/protobuf/descriptor.proto")
     )

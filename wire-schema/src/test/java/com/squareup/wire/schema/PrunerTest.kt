@@ -1021,11 +1021,11 @@ class PrunerTest {
         .include("Message")
         .build())
 
-    assertThat(pruned.protoFile("footer.proto").types()).isEmpty()
-    assertThat(pruned.protoFile("title.proto").types()).isNotEmpty
+    assertThat(pruned.protoFile("footer.proto").types).isEmpty()
+    assertThat(pruned.protoFile("title.proto").types).isNotEmpty
 
     val message = pruned.protoFile("message.proto")
-    assertThat(message.imports()).containsExactly("title.proto")
+    assertThat(message.imports).containsExactly("title.proto")
   }
 
   @Test
