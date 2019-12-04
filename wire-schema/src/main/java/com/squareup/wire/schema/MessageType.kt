@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.Extensions.Companion.fromElements
 import com.squareup.wire.schema.Extensions.Companion.toElements
 import com.squareup.wire.schema.Field.Companion.fromElements
@@ -33,42 +32,21 @@ class MessageType private constructor(
   override val location: Location,
   override val documentation: String,
   private val name: String,
-  val declaredFields: ImmutableList<Field>,
+  val declaredFields: List<Field>,
   val extensionFields: MutableList<Field>,
-  val oneOfs: ImmutableList<OneOf>,
-  override val nestedTypes: ImmutableList<Type>,
+  val oneOfs: List<OneOf>,
+  override val nestedTypes: List<Type>,
   private val extensionsList: List<Extensions>,
   private val reserveds: List<Reserved>,
   override val options: Options
 ) : Type() {
-  fun fields(): ImmutableList<Field> {
-    return ImmutableList.builder<Field>()
-        .addAll(declaredFields)
-        .addAll(extensionFields)
-        .build()
-  }
+  fun fields() = declaredFields + extensionFields
 
-  val requiredFields: ImmutableList<Field>
-    get() {
-      val required = ImmutableList.builder<Field>()
-      for (field in fieldsAndOneOfFields) {
-        if (field.isRequired) {
-          required.add(field)
-        }
-      }
-      return required.build()
-    }
+  val requiredFields: List<Field>
+    get() = fieldsAndOneOfFields.filter { it.isRequired }
 
-  val fieldsAndOneOfFields: ImmutableList<Field>
-    get() {
-      val result = ImmutableList.builder<Field>()
-          .addAll(declaredFields)
-          .addAll(extensionFields)
-      for (oneOf in oneOfs) {
-        result.addAll(oneOf.fields)
-      }
-      return result.build()
-    }
+  val fieldsAndOneOfFields: List<Field>
+    get() = declaredFields + extensionFields + oneOfs.flatMap { it.fields }
 
   /** Returns the field named `name`, or null if this type has no such field. */
   fun field(name: String): Field? {
@@ -92,7 +70,7 @@ class MessageType private constructor(
    * such field.
    */
   fun extensionField(qualifiedName: String): Field? =
-      extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
+    extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
 
   /** Returns the field tagged `tag`, or null if this type has no such field.  */
   fun field(tag: Int): Field? {
@@ -171,14 +149,7 @@ class MessageType private constructor(
     schema: Schema,
     markSet: MarkSet
   ): Type? {
-    val retainedNestedTypesBuilder = ImmutableList.builder<Type>()
-    for (nestedType in nestedTypes) {
-      val retainedNestedType = nestedType.retainAll(schema, markSet)
-      if (retainedNestedType != null) {
-        retainedNestedTypesBuilder.add(retainedNestedType)
-      }
-    }
-    val retainedNestedTypes = retainedNestedTypesBuilder.build()
+    val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
     if (!markSet.contains(type)) {
       return when {
         // This type is not retained, and none of its nested types are retained, prune it.
@@ -187,21 +158,16 @@ class MessageType private constructor(
         else -> EnclosingType(location, type, documentation, retainedNestedTypes)
       }
     }
-    val retainedOneOfsBuilder = ImmutableList.builder<OneOf>()
-    for (oneOf in oneOfs) {
-      val retainedOneOf = oneOf.retainAll(schema, markSet, type)
-      if (retainedOneOf != null) {
-        retainedOneOfsBuilder.add(retainedOneOf)
-      }
-    }
-    val retainedOneOfs = retainedOneOfsBuilder.build()
+
+    val retainedOneOfs = oneOfs.mapNotNull { it.retainAll(schema, markSet, type) }
+
     return MessageType(
         type = type,
         location = location,
         documentation = documentation,
         name = name,
         declaredFields = retainAll(schema, markSet, type, declaredFields),
-        extensionFields = retainAll(schema, markSet, type, extensionFields),
+        extensionFields = retainAll(schema, markSet, type, extensionFields).toMutableList(),
         oneOfs = retainedOneOfs,
         nestedTypes = retainedNestedTypes,
         extensionsList = extensionsList,
@@ -211,14 +177,8 @@ class MessageType private constructor(
   }
 
   override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
-    val retainedNestedTypesBuilder = ImmutableList.builder<Type>()
-    for (nestedType in nestedTypes) {
-      val retainedNestedType = nestedType.retainLinked(linkedTypes)
-      if (retainedNestedType != null) {
-        retainedNestedTypesBuilder.add(retainedNestedType)
-      }
-    }
-    val retainedNestedTypes = retainedNestedTypesBuilder.build()
+    val retainedNestedTypes = nestedTypes.mapNotNull { it.retainLinked(linkedTypes) }
+
     if (!linkedTypes.contains(type)) {
       return when {
         // This type is not retained, and none of its nested types are retained, prune it.
@@ -227,25 +187,21 @@ class MessageType private constructor(
         else -> EnclosingType(location, type, documentation, retainedNestedTypes)
       }
     }
+
     // We're retaining this type. Retain its fields and oneofs.
-    val retainedOneOfsBuilder = ImmutableList.builder<OneOf>()
-    for (oneOf in oneOfs) {
-      val retainedOneOf = oneOf.retainLinked()
-      if (retainedOneOf != null) {
-        retainedOneOfsBuilder.add(retainedOneOf)
-      }
-    }
+    val retainedOneOfs = oneOfs.mapNotNull { it.retainLinked() }
+
     return MessageType(
         type = type,
         location = location,
         documentation = documentation,
         name = name,
         declaredFields = retainLinked(declaredFields),
-        extensionFields = retainLinked(extensionFields),
-        oneOfs = retainedOneOfsBuilder.build(),
+        extensionFields = retainLinked(extensionFields).toMutableList(),
+        oneOfs = retainedOneOfs,
         nestedTypes = retainedNestedTypes,
-        extensionsList = ImmutableList.of(),
-        reserveds = ImmutableList.of(),
+        extensionsList = emptyList(),
+        reserveds = emptyList(),
         options = options.retainLinked()
     )
   }
@@ -274,10 +230,8 @@ class MessageType private constructor(
       check(messageElement.groups.isEmpty()) {
         "${messageElement.groups[0].location}: 'group' is not supported"
       }
-      val nestedTypes = ImmutableList.builder<Type>()
-      for (nestedType in messageElement.nestedTypes) {
-        nestedTypes.add(get(packageName, protoType.nestedType(nestedType.name), nestedType))
-      }
+      val nestedTypes =
+        messageElement.nestedTypes.map { Type[packageName, protoType.nestedType(it.name), it] }
       return MessageType(
           type = protoType,
           location = messageElement.location,
@@ -286,7 +240,7 @@ class MessageType private constructor(
           declaredFields = fromElements(packageName, messageElement.fields, false),
           extensionFields = mutableListOf(), // Extension fields are populated during linking.
           oneOfs = fromElements(packageName, messageElement.oneOfs, false),
-          nestedTypes = nestedTypes.build(),
+          nestedTypes = nestedTypes,
           extensionsList = fromElements(messageElement.extensions),
           reserveds = fromElements(messageElement.reserveds),
           options = Options(Options.MESSAGE_OPTIONS, messageElement.options)

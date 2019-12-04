@@ -15,13 +15,12 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
 import com.squareup.wire.schema.internal.parser.OneOfElement
 
 class OneOf private constructor(
   val name: String,
   val documentation: String,
-  val fields: ImmutableList<Field>
+  val fields: List<Field>
 ) {
   fun link(linker: Linker) {
     for (field in fields) {
@@ -57,34 +56,28 @@ class OneOf private constructor(
       packageName: String?,
       elements: List<OneOfElement>,
       extension: Boolean
-    ): ImmutableList<OneOf> {
-      val oneOfs = ImmutableList.builder<OneOf>()
-      for (element in elements) {
-        if (element.groups.isNotEmpty()) {
-          val (_, location) = element.groups[0]
-          throw IllegalStateException("$location: 'group' is not supported")
-        }
-        oneOfs.add(OneOf(
-            name = element.name,
-            documentation = element.documentation,
-            fields = Field.fromElements(packageName, element.fields, extension)
-        ))
+    ) = elements.map {
+      if (it.groups.isNotEmpty()) {
+        val (_, location) = it.groups[0]
+        throw IllegalStateException("$location: 'group' is not supported")
       }
-      return oneOfs.build()
+
+      return@map OneOf(
+          name = it.name,
+          documentation = it.documentation,
+          fields = Field.fromElements(packageName, it.fields, extension)
+      )
     }
 
     @JvmStatic
-    fun toElements(oneOfs: ImmutableList<OneOf>): ImmutableList<OneOfElement> {
-      val elements = ImmutableList.Builder<OneOfElement>()
-      for (oneOf in oneOfs) {
-        elements.add(OneOfElement(
-            name = oneOf.name,
-            documentation = oneOf.documentation,
-            fields = Field.toElements(oneOf.fields),
+    fun toElements(oneOfs: List<OneOf>) =
+      oneOfs.map {
+        OneOfElement(
+            name = it.name,
+            documentation = it.documentation,
+            fields = Field.toElements(it.fields),
             groups = emptyList()
-        ))
+        )
       }
-      return elements.build()
-    }
   }
 }

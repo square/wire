@@ -160,7 +160,7 @@ public final class JavaGenerator {
           nameAllocator.newName("CREATOR", "CREATOR");
         }
 
-        ImmutableList<Field> fieldsAndOneOfFields = ((MessageType) type).getFieldsAndOneOfFields();
+        List<Field> fieldsAndOneOfFields = ((MessageType) type).getFieldsAndOneOfFields();
         Set<String> collidingNames = collidingFieldNames(fieldsAndOneOfFields);
         for (Field field : fieldsAndOneOfFields) {
           String suggestion = collidingNames.contains(field.getName())
@@ -693,7 +693,7 @@ public final class JavaGenerator {
   }
 
   /** Returns the set of names that are not unique within {@code fields}. */
-  private Set<String> collidingFieldNames(ImmutableList<Field> fields) {
+  private Set<String> collidingFieldNames(List<Field> fields) {
     Set<String> fieldNames = new LinkedHashSet<>();
     Set<String> collidingNames = new LinkedHashSet<>();
     for (Field field : fields) {
