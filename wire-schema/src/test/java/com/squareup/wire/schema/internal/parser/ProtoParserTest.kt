@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.Range
 import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REPEATED
 import com.squareup.wire.schema.Field.Label.REQUIRED
@@ -2193,7 +2192,7 @@ class ProtoParserTest {
         reserveds = listOf(
             ReservedElement(
                 location = location.at(2, 3),
-                values = listOf(10, Range.closed(12, 14), "foo")
+                values = listOf(10, 12..14, "foo")
             )
         )
     )

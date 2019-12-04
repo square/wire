@@ -15,14 +15,13 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.Range
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.Util.appendDocumentation
 
 data class ReservedElement(
   val location: Location,
   val documentation: String = "",
-  /** A [String] name or [Integer] or [Range<Int>][Range] tag. */
+  /** A [String] name or [Integer] or [IntRange] tag. */
   val values: List<Any>
 ) {
   fun toSchema() = buildString {
@@ -37,10 +36,7 @@ data class ReservedElement(
       when (reservation) {
         is String -> append("\"$reservation\"")
         is Int -> append(reservation)
-        is Range<*> -> {
-          val range = reservation as Range<Int>
-          append("${range.lowerEndpoint()} to ${range.upperEndpoint()}")
-        }
+        is IntRange -> append("${reservation.first} to ${reservation.last}")
         else -> throw AssertionError()
       }
     }

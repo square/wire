@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.Range
 import com.squareup.wire.schema.internal.parser.ReservedElement
 
 class Reserved(
@@ -24,7 +23,7 @@ class Reserved(
   val values: List<Any>
 ) {
   fun matchesTag(tag: Int) = values.any {
-    it is Int && tag == it || (it as? Range<Int>)?.contains(tag) == true
+    it is Int && tag == it || (it as? IntRange)?.contains(tag) == true
   }
 
   fun matchesName(name: String) = values.any { it is String && name == it }

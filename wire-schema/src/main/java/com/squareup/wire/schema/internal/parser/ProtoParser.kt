@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.google.common.collect.ImmutableList
-import com.google.common.collect.Range
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
@@ -28,12 +26,12 @@ class ProtoParser internal constructor(
   data: CharArray
 ) {
   private val reader: SyntaxReader = SyntaxReader(data, location)
-  private val publicImports = ImmutableList.builder<String>()
-  private val imports = ImmutableList.builder<String>()
-  private val nestedTypes = ImmutableList.builder<TypeElement>()
-  private val services = ImmutableList.builder<ServiceElement>()
-  private val extendsList = ImmutableList.builder<ExtendElement>()
-  private val options = ImmutableList.builder<OptionElement>()
+  private val publicImports = mutableListOf<String>()
+  private val imports = mutableListOf<String>()
+  private val nestedTypes = mutableListOf<TypeElement>()
+  private val services = mutableListOf<ServiceElement>()
+  private val extendsList = mutableListOf<ExtendElement>()
+  private val options = mutableListOf<OptionElement>()
 
   /** The number of declarations defined in the current file. */
   private var declarationCount = 0
@@ -55,12 +53,12 @@ class ProtoParser internal constructor(
             location = location,
             packageName = packageName,
             syntax = syntax,
-            imports = imports.build(),
-            publicImports = publicImports.build(),
-            types = nestedTypes.build(),
-            services = services.build(),
-            extendDeclarations = extendsList.build(),
-            options = options.build()
+            imports = imports,
+            publicImports = publicImports,
+            types = nestedTypes,
+            services = services,
+            extendDeclarations = extendsList,
+            options = options
         )
       }
 
@@ -163,13 +161,13 @@ class ProtoParser internal constructor(
     documentation: String
   ): MessageElement {
     val name = reader.readName()
-    val fields = ImmutableList.builder<FieldElement>()
-    val oneOfs = ImmutableList.builder<OneOfElement>()
-    val nestedTypes = ImmutableList.builder<TypeElement>()
-    val extensions = ImmutableList.builder<ExtensionsElement>()
-    val options = ImmutableList.builder<OptionElement>()
-    val reserveds = ImmutableList.builder<ReservedElement>()
-    val groups = ImmutableList.builder<GroupElement>()
+    val fields = mutableListOf<FieldElement>()
+    val oneOfs = mutableListOf<OneOfElement>()
+    val nestedTypes = mutableListOf<TypeElement>()
+    val extensions = mutableListOf<ExtensionsElement>()
+    val options = mutableListOf<OptionElement>()
+    val reserveds = mutableListOf<ReservedElement>()
+    val groups = mutableListOf<GroupElement>()
 
     val previousPrefix = prefix
     prefix = "$prefix$name."
@@ -198,20 +196,20 @@ class ProtoParser internal constructor(
         location = location,
         name = name,
         documentation = documentation,
-        nestedTypes = nestedTypes.build(),
-        options = options.build(),
-        reserveds = reserveds.build(),
-        fields = fields.build(),
-        oneOfs = oneOfs.build(),
-        extensions = extensions.build(),
-        groups = groups.build()
+        nestedTypes = nestedTypes,
+        options = options,
+        reserveds = reserveds,
+        fields = fields,
+        oneOfs = oneOfs,
+        extensions = extensions,
+        groups = groups
     )
   }
 
   /** Reads an extend declaration. */
   private fun readExtend(location: Location, documentation: String): ExtendElement {
     val name = reader.readName()
-    val fields = ImmutableList.builder<FieldElement>()
+    val fields = mutableListOf<FieldElement>()
 
     reader.require('{')
     while (true) {
@@ -228,15 +226,15 @@ class ProtoParser internal constructor(
         location = location,
         name = name,
         documentation = documentation,
-        fields = fields.build()
+        fields = fields
     )
   }
 
   /** Reads a service declaration and returns it. */
   private fun readService(location: Location, documentation: String): ServiceElement {
     val name = reader.readName()
-    val rpcs = ImmutableList.builder<RpcElement>()
-    val options = ImmutableList.builder<OptionElement>()
+    val rpcs = mutableListOf<RpcElement>()
+    val options = mutableListOf<OptionElement>()
 
     reader.require('{')
     while (true) {
@@ -254,8 +252,8 @@ class ProtoParser internal constructor(
         location = location,
         name = name,
         documentation = documentation,
-        rpcs = rpcs.build(),
-        options = options.build()
+        rpcs = rpcs,
+        options = options
     )
   }
 
@@ -265,8 +263,8 @@ class ProtoParser internal constructor(
     documentation: String
   ): EnumElement {
     val name = reader.readName()
-    val constants = ImmutableList.builder<EnumConstantElement>()
-    val options = ImmutableList.builder<OptionElement>()
+    val constants = mutableListOf<EnumConstantElement>()
+    val options = mutableListOf<OptionElement>()
 
     reader.require('{')
     while (true) {
@@ -280,7 +278,7 @@ class ProtoParser internal constructor(
       }
     }
 
-    return EnumElement(location, name, documentation, options.build(), constants.build())
+    return EnumElement(location, name, documentation, options, constants)
   }
 
   private fun readField(documentation: String, location: Location, word: String): Any {
@@ -379,8 +377,8 @@ class ProtoParser internal constructor(
 
   private fun readOneOf(documentation: String): OneOfElement {
     val name = reader.readName()
-    val fields = ImmutableList.builder<FieldElement>()
-    val groups = ImmutableList.builder<GroupElement>()
+    val fields = mutableListOf<FieldElement>()
+    val groups = mutableListOf<GroupElement>()
 
     reader.require('{')
     while (true) {
@@ -397,8 +395,8 @@ class ProtoParser internal constructor(
     return OneOfElement(
         name = name,
         documentation = documentation,
-        fields = fields.build(),
-        groups = groups.build()
+        fields = fields,
+        groups = groups
     )
   }
 
@@ -410,7 +408,7 @@ class ProtoParser internal constructor(
     val name = reader.readWord()
     reader.require('=')
     val tag = reader.readInt()
-    val fields = ImmutableList.builder<FieldElement>()
+    val fields = mutableListOf<FieldElement>()
 
     reader.require('{')
     while (true) {
@@ -431,29 +429,27 @@ class ProtoParser internal constructor(
         name = name,
         tag = tag,
         documentation = documentation,
-        fields = fields.build()
+        fields = fields
     )
   }
 
   /** Reads a reserved tags and names list like "reserved 10, 12 to 14, 'foo';". */
   private fun readReserved(location: Location, documentation: String): ReservedElement {
-    val valuesBuilder = ImmutableList.builder<Any>()
+    val values = mutableListOf<Any>()
 
     loop@ while (true) {
       when (reader.peekChar()) {
-        '"', '\'' -> {
-          valuesBuilder.add(reader.readQuotedString())
-        }
+        '"', '\'' -> values.add(reader.readQuotedString())
 
         else -> {
           val tagStart = reader.readInt()
           when (reader.peekChar()) {
-            ',', ';' -> valuesBuilder.add(tagStart)
+            ',', ';' -> values.add(tagStart)
 
             else -> {
               reader.expect(reader.readWord() == "to", location) { "expected ',', ';', or 'to'" }
               val tagEnd = reader.readInt()
-              valuesBuilder.add(Range.closed(tagStart, tagEnd))
+              values.add(tagStart..tagEnd)
             }
           }
         }
@@ -466,7 +462,6 @@ class ProtoParser internal constructor(
       }
     }
 
-    val values = valuesBuilder.build()
     reader.expect(values.isNotEmpty(), location) {
       "'reserved' must have at least one field name or tag"
     }
@@ -548,7 +543,7 @@ class ProtoParser internal constructor(
     }
     reader.require(')')
 
-    val options = ImmutableList.builder<OptionElement>()
+    val options = mutableListOf<OptionElement>()
     if (reader.peekChar('{')) {
       while (true) {
         val rpcDocumentation = reader.readDocumentation()
@@ -571,7 +566,7 @@ class ProtoParser internal constructor(
         responseType = responseType,
         requestStreaming = requestStreaming,
         responseStreaming = responseStreaming,
-        options = options.build()
+        options = options
     )
   }
 
