@@ -17,11 +17,9 @@ package com.squareup.wire.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.file.SourceDirectorySetFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
-import javax.inject.Inject
 
 class WirePlugin : Plugin<Project> {
   private var kotlin = false
@@ -35,6 +33,9 @@ class WirePlugin : Plugin<Project> {
     val extension = project.extensions.create(
         "wire", WireExtension::class.java, project
     )
+
+    project.configurations.create("wireSourceDependencies")
+    project.configurations.create("wireProtoDependencies")
 
     project.plugins.all {
       logger.debug("plugin: $it")
@@ -70,7 +71,7 @@ class WirePlugin : Plugin<Project> {
     project: Project,
     extension: WireExtension
   ) {
-    val sourceInput = WireInput(project, project.configurations.create("wireSourceDependencies"))
+    val sourceInput = WireInput(project, project.configurations.getByName("wireSourceDependencies"))
     if (extension.sourcePaths.isNotEmpty() ||
         extension.sourceTrees.isNotEmpty() ||
         extension.sourceJars.isNotEmpty()) {
@@ -81,7 +82,7 @@ class WirePlugin : Plugin<Project> {
       sourceInput.addPaths(setOf("src/main/proto"))
     }
 
-    val protoInput = WireInput(project, project.configurations.create("wireProtoDependencies"))
+    val protoInput = WireInput(project, project.configurations.getByName("wireProtoDependencies"))
     if (extension.protoPaths.isNotEmpty() ||
         extension.protoTrees.isNotEmpty() ||
         extension.protoJars.isNotEmpty()) {
