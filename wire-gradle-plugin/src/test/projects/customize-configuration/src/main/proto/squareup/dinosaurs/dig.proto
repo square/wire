@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package squareup.dinosaurs;
+
+option java_package = "com.squareup.dinosaurs";
+
+import "squareup/geology/period.proto";
+import "squareup/dinosaurs/dinosaur.proto";
+
+message Dig {
+  optional string location = 1;
+  optional squareup.geology.Period artifact_period = 2;
+  repeated squareup.dinosaurs.Dinosaur dinosaurs = 3;
+}

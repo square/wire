@@ -604,6 +604,25 @@ class WirePluginTest {
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
   }
 
+  /**
+   * This test is symmetric with [protoPathMavenCoordinates] but it manipulates the configuration
+   * directly. We expect this to be useful in cases where users want to make dependency resolution
+   * non-transitive.
+   */
+  @Test
+  fun customizeConfiguration() {
+    val fixtureRoot = File("src/test/projects/customize-configuration")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .doesNotContain("Writing com.squareup.dinosaurs.Dinosaur")
+        .doesNotContain("Writing com.squareup.geology.Period")
+        .contains("Writing com.squareup.dinosaurs.Dig")
+        .contains("src/test/projects/customize-configuration/build/generated/source/wire")
+  }
+
   @Test
   fun customOutput() {
     val fixtureRoot = File("src/test/projects/custom-output")
