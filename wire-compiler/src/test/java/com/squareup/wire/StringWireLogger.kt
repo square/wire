@@ -15,7 +15,6 @@
  */
 package com.squareup.wire
 
-import com.google.common.collect.Iterables
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -37,7 +36,7 @@ internal class StringWireLogger : WireLogger {
   }
 
   @Synchronized override fun artifact(outputPath: Path, kotlinFile: FileSpec) {
-    val typeSpec = Iterables.getOnlyElement(kotlinFile.members) as TypeSpec
+    val typeSpec = kotlinFile.members.single() as TypeSpec
     buffer.append("$outputPath ${kotlinFile.packageName}.${typeSpec.name}\n")
   }
 
