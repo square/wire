@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.LinkedHashMultimap
-import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoType.Companion.get
 import com.squareup.wire.schema.internal.Util
 import java.util.ArrayDeque
@@ -320,8 +318,8 @@ class Linker {
     fields: Iterable<Field>,
     reserveds: List<Reserved>
   ) {
-    val tagToField: Multimap<Int, Field> = LinkedHashMultimap.create()
-    val nameToField: Multimap<String, Field> = LinkedHashMultimap.create()
+    val tagToField = linkedMapOf<Int, MutableSet<Field>>()
+    val nameToField = linkedMapOf<String, MutableSet<Field>>()
 
     for (field in fields) {
       val tag = field.tag
@@ -338,11 +336,11 @@ class Linker {
         }
       }
 
-      tagToField.put(tag, field)
-      nameToField.put(field.qualifiedName, field)
+      tagToField.getOrPut(tag, { mutableSetOf() }).also { it += field }
+      nameToField.getOrPut(field.qualifiedName, { mutableSetOf() }).also { it += field }
     }
 
-    for ((key, value) in tagToField.asMap()) {
+    for ((key, value) in tagToField) {
       if (value.size > 1) {
         val error = StringBuilder()
         error.append("multiple fields share tag $key:")
@@ -354,7 +352,7 @@ class Linker {
       }
     }
 
-    for (collidingFields in nameToField.asMap().values) {
+    for (collidingFields in nameToField.values) {
       if (collidingFields.size > 1) {
         val first = collidingFields.iterator().next()
         val error = StringBuilder()
@@ -369,16 +367,16 @@ class Linker {
   }
 
   fun validateEnumConstantNameUniqueness(nestedTypes: Iterable<Type>) {
-    val nameToType: Multimap<String, EnumType> = LinkedHashMultimap.create()
+    val nameToType = mutableMapOf<String, MutableSet<EnumType>>()
     for (type in nestedTypes) {
       if (type is EnumType) {
         for (enumConstant in type.constants) {
-          nameToType.put(enumConstant.name, type)
+          nameToType.getOrPut(enumConstant.name, { mutableSetOf() } ).also { it += type }
         }
       }
     }
 
-    for ((constant, value) in nameToType.asMap()) {
+    for ((constant, value) in nameToType) {
       if (value.size > 1) {
         val error = buildString {
           var index = 1

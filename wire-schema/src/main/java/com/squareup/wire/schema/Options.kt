@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.LinkedHashMultimap
-import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.internal.parser.OptionElement
 import java.util.regex.Pattern
@@ -207,20 +205,20 @@ class Options(
     return result
   }
 
-  fun fields(): Multimap<ProtoType, ProtoMember> {
-    return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
+  fun fields(): Map<ProtoType, Set<ProtoMember>> {
+    return mutableMapOf<ProtoType, MutableSet<ProtoMember>>().also {
       gatherFields(it, optionType, map, IdentifierSet.Builder().build())
     }
   }
 
-  fun fields(identifierSet: IdentifierSet): Multimap<ProtoType, ProtoMember> {
-    return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
+  fun fields(identifierSet: IdentifierSet): Map<ProtoType, Set<ProtoMember>> {
+    return mutableMapOf<ProtoType, MutableSet<ProtoMember>>().also {
       gatherFields(it, optionType, map, identifierSet)
     }
   }
 
   private fun gatherFields(
-    sink: Multimap<ProtoType, ProtoMember>,
+    sink: MutableMap<ProtoType, MutableSet<ProtoMember>>,
     type: ProtoType,
     o: Any?,
     identifierSet: IdentifierSet
@@ -230,7 +228,8 @@ class Options(
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
           if (identifierSet.excludes(protoMember)) continue
-          sink.put(type, protoMember)
+          val memberSet = sink.getOrPut(type, { mutableSetOf() })
+          memberSet += protoMember
           gatherFields(sink, protoMember.type, value!!, identifierSet)
         }
       }

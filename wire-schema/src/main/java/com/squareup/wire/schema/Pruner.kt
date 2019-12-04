@@ -223,12 +223,14 @@ internal class Pruner(
       }
     }
 
-    for (member in options.fields(identifierSet).values()) {
-      // If it's an extension, don't consider the entire enclosing type to be reachable.
-      if (!isExtensionField(member)) {
-        result.add(member.type)
+    for (memberSet in options.fields(identifierSet).values) {
+      for (member in memberSet) {
+        // If it's an extension, don't consider the entire enclosing type to be reachable.
+        if (!isExtensionField(member)) {
+          result.add(member.type)
+        }
+        result.add(member)
       }
-      result.add(member)
     }
     return result
   }
