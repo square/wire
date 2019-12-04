@@ -13,124 +13,119 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.sample;
+package com.squareup.wire.sample
 
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableSet;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.java.JavaGenerator;
-import com.squareup.wire.schema.IdentifierSet;
-import com.squareup.wire.schema.Location;
-import com.squareup.wire.schema.ProtoFile;
-import com.squareup.wire.schema.Schema;
-import com.squareup.wire.schema.SchemaLoader;
-import com.squareup.wire.schema.Service;
-import com.squareup.wire.schema.Type;
-import java.io.File;
-import java.io.IOException;
+import com.google.common.base.Stopwatch
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.JavaFile
+import com.squareup.javapoet.TypeSpec
+import com.squareup.wire.java.JavaGenerator
+import com.squareup.wire.schema.IdentifierSet
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.SchemaLoader
+import java.io.File
+import java.io.IOException
 
 /**
  * Reads in .proto files, links ’em together, prunes ’em, and emits both types and services. This
- * can be used to either complement or replace {@code WireCompiler}.
+ * can be used to either complement or replace `WireCompiler`.
  */
-public final class CodegenSample {
-  private final Log log;
-  private final ImmutableSet<String> sources;
-  private final ImmutableSet<String> protos;
-  private final String generatedSourceDirectory;
-  private final IdentifierSet identifierSet;
+class CodegenSample(
+  private val log: Log,
+  private val sources: Set<String>,
+  private val protos: Set<String>,
+  private val generatedSourceDirectory: String,
+  private val identifierSet: IdentifierSet
+) {
+  @Throws(IOException::class)
+  fun execute() {
+    var schema = loadSchema()
 
-  public CodegenSample(Log log, ImmutableSet<String> sources,
-      ImmutableSet<String> protos, String generatedSourceDirectory,
-      IdentifierSet identifierSet) {
-    this.log = log;
-    this.sources = sources;
-    this.protos = protos;
-    this.generatedSourceDirectory = generatedSourceDirectory;
-    this.identifierSet = identifierSet;
-  }
-
-  public void execute() throws IOException {
-    Schema schema = loadSchema();
-
-    if (!identifierSet.isEmpty()) {
-      schema = retainRoots(schema);
+    if (!identifierSet.isEmpty) {
+      schema = retainRoots(schema)
     }
 
-    JavaGenerator javaGenerator = JavaGenerator.get(schema);
-    ServiceGenerator serviceGenerator = new ServiceGenerator(javaGenerator);
-
-    for (ProtoFile protoFile : schema.getProtoFiles()) {
-      for (Type type : protoFile.getTypes()) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        TypeSpec typeSpec = javaGenerator.generateType(type);
-        ClassName javaTypeName = (ClassName) javaGenerator.typeName(type.getType());
-        writeJavaFile(javaTypeName, typeSpec, type.getLocation(), stopwatch);
+    val javaGenerator = JavaGenerator.get(schema)
+    val serviceGenerator = ServiceGenerator(javaGenerator)
+    for (protoFile in schema.protoFiles) {
+      for (type in protoFile.types) {
+        val stopwatch = Stopwatch.createStarted()
+        val typeSpec = javaGenerator.generateType(type)
+        val javaTypeName = javaGenerator.typeName(type.type) as ClassName
+        writeJavaFile(javaTypeName, typeSpec, type.location, stopwatch)
       }
-
-      for (Service service : protoFile.getServices()) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        ClassName javaTypeName = (ClassName) javaGenerator.typeName(service.type());
-        TypeSpec typeSpec = serviceGenerator.api(service);
-        writeJavaFile(javaTypeName, typeSpec, service.location(), stopwatch);
+      for (service in protoFile.services) {
+        val stopwatch = Stopwatch.createStarted()
+        val javaTypeName = javaGenerator.typeName(service.type()) as ClassName
+        val typeSpec = serviceGenerator.api(service)
+        writeJavaFile(javaTypeName, typeSpec, service.location(), stopwatch)
       }
     }
   }
 
-  private Schema loadSchema() throws IOException {
-    Stopwatch stopwatch = Stopwatch.createStarted();
-    SchemaLoader loader = new SchemaLoader();
-    for (String source : sources) {
-      loader.addSource(new File(source));
+  @Throws(IOException::class)
+  private fun loadSchema(): Schema {
+    val stopwatch = Stopwatch.createStarted()
+    val loader = SchemaLoader()
+    for (source in sources) {
+      loader.addSource(File(source))
     }
-    for (String proto : protos) {
-      loader.addProto(proto);
+    for (proto in protos) {
+      loader.addProto(proto)
     }
-    Schema schema = loader.load();
-    log.info("Loaded %s proto files in %s", schema.getProtoFiles().size(), stopwatch);
-    return schema;
+    val schema = loader.load()
+    log.info("Loaded %s proto files in %s", schema.protoFiles.size, stopwatch)
+    return schema
   }
 
-  private Schema retainRoots(Schema schema) {
-    Stopwatch stopwatch = Stopwatch.createStarted();
-    int oldSize = countTypes(schema);
+  private fun retainRoots(schema: Schema): Schema {
+    val stopwatch = Stopwatch.createStarted()
+    val oldSize = countTypes(schema)
 
-    Schema prunedSchema = schema.prune(identifierSet);
-    int newSize = countTypes(prunedSchema);
+    val prunedSchema = schema.prune(identifierSet)
+    val newSize = countTypes(prunedSchema)
 
-    log.info("Pruned schema from %s types to %s types in %s", oldSize, newSize, stopwatch);
+    log.info("Pruned schema from %s types to %s types in %s", oldSize, newSize, stopwatch)
 
-    return prunedSchema;
+    return prunedSchema
   }
 
-  private void writeJavaFile(ClassName javaTypeName, TypeSpec typeSpec, Location location,
-      Stopwatch stopwatch) throws IOException {
-    JavaFile.Builder builder = JavaFile.builder(javaTypeName.packageName(), typeSpec)
-        .addFileComment("Code generated by $L, do not edit.", CodegenSample.class.getName());
+  @Throws(IOException::class)
+  private fun writeJavaFile(
+    javaTypeName: ClassName,
+    typeSpec: TypeSpec,
+    location: Location?,
+    stopwatch: Stopwatch
+  ) {
+    val builder = JavaFile.builder(javaTypeName.packageName(), typeSpec)
+          .addFileComment("Code generated by \$L, do not edit.", CodegenSample::class.java.name)
     if (location != null) {
-      builder.addFileComment("\nSource file: $L", location.getPath());
+      builder.addFileComment("\nSource file: \$L", location.path)
     }
-    JavaFile javaFile = builder.build();
+    val javaFile = builder.build()
     try {
-      javaFile.writeTo(new File(generatedSourceDirectory));
-    } catch (IOException e) {
-      throw new IOException("Failed to write " + javaFile.packageName + "."
-          + javaFile.typeSpec.name + " to " + generatedSourceDirectory, e);
+      javaFile.writeTo(File(generatedSourceDirectory))
+    } catch (e: IOException) {
+      throw IOException(
+          "Failed to write ${javaFile.packageName}.${javaFile.typeSpec.name} to $generatedSourceDirectory", e
+      )
     }
-    log.info("Generated %s in %s", javaTypeName, stopwatch);
+    log.info("Generated %s in %s", javaTypeName, stopwatch)
   }
 
-  private int countTypes(Schema prunedSchema) {
-    int result = 0;
-    for (ProtoFile protoFile : prunedSchema.getProtoFiles()) {
-      result += protoFile.getTypes().size();
+  private fun countTypes(prunedSchema: Schema): Int {
+    var result = 0
+    for (protoFile in prunedSchema.protoFiles) {
+      result += protoFile.types.size
     }
-    return result;
+    return result
   }
 
   interface Log {
-    void info(String format, Object... args);
+    fun info(
+      format: String,
+      vararg args: Any
+    )
   }
 }

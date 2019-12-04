@@ -13,78 +13,83 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.sample;
+package com.squareup.wire.sample
 
-import com.google.common.collect.ImmutableSet;
-import com.squareup.wire.schema.IdentifierSet;
-import java.io.IOException;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+import com.squareup.wire.schema.IdentifierSet
+import org.apache.maven.plugin.AbstractMojo
+import org.apache.maven.plugin.MojoExecutionException
+import org.apache.maven.plugin.MojoFailureException
+import org.apache.maven.plugins.annotations.LifecyclePhase.GENERATE_SOURCES
+import org.apache.maven.plugins.annotations.Mojo
+import org.apache.maven.plugins.annotations.Parameter
+import org.apache.maven.project.MavenProject
+import java.io.IOException
 
-/** Maven plugin interface to CodegenSample. */
-@Mojo(name = "generate-sources", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
-public class CodegenSampleMojo extends AbstractMojo implements CodegenSample.Log {
+/** Maven plugin interface to CodegenSample.  */
+@Mojo(
+    name = "generate-sources",
+    defaultPhase = GENERATE_SOURCES
+)
+class CodegenSampleMojo : AbstractMojo(), CodegenSample.Log {
   @Parameter(property = "codgenSample.protoPaths")
-  private String[] protoPaths;
+  private lateinit var protoPaths: Array<String>
 
-  /** List of proto files to compile relative to ${protoPaths}. */
+  /** List of proto files to compile relative to ${protoPaths}.  */
   @Parameter(property = "codgenSample.protoFiles", required = true)
-  private String[] protoFiles;
+  private lateinit var protoFiles: Array<String>
 
   @Parameter(property = "codgenSample.includes")
-  private String[] includes;
+  private val includes: Array<String>? = null
 
   @Parameter(property = "codgenSample.excludes")
-  private String[] excludes;
+  private val excludes: Array<String>? = null
 
   @Parameter(
       property = "codgenSample.generatedSourceDirectory",
-      defaultValue = "${project.build.directory}/generated-sources/codgenSample")
-  private String generatedSourceDirectory;
+      defaultValue = "\${project.build.directory}/generated-sources/codgenSample"
+  )
+  private lateinit var generatedSourceDirectory: String
 
-  @Parameter(
-      defaultValue = "${project}",
-      required = true,
-      readonly = true)
-  private MavenProject project;
+  @Parameter(defaultValue = "\${project}", required = true, readonly = true)
+  private lateinit var project: MavenProject
 
-  @Override public void execute() throws MojoExecutionException, MojoFailureException {
-    project.addCompileSourceRoot(generatedSourceDirectory);
+  @Throws(
+      MojoExecutionException::class,
+      MojoFailureException::class
+  )
+  override fun execute() {
+    project.addCompileSourceRoot(generatedSourceDirectory)
 
-    ImmutableSet<String> protoPathsSet = ImmutableSet.copyOf(protoPaths);
-    ImmutableSet<String> protoFilesSet = ImmutableSet.copyOf(protoFiles);
-    IdentifierSet identifierSet = identifierSet();
+    val protoPathsSet = protoPaths.toSet()
+    val protoFilesSet = protoFiles.toSet()
+    val identifierSet = identifierSet()
 
     try {
-      CodegenSample codeGenerator = new CodegenSample(
-          this, protoPathsSet, protoFilesSet, generatedSourceDirectory, identifierSet);
-      codeGenerator.execute();
-    } catch (IOException e) {
-      throw new MojoExecutionException("failed to generate sources", e);
+      val codeGenerator =
+        CodegenSample(this, protoPathsSet, protoFilesSet, generatedSourceDirectory, identifierSet)
+      codeGenerator.execute()
+    } catch (e: IOException) {
+      throw MojoExecutionException("failed to generate sources", e)
     }
   }
 
-  private IdentifierSet identifierSet() {
-    IdentifierSet.Builder identifierSetBuilder = new IdentifierSet.Builder();
+  private fun identifierSet(): IdentifierSet {
+    val identifierSetBuilder = IdentifierSet.Builder()
     if (includes != null) {
-      for (String identifier : includes) {
-        identifierSetBuilder.include(identifier);
+      for (identifier in includes) {
+        identifierSetBuilder.include(identifier)
       }
     }
     if (excludes != null) {
-      for (String identifier : excludes) {
-        identifierSetBuilder.exclude(identifier);
+      for (identifier in excludes) {
+        identifierSetBuilder.exclude(identifier)
       }
     }
-    return identifierSetBuilder.build();
+    return identifierSetBuilder.build()
   }
 
-  @Override public void info(String format, Object... args) {
-    getLog().info(String.format(format, args));
-  }
+  override fun info(
+    format: String,
+    vararg args: Any
+  ) = log.info(String.format(format, *args))
 }

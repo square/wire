@@ -13,48 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.java;
+package com.squareup.wire.java
 
-import com.google.common.collect.ImmutableList;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.wire.java.internal.ProfileFileElement;
-import com.squareup.wire.java.internal.TypeConfigElement;
-import com.squareup.wire.schema.ProtoType;
-import javax.annotation.Nullable;
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.TypeName
+import com.squareup.wire.java.internal.ProfileFileElement
+import com.squareup.wire.schema.ProtoType
 
 /**
- * Describes how to map {@code .proto} to {@code .java}. A single repository of {@code .proto} files
+ * Describes how to map `.proto` to `.java`. A single repository of `.proto` files
  * may have multiple profiles; for example a project may target both Android and Java.
  */
-public final class Profile {
-  private final ImmutableList<ProfileFileElement> profileFiles;
-
-  Profile(ImmutableList<ProfileFileElement> profileFiles) {
-    this.profileFiles = profileFiles;
+class Profile internal constructor(
+  private val profileFiles: List<ProfileFileElement> = emptyList()
+) {
+  fun getTarget(type: ProtoType): TypeName? {
+    val typeConfig = typeConfig(type)
+    return if (typeConfig != null) ClassName.bestGuess(typeConfig.target) else null
   }
 
-  public Profile() {
-    this(ImmutableList.<ProfileFileElement>of());
+  fun getAdapter(type: ProtoType): AdapterConstant? {
+    val typeConfig = typeConfig(type)
+    return if (typeConfig != null) AdapterConstant(typeConfig.adapter) else null
   }
 
-  public @Nullable TypeName getTarget(ProtoType type) {
-    TypeConfigElement typeConfig = typeConfig(type);
-    return typeConfig != null ? ClassName.bestGuess(typeConfig.getTarget()) : null;
-  }
-
-  public @Nullable AdapterConstant getAdapter(ProtoType type) {
-    TypeConfigElement typeConfig = typeConfig(type);
-    return typeConfig != null ? new AdapterConstant(typeConfig.getAdapter()) : null;
-  }
-
-  /** Returns the config for {@code type}, or null if it is not configured. */
-  private @Nullable TypeConfigElement typeConfig(ProtoType type) {
-    for (ProfileFileElement element : profileFiles) {
-      for (TypeConfigElement typeConfig : element.getTypeConfigs()) {
-        if (typeConfig.getType().equals(type.toString())) return typeConfig;
-      }
-    }
-    return null;
-  }
+  /** Returns the config for [type], or null if it is not configured.  */
+  private fun typeConfig(type: ProtoType) =
+    profileFiles
+        .flatMap { it.typeConfigs }
+        .find { it.type == type.toString() }
 }
