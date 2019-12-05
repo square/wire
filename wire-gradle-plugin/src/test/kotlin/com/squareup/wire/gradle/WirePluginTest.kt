@@ -623,6 +623,24 @@ class WirePluginTest {
         .contains("src/test/projects/customize-configuration/build/generated/source/wire")
   }
 
+  /**
+   * This test manipulates the tasks directly. We expect this to be useful in cases where users want to make
+   * source file available to embedded dependancies.
+   */
+  @Test
+  fun customizeTask() {
+    val fixtureRoot = File("src/test/projects/customize-task")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.task(":helloWorld")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dig")
+        .contains("Hello, World!")
+        .contains("src/test/projects/customize-task/build/generated/source/wire")
+  }
+
   @Test
   fun customOutput() {
     val fixtureRoot = File("src/test/projects/custom-output")

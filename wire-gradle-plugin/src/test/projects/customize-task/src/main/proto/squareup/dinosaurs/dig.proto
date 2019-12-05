@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package squareup.dinosaurs;
+
+option java_package = "com.squareup.dinosaurs";
+
+message Dig {
+  optional string location = 1;
+}
