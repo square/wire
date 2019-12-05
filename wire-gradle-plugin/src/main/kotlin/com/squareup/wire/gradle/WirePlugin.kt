@@ -19,6 +19,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
 
 class WirePlugin : Plugin<Project> {
@@ -36,6 +37,11 @@ class WirePlugin : Plugin<Project> {
 
     project.configurations.create("wireSourceDependencies")
     project.configurations.create("wireProtoDependencies")
+
+    project.tasks.register("generateProtos", WireTask::class.java) { task ->
+      task.group = "wire"
+      task.description = "Generate Wire protocol buffer implementation for .proto files"
+    }
 
     project.plugins.all {
       logger.debug("plugin: $it")
@@ -108,16 +114,15 @@ class WirePlugin : Plugin<Project> {
 
     val targets = outputs.map { it.toTarget() }
 
-    val wireTask = project.tasks.register("generateProtos", WireTask::class.java) { task ->
-      task.source(sourceInput.configuration)
-      task.sourceInput = sourceInput
-      task.protoInput = protoInput
-      task.roots = extension.roots.toList()
-      task.prunes = extension.prunes.toList()
-      task.rules = extension.rules
-      task.targets = targets
-      task.group = "wire"
-      task.description = "Generate Wire protocol buffer implementation for .proto files"
+    val wireTask = project.tasks.named("generateProtos") as TaskProvider<WireTask>
+    wireTask.configure {
+      it.source(sourceInput.configuration)
+      it.sourceInput = sourceInput
+      it.protoInput = protoInput
+      it.roots = extension.roots.toList()
+      it.prunes = extension.prunes.toList()
+      it.rules = extension.rules
+      it.targets = targets
     }
 
     for (output in outputs) {

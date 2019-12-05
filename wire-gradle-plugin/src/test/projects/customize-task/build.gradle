@@ -1,0 +1,31 @@
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+// See installProtoJars task in wire-gradle-plugin/build.gradle
+repositories {
+  maven {
+    url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
+  }
+}
+
+
+configurations {
+  dinosaurProto
+}
+
+dependencies {
+  dinosaurProto("com.squareup.wire.dinosaur:all-protos:+") { transitive = false }
+}
+
+task helloWorld() {
+  println 'Hello, World!'
+}
+
+wire {
+  java {
+  }
+}
+
+tasks.getByName("generateProtos").dependsOn helloWorld
