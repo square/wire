@@ -10,7 +10,7 @@ repositories {
   }
 }
 
-configurations.wireProtoDependencies {
+configurations.protoPath {
   dependencies.add(project.dependencies.create('com.squareup.wire.dinosaur:all-protos:+'))
 }
 
