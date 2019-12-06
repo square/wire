@@ -15,8 +15,11 @@
  */
 package com.squareup.wire.schema
 
+import com.google.common.collect.LinkedHashMultimap
+import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.internal.parser.OptionElement
+import java.util.LinkedHashMap
 import java.util.regex.Pattern
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -30,15 +33,24 @@ import kotlin.collections.set
  */
 class Options(
   private val optionType: ProtoType,
-  val elements: List<OptionElement> = emptyList()
+  private val optionElements: List<OptionElement>
 ) {
   // Null until this options is linked.
-  var map: Map<ProtoMember, Any?>? = null
-    private set
+  private var entries: List<LinkedOptionEntry>? = null
 
-  fun retainLinked() = Options(optionType)
+  val elements: List<OptionElement>
+    get() {
+      return entries?.map { it.optionElement } ?: optionElements
+    }
 
-  operator fun get(protoMember: ProtoMember): Any? = map!![protoMember]
+  val map: Map<ProtoMember, Any?>
+    get() = entries!!.toMap()
+
+  fun retainLinked() = Options(optionType, emptyList())
+
+  operator fun get(protoMember: ProtoMember): Any? {
+    return entries?.find { it.protoMember == protoMember }?.value
+  }
 
   /**
    * Returns true if any of the options in `options` matches both of the regular expressions
@@ -47,26 +59,30 @@ class Options(
   fun optionMatches(namePattern: String, valuePattern: String): Boolean {
     val nameMatcher = Pattern.compile(namePattern).matcher("")
     val valueMatcher = Pattern.compile(valuePattern).matcher("")
-    return map!!.any { entry ->
-      nameMatcher.reset(entry.key.member).matches() &&
+
+    return entries!!.any { entry ->
+      nameMatcher.reset(entry.protoMember.member).matches() &&
           valueMatcher.reset(entry.value.toString()).matches()
     }
   }
 
   fun link(linker: Linker) {
-    var map = emptyMap<ProtoMember, Any?>()
-    for (option in elements) {
-      val canonicalOption = canonicalizeOption(linker, optionType, option) ?: continue
-      map = union(linker, map, canonicalOption)
+    var entries: List<LinkedOptionEntry> = emptyList()
+
+    for (option in optionElements) {
+      val canonicalOption: List<LinkedOptionEntry> = canonicalizeOption(linker, optionType, option)
+          ?: continue
+
+      entries = union(linker, entries, canonicalOption)
     }
-    this.map = map
+    this.entries = entries
   }
 
   private fun canonicalizeOption(
     linker: Linker,
     extensionType: ProtoType,
     option: OptionElement
-  ): Map<ProtoMember, Any>? {
+  ): List<LinkedOptionEntry>? {
     val type = linker.getForOptions(extensionType) as? MessageType
         ?: return null // No known extensions for the given extension type.
 
@@ -109,7 +125,10 @@ class Options(
     }
 
     last[get(lastProtoType!!, field!!)] = canonicalizeValue(linker, field, option.value)
-    return result
+
+    check(result.size == 1) // TODO(benoit) might be safe to remove
+    val (protoMember, value) = result.entries.first()
+    return listOf(LinkedOptionEntry(option, protoMember, value))
   }
 
   private fun canonicalizeValue(
@@ -146,7 +165,10 @@ class Options(
       }
 
       is List<*> -> {
-        val result = value.flatMap { canonicalizeValue(linker, context, it!!) as List<*> }
+        val result = mutableListOf<Any>()
+        for (element in value) {
+          result.addAll(canonicalizeValue(linker, context, element!!) as List<Any>)
+        }
         return coerceValueForField(context, result)
       }
 
@@ -160,10 +182,7 @@ class Options(
     }
   }
 
-  private fun coerceValueForField(
-    context: Field,
-    value: Any
-  ): Any {
+  private fun coerceValueForField(context: Field, value: Any): Any {
     return when {
       context.isRepeated -> value as? List<*> ?: listOf(value)
       value is List<*> -> value.single()!!
@@ -172,28 +191,53 @@ class Options(
   }
 
   /** Combine values for the same key, resolving conflicts based on their type.  */
-  private fun union(
-    linker: Linker,
-    a: Any,
-    b: Any
-  ): Any =
-    when (a) {
-      is List<*> -> a + b as List<*>
+  private fun union(linker: Linker, a: Any, b: Any): Any {
+    return when (a) {
+      is List<*> ->         a + b as List<*>
 
       is Map<*, *> -> {
         @Suppress("UNCHECKED_CAST") // All maps have this type.
         union(linker, a as Map<ProtoMember, Any?>, b as Map<ProtoMember, Any>)
       }
 
-      else -> linker.addError("conflicting options: %s, %s", a, b)
+      else -> {
+        linker.addError("conflicting options: %s, %s", a, b)
+        a // Just return any placeholder.
+      }
     }
+  }
 
   private fun union(
-    linker: Linker,
-    a: Map<ProtoMember, Any?>,
-    b: Map<ProtoMember, Any>
+    linker: Linker, a: List<LinkedOptionEntry>, b: List<LinkedOptionEntry>
+  ): List<LinkedOptionEntry> {
+    val aMap: Map<ProtoMember, Any?> = a.toMap()
+    val bMap: Map<ProtoMember, Any> = b.toMap() as Map<ProtoMember, Any>
+
+    val valuesMap: MutableMap<ProtoMember, Any?> = LinkedHashMap(aMap)
+    for (entry in bMap) {
+      val bValue = entry.value
+      val aValue = valuesMap[entry.key]
+      valuesMap[entry.key] = when {
+        aValue != null -> union(linker, aValue, bValue)
+        else -> bValue
+      }
+    }
+
+    return a.map { it.optionElement to it.protoMember }
+        .union(b.map { it.optionElement to it.protoMember })
+        .map { (optionElement, protoMember) ->
+          LinkedOptionEntry(
+              optionElement,
+              protoMember,
+              valuesMap[protoMember]
+          )
+        }
+  }
+
+  private fun union(
+    linker: Linker, a: Map<ProtoMember, Any?>, b: Map<ProtoMember, Any>
   ): Map<ProtoMember, Any?> {
-    val result = a.toMutableMap()
+    val result: MutableMap<ProtoMember, Any?> = LinkedHashMap(a)
     for (entry in b) {
       val bValue = entry.value
       val aValue = result[entry.key]
@@ -205,20 +249,18 @@ class Options(
     return result
   }
 
-  fun fields(): Map<ProtoType, Set<ProtoMember>> {
-    return mutableMapOf<ProtoType, MutableSet<ProtoMember>>().also {
-      gatherFields(it, optionType, map, IdentifierSet.Builder().build())
-    }
+  fun fields(): Multimap<ProtoType, ProtoMember> {
+    return fields(IdentifierSet.Builder().build())
   }
 
-  fun fields(identifierSet: IdentifierSet): Map<ProtoType, Set<ProtoMember>> {
-    return mutableMapOf<ProtoType, MutableSet<ProtoMember>>().also {
-      gatherFields(it, optionType, map, identifierSet)
+  fun fields(identifierSet: IdentifierSet): Multimap<ProtoType, ProtoMember> {
+    return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
+      gatherFields(it, optionType, entries?.toMap(), identifierSet)
     }
   }
 
   private fun gatherFields(
-    sink: MutableMap<ProtoType, MutableSet<ProtoMember>>,
+    sink: Multimap<ProtoType, ProtoMember>,
     type: ProtoType,
     o: Any?,
     identifierSet: IdentifierSet
@@ -228,8 +270,7 @@ class Options(
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
           if (identifierSet.excludes(protoMember)) continue
-          val memberSet = sink.getOrPut(type, { mutableSetOf() })
-          memberSet += protoMember
+          sink.put(type, protoMember)
           gatherFields(sink, protoMember.type, value!!, identifierSet)
         }
       }
@@ -242,12 +283,20 @@ class Options(
   }
 
   fun retainAll(schema: Schema, markSet: MarkSet): Options {
-    if (map == null || map!!.isEmpty()) return this // Nothing to prune.
+    if (entries.isNullOrEmpty()) return this // Nothing to prune.
 
-    val result = Options(optionType, elements)
+    val result = Options(optionType, optionElements)
+
     @Suppress("UNCHECKED_CAST") // All maps have these type parameters.
-    result.map = retainAll(schema, markSet, optionType, map!!) as Map<ProtoMember, Any?>?
-        ?: emptyMap()
+    val map = retainAll(schema, markSet, optionType, entries!!.toMap()) as Map<ProtoMember, Any?>?
+        ?: emptyMap<ProtoMember, Any>()
+
+    result.entries = entries
+        ?.filter { map.containsKey(it.protoMember) }
+        ?.map { entry ->
+          entry.copy(value = map.getValue(entry.protoMember))
+        }
+
     return result
   }
 
@@ -265,7 +314,7 @@ class Options(
         val map = mutableMapOf<ProtoMember, Any>()
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
-          if (protoMember !in markSet) continue  // Prune this field.
+          if (!markSet.contains(protoMember)) continue  // Prune this field.
           val field = schema.getField(protoMember)
           val retainedValue = retainAll(schema, markSet, field.type, value!!)
           if (retainedValue != null) {
@@ -276,7 +325,13 @@ class Options(
       }
 
       o is List<*> -> {
-        val list = o.mapNotNull { retainAll(schema, markSet, type, it!!) }
+        val list = mutableListOf<Any>()
+        for (value in o) {
+          val retainedValue = retainAll(schema, markSet, type, value!!)
+          if (retainedValue != null) {
+            list.add(retainedValue) // This retained value is non-empty.
+          }
+        }
         if (list.isNotEmpty()) list else null
       }
 
@@ -287,7 +342,7 @@ class Options(
   /** Returns true if these options assigns a value to `protoMember`.  */
   fun assignsMember(protoMember: ProtoMember?): Boolean {
     // TODO(jwilson): remove the null check; this shouldn't be called until linking completes.
-    return map != null && map!!.containsKey(protoMember)
+    return entries?.any { it.protoMember == protoMember } ?: false
   }
 
   companion object {
@@ -330,5 +385,9 @@ class Options(
       }
       return null
     }
+  }
+
+  private fun List<LinkedOptionEntry>.toMap(): Map<ProtoMember, Any?> {
+    return map { it.protoMember to it.value }.toMap()
   }
 }

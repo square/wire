@@ -791,9 +791,9 @@ class PrunerTest {
         .exclude("SomeFieldOptions")
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")
-    val map = field!!.options.map!!
+    val map = field!!.options.map
     val onlyOption = map.entries.single()
-    assertThat((onlyOption.key as ProtoMember).member).isEqualTo("b")
+    assertThat(onlyOption.key.member).isEqualTo("b")
     assertThat(onlyOption.value).isEqualTo("b")
   }
 
@@ -857,9 +857,9 @@ class PrunerTest {
         .exclude("Dimensions")
         .build())
     val field = (pruned.getType("Message") as MessageType).field("f")
-    val map = field!!.options.map!!
+    val map = field!!.options.map
     val onlyOption = map.entries.single()
-    assertThat((onlyOption.key as ProtoMember).member).isEqualTo("b")
+    assertThat(onlyOption.key.member).isEqualTo("b")
     assertThat(onlyOption.value).isEqualTo("b")
   }
 

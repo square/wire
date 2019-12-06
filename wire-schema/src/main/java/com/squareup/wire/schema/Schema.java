@@ -38,11 +38,13 @@ public final class Schema {
   private final ImmutableList<ProtoFile> protoFiles;
   private final ImmutableMap<String, Type> typesIndex;
   private final ImmutableMap<String, Service> servicesIndex;
+  private final Map<ProtoType, ProtoFile> protoFilesIndex;
 
   Schema(Iterable<ProtoFile> protoFiles) {
     this.protoFiles = PATH_ORDER.immutableSortedCopy(protoFiles);
-    this.typesIndex = buildTypesIndex(protoFiles);
-    this.servicesIndex = buildServicesIndex(protoFiles);
+    this.protoFilesIndex = new LinkedHashMap<>();
+    this.typesIndex = buildTypesIndex(protoFiles, this.protoFilesIndex);
+    this.servicesIndex = buildServicesIndex(protoFiles, this.protoFilesIndex);
   }
 
   public ImmutableList<ProtoFile> getProtoFiles() {
@@ -57,6 +59,11 @@ public final class Schema {
       }
     }
     return null;
+  }
+
+  /** Returns the proto file containing this {@code protoType}, or null if there isn't such file. */
+  public ProtoFile protoFile(ProtoType protoType) {
+    return protoFilesIndex.get(protoType);
   }
 
   /**
@@ -125,28 +132,37 @@ public final class Schema {
     return new Linker(pathFilesLoader).link(sourceProtoFiles);
   }
 
-  private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles) {
+  private static ImmutableMap<String, Type> buildTypesIndex(Iterable<ProtoFile> protoFiles,
+      Map<ProtoType, ProtoFile> protoFilesIndex) {
     Map<String, Type> result = new LinkedHashMap<>();
     for (ProtoFile protoFile : protoFiles) {
       for (Type type : protoFile.getTypes()) {
-        index(result, type);
+        index(result, type, protoFile, protoFilesIndex);
       }
     }
     return ImmutableMap.copyOf(result);
   }
 
-  private static void index(Map<String, Type> typesByName, Type type) {
+  private static void index(Map<String, Type> typesByName, Type type, ProtoFile protoFile,
+      Map<ProtoType, ProtoFile> protoFilesIndex) {
+    ProtoType protoType = type.getType();
+    if (!protoFilesIndex.containsKey(protoType)) {
+      protoFilesIndex.put(protoType, protoFile);
+    }
+
     typesByName.put(type.getType().toString(), type);
     for (Type nested : type.getNestedTypes()) {
-      index(typesByName, nested);
+      index(typesByName, nested, protoFile, protoFilesIndex);
     }
   }
 
-  private static ImmutableMap<String, Service> buildServicesIndex(Iterable<ProtoFile> protoFiles) {
+  private static ImmutableMap<String, Service> buildServicesIndex(Iterable<ProtoFile> protoFiles,
+      Map<ProtoType, ProtoFile> protoFilesIndex) {
     ImmutableMap.Builder<String, Service> result = ImmutableMap.builder();
     for (ProtoFile protoFile : protoFiles) {
       for (Service service : protoFile.getServices()) {
         result.put(service.type().toString(), service);
+        protoFilesIndex.put(service.type(), protoFile);
       }
     }
     return result.build();

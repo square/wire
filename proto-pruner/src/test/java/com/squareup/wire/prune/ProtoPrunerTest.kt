@@ -19,7 +19,6 @@ import com.squareup.wire.schema.IdentifierSet
 import com.squareup.wire.schema.Location
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -87,7 +86,7 @@ class ProtoPrunerTest {
     assertOutputs(outputs)
   }
 
-  @Test @Ignore("Options are not properly pruned yet. See #1243.")
+  @Test
   fun testOptionsExcludingProtobuf() {
     val identifierSet = IdentifierSet.Builder()
         .include("squareup.options.poem.Poem")
@@ -97,7 +96,8 @@ class ProtoPrunerTest {
     invokeProtoPruner(identifierSet)
 
     val outputs = arrayOf(
-        "poem.proto"
+        "poem.proto",
+        "options.proto"
     )
     assertOutputs(outputs)
   }

@@ -1,9 +1,6 @@
 // ../wire-tests/src/commonTest/proto/java/foreign.proto
 package squareup.protos.foreign;
 
-option java_package = "com.squareup.wire.protos.foreign";
-option java_outer_classname = "Foreign";
-
 enum ForeignEnum {
   BAV = 0;
   BAX = 1;
