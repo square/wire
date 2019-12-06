@@ -5,24 +5,17 @@ package squareup.options.poem;
 import "options.proto";
 
 message Poem {
-  option (squareup.options.misc.message_export_enabled) = false;
-
-  optional string title = 1 [(squareup.options.misc.relevant) = true];
+  optional string title = 1;
   optional Style style = 2 [default = LONG];
   optional bool about_love = 3 [default = true];
-  repeated int32 path = 4 [packed = true, deprecated = true];
+  repeated int32 path = 4;
   optional string signature = 5 [default = "BQ"];
 }
-
 enum Style {
-  SHORT = 1 [(squareup.options.misc.text_alignment) = 3];
-  LONG = 2 [(squareup.options.misc.text_alignment) = 4];
+  SHORT = 1;
+  LONG = 2;
 }
 
 service Court {
-  option (squareup.options.misc.httpOneOnly) = false;
-
-  rpc ExchangePoem (stream Poem) returns (stream Poem) {
-    option (squareup.options.misc.hide) = true;
-  }
+  rpc ExchangePoem (stream Poem) returns (stream Poem);
 }

@@ -145,6 +145,7 @@ internal class Pruner(
   private fun reachableObjects(root: Any): List<Any?> {
     val result = mutableListOf<Any?>()
     val options: Options
+    var fileOptions: Options? = null
 
     when (root) {
       is ProtoMember -> {
@@ -187,6 +188,7 @@ internal class Pruner(
 
         val type = schema.getType(root)
         val service = schema.getService(root)
+        fileOptions = schema.protoFile(root).options
 
         if (type is MessageType) {
           options = type.options
@@ -223,16 +225,22 @@ internal class Pruner(
       }
     }
 
-    for (memberSet in options.fields(identifierSet).values) {
-      for (member in memberSet) {
-        // If it's an extension, don't consider the entire enclosing type to be reachable.
-        if (!isExtensionField(member)) {
-          result.add(member.type)
-        }
-        result.add(member)
-      }
+    addOptions(options.fields(identifierSet).values(), result)
+    if (fileOptions != null) {
+      addOptions(fileOptions.fields(identifierSet).values(), result)
     }
+
     return result
+  }
+
+  private fun addOptions(options: Collection<ProtoMember>, result: MutableList<Any?>) {
+    for (member in options) {
+      // If it's an extension, don't consider the entire enclosing type to be reachable.
+      if (!isExtensionField(member)) {
+        result.add(member.type)
+      }
+      result.add(member)
+    }
   }
 
   private fun isExtensionField(protoMember: ProtoMember): Boolean {
