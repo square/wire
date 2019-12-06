@@ -42,8 +42,8 @@ class Extend private constructor(
     linker.validateImport(location, type!!)
   }
 
-  fun retainAll(schema: Schema?, markSet: MarkSet?): Extend? {
-    val retainedFields = retainAll(schema!!, markSet!!, type!!, fields)
+  fun retainAll(schema: Schema, markSet: MarkSet): Extend? {
+    val retainedFields = retainAll(schema, markSet, type!!, fields)
     if (retainedFields.isEmpty()) return null
     return Extend(location, documentation, name, retainedFields)
   }

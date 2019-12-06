@@ -121,11 +121,11 @@ class Field private constructor(
       if (type.isMap && type.valueType!! !in markSet) return null
 
       if (!markSet.contains(type)) return null
-
-      val memberName = if (isExtension) qualifiedName else name
-      val protoMember = ProtoMember.get(enclosingType, memberName)
-      if (!markSet.contains(protoMember)) return null
     }
+
+    val memberName = if (isExtension) qualifiedName else name
+    val protoMember = ProtoMember.get(enclosingType, memberName)
+    if (!markSet.contains(protoMember)) return null
 
     return withOptions(options.retainAll(schema, markSet))
   }
