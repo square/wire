@@ -2,8 +2,6 @@
 syntax = "proto2";
 package squareup.options.poem;
 
-import "options.proto";
-
 message Poem {
   optional string title = 1;
   optional Style style = 2 [default = LONG];

@@ -96,8 +96,7 @@ class ProtoPrunerTest {
     invokeProtoPruner(identifierSet)
 
     val outputs = arrayOf(
-        "poem.proto",
-        "options.proto"
+        "poem.proto"
     )
     assertOutputs(outputs)
   }
