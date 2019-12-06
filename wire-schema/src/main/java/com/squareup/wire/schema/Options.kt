@@ -15,14 +15,8 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.ImmutableList
-import com.google.common.collect.ImmutableMap
-import com.google.common.collect.Iterables
-import com.google.common.collect.LinkedHashMultimap
-import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.internal.parser.OptionElement
-import java.util.LinkedHashMap
 import java.util.regex.Pattern
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -36,15 +30,13 @@ import kotlin.collections.set
  */
 class Options(
   private val optionType: ProtoType,
-  elements: List<OptionElement>
+  val elements: List<OptionElement> = emptyList()
 ) {
-  val elements: ImmutableList<OptionElement> = ImmutableList.copyOf(elements)
-
   // Null until this options is linked.
-  var map: ImmutableMap<ProtoMember, Any?>? = null
+  var map: Map<ProtoMember, Any?>? = null
     private set
 
-  fun retainLinked() = Options(optionType, ImmutableList.of())
+  fun retainLinked() = Options(optionType)
 
   operator fun get(protoMember: ProtoMember): Any? = map!![protoMember]
 
@@ -62,7 +54,7 @@ class Options(
   }
 
   fun link(linker: Linker) {
-    var map = ImmutableMap.of<ProtoMember, Any?>()
+    var map = emptyMap<ProtoMember, Any?>()
     for (option in elements) {
       val canonicalOption = canonicalizeOption(linker, optionType, option) ?: continue
       map = union(linker, map, canonicalOption)
@@ -127,19 +119,19 @@ class Options(
   ): Any {
     when (value) {
       is OptionElement -> {
-        val result = ImmutableMap.builder<ProtoMember, Any>()
+        val result = mutableMapOf<ProtoMember, Any>()
         val field = linker.dereference(context, value.name)
         if (field == null) {
           linker.addError("unable to resolve option %s on %s", value.name, context.type!!)
         } else {
           val protoMember = get(context.type!!, field)
-          result.put(protoMember, canonicalizeValue(linker, field, value.value))
+          result[protoMember] = canonicalizeValue(linker, field, value.value)
         }
-        return coerceValueForField(context, result.build())
+        return coerceValueForField(context, result)
       }
 
       is Map<*, *> -> {
-        val result = ImmutableMap.builder<ProtoMember, Any>()
+        val result = mutableMapOf<ProtoMember, Any>()
         for (entry in value) {
           val name = entry.key as String
           val field = linker.dereference(context, name)
@@ -147,18 +139,15 @@ class Options(
             linker.addError("unable to resolve option %s on %s", name, context.type!!)
           } else {
             val protoMember = get(context.type!!, field)
-            result.put(protoMember, canonicalizeValue(linker, field, entry.value!!))
+            result[protoMember] = canonicalizeValue(linker, field, entry.value!!)
           }
         }
-        return coerceValueForField(context, result.build())
+        return coerceValueForField(context, result)
       }
 
       is List<*> -> {
-        val result = ImmutableList.builder<Any>()
-        for (element in value) {
-          result.addAll(canonicalizeValue(linker, context, element!!) as List<*>)
-        }
-        return coerceValueForField(context, result.build())
+        val result = value.flatMap { canonicalizeValue(linker, context, it!!) as List<*> }
+        return coerceValueForField(context, result)
       }
 
       is String -> {
@@ -171,37 +160,40 @@ class Options(
     }
   }
 
-  private fun coerceValueForField(context: Field, value: Any): Any {
+  private fun coerceValueForField(
+    context: Field,
+    value: Any
+  ): Any {
     return when {
-      context.isRepeated -> value as? List<*> ?: ImmutableList.of(value)
-      value is List<*> -> Iterables.getOnlyElement<Any>(value)
+      context.isRepeated -> value as? List<*> ?: listOf(value)
+      value is List<*> -> value.single()!!
       else -> value
     }
   }
 
   /** Combine values for the same key, resolving conflicts based on their type.  */
-  private fun union(linker: Linker, a: Any, b: Any): Any {
-    return when (a) {
-      is List<*> -> {
-        union(a, b as List<*>)
-      }
+  private fun union(
+    linker: Linker,
+    a: Any,
+    b: Any
+  ): Any =
+    when (a) {
+      is List<*> -> a + b as List<*>
 
       is Map<*, *> -> {
         @Suppress("UNCHECKED_CAST") // All maps have this type.
         union(linker, a as Map<ProtoMember, Any?>, b as Map<ProtoMember, Any>)
       }
 
-      else -> {
-        linker.addError("conflicting options: %s, %s", a, b)
-        a // Just return any placeholder.
-      }
+      else -> linker.addError("conflicting options: %s, %s", a, b)
     }
-  }
 
   private fun union(
-    linker: Linker, a: Map<ProtoMember, Any?>, b: Map<ProtoMember, Any>
-  ): ImmutableMap<ProtoMember, Any?> {
-    val result: MutableMap<ProtoMember, Any?> = LinkedHashMap(a)
+    linker: Linker,
+    a: Map<ProtoMember, Any?>,
+    b: Map<ProtoMember, Any>
+  ): Map<ProtoMember, Any?> {
+    val result = a.toMutableMap()
     for (entry in b) {
       val bValue = entry.value
       val aValue = result[entry.key]
@@ -210,30 +202,23 @@ class Options(
         else -> bValue
       }
     }
-    return ImmutableMap.copyOf(result)
+    return result
   }
 
-  private fun union(a: List<*>, b: List<*>): ImmutableList<Any> {
-    return ImmutableList.builder<Any>()
-        .addAll(a)
-        .addAll(b)
-        .build()
-  }
-
-  fun fields(): Multimap<ProtoType, ProtoMember> {
-    return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
+  fun fields(): Map<ProtoType, Set<ProtoMember>> {
+    return mutableMapOf<ProtoType, MutableSet<ProtoMember>>().also {
       gatherFields(it, optionType, map, IdentifierSet.Builder().build())
     }
   }
 
-  fun fields(identifierSet: IdentifierSet): Multimap<ProtoType, ProtoMember> {
-    return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
+  fun fields(identifierSet: IdentifierSet): Map<ProtoType, Set<ProtoMember>> {
+    return mutableMapOf<ProtoType, MutableSet<ProtoMember>>().also {
       gatherFields(it, optionType, map, identifierSet)
     }
   }
 
   private fun gatherFields(
-    sink: Multimap<ProtoType, ProtoMember>,
+    sink: MutableMap<ProtoType, MutableSet<ProtoMember>>,
     type: ProtoType,
     o: Any?,
     identifierSet: IdentifierSet
@@ -243,7 +228,8 @@ class Options(
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
           if (identifierSet.excludes(protoMember)) continue
-          sink.put(type, protoMember)
+          val memberSet = sink.getOrPut(type, { mutableSetOf() })
+          memberSet += protoMember
           gatherFields(sink, protoMember.type, value!!, identifierSet)
         }
       }
@@ -260,8 +246,8 @@ class Options(
 
     val result = Options(optionType, elements)
     @Suppress("UNCHECKED_CAST") // All maps have these type parameters.
-    result.map = retainAll(schema, markSet, optionType, map!!) as ImmutableMap<ProtoMember, Any?>?
-        ?: ImmutableMap.of<ProtoMember, Any>()
+    result.map = retainAll(schema, markSet, optionType, map!!) as Map<ProtoMember, Any?>?
+        ?: emptyMap()
     return result
   }
 
@@ -276,29 +262,21 @@ class Options(
       !markSet.contains(type!!) -> null // Prune this type.
 
       o is Map<*, *> -> {
-        val builder = ImmutableMap.builder<ProtoMember, Any>()
+        val map = mutableMapOf<ProtoMember, Any>()
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
-          if (!markSet.contains(protoMember)) continue  // Prune this field.
+          if (protoMember !in markSet) continue  // Prune this field.
           val field = schema.getField(protoMember)
           val retainedValue = retainAll(schema, markSet, field.type, value!!)
           if (retainedValue != null) {
-            builder.put(protoMember, retainedValue) // This retained field is non-empty.
+            map[protoMember] = retainedValue // This retained field is non-empty.
           }
         }
-        val map = builder.build()
         if (map.isNotEmpty()) map else null
       }
 
       o is List<*> -> {
-        val builder = ImmutableList.builder<Any>()
-        for (value in o) {
-          val retainedValue = retainAll(schema, markSet, type, value!!)
-          if (retainedValue != null) {
-            builder.add(retainedValue) // This retained value is non-empty.
-          }
-        }
-        val list = builder.build()
+        val list = o.mapNotNull { retainAll(schema, markSet, type, it!!) }
         if (list.isNotEmpty()) list else null
       }
 

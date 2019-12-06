@@ -15,10 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.base.Preconditions.checkArgument
-import com.google.common.collect.LinkedHashMultimap
-import com.google.common.collect.Multimap
-
 /**
  * A mark set is used in three phases:
  *
@@ -37,7 +33,7 @@ class MarkSet(
   val types = mutableSetOf<ProtoType>()
 
   /** The members to retain. Any member not in here should be pruned! */
-  val members: Multimap<ProtoType, ProtoMember> = LinkedHashMultimap.create()
+  val members = mutableMapOf<ProtoType, MutableSet<ProtoMember>>()
 
   /**
    * Marks `protoMember`, throwing if it is explicitly excluded. This implicitly excludes other
@@ -46,12 +42,13 @@ class MarkSet(
   fun root(protoMember: ProtoMember) {
     check(!identifierSet.excludes(protoMember))
     types.add(protoMember.type)
-    members.put(protoMember.type, protoMember)
+    val memberSet = members.getOrPut(protoMember.type, { mutableSetOf() })
+    memberSet += protoMember
   }
 
   /** Marks `type`, throwing if it is explicitly excluded. */
   fun root(type: ProtoType) {
-    checkArgument(!identifierSet.excludes(type))
+    check(!identifierSet.excludes(type))
     types.add(type)
   }
 
@@ -71,7 +68,8 @@ class MarkSet(
   fun mark(protoMember: ProtoMember): Boolean {
     if (identifierSet.excludes(protoMember)) return false
     types.add(protoMember.type)
-    return members.put(protoMember.type, protoMember)
+    val memberSet = members.getOrPut(protoMember.type, { mutableSetOf() })
+    return memberSet.add(protoMember)
   }
 
   /** Returns true if `type` is marked and should be retained. */
@@ -82,6 +80,7 @@ class MarkSet(
   /** Returns true if `member` is marked and should be retained. */
   operator fun contains(protoMember: ProtoMember): Boolean {
     if (identifierSet.excludes(protoMember)) return false
-    return members.containsEntry(protoMember.type, protoMember)
+    val memberSet = members[protoMember.type]
+    return memberSet != null && memberSet.contains(protoMember)
   }
 }
