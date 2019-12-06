@@ -20,6 +20,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 
 class PrunerTest {
@@ -824,6 +825,51 @@ class PrunerTest {
     val onlyOption = map.entries.single()
     assertThat((onlyOption.key as ProtoMember).member).isEqualTo("a")
     assertThat(onlyOption.value).isEqualTo("a")
+  }
+
+  @Test @Ignore("Need to fix #1264.")
+  fun prunedFieldDocumentationsGetPrunedWhenDocumentationIsOnTheSameLine(){
+    val schema = RepoBuilder()
+        .add("period.proto", """
+             |enum Period {
+             |  A = 1; // This is A.
+             |
+             |  reserved 2; // This is reserved.
+             |
+             |  C = 3; // This is C.
+             |}
+             """.trimMargin())
+        .schema()
+
+    val pruned = schema.prune(IdentifierSet.Builder().build())
+
+    val type = pruned.getType("Period") as EnumType
+    assertThat(type.constant("A")!!.documentation).isEqualTo("This is A.")
+    assertThat(type.constant("C")!!.documentation).isEqualTo("This is C.")
+  }
+
+  @Test
+  fun prunedFieldDocumentationsGetPruned(){
+    val schema = RepoBuilder()
+        .add("period.proto", """
+             |enum Period {
+             |  /* This is A. */
+             |  A = 1;
+             |
+             |  /* This is reserved. */
+             |  reserved 2;
+             |
+             |  /* This is C. */
+             |  C = 3;
+             |}
+             """.trimMargin())
+        .schema()
+
+    val pruned = schema.prune(IdentifierSet.Builder().build())
+
+    val type = pruned.getType("Period") as EnumType
+    assertThat(type.constant("A")!!.documentation).isEqualTo("This is A.")
+    assertThat(type.constant("C")!!.documentation).isEqualTo("This is C.")
   }
 
   @Test
