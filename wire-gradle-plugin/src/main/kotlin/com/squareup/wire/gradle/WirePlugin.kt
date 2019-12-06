@@ -35,8 +35,8 @@ class WirePlugin : Plugin<Project> {
         "wire", WireExtension::class.java, project
     )
 
-    project.configurations.create("wireSourceDependencies")
-    project.configurations.create("wireProtoDependencies")
+    project.configurations.create("protoSource")
+    project.configurations.create("protoPath")
 
     project.tasks.register("generateProtos", WireTask::class.java) { task ->
       task.group = "wire"
@@ -77,7 +77,7 @@ class WirePlugin : Plugin<Project> {
     project: Project,
     extension: WireExtension
   ) {
-    val sourceInput = WireInput(project, project.configurations.getByName("wireSourceDependencies"))
+    val sourceInput = WireInput(project, project.configurations.getByName("protoSource"))
     if (extension.sourcePaths.isNotEmpty() ||
         extension.sourceTrees.isNotEmpty() ||
         extension.sourceJars.isNotEmpty()) {
@@ -88,7 +88,7 @@ class WirePlugin : Plugin<Project> {
       sourceInput.addPaths(setOf("src/main/proto"))
     }
 
-    val protoInput = WireInput(project, project.configurations.getByName("wireProtoDependencies"))
+    val protoInput = WireInput(project, project.configurations.getByName("protoPath"))
     if (extension.protoPaths.isNotEmpty() ||
         extension.protoTrees.isNotEmpty() ||
         extension.protoJars.isNotEmpty()) {
