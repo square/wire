@@ -24,7 +24,7 @@ import com.squareup.wire.schema.ProtoType
  * Describes how to map `.proto` to `.java`. A single repository of `.proto` files
  * may have multiple profiles; for example a project may target both Android and Java.
  */
-class Profile internal constructor(
+class Profile(
   private val profileFiles: List<ProfileFileElement> = emptyList()
 ) {
   fun getTarget(type: ProtoType): TypeName? {

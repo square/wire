@@ -332,4 +332,61 @@ class NewSchemaLoaderTest {
         |  polygons/src/main/proto/squareup/curves/circle.proto
         """.trimMargin())
   }
+
+  @Test
+  fun locationsToCheck() {
+    val newSchemaLoader = NewSchemaLoader(fs)
+    val result = newSchemaLoader.locationsToCheck("java", listOf(
+        Location.get("shared-protos.jar", "squareup/cash/money/Money.proto"),
+        Location.get("src/main/proto", "squareup/cash/Service.proto"),
+        Location.get("src/main/proto", "squareup/cash/cashtags/Cashtag.proto"),
+        Location.get("src/main/proto", "squareup/cash/payments/Payment.proto")
+    ))
+    assertThat(result).containsExactlyInAnyOrder(
+        Location.get("shared-protos.jar", "java.wire"),
+        Location.get("shared-protos.jar", "squareup/cash/java.wire"),
+        Location.get("shared-protos.jar", "squareup/cash/money/java.wire"),
+        Location.get("shared-protos.jar", "squareup/java.wire"),
+        Location.get("src/main/proto", "java.wire"),
+        Location.get("src/main/proto", "squareup/cash/cashtags/java.wire"),
+        Location.get("src/main/proto", "squareup/cash/java.wire"),
+        Location.get("src/main/proto", "squareup/cash/payments/java.wire"),
+        Location.get("src/main/proto", "squareup/java.wire")
+    )
+  }
+
+  @Test
+  fun pathsToAttempt() {
+    val newSchemaLoader = NewSchemaLoader(fs)
+    val result = newSchemaLoader.locationsToCheck("android", listOf(
+        Location.get("/a/b", "c/d/e.proto")
+    ))
+    assertThat(result).containsExactlyInAnyOrder(
+        Location.get("/a/b", "c/d/android.wire"),
+        Location.get("/a/b", "c/android.wire"),
+        Location.get("/a/b", "android.wire")
+    )
+  }
+
+  @Test
+  fun pathsToAttemptMultipleRoots() {
+    val newSchemaLoader = NewSchemaLoader(fs)
+    val result = newSchemaLoader.locationsToCheck("android", listOf(
+        Location.get("/a/b", "c/d/e.proto"),
+        Location.get("/a/b", "c/f/g/h.proto"),
+        Location.get("/i/j.zip", "k/l/m.proto"),
+        Location.get("/i/j.zip", "k/l/m/n.proto")
+    ))
+    assertThat(result).containsExactlyInAnyOrder(
+        Location.get("/a/b", "c/d/android.wire"),
+        Location.get("/a/b", "c/android.wire"),
+        Location.get("/a/b", "android.wire"),
+        Location.get("/a/b", "c/f/g/android.wire"),
+        Location.get("/a/b", "c/f/android.wire"),
+        Location.get("/i/j.zip", "k/l/android.wire"),
+        Location.get("/i/j.zip", "k/android.wire"),
+        Location.get("/i/j.zip", "android.wire"),
+        Location.get("/i/j.zip", "k/l/m/android.wire")
+    )
+  }
 }

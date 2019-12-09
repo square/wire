@@ -16,10 +16,13 @@
 package com.squareup.wire.schema
 
 import com.google.common.io.Closer
+import com.squareup.wire.java.Profile
+import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 import java.io.Closeable
 import java.io.IOException
 import java.nio.file.FileSystem
+import java.util.ArrayDeque
 import java.util.TreeSet
 
 /**
@@ -28,7 +31,7 @@ import java.util.TreeSet
  */
 class NewSchemaLoader(
   private val fs: FileSystem
-) : Closeable, Loader {
+) : Closeable, Loader, NewProfileLoader {
   private val closer = Closer.create()
 
   /** Errors accumulated by this load. */
@@ -42,6 +45,9 @@ class NewSchemaLoader(
 
   /** Proto path roots that need to be closed */
   private var protoPathRoots: List<Root>? = null
+
+  /** Keys are a [Location.base]; values are the roots that those locations loaded from. */
+  private val baseToRoots = mutableMapOf<String, List<Root>>()
 
   /** Initialize the [WireRun.sourcePath] and [WireRun.protoPath] from which files are loaded. */
   fun initRoots(
@@ -117,8 +123,6 @@ class NewSchemaLoader(
   /** Convert `pathStrings` into roots that can be searched. */
   private fun allRoots(closer: Closer, locations: List<Location>): List<Root> {
     val result = mutableListOf<Root>()
-    val baseToRoots = mutableMapOf<String, List<Root>>()
-
     for (location in locations) {
       try {
         result += location.roots(fs, closer, baseToRoots)
@@ -147,6 +151,76 @@ class NewSchemaLoader(
 
   override fun close() {
     return closer.close()
+  }
+
+  override fun loadProfile(name: String, schema: Schema): Profile {
+    val allLocations = schema.protoFiles.map { it.location }
+    val locationsToCheck = locationsToCheck(name, allLocations)
+
+    val profileElements = mutableListOf<ProfileFileElement>()
+    for (location in locationsToCheck) {
+      val roots = baseToRoots[location.base] ?: continue
+      for (root in roots) {
+        val resolved = root.resolve(location.path) ?: continue
+        profileElements += resolved.parseProfile()
+      }
+    }
+
+    val profile = Profile(profileElements)
+    validate(schema, profileElements)
+    return profile
+  }
+
+  /** Confirms that `protoFiles` link correctly against `schema`.  */
+  internal fun validate(schema: Schema, profileFiles: List<ProfileFileElement>) {
+    for (profileFile in profileFiles) {
+      for (typeConfig in profileFile.typeConfigs) {
+        val type = importedType(ProtoType.get(typeConfig.type)) ?: continue
+
+        val resolvedType = schema.getType(type)
+        if (resolvedType == null) {
+          errors.add(String.format("unable to resolve %s (%s)", type, typeConfig.location))
+          continue
+        }
+
+        val requiredImport = resolvedType.location.path
+        if (!profileFile.imports.contains(requiredImport)) {
+          errors.add(String.format("%s needs to import %s (%s)",
+              typeConfig.location.path, requiredImport, typeConfig.location))
+        }
+      }
+    }
+
+    checkForErrors()
+  }
+
+  /** Returns the type to import for `type`.  */
+  private fun importedType(type: ProtoType): ProtoType? {
+    var type = type
+    // Map key type is always scalar.
+    if (type.isMap) type = type.valueType!!
+    return if (type.isScalar) null else type
+  }
+
+  /**
+   * Returns a list of locations to check for profile files. This is the profile file name (like
+   * "java.wire") in the same directory, and in all parent directories up to the base.
+   */
+  fun locationsToCheck(name: String, input: List<Location>): Set<Location> {
+    val queue = ArrayDeque<Location>(input)
+
+    val result = mutableSetOf<Location>()
+    while (true) {
+      val protoLocation = queue.poll() ?: break
+      val lastSlash = protoLocation.path.lastIndexOf("/")
+      val parentPath = protoLocation.path.substring(0, lastSlash + 1)
+      val profileLocation = protoLocation.copy(path = "$parentPath$name.wire")
+
+      if (!result.add(profileLocation)) continue // Already added.
+      if (!parentPath.isNotEmpty()) continue // No more parents to enqueue.
+      queue += protoLocation.copy(path = parentPath.dropLast(1)) // Drop trailing '/'.
+    }
+    return result
   }
 }
 

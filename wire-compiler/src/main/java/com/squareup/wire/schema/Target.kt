@@ -22,7 +22,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.WireCompiler
 import com.squareup.wire.WireLogger
 import com.squareup.wire.java.JavaGenerator
-import com.squareup.wire.java.ProfileLoader
+import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
@@ -57,7 +57,8 @@ sealed class Target {
   internal abstract fun newHandler(
     schema: Schema,
     fs: FileSystem,
-    logger: WireLogger
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
   ): SchemaHandler
 
   interface SchemaHandler {
@@ -87,11 +88,14 @@ data class JavaTarget(
    */
   val compact: Boolean = false
 ) : Target() {
-  override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+  override fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
+  ): SchemaHandler {
     val profileName = if (android) "android" else "java"
-    val profile = ProfileLoader(fs, profileName)
-        .schema(schema)
-        .load()
+    val profile = newProfileLoader.loadProfile(profileName, schema)
 
     val javaGenerator = JavaGenerator.get(schema)
         .withProfile(profile)
@@ -150,7 +154,12 @@ data class KotlinTarget(
   /** True for emitted services to implement one interface per RPC. */
   val singleMethodServices: Boolean = false
 ) : Target() {
-  override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+  override fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
+  ): SchemaHandler {
     val kotlinGenerator = KotlinGenerator(
         schema = schema,
         emitAndroid = android,
@@ -203,9 +212,7 @@ data class KotlinTarget(
       private fun write(service: Service, name: ClassName, typeSpec: TypeSpec) {
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-            .apply {
-              service.location()?.let { addComment("\nSource file: %L", it.withPathOnly()) }
-            }
+            .addComment("\nSource file: %L", service.location().withPathOnly())
             .addType(typeSpec)
             .build()
 
@@ -230,7 +237,12 @@ data class NullTarget(
 ) : Target() {
   override val exclusive: Boolean = true
 
-  override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+  override fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
+  ): SchemaHandler {
     return object : SchemaHandler {
       override fun handle(type: Type) {
         logger.artifactSkipped(type.type!!)
@@ -259,7 +271,12 @@ data class CustomTargetBeta(
    */
   val customHandlerClass: String
 ) : Target() {
-  override fun newHandler(schema: Schema, fs: FileSystem, logger: WireLogger): SchemaHandler {
+  override fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
+  ): SchemaHandler {
     val customHandlerType = try {
       Class.forName(customHandlerClass)
     } catch (exception: ClassNotFoundException) {
@@ -288,4 +305,9 @@ data class CustomTargetBeta(
 interface CustomHandlerBeta {
   fun newHandler(schema: Schema, fs: FileSystem, outDirectory: String, logger: WireLogger):
       Target.SchemaHandler
+}
+
+// TODO: merge this interface with Loader.
+interface NewProfileLoader {
+  fun loadProfile(name: String, schema: Schema): Profile
 }
