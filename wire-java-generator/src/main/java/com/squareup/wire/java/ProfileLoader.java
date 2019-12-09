@@ -150,6 +150,7 @@ public final class ProfileLoader {
   }
 
   /** Confirms that {@code protoFiles} link correctly against {@code schema}. */
+  @Deprecated
   void validate(Schema schema, ImmutableList<ProfileFileElement> profileFiles) {
     List<String> errors = new ArrayList<>();
 
@@ -179,6 +180,7 @@ public final class ProfileLoader {
   }
 
   /** Returns the type to import for {@code type}. */
+  @Deprecated
   private @Nullable ProtoType importedType(ProtoType type) {
     // Map key type is always scalar.
     if (type.isMap()) type = type.getValueType();

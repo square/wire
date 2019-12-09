@@ -143,25 +143,27 @@ data class WireRun(
 ) {
 
   fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
-    val (fullSchema, sourceLocationPaths) = NewSchemaLoader(fs).use { schemaLoader ->
-      schemaLoader.initRoots(sourcePath, protoPath)
+    return NewSchemaLoader(fs).use { newSchemaLoader ->
+      execute(fs, logger, newSchemaLoader)
+    }
+  }
 
-      // 1. Read source `.proto` files.
-      val sourceProtoFiles = schemaLoader.loadSourcePathFiles()
+  private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: NewSchemaLoader) {
+    schemaLoader.initRoots(sourcePath, protoPath)
 
-      // 2. Identify source files separately from path files.
-      val sourceLocationPaths = sourceProtoFiles.map { it.location.path }
+    // 1. Read source `.proto` files.
+    val sourceProtoFiles = schemaLoader.loadSourcePathFiles()
 
-      // 3. Validate the schema and resolve references
-      val fullSchema = try {
-        Schema.fromFiles(sourceProtoFiles, schemaLoader)
-      } catch (e: Exception) {
-        // TODO(jwilson): collect a single set of errors.
-        schemaLoader.reportLoadingErrors()
-        throw e
-      }
+    // 2. Identify source files separately from path files.
+    val sourceLocationPaths = sourceProtoFiles.map { it.location.path }
 
-      return@use fullSchema to sourceLocationPaths
+    // 3. Validate the schema and resolve references
+    val fullSchema = try {
+      Schema.fromFiles(sourceProtoFiles, schemaLoader)
+    } catch (e: Exception) {
+      // TODO(jwilson): collect a single set of errors.
+      schemaLoader.reportLoadingErrors()
+      throw e
     }
 
     // 4. Optionally prune the schema.
@@ -183,7 +185,7 @@ data class WireRun(
     }
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
     for (target in targetsExclusiveLast) {
-      val schemaHandler = target.newHandler(schema, fs, logger)
+      val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)
 
       val identifierSet: IdentifierSet = IdentifierSet.Builder()
           .include(target.includes)
