@@ -293,7 +293,7 @@ data class CustomTargetBeta(
         ?: throw IllegalArgumentException(
             "$customHandlerClass does not implement CustomHandlerBeta")
 
-    return instance.newHandler(schema, fs, outDirectory, logger)
+    return instance.newHandler(schema, fs, outDirectory, logger, newProfileLoader)
   }
 }
 
@@ -303,7 +303,13 @@ data class CustomTargetBeta(
  * This API is currently unstable. We will be changing this API in the future.
  */
 interface CustomHandlerBeta {
-  fun newHandler(schema: Schema, fs: FileSystem, outDirectory: String, logger: WireLogger):
+  fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    outDirectory: String,
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
+  ):
       Target.SchemaHandler
 }
 

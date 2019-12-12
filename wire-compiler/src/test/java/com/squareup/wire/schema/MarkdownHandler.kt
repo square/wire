@@ -29,7 +29,8 @@ class MarkdownHandler : CustomHandlerBeta {
     schema: Schema,
     fs: FileSystem,
     outDirectory: String,
-    logger: WireLogger
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
   ): Target.SchemaHandler {
     return object : Target.SchemaHandler {
       override fun handle(type: Type) {
