@@ -31,7 +31,11 @@ object Util {
     if (documentation.isEmpty()) {
       return
     }
-    for (line in documentation.split("\n")) {
+    var lines = documentation.split("\n")
+    if (lines.count() > 1 && lines.last().isEmpty()) {
+      lines = lines.dropLast(1)
+    }
+    for (line in lines) {
       builder.append("// ")
           .append(line)
           .append('\n')
@@ -61,7 +65,11 @@ object Util {
     builder: StringBuilder,
     value: String
   ) {
-    for (line in value.split("\n")) {
+    var lines = value.split("\n")
+    if (lines.count() > 1 && lines.last().isEmpty()) {
+      lines = lines.dropLast(1)
+    }
+    for (line in lines) {
       builder.append("  ")
           .append(line)
           .append('\n')
