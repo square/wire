@@ -1,0 +1,15 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+wire {
+  // Support versions 1995 through 2000 inclusive. This will prune:
+  //  * declarations preceding the beginning of the range (wire.until=1995 and earlier)
+  //  * declarations following the end of the range (wire.since=2001 and later)
+  oldest 1995
+  newest 2000
+
+  kotlin {}
+}

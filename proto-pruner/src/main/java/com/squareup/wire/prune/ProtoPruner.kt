@@ -19,7 +19,6 @@ import com.squareup.wire.schema.IdentifierSet
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.NewSchemaLoader
 import com.squareup.wire.schema.ProtoFile
-import com.squareup.wire.schema.Schema
 import java.io.File
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -32,31 +31,29 @@ class ProtoPruner(
   private val identifierSet: IdentifierSet
 ) : Runnable {
   override fun run() {
-    val sourcePathFiles = NewSchemaLoader(fs).use { loader ->
+    NewSchemaLoader(fs).use { loader ->
       loader.initRoots(sourcePath, protoPath)
-      loader.loadSourcePathFiles()
+
+      val schema = loader.loadSchema()
+          .prune(identifierSet)
+
+      val sourcePaths = loader.sourcePathFiles.map { it.location.path }.toSet()
+
+      schema.getProtoFiles()
+          .filter {
+            (it.location.path in sourcePaths) && it.isNotEmpty()
+          }
+          .forEach { protoFile ->
+            val relativePath = protoFile.location.path
+                .substringBeforeLast("/", missingDelimiterValue = ".")
+            val outFolder = File(outPath, relativePath)
+            outFolder.mkdirs() // Ensure the directories to the file have been created.
+
+            val outFile = File(outFolder, "${protoFile.name()}.proto")
+            println("Writing $outFile...")
+            outFile.writeText(protoFile.toSchema())
+          }
     }
-
-    val sourcePaths = sourcePathFiles.map { it.location.path }.toSet()
-
-    val schema = Schema
-        .fromFiles(sourcePathFiles)
-        .prune(identifierSet)
-
-    schema.getProtoFiles()
-        .filter {
-          (it.location.path in sourcePaths) && it.isNotEmpty()
-        }
-        .forEach { protoFile ->
-          val relativePath = protoFile.location.path
-              .substringBeforeLast("/", missingDelimiterValue = ".")
-          val outFolder = File(outPath, relativePath)
-          outFolder.mkdirs() // Ensure the directories to the file have been created.
-
-          val outFile = File(outFolder, "${protoFile.name()}.proto")
-          println("Writing $outFile...")
-          outFile.writeText(protoFile.toSchema())
-        }
   }
 
   private fun ProtoFile.isNotEmpty() =

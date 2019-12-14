@@ -170,13 +170,12 @@ class LinkerTest {
   }
 
   private fun loadAndLinkSchema(): Schema {
-    return NewSchemaLoader(fs).use { loader ->
+    NewSchemaLoader(fs).use { loader ->
       loader.initRoots(
           sourcePath = listOf(Location.get("source-path")),
           protoPath = listOf(Location.get("proto-path"))
       )
-      val sourceProtoFiles = loader.loadSourcePathFiles()
-      Schema.fromFiles(sourceProtoFiles, loader)
+      return loader.loadSchema()
     }
   }
 }

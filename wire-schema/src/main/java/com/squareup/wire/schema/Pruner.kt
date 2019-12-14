@@ -90,14 +90,27 @@ internal class Pruner(
 
     // The top-level type isn't a root, search for root members inside.
     for (reachable in reachableObjects(protoType)) {
-      if (reachable is ProtoMember) {
-        if (identifierSet.includes(reachable)) {
-          marks.root(reachable)
-          marks.mark(reachable.type) // Consider this type as visited.
-          queue.add(reachable)
-        }
+      if (reachable !is ProtoMember) continue
+      if (!isRetainedVersion(reachable)) continue
+      if (identifierSet.includes(reachable)) {
+        marks.root(reachable)
+        marks.mark(reachable.type) // Consider this type as visited.
+        queue.add(reachable)
       }
     }
+  }
+
+  /** Returns true if this member survives `since` and `until` pruning. */
+  private fun isRetainedVersion(protoMember: ProtoMember): Boolean {
+    val member = protoMember.member
+    val type = schema.getType(protoMember.type)
+
+    if (type is MessageType) {
+      val field = type.field(member) ?: type.extensionField(member)!!
+      return identifierSet.isRetainedVersion(field.options)
+    }
+
+    return true
   }
 
   /**
@@ -118,7 +131,7 @@ internal class Pruner(
           }
 
           is ProtoMember -> {
-            if (marks.mark(reachable)) {
+            if (isRetainedVersion(reachable) && marks.mark(reachable)) {
               queue.add(reachable)
             }
           }

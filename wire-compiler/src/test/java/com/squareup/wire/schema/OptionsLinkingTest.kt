@@ -133,7 +133,7 @@ class OptionsLinkingTest {
   }
 
   private fun loadAndLinkSchema(): Schema {
-    return NewSchemaLoader(fs).use { loader ->
+    NewSchemaLoader(fs).use { loader ->
       val protoPath = when {
         fs.exists("proto-path") -> listOf(Location.get("proto-path"))
         else -> listOf()
@@ -143,8 +143,7 @@ class OptionsLinkingTest {
           sourcePath = listOf(Location.get("source-path")),
           protoPath = protoPath
       )
-      val sourceProtoFiles = loader.loadSourcePathFiles()
-      Schema.fromFiles(sourceProtoFiles, loader)
+      return loader.loadSchema()
     }
   }
 

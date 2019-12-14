@@ -42,6 +42,14 @@ open class WireTask : SourceTask() {
 
   @Input
   @Optional
+  var oldest: Long? = null
+
+  @Input
+  @Optional
+  var newest: Long? = null
+
+  @Input
+  @Optional
   var rules: String? = null
 
   @Input
@@ -85,6 +93,8 @@ open class WireTask : SourceTask() {
         protoPath = protoInput.toLocations(),
         treeShakingRoots = if (roots.isEmpty()) includes else roots,
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
+        oldest = oldest,
+        newest = newest,
         targets = targets
     )
     wireRun.execute()
