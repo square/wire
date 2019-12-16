@@ -94,6 +94,10 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
   public static final String DEFAULT_PHP_NAMESPACE = "";
 
+  public static final String DEFAULT_PHP_METADATA_NAMESPACE = "";
+
+  public static final String DEFAULT_RUBY_PACKAGE = "";
+
   /**
    * Sets the Java package where classes generated from this .proto will be
    * placed.  By default, the proto package is used, but this is often
@@ -287,6 +291,28 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   public final String php_namespace;
 
   /**
+   * Use this option to change the namespace of php generated metadata classes.
+   * Default is empty. When this option is empty, the proto file name will be
+   * used for determining the namespace.
+   */
+  @WireField(
+      tag = 44,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String php_metadata_namespace;
+
+  /**
+   * Use this option to change the package of ruby generated classes. Default
+   * is empty. When this option is not set, the package name will be used for
+   * determining the ruby package.
+   */
+  @WireField(
+      tag = 45,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String ruby_package;
+
+  /**
    * The parser stores options it doesn't recognize here.
    * See the documentation for the "Options" section above.
    */
@@ -317,6 +343,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     this.swift_prefix = builder.swift_prefix;
     this.php_class_prefix = builder.php_class_prefix;
     this.php_namespace = builder.php_namespace;
+    this.php_metadata_namespace = builder.php_metadata_namespace;
+    this.ruby_package = builder.ruby_package;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", builder.uninterpreted_option);
   }
 
@@ -341,6 +369,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     builder.swift_prefix = swift_prefix;
     builder.php_class_prefix = php_class_prefix;
     builder.php_namespace = php_namespace;
+    builder.php_metadata_namespace = php_metadata_namespace;
+    builder.ruby_package = ruby_package;
     builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -370,6 +400,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
         && Internal.equals(swift_prefix, o.swift_prefix)
         && Internal.equals(php_class_prefix, o.php_class_prefix)
         && Internal.equals(php_namespace, o.php_namespace)
+        && Internal.equals(php_metadata_namespace, o.php_metadata_namespace)
+        && Internal.equals(ruby_package, o.ruby_package)
         && uninterpreted_option.equals(o.uninterpreted_option);
   }
 
@@ -396,6 +428,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       result = result * 37 + (swift_prefix != null ? swift_prefix.hashCode() : 0);
       result = result * 37 + (php_class_prefix != null ? php_class_prefix.hashCode() : 0);
       result = result * 37 + (php_namespace != null ? php_namespace.hashCode() : 0);
+      result = result * 37 + (php_metadata_namespace != null ? php_metadata_namespace.hashCode() : 0);
+      result = result * 37 + (ruby_package != null ? ruby_package.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
       super.hashCode = result;
     }
@@ -423,6 +457,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     if (swift_prefix != null) builder.append(", swift_prefix=").append(swift_prefix);
     if (php_class_prefix != null) builder.append(", php_class_prefix=").append(php_class_prefix);
     if (php_namespace != null) builder.append(", php_namespace=").append(php_namespace);
+    if (php_metadata_namespace != null) builder.append(", php_metadata_namespace=").append(php_metadata_namespace);
+    if (ruby_package != null) builder.append(", ruby_package=").append(ruby_package);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
     return builder.replace(0, 2, "FileOptions{").append('}').toString();
   }
@@ -463,6 +499,10 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     public String php_class_prefix;
 
     public String php_namespace;
+
+    public String php_metadata_namespace;
+
+    public String ruby_package;
 
     public List<UninterpretedOption> uninterpreted_option;
 
@@ -645,6 +685,26 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
     }
 
     /**
+     * Use this option to change the namespace of php generated metadata classes.
+     * Default is empty. When this option is empty, the proto file name will be
+     * used for determining the namespace.
+     */
+    public Builder php_metadata_namespace(String php_metadata_namespace) {
+      this.php_metadata_namespace = php_metadata_namespace;
+      return this;
+    }
+
+    /**
+     * Use this option to change the package of ruby generated classes. Default
+     * is empty. When this option is not set, the package name will be used for
+     * determining the ruby package.
+     */
+    public Builder ruby_package(String ruby_package) {
+      this.ruby_package = ruby_package;
+      return this;
+    }
+
+    /**
      * The parser stores options it doesn't recognize here.
      * See the documentation for the "Options" section above.
      */
@@ -742,6 +802,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
           + ProtoAdapter.STRING.encodedSizeWithTag(39, value.swift_prefix)
           + ProtoAdapter.STRING.encodedSizeWithTag(40, value.php_class_prefix)
           + ProtoAdapter.STRING.encodedSizeWithTag(41, value.php_namespace)
+          + ProtoAdapter.STRING.encodedSizeWithTag(44, value.php_metadata_namespace)
+          + ProtoAdapter.STRING.encodedSizeWithTag(45, value.ruby_package)
           + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
           + value.unknownFields().size();
     }
@@ -766,6 +828,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
       ProtoAdapter.STRING.encodeWithTag(writer, 39, value.swift_prefix);
       ProtoAdapter.STRING.encodeWithTag(writer, 40, value.php_class_prefix);
       ProtoAdapter.STRING.encodeWithTag(writer, 41, value.php_namespace);
+      ProtoAdapter.STRING.encodeWithTag(writer, 44, value.php_metadata_namespace);
+      ProtoAdapter.STRING.encodeWithTag(writer, 45, value.ruby_package);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
       writer.writeBytes(value.unknownFields());
     }
@@ -801,6 +865,8 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
           case 40: builder.php_class_prefix(ProtoAdapter.STRING.decode(reader)); break;
           case 41: builder.php_namespace(ProtoAdapter.STRING.decode(reader)); break;
           case 42: builder.php_generic_services(ProtoAdapter.BOOL.decode(reader)); break;
+          case 44: builder.php_metadata_namespace(ProtoAdapter.STRING.decode(reader)); break;
+          case 45: builder.ruby_package(ProtoAdapter.STRING.decode(reader)); break;
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
