@@ -306,12 +306,18 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     public static final Integer DEFAULT_END = 0;
 
+    /**
+     * Inclusive.
+     */
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
     public final Integer start;
 
+    /**
+     * Exclusive.
+     */
     @WireField(
         tag = 2,
         adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -389,11 +395,17 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
       public Builder() {
       }
 
+      /**
+       * Inclusive.
+       */
       public Builder start(Integer start) {
         this.start = start;
         return this;
       }
 
+      /**
+       * Exclusive.
+       */
       public Builder end(Integer end) {
         this.end = end;
         return this;
