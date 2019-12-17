@@ -262,7 +262,7 @@ class KotlinGenerator private constructor(
               newName("CREATOR", "CREATOR")
             }
             message.fieldsAndOneOfFields.forEach { field ->
-              if (field.name == field.type!!.simpleName || schema.getType("${field.packageName ?: ""}.${field.name}") != null) {
+              if (field.name == field.type!!.simpleName || schema.getType(field.qualifiedName) != null) {
                 newName(field.qualifiedName, field)
               } else {
                 newName(field.name, field)
