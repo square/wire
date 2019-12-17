@@ -2,6 +2,7 @@
 // Source file: simple_message.proto
 package com.squareup.wire.protos.kotlin.simple
 
+import com.google.protobuf.EnumOptions
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
@@ -599,18 +600,23 @@ class SimpleMessage(
   }
 
   enum class NestedEnum(
-    override val value: Int
+    override val value: Int,
+    val deprecated: Boolean?
   ) : WireEnum {
-    FOO(1),
+    FOO(1, null),
 
-    BAR(2),
+    BAR(2, null),
 
-    BAZ(3),
+    BAZ(3, null),
 
     @Deprecated(message = "BUZ is deprecated")
-    BUZ(3);
+    BUZ(3, true);
 
     companion object {
+      val ENUM_OPTIONS: EnumOptions = EnumOptions(
+            allow_alias = true
+          )
+
       @JvmField
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class

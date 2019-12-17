@@ -155,6 +155,7 @@ task generateKotlinTests(type: JavaExec) {
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
       '--kotlin_out=wire-tests/src/commonTest/proto-kotlin',
+      'google/protobuf/descriptor.proto',
       'all_types.proto',
       'person.proto',
       'optional_enum.proto',
@@ -173,6 +174,7 @@ task generateKotlinTests(type: JavaExec) {
       'unknown_fields.proto',
       'edge_cases.proto',
       'packed_encoding.proto',
+      'custom_options.proto',
   ]
 }
 
@@ -217,6 +219,7 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
       '--proto_path=wire-tests/src/commonTest/proto/kotlin',
       '--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
       '--java_interop',
+      'google/protobuf/descriptor.proto',
       'all_types.proto',
       'person.proto',
       'deprecated.proto',
@@ -301,7 +304,7 @@ task generateMoshiAdapterKotlinTests(type: JavaExec) {
   ]
 }
 
-task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generateNoOptionsTests, 
+task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generateNoOptionsTests,
     generateGsonTests, generateIncludesExcludesTests, generateAndroidTests, 
     generateAndroidCompactTests, generateKotlinTests, generateKotlinServicesTests,
     generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateGrpcTests,
