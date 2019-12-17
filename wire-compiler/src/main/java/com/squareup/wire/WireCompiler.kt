@@ -222,7 +222,7 @@ class WireCompiler internal constructor(
       vararg args: String
     ): WireCompiler {
       val sourceFileNames = mutableListOf<String>()
-      val identifierSetBuilder = PruningRules.Builder()
+      val pruningRulesBuilder = PruningRules.Builder()
       val protoPaths = mutableListOf<String>()
       var javaOut: String? = null
       var kotlinOut: String? = null
@@ -266,12 +266,12 @@ class WireCompiler internal constructor(
 
           arg.startsWith(INCLUDES_FLAG) -> {
             val includes = arg.substring(INCLUDES_FLAG.length)
-            identifierSetBuilder.include(includes.split(Regex(",")))
+            pruningRulesBuilder.include(includes.split(Regex(",")))
           }
 
           arg.startsWith(EXCLUDES_FLAG) -> {
             val excludes = arg.substring(EXCLUDES_FLAG.length)
-            identifierSetBuilder.exclude(excludes.split(Regex(",")))
+            pruningRulesBuilder.exclude(excludes.split(Regex(",")))
           }
 
           arg == QUIET_FLAG -> quiet = true
@@ -293,7 +293,7 @@ class WireCompiler internal constructor(
       logger.setQuiet(quiet)
 
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, sourceFileNames,
-          identifierSetBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitAndroidAnnotations,
+          pruningRulesBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitAndroidAnnotations,
           emitCompact, javaInterop)
     }
   }
