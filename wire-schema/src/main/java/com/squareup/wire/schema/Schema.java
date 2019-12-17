@@ -188,4 +188,10 @@ public final class Schema {
     if (type == null) throw new IllegalArgumentException("unexpected type " + typeName);
     return new SchemaProtoAdapterFactory(this, includeUnknown).get(type.getType());
   }
+
+  boolean isExtensionField(ProtoMember protoMember) {
+    Type type = getType(protoMember.getType());
+    return type instanceof MessageType
+        && ((MessageType) type).extensionField(protoMember.getMember()) != null;
+  }
 }

@@ -63,6 +63,7 @@ task generateNoOptionsTests(type: JavaExec) {
   args = [
       '--proto_path=wire-tests/src/commonTest/proto/java',
       '--java_out=wire-tests/src/jvmJavaNoOptionsTest/proto-java',
+      'google/protobuf/descriptor.proto',
       '--excludes=google.protobuf.*',
       '--excludes=squareup.options.*',
   ] + PROTOS

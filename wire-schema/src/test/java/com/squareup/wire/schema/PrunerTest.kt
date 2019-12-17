@@ -205,7 +205,7 @@ class PrunerTest {
   }
 
   @Test
-  fun oneOf(){
+  fun oneOf() {
     val schema = RepoBuilder()
         .add("one_of_message.proto", """
              |package oneof;
@@ -366,7 +366,7 @@ class PrunerTest {
   }
 
   @Test
-  fun prunedOptionDoesNotRetainOptionsType() {
+  fun prunedExtensionOptionDoesNotRetainExtension() {
     val schema = RepoBuilder()
         .add("service.proto", """
               |import "google/protobuf/descriptor.proto";
@@ -383,7 +383,12 @@ class PrunerTest {
     val pruned = schema.prune(PruningRules.Builder()
         .include("Message#g")
         .build())
-    assertThat(pruned.getType("google.protobuf.FieldOptions") as MessageType?).isNull()
+
+    val fieldOptions = pruned.getType("google.protobuf.FieldOptions") as MessageType
+    assertThat(fieldOptions.extensionField("a")).isNull()
+
+    val service = pruned.protoFile("service.proto")
+    assertThat(service.extendList).isEmpty()
   }
 
   @Test
@@ -828,7 +833,7 @@ class PrunerTest {
   }
 
   @Test @Ignore("Need to fix #1264.")
-  fun prunedFieldDocumentationsGetPrunedWhenDocumentationIsOnTheSameLine(){
+  fun prunedFieldDocumentationsGetPrunedWhenDocumentationIsOnTheSameLine() {
     val schema = RepoBuilder()
         .add("period.proto", """
              |enum Period {
@@ -849,7 +854,7 @@ class PrunerTest {
   }
 
   @Test
-  fun prunedFieldDocumentationsGetPruned(){
+  fun prunedFieldDocumentationsGetPruned() {
     val schema = RepoBuilder()
         .add("period.proto", """
              |enum Period {
@@ -1272,11 +1277,14 @@ class PrunerTest {
 
     assertThat(pruned.getType("squareup.Style")).isNull()
     assertThat(pruned.getType("squareup.MessageOption")).isNull()
+    assertThat(pruned.getType("google.protobuf.EnumValueOptions")).isNotNull()
+
     val authorType = pruned.getType("squareup.Author") as EnumType
     assertThat(authorType.constant("ZEUS")!!.options.fields().isEmpty()).isTrue()
     assertThat(authorType.constant("ARTEMIS")!!.options.fields().isEmpty()).isTrue()
     assertThat(authorType.constant("APOLLO")!!.options.fields().isEmpty()).isTrue()
-    assertThat(authorType.constant("POSEIDON")!!.options.fields().isEmpty()).isTrue()
+    // Options defined in google.protobuf.descriptor.proto are not pruned.
+    assertThat(authorType.constant("POSEIDON")!!.options.fields().values()).hasSize(1)
   }
 
   @Test
@@ -1322,10 +1330,14 @@ class PrunerTest {
     assertThat(pruned.getType("squareup.Style")).isNull()
     assertThat(pruned.getType("squareup.MessageOption")).isNull()
 
+    val enumValueOptions = pruned.getType("google.protobuf.FieldOptions") as MessageType
+    assertThat(enumValueOptions.field("deprecated")).isNotNull()
+
     val letterType = pruned.getType("squareup.Letter") as MessageType
     assertThat(letterType.field("header")!!.options.fields().isEmpty()).isTrue()
 
-    assertThat(letterType.field("add_margin")!!.options.fields().isEmpty()).isTrue()
+    // Options defined in google.protobuf.descriptor.proto are not pruned.
+    assertThat(letterType.field("add_margin")!!.options.fields().values()).hasSize(1)
     assertThat(letterType.field("add_margin")!!.isDeprecated).isTrue()
 
     assertThat(letterType.field("author")!!.options.fields().isEmpty()).isTrue()

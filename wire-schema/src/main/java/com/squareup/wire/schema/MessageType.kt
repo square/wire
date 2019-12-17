@@ -70,7 +70,7 @@ class MessageType private constructor(
    * such field.
    */
   fun extensionField(qualifiedName: String): Field? =
-    extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
+      extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
 
   /** Returns the field tagged `tag`, or null if this type has no such field.  */
   fun field(tag: Int): Field? {
@@ -150,7 +150,7 @@ class MessageType private constructor(
     markSet: MarkSet
   ): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
-    if (!markSet.contains(type)) {
+    if (!markSet.contains(type) && !Options.GOOGLE_PROTOBUF_OPTION_TYPES.contains(type)) {
       return when {
         // This type is not retained, and none of its nested types are retained, prune it.
         retainedNestedTypes.isEmpty() -> null
@@ -231,7 +231,7 @@ class MessageType private constructor(
         "${messageElement.groups[0].location}: 'group' is not supported"
       }
       val nestedTypes =
-        messageElement.nestedTypes.map { Type[packageName, protoType.nestedType(it.name), it] }
+          messageElement.nestedTypes.map { Type[packageName, protoType.nestedType(it.name), it] }
       return MessageType(
           type = protoType,
           location = messageElement.location,
