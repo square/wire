@@ -64,7 +64,11 @@ import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
+import com.squareup.wire.schema.Options
+import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
 import com.squareup.wire.schema.Options.Companion.ENUM_VALUE_OPTIONS
+import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
+import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
@@ -257,6 +261,7 @@ class KotlinGenerator private constructor(
             newName("reader", "reader")
             newName("Builder", "Builder")
             newName("builder", "builder")
+            newName("MESSAGE_OPTIONS", "MESSAGE_OPTIONS")
 
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
@@ -284,6 +289,7 @@ class KotlinGenerator private constructor(
     val companionBuilder = TypeSpec.companionObjectBuilder()
 
     addDefaultFields(type, companionBuilder, nameAllocator)
+    addOptionFields(type, companionBuilder, nameAllocator)
     addAdapter(type, companionBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
@@ -765,9 +771,30 @@ class KotlinGenerator private constructor(
     }
   }
 
+  private fun addOptionFields(
+    type: MessageType,
+    companionBuilder: TypeSpec.Builder,
+    nameAllocator: NameAllocator
+  ) {
+    val messageOptions = optionsField(MESSAGE_OPTIONS, nameAllocator["MESSAGE_OPTIONS"], type.options)
+    if (messageOptions != null) {
+      companionBuilder.addProperty(messageOptions)
+    }
+
+    type.fieldsAndOneOfFields.forEach { field ->
+      val optionsFieldName = "FIELD_OPTIONS_" + nameAllocator[field].toUpperCase(Locale.US)
+      val fieldOptions = optionsField(FIELD_OPTIONS, optionsFieldName, field.options)
+      if (fieldOptions != null) {
+        companionBuilder.addProperty(fieldOptions)
+      }
+    }
+  }
+
   private fun defaultFieldInitializer(protoType: ProtoType, defaultValue: Any): CodeBlock {
     val typeName = protoType.typeName
     return when {
+      defaultValue is List<*> -> defaultValue.toListFieldInitializer(protoType)
+      defaultValue is Map<*, *> -> defaultValue.toMapFieldInitializer(protoType)
       typeName == BOOLEAN -> CodeBlock.of("%L", defaultValue)
       typeName == INT -> defaultValue.toIntFieldInitializer()
       typeName == LONG -> defaultValue.toLongFieldInitializer()
@@ -780,6 +807,31 @@ class KotlinGenerator private constructor(
       protoType.isEnum -> CodeBlock.of("%T.%L", typeName, defaultValue)
       else -> throw IllegalStateException("$protoType is not an allowed scalar type")
     }
+  }
+
+  private fun List<*>.toListFieldInitializer(protoType: ProtoType): CodeBlock = buildCodeBlock {
+    add("listOf(")
+    var first = true
+    forEach {
+      if (!first) add(",")
+      first = false
+      add("\n⇥%L⇤", defaultFieldInitializer(protoType, it!!))
+    }
+    add("\n)")
+  }
+
+  private fun Map<*, *>.toMapFieldInitializer(protoType: ProtoType): CodeBlock = buildCodeBlock {
+    add("%T(", protoType.typeName)
+    var first = true
+    entries.forEach { entry ->
+      val field = schema.getField(entry.key as ProtoMember)
+      val valueInitializer = defaultFieldInitializer(field.type!!, entry.value!!)
+      val nameAllocator = nameAllocator(schema.getType(protoType))
+      if (!first) add(",")
+      first = false
+      add("\n⇥%L = %L⇤", nameAllocator[field], valueInitializer)
+    }
+    add("\n)")
   }
 
   private fun Any.toIntFieldInitializer(): CodeBlock = when (val int = valueToInt()) {
@@ -1047,6 +1099,27 @@ class KotlinGenerator private constructor(
         .build()
   }
 
+  private fun optionsField(optionsType: ProtoType, fieldName: String, options: Options): PropertySpec? {
+    val initializer = buildCodeBlock {
+      add("%T(", optionsType.typeName)
+      var empty = true
+      options.map.entries.forEach { entry ->
+        if (entry.key != FIELD_DEPRECATED && entry.key != PACKED) {
+          val optionField = schema.getField(entry.key)
+          val nameAllocator = nameAllocator(schema.getType(optionsType))
+          if (!empty) add(",")
+          add("\n⇥%L = %L⇤", nameAllocator[optionField], defaultFieldInitializer(optionField.type!!, entry.value!!))
+          empty = false
+        }
+      }
+      add("\n)")
+      if (empty) return null
+    }
+    return PropertySpec.builder(fieldName, optionsType.typeName)
+            .initializer(initializer)
+            .build()
+  }
+
   private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
       return when {
@@ -1117,6 +1190,9 @@ class KotlinGenerator private constructor(
 
     val valueName = nameAllocator["value"]
 
+    val primaryConstructor = FunSpec.constructorBuilder()
+            .addParameter(valueName, Int::class, OVERRIDE)
+
     val builder = TypeSpec.enumBuilder(type.simpleName)
         .apply {
           if (message.documentation.isNotBlank()) {
@@ -1124,18 +1200,39 @@ class KotlinGenerator private constructor(
           }
         }
         .addSuperinterface(WireEnum::class)
-        .primaryConstructor(FunSpec.constructorBuilder()
-            .addParameter(valueName, Int::class, OVERRIDE)
-            .build())
         .addProperty(PropertySpec.builder(valueName, Int::class)
             .initializer(valueName)
             .build())
         .addType(generateEnumCompanion(message))
 
+    val allOptionFieldsBuilder = mutableSetOf<ProtoMember>()
+
+    // Each enum constant option requires a constructor parameter and property
+    message.constants.forEach { constant ->
+      constant.options.map.keys.forEach { protoMember ->
+        if (allOptionFieldsBuilder.add(protoMember)) {
+          val optionField = schema.getField(protoMember)
+          primaryConstructor.addParameter(optionField.name, optionField.typeName)
+          builder.addProperty(PropertySpec.builder(optionField.name, optionField.typeName)
+                  .initializer(optionField.name)
+                  .build())
+        }
+      }
+    }
+
     message.constants.forEach { constant ->
       builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
           .addSuperclassConstructorParameter("%L", constant.tag)
           .apply {
+            allOptionFieldsBuilder.toList().forEach { protoMember ->
+              val field = schema.getField(protoMember)
+              val fieldValue = constant.options.map[protoMember]
+              if (fieldValue != null) {
+                addSuperclassConstructorParameter("%L", defaultFieldInitializer(field.type!!, fieldValue))
+              } else {
+                addSuperclassConstructorParameter("null")
+              }
+            }
             if (constant.documentation.isNotBlank()) {
               addKdoc("%L\n", constant.documentation)
             }
@@ -1148,10 +1245,16 @@ class KotlinGenerator private constructor(
           .build())
     }
 
-    return builder.build()
+    return builder.primaryConstructor(primaryConstructor.build())
+            .build()
   }
 
   private fun generateEnumCompanion(message: EnumType): TypeSpec {
+    val companionObjectBuilder = TypeSpec.companionObjectBuilder()
+    val options = optionsField(ENUM_OPTIONS, "ENUM_OPTIONS", message.options)
+    if (options != null) {
+      companionObjectBuilder.addProperty(options)
+    }
     val parentClassName = nameToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message)
     val valueName = nameAllocator["value"]
@@ -1168,10 +1271,10 @@ class KotlinGenerator private constructor(
           addCode("\n⇤}\n") // close the block
         }
         .build()
-    return TypeSpec.companionObjectBuilder()
-        .addFunction(fromValue)
-        .addProperty(generateEnumAdapter(message))
-        .build()
+
+    return companionObjectBuilder.addFunction(fromValue)
+            .addProperty(generateEnumAdapter(message))
+            .build()
   }
 
   /**
@@ -1294,12 +1397,17 @@ class KotlinGenerator private constructor(
         ProtoType.SINT64 to LONG,
         ProtoType.STRING to String::class.asClassName(),
         ProtoType.UINT32 to INT,
-        ProtoType.UINT64 to LONG
+        ProtoType.UINT64 to LONG,
+        FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
+        MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
+        ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
     )
     private val MESSAGE = Message::class.asClassName()
     private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
 
+    private val FIELD_DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated")
     private val ENUM_DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated")
+    private val PACKED = ProtoMember.get(FIELD_OPTIONS, "packed")
 
     @JvmStatic @JvmName("get")
     operator fun invoke(

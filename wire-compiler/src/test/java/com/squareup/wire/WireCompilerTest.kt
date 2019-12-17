@@ -469,6 +469,17 @@ class WireCompilerTest {
   }
 
   @Test
+  fun testCustomOptionsKotlin() {
+    val sources = arrayOf("custom_options.proto", "option_redacted.proto")
+    compileToKotlin(sources, "--named_files_only")
+
+    val outputs = arrayOf(
+            "com/squareup/wire/protos/custom_options/FooBar.kt",
+            "com/squareup/wire/protos/custom_options/MessageWithOptions.kt")
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
   fun testRedactedKotlin() {
     val sources = arrayOf("redacted_test.proto", "option_redacted.proto")
     compileToKotlin(sources)

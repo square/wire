@@ -1,0 +1,111 @@
+/*
+ * Copyright 2013 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package squareup.protos.custom_options;
+
+option java_package = "com.squareup.wire.protos.custom_options";
+
+import "google/protobuf/descriptor.proto";
+import "foreign.proto";
+import "option_redacted.proto";
+
+message FooBar {
+  extensions 100 to 200;
+
+  optional int32 foo = 1 [my_field_option_one = 17];
+  optional string bar = 2 [my_field_option_two = 33.5];
+  optional Nested baz = 3 [my_field_option_three = BAR];
+  optional uint64 qux = 4 [my_field_option_one = 18, my_field_option_two = 34.5];
+  repeated float fred = 5 [my_field_option_four = {
+      foo: 11, bar: "22", baz: { value: BAR }, fred : [444.0, 555.0],
+      nested: { foo: 33, fred: [100.0, 200.0] }
+  }, my_field_option_two = 99.9];
+  optional double daisy = 6 [my_field_option_four.baz.value = FOO];
+
+  repeated FooBar nested = 7 [(squareup.protos.redacted_option.redacted) = true];
+
+  message Nested {
+    optional FooBarBazEnum value = 1;
+  }
+
+  message More {
+    repeated int32 serial = 1;
+  }
+
+  enum FooBarBazEnum {
+    option enum_option = true;
+    FOO = 1 [enum_value_option=17, complex_enum_value_option={ serial: [ 99, 199 ] }];
+    BAR = 2 [squareup.protos.foreign.foreign_enum_value_option=true];
+    BAZ = 3 [enum_value_option=18, squareup.protos.foreign.foreign_enum_value_option=false];
+  }
+}
+
+extend google.protobuf.MessageOptions {
+  optional FooBar my_message_option_one = 50001;
+  optional float my_message_option_two = 50002;
+  optional FooBar my_message_option_three = 50003;
+  optional FooBar.FooBarBazEnum my_message_option_four = 50004;
+  optional FooBar my_message_option_five = 50005;
+  optional FooBar my_message_option_six = 50006;
+}
+
+extend google.protobuf.FieldOptions {
+  optional int32 my_field_option_one = 60001;
+  optional float my_field_option_two = 60002;
+  optional FooBar.FooBarBazEnum my_field_option_three = 60003;
+  optional FooBar my_field_option_four = 60004;
+}
+
+extend google.protobuf.EnumValueOptions {
+  optional int32 enum_value_option = 70000;
+  optional FooBar.More complex_enum_value_option = 70001;
+}
+
+extend google.protobuf.EnumOptions {
+  optional bool enum_option = 71000;
+}
+
+extend FooBar {
+  optional FooBar.FooBarBazEnum ext = 101;
+  repeated FooBar.FooBarBazEnum rep = 102;
+}
+
+message MessageWithOptions {
+  option (my_message_option_one).foo = 1234;
+  option (my_message_option_one.bar) = "5678";
+  option (my_message_option_one.baz.value) = BAZ;
+  option (my_message_option_one).qux = 18446744073709551615;
+  option (my_message_option_one).fred = 123.0;
+  option (my_message_option_one).fred = 321.0;
+  option (my_message_option_one).daisy = 456.0;
+  option (my_message_option_two) = 91011.0;
+  option (my_message_option_three) = {
+    foo: 11, bar: "22", baz: { value: BAR }, fred : [444.0, 555.0],
+    nested: { foo: 33, fred: [100.0, 200.0] }
+  };
+  option (my_message_option_four) = FOO;
+  option (squareup.protos.foreign.foreign_message_option).i = 9876;
+  option (my_message_option_five) = {
+    [squareup.protos.custom_options.ext]: BAZ,
+    [squareup.protos.custom_options.rep]: FOO,
+    [squareup.protos.custom_options.rep]: BAZ
+  };
+  option (my_message_option_six) = {
+    [squareup.protos.custom_options.rep]: [FOO, BAR],
+    nested: { foo: 44, [ext]: BAR },
+    nested: { foo: 55 }
+  };
+}
+
