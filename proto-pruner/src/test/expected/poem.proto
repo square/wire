@@ -6,7 +6,10 @@ message Poem {
   optional string title = 1;
   optional Style style = 2 [default = LONG];
   optional bool about_love = 3 [default = true];
-  repeated int32 path = 4;
+  repeated int32 path = 4 [
+    packed = true,
+    deprecated = true
+  ];
   optional string signature = 5 [default = "BQ"];
 }
 enum Style {

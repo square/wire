@@ -252,15 +252,10 @@ internal class Pruner(
   private fun addOptions(options: Collection<ProtoMember>, result: MutableList<Any?>) {
     for (member in options) {
       // If it's an extension, don't consider the entire enclosing type to be reachable.
-      if (!isExtensionField(member)) {
+      if (!schema.isExtensionField(member)) {
         result.add(member.type)
       }
       result.add(member)
     }
-  }
-
-  private fun isExtensionField(protoMember: ProtoMember): Boolean {
-    val type = schema.getType(protoMember.type)
-    return type is MessageType && type.extensionField(protoMember.member) != null
   }
 }

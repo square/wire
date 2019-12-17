@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
+import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
 import com.squareup.wire.schema.internal.parser.FieldElement
 
 class Field private constructor(
@@ -125,7 +126,9 @@ class Field private constructor(
 
     val memberName = if (isExtension) qualifiedName else name
     val protoMember = ProtoMember.get(enclosingType, memberName)
-    if (!markSet.contains(protoMember)) return null
+
+    if (!markSet.contains(protoMember) &&
+        !(GOOGLE_PROTOBUF_OPTION_TYPES.contains(enclosingType) && !isExtension)) return null
 
     return withOptions(options.retainAll(schema, markSet))
   }
@@ -152,7 +155,7 @@ class Field private constructor(
   }
 
   private fun isUsedAsOption(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Boolean {
-    for (protoFile in schema.getProtoFiles()) {
+    for (protoFile in schema.protoFiles) {
       if (protoFile.types.any { isUsedAsOption(markSet, enclosingType, it) }) return true
       if (protoFile.services.any { isUsedAsOption(markSet, enclosingType, it) }) return true
     }
@@ -166,7 +169,7 @@ class Field private constructor(
   ): Boolean {
     if (service.type() !in markSet) return false
 
-    val protoMember = ProtoMember.get(enclosingType, qualifiedName)
+    val protoMember = ProtoMember.get(enclosingType, if (isExtension) qualifiedName else name)
     if (service.options().assignsMember(protoMember)) return true
     if (service.rpcs().any { it.options.assignsMember(protoMember) }) return true
 
@@ -176,7 +179,7 @@ class Field private constructor(
   private fun isUsedAsOption(markSet: MarkSet, enclosingType: ProtoType, type: Type): Boolean {
     if (type.type!! !in markSet) return false
 
-    val protoMember = ProtoMember.get(enclosingType, qualifiedName)
+    val protoMember = ProtoMember.get(enclosingType, if (isExtension) qualifiedName else name)
 
     when (type) {
       is MessageType -> {

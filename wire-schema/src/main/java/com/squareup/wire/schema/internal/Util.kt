@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.schema.internal
 
+import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
+import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.internal.parser.OptionElement
 
 object Util {
@@ -78,7 +80,10 @@ object Util {
 
   /** True if the supplied value is in the valid tag range and not reserved.  */
   fun isValidTag(value: Int) =
-    value in MIN_TAG_VALUE until RESERVED_TAG_VALUE_START ||
-        value in (RESERVED_TAG_VALUE_END + 1) until MAX_TAG_VALUE + 1
+      value in MIN_TAG_VALUE until RESERVED_TAG_VALUE_START ||
+          value in (RESERVED_TAG_VALUE_END + 1) until MAX_TAG_VALUE + 1
+}
 
+internal fun ProtoMember.isGoogleProtobufOptionType(): Boolean {
+  return GOOGLE_PROTOBUF_OPTION_TYPES.contains(type)
 }
