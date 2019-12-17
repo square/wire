@@ -18,26 +18,26 @@ package com.squareup.wire.schema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class IdentifierSetTest {
+class PruningRulesTest {
   @Test
   fun enclosing() {
-    assertThat(IdentifierSet.enclosing("a.b.Outer#member")).isEqualTo("a.b.Outer")
-    assertThat(IdentifierSet.enclosing("a.b.Outer")).isEqualTo("a.b.*")
-    assertThat(IdentifierSet.enclosing("a.b.*")).isEqualTo("a.*")
-    assertThat(IdentifierSet.enclosing("a.*")).isEqualTo("*")
-    assertThat(IdentifierSet.enclosing("*")).isNull()
+    assertThat(PruningRules.enclosing("a.b.Outer#member")).isEqualTo("a.b.Outer")
+    assertThat(PruningRules.enclosing("a.b.Outer")).isEqualTo("a.b.*")
+    assertThat(PruningRules.enclosing("a.b.*")).isEqualTo("a.*")
+    assertThat(PruningRules.enclosing("a.*")).isEqualTo("*")
+    assertThat(PruningRules.enclosing("*")).isNull()
   }
 
   @Test
   fun enclosingOnNestedClass() {
-    assertThat(IdentifierSet.enclosing("a.b.Outer.Inner#member")).isEqualTo("a.b.Outer.Inner")
-    assertThat(IdentifierSet.enclosing("a.b.Outer.Inner")).isEqualTo("a.b.Outer.*")
-    assertThat(IdentifierSet.enclosing("a.b.Outer.*")).isEqualTo("a.b.*")
+    assertThat(PruningRules.enclosing("a.b.Outer.Inner#member")).isEqualTo("a.b.Outer.Inner")
+    assertThat(PruningRules.enclosing("a.b.Outer.Inner")).isEqualTo("a.b.Outer.*")
+    assertThat(PruningRules.enclosing("a.b.Outer.*")).isEqualTo("a.b.*")
   }
 
   @Test
   fun empty() {
-    val set = IdentifierSet.Builder().build()
+    val set = PruningRules.Builder().build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
   }
@@ -45,7 +45,7 @@ class IdentifierSetTest {
   /** Note that including a type includes nested members, but not nested types.  */
   @Test
   fun includeType() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .include("a.b.Message")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
@@ -57,7 +57,7 @@ class IdentifierSetTest {
 
   @Test
   fun includeMember() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .include("a.b.Message#member")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.UNSPECIFIED)
@@ -70,7 +70,7 @@ class IdentifierSetTest {
 
   @Test
   fun includePackage() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .include("a.b.*")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
@@ -83,7 +83,7 @@ class IdentifierSetTest {
 
   @Test
   fun includeAll() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .include("*")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
@@ -92,7 +92,7 @@ class IdentifierSetTest {
 
   @Test
   fun excludeType() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .exclude("a.b.Message")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
@@ -103,7 +103,7 @@ class IdentifierSetTest {
 
   @Test
   fun excludeMember() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .exclude("a.b.Message#member")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
@@ -115,7 +115,7 @@ class IdentifierSetTest {
 
   @Test
   fun excludePackage() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .exclude("a.b.*")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
@@ -128,7 +128,7 @@ class IdentifierSetTest {
 
   @Test
   fun excludePackageTakesPrecedenceOverIncludeType() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .exclude("a.b.*")
         .include("a.b.Message")
         .build()
@@ -142,7 +142,7 @@ class IdentifierSetTest {
 
   @Test
   fun excludeTypeTakesPrecedenceOverIncludeMember() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .exclude("a.b.Message")
         .include("a.b.Message#member")
         .build()
@@ -155,7 +155,7 @@ class IdentifierSetTest {
 
   @Test
   fun excludeMemberTakesPrecedenceOverIncludeType() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .exclude("a.b.Message#member")
         .include("a.b.Message")
         .build()
@@ -168,7 +168,7 @@ class IdentifierSetTest {
 
   @Test
   fun trackingUnusedIncludes() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .include("a.*")
         .include("b.IncludedType")
         .include("c.IncludedMember#member")
@@ -188,7 +188,7 @@ class IdentifierSetTest {
 
   @Test
   fun trackingUnusedExcludes() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .exclude("a.*")
         .exclude("b.ExcludedType")
         .exclude("c.ExcludedMember#member")
@@ -208,7 +208,7 @@ class IdentifierSetTest {
 
   @Test
   fun trackingUnusedIncludesPrecedence() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .include("a.*")
         .include("a.IncludedType")
         .build()
@@ -218,7 +218,7 @@ class IdentifierSetTest {
 
   @Test
   fun trackingUnusedExcludesPrecedence() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .exclude("a.*")
         .exclude("a.IncludedType")
         .build()
@@ -228,7 +228,7 @@ class IdentifierSetTest {
 
   @Test
   fun trackingUnusedPrecedence() {
-    val set = IdentifierSet.Builder()
+    val set = PruningRules.Builder()
         .include("a.*")
         .exclude("a.*")
         .build()
@@ -237,7 +237,7 @@ class IdentifierSetTest {
     assertThat(set.unusedIncludes()).containsExactly("a.*")
   }
 
-  private fun policy(set: IdentifierSet, identifier: String): Policy {
+  private fun policy(set: PruningRules, identifier: String): Policy {
     return if (identifier.contains("#")) {
       val protoMember = ProtoMember.get(identifier)
       if (set.includes(protoMember)) return Policy.INCLUDED

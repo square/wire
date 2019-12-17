@@ -25,9 +25,9 @@ import java.util.Deque
  */
 internal class Pruner(
   private val schema: Schema,
-  private val identifierSet: IdentifierSet
+  private val pruningRules: PruningRules
 ) {
-  private val marks = MarkSet(identifierSet)
+  private val marks = MarkSet(pruningRules)
   /**
    * [types][ProtoType] and [members][ProtoMember] whose immediate dependencies have not
    * yet been visited.
@@ -82,7 +82,7 @@ internal class Pruner(
   }
 
   private fun markRoots(protoType: ProtoType) {
-    if (identifierSet.includes(protoType)) {
+    if (pruningRules.includes(protoType)) {
       marks.root(protoType)
       queue.add(protoType)
       return
@@ -92,7 +92,7 @@ internal class Pruner(
     for (reachable in reachableObjects(protoType)) {
       if (reachable !is ProtoMember) continue
       if (!isRetainedVersion(reachable)) continue
-      if (identifierSet.includes(reachable)) {
+      if (pruningRules.includes(reachable)) {
         marks.root(reachable)
         marks.mark(reachable.type) // Consider this type as visited.
         queue.add(reachable)
@@ -107,7 +107,7 @@ internal class Pruner(
 
     if (type is MessageType) {
       val field = type.field(member) ?: type.extensionField(member)!!
-      return identifierSet.isRetainedVersion(field.options)
+      return pruningRules.isRetainedVersion(field.options)
     }
 
     return true
@@ -238,9 +238,9 @@ internal class Pruner(
       }
     }
 
-    addOptions(options.fields(identifierSet).values(), result)
+    addOptions(options.fields(pruningRules).values(), result)
     if (fileOptions != null) {
-      addOptions(fileOptions.fields(identifierSet).values(), result)
+      addOptions(fileOptions.fields(pruningRules).values(), result)
     }
 
     return result

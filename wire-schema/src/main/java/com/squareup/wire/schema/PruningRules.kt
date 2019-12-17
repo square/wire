@@ -16,11 +16,20 @@
 package com.squareup.wire.schema
 
 /**
- * A heterogeneous set of rules to include and exclude types and members. If a member is included in
- * the set, its type is implicitly also included. A type that is included without a specific member
- * implicitly includes all of that type's members, but not its nested types.
+ * A set of rules that describes which types and members to retain and which to remove.
  *
- * Rules in this set may be in the following forms:
+ * Members may be pruned using either their identifier (package, type name, member name) or their
+ * version (since and until options).
+ *
+ * Despite the builder, instances of this class are not safe for concurrent use.
+ *
+ * ### Identifier Matching
+ *
+ * If a member is included in the set, its type is implicitly also included. A type that is included
+ * without a specific member implicitly includes all of that type's members, but not its nested
+ * types.
+ *
+ * Identifiers in this set may be in the following forms:
  *
  *  * Package names, followed by `.*`, like `squareup.protos.person.*`. This matches types and
  *    services defined in the package and its descendant packages.
@@ -42,9 +51,23 @@ package com.squareup.wire.schema
  * If the includes set is empty, that implies that all elements should be included. Use this to
  * exclude unwanted types and members without also including everything else.
  *
- * Despite the builder, instances of this class are not safe for concurrent use.
+ * ### Version Matching
+ *
+ * Members may be declared with `wire.since` and `wire.until` options. For example, these options
+ * declare a field `age` that was replaced with `birth_date` in version 5:
+ *
+ * ```
+ *   optional int32 age = 3 [(wire.until) = 5];
+ *   optional Date birth_date = 4 [(wire.since) = 5];
+ * ```
+ *
+ * Client code should typically target a single version. In this example, versions <= 4 will have
+ * the `age` field only and versions >= 5 will have the `birth_date` field only.
+ *
+ * Service code that supports many clients should support the union of versions of all supported
+ * clients. Such code will have both the `age` and `birth_date` fields.
  */
-class IdentifierSet private constructor(builder: Builder) {
+class PruningRules private constructor(builder: Builder) {
   private val includes = builder.includes.toSet()
   private val excludes = builder.excludes.toSet()
   private val oldest = builder.oldest
@@ -53,7 +76,7 @@ class IdentifierSet private constructor(builder: Builder) {
   private val usedExcludes = mutableSetOf<String>()
 
   val isEmpty: Boolean
-    get() = includes.isEmpty() && excludes.isEmpty()
+    get() = includes.isEmpty() && excludes.isEmpty() && oldest == null && newest == null
 
   /** Returns true unless [options] specifies a version that is outside of the configured range. */
   fun isRetainedVersion(options: Options): Boolean {
@@ -186,11 +209,11 @@ class IdentifierSet private constructor(builder: Builder) {
       this.newest = newest
     }
 
-    fun build(): IdentifierSet {
+    fun build(): PruningRules {
       check((oldest ?: Long.MIN_VALUE) <= (newest ?: Long.MAX_VALUE)) {
         "expected oldest $oldest <= newest $newest"
       }
-      return IdentifierSet(this)
+      return PruningRules(this)
     }
   }
 

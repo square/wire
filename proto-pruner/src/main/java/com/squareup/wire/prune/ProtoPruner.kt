@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.prune
 
-import com.squareup.wire.schema.IdentifierSet
+import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.NewSchemaLoader
 import com.squareup.wire.schema.ProtoFile
@@ -28,14 +28,14 @@ class ProtoPruner(
   private val sourcePath: List<Location>,
   private val protoPath: List<Location>,
   private val outPath: String,
-  private val identifierSet: IdentifierSet
+  private val pruningRules: PruningRules
 ) : Runnable {
   override fun run() {
     NewSchemaLoader(fs).use { loader ->
       loader.initRoots(sourcePath, protoPath)
 
       val schema = loader.loadSchema()
-          .prune(identifierSet)
+          .prune(pruningRules)
 
       val sourcePaths = loader.sourcePathFiles.map { it.location.path }.toSet()
 
@@ -63,7 +63,7 @@ class ProtoPruner(
     @JvmStatic fun main(vararg args: String) {
       var outPath: String? = null
       val inLocations = mutableListOf<Location>()
-      val identifierSetBuilder = IdentifierSet.Builder()
+      val identifierSetBuilder = PruningRules.Builder()
 
       for (arg in args) {
         if (arg == "--help") {
@@ -116,7 +116,7 @@ class ProtoPruner(
           sourcePath = inLocations,
           protoPath = listOf(),
           outPath = outPath,
-          identifierSet = identifierSetBuilder.build()
+          pruningRules = identifierSetBuilder.build()
       ).run()
     }
   }

@@ -188,7 +188,7 @@ data class WireRun(
     for (target in targetsExclusiveLast) {
       val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)
 
-      val identifierSet: IdentifierSet = IdentifierSet.Builder()
+      val pruningRules: PruningRules = PruningRules.Builder()
           .include(target.includes)
           .exclude(target.excludes)
           .build()
@@ -196,7 +196,7 @@ data class WireRun(
       val i = typesToHandle.iterator()
       while (i.hasNext()) {
         val type = i.next()
-        if (identifierSet.includes(type.type!!)) {
+        if (pruningRules.includes(type.type!!)) {
           schemaHandler.handle(type)
           // We don't let other targets handle this one.
           if (target.exclusive) i.remove()
@@ -206,22 +206,22 @@ data class WireRun(
       val j = servicesToHandle.iterator()
       while (j.hasNext()) {
         val service = j.next()
-        if (identifierSet.includes(service.type())) {
+        if (pruningRules.includes(service.type())) {
           schemaHandler.handle(service)
           // We don't let other targets handle this one.
           if (target.exclusive) j.remove()
         }
       }
 
-      if (identifierSet.unusedIncludes().isNotEmpty()) {
+      if (pruningRules.unusedIncludes().isNotEmpty()) {
         logger.info("""Unused includes in targets:
-            |  ${identifierSet.unusedExcludes().joinToString(separator = "\n  ")}
+            |  ${pruningRules.unusedExcludes().joinToString(separator = "\n  ")}
             """.trimMargin())
       }
 
-      if (identifierSet.unusedExcludes().isNotEmpty()) {
+      if (pruningRules.unusedExcludes().isNotEmpty()) {
         logger.info("""Unused exclude in targets:
-            |  ${identifierSet.unusedExcludes().joinToString(separator = "\n  ")}
+            |  ${pruningRules.unusedExcludes().joinToString(separator = "\n  ")}
             """.trimMargin())
       }
     }
@@ -243,20 +243,20 @@ data class WireRun(
       return schema
     }
 
-    val identifierSet = IdentifierSet.Builder()
+    val pruningRules = PruningRules.Builder()
         .include(treeShakingRoots)
         .exclude(treeShakingRubbish)
         .oldest(oldest)
         .newest(newest)
         .build()
 
-    val result = schema.prune(identifierSet)
+    val result = schema.prune(pruningRules)
 
-    for (rule in identifierSet.unusedIncludes()) {
+    for (rule in pruningRules.unusedIncludes()) {
       logger.info("Unused element in treeShakingRoots: $rule")
     }
 
-    for (rule in identifierSet.unusedExcludes()) {
+    for (rule in pruningRules.unusedExcludes()) {
       logger.info("Unused element in treeShakingRubbish: $rule")
     }
 

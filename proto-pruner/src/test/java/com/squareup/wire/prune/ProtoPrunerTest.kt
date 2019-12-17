@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.prune
 
-import com.squareup.wire.schema.IdentifierSet
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.PruningRules
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -43,7 +43,7 @@ class ProtoPrunerTest {
 
   @Test
   fun testFooBar() {
-    val identifierSet = IdentifierSet.Builder()
+    val identifierSet = PruningRules.Builder()
         .include("squareup.foobar.Foo")
         .include("squareup.foobar.Bar")
         .build()
@@ -57,7 +57,7 @@ class ProtoPrunerTest {
 
   @Test
   fun testSimpleMessage() {
-    val identifierSet = IdentifierSet.Builder()
+    val identifierSet = PruningRules.Builder()
         .include("squareup.protos.simple.SimpleMessage")
         .exclude("google.protobuf.*")
         .build()
@@ -73,7 +73,7 @@ class ProtoPrunerTest {
 
   @Test
   fun testOptions() {
-    val identifierSet = IdentifierSet.Builder()
+    val identifierSet = PruningRules.Builder()
         .include("squareup.options.letter.Letter")
         .include("squareup.options.letter.Post")
         .build()
@@ -88,7 +88,7 @@ class ProtoPrunerTest {
 
   @Test
   fun testOptionsExcludingProtobuf() {
-    val identifierSet = IdentifierSet.Builder()
+    val identifierSet = PruningRules.Builder()
         .include("squareup.options.poem.Poem")
         .include("squareup.options.poem.Court")
         .exclude("google.protobuf.*")
@@ -101,13 +101,13 @@ class ProtoPrunerTest {
     assertOutputs(outputs)
   }
 
-  private fun invokeProtoPruner(identifierSet: IdentifierSet) {
+  private fun invokeProtoPruner(pruningRules: PruningRules) {
     val protoPruner = ProtoPruner(
         fs = FileSystems.getDefault(),
         sourcePath = listOf(Location.get("../wire-tests/src/commonTest/proto/java")),
         protoPath = listOf(),
         outPath = testDir.absolutePath,
-        identifierSet = identifierSet
+        pruningRules = pruningRules
     )
     protoPruner.run()
   }
