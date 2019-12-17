@@ -460,4 +460,28 @@ public final class JavaGeneratorTest {
     assertThat(repoBuilder.generateCode("common.proto.Person"))
         .contains("public final Gender common_proto_Gender;");
   }
+
+  @Test
+  public void generateTypeUsesPackageNameOnFieldAndClassNameClashWithinPackage() throws Exception {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("a.proto", ""
+            + "package common.proto;\n"
+            + "enum Status {\n"
+            + "  Status_Approved = 0;\n"
+            + "  Status_Denied = 1;\n"
+            + "}\n"
+            + "enum AnotherStatus {\n"
+            + "  AnotherStatus_Processing = 0;\n"
+            + "  AnotherStatus_Completed = 1;\n"
+            + "}\n"
+            + "message A {\n"
+            + "  message B {\n"
+            + "    optional Status Status = 1;\n"
+            + "  }\n"
+            + "  repeated B b = 1;"
+            + "  optional AnotherStatus Status = 2;\n"
+            + "}\n");
+    assertThat(repoBuilder.generateCode("common.proto.A"))
+        .contains("public final AnotherStatus common_proto_Status;");
+  }
 }

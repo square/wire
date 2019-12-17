@@ -777,6 +777,29 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("val common_proto_Gender: Gender"))
   }
 
+  @Test fun generateTypeUsesPackageNameOnFieldAndClassNameClashWithinPackage() {
+    val repoBuilder = RepoBuilder()
+        .add("a.proto", """
+        |package common.proto;
+        |enum Status {
+        |  Status_Approved = 0;
+        |  Status_Denied = 1;
+        |}
+        |enum AnotherStatus {
+        |  AnotherStatus_Processing = 0;
+        |  AnotherStatus_Completed = 1;
+        |}
+        |message A {
+        |  message B {
+        |    optional Status Status = 1;
+        |  }
+        |  repeated B b = 1;
+        |  optional AnotherStatus Status = 2;
+        |}""".trimMargin())
+    val code = repoBuilder.generateKotlin("common.proto.A")
+    assertTrue(code.contains("val common_proto_Status: AnotherStatus"))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {
