@@ -16,7 +16,7 @@
 package com.squareup.wire.sample;
 
 import com.google.common.collect.ImmutableSet;
-import com.squareup.wire.schema.IdentifierSet;
+import com.squareup.wire.schema.PruningRules;
 import java.io.IOException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -58,19 +58,19 @@ public class CodegenSampleMojo extends AbstractMojo implements CodegenSample.Log
 
     ImmutableSet<String> protoPathsSet = ImmutableSet.copyOf(protoPaths);
     ImmutableSet<String> protoFilesSet = ImmutableSet.copyOf(protoFiles);
-    IdentifierSet identifierSet = identifierSet();
+    PruningRules pruningRules = identifierSet();
 
     try {
       CodegenSample codeGenerator = new CodegenSample(
-          this, protoPathsSet, protoFilesSet, generatedSourceDirectory, identifierSet);
+          this, protoPathsSet, protoFilesSet, generatedSourceDirectory, pruningRules);
       codeGenerator.execute();
     } catch (IOException e) {
       throw new MojoExecutionException("failed to generate sources", e);
     }
   }
 
-  private IdentifierSet identifierSet() {
-    IdentifierSet.Builder identifierSetBuilder = new IdentifierSet.Builder();
+  private PruningRules identifierSet() {
+    PruningRules.Builder identifierSetBuilder = new PruningRules.Builder();
     if (includes != null) {
       for (String identifier : includes) {
         identifierSetBuilder.include(identifier);

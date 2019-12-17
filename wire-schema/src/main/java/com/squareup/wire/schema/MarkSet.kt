@@ -27,7 +27,7 @@ package com.squareup.wire.schema
  *  3. Retaining which members and types have been marked.
  */
 class MarkSet(
-  val identifierSet: IdentifierSet
+  val pruningRules: PruningRules
 ) {
   /** The types to retain. We may retain a type but not all of its members. */
   val types = mutableSetOf<ProtoType>()
@@ -40,7 +40,7 @@ class MarkSet(
    * members of the same type.
    */
   fun root(protoMember: ProtoMember) {
-    check(!identifierSet.excludes(protoMember))
+    check(!pruningRules.excludes(protoMember))
     types.add(protoMember.type)
     val memberSet = members.getOrPut(protoMember.type, { mutableSetOf() })
     memberSet += protoMember
@@ -48,7 +48,7 @@ class MarkSet(
 
   /** Marks `type`, throwing if it is explicitly excluded. */
   fun root(type: ProtoType) {
-    check(!identifierSet.excludes(type))
+    check(!pruningRules.excludes(type))
     types.add(type)
   }
 
@@ -57,7 +57,7 @@ class MarkSet(
    * the type will be retained, and reachable objects should be traversed.
    */
   fun mark(type: ProtoType): Boolean {
-    if (identifierSet.excludes(type)) return false
+    if (pruningRules.excludes(type)) return false
     return types.add(type)
   }
 
@@ -66,7 +66,7 @@ class MarkSet(
    * the member will be retained, and reachable objects should be traversed.
    */
   fun mark(protoMember: ProtoMember): Boolean {
-    if (identifierSet.excludes(protoMember)) return false
+    if (pruningRules.excludes(protoMember)) return false
     types.add(protoMember.type)
     val memberSet = members.getOrPut(protoMember.type, { mutableSetOf() })
     return memberSet.add(protoMember)
@@ -79,7 +79,7 @@ class MarkSet(
 
   /** Returns true if `member` is marked and should be retained. */
   operator fun contains(protoMember: ProtoMember): Boolean {
-    if (identifierSet.excludes(protoMember)) return false
+    if (pruningRules.excludes(protoMember)) return false
     val memberSet = members[protoMember.type]
     return memberSet != null && memberSet.contains(protoMember)
   }

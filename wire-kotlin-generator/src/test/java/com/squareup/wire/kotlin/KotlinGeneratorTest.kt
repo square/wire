@@ -16,7 +16,7 @@
 package com.squareup.wire.kotlin
 
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.wire.schema.IdentifierSet
+import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.RepoBuilder
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -95,7 +95,7 @@ class KotlinGeneratorTest {
           |}""".trimMargin())
         .schema()
 
-    val pruned = schema.prune(IdentifierSet.Builder().include("A.B").build())
+    val pruned = schema.prune(PruningRules.Builder().include("A.B").build())
 
     val kotlinGenerator = KotlinGenerator.invoke(pruned)
     val typeSpec = kotlinGenerator.generateType(pruned.getType("A"))

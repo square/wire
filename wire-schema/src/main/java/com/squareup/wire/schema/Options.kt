@@ -250,12 +250,12 @@ class Options(
   }
 
   fun fields(): Multimap<ProtoType, ProtoMember> {
-    return fields(IdentifierSet.Builder().build())
+    return fields(PruningRules.Builder().build())
   }
 
-  fun fields(identifierSet: IdentifierSet): Multimap<ProtoType, ProtoMember> {
+  fun fields(pruningRules: PruningRules): Multimap<ProtoType, ProtoMember> {
     return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
-      gatherFields(it, optionType, entries?.toMap(), identifierSet)
+      gatherFields(it, optionType, entries?.toMap(), pruningRules)
     }
   }
 
@@ -263,20 +263,20 @@ class Options(
     sink: Multimap<ProtoType, ProtoMember>,
     type: ProtoType,
     o: Any?,
-    identifierSet: IdentifierSet
+    pruningRules: PruningRules
   ) {
     when (o) {
       is Map<*, *> -> {
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
-          if (identifierSet.excludes(protoMember)) continue
+          if (pruningRules.excludes(protoMember)) continue
           sink.put(type, protoMember)
-          gatherFields(sink, protoMember.type, value!!, identifierSet)
+          gatherFields(sink, protoMember.type, value!!, pruningRules)
         }
       }
       is List<*> -> {
         for (e in o) {
-          gatherFields(sink, type, e!!, identifierSet)
+          gatherFields(sink, type, e!!, pruningRules)
         }
       }
     }

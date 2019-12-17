@@ -95,15 +95,15 @@ class CommandLineOptionsTest {
   @Test
   fun roots() {
     var compiler = parseArgs("--java_out=.")
-    assertThat(compiler.identifierSet.isEmpty).isTrue()
+    assertThat(compiler.pruningRules.isEmpty).isTrue()
 
     compiler = parseArgs("--java_out=.", "--includes=com.example.Foo")
-    assertThat(compiler.identifierSet.includes(ProtoType.get("com.example.Foo"))).isTrue()
-    assertThat(compiler.identifierSet.includes(ProtoType.get("com.example.Bar"))).isFalse()
+    assertThat(compiler.pruningRules.includes(ProtoType.get("com.example.Foo"))).isTrue()
+    assertThat(compiler.pruningRules.includes(ProtoType.get("com.example.Bar"))).isFalse()
 
     compiler = parseArgs("--java_out=.", "--includes=com.example.Foo,com.example.Bar")
-    assertThat(compiler.identifierSet.includes(ProtoType.get("com.example.Foo"))).isTrue()
-    assertThat(compiler.identifierSet.includes(ProtoType.get("com.example.Bar"))).isTrue()
+    assertThat(compiler.pruningRules.includes(ProtoType.get("com.example.Foo"))).isTrue()
+    assertThat(compiler.pruningRules.includes(ProtoType.get("com.example.Bar"))).isTrue()
   }
 
   private fun parseArgs(vararg args: String) = WireCompiler.forArgs(args = *args)

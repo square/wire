@@ -20,8 +20,8 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import com.squareup.wire.java.JavaGenerator
-import com.squareup.wire.schema.IdentifierSet
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.SchemaLoader
 import java.io.File
@@ -36,13 +36,13 @@ class CodegenSample(
   private val sources: Set<String>,
   private val protos: Set<String>,
   private val generatedSourceDirectory: String,
-  private val identifierSet: IdentifierSet
+  private val pruningRules: PruningRules
 ) {
   @Throws(IOException::class)
   fun execute() {
     var schema = loadSchema()
 
-    if (!identifierSet.isEmpty) {
+    if (!pruningRules.isEmpty) {
       schema = retainRoots(schema)
     }
 
@@ -83,7 +83,7 @@ class CodegenSample(
     val stopwatch = Stopwatch.createStarted()
     val oldSize = countTypes(schema)
 
-    val prunedSchema = schema.prune(identifierSet)
+    val prunedSchema = schema.prune(pruningRules)
     val newSize = countTypes(prunedSchema)
 
     log.info("Pruned schema from %s types to %s types in %s", oldSize, newSize, stopwatch)

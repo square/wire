@@ -17,7 +17,7 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.schema.IdentifierSet;
+import com.squareup.wire.schema.PruningRules;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
@@ -430,7 +430,7 @@ public final class JavaGeneratorTest {
             + "}\n")
         .schema();
 
-    Schema pruned = schema.prune(new IdentifierSet.Builder()
+    Schema pruned = schema.prune(new PruningRules.Builder()
         .include("A.B")
         .build());
 
