@@ -63,7 +63,7 @@ class ProtoPruner(
     @JvmStatic fun main(vararg args: String) {
       var outPath: String? = null
       val inLocations = mutableListOf<Location>()
-      val identifierSetBuilder = PruningRules.Builder()
+      val pruningRulesBuilder = PruningRules.Builder()
 
       for (arg in args) {
         if (arg == "--help") {
@@ -88,17 +88,17 @@ class ProtoPruner(
         } else if (arg.startsWith("--in=")) {
           inLocations.add(Location.get(arg.substringAfter('=')))
         } else if (arg.startsWith("--includes=")) {
-          identifierSetBuilder.include(arg.substringAfter('=').split(',').map(String::trim))
+          pruningRulesBuilder.include(arg.substringAfter('=').split(',').map(String::trim))
         } else if (arg.startsWith("--excludes=")) {
-          identifierSetBuilder.exclude(arg.substringAfter('=').split(',').map(String::trim))
+          pruningRulesBuilder.exclude(arg.substringAfter('=').split(',').map(String::trim))
         } else if (arg.startsWith("--")) {
           throw IllegalArgumentException("Unknown argument: $arg")
         } else {
           File(arg).forEachLine { line ->
             if (line.startsWith("+")) {
-              identifierSetBuilder.include(line.substring(1))
+              pruningRulesBuilder.include(line.substring(1))
             } else if (line.startsWith("-")) {
-              identifierSetBuilder.exclude(line.substring(1))
+              pruningRulesBuilder.exclude(line.substring(1))
             }
           }
         }
@@ -116,7 +116,7 @@ class ProtoPruner(
           sourcePath = inLocations,
           protoPath = listOf(),
           outPath = outPath,
-          pruningRules = identifierSetBuilder.build()
+          pruningRules = pruningRulesBuilder.build()
       ).run()
     }
   }

@@ -20,7 +20,7 @@ import java.util.ArrayDeque
 import java.util.Deque
 
 /**
- * Creates a new schema that contains only the types selected by an identifier set, including their
+ * Creates a new schema that contains only the types selected by the pruning rules, including their
  * transitive dependencies.
  */
 internal class Pruner(

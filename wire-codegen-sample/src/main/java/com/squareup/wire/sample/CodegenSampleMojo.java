@@ -58,7 +58,7 @@ public class CodegenSampleMojo extends AbstractMojo implements CodegenSample.Log
 
     ImmutableSet<String> protoPathsSet = ImmutableSet.copyOf(protoPaths);
     ImmutableSet<String> protoFilesSet = ImmutableSet.copyOf(protoFiles);
-    PruningRules pruningRules = identifierSet();
+    PruningRules pruningRules = pruningRules();
 
     try {
       CodegenSample codeGenerator = new CodegenSample(
@@ -69,19 +69,19 @@ public class CodegenSampleMojo extends AbstractMojo implements CodegenSample.Log
     }
   }
 
-  private PruningRules identifierSet() {
-    PruningRules.Builder identifierSetBuilder = new PruningRules.Builder();
+  private PruningRules pruningRules() {
+    PruningRules.Builder pruningRulesBuilder = new PruningRules.Builder();
     if (includes != null) {
-      for (String identifier : includes) {
-        identifierSetBuilder.include(identifier);
+      for (String rule : includes) {
+        pruningRulesBuilder.include(rule);
       }
     }
     if (excludes != null) {
-      for (String identifier : excludes) {
-        identifierSetBuilder.exclude(identifier);
+      for (String rule : excludes) {
+        pruningRulesBuilder.exclude(rule);
       }
     }
-    return identifierSetBuilder.build();
+    return pruningRulesBuilder.build();
   }
 
   @Override public void info(String format, Object... args) {

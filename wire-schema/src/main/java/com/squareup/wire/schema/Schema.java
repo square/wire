@@ -68,7 +68,7 @@ public final class Schema {
 
   /**
    * Returns a copy of this schema that retains only the types and services selected by {@code
-   * identifierSet}, plus their transitive dependencies.
+   * pruningRules}, plus their transitive dependencies.
    */
   public Schema prune(PruningRules pruningRules) {
     return new Pruner(this, pruningRules).prune();

@@ -70,7 +70,7 @@ class ProtoFile private constructor(
     return javaPackage?.toString()
   }
 
-  /** Returns a new proto file that omits types and services not in `identifiers`. */
+  /** Returns a new proto file that omits types and services not in `pruningRules`. */
   fun retainAll(schema: Schema, markSet: MarkSet): ProtoFile {
     val retainedTypes = types.mapNotNull { it.retainAll(schema, markSet) }
 

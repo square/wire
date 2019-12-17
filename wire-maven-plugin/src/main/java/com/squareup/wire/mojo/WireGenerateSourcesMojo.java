@@ -80,7 +80,7 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
       Schema schema = loadSchema(directories, protoFilesList);
       Profile profile = loadProfile(schema);
 
-      PruningRules pruningRules = identifierSet();
+      PruningRules pruningRules = pruningRules();
       if (!pruningRules.isEmpty()) {
         schema = retainRoots(pruningRules, schema);
       }
@@ -109,19 +109,19 @@ public class WireGenerateSourcesMojo extends AbstractMojo {
     }
   }
 
-  private PruningRules identifierSet() {
-    PruningRules.Builder identifierSetBuilder = new PruningRules.Builder();
+  private PruningRules pruningRules() {
+    PruningRules.Builder pruningRulesBuilder = new PruningRules.Builder();
     if (includes != null) {
-      for (String identifier : includes) {
-        identifierSetBuilder.include(identifier);
+      for (String rule : includes) {
+        pruningRulesBuilder.include(rule);
       }
     }
     if (excludes != null) {
-      for (String identifier : excludes) {
-        identifierSetBuilder.exclude(identifier);
+      for (String rule : excludes) {
+        pruningRulesBuilder.exclude(rule);
       }
     }
-    return identifierSetBuilder.build();
+    return pruningRulesBuilder.build();
   }
 
   private Schema retainRoots(PruningRules pruningRules, Schema schema) {
