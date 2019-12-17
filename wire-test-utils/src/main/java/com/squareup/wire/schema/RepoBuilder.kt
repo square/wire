@@ -21,8 +21,6 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.java.JavaGenerator
-import com.squareup.wire.java.Profile
-import com.squareup.wire.java.ProfileLoader
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
@@ -40,13 +38,12 @@ import java.nio.file.Files
 class RepoBuilder {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
   private val root = fs.getPath("/source")
-  private val schemaLoader = SchemaLoader().addSource(root)
+  private val schemaLoader = NewSchemaLoader(fs)
+  private var schema: Schema? = null
 
   fun add(name: String, protoFile: String): RepoBuilder {
-    if (name.endsWith(".proto")) {
-      schemaLoader.addProto(name)
-    } else if (!name.endsWith(".wire")) {
-      throw IllegalArgumentException("unexpected file extension: $name")
+    require(name.endsWith(".proto") || name.endsWith(".wire")) {
+      "unexpected file extension: $name"
     }
 
     val relativePath = fs.getPath(name)
@@ -73,21 +70,19 @@ class RepoBuilder {
     }
   }
 
+  @Throws(IOException::class)
   fun schema(): Schema {
-    try {
-      return schemaLoader.load()
-    } catch (e: IOException) {
-      throw RuntimeException(e)
+    var result = schema
+    if (result == null) {
+      schemaLoader.initRoots(sourcePath = listOf(Location.get("/source")))
+      result = schemaLoader.loadSchema()
+      schema = result
     }
-
+    return result
   }
 
   @Throws(IOException::class)
-  fun profile(name: String): Profile {
-    return ProfileLoader(fs, name)
-        .schema(schema())
-        .load()
-  }
+  fun profile(name: String) = schemaLoader.loadProfile(name, schema())
 
   @Throws(IOException::class)
   fun protoAdapter(messageTypeName: String): ProtoAdapter<Any> {

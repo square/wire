@@ -374,7 +374,7 @@ public final class JavaGeneratorTest {
     }
   }
 
-  @Test public void nullableFieldsWithoutParcelable() {
+  @Test public void nullableFieldsWithoutParcelable() throws IOException {
     Schema schema = new RepoBuilder()
         .add("message.proto", ""
             + "message A {\n"
@@ -395,7 +395,7 @@ public final class JavaGeneratorTest {
         + "    public final String c;");
   }
 
-  @Test public void androidSupport() {
+  @Test public void androidSupport() throws IOException {
     Schema schema = new RepoBuilder()
         .add("message.proto", ""
             + "message A {\n"
@@ -420,7 +420,7 @@ public final class JavaGeneratorTest {
   }
 
   @Test
-  public void enclosingTypeIsNotMessage() {
+  public void enclosingTypeIsNotMessage() throws IOException {
     Schema schema = new RepoBuilder()
         .add("message.proto", ""
             + "message A {\n"

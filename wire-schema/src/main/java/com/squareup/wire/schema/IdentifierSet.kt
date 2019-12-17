@@ -47,11 +47,30 @@ package com.squareup.wire.schema
 class IdentifierSet private constructor(builder: Builder) {
   private val includes = builder.includes.toSet()
   private val excludes = builder.excludes.toSet()
+  private val oldest = builder.oldest
+  private val newest = builder.newest
   private val usedIncludes = mutableSetOf<String>()
   private val usedExcludes = mutableSetOf<String>()
 
   val isEmpty: Boolean
     get() = includes.isEmpty() && excludes.isEmpty()
+
+  /** Returns true unless [options] specifies a version that is outside of the configured range. */
+  fun isRetainedVersion(options: Options): Boolean {
+    if (newest != null) {
+      val sinceOption = options[SINCE]
+      val since = (sinceOption as? String)?.toLong()
+      if (since != null && since > newest) return false
+    }
+
+    if (oldest != null) {
+      val untilOption = options[UNTIL]
+      val until = (untilOption as? String)?.toLong()
+      if (until != null && until <= oldest) return false
+    }
+
+    return true
+  }
 
   /** Returns true if `type` is a root. */
   fun includes(type: ProtoType) = includes(type.toString())
@@ -132,6 +151,8 @@ class IdentifierSet private constructor(builder: Builder) {
   class Builder {
     internal val includes = mutableSetOf<String>()
     internal val excludes = mutableSetOf<String>()
+    internal var oldest: Long? = null
+    internal var newest: Long? = null
 
     fun include(identifier: String) = apply {
       includes.add(identifier)
@@ -149,10 +170,33 @@ class IdentifierSet private constructor(builder: Builder) {
       excludes.addAll(identifiers)
     }
 
-    fun build() = IdentifierSet(this)
+    /**
+     * The exclusive lower bound of the version range. Fields with `until` values greater than this
+     * are retained.
+     */
+    fun oldest(oldest: Long?) = apply {
+      this.oldest = oldest
+    }
+
+    /**
+     * The inclusive upper bound of the version range. Fields with `since` values less than or equal
+     * to this are retained.
+     */
+    fun newest(newest: Long?) = apply {
+      this.newest = newest
+    }
+
+    fun build(): IdentifierSet {
+      check((oldest ?: Long.MIN_VALUE) <= (newest ?: Long.MAX_VALUE)) {
+        "expected oldest $oldest <= newest $newest"
+      }
+      return IdentifierSet(this)
+    }
   }
 
   companion object {
+    internal val SINCE = ProtoMember.get(Options.FIELD_OPTIONS, "wire.since")
+    internal val UNTIL = ProtoMember.get(Options.FIELD_OPTIONS, "wire.until")
 
     /**
      * Returns the identifier or wildcard that encloses `identifier`, or null if it is not enclosed.

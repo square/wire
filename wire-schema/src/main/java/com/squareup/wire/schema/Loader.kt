@@ -25,19 +25,25 @@ interface Loader {
 }
 
 /**
- * A loader that can only load Google's protobuf descriptor, which defines standard options like
- * default, deprecated, and java_package. If the user has provided their own version of the
- * descriptor proto, that is preferred.
+ * A loader that can only load built-in `.proto` files:
+ *
+ *  * Google's protobuf descriptor, which defines standard options like `default`, `deprecated`, and
+ *    `java_package`.
+ *
+ *  * Wire's extensions, which defines since and until options.
+ *
+ * If the user has provided their own version of these protos, those are preferred.
  */
 object CoreLoader : Loader {
   const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
+  const val WIRE_EXTENSIONS_PROTO = "wire/extensions.proto"
 
   override fun load(path: String): ProtoFile {
-    if (path == DESCRIPTOR_PROTO) {
-      val resourceAsStream = SchemaLoader::class.java.getResourceAsStream("/$DESCRIPTOR_PROTO")
+    if (path == DESCRIPTOR_PROTO || path == WIRE_EXTENSIONS_PROTO) {
+      val resourceAsStream = SchemaLoader::class.java.getResourceAsStream("/$path")
       resourceAsStream.source().buffer().use { source ->
         val data = source.readUtf8()
-        val location = Location.get(DESCRIPTOR_PROTO)
+        val location = Location.get(path)
         val element = ProtoParser.parse(location, data)
         return ProtoFile.get(element)
       }

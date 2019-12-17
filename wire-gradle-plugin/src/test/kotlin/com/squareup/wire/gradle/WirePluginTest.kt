@@ -650,6 +650,25 @@ class WirePluginTest {
         .contains("Couldn't find CustomHandlerClass 'NoSuchClass'")
   }
 
+  @Test
+  fun sinceUntil() {
+    val fixtureRoot = File("src/test/projects/since-until")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output).contains("Writing com.squareup.media.NewsFlash")
+
+    val generatedProto =
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/media/NewsFlash.kt")
+    assertThat(generatedProto).exists()
+
+    val newsFlash = generatedProto.readText()
+    assertThat(newsFlash).contains("val tv")
+    assertThat(newsFlash).contains("val website")
+    assertThat(newsFlash).doesNotContain("val radio")
+  }
+
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
     val protoFieldPattern = "@field:WireField.*?(val .*?):"
     val matchedFields = protoFieldPattern.toRegex(setOf(MULTILINE, DOT_MATCHES_ALL))

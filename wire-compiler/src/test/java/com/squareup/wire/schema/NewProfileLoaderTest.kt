@@ -156,11 +156,10 @@ class NewProfileLoaderTest {
     name: String,
     sourcePath: List<Location> = listOf(Location.get("source-path"))
   ): Profile {
-    return NewSchemaLoader(fs).use { loader ->
+    NewSchemaLoader(fs).use { loader ->
       loader.initRoots(sourcePath)
-      val sourceProtoFiles = loader.loadSourcePathFiles()
-      val schema = Schema.fromFiles(sourceProtoFiles, loader)
-      loader.loadProfile(name, schema)
+      val schema = loader.loadSchema()
+      return loader.loadProfile(name, schema)
     }
   }
 }

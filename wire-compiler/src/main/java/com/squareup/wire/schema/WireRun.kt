@@ -137,6 +137,18 @@ data class WireRun(
   val treeShakingRubbish: List<String> = listOf(),
 
   /**
+   * The exclusive lower bound of the version range. Fields with `until` values greater than this
+   * are retained.
+   */
+  val oldest: Long? = null,
+
+  /**
+   * The inclusive upper bound of the version range. Fields with `since` values less than or equal
+   * to this are retained.
+   */
+  val newest: Long? = null,
+
+  /**
    * Action to take with the loaded, resolved, and possibly-pruned schema.
    */
   val targets: List<Target>
@@ -151,25 +163,14 @@ data class WireRun(
   private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: NewSchemaLoader) {
     schemaLoader.initRoots(sourcePath, protoPath)
 
-    // 1. Read source `.proto` files.
-    val sourceProtoFiles = schemaLoader.loadSourcePathFiles()
+    // Validate the schema and resolve references
+    val fullSchema = schemaLoader.loadSchema()
+    val sourceLocationPaths = schemaLoader.sourcePathFiles.map { it.location.path }
 
-    // 2. Identify source files separately from path files.
-    val sourceLocationPaths = sourceProtoFiles.map { it.location.path }
-
-    // 3. Validate the schema and resolve references
-    val fullSchema = try {
-      Schema.fromFiles(sourceProtoFiles, schemaLoader)
-    } catch (e: Exception) {
-      // TODO(jwilson): collect a single set of errors.
-      schemaLoader.reportLoadingErrors()
-      throw e
-    }
-
-    // 4. Optionally prune the schema.
+    // Optionally prune the schema.
     val schema = treeShake(fullSchema, logger)
 
-    // 5. Call each target.
+    // Call each target.
     val typesToHandle = mutableListOf<Type>()
     val servicesToHandle = mutableListOf<Service>()
     val skippedForSyntax = mutableListOf<ProtoFile>()
@@ -235,11 +236,18 @@ data class WireRun(
 
   /** Returns a subset of schema with unreachable and unwanted elements removed. */
   private fun treeShake(schema: Schema, logger: WireLogger): Schema {
-    if (treeShakingRoots == listOf("*") && treeShakingRubbish.isEmpty()) return schema
+    if (treeShakingRoots == listOf("*") &&
+        treeShakingRubbish.isEmpty() &&
+        oldest == null &&
+        newest == null) {
+      return schema
+    }
 
     val identifierSet = IdentifierSet.Builder()
         .include(treeShakingRoots)
         .exclude(treeShakingRubbish)
+        .oldest(oldest)
+        .newest(newest)
         .build()
 
     val result = schema.prune(identifierSet)

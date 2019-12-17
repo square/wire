@@ -21,7 +21,6 @@ import com.squareup.javapoet.ClassName
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.RepoBuilder
-import com.squareup.wire.schema.SchemaException
 import com.squareup.wire.schema.SchemaLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.MapEntry
@@ -198,7 +197,7 @@ class ProfileLoaderTest {
     try {
       repoBuilder.profile("android")
       fail()
-    } catch (expected: SchemaException) {
+    } catch (expected: IllegalArgumentException) {
       assertThat(expected)
           .hasMessage("unable to resolve a.b.Message2 (/source/a/b/android.wire at 2:1)")
     }
@@ -225,7 +224,7 @@ class ProfileLoaderTest {
     try {
       repoBuilder.profile("android")
       fail()
-    } catch (expected: SchemaException) {
+    } catch (expected: IllegalArgumentException) {
       assertThat(expected)
           .hasMessage(
               "a/b/android.wire needs to import a/b/message.proto (/source/a/b/android.wire at 2:1)"

@@ -46,6 +46,10 @@ class NewSchemaLoader(
   /** Proto path roots that need to be closed */
   private var protoPathRoots: List<Root>? = null
 
+  /** Subset of the schema that was loaded from the source path. */
+  lateinit var sourcePathFiles: List<ProtoFile>
+    private set
+
   /** Keys are a [Location.base]; values are the roots that those locations loaded from. */
   private val baseToRoots = mutableMapOf<String, List<Root>>()
 
@@ -59,9 +63,23 @@ class NewSchemaLoader(
     protoPathRoots = allRoots(closer, protoPath)
   }
 
+  @Throws(IOException::class)
+  fun loadSchema(): Schema {
+    sourcePathFiles = loadSourcePathFiles()
+    val result = try {
+      Schema.fromFiles(sourcePathFiles, this)
+    } catch (e: Exception) {
+      // TODO(jwilson): collect a single set of errors in loader and linker.
+      reportLoadingErrors()
+      throw e
+    }
+    reportLoadingErrors()
+    return result
+  }
+
   /** Returns the files in the source path. */
   @Throws(IOException::class)
-  fun loadSourcePathFiles(): List<ProtoFile> {
+  internal fun loadSourcePathFiles(): List<ProtoFile> {
     check(sourcePathRoots != null && protoPathRoots != null) {
       "call initRoots() before calling loadSourcePathFiles()"
     }
@@ -94,15 +112,16 @@ class NewSchemaLoader(
       loadFrom = locationAndPath
     }
 
-    if (loadFrom == null) {
-      if (path == CoreLoader.DESCRIPTOR_PROTO) {
-        return CoreLoader.load(path)
-      }
-      missingImports += path
-      return ProtoFile.get(ProtoFileElement.empty(path))
-    } else {
+    if (loadFrom != null) {
       return load(loadFrom)
     }
+
+    if (path == CoreLoader.DESCRIPTOR_PROTO || path == CoreLoader.WIRE_EXTENSIONS_PROTO) {
+      return CoreLoader.load(path)
+    }
+
+    missingImports += path
+    return ProtoFile.get(ProtoFileElement.empty(path))
   }
 
   private fun load(protoFilePath: ProtoFilePath): ProtoFile {
@@ -133,7 +152,7 @@ class NewSchemaLoader(
     return result
   }
 
-  fun reportLoadingErrors() {
+  internal fun reportLoadingErrors() {
     if (missingImports.isNotEmpty()) {
       errors += """
           |unable to resolve ${missingImports.size} imports:
@@ -172,7 +191,7 @@ class NewSchemaLoader(
   }
 
   /** Confirms that `protoFiles` link correctly against `schema`.  */
-  internal fun validate(schema: Schema, profileFiles: List<ProfileFileElement>) {
+  private fun validate(schema: Schema, profileFiles: List<ProfileFileElement>) {
     for (profileFile in profileFiles) {
       for (typeConfig in profileFile.typeConfigs) {
         val type = importedType(ProtoType.get(typeConfig.type)) ?: continue
@@ -206,7 +225,7 @@ class NewSchemaLoader(
    * Returns a list of locations to check for profile files. This is the profile file name (like
    * "java.wire") in the same directory, and in all parent directories up to the base.
    */
-  fun locationsToCheck(name: String, input: List<Location>): Set<Location> {
+  internal fun locationsToCheck(name: String, input: List<Location>): Set<Location> {
     val queue = ArrayDeque<Location>(input)
 
     val result = mutableSetOf<Location>()

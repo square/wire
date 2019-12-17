@@ -16,7 +16,6 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Extend.Companion.fromElements
-import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.Service.Companion.fromElements
 import com.squareup.wire.schema.Type.Companion.fromElements
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
@@ -175,7 +174,7 @@ class ProtoFile private constructor(
   }
 
   companion object {
-    val JAVA_PACKAGE = get(Options.FILE_OPTIONS, "java_package")
+    val JAVA_PACKAGE = ProtoMember.get(Options.FILE_OPTIONS, "java_package")
 
     operator fun get(protoFileElement: ProtoFileElement): ProtoFile {
       val packageName = protoFileElement.packageName
