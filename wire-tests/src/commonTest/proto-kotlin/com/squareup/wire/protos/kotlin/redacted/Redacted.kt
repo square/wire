@@ -38,6 +38,9 @@ class Redacted(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val c: String? = null,
+  /**
+   * Extension source: redacted_test.proto
+   */
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedExtension#ADAPTER"
@@ -92,11 +95,13 @@ class Redacted(
   ): Redacted = Redacted(a, b, c, extension, unknownFields)
 
   companion object {
-    val FIELD_OPTIONS_A: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_A: FieldOptions = 
+        FieldOptions(
           redacted = true
         )
 
-    val FIELD_OPTIONS_B: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_B: FieldOptions = 
+        FieldOptions(
           redacted = false
         )
 

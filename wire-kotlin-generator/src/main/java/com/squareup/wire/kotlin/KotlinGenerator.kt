@@ -251,6 +251,7 @@ class KotlinGenerator private constructor(
           is EnumType -> {
             newName("value", "value")
             newName("ADAPTER", "ADAPTER")
+            newName("ENUM_OPTIONS", "ENUM_OPTIONS")
             message.constants.forEach { constant ->
               newName(constant.name, constant)
             }
@@ -659,6 +660,9 @@ class KotlinGenerator private constructor(
           .apply {
             if (field.documentation.isNotBlank()) {
               addKdoc("%L\n", field.documentation)
+            }
+            if (field.isExtension) {
+              addKdoc("Extension source: %L\n", field.location.withPathOnly())
             }
           }
           .build())
@@ -1099,6 +1103,16 @@ class KotlinGenerator private constructor(
         .build()
   }
 
+  /**
+   * Example
+   * ```
+   * @JvmField
+   * val FIELD_OPTIONS_FOO: FieldOptions =
+   *     FieldOptions(
+   *         my_field_option_one = 17
+   *     )
+   * ```
+   */
   private fun optionsField(optionsType: ProtoType, fieldName: String, options: Options): PropertySpec? {
     val initializer = buildCodeBlock {
       add("%T(", optionsType.typeName)
@@ -1116,8 +1130,11 @@ class KotlinGenerator private constructor(
       if (empty) return null
     }
     return PropertySpec.builder(fieldName, optionsType.typeName)
-            .initializer(initializer)
-            .build()
+        .apply {
+          if (javaInterOp) jvmField()
+        }
+        .initializer("\n%L", initializer)
+        .build()
   }
 
   private fun Field.redact(fieldName: String): CodeBlock? {
@@ -1191,7 +1208,7 @@ class KotlinGenerator private constructor(
     val valueName = nameAllocator["value"]
 
     val primaryConstructor = FunSpec.constructorBuilder()
-            .addParameter(valueName, Int::class, OVERRIDE)
+        .addParameter(valueName, Int::class, OVERRIDE)
 
     val builder = TypeSpec.enumBuilder(type.simpleName)
         .apply {
@@ -1214,8 +1231,8 @@ class KotlinGenerator private constructor(
           val optionField = schema.getField(protoMember)
           primaryConstructor.addParameter(optionField.name, optionField.typeName)
           builder.addProperty(PropertySpec.builder(optionField.name, optionField.typeName)
-                  .initializer(optionField.name)
-                  .build())
+              .initializer(optionField.name)
+              .build())
         }
       }
     }
@@ -1246,17 +1263,17 @@ class KotlinGenerator private constructor(
     }
 
     return builder.primaryConstructor(primaryConstructor.build())
-            .build()
+        .build()
   }
 
   private fun generateEnumCompanion(message: EnumType): TypeSpec {
+    val nameAllocator = nameAllocator(message)
     val companionObjectBuilder = TypeSpec.companionObjectBuilder()
-    val options = optionsField(ENUM_OPTIONS, "ENUM_OPTIONS", message.options)
+    val options = optionsField(ENUM_OPTIONS, nameAllocator["ENUM_OPTIONS"], message.options)
     if (options != null) {
       companionObjectBuilder.addProperty(options)
     }
     val parentClassName = nameToKotlinName.getValue(message.type)
-    val nameAllocator = nameAllocator(message)
     val valueName = nameAllocator["value"]
     val fromValue = FunSpec.builder("fromValue")
         .jvmStatic()
@@ -1273,8 +1290,8 @@ class KotlinGenerator private constructor(
         .build()
 
     return companionObjectBuilder.addFunction(fromValue)
-            .addProperty(generateEnumAdapter(message))
-            .build()
+        .addProperty(generateEnumAdapter(message))
+        .build()
   }
 
   /**

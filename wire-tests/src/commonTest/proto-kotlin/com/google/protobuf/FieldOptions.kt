@@ -132,21 +132,33 @@ class FieldOptions(
     label = WireField.Label.REPEATED
   )
   val uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 60001,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val my_field_option_one: Int? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 60002,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   val my_field_option_two: Float? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 60003,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER"
   )
   val my_field_option_three: FooBar.FooBarBazEnum? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 60004,
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
@@ -154,6 +166,7 @@ class FieldOptions(
   val my_field_option_four: FooBar? = null,
   /**
    * Fields marked with redacted are not to be logged, generally for PCI or PII.
+   * Extension source: option_redacted.proto
    */
   @field:WireField(
     tag = 22300,

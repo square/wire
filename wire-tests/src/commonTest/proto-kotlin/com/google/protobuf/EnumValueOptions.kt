@@ -44,16 +44,25 @@ class EnumValueOptions(
     label = WireField.Label.REPEATED
   )
   val uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 70000,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val enum_value_option: Int? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 70001,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}More#ADAPTER"
   )
   val complex_enum_value_option: FooBar.More? = null,
+  /**
+   * Extension source: foreign.proto
+   */
   @field:WireField(
     tag = 70002,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"

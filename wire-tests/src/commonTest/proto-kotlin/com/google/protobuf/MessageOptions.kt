@@ -110,36 +110,57 @@ class MessageOptions(
     label = WireField.Label.REPEATED
   )
   val uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 50001,
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
   )
   val my_message_option_one: FooBar? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 50002,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   val my_message_option_two: Float? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 50003,
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
   )
   val my_message_option_three: FooBar? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 50004,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER"
   )
   val my_message_option_four: FooBar.FooBarBazEnum? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 50005,
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
   )
   val my_message_option_five: FooBar? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 50006,
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER"
   )
   val my_message_option_six: FooBar? = null,
+  /**
+   * Extension source: foreign.proto
+   */
   @field:WireField(
     tag = 50007,
     adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignMessage#ADAPTER"

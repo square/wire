@@ -110,6 +110,9 @@ class MessageOptions(
   )
   @JvmField
   val uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  /**
+   * Extension source: foreign.proto
+   */
   @field:WireField(
     tag = 50007,
     adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignMessage#ADAPTER"

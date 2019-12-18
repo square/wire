@@ -613,7 +613,9 @@ class SimpleMessage(
     BUZ(3, true);
 
     companion object {
-      val ENUM_OPTIONS: EnumOptions = EnumOptions(
+      @JvmField
+      val ENUM_OPTIONS: EnumOptions = 
+          EnumOptions(
             allow_alias = true
           )
 

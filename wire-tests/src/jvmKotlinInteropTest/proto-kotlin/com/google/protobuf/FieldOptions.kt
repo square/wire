@@ -136,6 +136,7 @@ class FieldOptions(
   val uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**
    * Fields marked with redacted are not to be logged, generally for PCI or PII.
+   * Extension source: option_redacted.proto
    */
   @field:WireField(
     tag = 22300,

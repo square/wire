@@ -509,295 +509,451 @@ class AllTypes(
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   val map_string_enum: Map<String, NestedEnum> = emptyMap(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1001,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val ext_opt_int32: Int? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1002,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   val ext_opt_uint32: Int? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1003,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   val ext_opt_sint32: Int? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1004,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   val ext_opt_fixed32: Int? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1005,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   val ext_opt_sfixed32: Int? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1006,
     adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   val ext_opt_int64: Long? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1007,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   val ext_opt_uint64: Long? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1008,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   val ext_opt_sint64: Long? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1009,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   val ext_opt_fixed64: Long? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1010,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   val ext_opt_sfixed64: Long? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1011,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   val ext_opt_bool: Boolean? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1012,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   val ext_opt_float: Float? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1013,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   val ext_opt_double: Double? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1014,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val ext_opt_string: String? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1015,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   val ext_opt_bytes: ByteString? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1016,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   val ext_opt_nested_enum: NestedEnum? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1017,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
   )
   val ext_opt_nested_message: NestedMessage? = null,
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1101,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED
   )
   val ext_rep_int32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1102,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.REPEATED
   )
   val ext_rep_uint32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1103,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.REPEATED
   )
   val ext_rep_sint32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1104,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.REPEATED
   )
   val ext_rep_fixed32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1105,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.REPEATED
   )
   val ext_rep_sfixed32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1106,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REPEATED
   )
   val ext_rep_int64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1107,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REPEATED
   )
   val ext_rep_uint64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1108,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REPEATED
   )
   val ext_rep_sint64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1109,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REPEATED
   )
   val ext_rep_fixed64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1110,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REPEATED
   )
   val ext_rep_sfixed64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1111,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REPEATED
   )
   val ext_rep_bool: List<Boolean> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1112,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.REPEATED
   )
   val ext_rep_float: List<Float> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1113,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REPEATED
   )
   val ext_rep_double: List<Double> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1114,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED
   )
   val ext_rep_string: List<String> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1115,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.REPEATED
   )
   val ext_rep_bytes: List<ByteString> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1116,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.REPEATED
   )
   val ext_rep_nested_enum: List<NestedEnum> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1117,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.REPEATED
   )
   val ext_rep_nested_message: List<NestedMessage> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1201,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.PACKED
   )
   val ext_pack_int32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1202,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.PACKED
   )
   val ext_pack_uint32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1203,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.PACKED
   )
   val ext_pack_sint32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1204,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.PACKED
   )
   val ext_pack_fixed32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1205,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.PACKED
   )
   val ext_pack_sfixed32: List<Int> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1206,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.PACKED
   )
   val ext_pack_int64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1207,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.PACKED
   )
   val ext_pack_uint64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1208,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.PACKED
   )
   val ext_pack_sint64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1209,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.PACKED
   )
   val ext_pack_fixed64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1210,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.PACKED
   )
   val ext_pack_sfixed64: List<Long> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1211,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.PACKED
   )
   val ext_pack_bool: List<Boolean> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1212,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.PACKED
   )
   val ext_pack_float: List<Float> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1213,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.PACKED
   )
   val ext_pack_double: List<Double> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1216,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.PACKED
   )
   val ext_pack_nested_enum: List<NestedEnum> = emptyList(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1301,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val ext_map_int32_int32: Map<Int, Int> = emptyMap(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1402,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val ext_map_string_string: Map<String, String> = emptyMap(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1503,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
   )
   val ext_map_string_message: Map<String, NestedMessage> = emptyMap(),
+  /**
+   * Extension source: all_types.proto
+   */
   @field:WireField(
     tag = 1504,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
