@@ -103,14 +103,17 @@ internal class Pruner(
   /** Returns true if this member survives `since` and `until` pruning. */
   private fun isRetainedVersion(protoMember: ProtoMember): Boolean {
     val member = protoMember.member
-    val type = schema.getType(protoMember.type)
-
-    if (type is MessageType) {
-      val field = type.field(member) ?: type.extensionField(member)!!
-      return pruningRules.isRetainedVersion(field.options)
+    return when (val type = schema.getType(protoMember.type)) {
+      is MessageType -> {
+        val field = type.field(member) ?: type.extensionField(member)!!
+        pruningRules.isFieldRetainedVersion(field.options)
+      }
+      is EnumType -> {
+        val enumConstant = type.constant(member)!!
+        pruningRules.isEnumConstantRetainedVersion(enumConstant.options)
+      }
+      else -> true
     }
-
-    return true
   }
 
   /**
