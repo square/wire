@@ -1474,4 +1474,27 @@ class PrunerTest {
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("always")).isNotNull()
   }
+
+  @Test
+  fun sinceUntilOnEnumConstant() {
+    val schema = RepoBuilder()
+        .add("roshambo.proto", """
+            |import "wire/extensions.proto";
+            |
+            |enum Roshambo {
+            |  ROCK = 1 [(wire.until) = 29];
+            |  SCISSORS = 2 [(wire.since) = 30];
+            |  PAPER = 3 [(wire.since) = 29];
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .oldest(29L)
+        .newest(29L)
+        .build())
+    val enum = pruned.getType("Roshambo") as EnumType
+    assertThat(enum.constant("ROCK")).isNull()
+    assertThat(enum.constant("SCISSORS")).isNull()
+    assertThat(enum.constant("PAPER")).isNotNull()
+  }
 }
