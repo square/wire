@@ -420,6 +420,42 @@ class PrunerTest {
     assertThat((pruned.getType("SomeFieldOptions") as MessageType).field("c")).isNull()
   }
 
+  @Test @Ignore("Need to address #1327.")
+  fun includeExtensionOfOptionPrunesOtherExtensionFields() {
+    val schema = RepoBuilder()
+        .add("lecture.proto", """
+             |package squareup.options.lecture;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional bool relevant = 22301;
+             |  optional bool unrelevant = 22302;
+             |  optional bool unused = 22303;
+             |}
+             |
+             |message Lecture {
+             |  optional string title = 1 [(squareup.options.lecture.relevant) = true];
+             |  optional string content = 2 [(squareup.options.lecture.unrelevant) = true];
+             |}
+             """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .include("squareup.options.lecture.Lecture")
+        .include("google.protobuf.FieldOptions#squareup.options.lecture.relevant")
+        .build())
+    val fieldOptions = pruned.getType("google.protobuf.FieldOptions") as MessageType
+    assertThat(fieldOptions.extensionField("squareup.options.lecture.relevant")).isNotNull()
+    assertThat(fieldOptions.extensionField("squareup.options.lecture.unused")).isNull()
+    assertThat(fieldOptions.extensionField("squareup.options.lecture.unrelevant")).isNull()
+
+    val messageType = pruned.getType("squareup.options.lecture.Lecture") as MessageType
+    assertThat(messageType.field("title")).isNotNull()
+    assertThat(messageType.field("title")!!.options.elements).hasSize(1)
+    assertThat(messageType.field("content")).isNotNull()
+    assertThat(messageType.field("content")!!.options.elements).isEmpty()
+  }
+
   @Test
   fun optionRetainsType() {
     val schema = RepoBuilder()
