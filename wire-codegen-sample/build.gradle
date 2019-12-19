@@ -1,17 +1,9 @@
-apply plugin: 'com.liferay.maven.plugin.builder'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 
 jar {
   manifest {
     attributes('Automatic-Module-Name': 'wire-codegen-sample')
   }
-}
-
-buildPluginDescriptor {
-  goalPrefix = 'wire'
-  pomGroupId = GROUP
-  pomArtifactId = POM_ARTIFACT_ID
-  pomVersion = VERSION_NAME
 }
 
 dependencies {
@@ -21,9 +13,6 @@ dependencies {
   implementation deps.okio.jvm
   implementation deps.guava
   implementation deps.javapoet
-  implementation deps.maven.core
-  implementation deps.maven.plugin.api
-  implementation deps.maven.plugin.annotations
   testImplementation deps.junit
   testImplementation deps.assertj
 }
