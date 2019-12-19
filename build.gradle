@@ -33,6 +33,7 @@ buildscript {
           shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
           releasedWire: "com.squareup.wire:wire-gradle-plugin:${versions.releasedWire}",
           japicmp: 'me.champeau.gradle:japicmp-gradle-plugin:0.2.8',
+          mavenPublish: "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}"
       ],
       'android': "com.google.android:android:${versions.android}",
       'androidx': [
@@ -79,15 +80,6 @@ buildscript {
           'gradle': "ru.vyarus:gradle-animalsniffer-plugin:${versions.animalSnifferGradle}",
           'annotations': "org.codehaus.mojo:animal-sniffer-annotations:${versions.animalSniffer}",
       ],
-      'maven': [
-          'core': "org.apache.maven:maven-core:${versions.maven}",
-          'plugin': [
-              'api': "org.apache.maven:maven-plugin-api:${versions.maven}",
-              'annotations': "org.apache.maven.plugin-tools:maven-plugin-annotations:${versions.mavenAnnotations}",
-              'builder': "gradle.plugin.com.liferay:gradle-plugins-maven-plugin-builder:${versions.mavenPluginBuilder}",
-              'publish': "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}",
-          ]
-      ],
       'protoc': "com.google.protobuf:protoc:${versions.protoc}",
       'protobufGradlePlugin': "com.google.protobuf:protobuf-gradle-plugin:${versions.protobuf}",
       'releasedWire': [
@@ -100,9 +92,8 @@ buildscript {
     classpath deps.plugins.shadow
     classpath deps.plugins.releasedWire
     classpath deps.plugins.japicmp
+    classpath deps.plugins.mavenPublish
     classpath deps.animalSniffer.gradle
-    classpath deps.maven.plugin.builder
-    classpath deps.maven.plugin.publish
   }
 
   repositories {
