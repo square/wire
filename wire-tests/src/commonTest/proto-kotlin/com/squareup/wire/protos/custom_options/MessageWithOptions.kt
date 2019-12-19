@@ -42,7 +42,8 @@ class MessageWithOptions(
       MessageWithOptions(unknownFields)
 
   companion object {
-    val MESSAGE_OPTIONS: MessageOptions = MessageOptions(
+    val MESSAGE_OPTIONS: MessageOptions = 
+        MessageOptions(
           my_message_option_one = FooBar(
             foo = 1234,
             bar = "5678",

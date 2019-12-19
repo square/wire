@@ -80,7 +80,8 @@ class RedactedRepeated(
   ): RedactedRepeated = RedactedRepeated(a, b, unknownFields)
 
   companion object {
-    val FIELD_OPTIONS_A: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_A: FieldOptions = 
+        FieldOptions(
           redacted = true
         )
 

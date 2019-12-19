@@ -26,6 +26,9 @@ class ForeignMessage(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val i: Int? = null,
+  /**
+   * Extension source: simple_message.proto
+   */
   @field:WireField(
     tag = 100,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"

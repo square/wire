@@ -68,11 +68,17 @@ class FooBar(
     label = WireField.Label.REPEATED
   )
   val nested: List<FooBar> = emptyList(),
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 101,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER"
   )
   val ext: FooBarBazEnum? = null,
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 102,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
@@ -148,24 +154,29 @@ class FooBar(
   ): FooBar = FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, unknownFields)
 
   companion object {
-    val FIELD_OPTIONS_FOO: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_FOO: FieldOptions = 
+        FieldOptions(
           my_field_option_one = 17
         )
 
-    val FIELD_OPTIONS_BAR: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_BAR: FieldOptions = 
+        FieldOptions(
           my_field_option_two = 33.5f
         )
 
-    val FIELD_OPTIONS_BAZ: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_BAZ: FieldOptions = 
+        FieldOptions(
           my_field_option_three = FooBarBazEnum.BAR
         )
 
-    val FIELD_OPTIONS_QUX: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_QUX: FieldOptions = 
+        FieldOptions(
           my_field_option_one = 18,
           my_field_option_two = 34.5f
         )
 
-    val FIELD_OPTIONS_FRED: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_FRED: FieldOptions = 
+        FieldOptions(
           my_field_option_four = FooBar(
             foo = 11,
             bar = "22",
@@ -189,7 +200,8 @@ class FooBar(
           my_field_option_two = 99.9f
         )
 
-    val FIELD_OPTIONS_DAISY: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_DAISY: FieldOptions = 
+        FieldOptions(
           my_field_option_four = FooBar(
             baz = Nested(
               value = FooBarBazEnum.FOO
@@ -455,7 +467,8 @@ class FooBar(
     BAZ(3, 18, null);
 
     companion object {
-      val ENUM_OPTIONS: EnumOptions = EnumOptions(
+      val ENUM_OPTIONS: EnumOptions = 
+          EnumOptions(
             enum_option = true
           )
 

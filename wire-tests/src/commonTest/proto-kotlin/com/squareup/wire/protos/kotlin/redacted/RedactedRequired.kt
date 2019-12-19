@@ -65,7 +65,8 @@ class RedactedRequired(
       RedactedRequired(a, unknownFields)
 
   companion object {
-    val FIELD_OPTIONS_A: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_A: FieldOptions = 
+        FieldOptions(
           redacted = true
         )
 

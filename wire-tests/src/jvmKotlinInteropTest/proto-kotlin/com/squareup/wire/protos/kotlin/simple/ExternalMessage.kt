@@ -26,6 +26,9 @@ class ExternalMessage(
   )
   @JvmField
   val f: Float? = null,
+  /**
+   * Extension source: simple_message.proto
+   */
   @field:WireField(
     tag = 125,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -33,24 +36,36 @@ class ExternalMessage(
   )
   @JvmField
   val fooext: List<Int> = emptyList(),
+  /**
+   * Extension source: simple_message.proto
+   */
   @field:WireField(
     tag = 126,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
   val barext: Int? = null,
+  /**
+   * Extension source: simple_message.proto
+   */
   @field:WireField(
     tag = 127,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
   val bazext: Int? = null,
+  /**
+   * Extension source: simple_message.proto
+   */
   @field:WireField(
     tag = 128,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
   )
   @JvmField
   val nested_message_ext: SimpleMessage.NestedMessage? = null,
+  /**
+   * Extension source: simple_message.proto
+   */
   @field:WireField(
     tag = 129,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER"

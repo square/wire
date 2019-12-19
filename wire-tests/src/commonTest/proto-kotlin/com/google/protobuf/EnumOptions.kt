@@ -53,6 +53,9 @@ class EnumOptions(
     label = WireField.Label.REPEATED
   )
   val uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  /**
+   * Extension source: custom_options.proto
+   */
   @field:WireField(
     tag = 71000,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"

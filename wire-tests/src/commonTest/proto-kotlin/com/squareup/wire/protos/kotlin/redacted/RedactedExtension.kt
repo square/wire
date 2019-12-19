@@ -74,7 +74,8 @@ class RedactedExtension(
   ): RedactedExtension = RedactedExtension(d, e, unknownFields)
 
   companion object {
-    val FIELD_OPTIONS_D: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_D: FieldOptions = 
+        FieldOptions(
           redacted = true
         )
 

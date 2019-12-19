@@ -81,7 +81,8 @@ class RedactedOneOf(
   ): RedactedOneOf = RedactedOneOf(b, c, unknownFields)
 
   companion object {
-    val FIELD_OPTIONS_C: FieldOptions = FieldOptions(
+    val FIELD_OPTIONS_C: FieldOptions = 
+        FieldOptions(
           redacted = true
         )
 

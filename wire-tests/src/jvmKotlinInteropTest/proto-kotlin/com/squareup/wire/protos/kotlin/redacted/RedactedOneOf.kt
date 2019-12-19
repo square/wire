@@ -107,7 +107,9 @@ class RedactedOneOf(
   }
 
   companion object {
-    val FIELD_OPTIONS_C: FieldOptions = FieldOptions(
+    @JvmField
+    val FIELD_OPTIONS_C: FieldOptions = 
+        FieldOptions(
           redacted = true
         )
 
