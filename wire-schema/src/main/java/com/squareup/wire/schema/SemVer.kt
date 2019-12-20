@@ -122,5 +122,7 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
     private val PRERELEASE_TERMINATORS = charArrayOf('+')
     /** Characters that separate segments within a section. */
     private val SEPARATORS = charArrayOf('.', '-')
+
+    fun String.toLowerCaseSemVer() = SemVer(toLowerCase(Locale.US))
   }
 }

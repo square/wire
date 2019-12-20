@@ -24,7 +24,7 @@ extend google.protobuf.FieldOptions {
    * The value is the earliest version in which the annotated field is retained. It is pruned from
    * all preceding versions.
    */
-  optional int64 since = 1076;
+  optional string since = 1076;
 
   /**
    * Annotates a field that ceases to be available with a specified version.
@@ -32,7 +32,7 @@ extend google.protobuf.FieldOptions {
    * The value is the version that drops the annotated field. It is not available in that version or
    * any subsequent version.
    */
-  optional int64 until = 1077;
+  optional string until = 1077;
 }
 
 extend google.protobuf.EnumValueOptions {
@@ -42,7 +42,7 @@ extend google.protobuf.EnumValueOptions {
    * The value is the earliest version in which the annotated constant is retained. It is pruned
    * from all preceding versions.
    */
-  optional int64 since = 1076;
+  optional string since = 1076;
 
   /**
    * Annotates an enum constant that ceases to be available with a specified version.
@@ -50,5 +50,5 @@ extend google.protobuf.EnumValueOptions {
    * The value is the version that drops the annotated constant. It is not available in that version
    * or any subsequent version.
    */
-  optional int64 until = 1077;
+  optional string until = 1077;
 }

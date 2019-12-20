@@ -140,13 +140,13 @@ data class WireRun(
    * The exclusive lower bound of the version range. Fields with `until` values greater than this
    * are retained.
    */
-  val oldest: Long? = null,
+  val oldest: String? = null,
 
   /**
    * The inclusive upper bound of the version range. Fields with `since` values less than or equal
    * to this are retained.
    */
-  val newest: Long? = null,
+  val newest: String? = null,
 
   /**
    * Action to take with the loaded, resolved, and possibly-pruned schema.

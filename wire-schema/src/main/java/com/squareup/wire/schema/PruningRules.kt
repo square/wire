@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.schema.SemVer.Companion.toLowerCaseSemVer
+
 /**
  * A set of rules that describes which types and members to retain and which to remove.
  *
@@ -54,15 +56,15 @@ package com.squareup.wire.schema
  * ### Version Matching
  *
  * Members may be declared with `wire.since` and `wire.until` options. For example, these options
- * declare a field `age` that was replaced with `birth_date` in version 5:
+ * declare a field `age` that was replaced with `birth_date` in version "5.0":
  *
  * ```
- *   optional int32 age = 3 [(wire.until) = 5];
- *   optional Date birth_date = 4 [(wire.since) = 5];
+ *   optional int32 age = 3 [(wire.until) = "5.0"];
+ *   optional Date birth_date = 4 [(wire.since) = "5.0"];
  * ```
  *
- * Client code should typically target a single version. In this example, versions <= 4 will have
- * the `age` field only and versions >= 5 will have the `birth_date` field only.
+ * Client code should typically target a single version. In this example, versions <= "4.0" will
+ * have the `age` field only and versions >= "5.0" will have the `birth_date` field only.
  *
  * Service code that supports many clients should support the union of versions of all supported
  * clients. Such code will have both the `age` and `birth_date` fields.
@@ -93,13 +95,13 @@ class PruningRules private constructor(builder: Builder) {
   ): Boolean {
     if (newest != null) {
       val sinceOption = options[sinceMember]
-      val since = (sinceOption as? String)?.toLong()
+      val since = (sinceOption as? String)?.toLowerCaseSemVer()
       if (since != null && since > newest) return false
     }
 
     if (oldest != null) {
       val untilOption = options[untilMember]
-      val until = (untilOption as? String)?.toLong()
+      val until = (untilOption as? String)?.toLowerCaseSemVer()
       if (until != null && until <= oldest) return false
     }
 
@@ -185,8 +187,8 @@ class PruningRules private constructor(builder: Builder) {
   class Builder {
     internal val includes = mutableSetOf<String>()
     internal val excludes = mutableSetOf<String>()
-    internal var oldest: Long? = null
-    internal var newest: Long? = null
+    internal var oldest: SemVer? = null
+    internal var newest: SemVer? = null
 
     fun include(identifier: String) = apply {
       includes.add(identifier)
@@ -208,20 +210,20 @@ class PruningRules private constructor(builder: Builder) {
      * The exclusive lower bound of the version range. Fields with `until` values greater than this
      * are retained.
      */
-    fun oldest(oldest: Long?) = apply {
-      this.oldest = oldest
+    fun oldest(oldest: String?) = apply {
+      this.oldest = oldest?.toLowerCaseSemVer()
     }
 
     /**
      * The inclusive upper bound of the version range. Fields with `since` values less than or equal
      * to this are retained.
      */
-    fun newest(newest: Long?) = apply {
-      this.newest = newest
+    fun newest(newest: String?) = apply {
+      this.newest = newest?.toLowerCaseSemVer()
     }
 
     fun build(): PruningRules {
-      check((oldest ?: Long.MIN_VALUE) <= (newest ?: Long.MAX_VALUE)) {
+      check(oldest == null || newest == null || oldest!! <= newest!!) {
         "expected oldest $oldest <= newest $newest"
       }
       return PruningRules(this)
