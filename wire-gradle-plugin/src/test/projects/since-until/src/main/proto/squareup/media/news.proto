@@ -9,7 +9,7 @@ option java_package = "com.squareup.media";
 message NewsFlash {
   optional string title = 1;
   optional string author = 2;
-  optional string radio = 3 [(wire.until) = 1990];   // Omit this field on versions >= 1990.
-  optional string tv = 4 [(wire.since) = 1950];      // Omit this field on versions < 1950.
-  optional string website = 5 [(wire.since) = 2000]; // Omit this field on versions < 2000.
+  optional string radio = 3 [(wire.until) = "19.9.0"];   // Omit this field on versions >= "19.9.0".
+  optional string tv = 4 [(wire.since) = "19.5.0"];      // Omit this field on versions < "19.5.0".
+  optional string website = 5 [(wire.since) = "20.0.0"]; // Omit this field on versions < "20.0.0".
 }

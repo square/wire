@@ -1354,14 +1354,14 @@ class PrunerTest {
             |import "wire/extensions.proto";
             |
             |message Message {
-            |  optional string radio = 1 [(wire.until) = 1950];
-            |  optional string video = 2 [(wire.since) = 1950];
+            |  optional string radio = 1 [(wire.until) = "1950"];
+            |  optional string video = 2 [(wire.since) = "1950"];
             |}
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest(1949L)
-        .newest(1949L)
+        .oldest("1949")
+        .newest("1949")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("radio")).isNotNull()
@@ -1375,14 +1375,14 @@ class PrunerTest {
             |import "wire/extensions.proto";
             |
             |message Message {
-            |  optional string radio = 1 [(wire.until) = 1950];
-            |  optional string video = 2 [(wire.since) = 1950];
+            |  optional string radio = 1 [(wire.until) = "1950"];
+            |  optional string video = 2 [(wire.since) = "1950"];
             |}
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest(1950L)
-        .newest(1950L)
+        .oldest("1950")
+        .newest("1950")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("radio")).isNull()
@@ -1396,19 +1396,19 @@ class PrunerTest {
             |import "wire/extensions.proto";
             |
             |message Message {
-            |  optional string since_19 = 1 [(wire.since) = 19];
-            |  optional string since_20 = 2 [(wire.since) = 20];
-            |  optional string since_21 = 3 [(wire.since) = 21];
+            |  optional string since_19 = 1 [(wire.since) = "19"];
+            |  optional string since_20 = 2 [(wire.since) = "20"];
+            |  optional string since_21 = 3 [(wire.since) = "21"];
             |  
-            |  optional string since_29 = 4 [(wire.since) = 29];
-            |  optional string since_30 = 5 [(wire.since) = 30];
-            |  optional string since_31 = 6 [(wire.since) = 31];
+            |  optional string since_29 = 4 [(wire.since) = "29"];
+            |  optional string since_30 = 5 [(wire.since) = "30"];
+            |  optional string since_31 = 6 [(wire.since) = "31"];
             |}
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest(20L)
-        .newest(30L)
+        .oldest("20")
+        .newest("30")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("since_19")).isNotNull()
@@ -1427,19 +1427,19 @@ class PrunerTest {
             |import "wire/extensions.proto";
             |
             |message Message {
-            |  optional string until_19 = 1 [(wire.until) = 19];
-            |  optional string until_20 = 2 [(wire.until) = 20];
-            |  optional string until_21 = 3 [(wire.until) = 21];
+            |  optional string until_19 = 1 [(wire.until) = "19"];
+            |  optional string until_20 = 2 [(wire.until) = "20"];
+            |  optional string until_21 = 3 [(wire.until) = "21"];
             |  
-            |  optional string until_29 = 4 [(wire.until) = 29];
-            |  optional string until_30 = 5 [(wire.until) = 30];
-            |  optional string until_31 = 6 [(wire.until) = 31];
+            |  optional string until_29 = 4 [(wire.until) = "29"];
+            |  optional string until_30 = 5 [(wire.until) = "30"];
+            |  optional string until_31 = 6 [(wire.until) = "31"];
             |}
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest(20L)
-        .newest(30L)
+        .oldest("20")
+        .newest("30")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("until_19")).isNull()
@@ -1457,8 +1457,8 @@ class PrunerTest {
             |import "wire/extensions.proto";
             |
             |message Message {
-            |  optional string until_20 = 1 [(wire.until) = 20];
-            |  optional string since_20 = 2 [(wire.since) = 20];
+            |  optional string until_20 = 1 [(wire.until) = "20"];
+            |  optional string since_20 = 2 [(wire.since) = "20"];
             |}
             """.trimMargin())
         .schema()
@@ -1480,8 +1480,8 @@ class PrunerTest {
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest(20L)
-        .newest(30L)
+        .oldest("20")
+        .newest("30")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("always")).isNotNull()
@@ -1494,19 +1494,46 @@ class PrunerTest {
             |import "wire/extensions.proto";
             |
             |enum Roshambo {
-            |  ROCK = 1 [(wire.until) = 29];
-            |  SCISSORS = 2 [(wire.since) = 30];
-            |  PAPER = 3 [(wire.since) = 29];
+            |  ROCK = 1 [(wire.until) = "29"];
+            |  SCISSORS = 2 [(wire.since) = "30"];
+            |  PAPER = 3 [(wire.since) = "29"];
             |}
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest(29L)
-        .newest(29L)
+        .oldest("29")
+        .newest("29")
         .build())
     val enum = pruned.getType("Roshambo") as EnumType
     assertThat(enum.constant("ROCK")).isNull()
     assertThat(enum.constant("SCISSORS")).isNull()
     assertThat(enum.constant("PAPER")).isNotNull()
+  }
+
+  @Test
+  fun semVer() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |import "wire/extensions.proto";
+            |
+            |message Message {
+            |  optional string field_1 = 1 [(wire.until) = "1.0.0-alpha"];
+            |  optional string field_2 = 2 [(wire.until) = "1.0.0-alpha.1"];
+            |  optional string field_3 = 3 [(wire.until) = "1.0.0-alpha.beta"];
+            |  optional string field_4 = 4 [(wire.since) = "1.0.0-beta"];
+            |  optional string field_5 = 5 [(wire.since) = "1.0.0"];
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .oldest("1.0.0-alpha.1")
+        .newest("1.0.0-beta")
+        .build())
+    val message = pruned.getType("Message") as MessageType
+    assertThat(message.field("field_1")).isNull()
+    assertThat(message.field("field_2")).isNull()
+    assertThat(message.field("field_3")).isNotNull()
+    assertThat(message.field("field_4")).isNotNull()
+    assertThat(message.field("field_5")).isNull()
   }
 }

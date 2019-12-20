@@ -42,11 +42,11 @@ open class WireTask : SourceTask() {
 
   @Input
   @Optional
-  var oldest: Long? = null
+  var oldest: String? = null
 
   @Input
   @Optional
-  var newest: Long? = null
+  var newest: String? = null
 
   @Input
   @Optional
