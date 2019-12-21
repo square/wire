@@ -21,7 +21,7 @@ buildscript {
       'animalSniffer': '1.16',
       'animalSnifferGradle': '1.5.0',
       'mavenPublish': '0.8.0',
-      'releasedWire': '3.0.0-alpha01'
+      'releasedWire': '3.0.2'
   ]
 
   ext.deps = [
