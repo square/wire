@@ -27,10 +27,9 @@ notifications:
 
 sudo: false
 
-# TODO(egorand): Re-enable caching once Wire doesn't depend on Okio snapshot anymore
-# cache:
-#  directories:
-#    - $HOME/.gradle/caches/
-#    - $HOME/.gradle/wrapper/
-#    - $HOME/.gradle/native/
-#    - $HOME/.gradle/daemon/native/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.gradle/native/
+    - $HOME/.gradle/daemon/native/
