@@ -1,6 +1,28 @@
 Change Log
 ==========
 
+Version 3.0.3
+-------------
+
+_2019-12-23_
+
+Starting with this version the  Wire Maven plugin is no longer maintained and has been removed from 
+the repository.
+
+ * New: Support for custom options in Kotlin.
+ * New: Kotlin 1.3.61.
+ * New: Add support for custom targets in `WireRun` and the Gradle plugin.
+ * New: Improve schema evaluation algorithm when loading separate `sourcePath` and `protoPath`.
+ * New: Lazy loading of `protoPath` contents.
+ * New: Make it possible to customize Gradle plugin's configurations.
+ * New: Make it possible to customize Gradle plugin's `generateProtos` task.
+ * Fix: Use correct `ProtoAdapter` for packed fields in Kotlin.
+ * Fix: Properly handle name clashes between fields and enclosing types.
+ * Fix: Preserve the package name on files loaded from `protoPath`.
+ * Fix: ProtoPruner: Properly evaluate Pruner's reachable objects.
+ * Fix: ProtoPruner: Ensure `--excludes` properly prunes options.
+ * Fix: ProtoPruner: Keep used `ServiceOptions` and `MethodOptions` when pruning.
+
 Version 3.0.2
 -------------
 
