@@ -46,22 +46,11 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
     require(version.toLowerCase(Locale.US) == version) { "version must be lowercase: $version" }
   }
 
-  override fun compareTo(other: SemVer): Int {
-    return compareSegments(version, other.version, Comparator { a, b ->
-      val aDigits = a.toBigIntegerOrNull()
-      val bDigits = b.toBigIntegerOrNull()
-      return@Comparator when {
-        aDigits != null && bDigits != null -> aDigits.compareTo(bDigits)
-        aDigits != null -> -1
-        bDigits != null -> 1
-        else -> a.compareTo(b)
-      }
-    })
-  }
-
   override fun toString() = version
 
-  private fun compareSegments(a: String, b: String, comparator: Comparator<String>): Int {
+  override fun compareTo(other: SemVer): Int {
+    val a = version
+    val b = other.version
     var aPos = 0
     var bPos = 0
 
@@ -81,7 +70,7 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
         val aLimit = a.find(SEPARATORS, startIndex = aPos, endIndex = aSize)
         val bLimit = b.find(SEPARATORS, startIndex = bPos, endIndex = bSize)
 
-        val result = comparator.compare(
+        val result = compareSegment(
             a.substring(aPos, aLimit),
             b.substring(bPos, bLimit)
         )
@@ -99,6 +88,37 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
     }
 
     return 0
+  }
+
+  private fun compareSegment(a: String, b: String): Int {
+    val aAllDigits = a.all(Char::isDigit)
+    val bAllDigits = b.all(Char::isDigit)
+    return when {
+      aAllDigits && bAllDigits -> compareNumber(a, b)
+      aAllDigits -> -1
+      bAllDigits -> 1
+      else -> a.compareTo(b)
+    }
+  }
+
+  /** Compare two strings as non-negative integral values without decoding. */
+  private fun compareNumber(a: String, b: String): Int {
+    val aStart = a.indexOfFirst { it != '0' }
+    val bStart = b.indexOfFirst { it != '0' }
+    return when {
+      aStart == -1 && bStart == -1 -> 0 // a and b are 0
+      aStart == -1 -> -1 // a is 0, b is not
+      bStart == -1 -> 1 // b is 0, a is not
+      else -> {
+        val aLength = a.length - aStart
+        val bLength = b.length - bStart
+        when {
+          aLength < bLength -> -1 // a is shorter than b, thus smaller
+          aLength > bLength -> 1 // b is shorter than a, thus smaller
+          else -> a.substring(aStart).compareTo(b.substring(bStart)) // compare lexicographically
+        }
+      }
+    }
   }
 
   /**
