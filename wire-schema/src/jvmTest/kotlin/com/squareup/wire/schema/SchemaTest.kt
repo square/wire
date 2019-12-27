@@ -43,10 +43,10 @@ class SchemaTest {
             """.trimMargin())
         .schema()
 
-    val service = schema.getService("Service")
+    val service = schema.getService("Service")!!
     val call = service.rpc("Call")!!
-    assertThat(call.requestType).isEqualTo(schema.getType("Request").type)
-    assertThat(call.responseType).isEqualTo(schema.getType("Response").type)
+    assertThat(call.requestType).isEqualTo(schema.getType("Request")!!.type)
+    assertThat(call.responseType).isEqualTo(schema.getType("Response")!!.type)
   }
 
   @Test
@@ -69,11 +69,11 @@ class SchemaTest {
         .schema()
 
     val message = schema.getType("Message") as MessageType
-    val field = message.field("field")
-    assertThat(field!!.type).isEqualTo(schema.getType("foo_package.Foo").type)
+    val field = message.field("field")!!
+    assertThat(field.type).isEqualTo(schema.getType("foo_package.Foo")!!.type)
     val bars = message.field("bars")!!.type
     assertThat(bars!!.keyType).isEqualTo(ProtoType.STRING)
-    assertThat(bars.valueType).isEqualTo(schema.getType("foo_package.Bar").type)
+    assertThat(bars.valueType).isEqualTo(schema.getType("foo_package.Bar")!!.type)
   }
 
   @Ignore("Resolution happens from the root not from inside Outer and so this fails.")
@@ -97,8 +97,8 @@ class SchemaTest {
         .schema()
 
     val message = schema.getType("Other") as MessageType
-    val field = message.field("choice")
-    assertThat(field!!.type).isEqualTo(schema.getType("Outer.Choice").type)
+    val field = message.field("choice")!!
+    assertThat(field.type).isEqualTo(schema.getType("Outer.Choice")!!.type)
   }
 
   @Test
@@ -1068,7 +1068,7 @@ class SchemaTest {
              """.trimMargin()
         )
         .schema()
-    val service = schema.getService("pa.Service")
+    val service = schema.getService("pa.Service")!!
     val b = schema.getType("pb.B") as MessageType
     assertThat(service.rpcs()[0].requestType).isEqualTo(b.type)
     assertThat(service.rpcs()[0].responseType).isEqualTo(b.type)

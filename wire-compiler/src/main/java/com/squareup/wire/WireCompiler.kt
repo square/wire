@@ -123,7 +123,7 @@ class WireCompiler internal constructor(
 
     /** Queue which can contain both [Type]s and [Service]s. */
     val queue = ConcurrentLinkedQueue<PendingFileSpec>()
-    for (protoFile in schema.getProtoFiles()) {
+    for (protoFile in schema.protoFiles) {
       // Check if we're skipping files not explicitly named.
       if (!sourceFileNames.isEmpty() && protoFile.location.path !in sourceFileNames) {
         if (namedFilesOnly || protoFile.location.path == DESCRIPTOR_PROTO) continue

@@ -319,7 +319,7 @@ class Options(
             continue  // Prune this field.
           }
 
-          val field = schema.getField(protoMember)
+          val field = schema.getField(protoMember)!!
           val retainedValue = retainAll(schema, markSet, field.type, value!!)
           if (retainedValue != null) {
             map[protoMember] = retainedValue // This retained field is non-empty.

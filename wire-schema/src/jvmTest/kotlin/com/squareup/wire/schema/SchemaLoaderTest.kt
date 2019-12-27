@@ -44,12 +44,12 @@ class SchemaLoaderTest {
         .addSource(fileSystem.getPath("/source"))
         .load()
 
-    val message1 = schema.getType("Message1")
+    val message1 = schema.getType("Message1")!!
     assertThat(message1).isNotNull
     assertThat(message1.location.base).isEqualTo("/source")
     assertThat(message1.location.path).isEqualTo("message1.proto")
 
-    val message2 = schema.getType("Message2")
+    val message2 = schema.getType("Message2")!!
     assertThat(message2).isNotNull
     assertThat(message2.location.base).isEqualTo("/source")
     assertThat(message2.location.path).isEqualTo("message2.proto")
@@ -103,7 +103,7 @@ class SchemaLoaderTest {
         .addProto("a/b/message.proto")
         .load()
 
-    val message = schema.getType("Message")
+    val message = schema.getType("Message")!!
     assertThat(message).isNotNull
     assertThat(message.location.base).isEqualTo("/source/protos.zip")
     assertThat(message.location.path).isEqualTo("a/b/message.proto")

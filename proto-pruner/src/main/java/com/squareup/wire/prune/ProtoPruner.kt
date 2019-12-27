@@ -39,7 +39,7 @@ class ProtoPruner(
 
       val sourcePaths = loader.sourcePathFiles.map { it.location.path }.toSet()
 
-      schema.getProtoFiles()
+      schema.protoFiles
           .filter {
             (it.location.path in sourcePaths) && it.isNotEmpty()
           }
