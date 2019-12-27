@@ -28,15 +28,13 @@ data class ReservedElement(
     appendDocumentation(documentation)
     append("reserved ")
 
-    val value = values
-    for (i in value.indices) {
-      if (i > 0) append(", ")
+    values.forEachIndexed { index, value ->
+      if (index > 0) append(", ")
 
-      val reservation = value[i]
-      when (reservation) {
-        is String -> append("\"$reservation\"")
-        is Int -> append(reservation)
-        is IntRange -> append("${reservation.first} to ${reservation.last}")
+      when (value) {
+        is String -> append("\"$value\"")
+        is Int -> append(value)
+        is IntRange -> append("${value.first} to ${value.last}")
         else -> throw AssertionError()
       }
     }

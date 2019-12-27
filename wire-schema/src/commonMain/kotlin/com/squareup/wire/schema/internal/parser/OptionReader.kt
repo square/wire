@@ -78,8 +78,7 @@ class OptionReader(internal val reader: SyntaxReader) {
 
   /** Reads a value that can be a map, list, string, number, boolean or enum.  */
   private fun readKindAndValue(): KindAndValue {
-    val peeked = reader.peekChar()
-    when (peeked) {
+    when (val peeked = reader.peekChar()) {
       '{' -> return KindAndValue(MAP, readMap('{', '}', ':'))
       '[' -> return KindAndValue(LIST, readList())
       '"', '\'' -> return KindAndValue(STRING, reader.readString())
@@ -87,8 +86,7 @@ class OptionReader(internal val reader: SyntaxReader) {
         if (peeked.isDigit() || peeked == '-') {
           return KindAndValue(NUMBER, reader.readWord())
         }
-        val word = reader.readWord()
-        return when (word) {
+        return when (val word = reader.readWord()) {
           "true" -> KindAndValue(BOOLEAN, "true")
           "false" -> KindAndValue(BOOLEAN, "false")
           else -> KindAndValue(ENUM, word)

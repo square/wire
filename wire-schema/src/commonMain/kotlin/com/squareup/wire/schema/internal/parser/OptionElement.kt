@@ -94,7 +94,7 @@ data class OptionElement(
         val lastIndex = value.size - 1
         value.forEachIndexed { index, item ->
           val endl = if (index != lastIndex) "," else ""
-          appendIndented("${formatOptionMapValue(value[index]!!)}$endl")
+          appendIndented("${formatOptionMapValue(item!!)}$endl")
         }
         append("]")
       }

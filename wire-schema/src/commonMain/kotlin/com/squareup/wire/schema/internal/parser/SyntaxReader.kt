@@ -234,8 +234,7 @@ class SyntaxReader(
   private fun readComment(): String {
     check(pos != data.size && data[pos] == '/')
     pos++
-    val commentType = if (pos < data.size) data[pos++].toInt() else -1
-    when (commentType) {
+    when (if (pos < data.size) data[pos++].toInt() else -1) {
       '*'.toInt() -> {
         val result = StringBuilder()
         var startOfLine = true

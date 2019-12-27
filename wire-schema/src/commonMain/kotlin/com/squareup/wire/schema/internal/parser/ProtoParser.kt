@@ -108,7 +108,7 @@ class ProtoParser internal constructor(
         }
         val syntaxString = reader.readQuotedString()
         try {
-          syntax = ProtoFile.Syntax.get(syntaxString)
+          syntax = ProtoFile.Syntax[syntaxString]
         } catch (e: IllegalArgumentException) {
           throw reader.unexpected(e.message!!, location)
         }
