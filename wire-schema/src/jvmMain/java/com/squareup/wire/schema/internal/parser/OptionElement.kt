@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.squareup.wire.schema.internal.Util
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendIndented
+import com.squareup.wire.schema.internal.appendOptions
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.ENUM
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST
@@ -60,7 +60,7 @@ data class OptionElement(
       }
       LIST -> {
         append("$formattedName = ")
-        Util.appendOptions(this, value as List<OptionElement>)
+        appendOptions(value as List<OptionElement>)
       }
     }
   }
@@ -74,7 +74,7 @@ data class OptionElement(
     val lastIndex = valueMap.size - 1
     valueMap.entries.forEachIndexed { index, entry ->
       val endl = if (index != lastIndex) "," else ""
-      appendIndented(builder, "${entry.key}: ${formatOptionMapValue(entry.value!!)}$endl")
+      builder.appendIndented("${entry.key}: ${formatOptionMapValue(entry.value!!)}$endl")
     }
   }
 
@@ -93,7 +93,7 @@ data class OptionElement(
         val lastIndex = value.size - 1
         value.forEachIndexed { index, item ->
           val endl = if (index != lastIndex) "," else ""
-          appendIndented(this, "${formatOptionMapValue(value[index]!!)}$endl")
+          appendIndented("${formatOptionMapValue(value[index]!!)}$endl")
         }
         append("]")
       }

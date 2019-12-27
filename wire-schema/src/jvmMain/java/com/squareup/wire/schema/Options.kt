@@ -18,7 +18,6 @@ package com.squareup.wire.schema
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoMember.Companion.get
-import com.squareup.wire.schema.internal.isGoogleProtobufOptionType
 import com.squareup.wire.schema.internal.parser.OptionElement
 import java.util.LinkedHashMap
 import java.util.regex.Pattern
@@ -314,7 +313,8 @@ class Options(
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
           val isCoreMemberOfGoogleProtobuf =
-              protoMember.isGoogleProtobufOptionType() && !schema.isExtensionField(protoMember)
+              protoMember.type in GOOGLE_PROTOBUF_OPTION_TYPES &&
+                  !schema.isExtensionField(protoMember)
           if (!markSet.contains(protoMember) && !isCoreMemberOfGoogleProtobuf) {
             continue  // Prune this field.
           }

@@ -16,7 +16,7 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -50,7 +50,7 @@ class ExtensionsElementTest {
     val actual = ExtensionsElement(
         location = location,
         start = 500,
-        end = Util.MAX_TAG_VALUE
+        end = MAX_TAG_VALUE
     )
     val expected = "extensions 500 to max;\n"
     assertThat(actual.toSchema()).isEqualTo(expected)

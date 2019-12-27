@@ -16,7 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
-import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.isValidTag
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Ignore
@@ -103,13 +103,13 @@ class SchemaTest {
 
   @Test
   fun isValidTag() {
-    assertThat(Util.isValidTag(0)).isFalse() // Less than minimum.
-    assertThat(Util.isValidTag(1)).isTrue()
-    assertThat(Util.isValidTag(1234)).isTrue()
-    assertThat(Util.isValidTag(19222)).isFalse() // Reserved range.
-    assertThat(Util.isValidTag(2319573)).isTrue()
-    assertThat(Util.isValidTag(536870911)).isTrue()
-    assertThat(Util.isValidTag(536870912)).isFalse() // Greater than maximum.
+    assertThat(0.isValidTag()).isFalse() // Less than minimum.
+    assertThat(1.isValidTag()).isTrue()
+    assertThat(1234.isValidTag()).isTrue()
+    assertThat(19222.isValidTag()).isFalse() // Reserved range.
+    assertThat(2319573.isValidTag()).isTrue()
+    assertThat(536870911.isValidTag()).isTrue()
+    assertThat(536870912.isValidTag()).isFalse() // Greater than maximum.
   }
 
   @Test

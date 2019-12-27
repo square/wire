@@ -16,8 +16,8 @@
 package com.squareup.wire.java.internal
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendIndented
 import com.squareup.wire.schema.internal.parser.OptionElement
 
 /**
@@ -33,10 +33,10 @@ data class TypeConfigElement(
   val adapter: String? = null
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("type $type {\n")
     for (option in with) {
-      appendIndented(this, "with ${option.toSchema()};\n")
+      appendIndented("with ${option.toSchema()};\n")
     }
     append("  target $target using $adapter;\n")
     append("}\n")

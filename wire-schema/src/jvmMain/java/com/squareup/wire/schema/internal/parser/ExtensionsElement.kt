@@ -16,8 +16,8 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util
-import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.MAX_TAG_VALUE
+import com.squareup.wire.schema.internal.appendDocumentation
 
 data class ExtensionsElement(
   val location: Location,
@@ -26,12 +26,12 @@ data class ExtensionsElement(
   val end: Int
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("extensions $start")
 
     if (start != end) {
       append(" to ")
-      if (end < Util.MAX_TAG_VALUE) {
+      if (end < MAX_TAG_VALUE) {
         append(end)
       } else {
         append("max")

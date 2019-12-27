@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendIndented
 
 data class OneOfElement(
   val name: String,
@@ -25,19 +25,19 @@ data class OneOfElement(
   val groups: List<GroupElement> = emptyList()
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("oneof $name {")
 
     if (fields.isNotEmpty()) {
       append('\n')
       for (field in fields) {
-        appendIndented(this, field.toSchema())
+        appendIndented(field.toSchema())
       }
     }
     if (groups.isNotEmpty()) {
       append('\n')
       for (group in groups) {
-        appendIndented(this, group.toSchema())
+        appendIndented(group.toSchema())
       }
     }
     append("}\n")

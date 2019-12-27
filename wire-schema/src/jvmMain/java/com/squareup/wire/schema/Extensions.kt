@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.parser.ExtensionsElement
 
 class Extensions private constructor(
@@ -25,7 +25,7 @@ class Extensions private constructor(
   val end: Int
 ) {
   fun validate(linker: Linker) {
-    if (!Util.isValidTag(start) || !Util.isValidTag(end)) {
+    if (!start.isValidTag() || !end.isValidTag()) {
       linker.withContext(this)
           .addError("tags are out of range: %s to %s", start, end)
     }

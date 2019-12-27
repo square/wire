@@ -20,7 +20,7 @@ import com.squareup.wire.schema.Field.Label.REPEATED
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
-import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
@@ -1263,7 +1263,7 @@ class ProtoParserTest {
                 start = 500,
                 end = 500
             ),
-            ExtensionsElement(location.at(8, 3), "", 1000, Util.MAX_TAG_VALUE)
+            ExtensionsElement(location.at(8, 3), "", 1000, MAX_TAG_VALUE)
         )
     )
     val expected = ProtoFileElement(

@@ -16,8 +16,8 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendIndented
 
 data class EnumElement(
   override val location: Location,
@@ -30,7 +30,7 @@ data class EnumElement(
   override val nestedTypes: List<TypeElement> = emptyList()
 
   override fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("enum $name {")
 
     if (options.isNotEmpty() || constants.isNotEmpty()) {
@@ -39,12 +39,12 @@ data class EnumElement(
 
     if (options.isNotEmpty()) {
       for (option in options) {
-        appendIndented(this, option.toSchemaDeclaration())
+        appendIndented(option.toSchemaDeclaration())
       }
     }
     if (constants.isNotEmpty()) {
       for (constant in constants) {
-        appendIndented(this, constant.toSchema())
+        appendIndented(constant.toSchema())
       }
     }
     append("}\n")

@@ -16,8 +16,8 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendIndented
 
 data class RpcElement(
   val location: Location,
@@ -30,7 +30,7 @@ data class RpcElement(
   val options: List<OptionElement> = emptyList()
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("rpc $name (")
 
     if (requestStreaming) {
@@ -46,7 +46,7 @@ data class RpcElement(
     if (options.isNotEmpty()) {
       append(" {\n")
       for (option in options) {
-        appendIndented(this, option.toSchemaDeclaration())
+        appendIndented(option.toSchemaDeclaration())
       }
       append('}')
     }
