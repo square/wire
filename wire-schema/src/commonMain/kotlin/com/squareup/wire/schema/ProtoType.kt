@@ -99,27 +99,23 @@ class ProtoType {
     @JvmField val UINT32 = ProtoType(true, "uint32")
     @JvmField val UINT64 = ProtoType(true, "uint64")
 
-    private val SCALAR_TYPES: Map<String, ProtoType>
-
-    init {
-      val scalarTypes = LinkedHashMap<String, ProtoType>()
-      scalarTypes[BOOL.string] = BOOL
-      scalarTypes[BYTES.string] = BYTES
-      scalarTypes[DOUBLE.string] = DOUBLE
-      scalarTypes[FLOAT.string] = FLOAT
-      scalarTypes[FIXED32.string] = FIXED32
-      scalarTypes[FIXED64.string] = FIXED64
-      scalarTypes[INT32.string] = INT32
-      scalarTypes[INT64.string] = INT64
-      scalarTypes[SFIXED32.string] = SFIXED32
-      scalarTypes[SFIXED64.string] = SFIXED64
-      scalarTypes[SINT32.string] = SINT32
-      scalarTypes[SINT64.string] = SINT64
-      scalarTypes[STRING.string] = STRING
-      scalarTypes[UINT32.string] = UINT32
-      scalarTypes[UINT64.string] = UINT64
-      SCALAR_TYPES = scalarTypes
-    }
+    private val SCALAR_TYPES = listOf(
+        BOOL,
+        BYTES,
+        DOUBLE,
+        FLOAT,
+        FIXED32,
+        FIXED64,
+        INT32,
+        INT64,
+        SFIXED32,
+        SFIXED64,
+        SINT32,
+        SINT64,
+        STRING,
+        UINT32,
+        UINT64
+    ).associateBy { it.string }
 
     @JvmStatic
     fun get(enclosingTypeOrPackage: String?, typeName: String): ProtoType {

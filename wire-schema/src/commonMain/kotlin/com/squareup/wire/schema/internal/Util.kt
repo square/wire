@@ -40,7 +40,7 @@ internal fun StringBuilder.appendOptions(
 ) {
   val count = options.size
   if (count == 1) {
-    append("[")
+    append('[')
         .append(options[0].toSchema())
         .append(']')
     return
