@@ -593,7 +593,10 @@ class ProtoParser internal constructor(
 
   companion object {
     /** Parse a named `.proto` schema. */
-    fun parse(location: Location, data: String) =
-        ProtoParser(location, data.toCharArray()).readProtoFile()
+    fun parse(location: Location, data: String): ProtoFileElement {
+      // TODO Migrate to data.toCharArray() once stable in common code.
+      val chars = CharArray(data.length, data::get)
+      return ProtoParser(location, chars).readProtoFile()
+    }
   }
 }

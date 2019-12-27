@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.schema
 
-import java.util.Collections
-import java.util.LinkedHashMap
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
 
 /**
  * Names a protocol buffer message, enumerated type, service, map, or a scalar. This class models a
@@ -118,7 +118,7 @@ class ProtoType {
       scalarTypes[STRING.string] = STRING
       scalarTypes[UINT32.string] = UINT32
       scalarTypes[UINT64.string] = UINT64
-      SCALAR_TYPES = Collections.unmodifiableMap(scalarTypes)
+      SCALAR_TYPES = scalarTypes
     }
 
     @JvmStatic

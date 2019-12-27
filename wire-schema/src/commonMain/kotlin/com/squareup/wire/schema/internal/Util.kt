@@ -78,3 +78,7 @@ private const val RESERVED_TAG_VALUE_END = 19999
 internal fun Int.isValidTag() =
   this in MIN_TAG_VALUE until RESERVED_TAG_VALUE_START ||
       this in (RESERVED_TAG_VALUE_END + 1) until MAX_TAG_VALUE + 1
+
+internal expect fun Char.isDigit(): Boolean
+
+internal expect fun String.toEnglishLowerCase(): String

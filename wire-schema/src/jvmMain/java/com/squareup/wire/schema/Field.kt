@@ -19,7 +19,7 @@ import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
 import com.squareup.wire.schema.internal.parser.FieldElement
 
-class Field private constructor(
+actual class Field private constructor(
   val packageName: String?,
 
   val location: Location,
@@ -199,7 +199,7 @@ class Field private constructor(
 
   override fun toString() = name
 
-  enum class Label {
+  actual enum class Label {
     OPTIONAL,
     REQUIRED,
     REPEATED,

@@ -78,7 +78,7 @@ class SyntaxReader(
 
   fun readQuotedString(): String {
     var startQuote = readChar()
-    assert(startQuote == '"' || startQuote == '\'')
+    check(startQuote == '"' || startQuote == '\'')
     val result = StringBuilder()
     while (pos < data.size) {
       var c = data[pos++]
@@ -177,7 +177,7 @@ class SyntaxReader(
         val valueType = readDataType()
 
         expect(readChar() == '>') { "expected '>'" }
-        String.format("map<%s, %s>", keyType, valueType)
+        "map<$keyType, $valueType>"
       }
 
       else -> name
@@ -207,7 +207,7 @@ class SyntaxReader(
         tag = tag.substring("0x".length)
         radix = 16
       }
-      return Integer.valueOf(tag, radix)
+      return tag.toInt(radix)
     } catch (_: Exception) {
       throw unexpected("expected an integer but was $tag")
     }
@@ -232,7 +232,7 @@ class SyntaxReader(
 
   /** Reads a comment and returns its body. */
   private fun readComment(): String {
-    assert(pos != data.size && data[pos] == '/')
+    check(pos != data.size && data[pos] == '/')
     pos++
     val commentType = if (pos < data.size) data[pos++].toInt() else -1
     when (commentType) {
@@ -264,7 +264,7 @@ class SyntaxReader(
               startOfLine = false
             }
 
-            !Character.isWhitespace(c) -> {
+            !c.isWhitespace() -> {
               result.append(c)
               startOfLine = false
             }

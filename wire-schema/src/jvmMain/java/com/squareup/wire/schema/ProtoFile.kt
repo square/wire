@@ -20,7 +20,7 @@ import com.squareup.wire.schema.Service.Companion.fromElements
 import com.squareup.wire.schema.Type.Companion.fromElements
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 
-class ProtoFile private constructor(
+actual class ProtoFile private constructor(
   val location: Location,
   val imports: List<String>,
   val publicImports: List<String>,
@@ -160,14 +160,14 @@ class ProtoFile private constructor(
   }
 
   /** Syntax version. */
-  enum class Syntax(private val string: String) {
+  actual enum class Syntax(private val string: String) {
     PROTO_2("proto2"),
     PROTO_3("proto3");
 
     override fun toString(): String = string
 
-    companion object {
-      operator fun get(string: String): Syntax {
+    actual companion object {
+      actual operator fun get(string: String): Syntax {
         for (syntax in values()) {
           if (syntax.string == string) return syntax
         }

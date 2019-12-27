@@ -20,7 +20,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendOptions
-import java.util.Locale
+import com.squareup.wire.schema.internal.toEnglishLowerCase
 
 data class FieldElement(
   val location: Location,
@@ -36,7 +36,7 @@ data class FieldElement(
     appendDocumentation(documentation)
 
     if (label != null) {
-      append("${label.name.toLowerCase(Locale.US)} ")
+      append("${label.name.toEnglishLowerCase()} ")
     }
     append("$type $name = $tag")
 

@@ -15,8 +15,7 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.base.CharMatcher
-import java.io.File
+import kotlin.jvm.JvmStatic
 
 /**
  * Locates a .proto file, or a position within a .proto file, on the file system. This includes a
@@ -47,7 +46,7 @@ data class Location(
   override fun toString() = buildString {
     if (!base.isEmpty()) {
       append(base)
-      append(File.separator)
+      append('/')
     }
     append(path)
     if (line != -1) {
@@ -69,9 +68,7 @@ data class Location(
       base: String,
       path: String
     ): Location {
-      val newBase = CharMatcher.`is`('/')
-          .trimTrailingFrom(base)
-      return Location(newBase, path, -1, -1)
+      return Location(base.trimEnd('/'), path, -1, -1)
     }
   }
 }
