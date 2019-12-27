@@ -107,7 +107,7 @@ class RepoBuilder {
   fun generateKotlin(typeName: String): String {
     val schema = schema()
     val kotlinGenerator = KotlinGenerator(schema)
-    val type = schema.getType(typeName)
+    val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)
     val packageName = kotlinGenerator.generatedTypeName(type).packageName
     val fileSpec = FileSpec.builder(packageName, "_")
@@ -131,7 +131,7 @@ class RepoBuilder {
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole
     )
-    val service = schema.getService(serviceName)
+    val service = schema.getService(serviceName)!!
     val rpc = rpcName?.let { service.rpc(rpcName)!! }
     val typeSpec = grpcGenerator.generateService(service, rpc)
     val packageName = grpcGenerator.generatedServiceName(service).packageName

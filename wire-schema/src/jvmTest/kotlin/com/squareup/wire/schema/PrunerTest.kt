@@ -148,10 +148,10 @@ class PrunerTest {
     val pruned = schema.prune(PruningRules.Builder()
         .include("Service#CallA")
         .build())
-    assertThat(pruned.getService("Service").rpc("CallA")).isNotNull()
+    assertThat(pruned.getService("Service")!!.rpc("CallA")).isNotNull()
     assertThat(pruned.getType("RequestA")).isNotNull()
     assertThat(pruned.getType("ResponseA")).isNotNull()
-    assertThat(pruned.getService("Service").rpc("CallB")).isNull()
+    assertThat(pruned.getService("Service")!!.rpc("CallB")).isNull()
     assertThat(pruned.getType("RequestB")).isNull()
     assertThat(pruned.getType("ResponseB")).isNull()
   }
@@ -387,7 +387,7 @@ class PrunerTest {
     val fieldOptions = pruned.getType("google.protobuf.FieldOptions") as MessageType
     assertThat(fieldOptions.extensionField("a")).isNull()
 
-    val service = pruned.protoFile("service.proto")
+    val service = pruned.protoFile("service.proto")!!
     assertThat(service.extendList).isEmpty()
   }
 
@@ -664,9 +664,9 @@ class PrunerTest {
         .exclude("MessageC")
         .build())
     assertThat(pruned.getType("MessageB")).isNotNull()
-    assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull()
+    assertThat(pruned.getService("ServiceA")!!.rpc("CallB")).isNotNull()
     assertThat(pruned.getType("MessageC")).isNull()
-    assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull()
+    assertThat(pruned.getService("ServiceA")!!.rpc("CallC")).isNull()
   }
 
   @Test
@@ -689,9 +689,9 @@ class PrunerTest {
         .exclude("ServiceA#CallC")
         .build())
     assertThat(pruned.getType("MessageB")).isNotNull()
-    assertThat(pruned.getService("ServiceA").rpc("CallB")).isNotNull()
+    assertThat(pruned.getService("ServiceA")!!.rpc("CallB")).isNotNull()
     assertThat(pruned.getType("MessageC")).isNull()
-    assertThat(pruned.getService("ServiceA").rpc("CallC")).isNull()
+    assertThat(pruned.getService("ServiceA")!!.rpc("CallC")).isNull()
   }
 
   @Test
@@ -1072,10 +1072,10 @@ class PrunerTest {
         .include("Message")
         .build())
 
-    assertThat(pruned.protoFile("footer.proto").types).isEmpty()
-    assertThat(pruned.protoFile("title.proto").types).isNotEmpty
+    assertThat(pruned.protoFile("footer.proto")!!.types).isEmpty()
+    assertThat(pruned.protoFile("title.proto")!!.types).isNotEmpty()
 
-    val message = pruned.protoFile("message.proto")
+    val message = pruned.protoFile("message.proto")!!
     assertThat(message.imports).containsExactly("title.proto")
   }
 

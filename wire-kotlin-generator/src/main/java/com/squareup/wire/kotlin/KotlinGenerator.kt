@@ -828,9 +828,9 @@ class KotlinGenerator private constructor(
     add("%T(", protoType.typeName)
     var first = true
     entries.forEach { entry ->
-      val field = schema.getField(entry.key as ProtoMember)
+      val field = schema.getField(entry.key as ProtoMember)!!
       val valueInitializer = defaultFieldInitializer(field.type!!, entry.value!!)
-      val nameAllocator = nameAllocator(schema.getType(protoType))
+      val nameAllocator = nameAllocator(schema.getType(protoType)!!)
       if (!first) add(",")
       first = false
       add("\n⇥%L = %L⇤", nameAllocator[field], valueInitializer)
@@ -1119,8 +1119,8 @@ class KotlinGenerator private constructor(
       var empty = true
       options.map.entries.forEach { entry ->
         if (entry.key != FIELD_DEPRECATED && entry.key != PACKED) {
-          val optionField = schema.getField(entry.key)
-          val nameAllocator = nameAllocator(schema.getType(optionsType))
+          val optionField = schema.getField(entry.key)!!
+          val nameAllocator = nameAllocator(schema.getType(optionsType)!!)
           if (!empty) add(",")
           add("\n⇥%L = %L⇤", nameAllocator[optionField], defaultFieldInitializer(optionField.type!!, entry.value!!))
           empty = false
@@ -1228,7 +1228,7 @@ class KotlinGenerator private constructor(
     message.constants.forEach { constant ->
       constant.options.map.keys.forEach { protoMember ->
         if (allOptionFieldsBuilder.add(protoMember)) {
-          val optionField = schema.getField(protoMember)
+          val optionField = schema.getField(protoMember)!!
           primaryConstructor.addParameter(optionField.name, optionField.typeName)
           builder.addProperty(PropertySpec.builder(optionField.name, optionField.typeName)
               .initializer(optionField.name)
@@ -1242,7 +1242,7 @@ class KotlinGenerator private constructor(
           .addSuperclassConstructorParameter("%L", constant.tag)
           .apply {
             allOptionFieldsBuilder.toList().forEach { protoMember ->
-              val field = schema.getField(protoMember)
+              val field = schema.getField(protoMember)!!
               val fieldValue = constant.options.map[protoMember]
               if (fieldValue != null) {
                 addSuperclassConstructorParameter("%L", defaultFieldInitializer(field.type!!, fieldValue))
@@ -1445,7 +1445,7 @@ class KotlinGenerator private constructor(
         }
       }
 
-      for (protoFile in schema.getProtoFiles()) {
+      for (protoFile in schema.protoFiles) {
         val kotlinPackage = protoFile.kotlinPackage()
         putAll(kotlinPackage, null, protoFile.types)
 

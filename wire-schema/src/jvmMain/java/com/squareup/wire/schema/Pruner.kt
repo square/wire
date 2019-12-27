@@ -204,7 +204,7 @@ internal class Pruner(
 
         val type = schema.getType(root)
         val service = schema.getService(root)
-        fileOptions = schema.protoFile(root).options
+        fileOptions = schema.protoFile(root)!!.options
 
         if (type is MessageType) {
           options = type.options
