@@ -6,6 +6,11 @@ kotlin {
   }
 
   sourceSets {
+    commonMain {
+      dependencies {
+        api deps.kotlin.stdlib.common
+      }
+    }
     jvmMain {
       dependencies {
         api project(':wire-runtime')

@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import com.squareup.wire.schema.internal.isDigit
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.BOOLEAN
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.ENUM
@@ -22,8 +23,6 @@ import com.squareup.wire.schema.internal.parser.OptionElement.Kind.LIST
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.NUMBER
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
-import java.util.ArrayList
-import java.util.LinkedHashMap
 
 class OptionReader(internal val reader: SyntaxReader) {
 
@@ -85,7 +84,7 @@ class OptionReader(internal val reader: SyntaxReader) {
       '[' -> return KindAndValue(LIST, readList())
       '"', '\'' -> return KindAndValue(STRING, reader.readString())
       else -> {
-        if (Character.isDigit(peeked) || peeked == '-') {
+        if (peeked.isDigit() || peeked == '-') {
           return KindAndValue(NUMBER, reader.readWord())
         }
         val word = reader.readWord()

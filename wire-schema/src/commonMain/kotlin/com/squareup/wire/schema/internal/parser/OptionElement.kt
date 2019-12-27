@@ -24,6 +24,7 @@ import com.squareup.wire.schema.internal.parser.OptionElement.Kind.MAP
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.NUMBER
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.OPTION
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind.STRING
+import kotlin.jvm.JvmOverloads
 
 data class OptionElement(
   val name: String,

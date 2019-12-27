@@ -19,7 +19,7 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendIndented
-import java.util.Locale
+import com.squareup.wire.schema.internal.toEnglishLowerCase
 
 data class GroupElement(
   val label: Field.Label? = null,
@@ -32,7 +32,7 @@ data class GroupElement(
   fun toSchema() = buildString {
     appendDocumentation(documentation)
     if (label != null) {
-      append("${label.name.toLowerCase(Locale.US)} ")
+      append("${label.name.toEnglishLowerCase()} ")
     }
     append("group $name = $tag {")
     if (fields.isNotEmpty()) {

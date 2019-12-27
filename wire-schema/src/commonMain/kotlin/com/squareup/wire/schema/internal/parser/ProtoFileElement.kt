@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
+import kotlin.jvm.JvmStatic
 
 /** A single `.proto` file.  */
 data class ProtoFileElement(
