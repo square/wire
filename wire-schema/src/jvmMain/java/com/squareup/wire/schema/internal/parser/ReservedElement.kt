@@ -16,7 +16,7 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.appendDocumentation
 
 data class ReservedElement(
   val location: Location,
@@ -25,7 +25,7 @@ data class ReservedElement(
   val values: List<Any>
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("reserved ")
 
     val value = values

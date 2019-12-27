@@ -16,8 +16,8 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendIndented
 
 data class MessageElement(
   override val location: Location,
@@ -32,49 +32,49 @@ data class MessageElement(
   val groups: List<GroupElement> = emptyList()
 ) : TypeElement {
   override fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("message $name {")
 
     if (reserveds.isNotEmpty()) {
       append('\n')
       for (reserved in reserveds) {
-        appendIndented(this, reserved.toSchema())
+        appendIndented(reserved.toSchema())
       }
     }
     if (options.isNotEmpty()) {
       append('\n')
       for (option in options) {
-        appendIndented(this, option.toSchemaDeclaration())
+        appendIndented(option.toSchemaDeclaration())
       }
     }
     if (fields.isNotEmpty()) {
       append('\n')
       for (field in fields) {
-        appendIndented(this, field.toSchema())
+        appendIndented(field.toSchema())
       }
     }
     if (oneOfs.isNotEmpty()) {
       append('\n')
       for (oneOf in oneOfs) {
-        appendIndented(this, oneOf.toSchema())
+        appendIndented(oneOf.toSchema())
       }
     }
     if (groups.isNotEmpty()) {
       append('\n')
       for (group in groups) {
-        appendIndented(this, group.toSchema())
+        appendIndented(group.toSchema())
       }
     }
     if (extensions.isNotEmpty()) {
       append('\n')
       for (extension in extensions) {
-        appendIndented(this, extension.toSchema())
+        appendIndented(extension.toSchema())
       }
     }
     if (nestedTypes.isNotEmpty()) {
       append('\n')
       for (type in nestedTypes) {
-        appendIndented(this, type.toSchema())
+        appendIndented(type.toSchema())
       }
     }
     append("}\n")

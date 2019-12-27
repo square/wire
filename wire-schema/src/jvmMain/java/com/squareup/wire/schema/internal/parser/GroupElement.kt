@@ -17,8 +17,8 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendIndented
 import java.util.Locale
 
 data class GroupElement(
@@ -30,7 +30,7 @@ data class GroupElement(
   val fields: List<FieldElement> = emptyList()
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     if (label != null) {
       append("${label.name.toLowerCase(Locale.US)} ")
     }
@@ -38,7 +38,7 @@ data class GroupElement(
     if (fields.isNotEmpty()) {
       append('\n')
       for (field in fields) {
-        appendIndented(this, field.toSchema())
+        appendIndented(field.toSchema())
       }
     }
     append("}\n")

@@ -18,7 +18,7 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
-import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 
 /** Basic parser for `.proto` schema declarations. */
 class ProtoParser internal constructor(
@@ -484,7 +484,7 @@ class ProtoParser internal constructor(
     if (reader.peekChar() != ';') {
       reader.expect(reader.readWord() == "to", location) { "expected ';' or 'to'" }
       end = when (val s = reader.readWord()) {
-        "max" -> Util.MAX_TAG_VALUE
+        "max" -> MAX_TAG_VALUE
         else -> s.toInt()
       }
     }

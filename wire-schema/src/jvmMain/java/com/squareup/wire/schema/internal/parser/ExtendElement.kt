@@ -16,8 +16,8 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendIndented
 
 data class ExtendElement(
   val location: Location,
@@ -26,13 +26,13 @@ data class ExtendElement(
   val fields: List<FieldElement> = emptyList()
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("extend $name {")
 
     if (fields.isNotEmpty()) {
       append('\n')
       for (field in fields) {
-        appendIndented(this, field.toSchema())
+        appendIndented(field.toSchema())
       }
     }
 

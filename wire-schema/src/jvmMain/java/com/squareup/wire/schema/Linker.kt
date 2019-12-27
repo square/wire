@@ -16,7 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.ProtoType.Companion.get
-import com.squareup.wire.schema.internal.Util
+import com.squareup.wire.schema.internal.isValidTag
 import java.util.ArrayDeque
 
 /** Links local field types and option types to the corresponding declarations. */
@@ -323,7 +323,7 @@ class Linker {
 
     for (field in fields) {
       val tag = field.tag
-      if (!Util.isValidTag(tag)) {
+      if (!tag.isValidTag()) {
         withContext(field).addError("tag is out of range: %s", tag)
       }
 

@@ -16,8 +16,8 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendIndented
 
 data class ServiceElement(
   val location: Location,
@@ -27,18 +27,18 @@ data class ServiceElement(
   val options: List<OptionElement> = emptyList()
 ) {
   fun toSchema() = buildString{
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
     append("service $name {")
     if (options.isNotEmpty()) {
       append('\n')
       for (option in options) {
-        appendIndented(this, option.toSchemaDeclaration())
+        appendIndented(option.toSchemaDeclaration())
       }
     }
     if (rpcs.isNotEmpty()) {
       append('\n')
       for (rpc in rpcs) {
-        appendIndented(this, rpc.toSchema())
+        appendIndented(rpc.toSchema())
       }
     }
     append("}\n")

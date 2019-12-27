@@ -18,8 +18,8 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoType
-import com.squareup.wire.schema.internal.Util
-import com.squareup.wire.schema.internal.Util.appendDocumentation
+import com.squareup.wire.schema.internal.appendDocumentation
+import com.squareup.wire.schema.internal.appendOptions
 import java.util.Locale
 
 data class FieldElement(
@@ -33,7 +33,7 @@ data class FieldElement(
   val options: List<OptionElement> = emptyList()
 ) {
   fun toSchema() = buildString {
-    appendDocumentation(this, documentation)
+    appendDocumentation(documentation)
 
     if (label != null) {
       append("${label.name.toLowerCase(Locale.US)} ")
@@ -43,7 +43,7 @@ data class FieldElement(
     val optionsWithDefault = optionsWithDefaultValue()
     if (optionsWithDefault.isNotEmpty()) {
       append(' ')
-      Util.appendOptions(this, optionsWithDefault)
+      appendOptions(optionsWithDefault)
     }
 
     append(";\n")

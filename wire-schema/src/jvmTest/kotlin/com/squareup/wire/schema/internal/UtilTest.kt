@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema.internal
 
-import com.squareup.wire.schema.internal.Util.appendDocumentation
-import com.squareup.wire.schema.internal.Util.appendIndented
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -33,7 +31,7 @@ class UtilTest {
         |  Baz
         |""".trimMargin()
     val actual = buildString {
-      appendIndented(this, input)
+      appendIndented(input)
     }
     assertThat(actual).isEqualTo(expected)
   }
@@ -47,7 +45,7 @@ class UtilTest {
         |// Baz
         |""".trimMargin()
     val actual = buildString {
-      appendDocumentation(this, input)
+      appendDocumentation(input)
     }
     assertThat(actual).isEqualTo(expected)
   }
