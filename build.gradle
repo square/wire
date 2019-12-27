@@ -61,7 +61,7 @@ buildscript {
           ],
           'test': [
               'common': "org.jetbrains.kotlin:kotlin-test-common",
-              'annotations': "org.jetbrains.kotlin:kotlin-test-annotations-common",    
+              'annotations': "org.jetbrains.kotlin:kotlin-test-annotations-common",
               'junit': "org.jetbrains.kotlin:kotlin-test-junit",
               'js': "org.jetbrains.kotlin:kotlin-test-js",
           ],
@@ -131,7 +131,10 @@ subprojects { project ->
     targetCompatibility = JavaVersion.VERSION_1_8
   }
 
-  if (project.name != 'wire-runtime' && project.name != 'japicmp' && project.name != 'wire-tests') {
+  if (project.name != 'wire-runtime' &&
+      project.name != 'wire-schema' &&
+      project.name != 'japicmp' &&
+      project.name != 'wire-tests') {
     apply plugin: 'com.vanniktech.maven.publish'
   } else {
     tasks.create('uploadArchives') {

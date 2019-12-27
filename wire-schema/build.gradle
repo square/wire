@@ -1,5 +1,30 @@
-apply plugin: 'java-library'
-apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+
+kotlin {
+  jvm {
+    withJava()
+  }
+
+  sourceSets {
+    jvmMain {
+      dependencies {
+        api project(':wire-runtime')
+        api deps.kotlin.stdlib.jdk8
+        implementation deps.okio.jvm
+        api deps.guava
+      }
+    }
+    jvmTest {
+      dependencies {
+        implementation project(':wire-test-utils')
+        implementation deps.junit
+        implementation deps.kotlin.test.junit
+        implementation deps.assertj
+        implementation deps.jimfs
+      }
+    }
+  }
+}
 
 jar {
   manifest {
@@ -7,14 +32,16 @@ jar {
   }
 }
 
-dependencies {
-  api project(':wire-runtime')
-  api deps.kotlin.stdlib.jdk8
-  implementation deps.okio.jvm
-  api deps.guava
-  testImplementation project(':wire-test-utils')
-  testImplementation deps.junit
-  testImplementation deps.kotlin.test.junit
-  testImplementation deps.assertj
-  testImplementation deps.jimfs
+apply from: "$rootDir/gradle/gradle-mvn-mpp-push.gradle"
+
+publishing {
+  // Use default artifact name for the JVM target
+  publications {
+    kotlinMultiplatform {
+      artifactId = 'wire-schema-multiplatform'
+    }
+    jvm {
+      artifactId = 'wire-schema'
+    }
+  }
 }
