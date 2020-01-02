@@ -1536,4 +1536,148 @@ class PrunerTest {
     assertThat(message.field("field_4")).isNotNull()
     assertThat(message.field("field_5")).isNull()
   }
+
+  @Test @Ignore("Implement #1349")
+  fun typeIsRetainedIfMorePreciseRuleExists() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |package wire;
+            |
+            |message MessageA {
+            |}
+            |message MessageB {
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .include("wire.MessageA")
+        .exclude("wire.*")
+        .build())
+    assertThat(pruned.getType("wire.MessageA")).isNotNull()
+    assertThat(pruned.getType("wire.MessageB")).isNull()
+  }
+
+  @Test @Ignore("Implement #1349")
+  fun fieldIsRetainedIfMorePreciseRuleExists() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MyMessage {
+            |  optional string a = 1;
+            |  optional string b = 2;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .include("MyMessage#a")
+        .exclude("MyMessage")
+        .build())
+    assertThat(pruned.getType("MyMessage")).isNotNull()
+    val myMessageType = pruned.getType("MyMessage") as MessageType
+    assertThat(myMessageType.field("a")).isNotNull()
+    assertThat(myMessageType.field("b")).isNull()
+  }
+
+  @Test @Ignore("Implement #1349")
+  fun enumConstantIsRetainedIfMorePreciseRuleExists() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |enum MyEnum {
+            |  A = 1;
+            |  B = 2;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .include("MyEnum#A")
+        .exclude("MyEnum")
+        .build())
+    assertThat(pruned.getType("MyEnum")).isNotNull()
+    val myEnumType = pruned.getType("MyEnum") as EnumType
+    assertThat(myEnumType.constant("A")).isNotNull()
+    assertThat(myEnumType.constant("B")).isNull()
+  }
+
+  @Test
+  fun excludeTakesPrecedenceIfRulesAreEquals() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MyMessage {
+            |  optional string a = 1;
+            |  optional string b = 2;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .include("MyMessage")
+        .exclude("MyMessage")
+        .build())
+    assertThat(pruned.getType("MyMessage")).isNull()
+  }
+
+  @Test @Ignore("Implement #1349")
+  fun optionFieldIsRetainedIfMorePreciseRuleExists() {
+    val schema = RepoBuilder()
+        .add("lecture.proto", """
+             |package wire;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional bool relevant = 22301;
+             |  optional bool irrelevant = 22302;
+             |  optional bool unused = 22303;
+             |}
+             |
+             |message Lecture {
+             |  optional string title = 1 [(wire.relevant) = true];
+             |  optional string content = 2 [(wire.irrelevant) = true];
+             |}
+             """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .include("wire.Lecture")
+        .include("google.protobuf.FieldOptions#wire.relevant")
+        .exclude("google.protobuf.*")
+        .build())
+    val fieldOptions = pruned.getType("google.protobuf.FieldOptions") as MessageType
+    assertThat(fieldOptions.extensionField("wire.relevant")).isNotNull()
+    assertThat(fieldOptions.extensionField("wire.unused")).isNull()
+    assertThat(fieldOptions.extensionField("wire.irrelevant")).isNull()
+
+    val messageType = pruned.getType("wire.Lecture") as MessageType
+    assertThat(messageType.field("title")).isNotNull()
+    assertThat(messageType.field("title")!!.options.elements).hasSize(1)
+    assertThat(messageType.field("content")).isNotNull()
+    assertThat(messageType.field("content")!!.options.elements).isEmpty()
+  }
+
+  @Test @Ignore("Implement #1349")
+  fun nestedInclusion() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MyMessage {
+            |  optional string a = 1;
+            |  optional MyEnum b = 2;
+            |}
+            |
+            |enum MyEnum {
+            |  C = 1;
+            |  D = 2;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .exclude("MyEnum#D")
+        .include("MyMessage#b")
+        .exclude("MyMessage")
+        .build())
+    assertThat(pruned.getType("MyMessage")).isNotNull()
+    assertThat(pruned.getType("MyEnum")).isNotNull()
+    val myMessageType = pruned.getType("MyMessage") as MessageType
+    assertThat(myMessageType.field("a")).isNull()
+    assertThat(myMessageType.field("b")).isNotNull()
+    val myEnumType = pruned.getType("MyEnum") as EnumType
+    assertThat(myEnumType.constant("C")).isNotNull()
+    assertThat(myEnumType.constant("D")).isNull()
+  }
 }
