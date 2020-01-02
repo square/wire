@@ -46,7 +46,7 @@ class PruningRulesTest {
   @Test
   fun includeType() {
     val set = PruningRules.Builder()
-        .include("a.b.Message")
+        .root("a.b.Message")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
@@ -58,7 +58,7 @@ class PruningRulesTest {
   @Test
   fun includeMember() {
     val set = PruningRules.Builder()
-        .include("a.b.Message#member")
+        .root("a.b.Message#member")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.UNSPECIFIED)
     assertThat(policy(set, "a.b.Message.Nested")).isEqualTo(Policy.UNSPECIFIED)
@@ -71,7 +71,7 @@ class PruningRulesTest {
   @Test
   fun includePackage() {
     val set = PruningRules.Builder()
-        .include("a.b.*")
+        .root("a.b.*")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
@@ -84,7 +84,7 @@ class PruningRulesTest {
   @Test
   fun includeAll() {
     val set = PruningRules.Builder()
-        .include("*")
+        .root("*")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.INCLUDED)
@@ -130,7 +130,7 @@ class PruningRulesTest {
   fun excludePackageTakesPrecedenceOverIncludeType() {
     val set = PruningRules.Builder()
         .exclude("a.b.*")
-        .include("a.b.Message")
+        .root("a.b.Message")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
@@ -144,7 +144,7 @@ class PruningRulesTest {
   fun excludeTypeTakesPrecedenceOverIncludeMember() {
     val set = PruningRules.Builder()
         .exclude("a.b.Message")
-        .include("a.b.Message#member")
+        .root("a.b.Message#member")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.EXCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
@@ -157,7 +157,7 @@ class PruningRulesTest {
   fun excludeMemberTakesPrecedenceOverIncludeType() {
     val set = PruningRules.Builder()
         .exclude("a.b.Message#member")
-        .include("a.b.Message")
+        .root("a.b.Message")
         .build()
     assertThat(policy(set, "a.b.Message")).isEqualTo(Policy.INCLUDED)
     assertThat(policy(set, "a.b.Message#member")).isEqualTo(Policy.EXCLUDED)
@@ -169,21 +169,21 @@ class PruningRulesTest {
   @Test
   fun trackingUnusedIncludes() {
     val set = PruningRules.Builder()
-        .include("a.*")
-        .include("b.IncludedType")
-        .include("c.IncludedMember#member")
+        .root("a.*")
+        .root("b.IncludedType")
+        .root("c.IncludedMember#member")
         .build()
-    assertThat(set.unusedIncludes()).containsExactly("a.*", "b.IncludedType",
+    assertThat(set.unusedRoots()).containsExactly("a.*", "b.IncludedType",
         "c.IncludedMember#member")
 
-    set.includes(ProtoType.get("a.*"))
-    assertThat(set.unusedIncludes()).containsExactly("b.IncludedType", "c.IncludedMember#member")
+    set.isRoot(ProtoType.get("a.*"))
+    assertThat(set.unusedRoots()).containsExactly("b.IncludedType", "c.IncludedMember#member")
 
-    set.includes(ProtoType.get("b.IncludedType"))
-    assertThat(set.unusedIncludes()).containsExactly("c.IncludedMember#member")
+    set.isRoot(ProtoType.get("b.IncludedType"))
+    assertThat(set.unusedRoots()).containsExactly("c.IncludedMember#member")
 
-    set.includes(ProtoMember.get("c.IncludedMember#member"))
-    assertThat(set.unusedIncludes()).isEmpty()
+    set.isRoot(ProtoMember.get("c.IncludedMember#member"))
+    assertThat(set.unusedRoots()).isEmpty()
   }
 
   @Test
@@ -196,24 +196,24 @@ class PruningRulesTest {
     assertThat(set.unusedExcludes()).containsExactly("a.*", "b.ExcludedType",
         "c.ExcludedMember#member")
 
-    set.includes(ProtoType.get("a.*"))
+    set.isRoot(ProtoType.get("a.*"))
     assertThat(set.unusedExcludes()).containsExactly("b.ExcludedType", "c.ExcludedMember#member")
 
-    set.includes(ProtoType.get("b.ExcludedType"))
+    set.isRoot(ProtoType.get("b.ExcludedType"))
     assertThat(set.unusedExcludes()).containsExactly("c.ExcludedMember#member")
 
-    set.includes(ProtoMember.get("c.ExcludedMember#member"))
+    set.isRoot(ProtoMember.get("c.ExcludedMember#member"))
     assertThat(set.unusedExcludes()).isEmpty()
   }
 
   @Test
   fun trackingUnusedIncludesPrecedence() {
     val set = PruningRules.Builder()
-        .include("a.*")
-        .include("a.IncludedType")
+        .root("a.*")
+        .root("a.IncludedType")
         .build()
-    set.includes(ProtoMember.get("a.IncludedType#member"))
-    assertThat(set.unusedIncludes()).containsExactly("a.IncludedType")
+    set.isRoot(ProtoMember.get("a.IncludedType#member"))
+    assertThat(set.unusedRoots()).containsExactly("a.IncludedType")
   }
 
   @Test
@@ -222,29 +222,29 @@ class PruningRulesTest {
         .exclude("a.*")
         .exclude("a.IncludedType")
         .build()
-    set.includes(ProtoMember.get("a.IncludedType#member"))
+    set.isRoot(ProtoMember.get("a.IncludedType#member"))
     assertThat(set.unusedExcludes()).containsExactly("a.IncludedType")
   }
 
   @Test
   fun trackingUnusedPrecedence() {
     val set = PruningRules.Builder()
-        .include("a.*")
+        .root("a.*")
         .exclude("a.*")
         .build()
-    set.includes(ProtoType.get("a.Message"))
+    set.isRoot(ProtoType.get("a.Message"))
     assertThat(set.unusedExcludes()).isEmpty()
-    assertThat(set.unusedIncludes()).containsExactly("a.*")
+    assertThat(set.unusedRoots()).containsExactly("a.*")
   }
 
   private fun policy(set: PruningRules, identifier: String): Policy {
     return if (identifier.contains("#")) {
       val protoMember = ProtoMember.get(identifier)
-      if (set.includes(protoMember)) return Policy.INCLUDED
+      if (set.isRoot(protoMember)) return Policy.INCLUDED
       if (set.excludes(protoMember)) Policy.EXCLUDED else Policy.UNSPECIFIED
     } else {
       val protoType = ProtoType.get(identifier)
-      if (set.includes(protoType)) return Policy.INCLUDED
+      if (set.isRoot(protoType)) return Policy.INCLUDED
       if (set.excludes(protoType)) Policy.EXCLUDED else Policy.UNSPECIFIED
     }
   }

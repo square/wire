@@ -431,7 +431,7 @@ public final class JavaGeneratorTest {
         .schema();
 
     Schema pruned = schema.prune(new PruningRules.Builder()
-        .include("A.B")
+        .root("A.B")
         .build());
 
     JavaGenerator javaGenerator = JavaGenerator.get(schema);

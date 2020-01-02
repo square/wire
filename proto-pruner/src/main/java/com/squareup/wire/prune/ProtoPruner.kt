@@ -88,7 +88,7 @@ class ProtoPruner(
         } else if (arg.startsWith("--in=")) {
           inLocations.add(Location.get(arg.substringAfter('=')))
         } else if (arg.startsWith("--includes=")) {
-          pruningRulesBuilder.include(arg.substringAfter('=').split(',').map(String::trim))
+          pruningRulesBuilder.root(arg.substringAfter('=').split(',').map(String::trim))
         } else if (arg.startsWith("--excludes=")) {
           pruningRulesBuilder.exclude(arg.substringAfter('=').split(',').map(String::trim))
         } else if (arg.startsWith("--")) {
@@ -96,7 +96,7 @@ class ProtoPruner(
         } else {
           File(arg).forEachLine { line ->
             if (line.startsWith("+")) {
-              pruningRulesBuilder.include(line.substring(1))
+              pruningRulesBuilder.root(line.substring(1))
             } else if (line.startsWith("-")) {
               pruningRulesBuilder.exclude(line.substring(1))
             }

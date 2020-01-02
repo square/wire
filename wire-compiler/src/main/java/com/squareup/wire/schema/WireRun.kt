@@ -189,14 +189,14 @@ data class WireRun(
       val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)
 
       val pruningRules: PruningRules = PruningRules.Builder()
-          .include(target.includes)
+          .root(target.includes)
           .exclude(target.excludes)
           .build()
 
       val i = typesToHandle.iterator()
       while (i.hasNext()) {
         val type = i.next()
-        if (pruningRules.includes(type.type!!)) {
+        if (pruningRules.isRoot(type.type!!)) {
           schemaHandler.handle(type)
           // We don't let other targets handle this one.
           if (target.exclusive) i.remove()
@@ -206,16 +206,16 @@ data class WireRun(
       val j = servicesToHandle.iterator()
       while (j.hasNext()) {
         val service = j.next()
-        if (pruningRules.includes(service.type())) {
+        if (pruningRules.isRoot(service.type())) {
           schemaHandler.handle(service)
           // We don't let other targets handle this one.
           if (target.exclusive) j.remove()
         }
       }
 
-      if (pruningRules.unusedIncludes().isNotEmpty()) {
-        logger.info("""Unused includes in targets:
-            |  ${pruningRules.unusedExcludes().joinToString(separator = "\n  ")}
+      if (pruningRules.unusedRoots().isNotEmpty()) {
+        logger.info("""Unused roots in targets:
+            |  ${pruningRules.unusedRoots().joinToString(separator = "\n  ")}
             """.trimMargin())
       }
 
@@ -244,7 +244,7 @@ data class WireRun(
     }
 
     val pruningRules = PruningRules.Builder()
-        .include(treeShakingRoots)
+        .root(treeShakingRoots)
         .exclude(treeShakingRubbish)
         .oldest(oldest)
         .newest(newest)
@@ -252,7 +252,7 @@ data class WireRun(
 
     val result = schema.prune(pruningRules)
 
-    for (rule in pruningRules.unusedIncludes()) {
+    for (rule in pruningRules.unusedRoots()) {
       logger.info("Unused element in treeShakingRoots: $rule")
     }
 
