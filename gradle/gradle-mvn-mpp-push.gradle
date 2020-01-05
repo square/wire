@@ -82,7 +82,10 @@ task javadocsJar(type: Jar, dependsOn: dokka) {
 
 signing {
   required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
-  sign(publishing.publications)
+  // TODO(egorand): Remove if statement when https://github.com/gradle/gradle/issues/11387 is fixed
+  if (required) {
+    sign(publishing.publications)
+  }
 }
 
 publishing {
