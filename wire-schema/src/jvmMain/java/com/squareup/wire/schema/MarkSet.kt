@@ -20,7 +20,7 @@ package com.squareup.wire.schema
  *
  *  1. Marking root types and root members. These are the identifiers specifically identified by
  *     the user in the includes set. In this phase it is an error to mark a type that is excluded,
- *     or to both a type and one of its members.
+ *     or to mark both a type and one of its members.
  *  2. Marking members transitively reachable by those roots. In this phase if a member is visited,
  *     the member's enclosing type is marked instead, unless it is of a type that has a specific
  *     member already marked.
