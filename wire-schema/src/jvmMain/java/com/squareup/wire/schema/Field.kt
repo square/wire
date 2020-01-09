@@ -27,7 +27,7 @@ actual class Field private constructor(
   /** May be null for proto3 fields. */
   val label: Label?,
 
-  val name: String,
+  actual val name: String,
 
   val documentation: String,
 
@@ -39,7 +39,7 @@ actual class Field private constructor(
 
   val options: Options,
 
-  val isExtension: Boolean
+  actual val isExtension: Boolean
 ) {
   // Null until this field is linked.
   var type: ProtoType? = null
@@ -68,7 +68,7 @@ actual class Field private constructor(
    * Returns this field's name, prefixed with its package name. Uniquely identifies extension
    * fields, such as in options.
    */
-  val qualifiedName: String
+  actual val qualifiedName: String
     get() {
       return when {
         packageName != null -> "$packageName.$name"

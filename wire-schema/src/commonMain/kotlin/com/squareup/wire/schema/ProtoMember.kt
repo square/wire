@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.schema
 
+import kotlin.jvm.JvmStatic
+
 /**
  * Identifies a field, enum or RPC on a declaring type. Members are encoded as strings containing a
  * type name, a hash, and a member name, like `squareup.dinosaurs.Dinosaur#length_meters`.

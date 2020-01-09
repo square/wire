@@ -16,6 +16,10 @@
 package com.squareup.wire.schema
 
 expect class Field {
+  val name: String
+  val isExtension: Boolean
+  val qualifiedName: String
+
   enum class Label {
     REQUIRED,
     OPTIONAL,
