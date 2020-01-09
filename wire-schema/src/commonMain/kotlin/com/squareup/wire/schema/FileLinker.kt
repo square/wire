@@ -15,8 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import java.util.LinkedHashSet
-
 internal class FileLinker(
   val protoFile: ProtoFile,
   private val linker: Linker

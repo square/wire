@@ -27,6 +27,7 @@ import com.squareup.wire.schema.ProtoFile.Syntax
 import com.squareup.wire.schema.Reserved.Companion.fromElements
 import com.squareup.wire.schema.Reserved.Companion.toElements
 import com.squareup.wire.schema.internal.parser.MessageElement
+import kotlin.jvm.JvmStatic
 
 class MessageType private constructor(
   override val type: ProtoType,

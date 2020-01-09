@@ -21,6 +21,7 @@ import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.ProtoType.Companion.get
 import com.squareup.wire.schema.Rpc.Companion.fromElements
 import com.squareup.wire.schema.internal.parser.ServiceElement
+import kotlin.jvm.JvmStatic
 
 class Service private constructor(
   private val protoType: ProtoType,

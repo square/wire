@@ -19,11 +19,6 @@ import com.squareup.wire.schema.internal.parser.ProtoParser
 import okio.buffer
 import okio.source
 
-/** Loads other files as needed by their import path. */
-interface Loader {
-  fun load(path: String): ProtoFile
-}
-
 /**
  * A loader that can only load built-in `.proto` files:
  *

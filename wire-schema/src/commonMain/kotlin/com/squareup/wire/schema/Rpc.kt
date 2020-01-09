@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.parser.RpcElement
+import kotlin.jvm.JvmStatic
 
 class Rpc private constructor(
   val location: Location,

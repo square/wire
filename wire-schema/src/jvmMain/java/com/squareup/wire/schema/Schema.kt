@@ -16,7 +16,6 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.ProtoAdapter
-import com.squareup.wire.schema.internal.toImmutableList
 import kotlin.collections.set
 
 /**
@@ -25,8 +24,8 @@ import kotlin.collections.set
  *
  * Use [SchemaLoader] to load a schema from source files.
  */
-class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
-  val protoFiles = protoFiles.sortedBy { it.location.path }.toImmutableList()
+actual class Schema internal actual constructor(protoFiles: Iterable<ProtoFile>) {
+  actual val protoFiles: List<ProtoFile> = protoFiles.sortedBy { it.location.path }
 
   private val protoFilesIndex: Map<ProtoType?, ProtoFile?>
   private val typesIndex: Map<String, Type>
