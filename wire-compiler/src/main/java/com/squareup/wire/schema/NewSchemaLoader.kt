@@ -198,7 +198,13 @@ class NewSchemaLoader(
 
         val resolvedType = schema.getType(type)
         if (resolvedType == null) {
-          errors.add(String.format("unable to resolve %s (%s)", type, typeConfig.location))
+          // This type is either absent from .proto files, or merely not loaded because our schema
+          // is incomplete. Unfortunately we can't tell the difference! Assume that this type is
+          // just absent from the schema-as-loaded and therefore irrelevant to the current project.
+          // Ignore it!
+          //
+          // (A fancier implementation would load the schema and profile in one step and they would
+          // be mutually complete. We aren't bothering with this correctness at this phase.)
           continue
         }
 

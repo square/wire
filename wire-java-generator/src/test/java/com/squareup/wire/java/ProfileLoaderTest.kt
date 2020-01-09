@@ -194,13 +194,9 @@ class ProfileLoaderTest {
               |}
               """.trimMargin()
         )
-    try {
-      repoBuilder.profile("android")
-      fail()
-    } catch (expected: IllegalArgumentException) {
-      assertThat(expected)
-          .hasMessage("unable to resolve a.b.Message2 (/source/a/b/android.wire at 2:1)")
-    }
+    val profile = repoBuilder.profile("android")
+    val message = ProtoType.get("a.b.Message")
+    assertThat(profile.getTarget(message)).isNull()
   }
 
   @Test @Throws(Exception::class)
