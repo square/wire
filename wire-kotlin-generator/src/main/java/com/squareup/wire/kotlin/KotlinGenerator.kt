@@ -1351,7 +1351,8 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateEnclosing(type: EnclosingType): TypeSpec {
-    val classBuilder = TypeSpec.objectBuilder(type.typeName)
+    val classBuilder = TypeSpec.classBuilder(type.typeName)
+        .primaryConstructor(FunSpec.constructorBuilder().addModifiers(KModifier.PRIVATE).build())
 
     type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
 
