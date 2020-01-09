@@ -100,7 +100,7 @@ class KotlinGeneratorTest {
     val kotlinGenerator = KotlinGenerator.invoke(pruned)
     val typeSpec = kotlinGenerator.generateType(pruned.getType("A")!!)
     val code = FileSpec.get("", typeSpec).toString()
-    assertTrue(code.contains("object A {"))
+    assertTrue(code.contains("class A private constructor() {"))
     assertTrue(code.contains("class B(.*) : Message<B, Nothing>".toRegex(DOT_MATCHES_ALL)))
   }
 
