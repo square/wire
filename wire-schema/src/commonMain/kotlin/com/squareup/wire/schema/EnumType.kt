@@ -19,6 +19,7 @@ import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
 import com.squareup.wire.schema.ProtoFile.Syntax
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
 import com.squareup.wire.schema.internal.parser.EnumElement
+import kotlin.jvm.JvmStatic
 
 class EnumType private constructor(
   override val type: ProtoType,
@@ -84,7 +85,7 @@ class EnumType private constructor(
             append("\n  ${index + 1}. ${it.name} (${it.location})")
           }
         }
-        linker.addError("%s", error)
+        linker.addError(error)
       }
     }
   }

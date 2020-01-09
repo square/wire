@@ -15,8 +15,9 @@
  */
 package com.squareup.wire.schema.internal
 
-import com.google.common.collect.ImmutableList
+import java.util.ArrayDeque
 import java.util.Locale
+import java.util.Queue
 
 @Suppress("NOTHING_TO_INLINE") // Aliasing to platform method.
 internal actual inline fun Char.isDigit() = Character.isDigit(this)
@@ -24,7 +25,6 @@ internal actual inline fun Char.isDigit() = Character.isDigit(this)
 @Suppress("NOTHING_TO_INLINE") // Aliasing to platform method.
 internal actual inline fun String.toEnglishLowerCase() = toLowerCase(Locale.US)
 
-@Suppress("NOTHING_TO_INLINE") // Aliasing to library method.
-internal inline fun <T : Any> Iterable<T>.toImmutableList(): ImmutableList<T> {
-  return ImmutableList.copyOf(this)
-}
+actual typealias MutableQueue<T> = Queue<T>
+
+internal actual fun <T> mutableQueueOf(): MutableQueue<T> = ArrayDeque()

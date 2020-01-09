@@ -16,14 +16,15 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.ProtoType.Companion.get
+import com.squareup.wire.schema.internal.MutableQueue
 import com.squareup.wire.schema.internal.isValidTag
-import java.util.ArrayDeque
+import com.squareup.wire.schema.internal.mutableQueueOf
 
 /** Links local field types and option types to the corresponding declarations. */
 class Linker {
   private val loader: Loader
   private val fileLinkers: MutableMap<String, FileLinker>
-  private val fileOptionsQueue: ArrayDeque<FileLinker>
+  private val fileOptionsQueue: MutableQueue<FileLinker>
   private val protoTypeNames: MutableMap<String, Type>
   private val errors: MutableList<String>
   private val contextStack: List<Any>
@@ -32,7 +33,7 @@ class Linker {
   internal constructor(loader: Loader) {
     this.loader = loader
     fileLinkers = mutableMapOf()
-    fileOptionsQueue = ArrayDeque()
+    fileOptionsQueue = mutableQueueOf()
     protoTypeNames = mutableMapOf()
     contextStack = emptyList()
     errors = mutableListOf()
@@ -147,14 +148,14 @@ class Linker {
 
     if (type.isScalar) {
       if (messageOnly) {
-        addError("expected a message but was %s", name)
+        addError("expected a message but was $name")
       }
       return type
     }
 
     if (type.isMap) {
       if (messageOnly) {
-        addError("expected a message but was %s", name)
+        addError("expected a message but was $name")
       }
       val keyType = resolveType(type.keyType.toString(), false)
       val valueType = resolveType(type.valueType.toString(), false)
@@ -171,12 +172,12 @@ class Linker {
     }
 
     if (resolved == null) {
-      addError("unable to resolve %s", name)
+      addError("unable to resolve $name")
       return ProtoType.BYTES // Just return any placeholder.
     }
 
     if (messageOnly && resolved !is MessageType) {
-      addError("expected a message but was %s", name)
+      addError("expected a message but was $name")
       return ProtoType.BYTES // Just return any placeholder.
     }
 
@@ -324,15 +325,15 @@ class Linker {
     for (field in fields) {
       val tag = field.tag
       if (!tag.isValidTag()) {
-        withContext(field).addError("tag is out of range: %s", tag)
+        withContext(field).addError("tag is out of range: $tag")
       }
 
       for (reserved in reserveds) {
         if (reserved.matchesTag(tag)) {
-          withContext(field).addError("tag %s is reserved (%s)", tag, reserved.location)
+          withContext(field).addError("tag $tag is reserved (${reserved.location})")
         }
         if (reserved.matchesName(field.name)) {
-          withContext(field).addError("name '%s' is reserved (%s)", field.name, reserved.location)
+          withContext(field).addError("name '${field.name}' is reserved (${reserved.location})")
         }
       }
 
@@ -346,9 +347,9 @@ class Linker {
         error.append("multiple fields share tag $key:")
         var index = 1
         for (field in value) {
-          error.append(String.format("\n  %s. %s (%s)", index++, field.name, field.location))
+          error.append("\n  ${index++}. ${field.name} (${field.location})")
         }
-        addError("%s", error)
+        addError(error.toString())
       }
     }
 
@@ -356,12 +357,12 @@ class Linker {
       if (collidingFields.size > 1) {
         val first = collidingFields.iterator().next()
         val error = StringBuilder()
-        error.append(String.format("multiple fields share name %s:", first.name))
+        error.append("multiple fields share name ${first.name}:")
         var index = 1
         for (field in collidingFields) {
-          error.append(String.format("\n  %s. %s (%s)", index++, field.name, field.location))
+          error.append("\n  ${index++}. ${field.name} (${field.location})")
         }
-        addError("%s", error)
+        addError(error.toString())
       }
     }
   }
@@ -382,11 +383,11 @@ class Linker {
           var index = 1
           append("multiple enums share constant $constant:")
           for (enumType in value) {
-            append(String.format("\n  %s. %s.%s (%s)",
-                index++, enumType.type, constant, enumType.constant(constant)!!.location))
+            append("\n  ${index++}. ${enumType.type}.$constant (%s)",
+                enumType.constant(constant)!!.location)
           }
         }
-        addError("%s", error)
+        addError(error)
       }
     }
   }
@@ -406,7 +407,7 @@ class Linker {
     val requiredImport = get(type)!!.location.path
     val fileLinker = getFileLinker(path)
     if (path != requiredImport && !fileLinker.effectiveImports().contains(requiredImport)) {
-      addError("%s needs to import %s", path, requiredImport)
+      addError("$path needs to import $requiredImport")
     }
   }
 
@@ -415,9 +416,9 @@ class Linker {
     return Linker(this, context)
   }
 
-  fun addError(format: String, vararg args: Any) {
+  fun addError(message: String) {
     val error = StringBuilder()
-    error.append(String.format(format, *args))
+    error.append(message)
 
     for (i in contextStack.indices.reversed()) {
       val context = contextStack[i]
@@ -425,35 +426,34 @@ class Linker {
 
       when (context) {
         is Rpc -> {
-          error.append(String.format("%s rpc %s (%s)", prefix, context.name, context.location))
+          error.append("$prefix rpc ${context.name} (${context.location})")
         }
 
         is Extend -> {
           val type = context.type
           error.append(
-              if (type != null) String.format("%s extend %s (%s)", prefix, type, context.location)
-              else String.format("%s extend (%s)", prefix, context.location))
+              if (type != null) "$prefix extend $type (${context.location})"
+              else "$prefix extend (${context.location})")
         }
 
         is Field -> {
-          error.append(String.format("%s field %s (%s)", prefix, context.name, context.location))
+          error.append("$prefix field ${context.name} (${context.location})")
         }
 
         is MessageType -> {
-          error.append(String.format("%s message %s (%s)", prefix, context.type, context.location))
+          error.append("$prefix message ${context.type} (${context.location})")
         }
 
         is EnumType -> {
-          error.append(String.format("%s enum %s (%s)", prefix, context.type, context.location))
+          error.append("$prefix enum ${context.type} (${context.type})")
         }
 
         is Service -> {
-          error.append(
-              String.format("%s service %s (%s)", prefix, context.type(), context.location()))
+          error.append("$prefix service ${context.type()} (${context.location()})")
         }
 
         is Extensions -> {
-          error.append(String.format("%s extensions (%s)", prefix, context.location))
+          error.append("$prefix extensions (${context.location})")
         }
       }
     }

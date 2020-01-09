@@ -31,14 +31,14 @@ import kotlin.collections.set
  * Options values may be arbitrary protocol buffer messages, but must be valid protocol buffer
  * messages.
  */
-class Options(
+actual class Options actual constructor(
   private val optionType: ProtoType,
   private val optionElements: List<OptionElement>
 ) {
   // Null until this options is linked.
   private var entries: List<LinkedOptionEntry>? = null
 
-  val elements: List<OptionElement>
+  actual val elements: List<OptionElement>
     get() {
       return entries?.map { it.optionElement } ?: optionElements
     }
@@ -46,9 +46,9 @@ class Options(
   val map: Map<ProtoMember, Any?>
     get() = entries!!.toMap()
 
-  fun retainLinked() = Options(optionType, emptyList())
+  actual fun retainLinked() = Options(optionType, emptyList())
 
-  operator fun get(protoMember: ProtoMember): Any? {
+  actual operator fun get(protoMember: ProtoMember): Any? {
     return entries?.find { it.protoMember == protoMember }?.value
   }
 
@@ -56,7 +56,7 @@ class Options(
    * Returns true if any of the options in `options` matches both of the regular expressions
    * provided: its name matches the option's name and its value matches the option's value.
    */
-  fun optionMatches(namePattern: String, valuePattern: String): Boolean {
+  actual fun optionMatches(namePattern: String, valuePattern: String): Boolean {
     val nameMatcher = Pattern.compile(namePattern).matcher("")
     val valueMatcher = Pattern.compile(valuePattern).matcher("")
 
@@ -66,7 +66,7 @@ class Options(
     }
   }
 
-  fun link(linker: Linker) {
+  actual fun link(linker: Linker) {
     var entries: List<LinkedOptionEntry> = emptyList()
 
     for (option in optionElements) {
@@ -141,7 +141,7 @@ class Options(
         val result = mutableMapOf<ProtoMember, Any>()
         val field = linker.dereference(context, value.name)
         if (field == null) {
-          linker.addError("unable to resolve option %s on %s", value.name, context.type!!)
+          linker.addError("unable to resolve option ${value.name} on ${context.type}")
         } else {
           val protoMember = get(context.type!!, field)
           result[protoMember] = canonicalizeValue(linker, field, value.value)
@@ -155,7 +155,7 @@ class Options(
           val name = entry.key as String
           val field = linker.dereference(context, name)
           if (field == null) {
-            linker.addError("unable to resolve option %s on %s", name, context.type!!)
+            linker.addError("unable to resolve option $name on ${context.type}")
           } else {
             val protoMember = get(context.type!!, field)
             result[protoMember] = canonicalizeValue(linker, field, entry.value!!)
@@ -201,7 +201,7 @@ class Options(
       }
 
       else -> {
-        linker.addError("conflicting options: %s, %s", a, b)
+        linker.addError("conflicting options: $a, $b")
         a // Just return any placeholder.
       }
     }
@@ -282,7 +282,7 @@ class Options(
     }
   }
 
-  fun retainAll(schema: Schema, markSet: MarkSet): Options {
+  actual fun retainAll(schema: Schema, markSet: MarkSet): Options {
     if (entries.isNullOrEmpty()) return this // Nothing to prune.
 
     val result = Options(optionType, optionElements)
@@ -348,20 +348,20 @@ class Options(
   }
 
   /** Returns true if these options assigns a value to `protoMember`.  */
-  fun assignsMember(protoMember: ProtoMember?): Boolean {
+  actual fun assignsMember(protoMember: ProtoMember?): Boolean {
     // TODO(jwilson): remove the null check; this shouldn't be called until linking completes.
     return entries?.any { it.protoMember == protoMember } ?: false
   }
 
-  companion object {
-    @JvmField val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
-    @JvmField val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
-    @JvmField val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
-    @JvmField val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
-    @JvmField val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
-    @JvmField val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
-    @JvmField val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
-    val GOOGLE_PROTOBUF_OPTION_TYPES = arrayOf(
+  actual companion object {
+    @JvmField actual val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
+    @JvmField actual val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
+    @JvmField actual val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
+    @JvmField actual val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
+    @JvmField actual val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
+    @JvmField actual val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
+    @JvmField actual val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
+    actual val GOOGLE_PROTOBUF_OPTION_TYPES = arrayOf(
         FILE_OPTIONS,
         MESSAGE_OPTIONS,
         FIELD_OPTIONS,

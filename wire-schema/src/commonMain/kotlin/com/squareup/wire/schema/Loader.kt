@@ -1,6 +1,5 @@
 /*
-/*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2019 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +15,7 @@
  */
 package com.squareup.wire.schema
 
-expect class Field {
-  val name: String
-  val isExtension: Boolean
-  val qualifiedName: String
-
-  enum class Label {
-    REQUIRED,
-    OPTIONAL,
-    REPEATED,
-  }
+/** Loads other files as needed by their import path. */
+interface Loader {
+  fun load(path: String): ProtoFile
 }
-*/

@@ -1,5 +1,4 @@
 /*
-/*
  * Copyright (C) 2015 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +15,6 @@
  */
 package com.squareup.wire.schema
 
-expect class Field {
-  val name: String
-  val isExtension: Boolean
-  val qualifiedName: String
-
-  enum class Label {
-    REQUIRED,
-    OPTIONAL,
-    REPEATED,
-  }
+expect class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
+  val protoFiles: List<ProtoFile>
 }
-*/

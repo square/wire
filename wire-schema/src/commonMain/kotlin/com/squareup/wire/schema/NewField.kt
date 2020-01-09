@@ -18,8 +18,9 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
 import com.squareup.wire.schema.internal.parser.FieldElement
+import kotlin.jvm.JvmStatic
 
-actual class Field private constructor(
+class Field private constructor(
   val packageName: String?,
 
   val location: Location,
@@ -27,7 +28,7 @@ actual class Field private constructor(
   /** May be null for proto3 fields. */
   val label: Label?,
 
-  actual val name: String,
+  val name: String,
 
   val documentation: String,
 
@@ -39,7 +40,7 @@ actual class Field private constructor(
 
   val options: Options,
 
-  actual val isExtension: Boolean
+  val isExtension: Boolean
 ) {
   // Null until this field is linked.
   var type: ProtoType? = null
@@ -68,7 +69,7 @@ actual class Field private constructor(
    * Returns this field's name, prefixed with its package name. Uniquely identifies extension
    * fields, such as in options.
    */
-  actual val qualifiedName: String
+  val qualifiedName: String
     get() {
       return when {
         packageName != null -> "$packageName.$name"
@@ -104,10 +105,10 @@ actual class Field private constructor(
   fun validate(linker: Linker) {
     val linker = linker.withContext(this)
     if (isPacked && !isPackable(linker, type!!)) {
-      linker.addError("packed=true not permitted on %s", type!!)
+      linker.addError("packed=true not permitted on $type")
     }
     if (isExtension && isRequired) {
-      linker.addError("extension fields cannot be required", type!!)
+      linker.addError("extension fields cannot be required")
     }
     linker.validateImport(location, type!!)
   }
@@ -199,7 +200,7 @@ actual class Field private constructor(
 
   override fun toString() = name
 
-  actual enum class Label {
+  enum class Label {
     OPTIONAL,
     REQUIRED,
     REPEATED,

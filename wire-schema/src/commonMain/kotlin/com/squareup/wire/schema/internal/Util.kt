@@ -82,3 +82,9 @@ internal fun Int.isValidTag() =
 internal expect fun Char.isDigit(): Boolean
 
 internal expect fun String.toEnglishLowerCase(): String
+
+expect interface MutableQueue<T> : MutableCollection<T> {
+  fun poll(): T
+}
+
+internal expect fun <T> mutableQueueOf() : MutableQueue<T>

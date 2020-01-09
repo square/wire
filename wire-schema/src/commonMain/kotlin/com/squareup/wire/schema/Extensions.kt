@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.parser.ExtensionsElement
+import kotlin.jvm.JvmStatic
 
 class Extensions private constructor(
   val location: Location,
@@ -27,7 +28,7 @@ class Extensions private constructor(
   fun validate(linker: Linker) {
     if (!start.isValidTag() || !end.isValidTag()) {
       linker.withContext(this)
-          .addError("tags are out of range: %s to %s", start, end)
+          .addError("tags are out of range: $start to $end")
     }
   }
 
