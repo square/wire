@@ -15,7 +15,8 @@
  */
 package com.squareup.wire.schema
 
-import java.util.Locale
+import com.squareup.wire.schema.internal.isDigit
+import com.squareup.wire.schema.internal.toEnglishLowerCase
 
 /**
  * A version string as specified by [semver.org][semver_org]. This is used to order versions for
@@ -43,7 +44,7 @@ import java.util.Locale
 internal data class SemVer(val version: String) : Comparable<SemVer> {
 
   init {
-    require(version.toLowerCase(Locale.US) == version) { "version must be lowercase: $version" }
+    require(version.toEnglishLowerCase() == version) { "version must be lowercase: $version" }
   }
 
   override fun toString() = version
@@ -143,6 +144,6 @@ internal data class SemVer(val version: String) : Comparable<SemVer> {
     /** Characters that separate segments within a section. */
     private val SEPARATORS = charArrayOf('.', '-')
 
-    fun String.toLowerCaseSemVer() = SemVer(toLowerCase(Locale.US))
+    fun String.toLowerCaseSemVer() = SemVer(toEnglishLowerCase())
   }
 }

@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.parser.ReservedElement
+import kotlin.jvm.JvmStatic
 
 class Reserved(
   val location: Location,
