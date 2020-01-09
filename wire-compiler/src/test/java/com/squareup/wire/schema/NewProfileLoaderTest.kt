@@ -119,13 +119,9 @@ class NewProfileLoaderTest {
         |}
         """.trimMargin()
     )
-    try {
-      loadAndLinkProfile("android")
-      fail()
-    } catch (expected: IllegalArgumentException) {
-      assertThat(expected)
-          .hasMessage("unable to resolve a.b.Message2 (source-path/a/b/android.wire at 2:1)")
-    }
+    val profile = loadAndLinkProfile("android")
+    val message = ProtoType.get("a.b.Message")
+    assertThat(profile.getTarget(message)).isNull()
   }
 
   @Test
