@@ -317,13 +317,13 @@ class KotlinGenerator private constructor(
       addAndroidCreator(type, companionBuilder)
     }
 
+    addMessageConstructor(type, classBuilder)
+
     if (type.oneOfs.isNotEmpty()) {
       classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
     }
 
     classBuilder.addType(companionBuilder.build())
-
-    addMessageConstructor(type, classBuilder)
 
     type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
 
