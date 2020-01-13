@@ -120,7 +120,7 @@ class Linker {
       }
 
       // Retain this type if it's used by anything in the source path.
-      val anyTypeIsUsed = fileLinker.protoFile.types
+      val anyTypeIsUsed = fileLinker.protoFile.typesAndNestedTypes()
           .any { type ->
             requestedTypes.contains(type.type)
           }
