@@ -66,6 +66,18 @@ actual class ProtoFile private constructor(
     return result
   }
 
+  /**
+   * Returns all types and subtypes which are found in the proto file.
+   */
+  fun typesAndNestedTypes(): List<Type> {
+    val typesAndNestedTypes = mutableListOf<Type>()
+    for (type in types) {
+      typesAndNestedTypes.addAll(type.typesAndNestedTypes())
+    }
+
+    return typesAndNestedTypes
+  }
+
   fun javaPackage(): String? {
     return javaPackage?.toString()
   }

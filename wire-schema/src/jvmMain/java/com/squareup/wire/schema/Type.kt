@@ -42,6 +42,18 @@ abstract class Type {
    */
   abstract fun retainLinked(linkedTypes: Set<ProtoType>): Type?
 
+  /**
+   * Returns all types and subtypes which are linked to the type.
+   */
+  fun typesAndNestedTypes(): List<Type> {
+    val typesAndNestedTypes = mutableListOf<Type>()
+    typesAndNestedTypes.add(this)
+    for (type in nestedTypes) {
+      typesAndNestedTypes.addAll(type.typesAndNestedTypes())
+    }
+    return typesAndNestedTypes
+  }
+
   companion object {
     operator fun get(packageName: String?, protoType: ProtoType, type: TypeElement): Type {
       return when (type) {

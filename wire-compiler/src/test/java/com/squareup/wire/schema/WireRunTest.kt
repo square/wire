@@ -526,6 +526,36 @@ class WireRunTest {
           """.trimMargin())
   }
 
+  @Test
+  fun includeSubTypes() {
+    writeOrangeProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/kt/squareup/colors/Orange.kt")
+    assertThat(fs.get("generated/kt/squareup/colors/Orange.kt"))
+        .contains("class Orange")
+  }
+
+  private fun writeOrangeProto() {
+    fs.add("colors/src/main/proto/squareup/colors/orange.proto", """
+          |syntax = "proto2";
+          |package squareup.colors;
+          |import "squareup/polygons/triangle.proto";
+          |message Orange {
+          |  optional string circle = 1;
+          |  optional squareup.polygons.Triangle.Type triangle = 2;
+          |}
+          """.trimMargin())
+  }
+
   private fun writeColorsRouteProto() {
     fs.add("routes/src/main/proto/squareup/routes/route.proto", """
           |syntax = "proto2";
@@ -558,6 +588,11 @@ class WireRunTest {
           |package squareup.polygons;
           |message Triangle {
           |  repeated double angles = 1;
+          |    enum Type {
+          |      EQUILATERAL = 1;
+          |      ISOSCELES = 2;
+          |      RIGHTANGLED = 3;
+          |   }
           |}
           """.trimMargin())
   }
