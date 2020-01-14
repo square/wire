@@ -76,7 +76,7 @@ sealed class Target {
       isExclusive: Boolean
     ) {
       protoFile.types
-          .filter { !consumedTypesAndServices.contains(it) && emittingRules.includes(it.type!!) }
+          .filter { !consumedTypesAndServices.contains(it) && emittingRules.includes(it.type) }
           .forEach { type ->
             handle(type)
             // We don't let other targets handle this one.
@@ -336,8 +336,7 @@ interface CustomHandlerBeta {
     outDirectory: String,
     logger: WireLogger,
     newProfileLoader: NewProfileLoader
-  ):
-      Target.SchemaHandler
+  ): Target.SchemaHandler
 }
 
 // TODO: merge this interface with Loader.
