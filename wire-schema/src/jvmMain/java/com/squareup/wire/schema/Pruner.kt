@@ -128,8 +128,14 @@ internal class Pruner(
       for (reachable in reachableMembers) {
         when (reachable) {
           is ProtoType -> {
-            if (marks.mark(reachable)) {
-              queue.add(reachable)
+            if (root is ProtoMember) {
+              if (marks.mark(reachable, root)) {
+                queue.add(reachable)
+              }
+            } else {
+              if (marks.mark(reachable)) {
+                queue.add(reachable)
+              }
             }
           }
 
