@@ -34,6 +34,10 @@ class MarkSet(
 
   /** The members to retain. Any member not in here should be pruned! */
   val members = mutableMapOf<ProtoType, MutableSet<ProtoMember>>()
+  /** The root members which are never to be pruned, including their referenced type. */
+  private val rootMemberTypes = mutableMapOf<ProtoMember, ProtoType>()
+  /** The members this MarkSet have seen. The values should be non-null once the marking is done. */
+  private val memberTypes = mutableMapOf<ProtoMember, ProtoType>()
 
   /**
    * Marks `protoMember`, throwing if it is explicitly excluded. This implicitly excludes other
@@ -42,6 +46,7 @@ class MarkSet(
   fun root(protoMember: ProtoMember) {
     check(!pruningRules.excludes(protoMember))
     types.add(protoMember.type)
+    rootMemberTypes[protoMember] = UNKNOWN_TYPE
     val memberSet = members.getOrPut(protoMember.type, { mutableSetOf() })
     memberSet += protoMember
   }
@@ -50,6 +55,25 @@ class MarkSet(
   fun root(type: ProtoType) {
     check(!pruningRules.excludes(type))
     types.add(type)
+  }
+
+  /**
+   * Marks a type as transitively reachable by the includes set. Returns true if the mark is new,
+   * the type will be retained, and reachable objects should be traversed.
+   *
+   * If there is an exclude for [type], non-root members referencing it will be pruned. The type
+   * itself will also be pruned unless it is referenced by a root member.
+   */
+  fun mark(type: ProtoType, reference: ProtoMember): Boolean {
+    memberTypes[reference] = type
+
+    if (rootMemberTypes.containsKey(reference)) {
+      rootMemberTypes[reference] = type
+      // We keep.
+      return types.add(type)
+    }
+
+    return mark(type)
   }
 
   /**
@@ -79,8 +103,27 @@ class MarkSet(
 
   /** Returns true if `member` is marked and should be retained. */
   operator fun contains(protoMember: ProtoMember): Boolean {
+    val memberType: ProtoType? = memberTypes[protoMember]
+
+    // We do not contain non-root members whose referenced type is excluded.
+    if (!rootMemberTypes.containsKey(protoMember) &&
+        memberType != null && pruningRules.excludes(memberType)) {
+      return false
+    }
+
+    // A member cannot be included if its referencing type is excluded unless a root member of this
+    // referenced type exists.
+    if (pruningRules.excludes(protoMember.type) &&
+        rootMemberTypes.containsValue(protoMember.type)) {
+      return true
+    }
+
     if (pruningRules.excludes(protoMember)) return false
     val memberSet = members[protoMember.type]
     return memberSet != null && memberSet.contains(protoMember)
+  }
+
+  companion object {
+    private val UNKNOWN_TYPE = ProtoType.get("(unknown type)")
   }
 }

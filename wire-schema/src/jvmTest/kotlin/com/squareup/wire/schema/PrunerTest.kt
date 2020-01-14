@@ -1663,4 +1663,45 @@ class PrunerTest {
     assertThat(myEnumType.constant("C")).isNotNull()
     assertThat(myEnumType.constant("D")).isNull()
   }
+
+  @Test
+  fun includeMemberOfExcludedType() {
+    val schema = RepoBuilder()
+        .add("service.proto", """
+            |message MessageA {
+            |  optional string a = 1;
+            |  optional Book book = 2;
+            |}
+            |
+            |message MessageB {
+            |  optional string a = 1;
+            |  optional Book book = 2;
+            |}
+            |
+            |message Book {
+            |  optional string title = 1;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .include("MessageA#book")
+        .include("MessageB")
+        .exclude("Book")
+        .exclude("Stuff")
+        .build())
+
+    val messageA = pruned.getType("MessageA") as MessageType
+    assertThat(messageA.field("a")).isNull()
+    // Book is excluded but the member is included so we keep it.
+    assertThat(messageA.field("book")).isNotNull()
+
+    val messageB = pruned.getType("MessageB") as MessageType
+    assertThat(messageB.field("a")).isNotNull()
+    // Book is excluded and MessageB#book isn't included so the field should be gone.
+    assertThat(messageB.field("book")).isNull()
+
+    // Book is excluded but because MessageA#book is included, we keep the type.
+    val bookType = pruned.getType("Book") as MessageType
+    assertThat(bookType.field("title")).isNotNull()
+  }
 }
