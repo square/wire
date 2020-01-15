@@ -17,8 +17,8 @@ package com.squareup.wire.java;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.wire.schema.PruningRules;
 import com.squareup.wire.schema.MessageType;
+import com.squareup.wire.schema.PruningRules;
 import com.squareup.wire.schema.RepoBuilder;
 import com.squareup.wire.schema.Schema;
 import java.io.IOException;
@@ -483,5 +483,23 @@ public final class JavaGeneratorTest {
             + "}\n");
     assertThat(repoBuilder.generateCode("common.proto.A"))
         .contains("public final AnotherStatus common_proto_Status;");
+  }
+
+  @Test public void fieldHasScalarName() throws Exception {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("example.proto", ""
+            + "package squareup.testing.wire;\n"
+            + "\n"
+            + "option java_package = \"com.squareup.testing.wire\";\n"
+            + "\n"
+            + "message Data {\n"
+            + "  optional string string = 1;\n"
+            + "  repeated string values = 2;\n"
+            + "}\n");
+    assertThat(repoBuilder.generateCode("squareup.testing.wire.Data")).contains(""
+        + "    public Builder string(String string) {\n"
+        + "      this.string = string;\n"
+        + "      return this;\n"
+        + "    }");
   }
 }
