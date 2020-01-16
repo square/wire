@@ -67,7 +67,7 @@ internal class FileLinker(
   }
 
   private fun addTypes(type: Type) {
-    linker.addType(type.type!!, type)
+    linker.addType(type.type, type)
     for (nestedType in type.nestedTypes) {
       addTypes(nestedType)
     }
@@ -113,7 +113,7 @@ internal class FileLinker(
 
   /** Link the members of `type` that haven't been linked already. */
   fun requireMembersLinked(type: Type) {
-    if (typesWithMembersLinked.add(type.type!!)) {
+    if (typesWithMembersLinked.add(type.type)) {
       type.linkMembers(linker)
     }
   }

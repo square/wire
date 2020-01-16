@@ -99,7 +99,7 @@ class KotlinGenerator private constructor(
   private val ProtoType.isEnum
     get() = schema.getType(this) is EnumType
   private val Type.typeName
-    get() = type!!.typeName
+    get() = type.typeName
   private val Service.serviceName
     get() = type().typeName
 
@@ -1439,9 +1439,9 @@ class KotlinGenerator private constructor(
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
-          val className = enclosingClassName?.nestedClass(type.type!!.simpleName)
-              ?: ClassName(kotlinPackage, type.type!!.simpleName)
-          map[type.type!!] = className
+          val className = enclosingClassName?.nestedClass(type.type.simpleName)
+              ?: ClassName(kotlinPackage, type.type.simpleName)
+          map[type.type] = className
           putAll(kotlinPackage, className, type.nestedTypes)
         }
       }

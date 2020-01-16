@@ -23,7 +23,7 @@ import com.squareup.wire.schema.internal.parser.TypeElement
 
 abstract class Type {
   abstract val location: Location
-  abstract val type: ProtoType?
+  abstract val type: ProtoType
   abstract val documentation: String
   abstract val options: Options
   abstract val nestedTypes: List<Type>

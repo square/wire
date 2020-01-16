@@ -245,7 +245,7 @@ data class NullTarget(
   ): SchemaHandler {
     return object : SchemaHandler {
       override fun handle(type: Type) {
-        logger.artifactSkipped(type.type!!)
+        logger.artifactSkipped(type.type)
       }
 
       override fun handle(service: Service) {
