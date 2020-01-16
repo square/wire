@@ -177,7 +177,7 @@ actual class Field private constructor(
   }
 
   private fun isUsedAsOption(markSet: MarkSet, enclosingType: ProtoType, type: Type): Boolean {
-    if (type.type!! !in markSet) return false
+    if (type.type !in markSet) return false
 
     val protoMember = ProtoMember.get(enclosingType, if (isExtension) qualifiedName else name)
 

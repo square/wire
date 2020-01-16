@@ -196,7 +196,7 @@ data class WireRun(
       val i = typesToHandle.iterator()
       while (i.hasNext()) {
         val type = i.next()
-        if (pruningRules.includes(type.type!!)) {
+        if (pruningRules.includes(type.type)) {
           schemaHandler.handle(type)
           // We don't let other targets handle this one.
           if (target.exclusive) i.remove()

@@ -74,7 +74,7 @@ internal class Pruner(
   }
 
   private fun markRootsIncludingNested(type: Type) {
-    markRoots(type.type!!)
+    markRoots(type.type)
 
     for (nested in type.nestedTypes) {
       markRootsIncludingNested(nested)

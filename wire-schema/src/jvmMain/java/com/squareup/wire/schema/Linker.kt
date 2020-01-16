@@ -182,7 +182,7 @@ class Linker {
 
     requestedTypes.add(resolved.type)
 
-    return resolved.type!!
+    return resolved.type
   }
 
   fun <T> resolve(name: String, map: Map<String, T>): T? {
