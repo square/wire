@@ -13,7 +13,13 @@ kotlin {
       }
     }
     nodejs()
-    browser()
+    browser {
+      testTask {
+        useKarma {
+          useChrome()
+        }
+      }
+    }
   }
   iosX64()
   iosArm64()
