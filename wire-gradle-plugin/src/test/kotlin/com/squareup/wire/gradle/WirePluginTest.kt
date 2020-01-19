@@ -669,6 +669,28 @@ class WirePluginTest {
     assertThat(newsFlash).doesNotContain("val radio")
   }
 
+  @Test
+  fun kotlinMultiplatform() {
+    val fixtureRoot = File("src/test/projects/kotlin-multiplatform")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("assemble", "--stacktrace").build()
+    }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/kotlin-multiplatform/build/generated/source/wire")
+
+    val generatedProto1 =
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+    val generatedProto2 =
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
+  }
+
   private fun fieldsFromProtoSource(generatedProtoSource: String): List<String> {
     val protoFieldPattern = "@field:WireField.*?(val .*?):"
     val matchedFields = protoFieldPattern.toRegex(setOf(MULTILINE, DOT_MATCHES_ALL))
