@@ -82,7 +82,6 @@ afterEvaluate {
     dependsOn 'publishMetadataPublicationToTestRepository'
     dependsOn 'publishJvmPublicationToTestRepository'
     dependsOn 'publishJsPublicationToTestRepository'
-    dependsOn 'publishIosX64PublicationToTestRepository'
   }
 }
 

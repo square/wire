@@ -15,7 +15,6 @@ kotlin {
   js {
     nodejs()
   }
-  iosX64()
   sourceSets {
     commonMain {
       dependencies {
