@@ -232,6 +232,9 @@ internal class Pruner(
             result.add(get(type.type, constant.name))
           }
 
+        } else if (type is EnclosingType) {
+          options = type.options
+
         } else if (service != null) {
           options = service.options()
           for (rpc in service.rpcs()) {
