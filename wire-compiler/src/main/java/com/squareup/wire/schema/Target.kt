@@ -64,6 +64,33 @@ sealed class Target {
   interface SchemaHandler {
     fun handle(type: Type)
     fun handle(service: Service)
+    /**
+     * This will handle all [Type]s and [Service]s of the `protoFile` in respect to the emitting
+     * rules. If exclusive, the handled [Type]s and [Service]s should be added to the consumed set.
+     * Consumed types and services themselves are to be omitted by this handler.
+     */
+    fun handle(
+      protoFile: ProtoFile,
+      emittingRules: EmittingRules,
+      consumedTypesAndServices: MutableSet<Any>,
+      isExclusive: Boolean
+    ) {
+      protoFile.types
+          .filter { !consumedTypesAndServices.contains(it) && emittingRules.includes(it.type!!) }
+          .forEach { type ->
+            handle(type)
+            // We don't let other targets handle this one.
+            if (isExclusive) consumedTypesAndServices.add(type)
+          }
+
+      protoFile.services
+          .filter { !consumedTypesAndServices.contains(it) && emittingRules.includes(it.type()) }
+          .forEach { service ->
+            handle(service)
+            // We don't let other targets handle this one.
+            if (isExclusive) consumedTypesAndServices.add(service)
+          }
+    }
   }
 }
 

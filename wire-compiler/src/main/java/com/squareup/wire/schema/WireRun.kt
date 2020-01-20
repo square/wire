@@ -171,58 +171,41 @@ data class WireRun(
     val schema = treeShake(fullSchema, logger)
 
     // Call each target.
-    val typesToHandle = mutableListOf<Type>()
-    val servicesToHandle = mutableListOf<Service>()
     val skippedForSyntax = mutableListOf<ProtoFile>()
     for (protoFile in schema.protoFiles) {
       if (protoFile.syntax != ProtoFile.Syntax.PROTO_2) {
         skippedForSyntax += protoFile
         continue
       }
-      if (sourceLocationPaths.contains(protoFile.location.path)) {
-        typesToHandle += protoFile.types
-        servicesToHandle += protoFile.services
-      }
-    }
-    val targetsExclusiveLast = targets.sortedBy { it.exclusive }
-    for (target in targetsExclusiveLast) {
-      val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)
-
-      val emittingRules = EmittingRules.Builder()
-          .include(target.includes)
-          .exclude(target.excludes)
-          .build()
-
-      val i = typesToHandle.iterator()
-      while (i.hasNext()) {
-        val type = i.next()
-        if (emittingRules.includes(type.type)) {
-          schemaHandler.handle(type)
-          // We don't let other targets handle this one.
-          if (target.exclusive) i.remove()
-        }
+      if (!sourceLocationPaths.contains(protoFile.location.path)) {
+        continue
       }
 
-      val j = servicesToHandle.iterator()
-      while (j.hasNext()) {
-        val service = j.next()
-        if (emittingRules.includes(service.type())) {
-          schemaHandler.handle(service)
-          // We don't let other targets handle this one.
-          if (target.exclusive) j.remove()
-        }
-      }
+      val consumedTypesAndServices = mutableSetOf<Any>()
 
-      if (emittingRules.unusedIncludes().isNotEmpty()) {
-        logger.info("""Unused includes in targets:
+      val targetsExclusiveLast = targets.sortedBy { it.exclusive }
+      for (target in targetsExclusiveLast) {
+        val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)
+
+        val emittingRules: EmittingRules = EmittingRules.Builder()
+            .include(target.includes)
+            .exclude(target.excludes)
+            .build()
+
+        schemaHandler.handle(protoFile, emittingRules, consumedTypesAndServices,
+            isExclusive = target.exclusive)
+
+        if (emittingRules.unusedIncludes().isNotEmpty()) {
+          logger.info("""Unused includes in targets:
             |  ${emittingRules.unusedIncludes().joinToString(separator = "\n  ")}
             """.trimMargin())
-      }
+        }
 
-      if (emittingRules.unusedExcludes().isNotEmpty()) {
-        logger.info("""Unused exclude in targets:
+        if (emittingRules.unusedExcludes().isNotEmpty()) {
+          logger.info("""Unused exclude in targets:
             |  ${emittingRules.unusedExcludes().joinToString(separator = "\n  ")}
             """.trimMargin())
+        }
       }
     }
 
