@@ -188,7 +188,7 @@ data class WireRun(
     for (target in targetsExclusiveLast) {
       val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)
 
-      val pruningRules: PruningRules = PruningRules.Builder()
+      val emittingRules = EmittingRules.Builder()
           .include(target.includes)
           .exclude(target.excludes)
           .build()
@@ -196,7 +196,7 @@ data class WireRun(
       val i = typesToHandle.iterator()
       while (i.hasNext()) {
         val type = i.next()
-        if (pruningRules.includes(type.type)) {
+        if (emittingRules.includes(type.type)) {
           schemaHandler.handle(type)
           // We don't let other targets handle this one.
           if (target.exclusive) i.remove()
@@ -206,22 +206,22 @@ data class WireRun(
       val j = servicesToHandle.iterator()
       while (j.hasNext()) {
         val service = j.next()
-        if (pruningRules.includes(service.type())) {
+        if (emittingRules.includes(service.type())) {
           schemaHandler.handle(service)
           // We don't let other targets handle this one.
           if (target.exclusive) j.remove()
         }
       }
 
-      if (pruningRules.unusedIncludes().isNotEmpty()) {
+      if (emittingRules.unusedIncludes().isNotEmpty()) {
         logger.info("""Unused includes in targets:
-            |  ${pruningRules.unusedExcludes().joinToString(separator = "\n  ")}
+            |  ${emittingRules.unusedIncludes().joinToString(separator = "\n  ")}
             """.trimMargin())
       }
 
-      if (pruningRules.unusedExcludes().isNotEmpty()) {
+      if (emittingRules.unusedExcludes().isNotEmpty()) {
         logger.info("""Unused exclude in targets:
-            |  ${pruningRules.unusedExcludes().joinToString(separator = "\n  ")}
+            |  ${emittingRules.unusedExcludes().joinToString(separator = "\n  ")}
             """.trimMargin())
       }
     }
