@@ -544,6 +544,25 @@ class WireRunTest {
         .contains("class Orange")
   }
 
+  @Test
+  fun includeSubTypesWithPruning() {
+    writeOrangeProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        treeShakingRoots = listOf("squareup.colors.*"),
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/kt/squareup/colors/Orange.kt")
+    assertThat(fs.get("generated/kt/squareup/colors/Orange.kt"))
+        .contains("class Orange")
+  }
+
   private fun writeOrangeProto() {
     fs.add("colors/src/main/proto/squareup/colors/orange.proto", """
           |syntax = "proto2";

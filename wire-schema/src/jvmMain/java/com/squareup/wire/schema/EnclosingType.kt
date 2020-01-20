@@ -25,7 +25,7 @@ class EnclosingType internal constructor(
   override val nestedTypes: List<Type>
 ) : Type() {
   override val options
-    get() = throw UnsupportedOperationException()
+    get() = Options(Options.MESSAGE_OPTIONS, listOf())
 
   override fun linkMembers(linker: Linker) {}
   override fun linkOptions(linker: Linker) = nestedTypes.forEach { it.linkOptions(linker) }
