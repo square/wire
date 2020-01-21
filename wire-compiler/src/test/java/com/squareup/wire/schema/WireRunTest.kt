@@ -152,6 +152,28 @@ class WireRunTest {
   }
 
   @Test
+  fun protoOnly() {
+    writeBlueProto()
+    writeRedProto()
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(ProtoTarget(outDirectory = "generated/proto"))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/proto/squareup/colors/blue.proto",
+        "generated/proto/squareup/colors/red.proto")
+    assertThat(fs.get("generated/proto/squareup/colors/blue.proto"))
+        .contains("message Blue {")
+    assertThat(fs.get("generated/proto/squareup/colors/red.proto"))
+        .contains("message Red {")
+  }
+
+  @Test
   fun ktThenJava() {
     writeBlueProto()
     writeRedProto()
@@ -607,11 +629,11 @@ class WireRunTest {
           |package squareup.polygons;
           |message Triangle {
           |  repeated double angles = 1;
-          |    enum Type {
-          |      EQUILATERAL = 1;
-          |      ISOSCELES = 2;
-          |      RIGHTANGLED = 3;
-          |   }
+          |  enum Type {
+          |    EQUILATERAL = 1;
+          |    ISOSCELES = 2;
+          |    RIGHTANGLED = 3;
+          |  }
           |}
           """.trimMargin())
   }

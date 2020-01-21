@@ -26,8 +26,11 @@ import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import okio.buffer
+import okio.sink
 import java.io.IOException
 import java.nio.file.FileSystem
+import java.nio.file.Files
 
 sealed class Target {
   /**
@@ -72,23 +75,23 @@ sealed class Target {
     fun handle(
       protoFile: ProtoFile,
       emittingRules: EmittingRules,
-      consumedTypesAndServices: MutableSet<Any>,
+      claimedTypesSet: MutableSet<Any>,
       isExclusive: Boolean
     ) {
       protoFile.types
-          .filter { !consumedTypesAndServices.contains(it) && emittingRules.includes(it.type) }
+          .filter { !claimedTypesSet.contains(it) && emittingRules.includes(it.type) }
           .forEach { type ->
             handle(type)
             // We don't let other targets handle this one.
-            if (isExclusive) consumedTypesAndServices.add(type)
+            if (isExclusive) claimedTypesSet.add(type)
           }
 
       protoFile.services
-          .filter { !consumedTypesAndServices.contains(it) && emittingRules.includes(it.type()) }
+          .filter { !claimedTypesSet.contains(it) && emittingRules.includes(it.type()) }
           .forEach { service ->
             handle(service)
             // We don't let other targets handle this one.
-            if (isExclusive) consumedTypesAndServices.add(service)
+            if (isExclusive) claimedTypesSet.add(service)
           }
     }
   }
@@ -255,6 +258,53 @@ data class KotlinTarget(
       }
     }
   }
+}
+
+data class ProtoTarget(
+  override val includes: List<String> = listOf(),
+  override val excludes: List<String> = listOf(),
+  override val exclusive: Boolean = true,
+  val outDirectory: String
+) : Target() {
+  override fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
+  ): SchemaHandler {
+    return object : SchemaHandler {
+      override fun handle(type: Type) = Unit
+      override fun handle(service: Service) = Unit
+      override fun handle(
+        protoFile: ProtoFile,
+        emittingRules: EmittingRules,
+        claimedTypesSet: MutableSet<Any>,
+        isExclusive: Boolean
+      ) {
+        if (protoFile.isEmpty()) return
+
+        val relativePath: String = protoFile.location.path
+            .substringBeforeLast("/", missingDelimiterValue = ".")
+        val outputDirectory = fs.getPath(outDirectory, relativePath)
+
+        require(Files.notExists(outputDirectory) || Files.isDirectory(outputDirectory)) {
+          "path $outputDirectory exists but is not a directory."
+        }
+        Files.createDirectories(outputDirectory)
+
+        val outputFilePath = outputDirectory.resolve("${protoFile.name()}.proto")
+        outputFilePath.sink().buffer().use { sink ->
+          try {
+            sink.writeUtf8(protoFile.toSchema())
+          } catch (e: IOException) {
+            throw IOException("Error emitting $outputFilePath to $outDirectory", e)
+          }
+        }
+      }
+    }
+  }
+
+  private fun ProtoFile.isEmpty() = types.isEmpty() && services.isEmpty() && extendList.isEmpty()
 }
 
 /** Omit code generation for these sources. Use this for a dry-run. */

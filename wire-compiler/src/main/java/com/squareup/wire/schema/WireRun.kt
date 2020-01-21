@@ -181,7 +181,7 @@ data class WireRun(
         continue
       }
 
-      val consumedTypesAndServices = mutableSetOf<Any>()
+      val claimedTypesSet = mutableSetOf<Any>()
 
       val targetsExclusiveLast = targets.sortedBy { it.exclusive }
       for (target in targetsExclusiveLast) {
@@ -192,7 +192,7 @@ data class WireRun(
             .exclude(target.excludes)
             .build()
 
-        schemaHandler.handle(protoFile, emittingRules, consumedTypesAndServices,
+        schemaHandler.handle(protoFile, emittingRules, claimedTypesSet,
             isExclusive = target.exclusive)
 
         if (emittingRules.unusedIncludes().isNotEmpty()) {
