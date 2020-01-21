@@ -20,6 +20,7 @@ import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.CustomTargetBeta
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
+import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
@@ -140,6 +141,28 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       it.source(out)
       it.dependsOn(wireTask)
     }
+  }
+}
+
+open class ProtoOutput @Inject constructor() : WireOutput() {
+  var includes: List<String>? = null
+  var excludes: List<String>? = null
+  var exclusive: Boolean = true
+
+  override fun toTarget(): ProtoTarget {
+    return ProtoTarget(
+        includes = includes ?: listOf("*"),
+        excludes = excludes ?: listOf(),
+        exclusive = exclusive,
+        outDirectory = out!!
+    )
+  }
+
+  override fun applyToProject(
+    project: Project,
+    wireTask: TaskProvider<WireTask>?,
+    kotlin: Boolean
+  ) {
   }
 }
 
