@@ -113,10 +113,10 @@ class WireCompiler internal constructor(
     if (!pruningRules.isEmpty) {
       log.info("Analyzing dependencies of root types.")
       schema = schema.prune(pruningRules)
-      for (rule in pruningRules.unusedIncludes()) {
+      for (rule in pruningRules.unusedRoots()) {
         log.info("Unused include: $rule")
       }
-      for (rule in pruningRules.unusedExcludes()) {
+      for (rule in pruningRules.unusedPrunes()) {
         log.info("Unused exclude: $rule")
       }
     }
@@ -266,12 +266,12 @@ class WireCompiler internal constructor(
 
           arg.startsWith(INCLUDES_FLAG) -> {
             val includes = arg.substring(INCLUDES_FLAG.length)
-            pruningRulesBuilder.include(includes.split(Regex(",")))
+            pruningRulesBuilder.addRoot(includes.split(Regex(",")))
           }
 
           arg.startsWith(EXCLUDES_FLAG) -> {
             val excludes = arg.substring(EXCLUDES_FLAG.length)
-            pruningRulesBuilder.exclude(excludes.split(Regex(",")))
+            pruningRulesBuilder.prune(excludes.split(Regex(",")))
           }
 
           arg == QUIET_FLAG -> quiet = true
