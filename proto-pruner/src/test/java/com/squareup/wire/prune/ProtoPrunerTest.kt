@@ -44,8 +44,8 @@ class ProtoPrunerTest {
   @Test
   fun testFooBar() {
     val pruningRules = PruningRules.Builder()
-        .include("squareup.foobar.Foo")
-        .include("squareup.foobar.Bar")
+        .addRoot("squareup.foobar.Foo")
+        .addRoot("squareup.foobar.Bar")
         .build()
     invokeProtoPruner(pruningRules)
 
@@ -58,8 +58,8 @@ class ProtoPrunerTest {
   @Test
   fun testSimpleMessage() {
     val pruningRules = PruningRules.Builder()
-        .include("squareup.protos.simple.SimpleMessage")
-        .exclude("google.protobuf.*")
+        .addRoot("squareup.protos.simple.SimpleMessage")
+        .prune("google.protobuf.*")
         .build()
     invokeProtoPruner(pruningRules)
 
@@ -74,8 +74,8 @@ class ProtoPrunerTest {
   @Test
   fun testOptions() {
     val pruningRules = PruningRules.Builder()
-        .include("squareup.options.letter.Letter")
-        .include("squareup.options.letter.Post")
+        .addRoot("squareup.options.letter.Letter")
+        .addRoot("squareup.options.letter.Post")
         .build()
     invokeProtoPruner(pruningRules)
 
@@ -89,9 +89,9 @@ class ProtoPrunerTest {
   @Test
   fun testOptionsExcludingProtobuf() {
     val pruningRules = PruningRules.Builder()
-        .include("squareup.options.poem.Poem")
-        .include("squareup.options.poem.Court")
-        .exclude("google.protobuf.*")
+        .addRoot("squareup.options.poem.Poem")
+        .addRoot("squareup.options.poem.Court")
+        .prune("google.protobuf.*")
         .build()
     invokeProtoPruner(pruningRules)
 

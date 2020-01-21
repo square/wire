@@ -227,19 +227,19 @@ data class WireRun(
     }
 
     val pruningRules = PruningRules.Builder()
-        .include(treeShakingRoots)
-        .exclude(treeShakingRubbish)
+        .addRoot(treeShakingRoots)
+        .prune(treeShakingRubbish)
         .oldest(oldest)
         .newest(newest)
         .build()
 
     val result = schema.prune(pruningRules)
 
-    for (rule in pruningRules.unusedIncludes()) {
+    for (rule in pruningRules.unusedRoots()) {
       logger.info("Unused element in treeShakingRoots: $rule")
     }
 
-    for (rule in pruningRules.unusedExcludes()) {
+    for (rule in pruningRules.unusedPrunes()) {
       logger.info("Unused element in treeShakingRubbish: $rule")
     }
 

@@ -27,9 +27,9 @@ import com.squareup.wire.schema.SemVer.Companion.toLowerCaseSemVer
  *
  * ### Identifier Matching
  *
- * If a member is included in the set, its type is implicitly also included. A type that is included
- * without a specific member implicitly includes all of that type's members, but not its nested
- * types.
+ * If a member is a root in the set, its type is implicitly also considered a root. A type that is
+ * a root without a specific member implicitly set all of that type's members as roots, but not its
+ * nested types.
  *
  * Identifiers in this set may be in the following forms:
  *
@@ -46,13 +46,12 @@ import com.squareup.wire.schema.SemVer.Companion.toLowerCaseSemVer
  * as `Movie#name` and `Movie#release_date`). It contains the type `Actor` and one member
  * `Actor#name`, but not `Actor#birth_date` or `Actor#oscar_count`.
  *
- * This set has *included identifiers* and *excluded identifiers*, with the most precise identifier
- * taking precedence over the other ones. For instance, if there is one included identifier
- * `a.Movie` along an excluded identifier `a.*`, the type `a.Movie` is considered included in the
- * set.
+ * This set has *root identifiers* and *prune identifiers*, with the most precise identifier
+ * taking precedence over the other ones. For instance, if there is one root identifier
+ * `a.Movie` along a pruning identifier `a.*`, the type `a.Movie` is considered a root.
  *
- * If the includes set is empty, that implies that all elements should be included. Use this to
- * exclude unwanted types and members without also including everything else.
+ * If the roots set is empty, that implies that all elements are considered roots. Use this to
+ * prune unwanted types and members without also marking everything else as roots.
  *
  * ### Version Matching
  *
@@ -71,15 +70,15 @@ import com.squareup.wire.schema.SemVer.Companion.toLowerCaseSemVer
  * clients. Such code will have both the `age` and `birth_date` fields.
  */
 class PruningRules private constructor(builder: Builder) {
-  private val includes = builder.includes.toSet()
-  private val excludes = builder.excludes.toSet()
+  private val roots = builder.roots.toSet()
+  private val prunes = builder.prunes.toSet()
   private val oldest = builder.oldest
   private val newest = builder.newest
-  private val usedIncludes = mutableSetOf<String>()
-  private val usedExcludes = mutableSetOf<String>()
+  private val usedRoots = mutableSetOf<String>()
+  private val usedPrunes = mutableSetOf<String>()
 
   val isEmpty: Boolean
-    get() = includes.isEmpty() && excludes.isEmpty() && oldest == null && newest == null
+    get() = roots.isEmpty() && prunes.isEmpty() && oldest == null && newest == null
 
   /** Returns true unless [options] specifies a version that is outside of the configured range. */
   fun isFieldRetainedVersion(options: Options) =
@@ -110,104 +109,105 @@ class PruningRules private constructor(builder: Builder) {
   }
 
   /** Returns true if `type` is a root. */
-  fun includes(type: ProtoType) = includes(type.toString())
+  fun isRoot(type: ProtoType) = isRoot(type.toString())
 
   /** Returns true if `protoMember` is a root. */
-  fun includes(protoMember: ProtoMember) = includes(protoMember.toString())
+  fun isRoot(protoMember: ProtoMember) = isRoot(protoMember.toString())
 
   /**
-   * Returns true if `identifier` or any of its enclosing identifiers is included. If any enclosing
-   * identifier is excluded, that takes precedence and this returns false.
+   * Returns true if `identifier` or any of its enclosing identifiers is a root. If any enclosing
+   * identifier is pruned, that takes precedence and this returns false unless the root identifier
+   * is more precise.
    */
-  private fun includes(identifier: String): Boolean {
-    if (includes.isEmpty()) return !exclude(identifier)
+  private fun isRoot(identifier: String): Boolean {
+    if (roots.isEmpty()) return !prunes(identifier)
 
-    var includeMatch: String? = null
-    var excludeMatch: String? = null
+    var rootMatch: String? = null
+    var pruneMatch: String? = null
     var rule: String? = identifier
     while (rule != null) {
-      if (excludeMatch == null && excludes.contains(rule)) {
-        excludeMatch = rule
+      if (pruneMatch == null && prunes.contains(rule)) {
+        pruneMatch = rule
       }
-      if (includeMatch == null && includes.contains(rule)) {
-        includeMatch = rule
+      if (rootMatch == null && roots.contains(rule)) {
+        rootMatch = rule
       }
       rule = enclosing(rule)
     }
 
     val isRoot = when {
-      excludeMatch != null && includeMatch != null -> excludeMatch.length < includeMatch.length
-      excludeMatch != null -> false
-      includeMatch != null -> true
+      pruneMatch != null && rootMatch != null -> pruneMatch.length < rootMatch.length
+      pruneMatch != null -> false
+      rootMatch != null -> true
       else -> false
     }
     if (isRoot) {
-      usedIncludes.add(includeMatch!!)
-    } else if (excludeMatch != null) {
-      usedExcludes.add(excludeMatch)
+      usedRoots.add(rootMatch!!)
+    } else if (pruneMatch != null) {
+      usedPrunes.add(pruneMatch)
     }
     return isRoot
   }
 
   /**
-   * Returns true if `type` should be excluded, even if it is a transitive dependency of a root. In
-   * that case, the referring member is also excluded.
+   * Returns true if `type` should be pruned, even if it is a transitive dependency of a root. In
+   * that case, the referring member is also pruned.
    */
-  fun excludes(type: ProtoType) = exclude(type.toString())
+  fun prunes(type: ProtoType) = prunes(type.toString())
 
-  /** Returns true if `protoMember` should be excluded. */
-  fun excludes(protoMember: ProtoMember) = exclude(protoMember.toString())
+  /** Returns true if `protoMember` should be pruned. */
+  fun prunes(protoMember: ProtoMember) = prunes(protoMember.toString())
 
-  /** Returns true if `identifier` or any of its enclosing identifiers is excluded.  */
-  private fun exclude(identifier: String): Boolean {
-    var includeMatch: String? = null
-    var excludeMatch: String? = null
+  /** Returns true if `identifier` or any of its enclosing identifiers is pruned.  */
+  private fun prunes(identifier: String): Boolean {
+    var rootMatch: String? = null
+    var pruneMatch: String? = null
     var rule: String? = identifier
     while (rule != null) {
-      if (excludeMatch == null && excludes.contains(rule)) {
-        excludeMatch = rule
+      if (pruneMatch == null && prunes.contains(rule)) {
+        pruneMatch = rule
       }
-      if (includeMatch == null && includes.contains(rule)) {
-        includeMatch = rule
+      if (rootMatch == null && roots.contains(rule)) {
+        rootMatch = rule
       }
       rule = enclosing(rule)
     }
 
-    val excluded = when {
-      excludeMatch != null && includeMatch != null -> excludeMatch.length >= includeMatch.length
-      excludeMatch != null -> true
+    val pruned = when {
+      pruneMatch != null && rootMatch != null -> pruneMatch.length >= rootMatch.length
+      pruneMatch != null -> true
       else -> false
     }
-    if (excluded) {
-      usedExcludes.add(excludeMatch!!)
+    if (pruned) {
+      usedPrunes.add(pruneMatch!!)
     }
-    return excluded
+    return pruned
   }
 
-  fun unusedIncludes() = includes - usedIncludes
+  fun unusedRoots() = roots - usedRoots
 
-  fun unusedExcludes() = excludes - usedExcludes
+  fun unusedPrunes() = prunes - usedPrunes
 
   class Builder {
-    internal val includes = mutableSetOf<String>()
-    internal val excludes = mutableSetOf<String>()
+    internal val roots = mutableSetOf<String>()
+    internal val prunes = mutableSetOf<String>()
     internal var oldest: SemVer? = null
     internal var newest: SemVer? = null
 
-    fun include(identifier: String) = apply {
-      includes.add(identifier)
+    fun addRoot(identifier: String) = apply {
+      roots.add(identifier)
     }
 
-    fun include(identifiers: Iterable<String>) = apply {
-      includes.addAll(identifiers)
+    fun addRoot(identifiers: Iterable<String>) = apply {
+      roots.addAll(identifiers)
     }
 
-    fun exclude(identifier: String) = apply {
-      excludes.add(identifier)
+    fun prune(identifier: String) = apply {
+      prunes.add(identifier)
     }
 
-    fun exclude(identifiers: Iterable<String>) = apply {
-      excludes.addAll(identifiers)
+    fun prune(identifiers: Iterable<String>) = apply {
+      prunes.addAll(identifiers)
     }
 
     /**
@@ -230,9 +230,9 @@ class PruningRules private constructor(builder: Builder) {
       check(oldest == null || newest == null || oldest!! <= newest!!) {
         "expected oldest $oldest <= newest $newest"
       }
-      val conflictingRules = includes.intersect(excludes)
+      val conflictingRules = roots.intersect(prunes)
       check(conflictingRules.isEmpty()) {
-        "same rule(s) defined in both includes and excludes: ${conflictingRules.joinToString()}"
+        "same rule(s) defined in both roots and prunes: ${conflictingRules.joinToString()}"
       }
       return PruningRules(this)
     }

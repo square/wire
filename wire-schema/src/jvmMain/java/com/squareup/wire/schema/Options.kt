@@ -269,7 +269,7 @@ class Options(
       is Map<*, *> -> {
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
-          if (pruningRules.excludes(protoMember)) continue
+          if (pruningRules.prunes(protoMember)) continue
           sink.put(type, protoMember)
           gatherFields(sink, protoMember.type, value!!, pruningRules)
         }

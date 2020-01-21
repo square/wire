@@ -44,7 +44,7 @@ class MarkSet(
    * members of the same type.
    */
   fun root(protoMember: ProtoMember) {
-    check(!pruningRules.excludes(protoMember))
+    check(!pruningRules.prunes(protoMember))
     types.add(protoMember.type)
     rootMemberTypes[protoMember] = UNKNOWN_TYPE
     val memberSet = members.getOrPut(protoMember.type, { mutableSetOf() })
@@ -53,7 +53,7 @@ class MarkSet(
 
   /** Marks `type`, throwing if it is explicitly excluded. */
   fun root(type: ProtoType) {
-    check(!pruningRules.excludes(type))
+    check(!pruningRules.prunes(type))
     types.add(type)
   }
 
@@ -81,7 +81,7 @@ class MarkSet(
    * the type will be retained, and reachable objects should be traversed.
    */
   fun mark(type: ProtoType): Boolean {
-    if (pruningRules.excludes(type)) return false
+    if (pruningRules.prunes(type)) return false
     return types.add(type)
   }
 
@@ -90,7 +90,7 @@ class MarkSet(
    * the member will be retained, and reachable objects should be traversed.
    */
   fun mark(protoMember: ProtoMember): Boolean {
-    if (pruningRules.excludes(protoMember)) return false
+    if (pruningRules.prunes(protoMember)) return false
     types.add(protoMember.type)
     val memberSet = members.getOrPut(protoMember.type, { mutableSetOf() })
     return memberSet.add(protoMember)
@@ -107,18 +107,18 @@ class MarkSet(
 
     // We do not contain non-root members whose referenced type is excluded.
     if (!rootMemberTypes.containsKey(protoMember) &&
-        memberType != null && pruningRules.excludes(memberType)) {
+        memberType != null && pruningRules.prunes(memberType)) {
       return false
     }
 
     // A member cannot be included if its referencing type is excluded unless a root member of this
     // referenced type exists.
-    if (pruningRules.excludes(protoMember.type) &&
+    if (pruningRules.prunes(protoMember.type) &&
         rootMemberTypes.containsValue(protoMember.type)) {
       return true
     }
 
-    if (pruningRules.excludes(protoMember)) return false
+    if (pruningRules.prunes(protoMember)) return false
     val memberSet = members[protoMember.type]
     return memberSet != null && memberSet.contains(protoMember)
   }

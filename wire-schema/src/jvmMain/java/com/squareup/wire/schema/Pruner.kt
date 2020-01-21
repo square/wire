@@ -82,7 +82,7 @@ internal class Pruner(
   }
 
   private fun markRoots(protoType: ProtoType) {
-    if (pruningRules.includes(protoType)) {
+    if (pruningRules.isRoot(protoType)) {
       marks.root(protoType)
       queue.add(protoType)
       return
@@ -92,7 +92,7 @@ internal class Pruner(
     for (reachable in reachableObjects(protoType)) {
       if (reachable !is ProtoMember) continue
       if (!isRetainedVersion(reachable)) continue
-      if (pruningRules.includes(reachable)) {
+      if (pruningRules.isRoot(reachable)) {
         marks.root(reachable)
         marks.mark(reachable.type) // Consider this type as visited.
         queue.add(reachable)

@@ -95,7 +95,7 @@ class KotlinGeneratorTest {
           |}""".trimMargin())
         .schema()
 
-    val pruned = schema.prune(PruningRules.Builder().include("A.B").build())
+    val pruned = schema.prune(PruningRules.Builder().addRoot("A.B").build())
 
     val kotlinGenerator = KotlinGenerator.invoke(pruned)
     val typeSpec = kotlinGenerator.generateType(pruned.getType("A")!!)
