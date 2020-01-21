@@ -2,7 +2,6 @@
 // Source file: redacted_test.proto
 package com.squareup.wire.protos.kotlin.redacted
 
-import com.google.protobuf.FieldOptions
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
@@ -74,11 +73,6 @@ class RedactedExtension(
   ): RedactedExtension = RedactedExtension(d, e, unknownFields)
 
   companion object {
-    val FIELD_OPTIONS_D: FieldOptions = 
-        FieldOptions(
-          redacted = true
-        )
-
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedExtension> = object : ProtoAdapter<RedactedExtension>(
       FieldEncoding.LENGTH_DELIMITED, 

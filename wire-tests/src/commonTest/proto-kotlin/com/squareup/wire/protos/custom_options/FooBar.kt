@@ -3,7 +3,6 @@
 package com.squareup.wire.protos.custom_options
 
 import com.google.protobuf.EnumOptions
-import com.google.protobuf.FieldOptions
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
@@ -154,61 +153,6 @@ class FooBar(
   ): FooBar = FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, unknownFields)
 
   companion object {
-    val FIELD_OPTIONS_FOO: FieldOptions = 
-        FieldOptions(
-          my_field_option_one = 17
-        )
-
-    val FIELD_OPTIONS_BAR: FieldOptions = 
-        FieldOptions(
-          my_field_option_two = 33.5f
-        )
-
-    val FIELD_OPTIONS_BAZ: FieldOptions = 
-        FieldOptions(
-          my_field_option_three = FooBarBazEnum.BAR
-        )
-
-    val FIELD_OPTIONS_QUX: FieldOptions = 
-        FieldOptions(
-          my_field_option_one = 18,
-          my_field_option_two = 34.5f
-        )
-
-    val FIELD_OPTIONS_FRED: FieldOptions = 
-        FieldOptions(
-          my_field_option_four = FooBar(
-            foo = 11,
-            bar = "22",
-            baz = Nested(
-              value = FooBarBazEnum.BAR
-            ),
-            fred = listOf(
-              444.0f,
-              555.0f
-            ),
-            nested = listOf(
-              FooBar(
-                foo = 33,
-                fred = listOf(
-                  100.0f,
-                  200.0f
-                )
-              )
-            )
-          ),
-          my_field_option_two = 99.9f
-        )
-
-    val FIELD_OPTIONS_DAISY: FieldOptions = 
-        FieldOptions(
-          my_field_option_four = FooBar(
-            baz = Nested(
-              value = FooBarBazEnum.FOO
-            )
-          )
-        )
-
     @JvmField
     val ADAPTER: ProtoAdapter<FooBar> = object : ProtoAdapter<FooBar>(
       FieldEncoding.LENGTH_DELIMITED, 

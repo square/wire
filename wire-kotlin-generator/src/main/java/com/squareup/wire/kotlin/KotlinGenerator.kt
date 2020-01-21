@@ -90,7 +90,8 @@ class KotlinGenerator private constructor(
   private val emitAndroid: Boolean,
   private val javaInterOp: Boolean,
   private val rpcCallStyle: RpcCallStyle,
-  private val rpcRole: RpcRole
+  private val rpcRole: RpcRole,
+  private val generateOptionFields: Boolean
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -290,7 +291,9 @@ class KotlinGenerator private constructor(
     val companionBuilder = TypeSpec.companionObjectBuilder()
 
     addDefaultFields(type, companionBuilder, nameAllocator)
-    addOptionFields(type, companionBuilder, nameAllocator)
+    if (generateOptionFields) {
+      addOptionFields(type, companionBuilder, nameAllocator)
+    }
     addAdapter(type, companionBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
@@ -1433,7 +1436,8 @@ class KotlinGenerator private constructor(
       emitAndroid: Boolean = false,
       javaInterop: Boolean = false,
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
-      rpcRole: RpcRole = RpcRole.CLIENT
+      rpcRole: RpcRole = RpcRole.CLIENT,
+      generateOptionFields: Boolean = false
     ): KotlinGenerator {
       val map = BUILT_IN_TYPES.toMutableMap()
 
@@ -1456,7 +1460,8 @@ class KotlinGenerator private constructor(
         }
       }
 
-      return KotlinGenerator(schema, map, emitAndroid, javaInterop, rpcCallStyle, rpcRole)
+      return KotlinGenerator(schema, map, emitAndroid, javaInterop, rpcCallStyle, rpcRole,
+          generateOptionFields)
     }
   }
 }

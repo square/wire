@@ -182,7 +182,10 @@ data class KotlinTarget(
   val rpcRole: RpcRole = RpcRole.CLIENT,
 
   /** True for emitted services to implement one interface per RPC. */
-  val singleMethodServices: Boolean = false
+  val singleMethodServices: Boolean = false,
+
+  /** True for option fields of emitted types' members to be generated. */
+  val generateOptionFields: Boolean = false
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -195,7 +198,8 @@ data class KotlinTarget(
         emitAndroid = android,
         javaInterop = javaInterop,
         rpcCallStyle = rpcCallStyle,
-        rpcRole = rpcRole
+        rpcRole = rpcRole,
+        generateOptionFields = generateOptionFields
     )
 
     return object : SchemaHandler {

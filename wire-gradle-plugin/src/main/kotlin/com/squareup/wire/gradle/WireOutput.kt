@@ -104,6 +104,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var rpcCallStyle: String = "suspending"
   var rpcRole: String = "client"
   var singleMethodServices: Boolean = false
+  var generateOptionFields: Boolean = false
 
   override fun toTarget(): KotlinTarget {
     val rpcCallStyle = RpcCallStyle.values()
@@ -124,7 +125,8 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         javaInterop = javaInterop,
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole,
-        singleMethodServices = singleMethodServices
+        singleMethodServices = singleMethodServices,
+        generateOptionFields = generateOptionFields
     )
   }
 

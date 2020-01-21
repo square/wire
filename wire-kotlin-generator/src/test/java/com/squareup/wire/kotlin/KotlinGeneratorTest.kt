@@ -20,6 +20,7 @@ import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.RepoBuilder
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 
@@ -798,6 +799,38 @@ class KotlinGeneratorTest {
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("common.proto.A")
     assertTrue(code.contains("val common_proto_Status: AnotherStatus"))
+  }
+
+  @Test fun generateOptionFieldsWhenOptionIsTrue(){
+    val schema = RepoBuilder()
+        .add("message.proto", """
+          |message A {
+          |  optional string a = 1 [lazy = true];
+          |}""".trimMargin())
+        .schema()
+
+    val kotlinGenerator = KotlinGenerator.invoke(schema, generateOptionFields = true)
+    val typeSpec = kotlinGenerator.generateType(schema.getType("A")!!)
+    val code = FileSpec.get("", typeSpec).toString()
+    println(code)
+    assertTrue(code.contains("class A("))
+    assertTrue(code.contains("val FIELD_OPTIONS_A: FieldOptions = "))
+  }
+
+  @Test fun doNotGenerateOptionFieldsWhenOptionIsFalse(){
+    val schema = RepoBuilder()
+        .add("message.proto", """
+          |message A {
+          |  optional string a = 1 [lazy = true];
+          |}""".trimMargin())
+        .schema()
+
+    val kotlinGenerator = KotlinGenerator.invoke(schema, generateOptionFields = false)
+    val typeSpec = kotlinGenerator.generateType(schema.getType("A")!!)
+    val code = FileSpec.get("", typeSpec).toString()
+    println(code)
+    assertTrue(code.contains("class A("))
+    assertFalse(code.contains("val FIELD_OPTIONS_A: FieldOptions = "))
   }
 
   companion object {
