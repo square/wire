@@ -1,7 +1,12 @@
-language: java
+os:
+  - osx
 
-jdk:
-  - openjdk8
+osx_image: xcode11.2
+
+before_install:
+  - brew cask install homebrew/cask-versions/adoptopenjdk8
+  - export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+  - brew cask install google-chrome # Required to run JS tests. Remove when https://youtrack.jetbrains.com/issue/KT-32075 ships.
 
 before_script:
   - ./gradlew clean generateTests
