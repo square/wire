@@ -80,7 +80,6 @@ open class WireExtension(project: Project) {
     this.newest = newest
   }
 
-
   /**
    * Sets oldest and newest to the same version.
    */
@@ -200,6 +199,12 @@ open class WireExtension(project: Project) {
     val kotlinOutput = objectFactory.newInstance(KotlinOutput::class.java)
     action.execute(kotlinOutput)
     outputs += kotlinOutput
+  }
+
+  fun proto(action: Action<ProtoOutput>) {
+    val protoOutput = objectFactory.newInstance(ProtoOutput::class.java)
+    action.execute(protoOutput)
+    outputs += protoOutput
   }
 
   fun custom(action: Action<CustomOutput>) {

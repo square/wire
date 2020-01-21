@@ -678,6 +678,58 @@ class WirePluginTest {
         .toList()
   }
 
+  @Test
+  fun emitProto() {
+    val fixtureRoot = File("src/test/projects/emit-proto")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    // TODO(benoit)
+    // assertThat(result.output)
+    //     .contains("Writing squareup.dinosaurs.dinosaur.proto")
+    //     .contains("Writing squareup.geology.period.proto")
+
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
+    assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).exists()
+    assertThat(File(outputRoot, "squareup/geology/period.proto")).exists()
+  }
+
+  @Test
+  fun emitProtoWithPrune() {
+    val fixtureRoot = File("src/test/projects/emit-proto-with-prune")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    // TODO(benoit)
+    // assertThat(result.output)
+    //     .contains("Writing squareup.dinosaurs.dinosaur.proto")
+
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
+    assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).exists()
+    assertThat(File(outputRoot, "squareup/geology/period.proto")).doesNotExist()
+  }
+
+  @Test
+  fun emitProtoWithRoot() {
+    val fixtureRoot = File("src/test/projects/emit-proto-with-root")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    // TODO(benoit)
+    // assertThat(result.output)
+    //     .contains("Writing squareup.geology.period.proto")
+
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
+    assertThat(File(outputRoot, "squareup/geology/period.proto")).exists()
+    assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).doesNotExist()
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult
