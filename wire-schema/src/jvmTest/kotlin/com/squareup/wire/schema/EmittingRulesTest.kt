@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.test.fail
 
 class EmittingRulesTest {
   @Test
@@ -88,13 +89,24 @@ class EmittingRulesTest {
   }
 
   @Test
-  fun excludePackageTakesPrecedenceOverIncludeType() {
+  fun mostPreciseIncludeTakesPrecedenceOverExclude() {
     val rules = EmittingRules.Builder()
         .exclude("a.b.*")
         .include("a.b.Message")
         .build()
-    assertThat(rules.includes(ProtoType.get("a.b.Message"))).isFalse()
+    assertThat(rules.includes(ProtoType.get("a.b.Message"))).isTrue()
     assertThat(rules.includes(ProtoType.get("a.b.Another"))).isFalse()
+    assertThat(rules.includes(ProtoType.get("a.c.YetAnother"))).isFalse()
+  }
+
+  @Test
+  fun mostPreciseExcludeTakesPrecedenceOverInclude() {
+    val rules = EmittingRules.Builder()
+        .exclude("a.b.Message")
+        .include("a.b.*")
+        .build()
+    assertThat(rules.includes(ProtoType.get("a.b.Message"))).isFalse()
+    assertThat(rules.includes(ProtoType.get("a.b.Another"))).isTrue()
     assertThat(rules.includes(ProtoType.get("a.c.YetAnother"))).isFalse()
   }
 
@@ -149,13 +161,15 @@ class EmittingRulesTest {
   }
 
   @Test
-  fun trackingUnusedPrecedence() {
-    val rules = EmittingRules.Builder()
-        .include("a.*")
-        .exclude("a.*")
-        .build()
-    rules.includes(ProtoType.get("a.Message"))
-    assertThat(rules.unusedExcludes()).isEmpty()
-    assertThat(rules.unusedIncludes()).containsExactly("a.*")
+  fun crashForConflictingRules() {
+    try {
+      EmittingRules.Builder()
+          .include("a.*")
+          .exclude("a.*")
+          .build()
+      fail()
+    } catch (exception: IllegalStateException) {
+      assertThat(exception).hasMessage("same rule(s) defined in both includes and excludes: a.*")
+    }
   }
 }

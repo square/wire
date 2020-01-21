@@ -31,9 +31,10 @@ package com.squareup.wire.schema
  *
  * Identifiers should not contain member names.
  *
- * This set has *included identifiers* and *excluded identifiers*, with excludes taking precedence
- * over includes. That is, if a type `Movie` is in both the includes and the excludes, it is not
- * contained in the set.
+ * This set has *included identifiers* and *excluded identifiers*, with the most precise identifier
+ * taking precedence over the other ones. For instance, if there is one included identifier
+ * `a.Movie` along an excluded identifier `a.*`, the type `a.Movie` is considered included in the
+ * set.
  *
  * If the includes set is empty, that implies that all elements should be included. Use this to
  * exclude unwanted types and members without also including everything else.
@@ -57,49 +58,52 @@ class EmittingRules private constructor(builder: Builder) {
     var excludeMatch: String? = null
     var rule: String? = identifier
     while (rule != null) {
-      if (excludes.contains(rule)) {
+      if (excludeMatch == null && excludes.contains(rule)) {
         excludeMatch = rule
       }
-      if (includes.contains(rule)) {
+      if (includeMatch == null && includes.contains(rule)) {
         includeMatch = rule
       }
       rule = enclosing(rule)
     }
 
-    return when {
-      excludeMatch != null -> {
-        usedExcludes.add(excludeMatch)
-        false
-      }
-      includeMatch != null -> {
-        usedIncludes.add(includeMatch)
-        true
-      }
-      else -> {
-        false
-      }
+    val isIncluded = when {
+      excludeMatch != null && includeMatch != null -> excludeMatch.length < includeMatch.length
+      excludeMatch != null -> false
+      includeMatch != null -> true
+      else -> false
     }
+    if (isIncluded) {
+      usedIncludes.add(includeMatch!!)
+    } else if (excludeMatch != null) {
+      usedExcludes.add(excludeMatch)
+    }
+    return isIncluded
   }
 
   private fun exclude(identifier: String): Boolean {
+    var includeMatch: String? = null
     var excludeMatch: String? = null
     var rule: String? = identifier
     while (rule != null) {
-      if (excludes.contains(rule)) {
+      if (excludeMatch == null && excludes.contains(rule)) {
         excludeMatch = rule
       }
-      rule = PruningRules.enclosing(rule)
+      if (includeMatch == null && includes.contains(rule)) {
+        includeMatch = rule
+      }
+      rule = enclosing(rule)
     }
 
-    return when {
-      excludeMatch != null -> {
-        usedExcludes.add(excludeMatch)
-        true
-      }
-      else -> {
-        false
-      }
+    val excluded = when {
+      excludeMatch != null && includeMatch != null -> excludeMatch.length >= includeMatch.length
+      excludeMatch != null -> true
+      else -> false
     }
+    if (excluded) {
+      usedExcludes.add(excludeMatch!!)
+    }
+    return excluded
   }
 
   fun unusedIncludes() = includes - usedIncludes
@@ -127,6 +131,10 @@ class EmittingRules private constructor(builder: Builder) {
     }
 
     fun build(): EmittingRules {
+      val conflictingRules = includes.intersect(excludes)
+      check(conflictingRules.isEmpty()) {
+        "same rule(s) defined in both includes and excludes: ${conflictingRules.joinToString()}"
+      }
       return EmittingRules(this)
     }
   }
