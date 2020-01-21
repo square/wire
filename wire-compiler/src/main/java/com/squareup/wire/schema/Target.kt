@@ -75,23 +75,23 @@ sealed class Target {
     fun handle(
       protoFile: ProtoFile,
       emittingRules: EmittingRules,
-      claimedTypesSet: MutableSet<Any>,
+      claimedDefinitions: ClaimedDefinitions,
       isExclusive: Boolean
     ) {
       protoFile.types
-          .filter { !claimedTypesSet.contains(it) && emittingRules.includes(it.type) }
+          .filter { it !in claimedDefinitions && emittingRules.includes(it.type) }
           .forEach { type ->
             handle(type)
             // We don't let other targets handle this one.
-            if (isExclusive) claimedTypesSet.add(type)
+            if (isExclusive) claimedDefinitions.claim(type)
           }
 
       protoFile.services
-          .filter { !claimedTypesSet.contains(it) && emittingRules.includes(it.type()) }
+          .filter { it !in claimedDefinitions && emittingRules.includes(it.type()) }
           .forEach { service ->
             handle(service)
             // We don't let other targets handle this one.
-            if (isExclusive) claimedTypesSet.add(service)
+            if (isExclusive) claimedDefinitions.claim(service)
           }
     }
   }
@@ -278,7 +278,7 @@ data class ProtoTarget(
       override fun handle(
         protoFile: ProtoFile,
         emittingRules: EmittingRules,
-        claimedTypesSet: MutableSet<Any>,
+        claimedDefinitions: ClaimedDefinitions,
         isExclusive: Boolean
       ) {
         if (protoFile.isEmpty()) return
