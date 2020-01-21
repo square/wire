@@ -145,15 +145,8 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
 }
 
 open class ProtoOutput @Inject constructor() : WireOutput() {
-  var includes: List<String>? = null
-  var excludes: List<String>? = null
-  var exclusive: Boolean = true
-
   override fun toTarget(): ProtoTarget {
     return ProtoTarget(
-        includes = includes ?: listOf("*"),
-        excludes = excludes ?: listOf(),
-        exclusive = exclusive,
         outDirectory = out!!
     )
   }

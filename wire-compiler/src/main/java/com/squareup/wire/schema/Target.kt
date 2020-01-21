@@ -261,11 +261,12 @@ data class KotlinTarget(
 }
 
 data class ProtoTarget(
-  override val includes: List<String> = listOf(),
-  override val excludes: List<String> = listOf(),
-  override val exclusive: Boolean = true,
   val outDirectory: String
 ) : Target() {
+  override val includes: List<String> = listOf()
+  override val excludes: List<String> = listOf()
+  override val exclusive: Boolean = false
+
   override fun newHandler(
     schema: Schema,
     fs: FileSystem,
