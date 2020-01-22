@@ -1118,7 +1118,7 @@ class KotlinGenerator private constructor(
       add("%T(", optionsType.typeName)
       var empty = true
       options.map.entries.forEach { entry ->
-        if (entry.key != FIELD_DEPRECATED && entry.key != PACKED) {
+        if (entry.key != FIELD_DEPRECATED && entry.key != PACKED && !entry.key.isRedacted) {
           val optionField = schema.getField(entry.key)!!
           val nameAllocator = nameAllocator(schema.getType(optionsType)!!)
           if (!empty) add(",")
@@ -1426,6 +1426,9 @@ class KotlinGenerator private constructor(
     private val FIELD_DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated")
     private val ENUM_DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated")
     private val PACKED = ProtoMember.get(FIELD_OPTIONS, "packed")
+
+    private val ProtoMember.isRedacted: Boolean
+      get() = type == FIELD_OPTIONS && member.matches(Regex(".*\\.redacted"))
 
     @JvmStatic @JvmName("get")
     operator fun invoke(

@@ -79,10 +79,6 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
           .build())
       .build();
 
-  public static final FieldOptions FIELD_OPTIONS_NESTED = new FieldOptions.Builder()
-      .redacted(true)
-      .build();
-
   public static final Integer DEFAULT_FOO = 0;
 
   public static final String DEFAULT_BAR = "";
