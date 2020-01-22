@@ -1,0 +1,19 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+wire {
+  root 'google.protobuf.FieldOptions'
+  root 'squareup.dinosaurs.Dinosaur'
+  prune 'google.protobuf.*'
+  kotlin {
+    out 'src/main/java'
+    includes = ['squareup.dinosaurs.Dinosaur']
+  }
+  java {
+    out 'src/main/java'
+    includes = ['google.protobuf.FieldOptions']
+  }
+}

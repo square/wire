@@ -600,8 +600,10 @@ class WirePluginTest {
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceFightBlockingServer.kt")).exists()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
+    assertThat(
+        File(outputRoot, "com/squareup/dinosaurs/BattleServiceFightBlockingServer.kt")).exists()
+    assertThat(
+        File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
   }
 
   /**
@@ -728,6 +730,19 @@ class WirePluginTest {
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "squareup/geology/period.proto")).exists()
     assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).doesNotExist()
+  }
+
+  @Test
+  fun fieldOptionsInJavaOtherInKotlin() {
+    val fixtureRoot = File("src/test/projects/field-options-in-java-other-in-kotlin")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+
+    // The generated code cannot actually compile because of the `FIELD_OPTIONS_NAME` field in
+    // `Dinosaur`.
   }
 
   private fun GradleRunner.runFixture(

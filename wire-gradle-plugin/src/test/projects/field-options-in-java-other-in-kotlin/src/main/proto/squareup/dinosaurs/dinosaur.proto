@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package squareup.dinosaurs;
+
+option java_package = "com.squareup.dinosaurs";
+
+import "google/protobuf/descriptor.proto";
+
+message Dinosaur {
+  optional string name = 1 [lazy = true];
+}
