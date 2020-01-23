@@ -294,6 +294,9 @@ data class ProtoTarget(
         Files.createDirectories(outputDirectory)
 
         val outputFilePath = outputDirectory.resolve("${protoFile.name()}.proto")
+
+        logger.artifact(outputDirectory, protoFile.location.path)
+
         outputFilePath.sink().buffer().use { sink ->
           try {
             sink.writeUtf8(protoFile.toSchema())

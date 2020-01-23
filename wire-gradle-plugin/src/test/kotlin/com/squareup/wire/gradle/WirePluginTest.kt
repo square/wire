@@ -292,6 +292,18 @@ class WirePluginTest {
   }
 
   @Test
+  fun differentProtoOutputDir() {
+    val fixtureRoot = File("src/test/projects/different-proto-out")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing squareup/geology/period.proto")
+        .contains("src/test/projects/different-proto-out/custom")
+  }
+
+  @Test
   fun kotlinTargetMissingKotlinPlugin() {
     val fixtureRoot = File("src/test/projects/missing-kotlin-plugin")
 
@@ -686,10 +698,9 @@ class WirePluginTest {
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
-    // TODO(benoit)
-    // assertThat(result.output)
-    //     .contains("Writing squareup.dinosaurs.dinosaur.proto")
-    //     .contains("Writing squareup.geology.period.proto")
+    assertThat(result.output)
+        .contains("Writing squareup/dinosaurs/dinosaur.proto")
+        .contains("Writing squareup/geology/period.proto")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).exists()
@@ -704,9 +715,8 @@ class WirePluginTest {
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
-    // TODO(benoit)
-    // assertThat(result.output)
-    //     .contains("Writing squareup.dinosaurs.dinosaur.proto")
+    assertThat(result.output)
+        .contains("Writing squareup/dinosaurs/dinosaur.proto")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).exists()
@@ -721,9 +731,8 @@ class WirePluginTest {
 
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
-    // TODO(benoit)
-    // assertThat(result.output)
-    //     .contains("Writing squareup.geology.period.proto")
+    assertThat(result.output)
+        .contains("Writing squareup/geology/period.proto")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "squareup/geology/period.proto")).exists()
