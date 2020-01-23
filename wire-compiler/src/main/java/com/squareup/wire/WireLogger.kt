@@ -22,6 +22,7 @@ import java.nio.file.Path
 
 interface WireLogger {
   fun setQuiet(quiet: Boolean)
+  fun artifact(outputPath: Path, filePath: String)
   fun artifact(outputPath: Path, javaFile: JavaFile)
   fun artifact(outputPath: Path, kotlinFile: FileSpec)
   fun artifactSkipped(type: ProtoType)

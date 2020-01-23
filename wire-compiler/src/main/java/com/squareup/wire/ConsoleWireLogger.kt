@@ -34,6 +34,14 @@ internal class ConsoleWireLogger : WireLogger {
     }
   }
 
+  override fun artifact(outputPath: Path, filePath: String) {
+    if (quiet) {
+      println(filePath)
+    } else {
+      println("Writing $filePath to $outputPath")
+    }
+  }
+
   override fun artifact(outputPath: Path, javaFile: JavaFile) {
     if (quiet) {
       println("${javaFile.packageName}.${javaFile.typeSpec.name}")

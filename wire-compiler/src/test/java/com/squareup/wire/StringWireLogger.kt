@@ -31,6 +31,10 @@ internal class StringWireLogger : WireLogger {
     this.quiet = quiet
   }
 
+  @Synchronized override fun artifact(outputPath: Path, filePath: String) {
+    buffer.append("$outputPath $filePath\n")
+  }
+
   @Synchronized override fun artifact(outputPath: Path, javaFile: JavaFile) {
     buffer.append("$outputPath ${javaFile.packageName}.${javaFile.typeSpec.name}\n")
   }
