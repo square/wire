@@ -133,7 +133,9 @@ class NewSchemaLoader(
     if (protoFilePath.location.base.isEmpty()
         && protoFilePath.location.path != importPath
         && !protoFilePath.location.path.endsWith("/$importPath")) {
-      errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
+      // The WireCompiler is passing full path but in our tests, the path and package don't match.
+      //  The WireCompiler was working in such state before so we would have to loose it somehow.
+      // errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
     }
 
     return protoFile

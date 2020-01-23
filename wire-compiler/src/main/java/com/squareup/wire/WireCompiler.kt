@@ -15,11 +15,14 @@
  */
 package com.squareup.wire
 
+import com.google.common.io.Closer
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.java.ProfileLoader
 import com.squareup.wire.kotlin.KotlinGenerator
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.NewSchemaLoader
 import com.squareup.wire.schema.PruningRules
-import com.squareup.wire.schema.SchemaLoader
+import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
 import okio.buffer
@@ -29,6 +32,12 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
+import java.util.ArrayDeque
 import java.util.ArrayList
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutionException
@@ -101,14 +110,44 @@ class WireCompiler internal constructor(
 
   @Throws(IOException::class)
   fun compile() {
-    val schemaLoader = SchemaLoader()
-    for (protoPath in protoPaths) {
-      schemaLoader.addSource(fs.getPath(protoPath))
+    // We wanna find the full path of each `sourceFileNames` so they can be passed to the
+    // `NewSchemaLoader` as `sourcePath`. We'll look up into all `protoPaths` directories to find
+    // the to-be-emitted proto files and store them.
+    check (protoPaths.isNotEmpty()) { "No sources added." }
+    val sources = protoPaths.map { fs.getPath(it) }
+    val protos: ArrayDeque<String> = ArrayDeque()
+    Closer.create().use { closer ->
+      val directories = mutableMapOf<Path, Path>()
+      for (source in sources) {
+        directories[source] = when {
+          Files.isRegularFile(source) -> {
+            val sourceFs = FileSystems.newFileSystem(source, javaClass.classLoader)
+                .also { closer.register(it) }
+            sourceFs.rootDirectories.single()
+          }
+          else -> {
+            source
+          }
+        }
+      }
+      for (value in directories.values) {
+        Files.walkFileTree(value, object : SimpleFileVisitor<Path>() {
+          @Throws(IOException::class)
+          override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+            if (file.fileName.toString().endsWith(
+                    ".proto") && file.fileName.toString() in sourceFileNames) {
+              protos.add(file.toString())
+            }
+            return FileVisitResult.CONTINUE
+          }
+        })
+      }
     }
-    for (sourceFileName in sourceFileNames) {
-      schemaLoader.addProto(sourceFileName)
-    }
-    var schema = schemaLoader.load()
+
+    val newSchemaLoader = NewSchemaLoader(fs)
+    val protoPathLocations = protoPaths.map { Location.get(it) }
+    newSchemaLoader.initRoots(protos.map { Location.get(it) }, protoPathLocations)
+    var schema: Schema = newSchemaLoader.loadSchema()
 
     if (!pruningRules.isEmpty) {
       log.info("Analyzing dependencies of root types.")
