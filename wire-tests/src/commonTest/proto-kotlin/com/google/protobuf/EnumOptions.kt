@@ -44,7 +44,6 @@ class EnumOptions(
   )
   val deprecated: Boolean? = null,
   /**
-   * javanano_as_lite
    * The parser stores options it doesn't recognize here. See above.
    */
   @field:WireField(

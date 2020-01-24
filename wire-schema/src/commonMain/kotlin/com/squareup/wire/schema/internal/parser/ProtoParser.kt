@@ -435,6 +435,7 @@ class ProtoParser internal constructor(
 
   /** Reads a reserved tags and names list like "reserved 10, 12 to 14, 'foo';". */
   private fun readReserved(location: Location, documentation: String): ReservedElement {
+    var documentation = documentation
     val values = mutableListOf<Any>()
 
     loop@ while (true) {
@@ -465,6 +466,8 @@ class ProtoParser internal constructor(
     reader.expect(values.isNotEmpty(), location) {
       "'reserved' must have at least one field name or tag"
     }
+
+    documentation = reader.tryAppendTrailingDocumentation(documentation)
 
     return ReservedElement(
         location = location,

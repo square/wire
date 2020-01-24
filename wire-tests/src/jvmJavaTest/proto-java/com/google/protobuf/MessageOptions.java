@@ -119,7 +119,6 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   public final Boolean map_entry;
 
   /**
-   * javanano_as_lite
    * The parser stores options it doesn't recognize here. See above.
    */
   @WireField(
@@ -421,7 +420,6 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
     }
 
     /**
-     * javanano_as_lite
      * The parser stores options it doesn't recognize here. See above.
      */
     public Builder uninterpreted_option(List<UninterpretedOption> uninterpreted_option) {
