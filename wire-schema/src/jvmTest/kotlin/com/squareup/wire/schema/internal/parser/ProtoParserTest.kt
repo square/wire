@@ -2204,6 +2204,52 @@ class ProtoParserTest {
   }
 
   @Test
+  fun reservedWithComments() {
+    val proto = """
+        |message Foo {
+        |  optional string a = 1; // This is A.
+        |  reserved 2; // This is reserved.
+        |  optional string c = 3; // This is C.
+        |}
+        """.trimMargin()
+
+    val message = MessageElement(
+        location = location.at(1, 1),
+        name = "Foo",
+        fields = listOf(
+            FieldElement(
+                location = location.at(2, 3),
+                label = OPTIONAL,
+                type = "string",
+                name = "a",
+                tag = 1,
+                documentation = "This is A."
+            ),
+            FieldElement(
+                location = location.at(4, 3),
+                label = OPTIONAL,
+                type = "string",
+                name = "c",
+                tag = 3,
+                documentation = "This is C."
+            )
+        ),
+        reserveds = listOf(
+            ReservedElement(
+                location = location.at(3, 3),
+                values = listOf(2),
+                documentation = "This is reserved."
+            )
+        )
+    )
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(message)
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test
   fun noWhitespace() {
     val proto = "message C {optional A.B ab = 1;}"
     val expected = ProtoFileElement(

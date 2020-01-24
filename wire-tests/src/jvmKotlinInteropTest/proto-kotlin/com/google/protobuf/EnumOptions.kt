@@ -43,7 +43,6 @@ class EnumOptions(
   @JvmField
   val deprecated: Boolean? = null,
   /**
-   * javanano_as_lite
    * The parser stores options it doesn't recognize here. See above.
    */
   @field:WireField(
@@ -132,7 +131,6 @@ class EnumOptions(
     }
 
     /**
-     * javanano_as_lite
      * The parser stores options it doesn't recognize here. See above.
      */
     fun uninterpreted_option(uninterpreted_option: List<UninterpretedOption>): Builder {
