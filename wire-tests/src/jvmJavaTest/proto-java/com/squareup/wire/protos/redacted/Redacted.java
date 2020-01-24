@@ -2,7 +2,6 @@
 // Source file: redacted_test.proto
 package com.squareup.wire.protos.redacted;
 
-import com.google.protobuf.FieldOptions;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -21,14 +20,6 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
   public static final ProtoAdapter<Redacted> ADAPTER = new ProtoAdapter_Redacted();
 
   private static final long serialVersionUID = 0L;
-
-  public static final FieldOptions FIELD_OPTIONS_A = new FieldOptions.Builder()
-      .redacted(true)
-      .build();
-
-  public static final FieldOptions FIELD_OPTIONS_B = new FieldOptions.Builder()
-      .redacted(false)
-      .build();
 
   public static final String DEFAULT_A = "";
 

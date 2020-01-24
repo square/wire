@@ -139,6 +139,10 @@ public final class JavaGenerator {
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
   private static final int MAX_PARAMS_IN_CONSTRUCTOR = 16;
 
+  private static boolean isRedacted(ProtoMember member) {
+    return member.getType().equals(FIELD_OPTIONS) && member.getMember().matches(".*\\.redacted");
+  }
+
   /**
    * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
    * order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
@@ -1134,7 +1138,8 @@ public final class JavaGenerator {
 
     boolean empty = true;
     for (Map.Entry<ProtoMember, ?> entry : options.getMap().entrySet()) {
-      if (entry.getKey().equals(FIELD_DEPRECATED) || entry.getKey().equals(PACKED)) {
+      if (entry.getKey().equals(FIELD_DEPRECATED) || entry.getKey().equals(PACKED)
+          || isRedacted(entry.getKey())) {
         continue;
       }
 
