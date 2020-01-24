@@ -1,0 +1,94 @@
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'java'
+
+kotlin {
+  jvm("android")
+
+  def sdkName = System.getenv("SDK_NAME")
+  if (sdkName != null && sdkName.startsWith("iphoneos")) {
+    iosArm64("ios") {
+      binaries {
+        framework {
+          baseName = "Wire"
+        }
+      }
+    }
+  } else {
+    iosX64("ios") {
+      binaries {
+        framework {
+          baseName = "Wire"
+        }
+      }
+    }
+  }
+  sourceSets {
+    commonMain {
+      dependencies {
+        api deps.kotlin.stdlib.common
+        api project(':wire-runtime')
+      }
+    }
+    commonTest {
+      dependencies {
+        implementation deps.kotlin.test.common
+      }
+    }
+    androidTest {
+      dependencies {
+        implementation deps.kotlin.test.junit
+      }
+    }
+  }
+}
+
+kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
+  target.project.configurations {
+    def platformAttr = Attribute.of('org.jetbrains.kotlin.platform.type', KotlinPlatformType.class)
+    wireCompiler.with { attributes.attribute(platformAttr, KotlinPlatformType.jvm) }
+  }
+  target.project.dependencies {
+    wireCompiler "com.squareup.wire:wire-compiler:3.0.2"
+  }
+  target.project.tasks.register("generateProtos", JavaExec) {
+    classpath = target.project.configurations.wireCompiler
+    main = 'com.squareup.wire.WireCompiler'
+    args = [
+        '--proto_path=src/commonMain/proto',
+        '--kotlin_out=src/commonMain/kotlin',
+        '--excludes=google.*',
+    ]
+  }
+}
+
+def packForXcode = tasks.register("packForXcode", Sync) {
+  def targetDir = new File(buildDir, "xcode-frameworks")
+
+  // Select the right configuration for the iOS framework depending on the environment
+  // variables set by Xcode build.
+  def mode = System.getenv("CONFIGURATION")
+  if (mode == null) mode = "DEBUG"
+  def framework = kotlin.targets.getByName("ios").binaries.getFramework(mode)
+
+  from framework.outputDirectory
+  into targetDir
+
+  doLast {
+    // Generate a helpful ./gradlew wrapper with embedded Java path.
+    def gradlew = new File(targetDir, "gradlew")
+    gradlew.executable = true
+    gradlew.text = """
+# !/bin/bash
+export 'JAVA_HOME=${System.getProperty("java.home")}'
+cd '${rootProject.rootDir}'
+./gradlew \$@
+"""
+  }
+}
+
+def generateProtos = tasks.getByName("generateProtos")
+def build = tasks.getByName("build")
+build.dependsOn(generateProtos)
+build.dependsOn(packForXcode)
