@@ -333,6 +333,21 @@ wire {
 }
 ```
 
+### Proto
+
+Here's an exhaustive Proto configuration. You can use this target to generate a pruned proto schema,
+or to pretty-print one. Note that even with multiple outputs set, the proto target will always emit
+all types, all services, and all extensions of the schema.
+
+```groovy
+wire {
+  proto {
+    // Directory to emit to.
+    out "${buildDir}/custom"
+  }
+}
+```
+
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
  [maven_coordinates]: https://maven.apache.org/pom.html#Maven_Coordinates
