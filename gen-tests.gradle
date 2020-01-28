@@ -265,6 +265,19 @@ task generateGrpcTests(type: JavaExec) {
 
 // Moshi Adapter
 
+task generateMoshiAdapterCompactJavaTests(type: JavaExec) {
+  group = 'Generate MoshiAdapter Compact Java Tests'
+  description = 'Generates compat Java classes from the MoshiAdapter test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-moshi-adapter/src/test/proto',
+          '--java_out=wire-moshi-adapter/src/test/java',
+          '--compact',
+          'all_types.proto'
+  ]
+}
+
 task generateMoshiAdapterJavaTests(type: JavaExec) {
   group = 'Generate MoshiAdapter Java Tests'
   description = 'Generates Java classes from the MoshiAdapter test protos'
@@ -273,6 +286,7 @@ task generateMoshiAdapterJavaTests(type: JavaExec) {
   args = [
           '--proto_path=wire-moshi-adapter/src/test/proto',
           '--java_out=wire-moshi-adapter/src/test/java',
+          'collection_types.proto',
           'person_java.proto',
           'dinosaur_java.proto'
   ]
@@ -306,11 +320,31 @@ task generateMoshiAdapterKotlinTests(type: JavaExec) {
 }
 
 task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generateNoOptionsTests,
-    generateGsonTests, generateIncludesExcludesTests, generateAndroidTests, 
+    generateGsonTests, generateIncludesExcludesTests, generateAndroidTests,
     generateAndroidCompactTests, generateKotlinTests, generateKotlinServicesTests,
     generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateGrpcTests,
-    generateMoshiAdapterJavaTests, generateMoshiAdapterKotlinTests,
-    generateMoshiAdapterInteropKotlinTests]) {
+    generateMoshiAdapterCompactJavaTests, generateMoshiAdapterJavaTests,
+    generateMoshiAdapterKotlinTests, generateMoshiAdapterInteropKotlinTests]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
+}
+
+task cleanGeneratedTests(type: Delete) {
+  delete 'wire-grpc-tests/src/test/proto-grpc',
+         'wire-moshi-adapter/src/test/java/com/squareup/wire/protos',
+         'wire-tests/src/commonTest/proto-kotlin',
+         'wire-tests/src/jvmJavaAndroidCompactTest/proto-java',
+         'wire-tests/src/jvmJavaAndroidTest/proto-java',
+         'wire-tests/src/jvmJavaCompactTest/proto-java',
+         'wire-tests/src/jvmJavaNoOptionsTest/proto-java',
+         'wire-tests/src/jvmJavaPrunedTest/proto-java',
+         'wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
+         'wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+         'wire-tests/src/jvmJavaTest/proto-java'
+}
+
+project("wire-tests").afterEvaluate { project ->
+  project.tasks.named("clean").configure { task ->
+    task.dependsOn(cleanGeneratedTests)
+  }
 }
