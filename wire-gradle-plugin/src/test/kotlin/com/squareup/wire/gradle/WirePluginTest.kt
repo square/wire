@@ -3,10 +3,12 @@ package com.squareup.wire.gradle
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.junit.After
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.io.IOException
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 
@@ -17,6 +19,12 @@ class WirePluginTest {
     gradleRunner = GradleRunner.create()
         .withPluginClasspath()
         .withArguments("generateProtos", "--stacktrace")
+  }
+
+  @After
+  fun clearOutputs() {
+    // We clear outputs otherwise tests' tasks will be skip after their first execution.
+    getOutputDirectories(File("src/test/projects")).forEach(::unsafeDelete)
   }
 
   @Test
@@ -612,8 +620,10 @@ class WirePluginTest {
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceFightBlockingServer.kt")).exists()
-    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
+    assertThat(
+        File(outputRoot, "com/squareup/dinosaurs/BattleServiceFightBlockingServer.kt")).exists()
+    assertThat(
+        File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
   }
 
   /**
@@ -739,6 +749,24 @@ class WirePluginTest {
     assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).doesNotExist()
   }
 
+  @Test
+  fun consecutiveRuns() {
+    val fixtureRoot = File("src/test/projects/consecutive-runs")
+
+    val firstRun = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(firstRun.task(":generateProtos")).isNotNull
+    assertThat(firstRun.output)
+        .contains("Writing com.squareup.geology.Period")
+        .contains("src/test/projects/consecutive-runs/custom")
+
+    val secondRun = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(secondRun.task(":generateProtos")).isNotNull
+    assertThat(secondRun.output)
+        .contains("Task :generateProtos UP-TO-DATE")
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult
@@ -779,6 +807,24 @@ class WirePluginTest {
     } finally {
       if (generatedSettings) settings.delete()
       if (generatedGradleProperties) gradleProperties.delete()
+    }
+  }
+
+  companion object {
+    private val OUTPUT_DIRECTORY_NAMES = arrayOf("build", "custom")
+
+    private fun getOutputDirectories(root: File): List<File> {
+      if (!root.isDirectory) return emptyList()
+      if (root.isDirectory && root.name in OUTPUT_DIRECTORY_NAMES) return listOf(root)
+      return root.listFiles()!!.flatMap { getOutputDirectories(it) }
+    }
+
+    // This follows symlink so don't use it at home.
+    @Throws(IOException::class) fun unsafeDelete(f: File) {
+      if (f.isDirectory) {
+        for (c in f.listFiles()!!) unsafeDelete(c)
+      }
+      f.delete()
     }
   }
 }
