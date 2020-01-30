@@ -16,6 +16,8 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
+import com.squareup.wire.schema.ProtoFile.Syntax
+import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
 import com.squareup.wire.schema.internal.parser.EnumElement
 
 class EnumType private constructor(
@@ -49,11 +51,20 @@ class EnumType private constructor(
     allowAlias = options.get(ALLOW_ALIAS)
   }
 
-  override fun validate(linker: Linker) {
+  override fun validate(linker: Linker, syntax: Syntax?) {
     val linker = linker.withContext(this)
 
     if ("true" != allowAlias) {
       validateTagUniqueness(linker)
+    }
+    if (syntax === PROTO_3) {
+      validateFirstElement(linker)
+    }
+  }
+
+  private fun validateFirstElement(linker: Linker) {
+    if (constants.isEmpty() || constants.first().tag != 0) {
+      linker.addError("missing a zero value at the first element [proto3]")
     }
   }
 

@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.schema.ProtoFile.Syntax
 import com.squareup.wire.schema.internal.parser.MessageElement
 
 /** An empty type which only holds nested types.  */
@@ -29,7 +30,9 @@ class EnclosingType internal constructor(
 
   override fun linkMembers(linker: Linker) {}
   override fun linkOptions(linker: Linker) = nestedTypes.forEach { it.linkOptions(linker) }
-  override fun validate(linker: Linker) = nestedTypes.forEach { it.validate(linker) }
+  override fun validate(linker: Linker, syntax: Syntax?) {
+    nestedTypes.forEach { it.validate(linker, syntax) }
+  }
 
   override fun retainAll(schema: Schema, markSet: MarkSet): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
