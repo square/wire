@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-
-apply plugin: 'org.jetbrains.kotlin.multiplatform'
-apply plugin: 'java'
+plugins {
+  id 'org.jetbrains.kotlin.multiplatform'
+  id 'com.squareup.wire'
+}
 
 kotlin {
   jvm("android")
@@ -49,51 +49,8 @@ kotlin {
   }
 }
 
-kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
-  target.project.configurations {
-    def platformAttr = Attribute.of('org.jetbrains.kotlin.platform.type', KotlinPlatformType.class)
-    wireCompiler.with { attributes.attribute(platformAttr, KotlinPlatformType.jvm) }
-  }
-  target.project.dependencies {
-    wireCompiler deps.wire.compiler
-  }
-  target.project.tasks.register("generateProtos", JavaExec) {
-    classpath = target.project.configurations.wireCompiler
-    main = 'com.squareup.wire.WireCompiler'
-    args = [
-        '--proto_path=src/commonMain/proto',
-        '--kotlin_out=src/commonMain/kotlin',
-        '--excludes=google.*',
-    ]
+wire {
+  kotlin {
+    out 'src/commonMain/kotlin'
   }
 }
-
-def packForXcode = tasks.register("packForXcode", Sync) {
-  def targetDir = new File(buildDir, "xcode-frameworks")
-
-  // Select the right configuration for the iOS framework depending on the environment
-  // variables set by Xcode build.
-  def mode = System.getenv("CONFIGURATION")
-  if (mode == null) mode = "DEBUG"
-  def framework = kotlin.targets.getByName("ios").binaries.getFramework(mode)
-
-  from framework.outputDirectory
-  into targetDir
-
-  doLast {
-    // Generate a helpful ./gradlew wrapper with embedded Java path.
-    def gradlew = new File(targetDir, "gradlew")
-    gradlew.executable = true
-    gradlew.text = """
-# !/bin/bash
-export 'JAVA_HOME=${System.getProperty("java.home")}'
-cd '${rootProject.rootDir}'
-./gradlew \$@
-"""
-  }
-}
-
-def generateProtos = tasks.getByName("generateProtos")
-def assemble = tasks.getByName("assemble")
-assemble.dependsOn(generateProtos)
-assemble.finalizedBy(packForXcode)
