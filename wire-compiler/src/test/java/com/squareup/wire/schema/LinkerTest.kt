@@ -22,6 +22,7 @@ import com.google.common.jimfs.Jimfs
 import com.squareup.wire.testing.add
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.test.fail
 
 class LinkerTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
@@ -169,6 +170,149 @@ class LinkerTest {
     val schema = loadAndLinkSchema()
 
     assertThat(schema.protoFile("b.proto")!!.javaPackage()).isEqualTo("com.squareup.b")
+  }
+
+  @Test
+  fun linkerSucceedsWhenProto3EnumHasZeroTagAtFirstLine() {
+    fs.add("source-path/period.proto", """
+            |syntax = "proto3";
+            |
+            |enum Period {
+            |  ZERO = 0;
+            |  CRETACEOUS = 1;
+            |  JURASSIC = 2;
+            |  TRIASSIC = 3;
+            |}
+            |""".trimMargin())
+
+    val schema = NewSchemaLoader(fs).use { loader ->
+      loader.initRoots(
+          sourcePath = listOf(Location.get("source-path")),
+          protoPath = emptyList()
+      )
+      return@use loader.loadSchema()
+    }
+    assertThat(schema.getType("Period")).isNotNull()
+  }
+
+  @Test
+  fun linkerThrowsSchemaExceptionIfProto3EnumIsMissingTagZero() {
+    fs.add("source-path/period.proto", """
+            |syntax = "proto3";
+            |
+            |enum Period {
+            |  CRETACEOUS = 1;
+            |  JURASSIC = 2;
+            |  TRIASSIC = 3;
+            |}
+            |""".trimMargin())
+    try {
+      NewSchemaLoader(fs).use { loader ->
+        loader.initRoots(
+            sourcePath = listOf(Location.get("source-path")),
+            protoPath = emptyList()
+        )
+        return@use loader.loadSchema()
+      }
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected)
+          .hasMessageContaining("missing a zero value at the first element [proto3]\n" +
+              "  for enum Period (source-path/period.proto at 3:1)")
+    }
+  }
+
+  @Test
+  fun linkerThrowsSchemaExceptionIfProto3EnumZeroTagIsNotAtFirstLine() {
+    fs.add("source-path/period.proto", """
+            |syntax = "proto3";
+            |
+            |enum Period {
+            |  CRETACEOUS = 1;
+            |  CHAOS = 0;
+            |  JURASSIC = 2;
+            |  TRIASSIC = 3;
+            |}
+            |""".trimMargin())
+    try {
+      NewSchemaLoader(fs).use { loader ->
+        loader.initRoots(
+            sourcePath = listOf(Location.get("source-path")),
+            protoPath = emptyList()
+        )
+        return@use loader.loadSchema()
+      }
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected)
+          .hasMessageContaining("missing a zero value at the first element [proto3]\n" +
+              "  for enum Period (source-path/period.proto at 3:1)")
+    }
+  }
+
+  @Test
+  fun linkerThrowsSchemaExceptionIfProto3EnumIsEmpty() {
+    fs.add("source-path/period.proto", """
+            |syntax = "proto3";
+            |
+            |enum Period {}
+            |""".trimMargin())
+    try {
+      NewSchemaLoader(fs).use { loader ->
+        loader.initRoots(
+            sourcePath = listOf(Location.get("source-path")),
+            protoPath = emptyList()
+        )
+        return@use loader.loadSchema()
+      }
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected)
+          .hasMessageContaining("missing a zero value at the first element [proto3]\n" +
+              "  for enum Period (source-path/period.proto at 3:1)")
+    }
+  }
+
+  @Test
+  fun linkerSucceedsEvenIfProto2EnumIsMissingTagZero() {
+    fs.add("source-path/period.proto", """
+            |syntax = "proto2";
+            |
+            |enum Period {
+            |  CRETACEOUS = 1;
+            |  JURASSIC = 2;
+            |  TRIASSIC = 3;
+            |}
+            |""".trimMargin())
+
+    val schema = NewSchemaLoader(fs).use { loader ->
+      loader.initRoots(
+          sourcePath = listOf(Location.get("source-path")),
+          protoPath = emptyList()
+      )
+      return@use loader.loadSchema()
+    }
+    assertThat(schema.getType("Period")).isNotNull()
+  }
+
+  @Test
+  fun linkerSucceedsEvenIfProto2HasNoSyntaxAndEnumIsMissingTagZero() {
+    fs.add("source-path/period.proto", """
+            |enum Period {
+            |  CRETACEOUS = 1;
+            |  JURASSIC = 2;
+            |  TRIASSIC = 3;
+            |}
+            |""".trimMargin())
+
+    val schema = NewSchemaLoader(fs).use { loader ->
+      loader.initRoots(
+          sourcePath = listOf(Location.get("source-path")),
+          protoPath = emptyList()
+      )
+      return@use loader.loadSchema()
+    }
+    assertThat(schema.getType("Period")).isNotNull()
   }
 
   private fun loadAndLinkSchema(): Schema {

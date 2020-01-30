@@ -143,7 +143,7 @@ internal class FileLinker(
     protoFile.validate(linker)
 
     for (type in protoFile.types) {
-      type.validate(linker)
+      type.validate(linker, protoFile.syntax)
     }
     for (service in protoFile.services) {
       service.validate(linker)
