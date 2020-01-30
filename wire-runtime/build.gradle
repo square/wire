@@ -81,6 +81,7 @@ afterEvaluate {
     dependsOn 'publishKotlinMultiplatformPublicationToTestRepository'
     dependsOn 'publishMetadataPublicationToTestRepository'
     dependsOn 'publishJvmPublicationToTestRepository'
+    dependsOn 'publishJsPublicationToTestRepository'
   }
 }
 
