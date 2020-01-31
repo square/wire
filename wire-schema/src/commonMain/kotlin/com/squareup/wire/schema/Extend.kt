@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Field.Companion.retainAll
+import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
 import com.squareup.wire.schema.internal.parser.ExtendElement
 import kotlin.jvm.JvmStatic
 
@@ -38,9 +39,13 @@ class Extend private constructor(
     }
   }
 
-  fun validate(linker: Linker) {
+  fun validate(linker: Linker, syntaxRules: SyntaxRules) {
     val linker = linker.withContext(this)
     linker.validateImport(location, type!!)
+
+    if (!syntaxRules.canExtend(ProtoType.get(name))) {
+      linker.addError("extensions are not allowed [proto3]")
+    }
   }
 
   fun retainAll(schema: Schema, markSet: MarkSet): Extend? {

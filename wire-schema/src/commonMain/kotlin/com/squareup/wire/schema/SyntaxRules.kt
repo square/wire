@@ -21,6 +21,7 @@ import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
 
 /** A set of rules which defines schema requirements for a specific [Syntax]. */
 interface SyntaxRules {
+  fun canExtend(protoType: ProtoType): Boolean
   fun enumRequiresZeroValueAtFirstPosition(): Boolean
 
   companion object {
@@ -33,10 +34,14 @@ interface SyntaxRules {
     }
 
     internal val PROTO_2_SYNTAX_RULES = object : SyntaxRules {
+      override fun canExtend(protoType: ProtoType): Boolean = true
       override fun enumRequiresZeroValueAtFirstPosition(): Boolean = false
     }
 
     internal val PROTO_3_SYNTAX_RULES = object : SyntaxRules {
+      override fun canExtend(protoType: ProtoType): Boolean {
+        return protoType in Options.GOOGLE_PROTOBUF_OPTION_TYPES
+      }
       override fun enumRequiresZeroValueAtFirstPosition(): Boolean = true
     }
   }
