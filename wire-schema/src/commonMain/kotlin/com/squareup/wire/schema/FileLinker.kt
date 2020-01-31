@@ -147,7 +147,7 @@ internal class FileLinker(
       service.validate(linker)
     }
     for (extend in protoFile.extendList) {
-      extend.validate(linker)
+      extend.validate(linker, syntaxRules)
     }
   }
 }

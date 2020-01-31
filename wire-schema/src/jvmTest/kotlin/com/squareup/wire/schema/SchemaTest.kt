@@ -1674,4 +1674,49 @@ class SchemaTest {
     assertThat(enum.constant("JURASSIC")).isNotNull
     assertThat(enum.constant("TRIASSIC")).isNotNull
   }
+
+  @Test
+  fun proto3CanExtendCustomOption() {
+    val schema = RepoBuilder()
+        .add("test.proto", """
+            |syntax = "proto3";
+            |import "google/protobuf/descriptor.proto";
+            |
+            |extend google.protobuf.FieldOptions {
+            |  string a = 22101;
+            |}
+            |message Message {
+            |  string title = 1 [(a) = "hello"];
+            |}
+            """.trimMargin())
+        .schema()
+    val fieldOptions = schema.getType("google.protobuf.FieldOptions") as MessageType
+    assertThat(fieldOptions.extensionField("a")!!.type).isEqualTo(ProtoType.get("string"))
+  }
+
+  @Test
+  fun proto3CannotExtendNonCustomOption() {
+    try {
+       RepoBuilder()
+          .add("dinosaur.proto", """
+              |syntax = "proto3";
+              |
+              |message Dinosaur {
+              |  string name = 1;
+              |}
+              |
+              |extend Dinosaur {
+              |  bool scary = 2;
+              |}
+              |""".trimMargin())
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+          |extensions are not allowed [proto3]
+          |  for extend Dinosaur (/source/dinosaur.proto at 7:1)
+          """.trimMargin()
+      )
+    }
+  }
 }
