@@ -102,13 +102,16 @@ class Field private constructor(
     isRedacted = options.optionMatches(".*\\.redacted", "true")
   }
 
-  fun validate(linker: Linker) {
+  fun validate(linker: Linker, syntaxRules: SyntaxRules) {
     val linker = linker.withContext(this)
     if (isPacked && !isPackable(linker, type!!)) {
       linker.addError("packed=true not permitted on $type")
     }
     if (isExtension && isRequired) {
       linker.addError("extension fields cannot be required")
+    }
+    if (default != null && !syntaxRules.allowUserDefinedDefaultValue()) {
+      linker.addError("user-defined default values are not permitted [proto3]")
     }
     linker.validateImport(location, type!!)
   }
