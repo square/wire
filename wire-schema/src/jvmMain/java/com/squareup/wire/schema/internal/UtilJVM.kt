@@ -27,4 +27,4 @@ internal actual inline fun String.toEnglishLowerCase() = toLowerCase(Locale.US)
 
 actual typealias MutableQueue<T> = Queue<T>
 
-internal actual fun <T> mutableQueueOf(): MutableQueue<T> = ArrayDeque()
+internal actual fun <T : Any> mutableQueueOf(): MutableQueue<T> = ArrayDeque()

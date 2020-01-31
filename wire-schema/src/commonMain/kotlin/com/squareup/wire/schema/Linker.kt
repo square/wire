@@ -101,7 +101,7 @@ class Linker {
     // For compactness we'd prefer to link the options of source files only. But we link file
     // options on referenced files to make sure that java_package is populated.
     while (fileOptionsQueue.isNotEmpty()) {
-      val fileLinker = fileOptionsQueue.poll()
+      val fileLinker = fileOptionsQueue.poll()!!
       fileLinker.requireFileOptionsLinked()
     }
 
@@ -341,13 +341,12 @@ class Linker {
       nameToField.getOrPut(field.qualifiedName, { mutableSetOf() }).also { it += field }
     }
 
-    for ((key, value) in tagToField) {
-      if (value.size > 1) {
+    for ((key, values) in tagToField) {
+      if (values.size > 1) {
         val error = StringBuilder()
         error.append("multiple fields share tag $key:")
-        var index = 1
-        for (field in value) {
-          error.append("\n  ${index++}. ${field.name} (${field.location})")
+        values.forEachIndexed { index, field ->
+          error.append("\n  ${index + 1}. ${field.name} (${field.location})")
         }
         addError(error.toString())
       }
@@ -358,9 +357,8 @@ class Linker {
         val first = collidingFields.iterator().next()
         val error = StringBuilder()
         error.append("multiple fields share name ${first.name}:")
-        var index = 1
-        for (field in collidingFields) {
-          error.append("\n  ${index++}. ${field.name} (${field.location})")
+        collidingFields.forEachIndexed { index, field ->
+          error.append("\n  ${index + 1}. ${field.name} (${field.location})")
         }
         addError(error.toString())
       }
@@ -372,19 +370,18 @@ class Linker {
     for (type in nestedTypes) {
       if (type is EnumType) {
         for (enumConstant in type.constants) {
-          nameToType.getOrPut(enumConstant.name, { mutableSetOf() } ).also { it += type }
+          nameToType.getOrPut(enumConstant.name, { mutableSetOf() }).also { it += type }
         }
       }
     }
 
-    for ((constant, value) in nameToType) {
-      if (value.size > 1) {
+    for ((constant, values) in nameToType) {
+      if (values.size > 1) {
         val error = buildString {
-          var index = 1
           append("multiple enums share constant $constant:")
-          for (enumType in value) {
-            append("\n  ${index++}. ${enumType.type}.$constant (%s)",
-                enumType.constant(constant)!!.location)
+          values.forEachIndexed { index, enumType ->
+            append("\n  ${index + 1}. ${enumType.type}.$constant " +
+                "(${enumType.constant(constant)!!.location})")
           }
         }
         addError(error)
@@ -445,7 +442,7 @@ class Linker {
         }
 
         is EnumType -> {
-          error.append("$prefix enum ${context.type} (${context.type})")
+          error.append("$prefix enum ${context.type} (${context.location})")
         }
 
         is Service -> {
