@@ -23,7 +23,6 @@ import com.squareup.wire.schema.Field.Companion.retainLinked
 import com.squareup.wire.schema.Field.Companion.toElements
 import com.squareup.wire.schema.OneOf.Companion.fromElements
 import com.squareup.wire.schema.OneOf.Companion.toElements
-import com.squareup.wire.schema.ProtoFile.Syntax
 import com.squareup.wire.schema.Reserved.Companion.fromElements
 import com.squareup.wire.schema.Reserved.Companion.toElements
 import com.squareup.wire.schema.internal.parser.MessageElement
@@ -132,7 +131,7 @@ class MessageType private constructor(
     options.link(linker)
   }
 
-  override fun validate(linker: Linker, syntax: Syntax?) {
+  override fun validate(linker: Linker, syntaxRules: SyntaxRules) {
     val linker = linker.withContext(this)
     linker.validateFields(fieldsAndOneOfFields, reserveds)
     linker.validateEnumConstantNameUniqueness(nestedTypes)
@@ -140,7 +139,7 @@ class MessageType private constructor(
       field.validate(linker)
     }
     for (nestedType in nestedTypes) {
-      nestedType.validate(linker, syntax)
+      nestedType.validate(linker, syntaxRules)
     }
     for (extensions in extensionsList) {
       extensions.validate(linker)
