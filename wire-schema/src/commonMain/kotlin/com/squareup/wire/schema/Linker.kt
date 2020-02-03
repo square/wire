@@ -106,7 +106,8 @@ class Linker {
     }
 
     for (fileLinker in sourceFiles) {
-      fileLinker.validate()
+      val syntaxRules = SyntaxRules.get(fileLinker.protoFile.syntax)
+      fileLinker.validate(syntaxRules)
     }
 
     if (errors.isNotEmpty()) {

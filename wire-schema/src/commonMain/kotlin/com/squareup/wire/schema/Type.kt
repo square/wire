@@ -17,7 +17,6 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.EnumType.Companion.fromElement
 import com.squareup.wire.schema.MessageType.Companion.fromElement
-import com.squareup.wire.schema.ProtoFile.Syntax
 import com.squareup.wire.schema.internal.parser.EnumElement
 import com.squareup.wire.schema.internal.parser.MessageElement
 import com.squareup.wire.schema.internal.parser.TypeElement
@@ -31,7 +30,7 @@ abstract class Type {
   abstract val nestedTypes: List<Type>
   abstract fun linkMembers(linker: Linker)
   abstract fun linkOptions(linker: Linker)
-  abstract fun validate(linker: Linker, syntax: Syntax?)
+  abstract fun validate(linker: Linker, syntaxRules: SyntaxRules)
   abstract fun retainAll(schema: Schema, markSet: MarkSet): Type?
 
   /**

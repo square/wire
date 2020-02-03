@@ -137,11 +137,11 @@ internal class FileLinker(
     protoFile.linkOptions(linker)
   }
 
-  fun validate() {
+  fun validate(syntaxRules: SyntaxRules) {
     protoFile.validate(linker)
 
     for (type in protoFile.types) {
-      type.validate(linker, protoFile.syntax)
+      type.validate(linker, syntaxRules)
     }
     for (service in protoFile.services) {
       service.validate(linker)
