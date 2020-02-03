@@ -1260,10 +1260,36 @@ class ProtoParserTest {
             ExtensionsElement(
                 location = location.at(7, 3),
                 documentation = "Clients can define custom options in extensions of this message. See above.",
-                start = 500,
-                end = 500
+                values = listOf(500)
             ),
-            ExtensionsElement(location.at(8, 3), "", 1000, MAX_TAG_VALUE)
+            ExtensionsElement(location.at(8, 3), "", listOf(1000..MAX_TAG_VALUE))
+        )
+    )
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(messageElement)
+    )
+    val actual = ProtoParser.parse(location, proto)
+    assertThat(actual).isEqualTo(expected)
+  }
+
+  @Test
+  fun multiRangesExtensions() {
+    val proto = """
+        |message MeGustaExtensions {
+        |  extensions 1, 5 to 200, 500, 1000 to max;
+        |}
+        """.trimMargin()
+    val messageElement = MessageElement(
+        location = location.at(1, 1),
+        name = "MeGustaExtensions",
+        fields = emptyList(),
+        nestedTypes = emptyList(),
+        extensions = listOf(
+            ExtensionsElement(
+                location = location.at(2, 3),
+                values = listOf(1, 5..200, 500, 1000..MAX_TAG_VALUE)
+            )
         )
     )
     val expected = ProtoFileElement(

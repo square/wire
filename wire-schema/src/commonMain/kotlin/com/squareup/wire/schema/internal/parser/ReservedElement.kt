@@ -21,7 +21,7 @@ import com.squareup.wire.schema.internal.appendDocumentation
 data class ReservedElement(
   val location: Location,
   val documentation: String = "",
-  /** A [String] name or [Integer] or [IntRange] tag. */
+  /** A [String] name or [Int] or [IntRange] tag. */
   val values: List<Any>
 ) {
   fun toSchema() = buildString {

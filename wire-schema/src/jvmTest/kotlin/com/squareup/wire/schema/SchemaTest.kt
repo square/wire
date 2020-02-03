@@ -157,8 +157,7 @@ class SchemaTest {
                |  extensions 0;
                |  extensions 1;
                |  extensions 18999;
-               |  extensions 19000;
-               |  extensions 19999;
+               |  extensions 19000, 19001 to 19998, 19999;
                |  extensions 20000;
                |  extensions 536870911;
                |  extensions 536870912;
@@ -169,17 +168,14 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-            |tags are out of range: 0 to 0
+            |tags are out of range: 0
             |  for extensions (/source/message.proto at 2:3)
             |  in message Message (/source/message.proto at 1:1)
-            |tags are out of range: 19000 to 19000
+            |tags are out of range: 19000, 19001 to 19998, 19999
             |  for extensions (/source/message.proto at 5:3)
             |  in message Message (/source/message.proto at 1:1)
-            |tags are out of range: 19999 to 19999
-            |  for extensions (/source/message.proto at 6:3)
-            |  in message Message (/source/message.proto at 1:1)
-            |tags are out of range: 536870912 to 536870912
-            |  for extensions (/source/message.proto at 9:3)
+            |tags are out of range: 536870912
+            |  for extensions (/source/message.proto at 8:3)
             |  in message Message (/source/message.proto at 1:1)
             """.trimMargin()
       )

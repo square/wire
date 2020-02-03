@@ -27,8 +27,7 @@ class ExtensionsElementTest {
   fun singleValueToSchema() {
     val actual = ExtensionsElement(
         location = location,
-        start = 500,
-        end = 500
+        values = listOf(500)
     )
     val expected = "extensions 500;\n"
     assertThat(actual.toSchema()).isEqualTo(expected)
@@ -38,8 +37,7 @@ class ExtensionsElementTest {
   fun rangeToSchema() {
     val actual = ExtensionsElement(
         location = location,
-        start = 500,
-        end = 505
+        values = listOf(500..505)
     )
     val expected = "extensions 500 to 505;\n"
     assertThat(actual.toSchema()).isEqualTo(expected)
@@ -49,8 +47,7 @@ class ExtensionsElementTest {
   fun maxRangeToSchema() {
     val actual = ExtensionsElement(
         location = location,
-        start = 500,
-        end = MAX_TAG_VALUE
+        values = listOf(500..MAX_TAG_VALUE)
     )
     val expected = "extensions 500 to max;\n"
     assertThat(actual.toSchema()).isEqualTo(expected)
@@ -61,8 +58,7 @@ class ExtensionsElementTest {
     val actual = ExtensionsElement(
         location = location,
         documentation =  "Hello",
-        start = 500,
-        end = 500
+        values = listOf(500)
     )
     val expected = """
         |// Hello
