@@ -1546,4 +1546,132 @@ class SchemaTest {
       )
     }
   }
+
+  @Test
+  fun proto3EnumShouldHaveZeroValueAtFirstPosition() {
+    val schema = RepoBuilder()
+        .add("period.proto", """
+            |syntax = "proto3";
+            |
+            |enum Period {
+            |  ZERO = 0;
+            |  CRETACEOUS = 1;
+            |  JURASSIC = 2;
+            |  TRIASSIC = 3;
+            |}
+            |""".trimMargin())
+          .schema()
+    val enum = schema.getType("Period") as EnumType
+    assertThat(enum.constant("ZERO")).isNotNull
+    assertThat(enum.constant("CRETACEOUS")).isNotNull
+    assertThat(enum.constant("JURASSIC")).isNotNull
+    assertThat(enum.constant("TRIASSIC")).isNotNull
+  }
+
+  @Test
+  fun proto3EnumMustHaveZeroValue() {
+    try {
+      RepoBuilder()
+          .add("period.proto", """
+              |syntax = "proto3";
+              |
+              |enum Period {
+              |  CRETACEOUS = 1;
+              |  JURASSIC = 2;
+              |  TRIASSIC = 3;
+              |}
+              |""".trimMargin())
+          .schema()
+      fail()
+    }  catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+          |missing a zero value at the first element [proto3]
+          |  for enum Period (/source/period.proto at 3:1)
+          """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun proto3EnumMustHaveZeroValueAtFirstPosition() {
+    try {
+      RepoBuilder()
+          .add("period.proto", """
+              |syntax = "proto3";
+              |
+              |enum Period {
+              |  CRETACEOUS = 1;
+              |  CHAOS = 0;
+              |  JURASSIC = 2;
+              |  TRIASSIC = 3;
+              |}
+              |""".trimMargin())
+          .schema()
+      fail()
+    }  catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+          |missing a zero value at the first element [proto3]
+          |  for enum Period (/source/period.proto at 3:1)
+          """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun proto3EnumMustNotBeEmpty() {
+    try {
+      RepoBuilder()
+          .add("period.proto", """
+              |syntax = "proto3";
+              |
+              |enum Period {}
+              |""".trimMargin())
+          .schema()
+      fail()
+    }  catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+          |missing a zero value at the first element [proto3]
+          |  for enum Period (/source/period.proto at 3:1)
+          """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun proto2EnumNeedNotHaveZeroValue() {
+    val schema = RepoBuilder()
+        .add("period.proto", """
+            |syntax = "proto2";
+            |
+            |enum Period {
+            |  CRETACEOUS = 1;
+            |  JURASSIC = 2;
+            |  TRIASSIC = 3;
+            |}
+            |""".trimMargin())
+        .schema()
+    val enum = schema.getType("Period") as EnumType
+    assertThat(enum.constant("ZERO")).isNull()
+    assertThat(enum.constant("CRETACEOUS")).isNotNull
+    assertThat(enum.constant("JURASSIC")).isNotNull
+    assertThat(enum.constant("TRIASSIC")).isNotNull
+  }
+
+  @Test
+  fun proto2EnumNeedNotHaveZeroValueWithoutSyntax() {
+    val schema = RepoBuilder()
+        .add("period.proto", """
+            |enum Period {
+            |  CRETACEOUS = 1;
+            |  JURASSIC = 2;
+            |  TRIASSIC = 3;
+            |}
+            |""".trimMargin())
+          .schema()
+    val enum = schema.getType("Period") as EnumType
+    assertThat(enum.constant("ZERO")).isNull()
+    assertThat(enum.constant("CRETACEOUS")).isNotNull
+    assertThat(enum.constant("JURASSIC")).isNotNull
+    assertThat(enum.constant("TRIASSIC")).isNotNull
+  }
 }
