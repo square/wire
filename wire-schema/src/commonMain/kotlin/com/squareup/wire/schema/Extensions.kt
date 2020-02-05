@@ -22,23 +22,38 @@ import kotlin.jvm.JvmStatic
 class Extensions private constructor(
   val location: Location,
   val documentation: String,
-  val start: Int,
-  val end: Int
+  val values: List<Any>
 ) {
   fun validate(linker: Linker) {
-    if (!start.isValidTag() || !end.isValidTag()) {
-      linker.withContext(this)
-          .addError("tags are out of range: $start to $end")
+    val linker = linker.withContext(this)
+    val outOfRangeTags = mutableListOf<String>()
+    values.forEach { value ->
+      when (value) {
+        is Int -> {
+          if (!value.isValidTag()) {
+            outOfRangeTags.add("$value")
+          }
+        }
+        is IntRange -> {
+          if (!value.first.isValidTag() || !value.last.isValidTag()) {
+            outOfRangeTags.add("${value.first} to ${value.last}")
+          }
+        }
+        else -> throw AssertionError()
+      }
+    }
+    if (outOfRangeTags.isNotEmpty()) {
+      linker.addError("tags are out of range: ${outOfRangeTags.joinToString(separator = ", ")}")
     }
   }
 
   companion object {
     @JvmStatic
     fun fromElements(elements: List<ExtensionsElement>) =
-      elements.map { Extensions(it.location, it.documentation, it.start, it.end) }
+        elements.map { Extensions(it.location, it.documentation, it.values) }
 
     @JvmStatic
     fun toElements(extensions: List<Extensions>) =
-      extensions.map { ExtensionsElement(it.location, it.documentation, it.start, it.end) }
+        extensions.map { ExtensionsElement(it.location, it.documentation, it.values) }
   }
 }

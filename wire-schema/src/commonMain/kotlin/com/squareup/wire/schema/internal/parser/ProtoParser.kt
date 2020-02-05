@@ -481,23 +481,32 @@ class ProtoParser internal constructor(
     location: Location,
     documentation: String
   ): ExtensionsElement {
-    val start = reader.readInt() // Range start.
-    var end = start
+    val values = mutableListOf<Any>()
+    loop@ while (true) {
+      val start = reader.readInt()
 
-    if (reader.peekChar() != ';') {
-      reader.expect(reader.readWord() == "to", location) { "expected ';' or 'to'" }
-      end = when (val s = reader.readWord()) {
-        "max" -> MAX_TAG_VALUE
-        else -> s.toInt()
+      when (reader.peekChar()) {
+        ',', ';' -> values.add(start)
+        else -> {
+          reader.expect(reader.readWord() == "to", location) { "expected ',', ';' or 'to'" }
+          val end = when (val s = reader.readWord()) {
+            "max" -> MAX_TAG_VALUE
+            else -> s.toInt()
+          }
+          values.add(start..end)
+        }
+      }
+      when (reader.readChar()) {
+        ';' -> break@loop
+        ',' -> continue@loop
+        else -> throw reader.unexpected("expected ',' or ';'")
       }
     }
-    reader.require(';')
 
     return ExtensionsElement(
         location = location,
         documentation = documentation,
-        start = start,
-        end = end
+        values = values
     )
   }
 

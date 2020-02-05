@@ -22,19 +22,27 @@ import com.squareup.wire.schema.internal.appendDocumentation
 data class ExtensionsElement(
   val location: Location,
   val documentation: String = "",
-  val start: Int,
-  val end: Int
+  /** An [Int] or [IntRange] tag. */
+  val values: List<Any>
 ) {
   fun toSchema() = buildString {
     appendDocumentation(documentation)
-    append("extensions $start")
+    append("extensions ")
 
-    if (start != end) {
-      append(" to ")
-      if (end < MAX_TAG_VALUE) {
-        append(end)
-      } else {
-        append("max")
+    values.forEachIndexed { index, value ->
+      if (index > 0) append(", ")
+
+      when (value) {
+        is Int -> append(value)
+        is IntRange -> {
+          append("${value.first} to ")
+          if (value.last < MAX_TAG_VALUE) {
+            append(value.last)
+          } else {
+            append("max")
+          }
+        }
+        else -> throw AssertionError()
       }
     }
     append(";\n")
