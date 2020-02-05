@@ -19,7 +19,6 @@ import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.internal.parser.OptionElement
-import java.util.LinkedHashMap
 import java.util.regex.Pattern
 import kotlin.collections.component1
 import kotlin.collections.component2
