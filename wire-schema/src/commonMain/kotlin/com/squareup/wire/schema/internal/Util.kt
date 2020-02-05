@@ -90,5 +90,3 @@ expect interface MutableQueue<T : Any> : MutableCollection<T> {
 }
 
 internal expect fun <T : Any> mutableQueueOf(): MutableQueue<T>
-
-internal expect fun Schema.createProtoAdapter(typeName: String, includeUnknown: Boolean): ProtoAdapter<Any>
