@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema.internal
 
+import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.internal.parser.OptionElement
 
 // TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-20760
@@ -88,3 +89,7 @@ expect interface MutableQueue<T : Any> : MutableCollection<T> {
 }
 
 internal expect fun <T : Any> mutableQueueOf(): MutableQueue<T>
+
+expect abstract class ProtoAdapter<T>
+
+internal expect fun Schema.createProtoAdapter(typeName: String, includeUnknown: Boolean): ProtoAdapter<Any>

@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema.internal
 
+import com.squareup.wire.schema.Schema
 import java.util.ArrayDeque
 import java.util.Locale
 import java.util.Queue
@@ -28,3 +29,13 @@ internal actual inline fun String.toEnglishLowerCase() = toLowerCase(Locale.US)
 actual typealias MutableQueue<T> = Queue<T>
 
 internal actual fun <T : Any> mutableQueueOf(): MutableQueue<T> = ArrayDeque()
+
+actual typealias ProtoAdapter<E> = com.squareup.wire.ProtoAdapter<E>
+
+internal actual fun Schema.createProtoAdapter(
+  typeName: String,
+  includeUnknown: Boolean
+): ProtoAdapter<Any> {
+  val type = requireNotNull(getType(typeName)) { "unexpected type $typeName" }
+  return SchemaProtoAdapterFactory(this, includeUnknown)[type.type]
+}

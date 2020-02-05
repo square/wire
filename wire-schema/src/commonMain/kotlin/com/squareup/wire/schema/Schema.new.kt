@@ -15,8 +15,10 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.schema.internal.ProtoAdapter
+import com.squareup.wire.schema.internal.createProtoAdapter
 import kotlin.collections.set
+import kotlin.jvm.JvmOverloads
 
 /**
  * A collection of .proto files that describe a set of messages. A schema is *linked*: each
@@ -24,8 +26,8 @@ import kotlin.collections.set
  *
  * Use [SchemaLoader] to load a schema from source files.
  */
-actual class Schema internal actual constructor(protoFiles: Iterable<ProtoFile>) {
-  actual val protoFiles: List<ProtoFile> = protoFiles.sortedBy { it.location.path }
+class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
+  val protoFiles: List<ProtoFile> = protoFiles.sortedBy { it.location.path }
 
   private val protoFilesIndex: Map<ProtoType?, ProtoFile?>
   private val typesIndex: Map<String, Type>
@@ -108,8 +110,7 @@ actual class Schema internal actual constructor(protoFiles: Iterable<ProtoFile>)
     typeName: String,
     includeUnknown: Boolean
   ): ProtoAdapter<Any> {
-    val type = requireNotNull(getType(typeName)) { "unexpected type $typeName" }
-    return SchemaProtoAdapterFactory(this, includeUnknown)[type.type]
+    return createProtoAdapter(typeName, includeUnknown)
   }
 
   fun isExtensionField(protoMember: ProtoMember): Boolean {

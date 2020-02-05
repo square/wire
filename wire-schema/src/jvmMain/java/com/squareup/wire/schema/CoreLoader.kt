@@ -29,7 +29,7 @@ import okio.source
  *
  * If the user has provided their own version of these protos, those are preferred.
  */
-object CoreLoader : Loader {
+actual object CoreLoader : Loader {
   const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
   const val WIRE_EXTENSIONS_PROTO = "wire/extensions.proto"
 
