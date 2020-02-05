@@ -19,7 +19,6 @@ import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.internal.parser.OptionElement
-import java.util.regex.Pattern
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -56,12 +55,12 @@ actual class Options actual constructor(
    * provided: its name matches the option's name and its value matches the option's value.
    */
   actual fun optionMatches(namePattern: String, valuePattern: String): Boolean {
-    val nameMatcher = Pattern.compile(namePattern).matcher("")
-    val valueMatcher = Pattern.compile(valuePattern).matcher("")
+    val nameRegex = namePattern.toRegex()
+    val valueRegex = valuePattern.toRegex()
 
     return entries!!.any { entry ->
-      nameMatcher.reset(entry.protoMember.member).matches() &&
-          valueMatcher.reset(entry.value.toString()).matches()
+      nameRegex.matchEntire(entry.protoMember.member) != null &&
+          valueRegex.matchEntire(entry.value.toString()) != null
     }
   }
 
