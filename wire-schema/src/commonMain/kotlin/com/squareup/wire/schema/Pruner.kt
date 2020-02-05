@@ -16,8 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.ProtoMember.Companion.get
-import java.util.ArrayDeque
-import java.util.Deque
+import com.squareup.wire.schema.internal.mutableQueueOf
 
 /**
  * Creates a new schema that contains only the types selected by the pruning rules, including their
@@ -32,7 +31,7 @@ internal class Pruner(
    * [types][ProtoType] and [members][ProtoMember] whose immediate dependencies have not
    * yet been visited.
    */
-  private val queue: Deque<Any> = ArrayDeque()
+  private val queue = mutableQueueOf<Any>()
 
   fun prune(): Schema {
     markRoots()

@@ -29,6 +29,8 @@ expect class Options(
   fun link(linker: Linker)
   fun retainAll(schema: Schema, markSet: MarkSet): Options
   fun assignsMember(protoMember: ProtoMember?): Boolean
+  fun fields(): Multimap<ProtoType, ProtoMember>
+  fun fields(pruningRules: PruningRules): Multimap<ProtoType, ProtoMember>
 
   companion object {
     val FILE_OPTIONS: ProtoType

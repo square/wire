@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,13 @@
  */
 package com.squareup.wire.schema
 
-expect class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
-  val protoFiles: List<ProtoFile>
+expect interface Multimap<K : Any, V> {
+  fun size(): Int
+  fun isEmpty(): Boolean
+  fun containsKey(key: Any?): Boolean
+  fun containsValue(value: Any?): Boolean
+
+  operator fun get(key: K?): Collection<V>
+  fun values(): Collection<V>
+  fun asMap(): Map<K, Collection<V>>
 }

@@ -248,11 +248,11 @@ actual class Options actual constructor(
     return result
   }
 
-  fun fields(): Multimap<ProtoType, ProtoMember> {
+  actual fun fields(): Multimap<ProtoType, ProtoMember> {
     return fields(PruningRules.Builder().build())
   }
 
-  fun fields(pruningRules: PruningRules): Multimap<ProtoType, ProtoMember> {
+  actual fun fields(pruningRules: PruningRules): Multimap<ProtoType, ProtoMember> {
     return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
       gatherFields(it, optionType, entries?.toMap(), pruningRules)
     }

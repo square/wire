@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.schema;
+package com.squareup.wire.schema.internal;
 
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.schema.EnumConstant;
+import com.squareup.wire.schema.EnumType;
+import com.squareup.wire.schema.MessageType;
+import com.squareup.wire.schema.ProtoType;
+import com.squareup.wire.schema.Schema;
+import com.squareup.wire.schema.Type;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
