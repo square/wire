@@ -29,10 +29,11 @@ import com.squareup.wire.kotlin.RpcRole
 import okio.buffer
 import okio.sink
 import java.io.IOException
+import java.io.Serializable
 import java.nio.file.FileSystem
 import java.nio.file.Files
 
-sealed class Target {
+sealed class Target : Serializable {
   /**
    * Proto types to include generated sources for. Types listed here will be generated for this
    * target and not for subsequent targets in the task.

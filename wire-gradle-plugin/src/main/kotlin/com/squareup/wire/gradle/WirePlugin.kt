@@ -21,6 +21,7 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
+import java.io.File
 
 class WirePlugin : Plugin<Project> {
   private var kotlin = false
@@ -116,6 +117,7 @@ class WirePlugin : Plugin<Project> {
 
     val wireTask = project.tasks.named("generateProtos") as TaskProvider<WireTask>
     wireTask.configure {
+      it.outputDirectories = outputs.map { output -> File(output.out!!) }
       it.source(sourceInput.configuration)
       it.sourceInput = sourceInput
       it.protoInput = protoInput

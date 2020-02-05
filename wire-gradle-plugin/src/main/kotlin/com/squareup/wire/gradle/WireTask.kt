@@ -21,10 +21,15 @@ import com.squareup.wire.schema.WireRun
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 
 open class WireTask : SourceTask() {
+  @get:OutputDirectories
+  var outputDirectories: List<File>? = null
+
   @get:Input
   var pluginVersion: String = VERSION
 
