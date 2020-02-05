@@ -170,6 +170,14 @@ data class WireRun(
     // Optionally prune the schema.
     val schema = treeShake(fullSchema, logger)
 
+    val targetToEmittingRules = targets.associateWith {
+      EmittingRules.Builder()
+          .include(it.includes)
+          .exclude(it.excludes)
+          .build()
+    }
+    val targetsExclusiveLast = targets.sortedBy { it.exclusive }
+
     // Call each target.
     val skippedForSyntax = mutableListOf<ProtoFile>()
     for (protoFile in schema.protoFiles) {
@@ -183,29 +191,28 @@ data class WireRun(
 
       val claimedDefinitions = ClaimedDefinitions()
 
-      val targetsExclusiveLast = targets.sortedBy { it.exclusive }
       for (target in targetsExclusiveLast) {
         val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)
+        schemaHandler.handle(
+            protoFile,
+            targetToEmittingRules[target]!!,
+            claimedDefinitions,
+            isExclusive = target.exclusive
+        )
+      }
+    }
 
-        val emittingRules: EmittingRules = EmittingRules.Builder()
-            .include(target.includes)
-            .exclude(target.excludes)
-            .build()
-
-        schemaHandler.handle(protoFile, emittingRules, claimedDefinitions,
-            isExclusive = target.exclusive)
-
-        if (emittingRules.unusedIncludes().isNotEmpty()) {
-          logger.info("""Unused includes in targets:
+    for (emittingRules in targetToEmittingRules.values) {
+      if (emittingRules.unusedIncludes().isNotEmpty()) {
+        logger.info("""Unused includes in targets:
             |  ${emittingRules.unusedIncludes().joinToString(separator = "\n  ")}
             """.trimMargin())
-        }
+      }
 
-        if (emittingRules.unusedExcludes().isNotEmpty()) {
-          logger.info("""Unused exclude in targets:
+      if (emittingRules.unusedExcludes().isNotEmpty()) {
+        logger.info("""Unused excludes in targets:
             |  ${emittingRules.unusedExcludes().joinToString(separator = "\n  ")}
             """.trimMargin())
-        }
       }
     }
 
