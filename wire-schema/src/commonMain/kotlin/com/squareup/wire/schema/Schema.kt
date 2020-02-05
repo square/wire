@@ -16,7 +16,6 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.ProtoAdapter
-import com.squareup.wire.schema.internal.createProtoAdapter
 import kotlin.collections.set
 import kotlin.jvm.JvmOverloads
 
@@ -110,7 +109,8 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
     typeName: String,
     includeUnknown: Boolean
   ): ProtoAdapter<Any> {
-    return createProtoAdapter(typeName, includeUnknown)
+    val type = requireNotNull(getType(typeName)) { "unexpected type $typeName" }
+    return SchemaProtoAdapterFactory(this, includeUnknown)[type.type]
   }
 
   fun isExtensionField(protoMember: ProtoMember): Boolean {

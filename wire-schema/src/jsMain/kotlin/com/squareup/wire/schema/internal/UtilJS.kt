@@ -15,9 +15,6 @@
  */
 package com.squareup.wire.schema.internal
 
-import com.squareup.wire.ProtoAdapter
-import com.squareup.wire.schema.Schema
-
 internal actual fun Char.isDigit() = this in '0'..'9'
 
 internal actual fun String.toEnglishLowerCase() = toLowerCase()
@@ -31,11 +28,4 @@ internal actual fun <T : Any> mutableQueueOf(): MutableQueue<T> {
   return object : MutableQueue<T>, MutableCollection<T> by queue {
     override fun poll() = firstOrNull()
   }
-}
-
-internal actual fun Schema.createProtoAdapter(
-  typeName: String,
-  includeUnknown: Boolean
-): ProtoAdapter<Any> {
-  TODO("Not implemented for JS")
 }
