@@ -15,13 +15,9 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.collect.LinkedHashMultimap
-import com.google.common.collect.Multimap
 import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.internal.parser.OptionElement
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
+import kotlin.jvm.JvmField
 
 /**
  * A set of options declared on a message declaration, field declaration, enum declaration, enum
@@ -29,14 +25,14 @@ import kotlin.collections.set
  * Options values may be arbitrary protocol buffer messages, but must be valid protocol buffer
  * messages.
  */
-actual class Options actual constructor(
+class Options(
   private val optionType: ProtoType,
   private val optionElements: List<OptionElement>
 ) {
   // Null until this options is linked.
   private var entries: List<LinkedOptionEntry>? = null
 
-  actual val elements: List<OptionElement>
+  val elements: List<OptionElement>
     get() {
       return entries?.map { it.optionElement } ?: optionElements
     }
@@ -44,9 +40,9 @@ actual class Options actual constructor(
   val map: Map<ProtoMember, Any?>
     get() = entries!!.toMap()
 
-  actual fun retainLinked() = Options(optionType, emptyList())
+  fun retainLinked() = Options(optionType, emptyList())
 
-  actual operator fun get(protoMember: ProtoMember): Any? {
+  operator fun get(protoMember: ProtoMember): Any? {
     return entries?.find { it.protoMember == protoMember }?.value
   }
 
@@ -54,7 +50,7 @@ actual class Options actual constructor(
    * Returns true if any of the options in `options` matches both of the regular expressions
    * provided: its name matches the option's name and its value matches the option's value.
    */
-  actual fun optionMatches(namePattern: String, valuePattern: String): Boolean {
+  fun optionMatches(namePattern: String, valuePattern: String): Boolean {
     val nameRegex = namePattern.toRegex()
     val valueRegex = valuePattern.toRegex()
 
@@ -64,7 +60,7 @@ actual class Options actual constructor(
     }
   }
 
-  actual fun link(linker: Linker) {
+  fun link(linker: Linker) {
     var entries: List<LinkedOptionEntry> = emptyList()
 
     for (option in optionElements) {
@@ -247,18 +243,18 @@ actual class Options actual constructor(
     return result
   }
 
-  actual fun fields(): Multimap<ProtoType, ProtoMember> {
+  fun fields(): Multimap<ProtoType, ProtoMember> {
     return fields(PruningRules.Builder().build())
   }
 
-  actual fun fields(pruningRules: PruningRules): Multimap<ProtoType, ProtoMember> {
-    return LinkedHashMultimap.create<ProtoType, ProtoMember>().also {
+  fun fields(pruningRules: PruningRules): Multimap<ProtoType, ProtoMember> {
+    return mutableMapOf<ProtoType, MutableCollection<ProtoMember>>().also {
       gatherFields(it, optionType, entries?.toMap(), pruningRules)
-    }
+    }.toMultimap()
   }
 
   private fun gatherFields(
-    sink: Multimap<ProtoType, ProtoMember>,
+    sink: MutableMap<ProtoType, MutableCollection<ProtoMember>>,
     type: ProtoType,
     o: Any?,
     pruningRules: PruningRules
@@ -268,7 +264,7 @@ actual class Options actual constructor(
         for ((key, value) in o) {
           val protoMember = key as ProtoMember
           if (pruningRules.prunes(protoMember)) continue
-          sink.put(type, protoMember)
+          sink.getOrPut(type, ::ArrayList).add(protoMember)
           gatherFields(sink, protoMember.type, value!!, pruningRules)
         }
       }
@@ -280,7 +276,7 @@ actual class Options actual constructor(
     }
   }
 
-  actual fun retainAll(schema: Schema, markSet: MarkSet): Options {
+  fun retainAll(schema: Schema, markSet: MarkSet): Options {
     if (entries.isNullOrEmpty()) return this // Nothing to prune.
 
     val result = Options(optionType, optionElements)
@@ -346,20 +342,20 @@ actual class Options actual constructor(
   }
 
   /** Returns true if these options assigns a value to `protoMember`.  */
-  actual fun assignsMember(protoMember: ProtoMember?): Boolean {
+  fun assignsMember(protoMember: ProtoMember?): Boolean {
     // TODO(jwilson): remove the null check; this shouldn't be called until linking completes.
     return entries?.any { it.protoMember == protoMember } ?: false
   }
 
-  actual companion object {
-    @JvmField actual val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
-    @JvmField actual val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
-    @JvmField actual val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
-    @JvmField actual val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
-    @JvmField actual val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
-    @JvmField actual val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
-    @JvmField actual val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
-    actual val GOOGLE_PROTOBUF_OPTION_TYPES = arrayOf(
+  companion object {
+    @JvmField val FILE_OPTIONS = ProtoType.get("google.protobuf.FileOptions")
+    @JvmField val MESSAGE_OPTIONS = ProtoType.get("google.protobuf.MessageOptions")
+    @JvmField val FIELD_OPTIONS = ProtoType.get("google.protobuf.FieldOptions")
+    @JvmField val ENUM_OPTIONS = ProtoType.get("google.protobuf.EnumOptions")
+    @JvmField val ENUM_VALUE_OPTIONS = ProtoType.get("google.protobuf.EnumValueOptions")
+    @JvmField val SERVICE_OPTIONS = ProtoType.get("google.protobuf.ServiceOptions")
+    @JvmField val METHOD_OPTIONS = ProtoType.get("google.protobuf.MethodOptions")
+    val GOOGLE_PROTOBUF_OPTION_TYPES = arrayOf(
         FILE_OPTIONS,
         MESSAGE_OPTIONS,
         FIELD_OPTIONS,

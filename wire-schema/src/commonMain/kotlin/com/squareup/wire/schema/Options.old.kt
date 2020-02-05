@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.parser.OptionElement
@@ -43,3 +44,4 @@ expect class Options(
     val GOOGLE_PROTOBUF_OPTION_TYPES: Array<ProtoType>
   }
 }
+*/

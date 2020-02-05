@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.schema.internal.ProtoAdapter
+import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.schema.internal.createProtoAdapter
 import kotlin.collections.set
 import kotlin.jvm.JvmOverloads
