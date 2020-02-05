@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema.internal
 
+import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.internal.parser.OptionElement
 
@@ -89,7 +90,5 @@ expect interface MutableQueue<T : Any> : MutableCollection<T> {
 }
 
 internal expect fun <T : Any> mutableQueueOf(): MutableQueue<T>
-
-expect abstract class ProtoAdapter<T>
 
 internal expect fun Schema.createProtoAdapter(typeName: String, includeUnknown: Boolean): ProtoAdapter<Any>

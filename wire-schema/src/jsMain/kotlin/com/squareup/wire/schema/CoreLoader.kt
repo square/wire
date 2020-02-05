@@ -15,15 +15,8 @@
  */
 package com.squareup.wire.schema
 
-expect interface Multimap<K, V> {
-  fun size(): Int
-  fun isEmpty(): Boolean
-  fun containsKey(key: Any?): Boolean
-  fun containsValue(value: Any?): Boolean
-
-  operator fun get(key: K?): Collection<V>
-  fun values(): Collection<V>
-  fun asMap(): Map<K, Collection<V>>
+actual object CoreLoader : Loader {
+  override fun load(path: String): ProtoFile {
+    TODO("Not yet implemented in JS")
+  }
 }
-
-internal expect fun <K, V> Map<K, Collection<V>>.toMultimap(): Multimap<K, V>

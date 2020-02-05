@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Square, Inc.
+ * Copyright (C) 2020 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,25 @@ package com.squareup.wire.schema.internal
 
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.schema.Schema
-import java.util.ArrayDeque
-import java.util.Locale
-import java.util.Queue
 
-@Suppress("NOTHING_TO_INLINE") // Aliasing to platform method.
-internal actual inline fun Char.isDigit() = Character.isDigit(this)
+internal actual fun Char.isDigit() = this in '0'..'9'
 
-@Suppress("NOTHING_TO_INLINE") // Aliasing to platform method.
-internal actual inline fun String.toEnglishLowerCase() = toLowerCase(Locale.US)
+internal actual fun String.toEnglishLowerCase() = toLowerCase()
 
-actual typealias MutableQueue<T> = Queue<T>
+actual interface MutableQueue<T : Any> : MutableCollection<T> {
+  actual fun poll(): T?
+}
 
-internal actual fun <T : Any> mutableQueueOf(): MutableQueue<T> = ArrayDeque()
+internal actual fun <T : Any> mutableQueueOf(): MutableQueue<T> {
+  val queue = mutableListOf<T>()
+  return object : MutableQueue<T>, MutableCollection<T> by queue {
+    override fun poll() = firstOrNull()
+  }
+}
 
 internal actual fun Schema.createProtoAdapter(
   typeName: String,
   includeUnknown: Boolean
 ): ProtoAdapter<Any> {
-  val type = requireNotNull(getType(typeName)) { "unexpected type $typeName" }
-  return SchemaProtoAdapterFactory(this, includeUnknown)[type.type]
+  TODO("Not implemented for JS")
 }

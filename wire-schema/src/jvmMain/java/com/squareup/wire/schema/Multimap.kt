@@ -15,4 +15,14 @@
  */
 package com.squareup.wire.schema
 
+import com.google.common.collect.LinkedHashMultimap
+
 actual typealias Multimap<K, V> = com.google.common.collect.Multimap<K, V>
+
+internal actual fun <K, V> Map<K, Collection<V>>.toMultimap(): Multimap<K, V> {
+  val multimap = LinkedHashMultimap.create<K, V>()
+  forEach { key, value ->
+    multimap.putAll(key, value)
+  }
+  return multimap
+}
