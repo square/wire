@@ -31,6 +31,7 @@ import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.ArrayDeque
+import kotlin.DeprecationLevel.ERROR
 
 /**
  * Load proto files and their transitive dependencies, parse them, and link them together.
@@ -40,8 +41,13 @@ import java.util.ArrayDeque
  * to the root of the archive.
  */
 class SchemaLoader {
-  private val sources = mutableListOf<Path>()
-  private val protos = mutableListOf<String>()
+  /** Returns a mutable list of the sources that this loader will load from. */
+  @get:JvmName("sources")
+  val sources = mutableListOf<Path>()
+
+  /** Returns a mutable list of the proto paths that this loader will load. */
+  @get:JvmName("protos")
+  val protos = mutableListOf<String>()
 
   /** Add directory or zip file source from which proto files will be loaded. */
   fun addSource(file: File) = apply {
@@ -53,18 +59,26 @@ class SchemaLoader {
     sources.add(path)
   }
 
-  /** Returns a mutable list of the sources that this loader will load from. */
+  @Deprecated("Moved to property", ReplaceWith("this.sources"), level = ERROR)
+  @JvmName("-deprecated_sources")
   fun sources(): List<Path> = sources
 
   /**
-   * Add a proto file to load. Dependencies will be loaded automatically from the configured
+   * Add a proto file path to load. Dependencies will be loaded automatically from the configured
    * sources.
+   * <p>
+   * Examples:
+   * <ul>
+   * <li>{@code tea.proto}</li>
+   * <li>{@code coffee/espresso.proto}</li>
+   * </ul>
    */
   fun addProto(proto: String) = apply {
     protos.add(proto)
   }
 
-  /** Returns a mutable list of the protos that this loader will load. */
+  @Deprecated("Moved to property", ReplaceWith("this.protos"), level = ERROR)
+  @JvmName("-deprecated_protos")
   fun protos(): List<String> = protos
 
   @Throws(IOException::class)
