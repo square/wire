@@ -1,12 +1,34 @@
 Change Log
 ==========
 
+Version 3.1.0
+-------------
+
+_2019-02-06_
+
+This release includes major non-backwards-compatible API changes to the `wire-schema` module. This
+will break tools that use Wire's schema modeling as a standalone library. We are making big changes
+to this component and we sacrificed API compatibility to accelerate these improvements.
+
+ * New: `proto { ... }` target in the Wire Gradle plugin. Use this to perform basic source code
+   transformations on collections of `.proto` files. We use it to prune large collections of protos
+   to just the subset used by the application.
+ * Fix: Support all forms of reserved extensions, such as `extensions 1, 3 to 5, 7;`.
+ * Fix: Don't re-generate source files when their `.proto` files haven't changed.
+ * New: `includes`, `excludes`, `root`, and `prune` give precedence to the most precise rule.
+   Previously `excludes` always took precedence over `includes`, and `prune` always took precedence
+   over `root`.
+ * Fix: Generate non-instantiable class for enclosing types in Kotlin. These are emitted when a
+   nested type is retained but its enclosing type is pruned.
+ * Fix: Do not fail to build when the profile cannot find a dependency.
+
+
 Version 3.0.3
 -------------
 
 _2019-12-23_
 
-Starting with this version the  Wire Maven plugin is no longer maintained and has been removed from 
+Starting with this version the Wire Maven plugin is no longer maintained and has been removed from
 the repository.
 
  * New: Support for custom options in Kotlin.

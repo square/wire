@@ -1,24 +1,108 @@
 Releasing
 =========
 
- 1. Change the version in `gradle.properties` to a non-SNAPSHOT version.
- 2. Update the `CHANGELOG.md` for the impending release.
- 3. Update the `README.md` with the new version.
- 4. `git commit -am "Prepare for release X.Y.Z."` (where X.Y.Z is the new version)
- 5. `./gradlew clean publish uploadArchives`.
- 6. Visit [Sonatype Nexus](https://oss.sonatype.org/) and promote the artifact.
- 7. `git tag -a X.Y.Z -m "Version X.Y.Z"` (where X.Y.Z is the new version)
- 8. Update the `gradle.properties` to the next SNAPSHOT version.
- 9. `git commit -am "Prepare next development version."`
- 10. `git push && git push --tags`
+### Prerequisite: Sonatype (Maven Central) Account
 
-If step 5 or 6 fails, drop the Sonatype repo, fix the problem, commit, and start again at step 4.
+Create an account on the [Sonatype issues site][sonatype_issues]. Ask an existing publisher to open
+an issue requesting publishing permissions for `com.squareup` projects.
+
+### Prerequisite: GPG Keys
+
+Generate a GPG key (RSA, 4096 bit, 3650 day) expiry, or use an existing one. You should leave the
+password empty for this key.
+
+```
+$ gpg --full-generate-key
+```
+
+Upload the GPG keys to public servers:
+
+```
+$ gpg --list-keys --keyid-format LONG
+/Users/johnbarber/.gnupg/pubring.kbx
+------------------------------
+pub   rsa4096/XXXXXXXXXXXXXXXX 2019-07-16 [SC] [expires: 2029-07-13]
+      YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+uid           [ultimate] John Barber <jbarber@squareup.com>
+sub   rsa4096/ZZZZZZZZZZZZZZZZ 2019-07-16 [E] [expires: 2029-07-13]
+
+$ gpg --send-keys --keyserver keyserver.ubuntu.com XXXXXXXXXXXXXXXX
+```
+
+### Prerequisite: Gradle Properties
+
+Define publishing properties in `~/.gradle/gradle.properties`:
+
+```
+signing.keyId=1A2345F8
+signing.password=
+signing.secretKeyRingFile=/Users/jbarber/.gnupg/secring.gpg
+```
+
+`signing.keyId` is the GPG key's ID. Get it with this:
+
+   ```
+   $ gpg --list-keys --keyid-format SHORT
+   ```
+
+`signing.password` is the password for this key. This might be empty!
+
+`signing.secretKeyRingFile` is the absolute path for `secring.gpg`. You may need to export this
+file manually with the following command where `XXXXXXXX` is the `keyId` above:
+
+   ```
+   $ gpg --keyring secring.gpg --export-secret-key XXXXXXXX > ~/.gnupg/secring.gpg
+   ```
 
 
-Prerequisites
--------------
+Cutting a Release
+-----------------
 
-In `~/.gradle/gradle.properties`, set the following:
+1. Update `CHANGELOG.md`.
 
- * `SONATYPE_NEXUS_USERNAME` - Sonatype username for releasing to `com.squareup`.
- * `SONATYPE_NEXUS_PASSWORD` - Sonatype password for releasing to `com.squareup`.
+2. Set versions:
+
+    ```
+    export RELEASE_VERSION=X.Y.Z
+    export NEXT_VERSION=X.Y.Z-SNAPSHOT
+    ```
+
+3. Set environment variables with your [Sonatype credentials][sonatype_issues].
+
+    ```
+    export SONATYPE_NEXUS_USERNAME=johnbarber
+    export SONATYPE_NEXUS_PASSWORD=`pbpaste`
+    ```
+
+4. Update, build, and upload:
+
+    ```
+    sed -i "" \
+      "s/VERSION_NAME=.*/VERSION_NAME=$RELEASE_VERSION/g" \
+      gradle.properties
+    sed -i "" \
+      "s/\"com.squareup.wire:\([^\:]*\):[^\"]*\"/\"com.squareup.wire:\1:$RELEASE_VERSION\"/g" \
+      `find . -name "README.md"`
+    sed -i "" \
+      "s/\<version\>\([^<]*\)\<\/version\>/\<version\>$RELEASE_VERSION\<\/version\>/g" \
+      `find . -name "README.md"`
+    ./gradlew clean publish uploadArchives
+    ```
+
+5. Visit [Sonatype Nexus][sonatype_nexus] to promote (close then release) the artifact. Or drop it
+   if there is a problem!
+
+6. Tag the release, prepare for the next one, and push to GitHub.
+
+    ```
+    git commit -am "Prepare for release $RELEASE_VERSION."
+    git tag -a parent-$RELEASE_VERSION -m "Version $RELEASE_VERSION"
+    sed -i "" \
+      "s/version = '.*'/version = '$NEXT_VERSION'/g" \
+      build.gradle
+    git commit -am "Prepare next development version."
+    git push && git push --tags
+    ```
+
+ [sonatype_issues]: https://issues.sonatype.org/
+ [sonatype_nexus]: https://oss.sonatype.org/
