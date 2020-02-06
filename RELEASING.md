@@ -98,7 +98,7 @@ Cutting a Release
     git commit -am "Prepare for release $RELEASE_VERSION."
     git tag -a parent-$RELEASE_VERSION -m "Version $RELEASE_VERSION"
     sed -i "" \
-      "s/version = '.*'/version = '$NEXT_VERSION'/g" \
+      "s/VERSION_NAME=.*/VERSION_NAME=$NEXT_VERSION/g" \
       build.gradle
     git commit -am "Prepare next development version."
     git push && git push --tags
