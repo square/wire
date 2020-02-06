@@ -136,7 +136,7 @@ class MessageType private constructor(
     linker.validateFields(fieldsAndOneOfFields, reserveds)
     linker.validateEnumConstantNameUniqueness(nestedTypes)
     for (field in fieldsAndOneOfFields) {
-      field.validate(linker)
+      field.validate(linker, syntaxRules)
     }
     for (nestedType in nestedTypes) {
       nestedType.validate(linker, syntaxRules)

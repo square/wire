@@ -1715,4 +1715,28 @@ class SchemaTest {
       )
     }
   }
+
+  @Test
+  fun proto3DoesNotAllowUserDefinedDefaultValue() {
+    try {
+      RepoBuilder()
+          .add("dinosaur.proto", """
+              |syntax = "proto3";
+              |
+              |message Dinosaur {
+              |  string name = 1 [default = "T-Rex"];
+              |}
+              |""".trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |user-defined default values are not permitted [proto3]
+            |  for field name (/source/dinosaur.proto at 4:3)
+            |  in message Dinosaur (/source/dinosaur.proto at 3:1)
+            """.trimMargin()
+      )
+    }
+  }
 }
