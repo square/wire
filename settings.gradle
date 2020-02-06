@@ -1,4 +1,3 @@
-include ':proto-pruner'
 include ':sample'
 include ':wire-codegen-sample'
 include ':wire-compiler'
