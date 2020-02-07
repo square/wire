@@ -2,7 +2,6 @@
 // Source file: simple_message.proto
 package com.squareup.wire.protos.simple;
 
-import com.google.protobuf.EnumOptions;
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
@@ -533,10 +532,6 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     BUZ(3, true);
 
     public static final ProtoAdapter<NestedEnum> ADAPTER = new ProtoAdapter_NestedEnum();
-
-    public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
-        .allow_alias(true)
-        .build();
 
     private final int value;
 
