@@ -3202,7 +3202,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
       public ProtoAdapter_NestedMessage() {
-        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class);
+        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes.NestedMessage");
       }
 
       @Override
@@ -3260,7 +3260,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     private final ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enum = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
 
     public ProtoAdapter_AllTypes() {
-      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class);
+      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes");
     }
 
     @Override

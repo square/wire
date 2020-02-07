@@ -70,7 +70,8 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
     val ADAPTER: ProtoAdapter<VeryLongProtoNameCausingBrokenLineBreaks> = object :
         ProtoAdapter<VeryLongProtoNameCausingBrokenLineBreaks>(
       FieldEncoding.LENGTH_DELIMITED, 
-      VeryLongProtoNameCausingBrokenLineBreaks::class
+      VeryLongProtoNameCausingBrokenLineBreaks::class, 
+      "type.googleapis.com/squareup.protos.tostring.VeryLongProtoNameCausingBrokenLineBreaks"
     ) {
       override fun encodedSize(value: VeryLongProtoNameCausingBrokenLineBreaks): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +

@@ -112,7 +112,8 @@ class RouteSummary(
     @JvmField
     val ADAPTER: ProtoAdapter<RouteSummary> = object : ProtoAdapter<RouteSummary>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RouteSummary::class
+      RouteSummary::class, 
+      "type.googleapis.com/routeguide.RouteSummary"
     ) {
       override fun encodedSize(value: RouteSummary): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.point_count) +

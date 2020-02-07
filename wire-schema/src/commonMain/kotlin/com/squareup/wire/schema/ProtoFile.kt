@@ -192,7 +192,7 @@ class ProtoFile private constructor(
   companion object {
     val JAVA_PACKAGE = ProtoMember.get(Options.FILE_OPTIONS, "java_package")
 
-    operator fun get(protoFileElement: ProtoFileElement): ProtoFile {
+    fun get(protoFileElement: ProtoFileElement): ProtoFile {
       val packageName = protoFileElement.packageName
 
       val types = fromElements(packageName, protoFileElement.types)

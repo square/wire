@@ -29,8 +29,9 @@ import java.util.LinkedHashMap
 class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
   private val messageType: Class<M>,
   private val builderType: Class<B>,
-  val fieldBindings: Map<Int, FieldBinding<M, B>>
-) : ProtoAdapter<M>(FieldEncoding.LENGTH_DELIMITED, messageType.kotlin) {
+  val fieldBindings: Map<Int, FieldBinding<M, B>>,
+  typeUrl: String?
+) : ProtoAdapter<M>(FieldEncoding.LENGTH_DELIMITED, messageType.kotlin, typeUrl) {
 
   fun newBuilder(): B = builderType.newInstance()
 
@@ -144,7 +145,8 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     private const val REDACTED = "\u2588\u2588"
 
     @JvmStatic fun <M : Message<M, B>, B : Builder<M, B>> create(
-      messageType: Class<M>
+      messageType: Class<M>,
+      typeUrl: String?
     ): RuntimeMessageAdapter<M, B> {
       val builderType = getBuilderType(messageType)
       val fieldBindings = LinkedHashMap<Int, FieldBinding<M, B>>()
@@ -158,7 +160,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
       }
 
       return RuntimeMessageAdapter(messageType, builderType,
-          Collections.unmodifiableMap(fieldBindings))
+          Collections.unmodifiableMap(fieldBindings), typeUrl)
     }
 
     private fun <M : Message<M, B>, B : Builder<M, B>> getBuilderType(

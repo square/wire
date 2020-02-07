@@ -100,7 +100,7 @@ public final class OneofOptions extends Message<OneofOptions, OneofOptions.Build
 
   private static final class ProtoAdapter_OneofOptions extends ProtoAdapter<OneofOptions> {
     public ProtoAdapter_OneofOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneofOptions.class);
+      super(FieldEncoding.LENGTH_DELIMITED, OneofOptions.class, "type.googleapis.com/google.protobuf.OneofOptions");
     }
 
     @Override

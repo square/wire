@@ -36,7 +36,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   type: TypeToken<M>
 ) : TypeAdapter<M>() {
   private val messageAdapter: RuntimeMessageAdapter<M, B> =
-      RuntimeMessageAdapter.create(type.rawType as Class<M>)
+      RuntimeMessageAdapter.create(type.rawType as Class<M>, "square.github.io/wire/unknown")
   private val fieldBindings: Map<String, FieldBinding<M, B>> =
       messageAdapter.fieldBindings.values.associateBy { it.name }
 

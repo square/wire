@@ -124,7 +124,8 @@ class EnumValueDescriptorProto(
     val ADAPTER: ProtoAdapter<EnumValueDescriptorProto> = object :
         ProtoAdapter<EnumValueDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
-      EnumValueDescriptorProto::class
+      EnumValueDescriptorProto::class, 
+      "type.googleapis.com/google.protobuf.EnumValueDescriptorProto"
     ) {
       override fun encodedSize(value: EnumValueDescriptorProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +

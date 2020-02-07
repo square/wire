@@ -330,7 +330,8 @@ class FieldDescriptorProto(
     @JvmField
     val ADAPTER: ProtoAdapter<FieldDescriptorProto> = object : ProtoAdapter<FieldDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
-      FieldDescriptorProto::class
+      FieldDescriptorProto::class, 
+      "type.googleapis.com/google.protobuf.FieldDescriptorProto"
     ) {
       override fun encodedSize(value: FieldDescriptorProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +

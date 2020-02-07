@@ -49,6 +49,11 @@ protected actual constructor(
   /** Encode this message as a `byte[]`. */
   actual fun encode(): ByteArray = adapter.encode(this as M)
 
+  /** Encode this message as a `ByteString`. */
+  actual fun encodeByteString(): ByteString {
+    return adapter.encodeByteString(this as M)
+  }
+
   /**
    * Superclass for protocol buffer message builders.
    */

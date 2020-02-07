@@ -92,7 +92,7 @@ public final class SendDataResponse extends Message<SendDataResponse, SendDataRe
 
   private static final class ProtoAdapter_SendDataResponse extends ProtoAdapter<SendDataResponse> {
     public ProtoAdapter_SendDataResponse() {
-      super(FieldEncoding.LENGTH_DELIMITED, SendDataResponse.class);
+      super(FieldEncoding.LENGTH_DELIMITED, SendDataResponse.class, "type.googleapis.com/com.squareup.services.anotherpackage.SendDataResponse");
     }
 
     @Override

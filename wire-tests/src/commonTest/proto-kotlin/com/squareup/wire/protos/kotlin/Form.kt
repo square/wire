@@ -179,7 +179,8 @@ class Form(
     @JvmField
     val ADAPTER: ProtoAdapter<Form> = object : ProtoAdapter<Form>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Form::class
+      Form::class, 
+      "type.googleapis.com/squareup.protos.kotlin.oneof.Form"
     ) {
       override fun encodedSize(value: Form): Int = 
         ButtonElement.ADAPTER.encodedSizeWithTag(1, value.button_element) +
@@ -309,7 +310,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<ButtonElement> = object : ProtoAdapter<ButtonElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        ButtonElement::class
+        ButtonElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.ButtonElement"
       ) {
         override fun encodedSize(value: ButtonElement): Int = 
           value.unknownFields.size
@@ -358,7 +360,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<LocalImageElement> = object : ProtoAdapter<LocalImageElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        LocalImageElement::class
+        LocalImageElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement"
       ) {
         override fun encodedSize(value: LocalImageElement): Int = 
           value.unknownFields.size
@@ -407,7 +410,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<RemoteImageElement> = object : ProtoAdapter<RemoteImageElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        RemoteImageElement::class
+        RemoteImageElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.RemoteImageElement"
       ) {
         override fun encodedSize(value: RemoteImageElement): Int = 
           value.unknownFields.size
@@ -456,7 +460,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<MoneyElement> = object : ProtoAdapter<MoneyElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        MoneyElement::class
+        MoneyElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.MoneyElement"
       ) {
         override fun encodedSize(value: MoneyElement): Int = 
           value.unknownFields.size
@@ -505,7 +510,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<SpacerElement> = object : ProtoAdapter<SpacerElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        SpacerElement::class
+        SpacerElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.SpacerElement"
       ) {
         override fun encodedSize(value: SpacerElement): Int = 
           value.unknownFields.size
@@ -554,7 +560,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<TextElement> = object : ProtoAdapter<TextElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        TextElement::class
+        TextElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextElement"
       ) {
         override fun encodedSize(value: TextElement): Int = 
           value.unknownFields.size
@@ -604,7 +611,8 @@ class Form(
       val ADAPTER: ProtoAdapter<CustomizedCardElement> = object :
           ProtoAdapter<CustomizedCardElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        CustomizedCardElement::class
+        CustomizedCardElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CustomizedCardElement"
       ) {
         override fun encodedSize(value: CustomizedCardElement): Int = 
           value.unknownFields.size
@@ -653,7 +661,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<AddressElement> = object : ProtoAdapter<AddressElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        AddressElement::class
+        AddressElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.AddressElement"
       ) {
         override fun encodedSize(value: AddressElement): Int = 
           value.unknownFields.size
@@ -702,7 +711,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<TextInputElement> = object : ProtoAdapter<TextInputElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        TextInputElement::class
+        TextInputElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextInputElement"
       ) {
         override fun encodedSize(value: TextInputElement): Int = 
           value.unknownFields.size
@@ -751,7 +761,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<OptionPickerElement> = object : ProtoAdapter<OptionPickerElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        OptionPickerElement::class
+        OptionPickerElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.OptionPickerElement"
       ) {
         override fun encodedSize(value: OptionPickerElement): Int = 
           value.unknownFields.size
@@ -800,7 +811,8 @@ class Form(
       @JvmField
       val ADAPTER: ProtoAdapter<DetailRowElement> = object : ProtoAdapter<DetailRowElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        DetailRowElement::class
+        DetailRowElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.DetailRowElement"
       ) {
         override fun encodedSize(value: DetailRowElement): Int = 
           value.unknownFields.size
@@ -850,7 +862,8 @@ class Form(
       val ADAPTER: ProtoAdapter<CurrencyConversionFlagsElement> = object :
           ProtoAdapter<CurrencyConversionFlagsElement>(
         FieldEncoding.LENGTH_DELIMITED, 
-        CurrencyConversionFlagsElement::class
+        CurrencyConversionFlagsElement::class, 
+        "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CurrencyConversionFlagsElement"
       ) {
         override fun encodedSize(value: CurrencyConversionFlagsElement): Int = 
           value.unknownFields.size

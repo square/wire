@@ -800,6 +800,18 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("val common_proto_Status: AnotherStatus"))
   }
 
+  @Test fun usesAny() {
+    val repoBuilder = RepoBuilder()
+        .add("a.proto", """
+        |package common.proto;
+        |import "google/protobuf/any.proto";
+        |message Message {
+        |  optional google.protobuf.Any just_one = 1;
+        |}""".trimMargin())
+    val code = repoBuilder.generateKotlin("common.proto.Message")
+    assertTrue(code.contains("import com.squareup.wire.AnyMessage"))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

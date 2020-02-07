@@ -133,7 +133,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
 
   private static final class ProtoAdapter_EnumOptions extends ProtoAdapter<EnumOptions> {
     public ProtoAdapter_EnumOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class);
+      super(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class, "type.googleapis.com/google.protobuf.EnumOptions");
     }
 
     @Override

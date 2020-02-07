@@ -1608,7 +1608,8 @@ class AllTypes(
     @JvmField
     val ADAPTER: ProtoAdapter<AllTypes> = object : ProtoAdapter<AllTypes>(
       FieldEncoding.LENGTH_DELIMITED, 
-      AllTypes::class
+      AllTypes::class, 
+      "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes"
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> =
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32)
@@ -2449,7 +2450,8 @@ class AllTypes(
       @JvmField
       val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
         FieldEncoding.LENGTH_DELIMITED, 
-        NestedMessage::class
+        NestedMessage::class, 
+        "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes.NestedMessage"
       ) {
         override fun encodedSize(value: NestedMessage): Int = 
           ProtoAdapter.INT32.encodedSizeWithTag(1, value.a) +

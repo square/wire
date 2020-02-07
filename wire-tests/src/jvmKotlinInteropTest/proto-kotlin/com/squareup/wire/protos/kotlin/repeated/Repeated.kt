@@ -81,7 +81,8 @@ class Repeated(
     @JvmField
     val ADAPTER: ProtoAdapter<Repeated> = object : ProtoAdapter<Repeated>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Repeated::class
+      Repeated::class, 
+      "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Repeated"
     ) {
       override fun encodedSize(value: Repeated): Int = 
         Thing.ADAPTER.asRepeated().encodedSizeWithTag(1, value.things) +

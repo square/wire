@@ -387,7 +387,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
 
   private static final class ProtoAdapter_FileDescriptorProto extends ProtoAdapter<FileDescriptorProto> {
     public ProtoAdapter_FileDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, FileDescriptorProto.class);
+      super(FieldEncoding.LENGTH_DELIMITED, FileDescriptorProto.class, "type.googleapis.com/google.protobuf.FileDescriptorProto");
     }
 
     @Override

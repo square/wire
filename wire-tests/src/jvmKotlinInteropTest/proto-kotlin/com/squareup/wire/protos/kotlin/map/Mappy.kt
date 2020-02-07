@@ -79,7 +79,8 @@ class Mappy(
     @JvmField
     val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Mappy::class
+      Mappy::class, 
+      "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy"
     ) {
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> =
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER)

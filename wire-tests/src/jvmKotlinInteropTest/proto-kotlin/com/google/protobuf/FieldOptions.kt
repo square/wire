@@ -384,7 +384,8 @@ class FieldOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<FieldOptions> = object : ProtoAdapter<FieldOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      FieldOptions::class
+      FieldOptions::class, 
+      "type.googleapis.com/google.protobuf.FieldOptions"
     ) {
       override fun encodedSize(value: FieldOptions): Int = 
         CType.ADAPTER.encodedSizeWithTag(1, value.ctype) +

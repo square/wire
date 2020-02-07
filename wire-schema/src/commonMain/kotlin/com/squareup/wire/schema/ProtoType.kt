@@ -48,6 +48,19 @@ class ProtoType {
       return if (dot == -1) null else string.substring(0, dot)
     }
 
+  /**
+   * Returns a string like "type.googleapis.com/packagename.messagename" or null if this type is
+   * a scalar or a map. Note that this returns a non-null string for enums because it doesn't know
+   * if the named type is a message or an enum.
+   */
+  val typeUrl: String?
+    get() {
+      return when {
+        isScalar || isMap -> null
+        else -> "type.googleapis.com/$string"
+      }
+    }
+
   /** Creates a scalar or message type.  */
   private constructor(isScalar: Boolean, string: String) {
     this.isScalar = isScalar
@@ -98,6 +111,7 @@ class ProtoType {
     @JvmField val STRING = ProtoType(true, "string")
     @JvmField val UINT32 = ProtoType(true, "uint32")
     @JvmField val UINT64 = ProtoType(true, "uint64")
+    @JvmField val ANY = ProtoType(false, "google.protobuf.Any")
 
     private val SCALAR_TYPES = listOf(
         BOOL,

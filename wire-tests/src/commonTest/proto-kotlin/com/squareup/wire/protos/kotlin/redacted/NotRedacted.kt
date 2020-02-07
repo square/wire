@@ -75,7 +75,8 @@ class NotRedacted(
     @JvmField
     val ADAPTER: ProtoAdapter<NotRedacted> = object : ProtoAdapter<NotRedacted>(
       FieldEncoding.LENGTH_DELIMITED, 
-      NotRedacted::class
+      NotRedacted::class, 
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.NotRedacted"
     ) {
       override fun encodedSize(value: NotRedacted): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +

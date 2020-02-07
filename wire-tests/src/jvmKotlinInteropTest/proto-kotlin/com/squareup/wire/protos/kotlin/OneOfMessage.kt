@@ -153,7 +153,8 @@ class OneOfMessage(
     @JvmField
     val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OneOfMessage::class
+      OneOfMessage::class, 
+      "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage"
     ) {
       override fun encodedSize(value: OneOfMessage): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +

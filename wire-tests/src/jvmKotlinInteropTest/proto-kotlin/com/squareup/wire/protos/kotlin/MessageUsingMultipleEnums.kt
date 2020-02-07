@@ -104,7 +104,8 @@ class MessageUsingMultipleEnums(
     val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
         ProtoAdapter<MessageUsingMultipleEnums>(
       FieldEncoding.LENGTH_DELIMITED, 
-      MessageUsingMultipleEnums::class
+      MessageUsingMultipleEnums::class, 
+      "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums"
     ) {
       override fun encodedSize(value: MessageUsingMultipleEnums): Int = 
         MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a) +

@@ -212,7 +212,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
 
   private static final class ProtoAdapter_ExternalMessage extends ProtoAdapter<ExternalMessage> {
     public ProtoAdapter_ExternalMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, ExternalMessage.class);
+      super(FieldEncoding.LENGTH_DELIMITED, ExternalMessage.class, "type.googleapis.com/squareup.protos.simple.ExternalMessage");
     }
 
     @Override

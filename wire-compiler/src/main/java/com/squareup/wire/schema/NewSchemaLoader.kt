@@ -116,7 +116,9 @@ class NewSchemaLoader(
       return load(loadFrom)
     }
 
-    if (path == CoreLoader.DESCRIPTOR_PROTO || path == CoreLoader.WIRE_EXTENSIONS_PROTO) {
+    if (path == CoreLoader.ANY_PROTO ||
+        path == CoreLoader.DESCRIPTOR_PROTO ||
+        path == CoreLoader.WIRE_EXTENSIONS_PROTO) {
       return CoreLoader.load(path)
     }
 

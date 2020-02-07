@@ -83,7 +83,8 @@ class RedactedOneOf(
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedOneOf> = object : ProtoAdapter<RedactedOneOf>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedOneOf::class
+      RedactedOneOf::class, 
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedOneOf"
     ) {
       override fun encodedSize(value: RedactedOneOf): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.b) +

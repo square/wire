@@ -124,7 +124,8 @@ class SchemaLoader {
     }
 
     val loaded = mutableMapOf<String, ProtoFile>()
-    loaded[DESCRIPTOR_PROTO] = loadDescriptorProto()
+    loaded[DESCRIPTOR_PROTO] = loadSpecialProto(DESCRIPTOR_PROTO)
+    loaded[ANY_PROTO] = loadSpecialProto(ANY_PROTO)
 
     while (!protos.isEmpty()) {
       val proto = protos.removeFirst()
@@ -161,21 +162,21 @@ class SchemaLoader {
   }
 
   /**
-   * Returns Google's protobuf descriptor, which defines standard options like default, deprecated,
-   * and java_package. If the user has provided their own version of the descriptor proto, that is
-   * preferred.
+   * Loads a special proto like "google/protobuf/descriptor.proto" from the Wire resources. If the
+   * user has provided their own version of this proto, that is preferred.
    */
   @Throws(IOException::class)
-  private fun loadDescriptorProto(): ProtoFile {
-    SchemaLoader::class.java.getResourceAsStream("/$DESCRIPTOR_PROTO").source().buffer().use {
+  private fun loadSpecialProto(path: String): ProtoFile {
+    SchemaLoader::class.java.getResourceAsStream("/$path").source().buffer().use {
       val data = it.readUtf8()
-      val location = Location.get("", DESCRIPTOR_PROTO)
+      val location = Location.get("", path)
       val element = ProtoParser.parse(location, data)
       return ProtoFile.get(element)
     }
   }
 
   companion object {
+    private const val ANY_PROTO = "google/protobuf/any.proto"
     private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
 
     @Throws(IOException::class)

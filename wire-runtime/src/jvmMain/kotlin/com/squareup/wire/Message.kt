@@ -72,6 +72,12 @@ protected actual constructor(
   /** Encode this message as a `byte[]`.  */
   actual fun encode(): ByteArray = adapter.encode(this as M)
 
+  /** Encode this message as a `ByteString`. */
+  actual fun encodeByteString(): ByteString {
+    return adapter.encodeByteString(this as M)
+  }
+
+
   /** Encode this message and write it to `stream`.  */
   @Throws(IOException::class)
   fun encode(stream: OutputStream) {

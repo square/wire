@@ -67,7 +67,8 @@ class RedactedRequired(
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedRequired> = object : ProtoAdapter<RedactedRequired>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedRequired::class
+      RedactedRequired::class, 
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRequired"
     ) {
       override fun encodedSize(value: RedactedRequired): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +

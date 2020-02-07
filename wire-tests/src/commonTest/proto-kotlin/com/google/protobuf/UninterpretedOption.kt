@@ -139,7 +139,8 @@ class UninterpretedOption(
     @JvmField
     val ADAPTER: ProtoAdapter<UninterpretedOption> = object : ProtoAdapter<UninterpretedOption>(
       FieldEncoding.LENGTH_DELIMITED, 
-      UninterpretedOption::class
+      UninterpretedOption::class, 
+      "type.googleapis.com/google.protobuf.UninterpretedOption"
     ) {
       override fun encodedSize(value: UninterpretedOption): Int = 
         NamePart.ADAPTER.asRepeated().encodedSizeWithTag(2, value.name) +
@@ -265,7 +266,8 @@ class UninterpretedOption(
       @JvmField
       val ADAPTER: ProtoAdapter<NamePart> = object : ProtoAdapter<NamePart>(
         FieldEncoding.LENGTH_DELIMITED, 
-        NamePart::class
+        NamePart::class, 
+        "type.googleapis.com/google.protobuf.UninterpretedOption.NamePart"
       ) {
         override fun encodedSize(value: NamePart): Int = 
           ProtoAdapter.STRING.encodedSizeWithTag(1, value.name_part) +

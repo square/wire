@@ -25,7 +25,6 @@ import kotlin.reflect.KClass
 expect abstract class EnumAdapter<E : WireEnum> protected constructor(
   type: KClass<E>
 ) : ProtoAdapter<E> {
-
   override fun encodedSize(value: E): Int
 
   @Throws(IOException::class)

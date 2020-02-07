@@ -69,7 +69,8 @@ class FeatureDatabase(
     @JvmField
     val ADAPTER: ProtoAdapter<FeatureDatabase> = object : ProtoAdapter<FeatureDatabase>(
       FieldEncoding.LENGTH_DELIMITED, 
-      FeatureDatabase::class
+      FeatureDatabase::class, 
+      "type.googleapis.com/routeguide.FeatureDatabase"
     ) {
       override fun encodedSize(value: FeatureDatabase): Int = 
         Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature) +

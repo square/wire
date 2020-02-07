@@ -113,7 +113,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
 
   private static final class ProtoAdapter_OneofDescriptorProto extends ProtoAdapter<OneofDescriptorProto> {
     public ProtoAdapter_OneofDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneofDescriptorProto.class);
+      super(FieldEncoding.LENGTH_DELIMITED, OneofDescriptorProto.class, "type.googleapis.com/google.protobuf.OneofDescriptorProto");
     }
 
     @Override

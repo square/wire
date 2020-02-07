@@ -116,7 +116,7 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
 
   private static final class ProtoAdapter_EmbeddedMessage extends ProtoAdapter<EmbeddedMessage> {
     public ProtoAdapter_EmbeddedMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, EmbeddedMessage.class);
+      super(FieldEncoding.LENGTH_DELIMITED, EmbeddedMessage.class, "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage");
     }
 
     @Override

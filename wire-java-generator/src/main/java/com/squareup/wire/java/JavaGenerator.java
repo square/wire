@@ -131,9 +131,10 @@ public final class JavaGenerator {
           .put(ProtoType.STRING, ClassName.get(String.class))
           .put(ProtoType.UINT32, (ClassName) TypeName.INT.box())
           .put(ProtoType.UINT64, (ClassName) TypeName.LONG.box())
-          .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
-          .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
-          .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
+          .put(ProtoType.ANY, ClassName.get("com.squareup.wire", "AnyMessage"))
+          .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
+          .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
+          .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
           .build();
 
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
@@ -545,7 +546,7 @@ public final class JavaGenerator {
     String protoAdapterName = "ProtoAdapter_" + javaType.simpleName();
     String protoAdapterClassName = nameAllocator.newName(protoAdapterName);
     ClassName adapterJavaType = javaType.nestedClass(protoAdapterClassName);
-    builder.addField(messageAdapterField(adapterName, javaType, adapterJavaType));
+    builder.addField(messageAdapterField(adapterName, javaType, adapterJavaType, type.getType()));
     // Note: The non-compact implementation is added at the very bottom of the surrounding type.
 
     if (emitAndroid) {
@@ -709,11 +710,12 @@ public final class JavaGenerator {
   }
 
   private FieldSpec messageAdapterField(String adapterName, ClassName javaType,
-      ClassName adapterJavaType) {
+      ClassName adapterJavaType, ProtoType protoType) {
     FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), adapterName)
         .addModifiers(PUBLIC, STATIC, FINAL);
     if (emitCompact) {
-      result.initializer("$T.newMessageAdapter($T.class)", ProtoAdapter.class, javaType);
+      result.initializer("$T.newMessageAdapter($T.class, $S)",
+          ProtoAdapter.class, javaType, protoType.getTypeUrl());
     } else {
       result.initializer("new $T()", adapterJavaType);
     }
@@ -860,7 +862,8 @@ public final class JavaGenerator {
 
     adapter.addMethod(MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addStatement("super($T.LENGTH_DELIMITED, $T.class)", FieldEncoding.class, javaType)
+        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S)",
+            FieldEncoding.class, javaType, type.getType().getTypeUrl())
         .build());
 
     if (!useBuilder) {

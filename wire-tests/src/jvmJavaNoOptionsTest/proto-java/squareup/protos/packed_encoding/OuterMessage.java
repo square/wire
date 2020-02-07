@@ -112,7 +112,7 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
 
   private static final class ProtoAdapter_OuterMessage extends ProtoAdapter<OuterMessage> {
     public ProtoAdapter_OuterMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, OuterMessage.class);
+      super(FieldEncoding.LENGTH_DELIMITED, OuterMessage.class, "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage");
     }
 
     @Override

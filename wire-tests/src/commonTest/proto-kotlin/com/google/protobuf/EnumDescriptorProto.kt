@@ -120,7 +120,8 @@ class EnumDescriptorProto(
     @JvmField
     val ADAPTER: ProtoAdapter<EnumDescriptorProto> = object : ProtoAdapter<EnumDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
-      EnumDescriptorProto::class
+      EnumDescriptorProto::class, 
+      "type.googleapis.com/google.protobuf.EnumDescriptorProto"
     ) {
       override fun encodedSize(value: EnumDescriptorProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
@@ -243,7 +244,8 @@ class EnumDescriptorProto(
       @JvmField
       val ADAPTER: ProtoAdapter<EnumReservedRange> = object : ProtoAdapter<EnumReservedRange>(
         FieldEncoding.LENGTH_DELIMITED, 
-        EnumReservedRange::class
+        EnumReservedRange::class, 
+        "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange"
       ) {
         override fun encodedSize(value: EnumReservedRange): Int = 
           ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) +

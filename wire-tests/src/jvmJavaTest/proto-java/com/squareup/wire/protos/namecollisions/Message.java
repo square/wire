@@ -275,7 +275,7 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   private static final class ProtoAdapter_Message extends ProtoAdapter<Message> {
     public ProtoAdapter_Message() {
-      super(FieldEncoding.LENGTH_DELIMITED, Message.class);
+      super(FieldEncoding.LENGTH_DELIMITED, Message.class, "type.googleapis.com/squareup.protos.namecollisions.Message");
     }
 
     @Override

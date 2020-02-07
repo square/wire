@@ -105,7 +105,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
 
   private static final class ProtoAdapter_EnumValueOptions extends ProtoAdapter<EnumValueOptions> {
     public ProtoAdapter_EnumValueOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumValueOptions.class);
+      super(FieldEncoding.LENGTH_DELIMITED, EnumValueOptions.class, "type.googleapis.com/google.protobuf.EnumValueOptions");
     }
 
     @Override

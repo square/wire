@@ -44,7 +44,8 @@ class NoPackageRequest(
     @JvmField
     val ADAPTER: ProtoAdapter<NoPackageRequest> = object : ProtoAdapter<NoPackageRequest>(
       FieldEncoding.LENGTH_DELIMITED, 
-      NoPackageRequest::class
+      NoPackageRequest::class, 
+      "type.googleapis.com/NoPackageRequest"
     ) {
       override fun encodedSize(value: NoPackageRequest): Int = 
         value.unknownFields.size

@@ -155,7 +155,7 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
 
   private static final class ProtoAdapter_Redacted extends ProtoAdapter<Redacted> {
     public ProtoAdapter_Redacted() {
-      super(FieldEncoding.LENGTH_DELIMITED, Redacted.class);
+      super(FieldEncoding.LENGTH_DELIMITED, Redacted.class, "type.googleapis.com/squareup.protos.redacted_test.Redacted");
     }
 
     @Override

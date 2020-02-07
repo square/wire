@@ -78,7 +78,8 @@ class OneofDescriptorProto(
     @JvmField
     val ADAPTER: ProtoAdapter<OneofDescriptorProto> = object : ProtoAdapter<OneofDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OneofDescriptorProto::class
+      OneofDescriptorProto::class, 
+      "type.googleapis.com/google.protobuf.OneofDescriptorProto"
     ) {
       override fun encodedSize(value: OneofDescriptorProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +

@@ -128,6 +128,7 @@ class WireCompiler internal constructor(
       if (!sourceFileNames.isEmpty() && protoFile.location.path !in sourceFileNames) {
         if (namedFilesOnly || protoFile.location.path == DESCRIPTOR_PROTO) continue
       }
+      if (protoFile.location.path == ANY_PROTO) continue
       queue.addAll(protoFile.types.map(::PendingTypeFileSpec))
       queue.addAll(protoFile.services.map(::PendingServiceFileSpec))
     }
@@ -200,6 +201,7 @@ class WireCompiler internal constructor(
     private const val JAVA_INTEROP = "--java_interop"
     private const val MAX_WRITE_CONCURRENCY = 8
     private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
+    private const val ANY_PROTO = "google/protobuf/any.proto"
 
     @Throws(IOException::class)
     @JvmStatic fun main(args: Array<String>) {

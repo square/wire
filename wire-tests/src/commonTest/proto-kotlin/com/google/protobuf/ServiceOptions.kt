@@ -94,7 +94,8 @@ class ServiceOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<ServiceOptions> = object : ProtoAdapter<ServiceOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      ServiceOptions::class
+      ServiceOptions::class, 
+      "type.googleapis.com/google.protobuf.ServiceOptions"
     ) {
       override fun encodedSize(value: ServiceOptions): Int = 
         ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated) +

@@ -44,7 +44,8 @@ class NoPackageResponse(
     @JvmField
     val ADAPTER: ProtoAdapter<NoPackageResponse> = object : ProtoAdapter<NoPackageResponse>(
       FieldEncoding.LENGTH_DELIMITED, 
-      NoPackageResponse::class
+      NoPackageResponse::class, 
+      "type.googleapis.com/NoPackageResponse"
     ) {
       override fun encodedSize(value: NoPackageResponse): Int = 
         value.unknownFields.size

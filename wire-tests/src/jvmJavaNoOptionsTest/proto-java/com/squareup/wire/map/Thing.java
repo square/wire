@@ -92,7 +92,7 @@ public final class Thing extends Message<Thing, Thing.Builder> {
 
   private static final class ProtoAdapter_Thing extends ProtoAdapter<Thing> {
     public ProtoAdapter_Thing() {
-      super(FieldEncoding.LENGTH_DELIMITED, Thing.class);
+      super(FieldEncoding.LENGTH_DELIMITED, Thing.class, "type.googleapis.com/com.squareup.wire.map.Thing");
     }
 
     @Override

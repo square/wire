@@ -22,7 +22,8 @@ import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
-  actual val type: KClass<*>?
+  actual val type: KClass<*>?,
+  actual val typeUrl: String?
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
     this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
@@ -68,6 +69,11 @@ actual abstract class ProtoAdapter<E> actual constructor(
   /** Encode `value` as a `byte[]`. */
   actual fun encode(value: E): ByteArray {
     return commonEncode(value)
+  }
+
+  /** Encode `value` as a [ByteString]. */
+  actual fun encodeByteString(value: E): ByteString {
+    return commonEncodeByteString(value)
   }
 
   /** Read a non-null value from `reader`. */

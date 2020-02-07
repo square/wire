@@ -83,7 +83,8 @@ class Percents(
     @JvmField
     val ADAPTER: ProtoAdapter<Percents> = object : ProtoAdapter<Percents>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Percents::class
+      Percents::class, 
+      "type.googleapis.com/squareup.protos.kotlin.Percents"
     ) {
       override fun encodedSize(value: Percents): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.text) +

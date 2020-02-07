@@ -482,7 +482,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
       public ProtoAdapter_NestedMessage() {
-        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class);
+        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/squareup.protos.simple.SimpleMessage.NestedMessage");
       }
 
       @Override
@@ -578,7 +578,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
   private static final class ProtoAdapter_SimpleMessage extends ProtoAdapter<SimpleMessage> {
     public ProtoAdapter_SimpleMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, SimpleMessage.class);
+      super(FieldEncoding.LENGTH_DELIMITED, SimpleMessage.class, "type.googleapis.com/squareup.protos.simple.SimpleMessage");
     }
 
     @Override

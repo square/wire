@@ -104,7 +104,8 @@ class EmbeddedMessage(
     @JvmField
     val ADAPTER: ProtoAdapter<EmbeddedMessage> = object : ProtoAdapter<EmbeddedMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
-      EmbeddedMessage::class
+      EmbeddedMessage::class, 
+      "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage"
     ) {
       override fun encodedSize(value: EmbeddedMessage): Int = 
         ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number) +

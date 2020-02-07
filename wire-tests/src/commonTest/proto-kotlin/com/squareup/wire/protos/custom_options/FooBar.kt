@@ -212,7 +212,8 @@ class FooBar(
     @JvmField
     val ADAPTER: ProtoAdapter<FooBar> = object : ProtoAdapter<FooBar>(
       FieldEncoding.LENGTH_DELIMITED, 
-      FooBar::class
+      FooBar::class, 
+      "type.googleapis.com/squareup.protos.custom_options.FooBar"
     ) {
       override fun encodedSize(value: FooBar): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
@@ -337,7 +338,8 @@ class FooBar(
       @JvmField
       val ADAPTER: ProtoAdapter<Nested> = object : ProtoAdapter<Nested>(
         FieldEncoding.LENGTH_DELIMITED, 
-        Nested::class
+        Nested::class, 
+        "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested"
       ) {
         override fun encodedSize(value: Nested): Int = 
           FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value) +
@@ -418,7 +420,8 @@ class FooBar(
       @JvmField
       val ADAPTER: ProtoAdapter<More> = object : ProtoAdapter<More>(
         FieldEncoding.LENGTH_DELIMITED, 
-        More::class
+        More::class, 
+        "type.googleapis.com/squareup.protos.custom_options.FooBar.More"
       ) {
         override fun encodedSize(value: More): Int = 
           ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial) +

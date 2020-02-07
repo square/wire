@@ -276,7 +276,7 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
     private static final class ProtoAdapter_Annotation extends ProtoAdapter<Annotation> {
       public ProtoAdapter_Annotation() {
-        super(FieldEncoding.LENGTH_DELIMITED, Annotation.class);
+        super(FieldEncoding.LENGTH_DELIMITED, Annotation.class, "type.googleapis.com/google.protobuf.GeneratedCodeInfo.Annotation");
       }
 
       @Override
@@ -327,7 +327,7 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
   private static final class ProtoAdapter_GeneratedCodeInfo extends ProtoAdapter<GeneratedCodeInfo> {
     public ProtoAdapter_GeneratedCodeInfo() {
-      super(FieldEncoding.LENGTH_DELIMITED, GeneratedCodeInfo.class);
+      super(FieldEncoding.LENGTH_DELIMITED, GeneratedCodeInfo.class, "type.googleapis.com/google.protobuf.GeneratedCodeInfo");
     }
 
     @Override

@@ -142,7 +142,7 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
     private final ProtoAdapter<Map<Integer, Integer>> map_int32_int32 = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
 
     public ProtoAdapter_RepeatedPackedAndMap() {
-      super(FieldEncoding.LENGTH_DELIMITED, RepeatedPackedAndMap.class);
+      super(FieldEncoding.LENGTH_DELIMITED, RepeatedPackedAndMap.class, "type.googleapis.com/squareup.protos.alltypes.RepeatedPackedAndMap");
     }
 
     @Override

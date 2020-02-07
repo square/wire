@@ -22,7 +22,7 @@ import kotlin.reflect.KClass
  */
 actual abstract class EnumAdapter<E : WireEnum> protected actual constructor(
   type: KClass<E>
-) : ProtoAdapter<E>(FieldEncoding.VARINT, type) {
+) : ProtoAdapter<E>(FieldEncoding.VARINT, type, null) {
   actual override fun encodedSize(value: E): Int = commonEncodedSize(value)
 
   actual override fun encode(writer: ProtoWriter, value: E) {

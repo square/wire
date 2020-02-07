@@ -44,7 +44,8 @@ class SomeResponse(
     @JvmField
     val ADAPTER: ProtoAdapter<SomeResponse> = object : ProtoAdapter<SomeResponse>(
       FieldEncoding.LENGTH_DELIMITED, 
-      SomeResponse::class
+      SomeResponse::class, 
+      "type.googleapis.com/squareup.protos.kotlin.SomeResponse"
     ) {
       override fun encodedSize(value: SomeResponse): Int = 
         value.unknownFields.size
