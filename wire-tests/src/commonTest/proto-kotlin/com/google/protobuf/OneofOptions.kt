@@ -71,7 +71,8 @@ class OneofOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<OneofOptions> = object : ProtoAdapter<OneofOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OneofOptions::class
+      OneofOptions::class, 
+      "type.googleapis.com/google.protobuf.OneofOptions"
     ) {
       override fun encodedSize(value: OneofOptions): Int = 
         UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,

@@ -86,7 +86,8 @@ class Feature(
     @JvmField
     val ADAPTER: ProtoAdapter<Feature> = object : ProtoAdapter<Feature>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Feature::class
+      Feature::class, 
+      "type.googleapis.com/routeguide.Feature"
     ) {
       override fun encodedSize(value: Feature): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +

@@ -92,7 +92,7 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
 
   private static final class ProtoAdapter_OneBytesField extends ProtoAdapter<OneBytesField> {
     public ProtoAdapter_OneBytesField() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class);
+      super(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class, "type.googleapis.com/squareup.protos.edgecases.OneBytesField");
     }
 
     @Override

@@ -106,7 +106,8 @@ class MessageWithOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<MessageWithOptions> = object : ProtoAdapter<MessageWithOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      MessageWithOptions::class
+      MessageWithOptions::class, 
+      "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions"
     ) {
       override fun encodedSize(value: MessageWithOptions): Int = 
         value.unknownFields.size

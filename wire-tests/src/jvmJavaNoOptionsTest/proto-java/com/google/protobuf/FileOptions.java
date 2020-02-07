@@ -670,7 +670,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
   private static final class ProtoAdapter_FileOptions extends ProtoAdapter<FileOptions> {
     public ProtoAdapter_FileOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, FileOptions.class);
+      super(FieldEncoding.LENGTH_DELIMITED, FileOptions.class, "type.googleapis.com/google.protobuf.FileOptions");
     }
 
     @Override

@@ -113,7 +113,7 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
 
   private static final class ProtoAdapter_ServiceOptions extends ProtoAdapter<ServiceOptions> {
     public ProtoAdapter_ServiceOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, ServiceOptions.class);
+      super(FieldEncoding.LENGTH_DELIMITED, ServiceOptions.class, "type.googleapis.com/google.protobuf.ServiceOptions");
     }
 
     @Override

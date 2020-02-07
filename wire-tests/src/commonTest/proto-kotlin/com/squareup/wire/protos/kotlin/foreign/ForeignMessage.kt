@@ -78,7 +78,8 @@ class ForeignMessage(
     @JvmField
     val ADAPTER: ProtoAdapter<ForeignMessage> = object : ProtoAdapter<ForeignMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
-      ForeignMessage::class
+      ForeignMessage::class, 
+      "type.googleapis.com/squareup.protos.kotlin.foreign.ForeignMessage"
     ) {
       override fun encodedSize(value: ForeignMessage): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) +

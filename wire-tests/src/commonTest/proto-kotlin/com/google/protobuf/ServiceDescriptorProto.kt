@@ -91,7 +91,8 @@ class ServiceDescriptorProto(
     val ADAPTER: ProtoAdapter<ServiceDescriptorProto> = object :
         ProtoAdapter<ServiceDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
-      ServiceDescriptorProto::class
+      ServiceDescriptorProto::class, 
+      "type.googleapis.com/google.protobuf.ServiceDescriptorProto"
     ) {
       override fun encodedSize(value: ServiceDescriptorProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +

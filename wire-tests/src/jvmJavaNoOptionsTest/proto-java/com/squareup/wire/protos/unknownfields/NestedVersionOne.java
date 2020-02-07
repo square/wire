@@ -93,7 +93,7 @@ public final class NestedVersionOne extends Message<NestedVersionOne, NestedVers
 
   private static final class ProtoAdapter_NestedVersionOne extends ProtoAdapter<NestedVersionOne> {
     public ProtoAdapter_NestedVersionOne() {
-      super(FieldEncoding.LENGTH_DELIMITED, NestedVersionOne.class);
+      super(FieldEncoding.LENGTH_DELIMITED, NestedVersionOne.class, "type.googleapis.com/squareup.protos.unknownfields.NestedVersionOne");
     }
 
     @Override

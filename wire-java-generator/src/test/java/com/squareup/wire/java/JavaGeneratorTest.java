@@ -154,7 +154,7 @@ public final class JavaGeneratorTest {
         + "  private final ProtoAdapter<Map<String, Bar>> bars = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Bar.ADAPTER);\n"
         + "\n"
         + "  public AbstractProtoMessageAdapter() {\n"
-        + "    super(FieldEncoding.LENGTH_DELIMITED, JavaMessage.class);\n"
+        + "    super(FieldEncoding.LENGTH_DELIMITED, JavaMessage.class, \"type.googleapis.com/original.proto.ProtoMessage\");\n"
         + "  }\n"
         + "\n"
         + "  public abstract Foo field(JavaMessage value);\n"

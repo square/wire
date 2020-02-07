@@ -399,7 +399,8 @@ class SimpleMessage(
     @JvmField
     val ADAPTER: ProtoAdapter<SimpleMessage> = object : ProtoAdapter<SimpleMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
-      SimpleMessage::class
+      SimpleMessage::class, 
+      "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage"
     ) {
       override fun encodedSize(value: SimpleMessage): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32) +
@@ -567,7 +568,8 @@ class SimpleMessage(
       @JvmField
       val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
         FieldEncoding.LENGTH_DELIMITED, 
-        NestedMessage::class
+        NestedMessage::class, 
+        "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage"
       ) {
         override fun encodedSize(value: NestedMessage): Int = 
           ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb) +

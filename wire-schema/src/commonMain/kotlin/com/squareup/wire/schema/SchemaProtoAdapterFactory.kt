@@ -61,7 +61,7 @@ internal class SchemaProtoAdapterFactory(
       return enumAdapter
     }
     if (type is MessageType) {
-      val messageAdapter = MessageAdapter(includeUnknown)
+      val messageAdapter = MessageAdapter(type.type.typeUrl, includeUnknown)
       // Put the adapter in the map early to mitigate the recursive calls to get() made below.
       adapterMap[protoType] = messageAdapter
       for (field in type.fields()) {
@@ -74,7 +74,9 @@ internal class SchemaProtoAdapterFactory(
     throw IllegalArgumentException("unexpected type: $protoType")
   }
 
-  internal class EnumAdapter(private val enumType: EnumType) : ProtoAdapter<Any>(VARINT, Any::class) {
+  internal class EnumAdapter(
+    private val enumType: EnumType
+  ) : ProtoAdapter<Any>(VARINT, Any::class, null) {
     override fun encodedSize(value: Any): Int {
       throw UnsupportedOperationException()
     }
@@ -102,8 +104,9 @@ internal class SchemaProtoAdapterFactory(
   }
 
   internal class MessageAdapter(
+    typeUrl: String?,
     private val includeUnknown: Boolean
-  ) : ProtoAdapter<Map<String, Any>>(LENGTH_DELIMITED, MutableMap::class) {
+  ) : ProtoAdapter<Map<String, Any>>(LENGTH_DELIMITED, MutableMap::class, typeUrl) {
     @JvmField val fieldsByTag = mutableMapOf<Int, Field>()
     @JvmField val fieldsByName = mutableMapOf<String, Field>()
 

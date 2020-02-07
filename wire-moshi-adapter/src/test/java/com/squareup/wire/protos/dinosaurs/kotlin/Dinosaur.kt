@@ -112,7 +112,8 @@ class Dinosaur(
     @JvmField
     val ADAPTER: ProtoAdapter<Dinosaur> = object : ProtoAdapter<Dinosaur>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Dinosaur::class
+      Dinosaur::class, 
+      "type.googleapis.com/squareup.dinosaurs.Dinosaur"
     ) {
       override fun encodedSize(value: Dinosaur): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +

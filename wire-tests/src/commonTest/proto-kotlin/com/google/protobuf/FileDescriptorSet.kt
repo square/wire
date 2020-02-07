@@ -70,7 +70,8 @@ class FileDescriptorSet(
     @JvmField
     val ADAPTER: ProtoAdapter<FileDescriptorSet> = object : ProtoAdapter<FileDescriptorSet>(
       FieldEncoding.LENGTH_DELIMITED, 
-      FileDescriptorSet::class
+      FileDescriptorSet::class, 
+      "type.googleapis.com/google.protobuf.FileDescriptorSet"
     ) {
       override fun encodedSize(value: FileDescriptorSet): Int = 
         FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file) +

@@ -265,7 +265,8 @@ class MessageOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<MessageOptions> = object : ProtoAdapter<MessageOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      MessageOptions::class
+      MessageOptions::class, 
+      "type.googleapis.com/google.protobuf.MessageOptions"
     ) {
       override fun encodedSize(value: MessageOptions): Int = 
         ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format) +

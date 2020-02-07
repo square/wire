@@ -64,7 +64,8 @@ class RedactedCycleA(
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedCycleA> = object : ProtoAdapter<RedactedCycleA>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedCycleA::class
+      RedactedCycleA::class, 
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedCycleA"
     ) {
       override fun encodedSize(value: RedactedCycleA): Int = 
         RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b) +

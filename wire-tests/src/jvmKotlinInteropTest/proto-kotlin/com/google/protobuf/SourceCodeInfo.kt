@@ -178,7 +178,8 @@ class SourceCodeInfo(
     @JvmField
     val ADAPTER: ProtoAdapter<SourceCodeInfo> = object : ProtoAdapter<SourceCodeInfo>(
       FieldEncoding.LENGTH_DELIMITED, 
-      SourceCodeInfo::class
+      SourceCodeInfo::class, 
+      "type.googleapis.com/google.protobuf.SourceCodeInfo"
     ) {
       override fun encodedSize(value: SourceCodeInfo): Int = 
         Location.ADAPTER.asRepeated().encodedSizeWithTag(1, value.location) +
@@ -523,7 +524,8 @@ class SourceCodeInfo(
       @JvmField
       val ADAPTER: ProtoAdapter<Location> = object : ProtoAdapter<Location>(
         FieldEncoding.LENGTH_DELIMITED, 
-        Location::class
+        Location::class, 
+        "type.googleapis.com/google.protobuf.SourceCodeInfo.Location"
       ) {
         override fun encodedSize(value: Location): Int = 
           ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path) +

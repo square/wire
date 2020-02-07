@@ -131,11 +131,14 @@ class KotlinGenerator private constructor(
     return typeName.peerClass(simpleName)
   }
 
-  fun generateType(type: Type): TypeSpec = when (type) {
-    is MessageType -> generateMessage(type)
-    is EnumType -> generateEnum(type)
-    is EnclosingType -> generateEnclosing(type)
-    else -> error("Unknown type $type")
+  fun generateType(type: Type): TypeSpec {
+    check(type.type != ProtoType.ANY)
+    return when (type) {
+      is MessageType -> generateMessage(type)
+      is EnumType -> generateEnum(type)
+      is EnclosingType -> generateEnclosing(type)
+      else -> error("Unknown type $type")
+    }
   }
 
   /**
@@ -878,7 +881,7 @@ class KotlinGenerator private constructor(
    * companion object {
    *  @JvmField
    *  val ADAPTER : ProtoAdapter<Person> =
-   *      object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class) {
+   *      object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class, "square.github.io/wire/unknown") {
    *    override fun encodedSize(value: Person): Int { .. }
    *    override fun encode(writer: ProtoWriter, value: Person) { .. }
    *    override fun decode(reader: ProtoReader): Person { .. }
@@ -896,7 +899,8 @@ class KotlinGenerator private constructor(
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
         .addSuperclassConstructorParameter("\n⇥%T.LENGTH_DELIMITED",
             FieldEncoding::class.asClassName())
-        .addSuperclassConstructorParameter("\n%T::class\n⇤", parentClassName)
+        .addSuperclassConstructorParameter("\n%T::class", parentClassName)
+        .addSuperclassConstructorParameter("\n%S\n⇤", type.type.typeUrl!!)
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
@@ -1416,6 +1420,7 @@ class KotlinGenerator private constructor(
         ProtoType.STRING to String::class.asClassName(),
         ProtoType.UINT32 to INT,
         ProtoType.UINT64 to LONG,
+        ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
         FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
         MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
         ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
@@ -1438,7 +1443,7 @@ class KotlinGenerator private constructor(
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT
     ): KotlinGenerator {
-      val map = BUILT_IN_TYPES.toMutableMap()
+      val map = mutableMapOf<ProtoType, ClassName>()
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
@@ -1458,6 +1463,8 @@ class KotlinGenerator private constructor(
           map[service.type()] = className
         }
       }
+
+      map.putAll(BUILT_IN_TYPES)
 
       return KotlinGenerator(schema, map, emitAndroid, javaInterop, rpcCallStyle, rpcRole)
     }

@@ -82,7 +82,8 @@ class RedactedRepeated(
     @JvmField
     val ADAPTER: ProtoAdapter<RedactedRepeated> = object : ProtoAdapter<RedactedRepeated>(
       FieldEncoding.LENGTH_DELIMITED, 
-      RedactedRepeated::class
+      RedactedRepeated::class, 
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRepeated"
     ) {
       override fun encodedSize(value: RedactedRepeated): Int = 
         ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a) +

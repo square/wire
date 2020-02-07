@@ -99,7 +99,8 @@ class OuterMessage(
     @JvmField
     val ADAPTER: ProtoAdapter<OuterMessage> = object : ProtoAdapter<OuterMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OuterMessage::class
+      OuterMessage::class, 
+      "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage"
     ) {
       override fun encodedSize(value: OuterMessage): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before) +

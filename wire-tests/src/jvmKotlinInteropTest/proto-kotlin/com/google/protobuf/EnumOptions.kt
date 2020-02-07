@@ -153,7 +153,8 @@ class EnumOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<EnumOptions> = object : ProtoAdapter<EnumOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      EnumOptions::class
+      EnumOptions::class, 
+      "type.googleapis.com/google.protobuf.EnumOptions"
     ) {
       override fun encodedSize(value: EnumOptions): Int = 
         ProtoAdapter.BOOL.encodedSizeWithTag(2, value.allow_alias) +

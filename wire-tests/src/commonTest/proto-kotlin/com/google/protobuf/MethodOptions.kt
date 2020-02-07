@@ -110,7 +110,8 @@ class MethodOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<MethodOptions> = object : ProtoAdapter<MethodOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      MethodOptions::class
+      MethodOptions::class, 
+      "type.googleapis.com/google.protobuf.MethodOptions"
     ) {
       override fun encodedSize(value: MethodOptions): Int = 
         ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated) +

@@ -29,7 +29,8 @@ import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
-  actual val type: KClass<*>?
+  actual val type: KClass<*>?,
+  actual val typeUrl: String?
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
     this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
@@ -41,7 +42,14 @@ actual abstract class ProtoAdapter<E> actual constructor(
     else -> commonCreateRepeated()
   }
 
-  constructor(fieldEncoding: FieldEncoding, type: Class<*>): this(fieldEncoding, type.kotlin)
+  // Obsolete; for Java classes generated before typeUrl was added.
+  constructor(fieldEncoding: FieldEncoding, type: Class<*>) : this(fieldEncoding, type.kotlin)
+
+  // Obsolete; for Kotlin classes generated before typeUrl was added.
+  constructor(fieldEncoding: FieldEncoding, type: KClass<*>?) : this(fieldEncoding, type, null)
+
+  constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?) :
+      this(fieldEncoding, type.kotlin, typeUrl)
 
   actual abstract fun redact(value: E): E
 
@@ -66,6 +74,10 @@ actual abstract class ProtoAdapter<E> actual constructor(
 
   actual fun encode(value: E): ByteArray {
     return commonEncode(value)
+  }
+
+  actual fun encodeByteString(value: E): ByteString {
+    return commonEncodeByteString(value)
   }
 
   @Throws(IOException::class)
@@ -136,7 +148,15 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>
     ): ProtoAdapter<M> {
-      return RuntimeMessageAdapter.create(type)
+      return RuntimeMessageAdapter.create(type, null)
+    }
+
+    /** Creates a new proto adapter for `type`. */
+    @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
+      type: Class<M>,
+      typeUrl: String
+    ): ProtoAdapter<M> {
+      return RuntimeMessageAdapter.create(type, typeUrl)
     }
 
     /** Creates a new proto adapter for `type`. */

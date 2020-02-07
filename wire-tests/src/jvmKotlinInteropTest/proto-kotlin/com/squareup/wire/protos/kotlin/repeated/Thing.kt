@@ -77,7 +77,8 @@ class Thing(
     @JvmField
     val ADAPTER: ProtoAdapter<Thing> = object : ProtoAdapter<Thing>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Thing::class
+      Thing::class, 
+      "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Thing"
     ) {
       override fun encodedSize(value: Thing): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +

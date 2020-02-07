@@ -43,7 +43,8 @@ class NoFields(
     @JvmField
     val ADAPTER: ProtoAdapter<NoFields> = object : ProtoAdapter<NoFields>(
       FieldEncoding.LENGTH_DELIMITED, 
-      NoFields::class
+      NoFields::class, 
+      "type.googleapis.com/squareup.protos.kotlin.NoFields"
     ) {
       override fun encodedSize(value: NoFields): Int = 
         value.unknownFields.size

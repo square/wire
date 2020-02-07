@@ -128,7 +128,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
 
   private static final class ProtoAdapter_RedactedChild extends ProtoAdapter<RedactedChild> {
     public ProtoAdapter_RedactedChild() {
-      super(FieldEncoding.LENGTH_DELIMITED, RedactedChild.class);
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedChild.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedChild");
     }
 
     @Override

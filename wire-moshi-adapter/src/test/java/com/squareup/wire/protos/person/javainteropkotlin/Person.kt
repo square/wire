@@ -177,7 +177,8 @@ class Person(
     @JvmField
     val ADAPTER: ProtoAdapter<Person> = object : ProtoAdapter<Person>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Person::class
+      Person::class, 
+      "type.googleapis.com/squareup.protos.kotlin.person.Person"
     ) {
       override fun encodedSize(value: Person): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
@@ -356,7 +357,8 @@ class Person(
       @JvmField
       val ADAPTER: ProtoAdapter<PhoneNumber> = object : ProtoAdapter<PhoneNumber>(
         FieldEncoding.LENGTH_DELIMITED, 
-        PhoneNumber::class
+        PhoneNumber::class, 
+        "type.googleapis.com/squareup.protos.kotlin.person.Person.PhoneNumber"
       ) {
         override fun encodedSize(value: PhoneNumber): Int = 
           ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +

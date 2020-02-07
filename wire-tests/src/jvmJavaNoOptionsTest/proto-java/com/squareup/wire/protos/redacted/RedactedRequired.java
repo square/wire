@@ -98,7 +98,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
 
   private static final class ProtoAdapter_RedactedRequired extends ProtoAdapter<RedactedRequired> {
     public ProtoAdapter_RedactedRequired() {
-      super(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class);
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedRequired");
     }
 
     @Override

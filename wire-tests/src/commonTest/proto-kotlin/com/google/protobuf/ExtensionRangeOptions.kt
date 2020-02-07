@@ -71,7 +71,8 @@ class ExtensionRangeOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<ExtensionRangeOptions> = object : ProtoAdapter<ExtensionRangeOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      ExtensionRangeOptions::class
+      ExtensionRangeOptions::class, 
+      "type.googleapis.com/google.protobuf.ExtensionRangeOptions"
     ) {
       override fun encodedSize(value: ExtensionRangeOptions): Int = 
         UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,

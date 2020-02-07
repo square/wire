@@ -102,7 +102,7 @@ public final class E {
 
     private static final class ProtoAdapter_F extends ProtoAdapter<F> {
       public ProtoAdapter_F() {
-        super(FieldEncoding.LENGTH_DELIMITED, F.class);
+        super(FieldEncoding.LENGTH_DELIMITED, F.class, "type.googleapis.com/squareup.protos.roots.E.F");
       }
 
       @Override

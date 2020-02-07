@@ -81,7 +81,8 @@ class Point(
     @JvmField
     val ADAPTER: ProtoAdapter<Point> = object : ProtoAdapter<Point>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Point::class
+      Point::class, 
+      "type.googleapis.com/routeguide.Point"
     ) {
       override fun encodedSize(value: Point): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.latitude) +

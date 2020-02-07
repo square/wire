@@ -76,7 +76,8 @@ class GeneratedCodeInfo(
     @JvmField
     val ADAPTER: ProtoAdapter<GeneratedCodeInfo> = object : ProtoAdapter<GeneratedCodeInfo>(
       FieldEncoding.LENGTH_DELIMITED, 
-      GeneratedCodeInfo::class
+      GeneratedCodeInfo::class, 
+      "type.googleapis.com/google.protobuf.GeneratedCodeInfo"
     ) {
       override fun encodedSize(value: GeneratedCodeInfo): Int = 
         Annotation.ADAPTER.asRepeated().encodedSizeWithTag(1, value.annotation) +
@@ -198,7 +199,8 @@ class GeneratedCodeInfo(
       @JvmField
       val ADAPTER: ProtoAdapter<Annotation> = object : ProtoAdapter<Annotation>(
         FieldEncoding.LENGTH_DELIMITED, 
-        Annotation::class
+        Annotation::class, 
+        "type.googleapis.com/google.protobuf.GeneratedCodeInfo.Annotation"
       ) {
         override fun encodedSize(value: Annotation): Int = 
           ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path) +

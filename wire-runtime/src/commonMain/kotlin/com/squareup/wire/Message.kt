@@ -47,6 +47,9 @@ expect abstract class Message<M : Message<M, B>, B : Message.Builder<M, B>> prot
   /** Encode this message as a `byte[]`. */
   fun encode(): ByteArray
 
+  /** Encode this message as a `ByteString`. */
+  fun encodeByteString(): ByteString
+
   /**
    * Superclass for protocol buffer message builders.
    */

@@ -85,7 +85,8 @@ class Rectangle(
     @JvmField
     val ADAPTER: ProtoAdapter<Rectangle> = object : ProtoAdapter<Rectangle>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Rectangle::class
+      Rectangle::class, 
+      "type.googleapis.com/routeguide.Rectangle"
     ) {
       override fun encodedSize(value: Rectangle): Int = 
         Point.ADAPTER.encodedSizeWithTag(1, value.lo) +

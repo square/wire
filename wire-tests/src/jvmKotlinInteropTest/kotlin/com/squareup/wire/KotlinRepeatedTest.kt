@@ -25,7 +25,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class KotlinRepeatedTest {
-  private val adapter = RuntimeMessageAdapter.create(Repeated::class.java)
+  private val adapter = RuntimeMessageAdapter.create(Repeated::class.java, "square.github.io/wire/unknown")
 
   @Test fun serialize() {
     assertEquals(BYTES, adapter.encode(THREE).toByteString())

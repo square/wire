@@ -744,7 +744,8 @@ class FileOptions(
     @JvmField
     val ADAPTER: ProtoAdapter<FileOptions> = object : ProtoAdapter<FileOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
-      FileOptions::class
+      FileOptions::class, 
+      "type.googleapis.com/google.protobuf.FileOptions"
     ) {
       override fun encodedSize(value: FileOptions): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.java_package) +

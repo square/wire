@@ -510,7 +510,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   private static final class ProtoAdapter_FieldDescriptorProto extends ProtoAdapter<FieldDescriptorProto> {
     public ProtoAdapter_FieldDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class);
+      super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class, "type.googleapis.com/google.protobuf.FieldDescriptorProto");
     }
 
     @Override

@@ -75,7 +75,8 @@ class Recursive(
     @JvmField
     val ADAPTER: ProtoAdapter<Recursive> = object : ProtoAdapter<Recursive>(
       FieldEncoding.LENGTH_DELIMITED, 
-      Recursive::class
+      Recursive::class, 
+      "type.googleapis.com/squareup.protos.kotlin.edgecases.Recursive"
     ) {
       override fun encodedSize(value: Recursive): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.value) +

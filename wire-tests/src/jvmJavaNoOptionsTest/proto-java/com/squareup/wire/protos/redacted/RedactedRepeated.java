@@ -123,7 +123,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
 
   private static final class ProtoAdapter_RedactedRepeated extends ProtoAdapter<RedactedRepeated> {
     public ProtoAdapter_RedactedRepeated() {
-      super(FieldEncoding.LENGTH_DELIMITED, RedactedRepeated.class);
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedRepeated.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedRepeated");
     }
 
     @Override

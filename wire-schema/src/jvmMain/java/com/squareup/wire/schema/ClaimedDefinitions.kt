@@ -16,17 +16,23 @@
 package com.squareup.wire.schema
 
 class ClaimedDefinitions {
-  private val set = mutableSetOf<Any>()
+  private val set = mutableSetOf<ProtoType>()
 
-  fun claim(type: Type) {
+  fun claim(type: ProtoType) {
     set.add(type)
   }
 
-  fun claim(service: Service) {
-    set.add(service)
+  fun claim(type: Type) {
+    claim(type.type)
   }
 
-  operator fun contains(type: Type) = set.contains(type)
+  fun claim(service: Service) {
+    claim(service.type())
+  }
 
-  operator fun contains(service: Service) = set.contains(service)
+  operator fun contains(type: ProtoType) = set.contains(type)
+
+  operator fun contains(type: Type) = contains(type.type)
+
+  operator fun contains(service: Service) = contains(service.type())
 }

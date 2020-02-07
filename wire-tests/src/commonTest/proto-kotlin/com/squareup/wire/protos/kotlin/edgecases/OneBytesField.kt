@@ -64,7 +64,8 @@ class OneBytesField(
     @JvmField
     val ADAPTER: ProtoAdapter<OneBytesField> = object : ProtoAdapter<OneBytesField>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OneBytesField::class
+      OneBytesField::class, 
+      "type.googleapis.com/squareup.protos.kotlin.edgecases.OneBytesField"
     ) {
       override fun encodedSize(value: OneBytesField): Int = 
         ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes) +

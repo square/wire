@@ -160,7 +160,7 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
 
   private static final class ProtoAdapter_OneOfMessage extends ProtoAdapter<OneOfMessage> {
     public ProtoAdapter_OneOfMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class);
+      super(FieldEncoding.LENGTH_DELIMITED, OneOfMessage.class, "type.googleapis.com/squareup.protos.oneof.OneOfMessage");
     }
 
     @Override

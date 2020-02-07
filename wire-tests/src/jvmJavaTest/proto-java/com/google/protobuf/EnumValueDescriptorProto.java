@@ -135,7 +135,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
   private static final class ProtoAdapter_EnumValueDescriptorProto extends ProtoAdapter<EnumValueDescriptorProto> {
     public ProtoAdapter_EnumValueDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumValueDescriptorProto.class);
+      super(FieldEncoding.LENGTH_DELIMITED, EnumValueDescriptorProto.class, "type.googleapis.com/google.protobuf.EnumValueDescriptorProto");
     }
 
     @Override

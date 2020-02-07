@@ -64,7 +64,8 @@ class OneField(
     @JvmField
     val ADAPTER: ProtoAdapter<OneField> = object : ProtoAdapter<OneField>(
       FieldEncoding.LENGTH_DELIMITED, 
-      OneField::class
+      OneField::class, 
+      "type.googleapis.com/squareup.protos.kotlin.edgecases.OneField"
     ) {
       override fun encodedSize(value: OneField): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32) +

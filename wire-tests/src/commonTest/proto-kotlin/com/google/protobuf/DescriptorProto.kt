@@ -165,7 +165,8 @@ class DescriptorProto(
     @JvmField
     val ADAPTER: ProtoAdapter<DescriptorProto> = object : ProtoAdapter<DescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
-      DescriptorProto::class
+      DescriptorProto::class, 
+      "type.googleapis.com/google.protobuf.DescriptorProto"
     ) {
       override fun encodedSize(value: DescriptorProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
@@ -319,7 +320,8 @@ class DescriptorProto(
       @JvmField
       val ADAPTER: ProtoAdapter<ExtensionRange> = object : ProtoAdapter<ExtensionRange>(
         FieldEncoding.LENGTH_DELIMITED, 
-        ExtensionRange::class
+        ExtensionRange::class, 
+        "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange"
       ) {
         override fun encodedSize(value: ExtensionRange): Int = 
           ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) +
@@ -428,7 +430,8 @@ class DescriptorProto(
       @JvmField
       val ADAPTER: ProtoAdapter<ReservedRange> = object : ProtoAdapter<ReservedRange>(
         FieldEncoding.LENGTH_DELIMITED, 
-        ReservedRange::class
+        ReservedRange::class, 
+        "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange"
       ) {
         override fun encodedSize(value: ReservedRange): Int = 
           ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) +

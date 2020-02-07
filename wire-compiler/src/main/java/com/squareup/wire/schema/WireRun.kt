@@ -190,6 +190,7 @@ data class WireRun(
       }
 
       val claimedDefinitions = ClaimedDefinitions()
+      claimedDefinitions.claim(ProtoType.ANY)
 
       for (target in targetsExclusiveLast) {
         val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)

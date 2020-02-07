@@ -202,7 +202,8 @@ class ExternalMessage(
     @JvmField
     val ADAPTER: ProtoAdapter<ExternalMessage> = object : ProtoAdapter<ExternalMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
-      ExternalMessage::class
+      ExternalMessage::class, 
+      "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage"
     ) {
       override fun encodedSize(value: ExternalMessage): Int = 
         ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f) +

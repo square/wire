@@ -113,7 +113,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
   private static final class ProtoAdapter_MethodOptions extends ProtoAdapter<MethodOptions> {
     public ProtoAdapter_MethodOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class);
+      super(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class, "type.googleapis.com/google.protobuf.MethodOptions");
     }
 
     @Override

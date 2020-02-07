@@ -77,7 +77,8 @@ class NestedVersionOne(
     @JvmField
     val ADAPTER: ProtoAdapter<NestedVersionOne> = object : ProtoAdapter<NestedVersionOne>(
       FieldEncoding.LENGTH_DELIMITED, 
-      NestedVersionOne::class
+      NestedVersionOne::class, 
+      "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionOne"
     ) {
       override fun encodedSize(value: NestedVersionOne): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) +

@@ -80,7 +80,8 @@ class DeprecatedProto(
     @JvmField
     val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
       FieldEncoding.LENGTH_DELIMITED, 
-      DeprecatedProto::class
+      DeprecatedProto::class, 
+      "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto"
     ) {
       override fun encodedSize(value: DeprecatedProto): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +

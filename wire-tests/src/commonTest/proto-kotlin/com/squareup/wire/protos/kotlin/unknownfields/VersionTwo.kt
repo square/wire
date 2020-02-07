@@ -132,7 +132,8 @@ class VersionTwo(
     @JvmField
     val ADAPTER: ProtoAdapter<VersionTwo> = object : ProtoAdapter<VersionTwo>(
       FieldEncoding.LENGTH_DELIMITED, 
-      VersionTwo::class
+      VersionTwo::class, 
+      "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionTwo"
     ) {
       override fun encodedSize(value: VersionTwo): Int = 
         ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) +
