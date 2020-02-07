@@ -79,7 +79,7 @@ Cutting a Release
     ```
     sed -i "" \
       "s/VERSION_NAME=.*/VERSION_NAME=$RELEASE_VERSION/g" \
-      gradle.properties
+      `find . -name "gradle.properties"`
     sed -i "" \
       "s/\"com.squareup.wire:\([^\:]*\):[^\"]*\"/\"com.squareup.wire:\1:$RELEASE_VERSION\"/g" \
       `find . -name "README.md"`
@@ -99,7 +99,7 @@ Cutting a Release
     git tag -a parent-$RELEASE_VERSION -m "Version $RELEASE_VERSION"
     sed -i "" \
       "s/VERSION_NAME=.*/VERSION_NAME=$NEXT_VERSION/g" \
-      build.gradle
+      `find . -name "gradle.properties"`
     git commit -am "Prepare next development version."
     git push && git push --tags
     ```
