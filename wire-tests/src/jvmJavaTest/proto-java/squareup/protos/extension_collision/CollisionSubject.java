@@ -2,7 +2,6 @@
 // Source file: extension_collision.proto
 package squareup.protos.extension_collision;
 
-import com.google.protobuf.FieldOptions;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -21,13 +20,6 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
   public static final ProtoAdapter<CollisionSubject> ADAPTER = new ProtoAdapter_CollisionSubject();
 
   private static final long serialVersionUID = 0L;
-
-  public static final FieldOptions FIELD_OPTIONS_F = new FieldOptions.Builder()
-      .squareup_protos_extension_collision_1_a("1a")
-      .b("1b")
-      .squareup_protos_extension_collision_2_a("2a")
-      .c("2c")
-      .build();
 
   public static final String DEFAULT_F = "";
 

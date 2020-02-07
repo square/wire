@@ -2,8 +2,6 @@
 // Source file: custom_options.proto
 package com.squareup.wire.protos.custom_options;
 
-import com.google.protobuf.EnumOptions;
-import com.google.protobuf.FieldOptions;
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
@@ -32,52 +30,6 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   public static final ProtoAdapter<FooBar> ADAPTER = new ProtoAdapter_FooBar();
 
   private static final long serialVersionUID = 0L;
-
-  public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
-      .my_field_option_one(17)
-      .build();
-
-  public static final FieldOptions FIELD_OPTIONS_BAR = new FieldOptions.Builder()
-      .my_field_option_two(33.5f)
-      .build();
-
-  public static final FieldOptions FIELD_OPTIONS_BAZ = new FieldOptions.Builder()
-      .my_field_option_three(FooBarBazEnum.BAR)
-      .build();
-
-  public static final FieldOptions FIELD_OPTIONS_QUX = new FieldOptions.Builder()
-      .my_field_option_one(18)
-      .my_field_option_two(34.5f)
-      .build();
-
-  public static final FieldOptions FIELD_OPTIONS_FRED = new FieldOptions.Builder()
-      .my_field_option_four(new FooBar.Builder()
-          .foo(11)
-          .bar("22")
-          .baz(new Nested.Builder()
-              .value(FooBarBazEnum.BAR)
-              .build())
-          .fred(Arrays.asList(
-              444.0f,
-              555.0f))
-          .nested(Arrays.asList(
-              new FooBar.Builder()
-                  .foo(33)
-                  .fred(Arrays.asList(
-                      100.0f,
-                      200.0f))
-                  .build()))
-          .build())
-      .my_field_option_two(99.9f)
-      .build();
-
-  public static final FieldOptions FIELD_OPTIONS_DAISY = new FieldOptions.Builder()
-      .my_field_option_four(new FooBar.Builder()
-          .baz(new Nested.Builder()
-              .value(FooBarBazEnum.FOO)
-              .build())
-          .build())
-      .build();
 
   public static final Integer DEFAULT_FOO = 0;
 
@@ -570,10 +522,6 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     BAZ(3, 18, null, false);
 
     public static final ProtoAdapter<FooBarBazEnum> ADAPTER = new ProtoAdapter_FooBarBazEnum();
-
-    public static final EnumOptions ENUM_OPTIONS = new EnumOptions.Builder()
-        .enum_option(true)
-        .build();
 
     private final int value;
 

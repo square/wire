@@ -50,7 +50,6 @@ import com.squareup.wire.schema.EnumType;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
-import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.ProtoMember;
 import com.squareup.wire.schema.ProtoType;
@@ -139,10 +138,6 @@ public final class JavaGenerator {
 
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
   private static final int MAX_PARAMS_IN_CONSTRUCTOR = 16;
-
-  private static boolean isRedacted(ProtoMember member) {
-    return member.getType().equals(FIELD_OPTIONS) && member.getMember().matches(".*\\.redacted");
-  }
 
   /**
    * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
@@ -496,12 +491,6 @@ public final class JavaGenerator {
     }
     builder.addField(adapterBuilder.build());
 
-    // Enum type options.
-    FieldSpec options = optionsField(ENUM_OPTIONS, "ENUM_OPTIONS", type.getOptions());
-    if (options != null) {
-      builder.addField(options);
-    }
-
     // Public Getter
     builder.addMethod(MethodSpec.methodBuilder("getValue")
         .addAnnotation(Override.class)
@@ -561,21 +550,6 @@ public final class JavaGenerator {
         .addModifiers(PRIVATE, STATIC, FINAL)
         .initializer("$LL", 0L)
         .build());
-
-    FieldSpec messageOptions = optionsField(
-        MESSAGE_OPTIONS, nameAllocator.get("MESSAGE_OPTIONS"), type.getOptions());
-    if (messageOptions != null) {
-      builder.addField(messageOptions);
-    }
-
-    for (Field field : type.getFieldsAndOneOfFields()) {
-      String fieldName = nameAllocator.get(field);
-      String optionsFieldName = "FIELD_OPTIONS_" + fieldName.toUpperCase(Locale.US);
-      FieldSpec fieldOptions = optionsField(FIELD_OPTIONS, optionsFieldName, field.getOptions());
-      if (fieldOptions != null) {
-        builder.addField(fieldOptions);
-      }
-    }
 
     for (Field field : type.getFieldsAndOneOfFields()) {
       TypeName fieldJavaType = fieldType(field);
@@ -1125,39 +1099,6 @@ public final class JavaGenerator {
 
     result.addStatement("return builder.build()");
     return result.build();
-  }
-
-  // Example:
-  //
-  // public static final FieldOptions FIELD_OPTIONS_FOO = new FieldOptions.Builder()
-  //     .setExtension(Ext_custom_options.count, 42)
-  //     .build();
-  //
-  private FieldSpec optionsField(ProtoType optionsType, String fieldName, Options options) {
-    TypeName optionsJavaType = typeName(optionsType);
-
-    CodeBlock.Builder initializer = CodeBlock.builder();
-    initializer.add("$[new $T.Builder()", optionsJavaType);
-
-    boolean empty = true;
-    for (Map.Entry<ProtoMember, ?> entry : options.getMap().entrySet()) {
-      if (entry.getKey().equals(FIELD_DEPRECATED) || entry.getKey().equals(PACKED)
-          || isRedacted(entry.getKey())) {
-        continue;
-      }
-
-      Field optionField = schema.getField(entry.getKey());
-      initializer.add("\n.$L($L)", fieldName(optionsType, optionField),
-          fieldInitializer(optionField.getType(), entry.getValue()));
-      empty = false;
-    }
-    initializer.add("\n.build()$]");
-    if (empty) return null;
-
-    return FieldSpec.builder(optionsJavaType, fieldName)
-        .addModifiers(PUBLIC, STATIC, FINAL)
-        .initializer(initializer.build())
-        .build();
   }
 
   private String fieldName(ProtoType type, Field field) {

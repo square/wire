@@ -2,7 +2,6 @@
 // Source file: custom_options.proto
 package com.squareup.wire.protos.custom_options
 
-import com.google.protobuf.MessageOptions
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
@@ -42,67 +41,6 @@ class MessageWithOptions(
       MessageWithOptions(unknownFields)
 
   companion object {
-    val MESSAGE_OPTIONS: MessageOptions = 
-        MessageOptions(
-          my_message_option_one = FooBar(
-            foo = 1234,
-            bar = "5678",
-            baz = FooBar.Nested(
-              value = FooBar.FooBarBazEnum.BAZ
-            ),
-            qux = -1L,
-            fred = listOf(
-              123.0f,
-              321.0f
-            ),
-            daisy = 456.0
-          ),
-          my_message_option_two = 91011.0f,
-          my_message_option_three = FooBar(
-            foo = 11,
-            bar = "22",
-            baz = FooBar.Nested(
-              value = FooBar.FooBarBazEnum.BAR
-            ),
-            fred = listOf(
-              444.0f,
-              555.0f
-            ),
-            nested = listOf(
-              FooBar(
-                foo = 33,
-                fred = listOf(
-                  100.0f,
-                  200.0f
-                )
-              )
-            )
-          ),
-          my_message_option_four = FooBar.FooBarBazEnum.FOO,
-          my_message_option_five = FooBar(
-            ext = FooBar.FooBarBazEnum.BAZ,
-            rep = listOf(
-              FooBar.FooBarBazEnum.FOO,
-              FooBar.FooBarBazEnum.BAZ
-            )
-          ),
-          my_message_option_six = FooBar(
-            rep = listOf(
-              FooBar.FooBarBazEnum.FOO,
-              FooBar.FooBarBazEnum.BAR
-            ),
-            nested = listOf(
-              FooBar(
-                foo = 44,
-                ext = FooBar.FooBarBazEnum.BAR
-              ),
-              FooBar(
-                foo = 55
-              )
-            )
-          )
-        )
-
     @JvmField
     val ADAPTER: ProtoAdapter<MessageWithOptions> = object : ProtoAdapter<MessageWithOptions>(
       FieldEncoding.LENGTH_DELIMITED, 

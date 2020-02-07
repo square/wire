@@ -2,7 +2,6 @@
 // Source file: simple_message.proto
 package com.squareup.wire.protos.kotlin.simple
 
-import com.google.protobuf.EnumOptions
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
@@ -615,12 +614,6 @@ class SimpleMessage(
     BUZ(3, true);
 
     companion object {
-      @JvmField
-      val ENUM_OPTIONS: EnumOptions = 
-          EnumOptions(
-            allow_alias = true
-          )
-
       @JvmField
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class

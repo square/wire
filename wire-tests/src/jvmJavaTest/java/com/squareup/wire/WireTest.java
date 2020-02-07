@@ -375,16 +375,4 @@ public class WireTest {
     NoFields empty = new NoFields();
     assertThat(empty.toString()).isEqualTo("NoFields{}");
   }
-
-  @Test
-  public void extensionNameCollisions() throws Exception {
-    assertThat(CollisionSubject.FIELD_OPTIONS_F.squareup_protos_extension_collision_1_a)
-        .isEqualTo("1a");
-    assertThat(CollisionSubject.FIELD_OPTIONS_F.b)
-        .isEqualTo("1b");
-    assertThat(CollisionSubject.FIELD_OPTIONS_F.squareup_protos_extension_collision_2_a)
-        .isEqualTo("2a");
-    assertThat(CollisionSubject.FIELD_OPTIONS_F.c)
-        .isEqualTo("2c");
-  }
 }
