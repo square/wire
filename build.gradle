@@ -133,6 +133,8 @@ subprojects { project ->
 
   if (project.name != 'wire-runtime' &&
       project.name != 'wire-schema' &&
+      project.name != 'sample' &&
+      project.name != 'wire-codegen-sample' &&
       project.name != 'japicmp' &&
       project.name != 'wire-tests') {
     apply plugin: 'com.vanniktech.maven.publish'
