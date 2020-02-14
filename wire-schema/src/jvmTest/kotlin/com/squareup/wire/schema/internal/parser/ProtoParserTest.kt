@@ -2308,9 +2308,9 @@ class ProtoParserTest {
             |message Message {
             |  repeated OtherMessage a = 1;
             |  repeated bool b = 2;
-            |  repeated bytes c = 3;
-            |  repeated string d = 4;
+            |  repeated string c = 3;
             |
+            |  repeated bytes d = 4;
             |  repeated double e = 5;
             |  repeated float f = 6;
             |  repeated fixed32 g = 7;
@@ -2356,16 +2356,17 @@ class ProtoParserTest {
                     FieldElement(
                         location = location.at(6, 3),
                         label = REPEATED,
-                        type = "bytes",
+                        type = "string",
                         name = "c",
                         tag = 3
                     ),
                     FieldElement(
-                        location = location.at(7, 3),
+                        location = location.at(8, 3),
                         label = REPEATED,
-                        type = "string",
+                        type = "bytes",
                         name = "d",
-                        tag = 4
+                        tag = 4,
+                        options = listOf(PACKED_OPTION_ELEMENT)
                     ),
                     FieldElement(
                         location = location.at(9, 3),

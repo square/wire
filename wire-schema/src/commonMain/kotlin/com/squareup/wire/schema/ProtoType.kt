@@ -132,6 +132,7 @@ class ProtoType {
     ).associateBy { it.string }
 
     internal val NUMERIC_SCALAR_TYPES = listOf(
+        BYTES,
         DOUBLE,
         FLOAT,
         FIXED32,
