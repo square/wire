@@ -16,9 +16,13 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Field
+import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
+import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
+import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
+import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 
 /** Basic parser for `.proto` schema declarations. */
 class ProtoParser internal constructor(
@@ -44,6 +48,9 @@ class ProtoParser internal constructor(
 
   /** The current package name + nested type names, separated by dots. */
   private var prefix = ""
+
+  /** The syntax rules used to parse this file. The rules will be set when [syntax] is set. */
+  private var syntaxRules: SyntaxRules? = null
 
   fun readProtoFile(): ProtoFileElement {
     while (true) {
@@ -109,6 +116,7 @@ class ProtoParser internal constructor(
         val syntaxString = reader.readQuotedString()
         try {
           syntax = ProtoFile.Syntax[syntaxString]
+          syntaxRules = SyntaxRules.get(syntax)
         } catch (e: IllegalArgumentException) {
           throw reader.unexpected(e.message!!, location)
         }
@@ -286,15 +294,15 @@ class ProtoParser internal constructor(
     val type: String
     when (word) {
       "required" -> {
-        reader.expect(syntax != ProtoFile.Syntax.PROTO_3, location) {
+        reader.expect(syntax != PROTO_3, location) {
           "'required' label forbidden in proto3 field declarations"
         }
-        label = Field.Label.REQUIRED
+        label = REQUIRED
         type = reader.readDataType()
       }
 
       "optional" -> {
-        reader.expect(syntax != ProtoFile.Syntax.PROTO_3, location) {
+        reader.expect(syntax != PROTO_3, location) {
           "'optional' label forbidden in proto3 field declarations"
         }
         label = Field.Label.OPTIONAL
@@ -307,7 +315,7 @@ class ProtoParser internal constructor(
       }
 
       else -> {
-        reader.expect(syntax == ProtoFile.Syntax.PROTO_3 ||
+        reader.expect(syntax == PROTO_3 ||
             (word == "map" && reader.peekChar() == '<'), location) {
           "unexpected label: $word"
         }
@@ -339,8 +347,12 @@ class ProtoParser internal constructor(
     reader.require('=')
     val tag = reader.readInt()
 
-    var options = OptionReader(reader).readOptions()
-    options = options.toMutableList() // Mutable copy for extractDefault.
+    // Mutable copy to extract the default value, and add packed if necessary.
+    val options: MutableList<OptionElement> = OptionReader(reader).readOptions().toMutableList()
+    if (syntaxRules?.shouldBePacked(type, label, options) == true) {
+      options.add(PACKED_OPTION_ELEMENT)
+    }
+
     val defaultValue = stripDefault(options)
     reader.require(';')
 
