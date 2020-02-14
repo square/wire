@@ -30,7 +30,8 @@ data class OptionElement(
   val name: String,
   val kind: Kind,
   val value: Any,
-  private val isParenthesized: Boolean
+  /** If true, this [OptionElement] is a custom option. */
+  val isParenthesized: Boolean
 ) {
   enum class Kind {
     STRING,
@@ -105,6 +106,9 @@ data class OptionElement(
   }
 
   companion object {
+    internal val PACKED_OPTION_ELEMENT =
+        OptionElement("packed", BOOLEAN, value = "true", isParenthesized = false)
+
     @JvmOverloads
     fun create(
       name: String,

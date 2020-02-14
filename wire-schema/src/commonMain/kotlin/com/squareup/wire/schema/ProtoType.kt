@@ -113,7 +113,7 @@ class ProtoType {
     @JvmField val UINT64 = ProtoType(true, "uint64")
     @JvmField val ANY = ProtoType(false, "google.protobuf.Any")
 
-    private val SCALAR_TYPES = listOf(
+    private val SCALAR_TYPES: Map<String, ProtoType> = listOf(
         BOOL,
         BYTES,
         DOUBLE,
@@ -130,6 +130,21 @@ class ProtoType {
         UINT32,
         UINT64
     ).associateBy { it.string }
+
+    internal val NUMERIC_SCALAR_TYPES = listOf(
+        DOUBLE,
+        FLOAT,
+        FIXED32,
+        FIXED64,
+        INT32,
+        INT64,
+        SFIXED32,
+        SFIXED64,
+        SINT32,
+        SINT64,
+        UINT32,
+        UINT64
+    )
 
     @JvmStatic
     fun get(enclosingTypeOrPackage: String?, typeName: String): ProtoType {
