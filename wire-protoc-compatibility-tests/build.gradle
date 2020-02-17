@@ -1,0 +1,65 @@
+buildscript {
+  dependencies {
+    classpath deps.protobuf.gradlePlugin
+  }
+
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'ru.vyarus.animalsniffer'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'com.squareup.wire'
+
+protobuf {
+  plugins {
+    grpc {
+      artifact = deps.grpc.genJava
+    }
+  }
+
+  protoc {
+    artifact = deps.protobuf.protoc
+  }
+}
+
+wire {
+  kotlin {
+  }
+}
+
+sourceSets {
+  test.java.srcDirs += 'build/generated/source/proto/main/java'
+  test.java.srcDirs += 'build/generated/source/wire/'
+}
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-protoc-compatibility-tests')
+  }
+}
+
+animalsniffer {
+  sourceSets = [sourceSets.main]
+  ignore 'com.squareup.wire.internal'
+}
+
+dependencies {
+  implementation project(':wire-runtime')
+  implementation deps.kotlin.stdlib.jdk8
+  implementation deps.okio.jvm
+  implementation deps.protobuf.java
+  testImplementation deps.junit
+  testImplementation deps.assertj
+}
+
+test {
+  testLogging {
+    events "passed", "skipped", "failed"
+    exceptionFormat "full"
+  }
+}

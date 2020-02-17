@@ -1,6 +1,6 @@
 buildscript {
   dependencies {
-    classpath deps.protobufGradlePlugin
+    classpath deps.protobuf.gradlePlugin
   }
 
   repositories {
@@ -22,7 +22,7 @@ protobuf {
   }
 
   protoc {
-    artifact = deps.protoc
+    artifact = deps.protobuf.protoc
   }
 
   generateProtoTasks {
