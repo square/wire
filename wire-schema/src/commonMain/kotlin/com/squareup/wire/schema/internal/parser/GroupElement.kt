@@ -17,6 +17,7 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendIndented
 import com.squareup.wire.schema.internal.toEnglishLowerCase
@@ -29,7 +30,7 @@ data class GroupElement(
   val documentation: String = "",
   val fields: List<FieldElement> = emptyList()
 ) {
-  fun toSchema() = buildString {
+  fun toSchema(syntaxRules: SyntaxRules = SyntaxRules.get(syntax = null)) = buildString {
     appendDocumentation(documentation)
     if (label != null) {
       append("${label.name.toEnglishLowerCase()} ")
@@ -38,7 +39,7 @@ data class GroupElement(
     if (fields.isNotEmpty()) {
       append('\n')
       for (field in fields) {
-        appendIndented(field.toSchema())
+        appendIndented(field.toSchema(syntaxRules))
       }
     }
     append("}\n")

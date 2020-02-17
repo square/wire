@@ -18,6 +18,7 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoType
+import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendOptions
 import com.squareup.wire.schema.internal.toEnglishLowerCase
@@ -32,7 +33,7 @@ data class FieldElement(
   val documentation: String = "",
   val options: List<OptionElement> = emptyList()
 ) {
-  fun toSchema() = buildString {
+  fun toSchema(syntaxRules: SyntaxRules = SyntaxRules.get(syntax = null)) = buildString {
     appendDocumentation(documentation)
 
     if (label != null) {
@@ -40,7 +41,7 @@ data class FieldElement(
     }
     append("$type $name = $tag")
 
-    val optionsWithDefault = optionsWithDefaultValue()
+    val optionsWithDefault = optionsWithDefaultValue(syntaxRules)
     if (optionsWithDefault.isNotEmpty()) {
       append(' ')
       appendOptions(optionsWithDefault)
@@ -49,8 +50,10 @@ data class FieldElement(
     append(";\n")
   }
 
-  private fun optionsWithDefaultValue(): List<OptionElement> {
-    if (defaultValue == null) return options
+  private fun optionsWithDefaultValue(syntaxRules: SyntaxRules): List<OptionElement> {
+    if (defaultValue == null || !syntaxRules.allowUserDefinedDefaultValue()) {
+      return options
+    }
 
     val protoType = ProtoType.get(type)
 

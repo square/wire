@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendIndented
 
@@ -31,7 +32,7 @@ data class MessageElement(
   val extensions: List<ExtensionsElement> = emptyList(),
   val groups: List<GroupElement> = emptyList()
 ) : TypeElement {
-  override fun toSchema() = buildString {
+  override fun toSchema(syntaxRules: SyntaxRules) = buildString {
     appendDocumentation(documentation)
     append("message $name {")
 
@@ -50,19 +51,19 @@ data class MessageElement(
     if (fields.isNotEmpty()) {
       append('\n')
       for (field in fields) {
-        appendIndented(field.toSchema())
+        appendIndented(field.toSchema(syntaxRules))
       }
     }
     if (oneOfs.isNotEmpty()) {
       append('\n')
       for (oneOf in oneOfs) {
-        appendIndented(oneOf.toSchema())
+        appendIndented(oneOf.toSchema(syntaxRules))
       }
     }
     if (groups.isNotEmpty()) {
       append('\n')
       for (group in groups) {
-        appendIndented(group.toSchema())
+        appendIndented(group.toSchema(syntaxRules))
       }
     }
     if (extensions.isNotEmpty()) {
@@ -74,7 +75,7 @@ data class MessageElement(
     if (nestedTypes.isNotEmpty()) {
       append('\n')
       for (type in nestedTypes) {
-        appendIndented(type.toSchema())
+        appendIndented(type.toSchema(syntaxRules))
       }
     }
     append("}\n")
