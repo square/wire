@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendIndented
 
@@ -29,7 +30,7 @@ data class EnumElement(
   // Enums do not allow nested type declarations.
   override val nestedTypes: List<TypeElement> = emptyList()
 
-  override fun toSchema() = buildString {
+  override fun toSchema(syntaxRules: SyntaxRules) = buildString {
     appendDocumentation(documentation)
     append("enum $name {")
 

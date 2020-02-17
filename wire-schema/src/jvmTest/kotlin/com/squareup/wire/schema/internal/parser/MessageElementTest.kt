@@ -19,6 +19,7 @@ import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REPEATED
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.SyntaxRules.Companion.PROTO_3_SYNTAX_RULES
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -548,7 +549,7 @@ class MessageElementTest {
   }
 
   @Test
-  fun fieldWithDefaultStringToSchema() {
+  fun fieldWithDefaultStringToSchemaInProto2() {
     val field = FieldElement(
         location = location,
         label = REQUIRED,
@@ -559,6 +560,20 @@ class MessageElementTest {
     )
     val expected = "required string name = 1 [default = \"benoît\"];\n"
     assertThat(field.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
+  fun defaultIsNotSetInProto3() {
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        tag = 1,
+        defaultValue = "benoît"
+    )
+    val expected = "required string name = 1;\n"
+    assertThat(field.toSchema(PROTO_3_SYNTAX_RULES)).isEqualTo(expected)
   }
 
   @Test

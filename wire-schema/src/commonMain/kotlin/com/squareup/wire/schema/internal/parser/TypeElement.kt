@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.SyntaxRules
 
 /** A message type or enum type declaration.  */
 interface TypeElement {
@@ -24,5 +25,5 @@ interface TypeElement {
   val documentation: String
   val options: List<OptionElement>
   val nestedTypes: List<TypeElement>
-  fun toSchema(): String
+  fun toSchema(syntaxRules: SyntaxRules = SyntaxRules.get(syntax = null)): String
 }
