@@ -42,7 +42,7 @@ class Options(
 
   fun retainLinked() = Options(optionType, emptyList())
 
-  operator fun get(protoMember: ProtoMember): Any? {
+  fun get(protoMember: ProtoMember): Any? {
     return entries?.find { it.protoMember == protoMember }?.value
   }
 

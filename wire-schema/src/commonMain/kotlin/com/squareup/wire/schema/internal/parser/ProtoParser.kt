@@ -20,9 +20,7 @@ import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
-import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
-import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 
 /** Basic parser for `.proto` schema declarations. */
 class ProtoParser internal constructor(
@@ -48,9 +46,6 @@ class ProtoParser internal constructor(
 
   /** The current package name + nested type names, separated by dots. */
   private var prefix = ""
-
-  /** The syntax rules used to parse this file. The rules will be set when [syntax] is set. */
-  private var syntaxRules: SyntaxRules? = null
 
   fun readProtoFile(): ProtoFileElement {
     while (true) {
@@ -116,7 +111,6 @@ class ProtoParser internal constructor(
         val syntaxString = reader.readQuotedString()
         try {
           syntax = ProtoFile.Syntax[syntaxString]
-          syntaxRules = SyntaxRules.get(syntax)
         } catch (e: IllegalArgumentException) {
           throw reader.unexpected(e.message!!, location)
         }
@@ -349,9 +343,6 @@ class ProtoParser internal constructor(
 
     // Mutable copy to extract the default value, and add packed if necessary.
     val options: MutableList<OptionElement> = OptionReader(reader).readOptions().toMutableList()
-    if (syntaxRules?.shouldBePacked(type, label, options) == true) {
-      options.add(PACKED_OPTION_ELEMENT)
-    }
 
     val defaultValue = stripDefault(options)
     reader.require(';')

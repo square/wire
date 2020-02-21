@@ -94,13 +94,13 @@ class PruningRules private constructor(builder: Builder) {
     untilMember: ProtoMember
   ): Boolean {
     if (newest != null) {
-      val sinceOption = options[sinceMember]
+      val sinceOption = options.get(sinceMember)
       val since = (sinceOption as? String)?.toLowerCaseSemVer()
       if (since != null && since > newest) return false
     }
 
     if (oldest != null) {
-      val untilOption = options[untilMember]
+      val untilOption = options.get(untilMember)
       val until = (untilOption as? String)?.toLowerCaseSemVer()
       if (until != null && until <= oldest) return false
     }

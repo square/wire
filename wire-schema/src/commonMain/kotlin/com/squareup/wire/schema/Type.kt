@@ -29,7 +29,7 @@ abstract class Type {
   abstract val options: Options
   abstract val nestedTypes: List<Type>
   abstract fun linkMembers(linker: Linker)
-  abstract fun linkOptions(linker: Linker)
+  abstract fun linkOptions(linker: Linker, syntaxRules: SyntaxRules)
   abstract fun validate(linker: Linker, syntaxRules: SyntaxRules)
   abstract fun retainAll(schema: Schema, markSet: MarkSet): Type?
 
