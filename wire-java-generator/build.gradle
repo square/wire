@@ -21,3 +21,5 @@ dependencies {
   testImplementation deps.assertj
   testImplementation deps.jimfs
 }
+
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

@@ -53,5 +53,7 @@ def installProtoJars = tasks.register("installProtoJars", Copy) {
 
 tasks.withType(Test).configureEach {
   dependsOn(installProtoJars)
-  dependsOn(':wire-runtime:installLocally')
+  dependsOn(':wire-runtime:installArchives')
 }
+
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

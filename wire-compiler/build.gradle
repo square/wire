@@ -39,3 +39,5 @@ artifacts {
 shadowDistTar.enabled = false
 shadowDistZip.enabled = false
 configurations.archives.artifacts.removeAll { it.file =~ 'tar' || it.file =~ 'zip' }
+
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

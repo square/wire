@@ -5,15 +5,15 @@ kotlin {
     withJava()
   }
   js {
-    configure([compilations.main, compilations.test]) {
-      tasks.getByName(compileKotlinTaskName).kotlinOptions {
-        moduleKind = 'umd'
-        sourceMap = true
-        metaInfo = true
-      }
-    }
     nodejs()
     browser()
+    compilations.all {
+      it.compileKotlinTask.kotlinOptions {
+        moduleKind = "umd"
+        sourceMap = true
+        sourceMapEmbedSources = null
+      }
+    }
   }
   iosX64()
   iosArm64()
@@ -76,15 +76,6 @@ kotlin {
   }
 }
 
-afterEvaluate {
-  tasks.create('installLocally') {
-    dependsOn 'publishKotlinMultiplatformPublicationToTestRepository'
-    dependsOn 'publishMetadataPublicationToTestRepository'
-    dependsOn 'publishJvmPublicationToTestRepository'
-    dependsOn 'publishJsPublicationToTestRepository'
-  }
-}
-
 // TODO(egorand): Remove when https://github.com/srs/gradle-node-plugin/issues/301 is fixed
 repositories.whenObjectAdded {
   if (it instanceof IvyArtifactRepository) {
@@ -95,16 +86,4 @@ repositories.whenObjectAdded {
 }
 
 apply from: 'jvm.gradle'
-apply from: "$rootDir/gradle/gradle-mvn-mpp-push.gradle"
-
-publishing {
-  // Use default artifact name for the JVM target
-  publications {
-    kotlinMultiplatform {
-      artifactId = 'wire-runtime-multiplatform'
-    }
-    jvm {
-      artifactId = 'wire-runtime'
-    }
-  }
-}
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

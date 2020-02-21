@@ -27,9 +27,4 @@ dependencies {
   implementation deps.kotlin.coroutines.core
 }
 
-afterEvaluate { project ->
-  project.tasks.dokka {
-    outputDirectory = "$rootDir/docs/3.x"
-    outputFormat = 'gfm'
-  }
-}
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

@@ -19,3 +19,5 @@ dependencies {
   testImplementation project(':wire-test-utils')
   testImplementation deps.kotlin.test.junit
 }
+
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

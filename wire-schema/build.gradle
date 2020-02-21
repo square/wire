@@ -5,15 +5,15 @@ kotlin {
     withJava()
   }
   js {
-    configure([compilations.main, compilations.test]) {
-      tasks.getByName(compileKotlinTaskName).kotlinOptions {
-        moduleKind = 'umd'
-        sourceMap = true
-        metaInfo = true
-      }
-    }
     nodejs()
     browser()
+    compilations.all {
+      it.compileKotlinTask.kotlinOptions {
+        moduleKind = "umd"
+        sourceMap = true
+        sourceMapEmbedSources = null
+      }
+    }
   }
 
   sourceSets {
@@ -58,16 +58,4 @@ jar {
   }
 }
 
-apply from: "$rootDir/gradle/gradle-mvn-mpp-push.gradle"
-
-publishing {
-  // Use default artifact name for the JVM target
-  publications {
-    kotlinMultiplatform {
-      artifactId = 'wire-schema-multiplatform'
-    }
-    jvm {
-      artifactId = 'wire-schema'
-    }
-  }
-}
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
