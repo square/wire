@@ -349,7 +349,8 @@ class ProtoParser internal constructor(
 
     // Mutable copy to extract the default value, and add packed if necessary.
     val options: MutableList<OptionElement> = OptionReader(reader).readOptions().toMutableList()
-    if (syntaxRules?.shouldBePacked(type, label, options) == true) {
+    if (syntaxRules?.isPackedByDefault(type, label) == true &&
+        options.none { it.name == PACKED_OPTION_ELEMENT.name && !it.isParenthesized }) {
       options.add(PACKED_OPTION_ELEMENT)
     }
 

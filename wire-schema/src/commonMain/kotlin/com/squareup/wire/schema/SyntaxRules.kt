@@ -25,7 +25,7 @@ interface SyntaxRules {
   fun allowUserDefinedDefaultValue(): Boolean
   fun canExtend(protoType: ProtoType): Boolean
   fun enumRequiresZeroValueAtFirstPosition(): Boolean
-  fun shouldBePacked(type: String, label: Field.Label?, options: List<OptionElement>): Boolean
+  fun isPackedByDefault(type: String, label: Field.Label?): Boolean
 
   companion object {
     fun get(syntax: Syntax?): SyntaxRules {
@@ -40,10 +40,9 @@ interface SyntaxRules {
       override fun allowUserDefinedDefaultValue(): Boolean = true
       override fun canExtend(protoType: ProtoType): Boolean = true
       override fun enumRequiresZeroValueAtFirstPosition(): Boolean = false
-      override fun shouldBePacked(
+      override fun isPackedByDefault(
         type: String,
-        label: Field.Label?,
-        options: List<OptionElement>
+        label: Field.Label?
       ): Boolean = false
     }
 
@@ -53,14 +52,12 @@ interface SyntaxRules {
         return protoType in Options.GOOGLE_PROTOBUF_OPTION_TYPES
       }
       override fun enumRequiresZeroValueAtFirstPosition(): Boolean = true
-      override fun shouldBePacked(
+      override fun isPackedByDefault(
         type: String,
-        label: Field.Label?,
-        options: List<OptionElement>
+        label: Field.Label?
       ): Boolean {
         return label == Field.Label.REPEATED &&
-            ProtoType.get(type) in ProtoType.NUMERIC_SCALAR_TYPES &&
-            options.none { it.name == OptionElement.PACKED_OPTION_ELEMENT.name && !it.isParenthesized }
+            ProtoType.get(type) in ProtoType.NUMERIC_SCALAR_TYPES
       }
     }
   }

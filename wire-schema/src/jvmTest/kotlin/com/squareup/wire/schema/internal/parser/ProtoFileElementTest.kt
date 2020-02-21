@@ -19,6 +19,7 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
+import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -410,5 +411,164 @@ class ProtoFileElementTest {
     // // Re-parse the expected string into a ProtoFile and ensure they're equal.
     // val parsed = ProtoParser.parse(location, expected)
     // assertThat(parsed).isEqualTo(file)
+  }
+
+  @Test
+  fun convertPackedOptionFromWireSchemaInProto2() {
+    val fieldNumeric = FieldElement(
+        location = location.at(6, 3),
+        label = Field.Label.REPEATED,
+        type = "int32",
+        name = "numeric_without_packed_option",
+        tag = 1
+    )
+    val fieldNumericPackedTrue = FieldElement(
+        location = location.at(7, 3),
+        label = Field.Label.REPEATED,
+        type = "int32",
+        name = "numeric_packed_true",
+        tag = 2,
+        options = listOf(PACKED_OPTION_ELEMENT)
+    )
+    val fieldNumericPackedFalse = FieldElement(
+        location = location.at(8, 3),
+        label = Field.Label.REPEATED,
+        type = "int32",
+        name = "numeric_packed_false",
+        tag = 3,
+        options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
+    )
+    val fieldString = FieldElement(
+        location = location.at(9, 3),
+        label = Field.Label.REPEATED,
+        type = "string",
+        name = "string_without_packed_option",
+        tag = 4
+    )
+    val fieldStringPackedTrue = FieldElement(
+        location = location.at(10, 3),
+        label = Field.Label.REPEATED,
+        type = "string",
+        name = "string_packed_true",
+        tag = 5,
+        options = listOf(PACKED_OPTION_ELEMENT)
+    )
+    val fieldStringPackedFalse = FieldElement(
+        location = location.at(11, 3),
+        label = Field.Label.REPEATED,
+        type = "string",
+        name = "string_packed_false",
+        tag = 6,
+        options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
+    )
+
+    val message = MessageElement(
+        location = location.at(5, 1),
+        name = "Message",
+        fields = listOf(fieldNumeric, fieldNumericPackedTrue, fieldNumericPackedFalse, fieldString,
+            fieldStringPackedTrue, fieldStringPackedFalse))
+    val file = ProtoFileElement(
+        syntax = PROTO_2,
+        location = location,
+        packageName = "example.simple",
+        imports = emptyList(),
+        publicImports = emptyList(),
+        types = listOf(message)
+    )
+    val expected = """
+        |// file.proto
+        |syntax = "proto2";
+        |package example.simple;
+        |
+        |message Message {
+        |  repeated int32 numeric_without_packed_option = 1;
+        |  repeated int32 numeric_packed_true = 2 [packed = true];
+        |  repeated int32 numeric_packed_false = 3 [packed = false];
+        |  repeated string string_without_packed_option = 4;
+        |  repeated string string_packed_true = 5 [packed = true];
+        |  repeated string string_packed_false = 6 [packed = false];
+        |}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
+
+    // Re-parse the expected string into a ProtoFile and ensure they're equal.
+    val parsed = ProtoParser.parse(location, expected)
+    assertThat(parsed).isEqualTo(file)
+  }
+
+  @Test
+  fun convertPackedOptionFromWireSchemaInProto3() {
+    val fieldNumericPackedTrue = FieldElement(
+        location = location.at(6, 3),
+        label = Field.Label.REPEATED,
+        type = "int32",
+        name = "numeric_packed_true",
+        tag = 1,
+        options = listOf(PACKED_OPTION_ELEMENT)
+    )
+    val fieldNumericPackedFalse = FieldElement(
+        location = location.at(7, 3),
+        label = Field.Label.REPEATED,
+        type = "int32",
+        name = "numeric_packed_false",
+        tag = 2,
+        options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
+    )
+    val fieldString = FieldElement(
+        location = location.at(8, 3),
+        label = Field.Label.REPEATED,
+        type = "string",
+        name = "string_without_packed_option",
+        tag = 3
+    )
+    val fieldStringPackedTrue = FieldElement(
+        location = location.at(9, 3),
+        label = Field.Label.REPEATED,
+        type = "string",
+        name = "string_packed_true",
+        tag = 4,
+        options = listOf(PACKED_OPTION_ELEMENT)
+    )
+    val fieldStringPackedFalse = FieldElement(
+        location = location.at(10, 3),
+        label = Field.Label.REPEATED,
+        type = "string",
+        name = "string_packed_false",
+        tag = 5,
+        options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
+    )
+
+    val message = MessageElement(
+        location = location.at(5, 1),
+        name = "Message",
+        fields = listOf(fieldNumericPackedTrue, fieldNumericPackedFalse, fieldString,
+            fieldStringPackedTrue, fieldStringPackedFalse)
+    )
+    val file = ProtoFileElement(
+        syntax = PROTO_3,
+        location = location,
+        packageName = "example.simple",
+        imports = emptyList(),
+        publicImports = emptyList(),
+        types = listOf(message)
+    )
+    val expected = """
+        |// file.proto
+        |syntax = "proto3";
+        |package example.simple;
+        |
+        |message Message {
+        |  repeated int32 numeric_packed_true = 1;
+        |  repeated int32 numeric_packed_false = 2 [packed = false];
+        |  repeated string string_without_packed_option = 3;
+        |  repeated string string_packed_true = 4 [packed = true];
+        |  repeated string string_packed_false = 5 [packed = false];
+        |}
+        |""".trimMargin()
+    assertThat(file.toSchema()).isEqualTo(expected)
+
+    // Re-parse the expected string into a ProtoFile and ensure they're equal.
+    val parsed = ProtoParser.parse(location, expected)
+    assertThat(parsed).isEqualTo(file)
   }
 }

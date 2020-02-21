@@ -21,6 +21,7 @@ import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendOptions
+import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import com.squareup.wire.schema.internal.toEnglishLowerCase
 
 data class FieldElement(
@@ -41,23 +42,26 @@ data class FieldElement(
     }
     append("$type $name = $tag")
 
-    val optionsWithDefault = optionsWithDefaultValue(syntaxRules)
-    if (optionsWithDefault.isNotEmpty()) {
+    val formattedOptions = formatOptions(syntaxRules)
+    if (formattedOptions.isNotEmpty()) {
       append(' ')
-      appendOptions(optionsWithDefault)
+      appendOptions(formattedOptions)
     }
 
     append(";\n")
   }
 
-  private fun optionsWithDefaultValue(syntaxRules: SyntaxRules): List<OptionElement> {
-    if (defaultValue == null || !syntaxRules.allowUserDefinedDefaultValue()) {
-      return options
+  private fun formatOptions(syntaxRules: SyntaxRules): List<OptionElement> {
+    val result = options.toMutableList()
+
+    if (defaultValue != null && syntaxRules.allowUserDefinedDefaultValue()) {
+      val protoType = ProtoType.get(type)
+      result += OptionElement.create("default", protoType.toKind(), defaultValue)
     }
-
-    val protoType = ProtoType.get(type)
-
-    return options + OptionElement.create("default", protoType.toKind(), defaultValue)
+    if (syntaxRules.isPackedByDefault(type, label)) {
+      result.remove(PACKED_OPTION_ELEMENT)
+    }
+    return result
   }
 
   // Only non-repeated scalar types and Enums support default values.
