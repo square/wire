@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UsePropertyAccessSyntax")
+
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
@@ -1738,5 +1740,64 @@ class SchemaTest {
             """.trimMargin()
       )
     }
+  }
+
+  @Test
+  fun repeatedNumericScalarsShouldBePackedByDefaultForProto3() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |syntax = "proto3";
+            |
+            |message Message {
+            |  repeated OtherMessage a = 1;
+            |  repeated bool b = 2;
+            |  repeated bytes c = 3;
+            |  repeated string d = 4;
+            |
+            |  repeated double e = 5;
+            |  repeated float f = 6;
+            |  repeated fixed32 g = 7;
+            |  repeated fixed64 h = 8;
+            |  repeated int32 i = 9;
+            |  repeated int64 j = 10;
+            |  repeated sfixed32 k = 11;
+            |  repeated sfixed64 l = 12;
+            |  repeated sint32 m = 13;
+            |  repeated sint64 n = 14;
+            |  repeated uint32 o = 15;
+            |  repeated uint64 p = 16;
+            |
+            |  repeated int32 set_to_false = 17 [packed = false];
+            |  repeated int32 set_to_true = 18 [packed = true];
+            |}
+            |
+            |message OtherMessage {}
+            |""".trimMargin()
+        ).schema()
+
+    val messageType = schema.getType("Message") as MessageType
+    // Default to false.
+    assertThat(messageType.field("a")!!.isPacked).isFalse()
+    assertThat(messageType.field("b")!!.isPacked).isFalse()
+    assertThat(messageType.field("c")!!.isPacked).isFalse()
+    assertThat(messageType.field("d")!!.isPacked).isFalse()
+
+    // Repeated numeric scalar default to true.
+    assertThat(messageType.field("e")!!.isPacked).isTrue()
+    assertThat(messageType.field("f")!!.isPacked).isTrue()
+    assertThat(messageType.field("g")!!.isPacked).isTrue()
+    assertThat(messageType.field("h")!!.isPacked).isTrue()
+    assertThat(messageType.field("i")!!.isPacked).isTrue()
+    assertThat(messageType.field("j")!!.isPacked).isTrue()
+    assertThat(messageType.field("k")!!.isPacked).isTrue()
+    assertThat(messageType.field("l")!!.isPacked).isTrue()
+    assertThat(messageType.field("m")!!.isPacked).isTrue()
+    assertThat(messageType.field("n")!!.isPacked).isTrue()
+    assertThat(messageType.field("o")!!.isPacked).isTrue()
+    assertThat(messageType.field("p")!!.isPacked).isTrue()
+
+    // Don't override set packed.
+    assertThat(messageType.field("set_to_false")!!.isPacked).isFalse()
+    assertThat(messageType.field("set_to_true")!!.isPacked).isTrue()
   }
 }

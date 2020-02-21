@@ -18,14 +18,13 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.ProtoFile.Syntax
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
-import com.squareup.wire.schema.internal.parser.OptionElement
 
 /** A set of rules which defines schema requirements for a specific [Syntax]. */
 interface SyntaxRules {
   fun allowUserDefinedDefaultValue(): Boolean
   fun canExtend(protoType: ProtoType): Boolean
   fun enumRequiresZeroValueAtFirstPosition(): Boolean
-  fun shouldBePacked(type: String, label: Field.Label?, options: List<OptionElement>): Boolean
+  fun isPackedByDefault(type: ProtoType, label: Field.Label?): Boolean
 
   companion object {
     fun get(syntax: Syntax?): SyntaxRules {
@@ -40,10 +39,9 @@ interface SyntaxRules {
       override fun allowUserDefinedDefaultValue(): Boolean = true
       override fun canExtend(protoType: ProtoType): Boolean = true
       override fun enumRequiresZeroValueAtFirstPosition(): Boolean = false
-      override fun shouldBePacked(
-        type: String,
-        label: Field.Label?,
-        options: List<OptionElement>
+      override fun isPackedByDefault(
+        type: ProtoType,
+        label: Field.Label?
       ): Boolean = false
     }
 
@@ -53,14 +51,11 @@ interface SyntaxRules {
         return protoType in Options.GOOGLE_PROTOBUF_OPTION_TYPES
       }
       override fun enumRequiresZeroValueAtFirstPosition(): Boolean = true
-      override fun shouldBePacked(
-        type: String,
-        label: Field.Label?,
-        options: List<OptionElement>
+      override fun isPackedByDefault(
+        type: ProtoType,
+        label: Field.Label?
       ): Boolean {
-        return label == Field.Label.REPEATED &&
-            ProtoType.get(type) in ProtoType.NUMERIC_SCALAR_TYPES &&
-            options.none { it.name == OptionElement.PACKED_OPTION_ELEMENT.name && !it.isParenthesized }
+        return label == Field.Label.REPEATED && type in ProtoType.NUMERIC_SCALAR_TYPES
       }
     }
   }

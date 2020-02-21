@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
 import com.squareup.wire.schema.internal.parser.FieldElement
+import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import kotlin.jvm.JvmStatic
 
 class Field private constructor(
@@ -93,11 +94,12 @@ class Field private constructor(
     type = linker.withContext(this).resolveType(elementType)
   }
 
-  fun linkOptions(linker: Linker) {
+  fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
     val linker = linker.withContext(this)
     options.link(linker)
     deprecated = options.get(DEPRECATED)
     packed = options.get(PACKED)
+        ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
     // We allow any package name to be used as long as it ends with '.redacted'.
     isRedacted = options.optionMatches(".*\\.redacted", "true")
   }

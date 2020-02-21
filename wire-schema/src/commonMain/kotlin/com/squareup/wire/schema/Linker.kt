@@ -67,7 +67,7 @@ class Linker {
    * partially link any imported files necessary.
    */
   fun link(sourceProtoFiles: Iterable<ProtoFile>): Schema {
-    val sourceFiles = sourceProtoFiles.map { sourceFile ->
+    val sourceFiles: List<FileLinker> = sourceProtoFiles.map { sourceFile ->
       FileLinker(sourceFile, withContext(sourceFile))
           .also { fileLinker ->
             fileLinkers[sourceFile.location.path] = fileLinker
@@ -95,7 +95,9 @@ class Linker {
     }
 
     for (fileLinker in sourceFiles) {
-      fileLinker.linkOptions()
+      // TODO(benoit) Create a map to cache those.
+      val syntaxRules = SyntaxRules.get(fileLinker.protoFile.syntax)
+      fileLinker.linkOptions(syntaxRules)
     }
 
     // For compactness we'd prefer to link the options of source files only. But we link file

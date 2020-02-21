@@ -114,19 +114,19 @@ class MessageType private constructor(
     }
   }
 
-  override fun linkOptions(linker: Linker) {
+  override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
     val linker = linker.withContext(this)
     for (nestedType in nestedTypes) {
-      nestedType.linkOptions(linker)
+      nestedType.linkOptions(linker, syntaxRules)
     }
     for (field in declaredFields) {
-      field.linkOptions(linker)
+      field.linkOptions(linker, syntaxRules)
     }
     for (field in extensionFields) {
-      field.linkOptions(linker)
+      field.linkOptions(linker, syntaxRules)
     }
     for (oneOf in oneOfs) {
-      oneOf.linkOptions(linker)
+      oneOf.linkOptions(linker, syntaxRules)
     }
     options.link(linker)
   }

@@ -156,7 +156,7 @@ class ProtoFile private constructor(
 
   fun linkOptions(linker: Linker) {
     options.link(linker)
-    javaPackage = options[JAVA_PACKAGE]
+    javaPackage = options.get(JAVA_PACKAGE)
   }
 
   override fun toString(): String {

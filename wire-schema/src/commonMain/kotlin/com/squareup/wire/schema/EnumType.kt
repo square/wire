@@ -42,7 +42,7 @@ class EnumType private constructor(
 
   override fun linkMembers(linker: Linker) {}
 
-  override fun linkOptions(linker: Linker) {
+  override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
     options.link(linker)
     for (constant in constants) {
       constant.linkOptions(linker)
