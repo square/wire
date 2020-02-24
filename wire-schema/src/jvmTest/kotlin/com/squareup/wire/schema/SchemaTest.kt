@@ -19,6 +19,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.internal.isValidTag
+import com.squareup.wire.schema.internal.parser.OptionElement
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Ignore
@@ -1558,7 +1559,7 @@ class SchemaTest {
             |  TRIASSIC = 3;
             |}
             |""".trimMargin())
-          .schema()
+        .schema()
     val enum = schema.getType("Period") as EnumType
     assertThat(enum.constant("ZERO")).isNotNull
     assertThat(enum.constant("CRETACEOUS")).isNotNull
@@ -1581,7 +1582,7 @@ class SchemaTest {
               |""".trimMargin())
           .schema()
       fail()
-    }  catch (expected: SchemaException) {
+    } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
           |missing a zero value at the first element [proto3]
           |  for enum Period (/source/period.proto at 3:1)
@@ -1606,7 +1607,7 @@ class SchemaTest {
               |""".trimMargin())
           .schema()
       fail()
-    }  catch (expected: SchemaException) {
+    } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
           |missing a zero value at the first element [proto3]
           |  for enum Period (/source/period.proto at 3:1)
@@ -1626,7 +1627,7 @@ class SchemaTest {
               |""".trimMargin())
           .schema()
       fail()
-    }  catch (expected: SchemaException) {
+    } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
           |missing a zero value at the first element [proto3]
           |  for enum Period (/source/period.proto at 3:1)
@@ -1665,7 +1666,7 @@ class SchemaTest {
             |  TRIASSIC = 3;
             |}
             |""".trimMargin())
-          .schema()
+        .schema()
     val enum = schema.getType("Period") as EnumType
     assertThat(enum.constant("ZERO")).isNull()
     assertThat(enum.constant("CRETACEOUS")).isNotNull
@@ -1695,7 +1696,7 @@ class SchemaTest {
   @Test
   fun proto3CannotExtendNonCustomOption() {
     try {
-       RepoBuilder()
+      RepoBuilder()
           .add("dinosaur.proto", """
               |syntax = "proto3";
               |
@@ -1799,5 +1800,43 @@ class SchemaTest {
     // Don't override set packed.
     assertThat(messageType.field("set_to_false")!!.isPacked).isFalse()
     assertThat(messageType.field("set_to_true")!!.isPacked).isTrue()
+  }
+
+  @Test fun deprecatedOptionsForProto3() {
+    val deprecatedOptionElement = OptionElement.create(name = "deprecated",
+        kind = OptionElement.Kind.BOOLEAN, value = "true", isParenthesized = false)
+
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |option deprecated = true;
+            |
+            |message Message {
+            |  option deprecated = true;
+            |  optional string s = 1 [deprecated = true];
+            |}
+            |
+            |enum Enum {
+            |  option deprecated = true;
+            |  A = 1 [deprecated = true];
+            |}
+            |
+            |service Service {
+            |  option deprecated = true;
+            |  rpc Call (Request) returns (Response) {
+            |    option deprecated = true;
+            |  };
+            |}
+            |message Request {}
+            |message Response {}
+            |""".trimMargin()
+        ).schema()
+
+    assertThat(schema.protoFile("message.proto")!!.options.elements).contains(deprecatedOptionElement)
+    assertThat(schema.getType("Message")!!.options.elements).contains(deprecatedOptionElement)
+    assertThat((schema.getType("Message")!! as MessageType).field("s")!!.options.elements).contains(deprecatedOptionElement)
+    assertThat(schema.getType("Enum")!!.options.elements).contains(deprecatedOptionElement)
+    assertThat((schema.getType("Enum")!! as EnumType).constant("A")!!.options.elements).contains(deprecatedOptionElement)
+    assertThat(schema.getService("Service")!!.options().elements).contains(deprecatedOptionElement)
+    assertThat(schema.getService("Service")!!.rpc("Call")!!.options.elements).contains(deprecatedOptionElement)
   }
 }
