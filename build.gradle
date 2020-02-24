@@ -22,7 +22,7 @@ buildscript {
       'animalSniffer': '1.16',
       'animalSnifferGradle': '1.5.0',
       'mavenPublish': '0.8.0',
-      'releasedWire': '3.0.2'
+      'releasedWire': '3.1.0'
   ]
 
   ext.deps = [
@@ -30,6 +30,8 @@ buildscript {
           kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
           shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
           releasedWire: "com.squareup.wire:wire-gradle-plugin:${versions.releasedWire}",
+          // This would usually take the SNAPSHOT, and we don't fail when releasing.
+          snapshotWire: "com.squareup.wire:wire-gradle-plugin:+",
           japicmp: 'me.champeau.gradle:japicmp-gradle-plugin:0.2.8',
           mavenPublish: "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}"
       ],
@@ -91,7 +93,6 @@ buildscript {
   dependencies {
     classpath deps.plugins.kotlin
     classpath deps.plugins.shadow
-    classpath deps.plugins.releasedWire
     classpath deps.plugins.japicmp
     classpath deps.plugins.mavenPublish
     classpath deps.animalSniffer.gradle

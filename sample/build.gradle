@@ -1,3 +1,12 @@
+buildscript {
+  dependencies {
+    classpath deps.plugins.releasedWire
+  }
+  repositories {
+    mavenCentral()
+  }
+}
+
 apply plugin: 'application'
 apply plugin: 'com.squareup.wire'
 
@@ -11,6 +20,11 @@ jar {
 
 dependencies {
   implementation deps.releasedWire.runtime
+}
+
+sourceSets {
+  // TODO(benoit): we do this to make IntelliJ happy but the Wire Gradle plugin should do that.
+  main.java.srcDirs += 'build/generated/source/wire'
 }
 
 /**

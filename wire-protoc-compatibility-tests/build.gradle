@@ -1,11 +1,15 @@
 buildscript {
   dependencies {
     classpath deps.protobuf.gradlePlugin
+    classpath deps.plugins.snapshotWire
   }
 
   repositories {
     mavenCentral()
     gradlePluginPortal()
+    maven {
+      url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
   }
 }
 
@@ -16,12 +20,6 @@ apply plugin: 'com.google.protobuf'
 apply plugin: 'com.squareup.wire'
 
 protobuf {
-  plugins {
-    grpc {
-      artifact = deps.grpc.genJava
-    }
-  }
-
   protoc {
     artifact = deps.protobuf.protoc
   }
