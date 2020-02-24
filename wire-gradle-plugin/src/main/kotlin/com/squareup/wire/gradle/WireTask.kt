@@ -60,6 +60,10 @@ open class WireTask : SourceTask() {
   @Input
   lateinit var targets: List<Target>
 
+  @Input
+  @Optional
+  var proto3Preview: String? = null
+
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -100,7 +104,8 @@ open class WireTask : SourceTask() {
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
         oldest = oldest,
         newest = newest,
-        targets = targets
+        targets = targets,
+        proto3Preview = (proto3Preview == "UNSUPPORTED")
     )
     wireRun.execute()
   }

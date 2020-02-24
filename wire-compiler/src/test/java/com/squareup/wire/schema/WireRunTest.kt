@@ -420,6 +420,31 @@ class WireRunTest {
         "generated/kt/squareup/colors/Blue.kt")
   }
 
+  @Test
+  fun proto3ReadIfPreviewIsTurnedOn() {
+    writeBlueProto()
+    fs.add("colors/src/main/proto/squareup/colors/red.proto", """
+          |syntax = "proto3";
+          |package squareup.colors;
+          |message Red {
+          |  string oval = 1;
+          |}
+          """.trimMargin())
+    writeTriangleProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
+        proto3Preview = true
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+        "generated/kt/squareup/colors/Blue.kt",
+        "generated/kt/squareup/colors/Red.kt")
+  }
+
   /**
    * If Wire loaded (and therefore validated) members of dependencies this would fail with a
    * [SchemaException]. But we no longer do this to make Wire both faster and to eliminate the need
