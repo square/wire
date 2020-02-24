@@ -127,6 +127,7 @@ class WirePlugin : Plugin<Project> {
       it.newest = extension.newest
       it.rules = extension.rules
       it.targets = targets
+      it.proto3Preview = extension.proto3Preview
     }
 
     for (output in outputs) {

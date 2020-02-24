@@ -151,7 +151,10 @@ data class WireRun(
   /**
    * Action to take with the loaded, resolved, and possibly-pruned schema.
    */
-  val targets: List<Target>
+  val targets: List<Target>,
+
+  /** True to build proto3 artifacts. This is unsupported and does not work. */
+  val proto3Preview: Boolean = false
 ) {
 
   fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
@@ -181,7 +184,7 @@ data class WireRun(
     // Call each target.
     val skippedForSyntax = mutableListOf<ProtoFile>()
     for (protoFile in schema.protoFiles) {
-      if (protoFile.syntax != ProtoFile.Syntax.PROTO_2) {
+      if (protoFile.syntax == ProtoFile.Syntax.PROTO_3 && !proto3Preview) {
         skippedForSyntax += protoFile
         continue
       }
