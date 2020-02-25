@@ -18,7 +18,7 @@ generated
 plugin*.xml
 
 # Special Mkdocs files
-docs/3.x
-docs/changelog.md
-docs/contributing.md
-docs/index.md
+wire-library/docs/3.x
+wire-library/docs/changelog.md
+wire-library/docs/contributing.md
+wire-library/docs/index.md
