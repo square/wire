@@ -93,6 +93,7 @@ buildscript {
           'kotlinGenerator': "com.squareup.wire:wire-kotlin-generator",
           'runtime': "com.squareup.wire:wire-runtime",
           'schema': "com.squareup.wire:wire-schema",
+      ],
   ]
 
   dependencies {

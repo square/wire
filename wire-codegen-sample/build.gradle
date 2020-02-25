@@ -7,9 +7,9 @@ jar {
 }
 
 dependencies {
-  implementation project(':wire-runtime')
-  implementation project(':wire-schema')
-  implementation project(':wire-java-generator')
+  implementation deps.wire.runtime
+  implementation deps.wire.schema
+  implementation deps.wire.javaGenerator
   implementation deps.okio.jvm
   implementation deps.guava
   implementation deps.javapoet
