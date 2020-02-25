@@ -47,7 +47,7 @@ class Options(
   }
 
   /**
-   * Returns true if any of the options in `options` matches both of the regular expressions
+   * Returns true if any of the options in [entries] matches both of the regular expressions
    * provided: its name matches the option's name and its value matches the option's value.
    */
   fun optionMatches(namePattern: String, valuePattern: String): Boolean {
@@ -294,7 +294,7 @@ class Options(
     return result
   }
 
-  /** Returns an object of the same type as `o`, or null if it is not retained.  */
+  /** Returns an object of the same type as [o], or null if it is not retained.  */
   private fun retainAll(
     schema: Schema,
     markSet: MarkSet,
@@ -341,7 +341,7 @@ class Options(
     }
   }
 
-  /** Returns true if these options assigns a value to `protoMember`.  */
+  /** Returns true if these options assigns a value to [protoMember].  */
   fun assignsMember(protoMember: ProtoMember?): Boolean {
     // TODO(jwilson): remove the null check; this shouldn't be called until linking completes.
     return entries?.any { it.protoMember == protoMember } ?: false

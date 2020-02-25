@@ -108,14 +108,14 @@ class PruningRules private constructor(builder: Builder) {
     return true
   }
 
-  /** Returns true if `type` is a root. */
+  /** Returns true if [type] is a root. */
   fun isRoot(type: ProtoType) = isRoot(type.toString())
 
-  /** Returns true if `protoMember` is a root. */
+  /** Returns true if [protoMember] is a root. */
   fun isRoot(protoMember: ProtoMember) = isRoot(protoMember.toString())
 
   /**
-   * Returns true if `identifier` or any of its enclosing identifiers is a root. If any enclosing
+   * Returns true if [identifier] or any of its enclosing identifiers is a root. If any enclosing
    * identifier is pruned, that takes precedence and this returns false unless the root identifier
    * is more precise.
    */
@@ -150,15 +150,15 @@ class PruningRules private constructor(builder: Builder) {
   }
 
   /**
-   * Returns true if `type` should be pruned, even if it is a transitive dependency of a root. In
+   * Returns true if [type] should be pruned, even if it is a transitive dependency of a root. In
    * that case, the referring member is also pruned.
    */
   fun prunes(type: ProtoType) = prunes(type.toString())
 
-  /** Returns true if `protoMember` should be pruned. */
+  /** Returns true if [protoMember] should be pruned. */
   fun prunes(protoMember: ProtoMember) = prunes(protoMember.toString())
 
-  /** Returns true if `identifier` or any of its enclosing identifiers is pruned.  */
+  /** Returns true if [identifier] or any of its enclosing identifiers is pruned.  */
   private fun prunes(identifier: String): Boolean {
     var rootMatch: String? = null
     var pruneMatch: String? = null
@@ -245,9 +245,9 @@ class PruningRules private constructor(builder: Builder) {
     internal val ENUM_CONSTANT_UNTIL = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.until")
 
     /**
-     * Returns the identifier or wildcard that encloses `identifier`, or null if it is not enclosed.
+     * Returns the identifier or wildcard that encloses [identifier], or null if it is not enclosed.
      *
-     *  * If `identifier` is a member this returns the enclosing type.
+     *  * If [identifier] is a member this returns the enclosing type.
      *
      *  * If it is a type it returns the enclosing package with a wildcard, like
      *    `squareup.dinosaurs.*`.

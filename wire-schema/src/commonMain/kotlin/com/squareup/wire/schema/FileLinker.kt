@@ -101,7 +101,7 @@ internal class FileLinker(
     }
   }
 
-  /** Link the members of `types` and their nested types. */
+  /** Link the members of [types] and their nested types. */
   private fun linkMembersRecursive(types: List<Type>) {
     for (type in types) {
       requireMembersLinked(type)
@@ -109,7 +109,7 @@ internal class FileLinker(
     }
   }
 
-  /** Link the members of `type` that haven't been linked already. */
+  /** Link the members of [type] that haven't been linked already. */
   fun requireMembersLinked(type: Type) {
     if (typesWithMembersLinked.add(type.type)) {
       type.linkMembers(linker)

@@ -139,7 +139,7 @@ class Field private constructor(
     return withOptions(options.retainAll(schema, markSet))
   }
 
-  /** Returns a copy of this whose options is `options`.  */
+  /** Returns a copy of this whose options is [options].  */
   private fun withOptions(options: Options): Field {
     val result = Field(
         packageName = packageName,

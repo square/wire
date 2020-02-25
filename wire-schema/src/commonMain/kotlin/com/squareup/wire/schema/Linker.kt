@@ -50,7 +50,7 @@ class Linker {
     requestedTypes = enclosing.requestedTypes
   }
 
-  /** Returns a linker for `path`, loading the file if necessary. */
+  /** Returns a linker for [path], loading the file if necessary. */
   internal fun getFileLinker(path: String): FileLinker {
     val existing = fileLinkers[path]
     if (existing != null) return existing
@@ -63,7 +63,7 @@ class Linker {
   }
 
   /**
-   * Link all features of all files in `sourceProtoFiles` to create a schema. This will also
+   * Link all features of all files in [sourceProtoFiles] to create a schema. This will also
    * partially link any imported files necessary.
    */
   fun link(sourceProtoFiles: Iterable<ProtoFile>): Schema {
@@ -136,12 +136,12 @@ class Linker {
     return Schema(result)
   }
 
-  /** Returns the type name for the scalar, relative or fully-qualified name `name`. */
+  /** Returns the type name for the scalar, relative or fully-qualified name [name]. */
   fun resolveType(name: String): ProtoType {
     return resolveType(name, false)
   }
 
-  /** Returns the type name for the relative or fully-qualified name `name`. */
+  /** Returns the type name for the relative or fully-qualified name [name]. */
   fun resolveMessageType(name: String): ProtoType {
     return resolveType(name, true)
   }
@@ -258,7 +258,7 @@ class Linker {
     return result
   }
 
-  /** Adds `type`. */
+  /** Adds [type]. */
   fun addType(protoType: ProtoType, type: Type) {
     protoTypeNames[protoType.toString()] = type
   }
@@ -294,7 +294,7 @@ class Linker {
     return result
   }
 
-  /** Returns the field named `field` on the message type of `self`. */
+  /** Returns the field named [field] on the message type of [self]. */
   fun dereference(
     self: Field,
     field: String
@@ -317,7 +317,7 @@ class Linker {
     return null // Unable to traverse this field path.
   }
 
-  /** Validate that the tags of `fields` are unique and in range. */
+  /** Validate that the tags of [fields] are unique and in range. */
   fun validateFields(
     fields: Iterable<Field>,
     reserveds: List<Reserved>
@@ -411,7 +411,7 @@ class Linker {
     }
   }
 
-  /** Returns a new linker that uses `context` to resolve type names and report errors. */
+  /** Returns a new linker that uses [context] to resolve type names and report errors. */
   fun withContext(context: Any): Linker {
     return Linker(this, context)
   }
