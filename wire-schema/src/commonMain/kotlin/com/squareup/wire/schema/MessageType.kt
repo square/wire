@@ -49,7 +49,7 @@ class MessageType private constructor(
   val fieldsAndOneOfFields: List<Field>
     get() = declaredFields + extensionFields + oneOfs.flatMap { it.fields }
 
-  /** Returns the field named `name`, or null if this type has no such field. */
+  /** Returns the field named [name], or null if this type has no such field. */
   fun field(name: String): Field? {
     for (field in declaredFields) {
       if (field.name == name) {
@@ -67,13 +67,13 @@ class MessageType private constructor(
   }
 
   /**
-   * Returns the field with the qualified name `qualifiedName`, or null if this type has no
+   * Returns the field with the qualified name [qualifiedName], or null if this type has no
    * such field.
    */
   fun extensionField(qualifiedName: String): Field? =
       extensionFields.firstOrNull { it.qualifiedName == qualifiedName }
 
-  /** Returns the field tagged `tag`, or null if this type has no such field.  */
+  /** Returns the field tagged [tag], or null if this type has no such field.  */
   fun field(tag: Int): Field? {
     for (field in declaredFields) {
       if (field.tag == tag) {
