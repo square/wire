@@ -55,7 +55,6 @@ kotlin {
       dependencies {
         api deps.kotlin.stdlib.common
         api project(':wire-runtime')
-        api project(':wire-grpc-client')
       }
     }
     commonTest {
@@ -74,7 +73,7 @@ kotlin {
       kotlin.srcDirs += 'src/jvmTest/proto-kotlin'
       kotlin.srcDirs += 'src/jvmTest/proto-java'
       dependencies {
-        implementation project(':wire-test-utils')
+        implementation "com.squareup.wire:wire-test-utils:3.2.0-SNAPSHOT"
         implementation deps.assertj
         implementation deps.kotlin.test.junit
         implementation deps.jimfs

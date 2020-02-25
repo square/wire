@@ -10,7 +10,7 @@ jar {
 }
 
 dependencies {
-  implementation deps.releasedWire.runtime
+  implementation deps.wire.runtime
 }
 
 /**

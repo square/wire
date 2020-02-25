@@ -16,12 +16,6 @@ apply plugin: 'com.google.protobuf'
 apply plugin: 'com.squareup.wire'
 
 protobuf {
-  plugins {
-    grpc {
-      artifact = deps.grpc.genJava
-    }
-  }
-
   protoc {
     artifact = deps.protobuf.protoc
   }
@@ -49,7 +43,7 @@ animalsniffer {
 }
 
 dependencies {
-  implementation project(':wire-runtime')
+  implementation deps.wire.runtime
   implementation deps.kotlin.stdlib.jdk8
   implementation deps.okio.jvm
   implementation deps.protobuf.java
