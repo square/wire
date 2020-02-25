@@ -1,35 +1,82 @@
-apply plugin: 'java-library'
-apply plugin: 'org.jetbrains.kotlin.jvm'
-apply plugin: 'ru.vyarus.animalsniffer'
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
-jar {
-  manifest {
-    attributes('Automatic-Module-Name': 'wire-grpc-client')
+kotlin {
+  jvm {
+    withJava()
+  }
+  js {
+    configure([compilations.main, compilations.test]) {
+      tasks.getByName(compileKotlinTaskName).kotlinOptions {
+        moduleKind = 'umd'
+        sourceMap = true
+        metaInfo = true
+      }
+    }
+    nodejs()
+    browser()
+  }
+  iosX64()
+  iosArm64()
+  // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
+  linuxX64()
+  macosX64()
+  sourceSets {
+    commonMain {
+      dependencies {
+        api project(':wire-runtime')
+        api deps.okio.multiplatform
+        api deps.kotlin.coroutines.core.common
+      }
+    }
+    jvmMain {
+      dependencies {
+        api deps.okhttp
+      }
+    }
+    nativeMain {
+      dependsOn commonMain
+    }
+    configure([iosX64Main, iosArm64Main, linuxX64Main, macosX64Main]) {
+      dependsOn nativeMain
+    }
+  }
+  targets.all {
+    compilations.all {
+      kotlinOptions {
+        freeCompilerArgs += "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        freeCompilerArgs += "-Xexperimental=com.squareup.wire.WireGrpcExperimental"
+      }
+    }
   }
 }
 
-animalsniffer {
-  sourceSets = [sourceSets.main]
-  ignore 'com.squareup.wire.internal'
-}
-
-compileKotlin {
-  kotlinOptions {
-    freeCompilerArgs += "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
-    freeCompilerArgs += "-Xexperimental=com.squareup.wire.WireGrpcExperimental"
+// TODO(egorand): Remove when https://github.com/srs/gradle-node-plugin/issues/301 is fixed
+repositories.whenObjectAdded {
+  if (it instanceof IvyArtifactRepository) {
+    metadataSources {
+      artifact()
+    }
   }
-}
-
-dependencies {
-  api project(':wire-runtime')
-  api deps.okhttp
-  implementation deps.okio.jvm
-  implementation deps.kotlin.coroutines.core
 }
 
 afterEvaluate { project ->
   project.tasks.dokka {
     outputDirectory = "$rootDir/docs/3.x"
     outputFormat = 'gfm'
+  }
+}
+
+apply from: 'jvm.gradle'
+apply from: "$rootDir/gradle/gradle-mvn-mpp-push.gradle"
+
+publishing {
+  // Use default artifact name for the JVM target
+  publications {
+    kotlinMultiplatform {
+      artifactId = 'wire-grpc-client-multiplatform'
+    }
+    jvm {
+      artifactId = 'wire-grpc-client'
+    }
   }
 }

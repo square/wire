@@ -15,8 +15,9 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.Throws
+import okio.IOException
 import okio.Timeout
-import java.io.IOException
 
 /**
  * A single call to a remote server. This call sends a single request value and receives a single

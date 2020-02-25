@@ -57,7 +57,6 @@ dependencies {
   implementation project(':wire-runtime')
   implementation project(':wire-grpc-client')
   implementation deps.okio.jvm
-  implementation deps.kotlin.coroutines.core
   if (JavaVersion.current().isJava9Compatible()) {
     // Workaround for @javax.annotation.Generated
     // see: https://github.com/grpc/grpc-java/issues/3633
