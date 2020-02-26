@@ -4,7 +4,7 @@ Change Log
 Version 3.1.0
 -------------
 
-_2019-02-06_
+_2020-02-06_
 
 This release includes major non-backwards-compatible API changes to the `wire-schema` module. This
 will break tools that use Wire's schema modeling as a standalone library. We are making big changes
