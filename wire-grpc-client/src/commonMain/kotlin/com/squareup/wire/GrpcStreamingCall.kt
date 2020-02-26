@@ -17,8 +17,8 @@ package com.squareup.wire
 
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
+import okio.IOException
 import okio.Timeout
-import java.io.IOException
 
 /**
  * A single streaming call to a remote server. This class handles three streaming call types:

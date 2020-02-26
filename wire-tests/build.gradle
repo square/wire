@@ -8,7 +8,6 @@ kotlin {
         kotlin.srcDirs += 'src/jvmKotlinInteropTest/proto-kotlin'
         dependencies {
           implementation(compilations.main.compileDependencyFiles)
-          implementation project(':wire-grpc-client')
           implementation deps.kotlin.test.junit
           implementation deps.assertj
         }
@@ -56,6 +55,7 @@ kotlin {
       dependencies {
         api deps.kotlin.stdlib.common
         api project(':wire-runtime')
+        api project(':wire-grpc-client')
       }
     }
     commonTest {
