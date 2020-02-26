@@ -55,6 +55,7 @@ kotlin {
       dependencies {
         api deps.kotlin.stdlib.common
         api deps.wire.runtime
+        api deps.wire.grpcClient
       }
     }
     commonTest {
