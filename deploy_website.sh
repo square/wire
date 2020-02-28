@@ -21,26 +21,28 @@ git clone $REPO $DIR
 cd $DIR
 
 # Generate the API docs
-./gradlew \
-  :wire-grpc-client:dokka \
-  :wire-moshi-adapter:dokka \
-  :wire-runtime:dokka
+cd wire-library
+  ../gradlew \
+    :wire-grpc-client:dokka \
+    :wire-moshi-adapter:dokka \
+    :wire-runtime:dokka
 
-# Fix *.md links to point to where the docs live under Mkdocs.
-# Linux
-# sed -i 's/docs\/wire_compiler.md/wire_compiler/' README.md
-# OSX
-sed -i "" 's/docs\/wire_compiler.md/wire_compiler/' README.md
-sed -i "" 's/docs\/wire_grpc.md/wire_grpc/' README.md
+  # Fix *.md links to point to where the docs live under Mkdocs.
+  # Linux
+  # sed -i 's/docs\/wire_compiler.md/wire_compiler/' README.md
+  # OSX
+  sed -i "" 's/docs\/wire_compiler.md/wire_compiler/' README.md
+  sed -i "" 's/docs\/wire_grpc.md/wire_grpc/' README.md
 
-# Copy in special files that GitHub wants in the project root.
-cat README.md | grep -v 'project website' > docs/index.md
-cp CHANGELOG.md docs/changelog.md
-cp CONTRIBUTING.md docs/contributing.md
+  # Copy in special files that GitHub wants in the project root.
+  cat ../README.md | grep -v 'project website' > docs/index.md
+  cp ../CHANGELOG.md docs/changelog.md
+  cp ../CONTRIBUTING.md docs/contributing.md
 
-# Build the site and push the new files up to GitHub
-mkdocs gh-deploy
+  # Build the site and push the new files up to GitHub
+  mkdocs gh-deploy
 
+cd ..
 # Undo any file changes to be able to jump branches.
 git checkout -- .
 
