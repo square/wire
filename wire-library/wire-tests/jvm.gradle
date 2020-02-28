@@ -46,12 +46,12 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
     jvmTest.dependsOn jvmJavaAndroidCompactTest
 
     dependencies {
-      javaTestImplementation deps.wire.runtime
-      javaNoOptionsTestImplementation deps.wire.runtime
-      javaCompactTestImplementation deps.wire.runtime
-      javaPrunedTestImplementation deps.wire.runtime
-      javaAndroidTestImplementation deps.wire.runtime
-      javaAndroidCompactTestImplementation deps.wire.runtime
+      javaTestImplementation project(':wire-runtime')
+      javaNoOptionsTestImplementation project(':wire-runtime')
+      javaCompactTestImplementation project(':wire-runtime')
+      javaPrunedTestImplementation project(':wire-runtime')
+      javaAndroidTestImplementation project(':wire-runtime')
+      javaAndroidCompactTestImplementation project(':wire-runtime')
 
       javaAndroidTestCompileOnly deps.android
       javaAndroidCompactTestCompileOnly deps.android

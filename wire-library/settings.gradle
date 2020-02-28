@@ -9,4 +9,5 @@ include ':wire-runtime:japicmp'
 include ':wire-runtime'
 include ':wire-schema'
 include ':wire-test-utils'
+include ':wire-tests'
 
