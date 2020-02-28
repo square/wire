@@ -630,12 +630,12 @@ class WireCompilerTest {
 
   private enum class TargetLanguage {
     JAVA {
-      override fun protoPathArg() = "--proto_path=../../wire-tests/src/commonTest/proto/java"
+      override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/java"
       override fun outArg(testDirPath: String) = "--java_out=$testDirPath"
       override fun protoFolderSuffix() = "java"
     },
     KOTLIN {
-      override fun protoPathArg() = "--proto_path=../../wire-tests/src/commonTest/proto/kotlin"
+      override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/kotlin"
       override fun outArg(testDirPath: String) = "--kotlin_out=$testDirPath"
       override fun protoFolderSuffix() = "kotlin"
     };
@@ -663,7 +663,7 @@ class WireCompilerTest {
         }
         else -> throw AssertionError("Unknown proto folder suffix: $protoFolderSuffix")
       }
-      val expectedFile = File("../../wire-tests/src/$sourceSet/proto-${protoFolderSuffix()}/$path")
+      val expectedFile = File("../wire-tests/src/$sourceSet/proto-${protoFolderSuffix()}/$path")
       return expectedFile.also {
         println("Comparing against expected output $name")
       }

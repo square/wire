@@ -15,7 +15,7 @@ before_script:
 
 script:
   - cd wire-library; ../gradlew build; cd ..
-  - ./gradlew wire-codegen-sample:build wire-grpc-tests:build wire-protoc-compatibility-tests:build wire-tests:build
+  - ./gradlew wire-codegen-sample:build wire-grpc-tests:build wire-protoc-compatibility-tests:build
 
 after_success:
   - .buildscript/deploy_snapshot.sh

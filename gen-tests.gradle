@@ -14,12 +14,12 @@ buildscript {
 }
 
 def PROTOS = Files.find(
-      Paths.get("${rootProject.rootDir}/wire-tests/src/commonTest/proto/java"),
+      Paths.get("${rootProject.rootDir}/wire-library/wire-tests/src/commonTest/proto/java"),
       Integer.MAX_VALUE,
       { path, attrs -> attrs.isRegularFile() }
     )
     .map { path ->
-      Paths.get("${rootProject.rootDir}/wire-tests/src/commonTest/proto/java").relativize(path)
+      Paths.get("${rootProject.rootDir}/wire-library/wire-tests/src/commonTest/proto/java").relativize(path)
     }
     .filter { path -> !path.startsWith("kotlin") }
     .map { path -> path.toString() }
@@ -46,8 +46,8 @@ task generateJavaTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/java',
-      '--java_out=wire-tests/src/jvmJavaTest/proto-java',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/java',
+      '--java_out=wire-library/wire-tests/src/jvmJavaTest/proto-java',
       'google/protobuf/any.proto',
       'google/protobuf/descriptor.proto',
       '--excludes=squareup.options.*',
@@ -62,8 +62,8 @@ task generateNoOptionsTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/java',
-      '--java_out=wire-tests/src/jvmJavaNoOptionsTest/proto-java',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/java',
+      '--java_out=wire-library/wire-tests/src/jvmJavaNoOptionsTest/proto-java',
       'google/protobuf/any.proto',
       'google/protobuf/descriptor.proto',
       '--excludes=google.protobuf.*',
@@ -79,8 +79,8 @@ task generateCompactTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/java',
-      '--java_out=wire-tests/src/jvmJavaCompactTest/proto-java',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/java',
+      '--java_out=wire-library/wire-tests/src/jvmJavaCompactTest/proto-java',
       '--compact',
       'all_types.proto'
   ]
@@ -109,8 +109,8 @@ task generateIncludesExcludesTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/java',
-      '--java_out=wire-tests/src/jvmJavaPrunedTest/proto-java',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/java',
+      '--java_out=wire-library/wire-tests/src/jvmJavaPrunedTest/proto-java',
       '--includes=squareup.protos.roots.A,squareup.protos.roots.H',
       '--excludes=squareup.protos.roots.B',
       'roots.proto'
@@ -125,8 +125,8 @@ task generateAndroidTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/java',
-      '--java_out=wire-tests/src/jvmJavaAndroidTest/proto-java',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/java',
+      '--java_out=wire-library/wire-tests/src/jvmJavaAndroidTest/proto-java',
       '--android',
       'person.proto'
   ]
@@ -140,8 +140,8 @@ task generateAndroidCompactTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/java',
-      '--java_out=wire-tests/src/jvmJavaAndroidCompactTest/proto-java',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/java',
+      '--java_out=wire-library/wire-tests/src/jvmJavaAndroidCompactTest/proto-java',
       '--android',
       '--compact',
       'person.proto'
@@ -156,8 +156,8 @@ task generateKotlinTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/src/commonTest/proto-kotlin',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin',
       'all_types.proto',
       'custom_options.proto',
       'deprecated.proto',
@@ -191,8 +191,8 @@ task generateKotlinServicesTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
       'service_kotlin.proto',
       'service_without_package.proto',
   ]
@@ -206,8 +206,8 @@ task generateKotlinAndroidTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-library/wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
       '--android',
       'person.proto'
   ]
@@ -221,8 +221,8 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=wire-tests/src/commonTest/proto/kotlin',
-      '--kotlin_out=wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
       '--java_interop',
       'all_types.proto',
       'deprecated.proto',
@@ -333,24 +333,4 @@ task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generate
     generateMoshiAdapterKotlinTests, generateMoshiAdapterInteropKotlinTests]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
-}
-
-task cleanGeneratedTests(type: Delete) {
-  delete 'wire-grpc-tests/src/test/proto-grpc',
-         'wire-library/wire-moshi-adapter/src/test/java/com/squareup/wire/protos',
-         'wire-tests/src/commonTest/proto-kotlin',
-         'wire-tests/src/jvmJavaAndroidCompactTest/proto-java',
-         'wire-tests/src/jvmJavaAndroidTest/proto-java',
-         'wire-tests/src/jvmJavaCompactTest/proto-java',
-         'wire-tests/src/jvmJavaNoOptionsTest/proto-java',
-         'wire-tests/src/jvmJavaPrunedTest/proto-java',
-         'wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
-         'wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
-         'wire-tests/src/jvmJavaTest/proto-java'
-}
-
-project("wire-tests").afterEvaluate { project ->
-  project.tasks.named("clean").configure { task ->
-    task.dependsOn(cleanGeneratedTests)
-  }
 }
