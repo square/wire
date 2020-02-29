@@ -28,7 +28,7 @@ internal abstract class GrpcMethod<S : Any, R : Any>(
   val responseAdapter: ProtoAdapter<R>
 ) {
   /** Handle a dynamic proxy method call to this. */
-  abstract fun invoke(grpcClient: GrpcClient, args: Array<Any>): Any
+  abstract fun invoke(grpcClient: GrpcClient): Any
 
   internal companion object {
     internal fun <S : Any, R : Any> Method.toGrpc(): GrpcMethod<S, R> {
@@ -40,16 +40,14 @@ internal abstract class GrpcMethod<S : Any, R : Any>(
       if (returnType.rawType() == GrpcCall::class.java) {
         return object : GrpcMethod<S, R>(wireRpc.path, requestAdapter, responseAdapter) {
           override fun invoke(
-            grpcClient: GrpcClient,
-            args: Array<Any>
+            grpcClient: GrpcClient
           ) = RealGrpcCall(grpcClient, this)
         }
 
       } else if (returnType.rawType() == GrpcStreamingCall::class.java) {
         return object : GrpcMethod<S, R>(wireRpc.path, requestAdapter, responseAdapter) {
           override fun invoke(
-            grpcClient: GrpcClient,
-            args: Array<Any>
+            grpcClient: GrpcClient
           ) = RealGrpcStreamingCall(grpcClient, this)
         }
       }
