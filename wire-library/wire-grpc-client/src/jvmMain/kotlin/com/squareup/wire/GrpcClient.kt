@@ -42,14 +42,13 @@ class GrpcClient private constructor(
         object : InvocationHandler {
           override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any {
             val self: InvocationHandler = this
-            val args = args ?: emptyArray()
 
             if (method.declaringClass == Object::class.java) {
-              return method.invoke(self, *args)
+              return method.invoke(self, *(args ?: emptyArray()))
             }
 
             val grpcMethod = methodToService[method] as GrpcMethod<*, *>
-            return grpcMethod.invoke(this@GrpcClient, args)
+            return grpcMethod.invoke(this@GrpcClient)
           }
         }
     ) as T
