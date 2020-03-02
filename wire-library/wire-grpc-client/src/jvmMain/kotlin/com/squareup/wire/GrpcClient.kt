@@ -17,7 +17,6 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
-import com.squareup.wire.internal.rawType
 import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -65,11 +64,10 @@ class GrpcClient private constructor(
     val responseAdapter = ProtoAdapter.get(wireRpc.responseAdapter) as ProtoAdapter<Any>
     val method = GrpcMethod(wireRpc.path, requestAdapter, responseAdapter)
 
-    val returnType = genericReturnType
-    if (returnType.rawType() == GrpcCall::class.java) {
+    if (returnType == GrpcCall::class.java) {
       return { newCall(method) }
     }
-    if (returnType.rawType() == GrpcStreamingCall::class.java) {
+    if (returnType == GrpcStreamingCall::class.java) {
       return { newStreamingCall(method) }
     }
 
