@@ -17,6 +17,7 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcMethod
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
