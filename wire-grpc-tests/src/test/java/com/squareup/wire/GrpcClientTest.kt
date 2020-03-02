@@ -96,6 +96,16 @@ class GrpcClientTest {
   }
 
   @Test
+  fun invalidBaseUrlThrows() {
+    val builder = GrpcClient.Builder()
+    try {
+      builder.baseUrl("mailto:bob@example.com")
+      fail()
+    } catch (_: IllegalArgumentException) {
+    }
+  }
+
+  @Test
   fun requestResponseSuspend() {
     mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
     mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
