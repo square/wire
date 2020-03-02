@@ -20,7 +20,7 @@ import com.squareup.wire.proto2.simple.SimpleMessageOuterClass
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class WireProtocCompatibilityTests {
+class Proto2WireProtocCompatibilityTests {
   @Test fun simpleMessage() {
     val wireMessage = SimpleMessage(
         optional_nested_msg = SimpleMessage.NestedMessage(806),

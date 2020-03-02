@@ -158,6 +158,7 @@ data class WireRun(
 ) {
 
   fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
+    println("CONNARD $protoPath")
     return NewSchemaLoader(fs).use { newSchemaLoader ->
       execute(fs, logger, newSchemaLoader)
     }
