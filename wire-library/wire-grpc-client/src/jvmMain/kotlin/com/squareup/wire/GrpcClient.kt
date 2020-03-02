@@ -19,7 +19,7 @@ import com.squareup.wire.internal.GrpcMethod
 import com.squareup.wire.internal.GrpcMethod.Companion.toGrpc
 import okhttp3.Call
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -75,7 +75,7 @@ class GrpcClient private constructor(
     }
 
     fun baseUrl(baseUrl: String): Builder {
-      this.baseUrl = baseUrl.toHttpUrlOrNull()
+      this.baseUrl = baseUrl.toHttpUrl()
       return this
     }
 
