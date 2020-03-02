@@ -32,6 +32,3 @@ actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T>
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
     Collections.unmodifiableMap(this)
-
-@Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
-internal actual inline fun String.format(vararg args: Any?): String = String.format(this, *args)

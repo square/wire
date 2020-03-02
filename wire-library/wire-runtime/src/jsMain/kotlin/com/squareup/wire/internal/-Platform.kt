@@ -29,5 +29,3 @@ actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> = this
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = this
-
-internal actual fun String.format(vararg args: Any?): String = TODO("Not implemented")

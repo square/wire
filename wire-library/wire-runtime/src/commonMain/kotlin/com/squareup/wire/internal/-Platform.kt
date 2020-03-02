@@ -32,5 +32,3 @@ expect class ProtocolException(host: String) : IOException
 expect fun <T> MutableList<T>.toUnmodifiableList(): List<T>
 
 expect fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V>
-
-internal expect fun String.format(vararg args: Any?): String
