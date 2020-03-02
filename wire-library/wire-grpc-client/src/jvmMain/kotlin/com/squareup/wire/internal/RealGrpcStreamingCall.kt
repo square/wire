@@ -16,6 +16,7 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource

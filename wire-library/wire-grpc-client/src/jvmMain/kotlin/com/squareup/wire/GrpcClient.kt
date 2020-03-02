@@ -15,8 +15,9 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.GrpcMethod
-import com.squareup.wire.internal.GrpcMethod.Companion.toGrpc
+import com.squareup.wire.internal.RealGrpcCall
+import com.squareup.wire.internal.RealGrpcStreamingCall
+import com.squareup.wire.internal.rawType
 import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -33,25 +34,46 @@ class GrpcClient private constructor(
   internal val baseUrl: HttpUrl
 ) {
   fun <T : Service> create(service: KClass<T>): T {
-    val methodToService: Map<Method, GrpcMethod<*, *>> =
-        service.java.methods.associate { method -> method to method.toGrpc<Any, Any>() }
+    val methodToService: Map<Method, () -> Any> =
+        service.java.methods.associate { method -> method to method.toGrpc() }
 
     return Proxy.newProxyInstance(
         service.java.classLoader,
         arrayOf<Class<*>>(service.java),
         object : InvocationHandler {
           override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any {
-            val self: InvocationHandler = this
-
             if (method.declaringClass == Object::class.java) {
-              return method.invoke(self, *(args ?: emptyArray()))
+              return method.invoke(this, *(args ?: emptyArray()))
             }
-
-            val grpcMethod = methodToService[method] as GrpcMethod<*, *>
-            return grpcMethod.invoke(this@GrpcClient)
+            return methodToService.getValue(method).invoke()
           }
         }
     ) as T
+  }
+
+  fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
+    return RealGrpcCall(this, method)
+  }
+
+  fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> {
+    return RealGrpcStreamingCall(this, method)
+  }
+
+  private fun Method.toGrpc(): () -> Any {
+    val wireRpc = getAnnotation(WireRpc::class.java)
+    val requestAdapter = ProtoAdapter.get(wireRpc.requestAdapter) as ProtoAdapter<Any>
+    val responseAdapter = ProtoAdapter.get(wireRpc.responseAdapter) as ProtoAdapter<Any>
+    val method = GrpcMethod(wireRpc.path, requestAdapter, responseAdapter)
+
+    val returnType = genericReturnType
+    if (returnType.rawType() == GrpcCall::class.java) {
+      return { newCall(method) }
+    }
+    if (returnType.rawType() == GrpcStreamingCall::class.java) {
+      return { newStreamingCall(method) }
+    }
+
+    error("unexpected gRPC method: $this")
   }
 
   internal fun newCall(path: String, requestBody: RequestBody): Call {
