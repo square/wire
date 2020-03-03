@@ -16,6 +16,7 @@
 package com.squareup.wire.kotlin
 
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.RepoBuilder
 import kotlin.test.Test
@@ -810,6 +811,47 @@ class KotlinGeneratorTest {
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("common.proto.Message")
     assertTrue(code.contains("import com.squareup.wire.AnyMessage"))
+  }
+
+  @Test fun wildCommentsAreEscaped() {
+    val repoBuilder = RepoBuilder()
+        .add("message.proto", """
+        |message Person {
+        |	required string name = 1;
+        |	required int32 id = 2;
+        |	optional string email = 3;
+        |	enum PhoneType {
+        |		HOME = 0;
+        |		WORK = 1;
+        |		MOBILE = 2;
+        |	}
+        |	message PhoneNumber {
+        |		required string number = 1;
+        |		optional PhoneType type = 2 [default = HOME];
+        |	}
+        |	repeated PhoneNumber phone = 4;
+        |}""".trimMargin())
+    val code = repoBuilder.generateKotlin("Person").replace("\n", "")
+    assertTrue(code.contains("class Person"))
+    assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>("))
+    assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
+    assertTrue(code.contains("PhoneNumber::class"))
+    assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))
+    assertTrue(code.contains("enum class PhoneType(    override val value: Int  ) : WireEnum"))
+    assertTrue(code.contains("fun fromValue(value: Int): PhoneType?"))
+    assertTrue(code.contains("WORK(1),"))
+  }
+
+  @Test fun sanitizeJavadocStripsTrailingWhitespace() {
+    val input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  "
+    val expected = "The quick brown fox\nJumps over\n\nThe lazy dog"
+    assertEquals(expected, input.sanitizeKdoc())
+  }
+
+  @Test fun sanitizeJavadocStarSlash() {
+    val input = "/* comment inside comment. */"
+    val expected = "/&#42; comment inside comment. &#42;/"
+    assertEquals(expected, input.sanitizeKdoc())
   }
 
   companion object {

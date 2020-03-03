@@ -30,7 +30,7 @@ import okio.ByteString
  */
 class SimpleMessage(
   /**
-   * An optional int32
+   * An optional int32 //&#42;we should escape that comment*
    */
   @field:WireField(
     tag = 1,
@@ -39,7 +39,7 @@ class SimpleMessage(
   @JvmField
   val optional_int32: Int? = null,
   /**
-   * An optional NestedMessage, deprecated
+   * An optional NestedMessage, *deprecated&#42;//
    */
   @Deprecated(message = "optional_nested_msg is deprecated")
   @field:WireField(
@@ -271,7 +271,7 @@ class SimpleMessage(
     var o: String? = null
 
     /**
-     * An optional int32
+     * An optional int32 //&#42;we should escape that comment*
      */
     fun optional_int32(optional_int32: Int?): Builder {
       this.optional_int32 = optional_int32
@@ -279,7 +279,7 @@ class SimpleMessage(
     }
 
     /**
-     * An optional NestedMessage, deprecated
+     * An optional NestedMessage, *deprecated&#42;//
      */
     @Deprecated(message = "optional_nested_msg is deprecated")
     fun optional_nested_msg(optional_nested_msg: NestedMessage?): Builder {
