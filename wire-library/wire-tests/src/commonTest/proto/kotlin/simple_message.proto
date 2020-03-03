@@ -35,9 +35,9 @@ message SimpleMessage {
     BUZ = 3 [deprecated = true];
   }
 
-  // An optional int32
+  // An optional int32 //*we should escape that comment*
   optional int32 optional_int32 = 1 [default = 123];
-  // An optional NestedMessage, deprecated
+  // An optional NestedMessage, *deprecated*//
   optional NestedMessage optional_nested_msg = 2 [deprecated = true];
   // An optional ExternalMessage
   optional ExternalMessage optional_external_msg = 3;

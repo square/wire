@@ -147,7 +147,11 @@ class KotlinGenerator private constructor(
   fun generateService(service: Service, onlyRpc: Rpc? = null): TypeSpec {
     val serviceName = generatedServiceName(service, onlyRpc)
     val builder = TypeSpec.interfaceBuilder(serviceName)
-        .apply { if (service.documentation().isNotBlank()) addKdoc("%L\n", service.documentation()) }
+        .apply {
+          if (service.documentation().isNotBlank()) {
+            addKdoc("%L\n", service.documentation().sanitizeKdoc())
+          }
+        }
         .addSuperinterface(com.squareup.wire.Service::class.java)
 
     val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
@@ -175,7 +179,11 @@ class KotlinGenerator private constructor(
     val funSpecBuilder = FunSpec.builder(rpc.name)
         .addModifiers(KModifier.ABSTRACT)
         .addAnnotation(wireRpcAnnotationSpec)
-        .apply { if (rpc.documentation.isNotBlank()) addKdoc("%L\n", rpc.documentation) }
+        .apply {
+          if (rpc.documentation.isNotBlank()) {
+            addKdoc("%L\n", rpc.documentation.sanitizeKdoc())
+          }
+        }
 
     val requestType = rpc.requestType!!.typeName
     val responseType = rpc.responseType!!.typeName
@@ -270,7 +278,8 @@ class KotlinGenerator private constructor(
               newName("CREATOR", "CREATOR")
             }
             message.fieldsAndOneOfFields.forEach { field ->
-              if (field.name == field.type!!.simpleName || schema.getType(field.qualifiedName) != null) {
+              if (field.name == field.type!!.simpleName ||
+                  schema.getType(field.qualifiedName) != null) {
                 newName(field.qualifiedName, field)
               } else {
                 newName(field.name, field)
@@ -295,7 +304,11 @@ class KotlinGenerator private constructor(
     addAdapter(type, companionBuilder)
 
     val classBuilder = TypeSpec.classBuilder(className)
-        .apply { if (type.documentation.isNotBlank()) addKdoc("%L\n", type.documentation) }
+        .apply {
+          if (type.documentation.isNotBlank()) {
+            addKdoc("%L\n", type.documentation.sanitizeKdoc())
+          }
+        }
         .superclass(if (javaInterOp) {
           superclass.parameterizedBy(className, builderClassName)
         } else {
@@ -589,7 +602,7 @@ class KotlinGenerator private constructor(
         .addParameter(fieldName, field.getClass())
         .returns(builderType)
     if (field.documentation.isNotBlank()) {
-      funBuilder.addKdoc("%L\n", field.documentation)
+      funBuilder.addKdoc("%L\n", field.documentation.sanitizeKdoc())
     }
     if (field.isDeprecated) {
       funBuilder.addAnnotation(AnnotationSpec.builder(Deprecated::class)
@@ -660,7 +673,7 @@ class KotlinGenerator private constructor(
           .initializer(fieldName)
           .apply {
             if (field.documentation.isNotBlank()) {
-              addKdoc("%L\n", field.documentation)
+              addKdoc("%L\n", field.documentation.sanitizeKdoc())
             }
             if (field.isExtension) {
               addKdoc("Extension source: %L\n", field.location.withPathOnly())
@@ -1162,7 +1175,7 @@ class KotlinGenerator private constructor(
     val builder = TypeSpec.enumBuilder(type.simpleName)
         .apply {
           if (message.documentation.isNotBlank()) {
-            addKdoc("%L\n", message.documentation)
+            addKdoc("%L\n", message.documentation.sanitizeKdoc())
           }
         }
         .addSuperinterface(WireEnum::class)
@@ -1194,13 +1207,14 @@ class KotlinGenerator private constructor(
               val field = schema.getField(protoMember)!!
               val fieldValue = constant.options.map[protoMember]
               if (fieldValue != null) {
-                addSuperclassConstructorParameter("%L", defaultFieldInitializer(field.type!!, fieldValue))
+                addSuperclassConstructorParameter("%L",
+                    defaultFieldInitializer(field.type!!, fieldValue))
               } else {
                 addSuperclassConstructorParameter("null")
               }
             }
             if (constant.documentation.isNotBlank()) {
-              addKdoc("%L\n", constant.documentation)
+              addKdoc("%L\n", constant.documentation.sanitizeKdoc())
             }
             if (constant.options.get(ENUM_DEPRECATED) == "true") {
               addAnnotation(AnnotationSpec.builder(Deprecated::class)
@@ -1403,6 +1417,15 @@ class KotlinGenerator private constructor(
       map.putAll(BUILT_IN_TYPES)
 
       return KotlinGenerator(schema, map, emitAndroid, javaInterop, rpcCallStyle, rpcRole)
+    }
+
+    internal fun String.sanitizeKdoc(): String {
+      return this
+          // Remove trailing whitespace on each line.
+          .replace("[^\\S\n]+\n".toRegex(), "\n")
+          .replace("\\s+$".toRegex(), "")
+          .replace("\\*/".toRegex(), "&#42;/")
+          .replace("/\\*".toRegex(), "/&#42;")
     }
   }
 }

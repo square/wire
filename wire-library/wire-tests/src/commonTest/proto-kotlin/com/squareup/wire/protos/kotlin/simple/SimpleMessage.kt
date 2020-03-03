@@ -32,7 +32,7 @@ import okio.ByteString
  */
 class SimpleMessage(
   /**
-   * An optional int32
+   * An optional int32 //&#42;we should escape that comment*
    */
   @field:WireField(
     tag = 1,
@@ -40,7 +40,7 @@ class SimpleMessage(
   )
   val optional_int32: Int? = null,
   /**
-   * An optional NestedMessage, deprecated
+   * An optional NestedMessage, *deprecated&#42;//
    */
   @Deprecated(message = "optional_nested_msg is deprecated")
   @field:WireField(
