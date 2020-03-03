@@ -23,7 +23,6 @@ import com.squareup.wire.ProtoWriter.Companion.int32Size
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
 import com.squareup.wire.internal.Throws
-import com.squareup.wire.internal.format
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -422,7 +421,7 @@ internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean
   override fun decode(reader: ProtoReader): Boolean = when (val value = reader.readVarint32()) {
     0 -> false
     1 -> true
-    else -> throw IOException("Invalid boolean value 0x%02x".format(value))
+    else -> throw IOException("Invalid boolean value 0x" + value.toString(16).padStart(2, '0'))
   }
 
   override fun redact(value: Boolean): Boolean = throw UnsupportedOperationException()
