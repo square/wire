@@ -3,14 +3,16 @@
 package com.squareup.wire.protos.kotlin.services
 
 import com.squareup.wire.GrpcCall
+import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcMethod
 import com.squareup.wire.Service
-import com.squareup.wire.WireRpc
 
-interface SomeServiceClient : Service {
-  @WireRpc(
-    path = "/squareup.protos.kotlin.SomeService/SomeMethod",
-    requestAdapter = "com.squareup.wire.protos.kotlin.services.SomeRequest#ADAPTER",
-    responseAdapter = "com.squareup.wire.protos.kotlin.services.SomeResponse#ADAPTER"
-  )
-  fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse>
+class SomeServiceClient(
+  private val client: GrpcClient
+) : Service {
+  fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse> = client.newCall(GrpcMethod(
+      path = "/squareup.protos.kotlin.SomeService/SomeMethod",
+      requestAdapter = SomeRequest.ADAPTER,
+      responseAdapter = SomeResponse.ADAPTER
+  ))
 }
