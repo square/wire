@@ -25,7 +25,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ProtoFileElementTest {
-  internal var location = Location.get("file.proto")
+  internal var location = Location.get("some/folder", "file.proto")
 
   @Test
   fun emptyToSchema() {
@@ -334,7 +334,7 @@ class ProtoFileElementTest {
   }
 
   @Test
-  fun defaultIsSetInProto2(){
+  fun defaultIsSetInProto2() {
     val field = FieldElement(
         location = location.at(9, 3),
         label = Field.Label.REQUIRED,
@@ -373,7 +373,7 @@ class ProtoFileElementTest {
   }
 
   @Test
-  fun defaultIsNotSetInProto3(){
+  fun defaultIsNotSetInProto3() {
     val field = FieldElement(
         location = location.at(9, 3),
         label = Field.Label.REQUIRED,

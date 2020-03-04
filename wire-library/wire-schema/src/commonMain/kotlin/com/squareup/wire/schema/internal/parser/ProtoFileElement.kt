@@ -36,7 +36,7 @@ data class ProtoFileElement(
     val syntaxRules = SyntaxRules.get(syntax)
 
     append("// ")
-    append(location)
+    append(location.withPathOnly())
     append('\n')
 
     if (syntax != null) {
