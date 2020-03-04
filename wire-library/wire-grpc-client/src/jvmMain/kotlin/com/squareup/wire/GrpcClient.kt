@@ -28,7 +28,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
 
-class GrpcClient private constructor(
+actual class GrpcClient private constructor(
   internal val client: OkHttpClient,
   internal val baseUrl: HttpUrl
 ) {
@@ -50,11 +50,13 @@ class GrpcClient private constructor(
     ) as T
   }
 
-  fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
+  actual fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
     return RealGrpcCall(this, method)
   }
 
-  fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> {
+  actual fun <S : Any, R : Any> newStreamingCall(
+    method: GrpcMethod<S, R>
+  ): GrpcStreamingCall<S, R> {
     return RealGrpcStreamingCall(this, method)
   }
 
