@@ -23,33 +23,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-import java.lang.reflect.InvocationHandler
-import java.lang.reflect.Method
-import java.lang.reflect.Proxy
-import kotlin.reflect.KClass
 
 actual class GrpcClient private constructor(
   internal val client: OkHttpClient,
   internal val baseUrl: HttpUrl
 ) {
-  fun <T : Service> create(service: KClass<T>): T {
-    val methodToService: Map<Method, () -> Any> =
-        service.java.methods.associate { method -> method to method.toGrpc() }
-
-    return Proxy.newProxyInstance(
-        service.java.classLoader,
-        arrayOf<Class<*>>(service.java),
-        object : InvocationHandler {
-          override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any {
-            if (method.declaringClass == Object::class.java) {
-              return method.invoke(this, *(args ?: emptyArray()))
-            }
-            return methodToService.getValue(method).invoke()
-          }
-        }
-    ) as T
-  }
-
   actual fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
     return RealGrpcCall(this, method)
   }
@@ -58,22 +36,6 @@ actual class GrpcClient private constructor(
     method: GrpcMethod<S, R>
   ): GrpcStreamingCall<S, R> {
     return RealGrpcStreamingCall(this, method)
-  }
-
-  private fun Method.toGrpc(): () -> Any {
-    val wireRpc = getAnnotation(WireRpc::class.java)
-    val requestAdapter = ProtoAdapter.get(wireRpc.requestAdapter) as ProtoAdapter<Any>
-    val responseAdapter = ProtoAdapter.get(wireRpc.responseAdapter) as ProtoAdapter<Any>
-    val method = GrpcMethod(wireRpc.path, requestAdapter, responseAdapter)
-
-    if (returnType == GrpcCall::class.java) {
-      return { newCall(method) }
-    }
-    if (returnType == GrpcStreamingCall::class.java) {
-      return { newStreamingCall(method) }
-    }
-
-    error("unexpected gRPC method: $this")
   }
 
   internal fun newCall(path: String, requestBody: RequestBody): Call {
