@@ -3,14 +3,17 @@
 package routeguide
 
 import com.squareup.wire.GrpcCall
+import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.Service
-import com.squareup.wire.WireRpc
 
 /**
  * Interface exported by the server.
  */
-interface RouteGuideClient : Service {
+class RouteGuideClient(
+  private val client: GrpcClient
+) : Service {
   /**
    * A simple RPC.
    *
@@ -19,12 +22,11 @@ interface RouteGuideClient : Service {
    * A feature with an empty name is returned if there's no feature at the given
    * position.
    */
-  @WireRpc(
-    path = "/routeguide.RouteGuide/GetFeature",
-    requestAdapter = "routeguide.Point#ADAPTER",
-    responseAdapter = "routeguide.Feature#ADAPTER"
-  )
-  fun GetFeature(): GrpcCall<Point, Feature>
+  fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
+      path = "/routeguide.RouteGuide/GetFeature",
+      requestAdapter = Point.ADAPTER,
+      responseAdapter = Feature.ADAPTER
+  ))
 
   /**
    * A server-to-client streaming RPC.
@@ -34,12 +36,11 @@ interface RouteGuideClient : Service {
    * repeated field), as the rectangle may cover a large area and contain a
    * huge number of features.
    */
-  @WireRpc(
-    path = "/routeguide.RouteGuide/ListFeatures",
-    requestAdapter = "routeguide.Rectangle#ADAPTER",
-    responseAdapter = "routeguide.Feature#ADAPTER"
-  )
-  fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature>
+  fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> = client.newStreamingCall(GrpcMethod(
+      path = "/routeguide.RouteGuide/ListFeatures",
+      requestAdapter = Rectangle.ADAPTER,
+      responseAdapter = Feature.ADAPTER
+  ))
 
   /**
    * A client-to-server streaming RPC.
@@ -47,12 +48,11 @@ interface RouteGuideClient : Service {
    * Accepts a stream of Points on a route being traversed, returning a
    * RouteSummary when traversal is completed.
    */
-  @WireRpc(
-    path = "/routeguide.RouteGuide/RecordRoute",
-    requestAdapter = "routeguide.Point#ADAPTER",
-    responseAdapter = "routeguide.RouteSummary#ADAPTER"
-  )
-  fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary>
+  fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> = client.newStreamingCall(GrpcMethod(
+      path = "/routeguide.RouteGuide/RecordRoute",
+      requestAdapter = Point.ADAPTER,
+      responseAdapter = RouteSummary.ADAPTER
+  ))
 
   /**
    * A Bidirectional streaming RPC.
@@ -60,10 +60,9 @@ interface RouteGuideClient : Service {
    * Accepts a stream of RouteNotes sent while a route is being traversed,
    * while receiving other RouteNotes (e.g. from other users).
    */
-  @WireRpc(
-    path = "/routeguide.RouteGuide/RouteChat",
-    requestAdapter = "routeguide.RouteNote#ADAPTER",
-    responseAdapter = "routeguide.RouteNote#ADAPTER"
-  )
-  fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
+  fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> = client.newStreamingCall(GrpcMethod(
+      path = "/routeguide.RouteGuide/RouteChat",
+      requestAdapter = RouteNote.ADAPTER,
+      responseAdapter = RouteNote.ADAPTER
+  ))
 }

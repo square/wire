@@ -49,6 +49,8 @@ import com.squareup.kotlinpoet.jvm.jvmStatic
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.GrpcCall
+import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.Message
 import com.squareup.wire.MessageSink
@@ -58,7 +60,6 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
-import com.squareup.wire.WireRpc
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
@@ -146,13 +147,19 @@ class KotlinGenerator private constructor(
    */
   fun generateService(service: Service, onlyRpc: Rpc? = null): TypeSpec {
     val serviceName = generatedServiceName(service, onlyRpc)
-    val builder = TypeSpec.interfaceBuilder(serviceName)
+    val builder = TypeSpec.classBuilder(serviceName)
         .apply {
           if (service.documentation().isNotBlank()) {
             addKdoc("%L\n", service.documentation().sanitizeKdoc())
           }
         }
         .addSuperinterface(com.squareup.wire.Service::class.java)
+        .primaryConstructor(FunSpec.constructorBuilder()
+            .addParameter("client", GrpcClient::class)
+            .build())
+        .addProperty(PropertySpec.builder("client", GrpcClient::class, PRIVATE)
+            .initializer("client")
+            .build())
 
     val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
     for (rpc in rpcs) {
@@ -169,16 +176,7 @@ class KotlinGenerator private constructor(
     servicePackageName: String?
   ): FunSpec {
     val packageName = if (servicePackageName.isNullOrBlank()) "" else "$servicePackageName."
-
-    val wireRpcAnnotationSpec = AnnotationSpec.builder(WireRpc::class.asClassName())
-        .addMember("path = %S", "/$packageName$serviceName/${rpc.name}")
-        // TODO(oldergod|jwilson) Lets' use Profile for this.
-        .addMember("requestAdapter = %S", rpc.requestType!!.adapterString())
-        .addMember("responseAdapter = %S", rpc.responseType!!.adapterString())
-        .build()
     val funSpecBuilder = FunSpec.builder(rpc.name)
-        .addModifiers(KModifier.ABSTRACT)
-        .addAnnotation(wireRpcAnnotationSpec)
         .apply {
           if (rpc.documentation.isNotBlank()) {
             addKdoc("%L\n", rpc.documentation.sanitizeKdoc())
@@ -215,14 +213,27 @@ class KotlinGenerator private constructor(
         }
       }
     } else {
+      val grpcMethod = CodeBlock.builder()
+          .addStatement("%T(⇥⇥", GrpcMethod::class)
+          .addStatement("path = %S,", "/$packageName$serviceName/${rpc.name}")
+          .addStatement("requestAdapter = %L,", rpc.requestType!!.getAdapterName())
+          .addStatement("responseAdapter = %L", rpc.responseType!!.getAdapterName())
+          .add("⇤⇤)")
+          .build()
       when {
         rpc.requestStreaming || rpc.responseStreaming -> {
-          funSpecBuilder.returns(
-              GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType))
+          funSpecBuilder
+              .returns(
+                  GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType)
+              )
+              .addStatement("return client.newStreamingCall(%L)", grpcMethod)
         }
         else -> {
-          funSpecBuilder.returns(
-              GrpcCall::class.asClassName().parameterizedBy(requestType, responseType))
+          funSpecBuilder
+              .returns(
+                  GrpcCall::class.asClassName().parameterizedBy(requestType, responseType)
+              )
+              .addStatement("return client.newCall(%L)", grpcMethod)
         }
       }
     }
