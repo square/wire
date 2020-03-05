@@ -79,7 +79,7 @@ class GrpcClientTest {
         .client(okhttpClient)
         .baseUrl(mockService.url)
         .build()
-    routeGuideService = grpcClient.create(RouteGuideClient::class)
+    routeGuideService = RouteGuideClient(grpcClient)
   }
 
   @After
