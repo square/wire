@@ -14,7 +14,7 @@ before_script:
   - if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
 script:
-  - cd wire-library; ../gradlew build; cd ..
+  - cd wire-library && ../gradlew build && cd ..
   - ./gradlew wire-codegen-sample:build wire-grpc-tests:build wire-protoc-compatibility-tests:build
 
 after_success:
