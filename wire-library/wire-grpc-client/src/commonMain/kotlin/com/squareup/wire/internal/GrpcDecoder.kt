@@ -16,9 +16,7 @@
 package com.squareup.wire.internal
 
 import okio.BufferedSource
-import okio.GzipSource
 import okio.Source
-import java.net.ProtocolException
 
 internal sealed class GrpcDecoder(val name: String) {
   /** Returns a stream that decodes `source`. */
@@ -29,7 +27,7 @@ internal sealed class GrpcDecoder(val name: String) {
   }
 
   internal object GzipGrpcDecoder : GrpcDecoder("gzip") {
-    override fun decode(source: BufferedSource) = GzipSource(source)
+    override fun decode(source: BufferedSource) = source.asGzip()
   }
 }
 
