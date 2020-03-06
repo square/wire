@@ -93,7 +93,10 @@ class WireRunTest {
     assertThat(fs.find("generated")).containsExactly(
         "generated/kt/squareup/routes/RouteClient.kt")
     assertThat(fs.get("generated/kt/squareup/routes/RouteClient.kt"))
-        .contains("interface RouteClient : Service", "fun GetUpdatedBlue()")
+        .contains(
+            "class RouteClient(\n  private val client: GrpcClient\n) : Service",
+            "fun GetUpdatedBlue()"
+        )
   }
 
   @Test
@@ -120,7 +123,9 @@ class WireRunTest {
     assertThat(fs.find("generated")).containsExactly(
         "generated/kt/squareup/routes/RouteBlockingServer.kt")
     assertThat(fs.get("generated/kt/squareup/routes/RouteBlockingServer.kt"))
-        .contains("interface RouteBlockingServer : Service", "fun GetUpdatedRed")
+        .contains(
+            "class RouteBlockingServer(\n  private val client: GrpcClient\n) : Service",
+            "fun GetUpdatedRed")
         .doesNotContain("suspend fun GetUpdatedRed")
   }
 
@@ -144,11 +149,11 @@ class WireRunTest {
         "generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt",
         "generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt")
     assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt"))
-        .contains("interface RouteGetUpdatedBlueClient : Service")
-        .doesNotContain("interface RouteGetUpdatedRedClient : Service")
+        .contains("class RouteGetUpdatedBlueClient(\n  private val client: GrpcClient\n) : Service")
+        .doesNotContain("RouteGetUpdatedRedClient")
     assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt"))
-        .contains("interface RouteGetUpdatedRedClient : Service")
-        .doesNotContain("interface RouteGetUpdatedBlueClient : Service")
+        .contains("class RouteGetUpdatedRedClient(\n  private val client: GrpcClient\n) : Service")
+        .doesNotContain("RouteGetUpdatedBlueClient")
   }
 
   @Test
