@@ -18,5 +18,12 @@ package com.squareup.wire.internal
 import okio.Sink
 import okio.Source
 
+// TODO make internal https://youtrack.jetbrains.com/issue/KT-37316
+expect interface Call {
+  fun cancel()
+}
+
 internal expect fun Sink.asGzip(): Sink
 internal expect fun Source.asGzip(): Source
+
+internal expect fun Throwable.addSuppressed(other: Throwable)

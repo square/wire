@@ -18,10 +18,17 @@ package com.squareup.wire.internal
 import okio.Sink
 import okio.Source
 
+actual interface Call {
+  actual fun cancel()
+}
+
 internal actual fun Sink.asGzip(): Sink {
   throw UnsupportedOperationException("Gzip not implemented for native")
 }
 
 internal actual fun Source.asGzip(): Source {
   throw UnsupportedOperationException("Gzip not implemented for native")
+}
+
+internal actual fun Throwable.addSuppressed(other: Throwable) {
 }
