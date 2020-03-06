@@ -17,7 +17,6 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.MessageSink
 import com.squareup.wire.ProtoAdapter
-import okhttp3.Call
 import okio.Buffer
 import okio.BufferedSink
 
@@ -40,7 +39,7 @@ internal class GrpcMessageSink<T : Any> constructor(
     check(!closed) { "closed" }
 
     val encodedMessage = Buffer()
-    grpcEncoding.toGrpcEncoder().encode(encodedMessage).use { encodingSink ->
+    grpcEncoding.toGrpcEncoder().encode(encodedMessage).use(BufferedSink::close) { encodingSink ->
       messageAdapter.encode(encodingSink, message)
     }
 

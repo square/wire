@@ -20,8 +20,6 @@ import com.squareup.wire.ProtoAdapter
 import okio.Buffer
 import okio.BufferedSource
 import okio.buffer
-import java.io.Closeable
-import java.net.ProtocolException
 
 /**
  * Reads an HTTP/2 stream as a sequence of gRPC messages.
@@ -34,7 +32,7 @@ internal class GrpcMessageSource<T : Any>(
   private val source: BufferedSource,
   private val messageAdapter: ProtoAdapter<T>,
   private val grpcEncoding: String? = null
-) : MessageSource<T>, Closeable by source {
+) : MessageSource<T> {
   override fun read(): T? {
     if (source.exhausted()) return null
 
@@ -57,17 +55,19 @@ internal class GrpcMessageSource<T : Any>(
 
     val encodedMessage = Buffer().write(source, encodedLength)
 
-    return messageDecoding.decode(encodedMessage).buffer().use {
+    return messageDecoding.decode(encodedMessage).buffer().use(BufferedSource::close) {
       messageAdapter.decode(it)
     }
   }
 
   fun readExactlyOneAndClose(): T {
-    use { reader ->
+    use(GrpcMessageSource<T>::close) { reader ->
       val result = reader.read() ?: throw ProtocolException("expected 1 message but got none")
       val end = reader.read()
       if (end != null) throw ProtocolException("expected 1 message but got multiple")
       return result
     }
   }
+
+  override fun close() = source.close()
 }

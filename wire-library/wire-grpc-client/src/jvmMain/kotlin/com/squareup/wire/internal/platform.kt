@@ -18,6 +18,21 @@ package com.squareup.wire.internal
 import okio.Sink
 import okio.Source
 import okio.gzip
+import java.lang.reflect.Method
+
+actual typealias Call = okhttp3.Call
 
 internal actual inline fun Sink.asGzip(): Sink = gzip()
 internal actual inline fun Source.asGzip(): Source = gzip()
+
+internal actual fun Throwable.addSuppressed(other: Throwable) {
+  AddSuppressedMethod?.invoke(this, other)
+}
+
+private val AddSuppressedMethod: Method? by lazy {
+  try {
+    Throwable::class.java.getMethod("addSuppressed", Throwable::class.java)
+  } catch (t: Throwable) {
+    null
+  }
+}
