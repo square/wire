@@ -25,6 +25,7 @@ import java.util.List;
 import okio.ByteString;
 import org.junit.Test;
 
+import static com.squareup.wire.json.JsonKt.assertJsonEquals;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -258,8 +259,7 @@ public class MoshiTest {
 
   @Test public void serializationOfAllTypes() {
     AllTypes allTypes = createBuilder().build();
-    String json = moshi.adapter(AllTypes.class).toJson(allTypes);
-    assertThat(json).isEqualTo(JSON);
+    assertJsonEquals(moshi.adapter(AllTypes.class).toJson(allTypes), JSON);
   }
 
   @SuppressWarnings("ConstantConditions")
@@ -270,7 +270,7 @@ public class MoshiTest {
     AllTypes parsed = allTypesAdapter.fromJson(JSON);
     assertThat(parsed).isEqualTo(allTypes);
     assertThat(parsed.toString()).isEqualTo(allTypes.toString());
-    assertThat(allTypesAdapter.toJson(parsed)).isEqualTo(allTypesAdapter.toJson(allTypes));
+    assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes));
   }
 
   @Test public void omitsUnknownFields() {
@@ -282,8 +282,7 @@ public class MoshiTest {
     builder.addUnknownField(9003, FieldEncoding.VARINT, 9003L);
 
     AllTypes allTypes = builder.build();
-    String json = moshi.adapter(AllTypes.class).toJson(allTypes);
-    assertThat(json).isEqualTo(JSON);
+    assertJsonEquals(moshi.adapter(AllTypes.class).toJson(allTypes), JSON);
   }
 
   @SuppressWarnings("ConstantConditions")
