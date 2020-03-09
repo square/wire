@@ -43,7 +43,33 @@ import java.util.ArrayList
  * compatible with the [protobuf-java-format](https://code.google.com/p/protobuf-java-format/)
  * library.
  */
-class WireJsonAdapterFactory : JsonAdapter.Factory {
+class WireJsonAdapterFactory private constructor(
+  private val typeUrlToAdapter: Map<String, ProtoAdapter<*>>
+) : JsonAdapter.Factory {
+  constructor() : this(mapOf())
+
+  /**
+   * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
+   * used with [AnyMessage].
+   */
+  fun plus(adapters: List<ProtoAdapter<*>>): WireJsonAdapterFactory {
+    val newMap = typeUrlToAdapter.toMutableMap()
+    for (adapter in adapters) {
+      val key = adapter.typeUrl ?: throw IllegalArgumentException(
+          "recompile ${adapter.type} to use it with WireJsonAdapterFactory")
+      newMap[key] = adapter
+    }
+    return WireJsonAdapterFactory(newMap)
+  }
+
+  /**
+   * Returns a new WireJsonAdapterFactory that can encode the messages for [adapter] if they're
+   * used with [AnyMessage].
+   */
+  fun plus(adapter: ProtoAdapter<*>): WireJsonAdapterFactory {
+    return plus(listOf(adapter))
+  }
+
   override fun create(
     type: Type,
     annotations: Set<Annotation>,
@@ -64,6 +90,9 @@ class WireJsonAdapterFactory : JsonAdapter.Factory {
     }
     if (rawType == ByteString::class.java) {
       return BYTE_STRING_JSON_ADAPTER
+    }
+    if (rawType == AnyMessage::class.java) {
+      return AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
     }
     return if (Message::class.java.isAssignableFrom(rawType)) {
       MessageJsonAdapter<Nothing, Nothing>(moshi, type)

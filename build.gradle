@@ -84,6 +84,7 @@ buildscript {
       'protobuf': [
           'gradlePlugin': "com.google.protobuf:protobuf-gradle-plugin:${versions.protobufGradlePlugin}",
           'java': "com.google.protobuf:protobuf-java:${versions.protoc}",
+          'javaUtil': "com.google.protobuf:protobuf-java-util:${versions.protoc}",
           'protoc': "com.google.protobuf:protoc:${versions.protoc}",
       ],
       'wire': [
@@ -91,6 +92,7 @@ buildscript {
           'grpcClient': "com.squareup.wire:wire-grpc-client",
           'javaGenerator': "com.squareup.wire:wire-java-generator",
           'kotlinGenerator': "com.squareup.wire:wire-kotlin-generator",
+          'moshiAdapter': "com.squareup.wire:wire-moshi-adapter",
           'runtime': "com.squareup.wire:wire-runtime",
           'schema': "com.squareup.wire:wire-schema",
           'testUtils': "com.squareup.wire:wire-test-utils",

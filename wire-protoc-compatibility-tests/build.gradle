@@ -24,12 +24,22 @@ protobuf {
 wire {
   proto3Preview = 'UNSUPPORTED'
 
+  sourcePath {
+    srcDir 'src/main/proto'
+  }
+
+  sourcePath {
+    srcJar deps.protobuf.java
+    include 'google/protobuf/descriptor.proto'
+  }
+
   protoPath {
     srcJar 'src/main/proto/protos.jar'
     include 'squareup/geology/period.proto'
   }
 
   kotlin {
+    javaInterop = true
   }
 }
 
@@ -50,12 +60,16 @@ animalsniffer {
 }
 
 dependencies {
-  implementation deps.wire.runtime
   implementation deps.kotlin.stdlib.jdk8
   implementation deps.okio.jvm
   implementation deps.protobuf.java
-  testImplementation deps.junit
+  implementation deps.wire.runtime
   testImplementation deps.assertj
+  testImplementation deps.junit
+  testImplementation deps.moshi
+  testImplementation deps.protobuf.javaUtil
+  testImplementation deps.wire.moshiAdapter
+  testImplementation deps.wire.testUtils
 }
 
 test {
