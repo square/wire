@@ -17,12 +17,25 @@
 
 package com.squareup.wire
 
+import com.google.protobuf.Any
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.FieldOptions
+import com.google.protobuf.util.JsonFormat
+import com.squareup.moshi.JsonDataException
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.Moshi
 import com.squareup.wire.proto3.requiredextension.RequiredExtension
 import com.squareup.wire.proto3.requiredextension.RequiredExtensionMessage
+import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.fail
 import org.junit.Test
+import squareup.proto3.pizza.BuyOneGetOnePromotion
+import squareup.proto3.pizza.FreeGarlicBreadPromotion
+import squareup.proto3.pizza.Pizza
+import squareup.proto3.pizza.PizzaDelivery
+import squareup.proto3.pizza.PizzaOuterClass
+import java.io.IOException
 
 class Proto3WireProtocCompatibilityTests {
   // Note: this test mostly make sure we compile required extension without failing.
@@ -40,4 +53,222 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(DescriptorProtos.FieldOptions.newBuilder().build()).isNotNull()
     assertThat(FieldOptions()).isNotNull()
   }
+
+  @Test fun protocJson() {
+    val pizzaDelivery = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .setAddress("507 Cross Street")
+        .addPizzas(PizzaOuterClass.Pizza.newBuilder()
+            .addToppings("pineapple")
+            .addToppings("onion")
+            .build())
+        .setPromotion(Any.pack(PizzaOuterClass.BuyOneGetOnePromotion.newBuilder()
+            .setCoupon("MAUI")
+            .build()))
+        .build()
+
+    val json = """
+        |{
+        |  "address": "507 Cross Street",
+        |  "pizzas": [{
+        |    "toppings": ["pineapple", "onion"]
+        |  }],
+        |  "promotion": {
+        |    "@type": "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion",
+        |    "coupon": "MAUI"
+        |  }
+        |}
+        """.trimMargin()
+
+    val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
+        .add(PizzaOuterClass.BuyOneGetOnePromotion.getDescriptor())
+        .add(PizzaOuterClass.FreeGarlicBreadPromotion.getDescriptor())
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+        .usingTypeRegistry(typeRegistry)
+    assertThat(jsonPrinter.print(pizzaDelivery)).isEqualTo(json)
+
+    val jsonParser = JsonFormat.parser().usingTypeRegistry(typeRegistry)
+    val parsed = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .apply { jsonParser.merge(json, this) }
+        .build()
+    assertThat(parsed).isEqualTo(pizzaDelivery)
+  }
+
+  @Test fun wireJson() {
+    val pizzaDelivery = PizzaDelivery(
+        address = "507 Cross Street",
+        pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
+        promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI"))
+    )
+    val json = """
+        |{
+        |  "address": "507 Cross Street",
+        |  "pizzas": [
+        |    {
+        |      "toppings": [
+        |        "pineapple",
+        |        "onion"
+        |      ]
+        |    }
+        |  ],
+        |  "promotion": {
+        |    "@type": "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion",
+        |    "coupon": "MAUI"
+        |  }
+        |}
+        """.trimMargin()
+
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory()
+            .plus(BuyOneGetOnePromotion.ADAPTER, FreeGarlicBreadPromotion.ADAPTER))
+        .build()
+
+    val jsonAdapter = moshi.adapter(PizzaDelivery::class.java).indent("  ")
+    assertThat(jsonAdapter.toJson(pizzaDelivery)).isEqualTo(json)
+    assertThat(jsonAdapter.fromJson(json)).isEqualTo(pizzaDelivery)
+  }
+
+  @Test fun wireProtocJsonRoundTrip() {
+    val protocMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .setAddress("507 Cross Street")
+        .addPizzas(PizzaOuterClass.Pizza.newBuilder()
+            .addToppings("pineapple")
+            .addToppings("onion")
+            .build())
+        .setPromotion(Any.pack(PizzaOuterClass.BuyOneGetOnePromotion.newBuilder()
+            .setCoupon("MAUI")
+            .build()))
+        .build()
+
+    val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
+        .add(PizzaOuterClass.BuyOneGetOnePromotion.getDescriptor())
+        .add(PizzaOuterClass.FreeGarlicBreadPromotion.getDescriptor())
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+        .usingTypeRegistry(typeRegistry)
+    val protocMessageJson = jsonPrinter.print(protocMessage)
+
+    val wireMessage = PizzaDelivery(
+        address = "507 Cross Street",
+        pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
+        promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI"))
+    )
+
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory()
+            .plus(BuyOneGetOnePromotion.ADAPTER, FreeGarlicBreadPromotion.ADAPTER))
+        .build()
+    val jsonAdapter = moshi.adapter(PizzaDelivery::class.java)
+    val moshiMessageJson = jsonAdapter.toJson(wireMessage)
+
+    // Parsing the two json because this should be order insensitive.
+    assertThat(JsonReader.of(Buffer().writeUtf8(moshiMessageJson)).readJsonValue())
+        .isEqualTo(JsonReader.of(Buffer().writeUtf8(protocMessageJson)).readJsonValue())
+
+    // Now each parses the other's json.
+    val jsonParser = JsonFormat.parser().usingTypeRegistry(typeRegistry)
+    val protocMessageDecodedFromWireJson = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .apply { jsonParser.merge(moshiMessageJson, this) }
+        .build()
+
+    val wireMessageDecodedFromProtocJson = jsonAdapter.fromJson(protocMessageJson)
+
+    assertThat(protocMessageDecodedFromWireJson).isEqualTo(protocMessage)
+    assertThat(wireMessageDecodedFromProtocJson).isEqualTo(wireMessage)
+  }
+
+  @Test fun unregisteredTypeOnReading() {
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory())
+        .build()
+
+    val jsonAdapter = moshi.adapter(PizzaDelivery::class.java)
+
+    val json = """
+        |{
+        |  "address": "507 Cross Street",
+        |  "pizzas": [
+        |    {
+        |      "toppings": [
+        |        "pineapple",
+        |        "onion"
+        |      ]
+        |    }
+        |  ],
+        |  "promotion": {
+        |    "@type": "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion",
+        |    "coupon": "MAUI"
+        |  }
+        |}
+        """.trimMargin()
+
+    try {
+      jsonAdapter.fromJson(json)
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage("Cannot resolve type: " +
+          "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion")
+    }
+  }
+
+  @Test fun unrecognizedTypeOnWriting() {
+    val pizzaDelivery = PizzaDelivery(
+        address = "507 Cross Street",
+        pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
+        promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI"))
+    )
+
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory())
+        .build()
+
+    val jsonAdapter = moshi.adapter(PizzaDelivery::class.java)
+    try {
+      jsonAdapter.toJson(pizzaDelivery)
+      fail()
+    } catch (expected: AssertionError) {
+      assertThat(expected).hasMessage("java.io.IOException: " +
+          "Cannot find type for url: " +
+          "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion")
+    }
+  }
+
+  @Test fun anyJsonWithoutType() {
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory())
+        .build()
+
+    val jsonAdapter = moshi.adapter(PizzaDelivery::class.java)
+
+    val json = """
+        |{
+        |  "address": "507 Cross Street",
+        |  "pizzas": [
+        |    {
+        |      "toppings": [
+        |        "pineapple",
+        |        "onion"
+        |      ]
+        |    }
+        |  ],
+        |  "promotion": {
+        |    "coupon": "MAUI"
+        |  }
+        |}
+        """.trimMargin()
+
+    try {
+      jsonAdapter.fromJson(json)
+      fail()
+    } catch (expected: JsonDataException) {
+      assertThat(expected).hasMessage(
+          """expected @type in JsonReader([text=\n    "coupon": "MAUI"\n  }\n}])""")
+    }
+  }
+
+  // Nice error on unrecognized @type
+  // Nice error on absent @type
+  // Nice error on unregistered type
 }
