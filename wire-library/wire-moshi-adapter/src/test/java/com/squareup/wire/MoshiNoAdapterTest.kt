@@ -1,6 +1,8 @@
 package com.squareup.wire
 
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.squareup.wire.json.assertJsonEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
 import org.junit.Test
@@ -12,7 +14,7 @@ import com.squareup.wire.protos.geology.javainteropkotlin.Period as PeriodIntero
 import com.squareup.wire.protos.geology.kotlin.Period as PeriodKotlin
 
 class MoshiNoAdapterTest {
-  private val moshi = Moshi.Builder().build()
+  private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
   /** This test passes with Wire 2.2. */
   @Test fun kotlinFullObject() {
@@ -30,7 +32,7 @@ class MoshiNoAdapterTest {
       |"period":"JURASSIC",
       |"picture_urls":["http://goo.gl/LD5KY5","http://goo.gl/VYRM67"]
       |}""".trimMargin().replace("\n", "")
-    assertThat(moshi.adapter(DinosaurKotlin::class.java).toJson(value)).isEqualTo(json)
+    assertJsonEquals(moshi.adapter(DinosaurKotlin::class.java).toJson(value), json)
     val decoded = moshi.adapter(DinosaurKotlin::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
@@ -41,7 +43,7 @@ class MoshiNoAdapterTest {
   @Test fun kotlinListsOnly() {
     val value = DinosaurKotlin()
     val json = """{"picture_urls":[]}"""
-    assertThat(moshi.adapter(DinosaurKotlin::class.java).toJson(value)).isEqualTo(json)
+    assertJsonEquals(moshi.adapter(DinosaurKotlin::class.java).toJson(value), json)
     val decoded = moshi.adapter(DinosaurKotlin::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
@@ -52,8 +54,8 @@ class MoshiNoAdapterTest {
   @Test fun kotlinEmptyObject() {
     val value = DinosaurKotlin()
     val json = "{}"
-    assertThat(moshi.adapter(DinosaurKotlin::class.java).toJson(value))
-        .isEqualTo("{\"picture_urls\":[]}")
+    assertJsonEquals(moshi.adapter(DinosaurKotlin::class.java).toJson(value),
+        "{\"picture_urls\":[]}")
     val decoded = moshi.adapter(DinosaurKotlin::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
@@ -76,7 +78,7 @@ class MoshiNoAdapterTest {
       |"period":"JURASSIC",
       |"picture_urls":["http://goo.gl/LD5KY5","http://goo.gl/VYRM67"]
       |}""".trimMargin().replace("\n", "")
-    assertThat(moshi.adapter(DinosaurJava::class.java).toJson(value)).isEqualTo(json)
+    assertJsonEquals(moshi.adapter(DinosaurJava::class.java).toJson(value), json)
     val decoded = moshi.adapter(DinosaurJava::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
@@ -87,7 +89,7 @@ class MoshiNoAdapterTest {
   @Test fun javaListsOnly() {
     val value = DinosaurJava.Builder().build()
     val json = """{"picture_urls":[]}"""
-    assertThat(moshi.adapter(DinosaurJava::class.java).toJson(value)).isEqualTo(json)
+    assertJsonEquals(moshi.adapter(DinosaurJava::class.java).toJson(value), json)
     val decoded = moshi.adapter(DinosaurJava::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
@@ -99,8 +101,8 @@ class MoshiNoAdapterTest {
   @Test fun javaEmptyObject() {
     val value = DinosaurJava.Builder().build()
     val json = "{}"
-    assertThat(moshi.adapter(DinosaurJava::class.java).toJson(value))
-        .isEqualTo("{\"picture_urls\":[]}")
+    assertJsonEquals(moshi.adapter(DinosaurJava::class.java).toJson(value),
+        "{\"picture_urls\":[]}")
     val decoded = moshi.adapter(DinosaurJava::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
@@ -123,7 +125,7 @@ class MoshiNoAdapterTest {
       |"period":"JURASSIC",
       |"picture_urls":["http://goo.gl/LD5KY5","http://goo.gl/VYRM67"]
       |}""".trimMargin().replace("\n", "")
-    assertThat(moshi.adapter(DinosaurInterop::class.java).toJson(value)).isEqualTo(json)
+    assertJsonEquals(moshi.adapter(DinosaurInterop::class.java).toJson(value), json)
     val decoded = moshi.adapter(DinosaurInterop::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
@@ -134,7 +136,7 @@ class MoshiNoAdapterTest {
   @Test fun interopListsOnly() {
     val value = DinosaurInterop.Builder().build()
     val json = """{"picture_urls":[]}"""
-    assertThat(moshi.adapter(DinosaurInterop::class.java).toJson(value)).isEqualTo(json)
+    assertJsonEquals(moshi.adapter(DinosaurInterop::class.java).toJson(value), json)
     val decoded = moshi.adapter(DinosaurInterop::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
@@ -145,8 +147,8 @@ class MoshiNoAdapterTest {
   @Test fun interopEmptyObject() {
     val value = DinosaurInterop.Builder().build()
     val json = "{}"
-    assertThat(moshi.adapter(DinosaurInterop::class.java).toJson(value))
-        .isEqualTo("{\"picture_urls\":[]}")
+    assertJsonEquals(moshi.adapter(DinosaurInterop::class.java).toJson(value),
+        "{\"picture_urls\":[]}")
     val decoded = moshi.adapter(DinosaurInterop::class.java).fromJson(json)
     assertThat(decoded).isEqualTo(value)
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode())
