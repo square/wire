@@ -25,6 +25,18 @@ interface SyntaxRules {
   fun canExtend(protoType: ProtoType): Boolean
   fun enumRequiresZeroValueAtFirstPosition(): Boolean
   fun isPackedByDefault(type: ProtoType, label: Field.Label?): Boolean
+  fun isTypeOptionalByDefault(
+    protoType: ProtoType,
+    type: Type?,
+    isExtension: Boolean,
+    isOneOf: Boolean
+  ): Boolean
+  fun isTypeRequiredByDefault(
+    protoType: ProtoType,
+    type: Type?,
+    isExtension: Boolean,
+    isOneOf: Boolean
+  ): Boolean
 
   companion object {
     fun get(syntax: Syntax?): SyntaxRules {
@@ -43,6 +55,20 @@ interface SyntaxRules {
         type: ProtoType,
         label: Field.Label?
       ): Boolean = false
+
+      override fun isTypeOptionalByDefault(
+        protoType: ProtoType,
+        type: Type?,
+        isExtension: Boolean,
+        isOneOf: Boolean
+      ): Boolean = false
+
+      override fun isTypeRequiredByDefault(
+        protoType: ProtoType,
+        type: Type?,
+        isExtension: Boolean,
+        isOneOf: Boolean
+      ): Boolean = false
     }
 
     internal val PROTO_3_SYNTAX_RULES = object : SyntaxRules {
@@ -56,6 +82,28 @@ interface SyntaxRules {
         label: Field.Label?
       ): Boolean {
         return label == Field.Label.REPEATED && type in ProtoType.NUMERIC_SCALAR_TYPES
+      }
+
+      override fun isTypeOptionalByDefault(
+        protoType: ProtoType,
+        type: Type?,
+        isExtension: Boolean,
+        isOneOf: Boolean
+      ): Boolean {
+        return !(protoType.isScalar || type is EnumType) ||
+            // Extensions (custom options) are always optional.
+            isExtension ||
+            // OneOfs are always optional.
+            isOneOf
+      }
+
+      override fun isTypeRequiredByDefault(
+        protoType: ProtoType,
+        type: Type?,
+        isExtension: Boolean,
+        isOneOf: Boolean
+      ): Boolean {
+        return !isTypeOptionalByDefault(protoType, type, isExtension, isOneOf)
       }
     }
   }

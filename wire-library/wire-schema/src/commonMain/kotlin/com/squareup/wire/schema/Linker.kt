@@ -263,6 +263,7 @@ class Linker {
     protoTypeNames[protoType.toString()] = type
   }
 
+  // TODO(benoit) Remove the operator. This isn't a getter method.
   /** Returns the type or null if it doesn't exist. */
   operator fun get(protoType: ProtoType): Type? {
     var result = protoTypeNames[protoType.toString()]

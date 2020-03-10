@@ -502,4 +502,37 @@ public final class JavaGeneratorTest {
         + "      return this;\n"
         + "    }");
   }
+
+  @Test public void noLabelForProto3() throws Exception {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("message.proto", ""
+            + "syntax = \"proto3\";\n"
+            + "package common.proto;\n"
+            + "message LabelMessage {\n"
+            + "  string text = 1;\n"
+            + "  Author author = 2;\n"
+            + "  Enum enum = 3;\n"
+            + "\n"
+            + "  oneof choice {\n"
+            + "    int32 foo = 4;\n"
+            + "    string bar = 5;\n"
+            + "  }\n"
+            + "  enum Enum {\n"
+            + "    UNKNOWN = 0;\n"
+            + "    A = 1;\n"
+            + "  }\n"
+            + "  message Author {\n"
+            + "    string name = 1;\n"
+            + "  }\n"
+            + "}");
+    assertThat(repoBuilder.generateCode("common.proto.LabelMessage")).contains(""
+        + "    public LabelMessage build() {\n"
+        + "      if (text == null\n"
+        + "          || enum_ == null) {\n"
+        + "        throw Internal.missingRequiredFields(text, \"text\",\n"
+        + "            enum_, \"enum\");\n"
+        + "      }\n"
+        + "      return new LabelMessage(text, author, enum_, foo, bar, super.buildUnknownFields());\n"
+        + "    }");
+  }
 }

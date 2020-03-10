@@ -27,7 +27,7 @@ class EnclosingType internal constructor(
   override val options
     get() = Options(Options.MESSAGE_OPTIONS, listOf())
 
-  override fun linkMembers(linker: Linker) {}
+  override fun linkMembers(linker: Linker, syntaxRules: SyntaxRules) {}
   override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
     nestedTypes.forEach { it.linkOptions(linker, syntaxRules) }
   }

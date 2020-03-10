@@ -40,7 +40,7 @@ class EnumType private constructor(
   /** Returns the constant tagged `tag`, or null if this enum has no such constant.  */
   fun constant(tag: Int) = constants.find { it.tag == tag }
 
-  override fun linkMembers(linker: Linker) {}
+  override fun linkMembers(linker: Linker, syntaxRules: SyntaxRules) {}
 
   override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
     options.link(linker)

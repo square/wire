@@ -41,7 +41,9 @@ class Field private constructor(
 
   val options: Options,
 
-  val isExtension: Boolean
+  val isExtension: Boolean,
+
+  val isOneOf: Boolean
 ) {
   // Null until this field is linked.
   var type: ProtoType? = null
@@ -60,11 +62,13 @@ class Field private constructor(
   val isRepeated: Boolean
     get() = label == Label.REPEATED
 
-  val isOptional: Boolean
-    get() = label == Label.OPTIONAL
+  // Null until this field is linked.
+  var isOptional: Boolean = false
+    private set
 
-  val isRequired: Boolean
-    get() = label == Label.REQUIRED
+  // Null until this field is linked.
+  var isRequired: Boolean = false
+    private set
 
   /**
    * Returns this field's name, prefixed with its package name. Uniquely identifies extension
@@ -90,8 +94,17 @@ class Field private constructor(
         linker.get(type) !is MessageType
   }
 
-  fun link(linker: Linker) {
+  fun link(linker: Linker, syntaxRules: SyntaxRules) {
     type = linker.withContext(this).resolveType(elementType)
+
+    // We look up the member type because we wanna know if this field is an Enum.
+    val memberType = linker.get(type!!)
+    isOptional = label == Label.OPTIONAL ||
+        label == null &&
+        syntaxRules.isTypeOptionalByDefault(type!!, memberType, isExtension, isOneOf)
+    isRequired = label == Label.REQUIRED ||
+        label == null &&
+        syntaxRules.isTypeRequiredByDefault(type!!, memberType, isExtension, isOneOf)
   }
 
   fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
@@ -151,12 +164,15 @@ class Field private constructor(
         default = default,
         elementType = elementType,
         options = options,
-        isExtension = isExtension
+        isExtension = isExtension,
+        isOneOf = isOneOf
     )
     result.type = type
     result.deprecated = deprecated
     result.packed = packed
     result.isRedacted = isRedacted
+    result.isOptional = isOptional
+    result.isRequired = isRequired
     return result
   }
 
@@ -221,7 +237,8 @@ class Field private constructor(
     fun fromElements(
       packageName: String?,
       fieldElements: List<FieldElement>,
-      extension: Boolean
+      extension: Boolean,
+      oneOf: Boolean
     ) = fieldElements.map {
       Field(
           packageName = packageName,
@@ -233,7 +250,8 @@ class Field private constructor(
           default = it.defaultValue,
           elementType = it.type,
           options = Options(FIELD_OPTIONS, it.options),
-          isExtension = extension
+          isExtension = extension,
+          isOneOf = oneOf
       )
     }
 

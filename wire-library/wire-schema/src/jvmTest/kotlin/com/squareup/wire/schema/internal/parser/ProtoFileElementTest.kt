@@ -373,47 +373,6 @@ class ProtoFileElementTest {
   }
 
   @Test
-  fun defaultIsNotSetInProto3() {
-    val field = FieldElement(
-        location = location.at(9, 3),
-        label = Field.Label.REQUIRED,
-        type = "string",
-        name = "name",
-        tag = 1,
-        defaultValue = "defaultValue"
-    )
-    val message =
-        MessageElement(location = location.at(8, 1), name = "Message", fields = listOf(field))
-    val file = ProtoFileElement(
-        syntax = PROTO_3,
-        location = location,
-        packageName = "example.simple",
-        imports = listOf("example.thing"),
-        publicImports = listOf("example.other"),
-        types = listOf(message)
-    )
-    assertThat(file.toSchema()).doesNotContain("defaultValue")
-
-    // TODO(benoit|masaru): Ignore the test below now. This will be fixed by #1386.
-    // val expected = """
-    //     |// file.proto
-    //     |syntax = "proto3";
-    //     |package example.simple;
-    //     |
-    //     |import "example.thing";
-    //     |import public "example.other";
-    //     |
-    //     |message Message {
-    //     |  string name = 1;
-    //     |}
-    //     |""".trimMargin()
-    // assertThat(file.toSchema()).isEqualTo(expected)
-    // // Re-parse the expected string into a ProtoFile and ensure they're equal.
-    // val parsed = ProtoParser.parse(location, expected)
-    // assertThat(parsed).isEqualTo(file)
-  }
-
-  @Test
   fun convertPackedOptionFromWireSchemaInProto2() {
     val fieldNumeric = FieldElement(
         location = location.at(6, 3),

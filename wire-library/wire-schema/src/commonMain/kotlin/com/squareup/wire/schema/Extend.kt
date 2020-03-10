@@ -64,7 +64,7 @@ class Extend private constructor(
           location = it.location,
           documentation = it.documentation,
           name = it.name,
-          fields = Field.fromElements(packageName, it.fields, true)
+          fields = Field.fromElements(packageName, it.fields, extension = true, oneOf = false)
       )
     }
 

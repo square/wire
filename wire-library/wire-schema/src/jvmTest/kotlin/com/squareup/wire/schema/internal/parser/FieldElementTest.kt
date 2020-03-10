@@ -84,13 +84,12 @@ class FieldElementTest {
   fun defaultIsNotSetInProto3File() {
     val field = FieldElement(
         location = location,
-        label = REQUIRED,
         type = "string",
         name = "name",
         tag = 1,
         defaultValue = "default value shouldn't be set"
     )
 
-    assertThat(field.toSchema(PROTO_3_SYNTAX_RULES)).isEqualTo("required string name = 1;\n")
+    assertThat(field.toSchema(PROTO_3_SYNTAX_RULES)).isEqualTo("string name = 1;\n")
   }
 }

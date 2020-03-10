@@ -1839,4 +1839,75 @@ class SchemaTest {
     assertThat(schema.getService("Service")!!.options().elements).contains(deprecatedOptionElement)
     assertThat(schema.getService("Service")!!.rpc("Call")!!.options.elements).contains(deprecatedOptionElement)
   }
+
+  @Test
+  fun defaultLabelForProto3Fields() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |syntax = "proto3";
+            |
+            |message Message {
+            |  OtherMessage a = 1;
+            |  bool b = 2;
+            |  bytes c = 3;
+            |  string d = 4;
+            |  Enum e = 5;
+            |  oneof f {
+            |    int32 fa = 6;
+            |    string fb = 7;
+            |  }
+            |}
+            |
+            |message OtherMessage {}
+            |enum Enum {
+            |  UNKNOWN = 0;
+            |}
+            |""".trimMargin()
+        ).schema()
+
+    val messageType = schema.getType("Message") as MessageType
+    assertThat(messageType.field("a")!!.isOptional).isTrue()
+    assertThat(messageType.field("a")!!.isRequired).isFalse()
+    assertThat(messageType.field("b")!!.isOptional).isFalse()
+    assertThat(messageType.field("b")!!.isRequired).isTrue()
+    assertThat(messageType.field("c")!!.isOptional).isFalse()
+    assertThat(messageType.field("c")!!.isRequired).isTrue()
+    assertThat(messageType.field("d")!!.isOptional).isFalse()
+    assertThat(messageType.field("d")!!.isRequired).isTrue()
+    assertThat(messageType.field("e")!!.isOptional).isFalse()
+    assertThat(messageType.field("e")!!.isRequired).isTrue()
+    assertThat(messageType.field("fa")!!.isOptional).isTrue()
+    assertThat(messageType.field("fa")!!.isRequired).isFalse()
+    assertThat(messageType.field("fb")!!.isOptional).isTrue()
+    assertThat(messageType.field("fb")!!.isRequired).isFalse()
+  }
+
+  @Test
+  fun proto3AllowRequiredCustomOptions() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+             |syntax = "proto3";
+             |import "google/protobuf/descriptor.proto";
+             |message Message {
+             |  int32 a = 1;
+             |  int32 b = 2 [color=red, deprecated=true, packed=true];
+             |}
+             |extend google.protobuf.FieldOptions {
+             |  string color = 60001;
+             |}
+             """.trimMargin()
+        )
+        .schema()
+    val message = schema.getType("Message") as MessageType
+
+    val aOptions = message.field("a")!!.options
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isNull()
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isNull()
+    assertThat(aOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isNull()
+
+    val bOptions = message.field("b")!!.options
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "color"))).isEqualTo("red")
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "deprecated"))).isEqualTo("true")
+    assertThat(bOptions.get(ProtoMember.get(FIELD_OPTIONS, "packed"))).isEqualTo("true")
+  }
 }

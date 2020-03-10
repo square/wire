@@ -23,9 +23,9 @@ class OneOf private constructor(
   val documentation: String,
   val fields: List<Field>
 ) {
-  fun link(linker: Linker) {
+  fun link(linker: Linker, syntaxRules: SyntaxRules) {
     for (field in fields) {
-      field.link(linker)
+      field.link(linker, syntaxRules)
     }
   }
 
@@ -66,7 +66,7 @@ class OneOf private constructor(
       return@map OneOf(
           name = it.name,
           documentation = it.documentation,
-          fields = Field.fromElements(packageName, it.fields, extension)
+          fields = Field.fromElements(packageName, it.fields, extension, oneOf = true)
       )
     }
 
