@@ -60,6 +60,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.WireRpc
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
@@ -147,19 +148,24 @@ class KotlinGenerator private constructor(
    */
   fun generateService(service: Service, onlyRpc: Rpc? = null): TypeSpec {
     val serviceName = generatedServiceName(service, onlyRpc)
-    val builder = TypeSpec.classBuilder(serviceName)
+    val builder = if (rpcRole == RpcRole.SERVER) {
+      TypeSpec.interfaceBuilder(serviceName)
+    } else {
+      TypeSpec.classBuilder(serviceName)
+          .primaryConstructor(FunSpec.constructorBuilder()
+              .addParameter("client", GrpcClient::class)
+              .build())
+          .addProperty(PropertySpec.builder("client", GrpcClient::class, PRIVATE)
+              .initializer("client")
+              .build())
+    }
+    builder
         .apply {
           if (service.documentation().isNotBlank()) {
             addKdoc("%L\n", service.documentation().sanitizeKdoc())
           }
         }
         .addSuperinterface(com.squareup.wire.Service::class.java)
-        .primaryConstructor(FunSpec.constructorBuilder()
-            .addParameter("client", GrpcClient::class)
-            .build())
-        .addProperty(PropertySpec.builder("client", GrpcClient::class, PRIVATE)
-            .initializer("client")
-            .build())
 
     val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
     for (rpc in rpcs) {
@@ -187,6 +193,15 @@ class KotlinGenerator private constructor(
     val responseType = rpc.responseType!!.typeName
 
     if (rpcRole == RpcRole.SERVER) {
+      val wireRpcAnnotationSpec = AnnotationSpec.builder(WireRpc::class.asClassName())
+          .addMember("path = %S", "/$packageName$serviceName/${rpc.name}")
+          // TODO(oldergod|jwilson) Lets' use Profile for this.
+          .addMember("requestAdapter = %S", rpc.requestType!!.adapterString())
+          .addMember("responseAdapter = %S", rpc.responseType!!.adapterString())
+          .build()
+      funSpecBuilder
+          .addAnnotation(wireRpcAnnotationSpec)
+          .addModifiers(KModifier.ABSTRACT)
       if (rpcCallStyle == RpcCallStyle.SUSPENDING) {
         funSpecBuilder.addModifiers(KModifier.SUSPEND)
       }
