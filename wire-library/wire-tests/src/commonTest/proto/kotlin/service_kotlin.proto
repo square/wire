@@ -20,6 +20,18 @@ option java_package = "com.squareup.wire.protos.kotlin.services";
 message SomeRequest {}
 message SomeResponse {}
 
-service SomeService {
+service BlockingClient {
+  rpc SomeMethod (SomeRequest) returns (SomeResponse);
+}
+
+service SuspendingClient {
+  rpc SomeMethod (SomeRequest) returns (SomeResponse);
+}
+
+service BlockingServer {
+  rpc SomeMethod (SomeRequest) returns (SomeResponse);
+}
+
+service SuspendingServer {
   rpc SomeMethod (SomeRequest) returns (SomeResponse);
 }

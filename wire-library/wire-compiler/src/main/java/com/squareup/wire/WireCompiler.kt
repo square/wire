@@ -18,6 +18,8 @@ package com.squareup.wire
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.java.ProfileLoader
 import com.squareup.wire.kotlin.KotlinGenerator
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.SchemaLoader
 import com.squareup.wire.schema.Service
@@ -53,6 +55,8 @@ import java.util.concurrent.Future
  *   [--android]
  *   [--android-annotations]
  *   [--compact]
+ *   [--rpc_role]
+ *   [--rpc_call_style]
  *   [file [file...]]
  * ```
  *
@@ -82,6 +86,12 @@ import java.util.concurrent.Future
  *
  * The `--compact` flag will emit code that uses reflection for reading, writing, and
  * toString methods which are normally implemented with code generation.
+ *
+ * The `--rpc_role` flag specifies which party the RPC code will be generated for, either `client`
+ * or `server`. `--kotlin_out` has to be set when using `--rpc_role`.
+ *
+ * The `--rpc_call_style` flag specifies which call style to use to generate RPC code, either
+ * `suspending` or `blocking`. `--kotlin_out` has to be set when using `--rpc_call_style`.
  */
 class WireCompiler internal constructor(
   val fs: FileSystem,
@@ -96,7 +106,9 @@ class WireCompiler internal constructor(
   val emitAndroid: Boolean,
   val emitAndroidAnnotations: Boolean,
   val emitCompact: Boolean,
-  val javaInterop: Boolean
+  val javaInterop: Boolean,
+  val rpcRole: RpcRole?,
+  val rpcCallStyle: RpcCallStyle?
 ) {
 
   @Throws(IOException::class)
@@ -158,7 +170,8 @@ class WireCompiler internal constructor(
       }
 
       kotlinOut != null -> {
-        val kotlinGenerator = KotlinGenerator(schema, emitAndroid, javaInterop)
+        val kotlinGenerator = KotlinGenerator(schema, emitAndroid, javaInterop,
+            rpcCallStyle ?: RpcCallStyle.SUSPENDING, rpcRole ?: RpcRole.CLIENT)
 
         for (i in 0 until MAX_WRITE_CONCURRENCY) {
           val task = KotlinFileWriter(kotlinOut, kotlinGenerator, queue, fs, log, dryRun)
@@ -199,6 +212,8 @@ class WireCompiler internal constructor(
     private const val ANDROID_ANNOTATIONS = "--android-annotations"
     private const val COMPACT = "--compact"
     private const val JAVA_INTEROP = "--java_interop"
+    private const val RPC_ROLE = "--rpc_role"
+    private const val RPC_CALL_STYLE = "--rpc_call_style"
     private const val MAX_WRITE_CONCURRENCY = 8
     private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
     private const val ANY_PROTO = "google/protobuf/any.proto"
@@ -235,6 +250,8 @@ class WireCompiler internal constructor(
       var emitAndroidAnnotations = false
       var emitCompact = false
       var javaInterop = false
+      var rpcRole: RpcRole? = null
+      var rpcCallStyle: RpcCallStyle? = null
 
       for (arg in args) {
         when {
@@ -283,6 +300,24 @@ class WireCompiler internal constructor(
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
           arg == COMPACT -> emitCompact = true
           arg == JAVA_INTEROP -> javaInterop = true
+          arg.startsWith(RPC_ROLE) -> {
+            val value = arg.substring(RPC_ROLE.length + 1)
+            rpcRole = try {
+              RpcRole.valueOf(value.toUpperCase())
+            } catch (_: IllegalArgumentException) {
+              throw WireException("Unknown --rpc_role value: [$value]. Possible values: " +
+                  "${RpcRole.values().contentToString()}.")
+            }
+          }
+          arg.startsWith(RPC_CALL_STYLE) -> {
+            val value = arg.substring(RPC_CALL_STYLE.length + 1)
+            rpcCallStyle = try {
+              RpcCallStyle.valueOf(value.toUpperCase())
+            } catch (_: IllegalArgumentException) {
+              throw WireException("Unknown --rpc_call_style value: [$value]. Possible values: " +
+                  "${RpcCallStyle.values().contentToString()}.")
+            }
+          }
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
           else -> sourceFileNames.add(arg)
         }
@@ -292,11 +327,19 @@ class WireCompiler internal constructor(
         throw WireException("Only one of $JAVA_OUT_FLAG or $KOTLIN_OUT_FLAG flag must be specified")
       }
 
+      if (rpcRole != null && kotlinOut == null) {
+        throw WireException("--kotlin_out has to be set to use --rpc_role!")
+      }
+
+      if (rpcCallStyle != null && kotlinOut == null) {
+        throw WireException("--kotlin_out has to be set to use --rpc_call_style!")
+      }
+
       logger.setQuiet(quiet)
 
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, sourceFileNames,
           pruningRulesBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitAndroidAnnotations,
-          emitCompact, javaInterop)
+          emitCompact, javaInterop, rpcRole, rpcCallStyle)
     }
   }
 }

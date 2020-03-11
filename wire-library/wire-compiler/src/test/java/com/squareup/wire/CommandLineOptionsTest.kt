@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.ProtoType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -104,6 +106,49 @@ class CommandLineOptionsTest {
     compiler = parseArgs("--java_out=.", "--includes=com.example.Foo,com.example.Bar")
     assertThat(compiler.pruningRules.isRoot(ProtoType.get("com.example.Foo"))).isTrue()
     assertThat(compiler.pruningRules.isRoot(ProtoType.get("com.example.Bar"))).isTrue()
+  }
+
+  @Test fun rpcRole() {
+    var compiler = parseArgs("--kotlin_out=.", "--rpc_role=client")
+    assertThat(compiler.rpcRole).isEqualTo(RpcRole.CLIENT)
+
+    compiler = parseArgs("--kotlin_out=.", "--rpc_role=server")
+    assertThat(compiler.rpcRole).isEqualTo(RpcRole.SERVER)
+
+    // --kotlin_out has to be set
+    var exception = assertFailsWith<WireException> {
+      parseArgs("--java_out=.", "--rpc_role=server")
+    }
+    assertThat(exception).hasMessage("--kotlin_out has to be set to use --rpc_role!")
+
+    // Unknown value
+    exception = assertFailsWith<WireException> {
+      parseArgs("--rpc_role=dinosaur")
+    }
+    assertThat(exception)
+        .hasMessage("Unknown --rpc_role value: [dinosaur]. Possible values: [CLIENT, SERVER].")
+  }
+
+  @Test fun rpcCallStyle() {
+    var compiler = parseArgs("--kotlin_out=.", "--rpc_call_style=blocking")
+    assertThat(compiler.rpcCallStyle).isEqualTo(RpcCallStyle.BLOCKING)
+
+    compiler = parseArgs("--kotlin_out=.", "--rpc_call_style=suspending")
+    assertThat(compiler.rpcCallStyle).isEqualTo(RpcCallStyle.SUSPENDING)
+
+    // --kotlin_out has to be set
+    var exception = assertFailsWith<WireException> {
+      parseArgs("--java_out=.", "--rpc_call_style=blocking")
+    }
+    assertThat(exception).hasMessage("--kotlin_out has to be set to use --rpc_call_style!")
+
+    // Unknown value
+    exception = assertFailsWith<WireException> {
+      parseArgs("--rpc_call_style=async")
+    }
+    assertThat(exception)
+        .hasMessage("Unknown --rpc_call_style value: [async]. Possible values: [SUSPENDING, " +
+            "BLOCKING].")
   }
 
   private fun parseArgs(vararg args: String) = WireCompiler.forArgs(args = *args)

@@ -7,11 +7,11 @@ import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.Service
 
-class SomeServiceClient(
+class BlockingClientClient(
   private val client: GrpcClient
 ) : Service {
   fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse> = client.newCall(GrpcMethod(
-      path = "/squareup.protos.kotlin.SomeService/SomeMethod",
+      path = "/squareup.protos.kotlin.BlockingClient/SomeMethod",
       requestAdapter = SomeRequest.ADAPTER,
       responseAdapter = SomeResponse.ADAPTER
   ))

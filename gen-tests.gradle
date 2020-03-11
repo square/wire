@@ -185,7 +185,7 @@ task generateKotlinTests(type: JavaExec) {
 
 // KOTLIN SERVICES
 
-task generateKotlinServicesTests(type: JavaExec) {
+task generateRPCBlockingClientTests(type: JavaExec) {
   group = 'Generate Tests'
   description = 'Generates Kotlin classes from the test protos'
   classpath = configurations.wire
@@ -193,8 +193,56 @@ task generateKotlinServicesTests(type: JavaExec) {
   args = [
       '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
       '--kotlin_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+      '--includes=squareup.protos.kotlin.BlockingClient,NoPackageService',
+      '--rpc_role=client',
+      '--rpc_call_style=blocking',
       'service_kotlin.proto',
       'service_without_package.proto',
+  ]
+}
+
+task generateRPCSuspendingClientTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes from the test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+      '--includes=squareup.protos.kotlin.SuspendingClient',
+      '--rpc_role=client',
+      '--rpc_call_style=suspending',
+      'service_kotlin.proto',
+  ]
+}
+
+task generateRPCBlockingServerTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes from the test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+      '--includes=squareup.protos.kotlin.BlockingServer',
+      '--rpc_role=server',
+      '--rpc_call_style=blocking',
+      'service_kotlin.proto',
+  ]
+}
+
+task generateRPCSuspendingServerTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes from the test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+      '--kotlin_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+      '--includes=squareup.protos.kotlin.SuspendingServer',
+      '--rpc_role=server',
+      '--rpc_call_style=suspending',
+      'service_kotlin.proto',
   ]
 }
 
@@ -327,9 +375,10 @@ task generateMoshiAdapterKotlinTests(type: JavaExec) {
 
 task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generateNoOptionsTests,
     generateGsonTests, generateIncludesExcludesTests, generateAndroidTests,
-    generateAndroidCompactTests, generateKotlinTests, generateKotlinServicesTests,
-    generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateGrpcTests,
-    generateMoshiAdapterCompactJavaTests, generateMoshiAdapterJavaTests,
+    generateAndroidCompactTests, generateKotlinTests, generateRPCBlockingClientTests,
+    generateRPCSuspendingClientTests, generateRPCBlockingServerTests,
+    generateRPCSuspendingServerTests, generateKotlinAndroidTests, generateKotlinJavaInteropTests,
+    generateGrpcTests, generateMoshiAdapterCompactJavaTests, generateMoshiAdapterJavaTests,
     generateMoshiAdapterKotlinTests, generateMoshiAdapterInteropKotlinTests]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'

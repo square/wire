@@ -345,12 +345,55 @@ class WireCompilerTest {
   }
 
   @Test
-  fun serviceInKotlin() {
+  fun rpcBlockingClient() {
     val sources = arrayOf("service_kotlin.proto")
-    compileToKotlin(sources, "--includes=squareup.protos.kotlin.SomeService")
+    compileToKotlin(sources, "--includes=squareup.protos.kotlin.BlockingClient",
+        "--rpc_role=client", "--rpc_call_style=blocking")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/services/SomeServiceClient.kt",
+        "com/squareup/wire/protos/kotlin/services/BlockingClientClient.kt",
+        "com/squareup/wire/protos/kotlin/services/SomeResponse.kt",
+        "com/squareup/wire/protos/kotlin/services/SomeRequest.kt"
+    )
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun rpcSuspendingClient() {
+    val sources = arrayOf("service_kotlin.proto")
+    compileToKotlin(sources, "--includes=squareup.protos.kotlin.SuspendingClient",
+        "--rpc_role=client", "--rpc_call_style=suspending")
+
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/kotlin/services/SuspendingClientClient.kt",
+        "com/squareup/wire/protos/kotlin/services/SomeResponse.kt",
+        "com/squareup/wire/protos/kotlin/services/SomeRequest.kt"
+    )
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun rpcBlockingServer() {
+    val sources = arrayOf("service_kotlin.proto")
+    compileToKotlin(sources, "--includes=squareup.protos.kotlin.BlockingServer",
+        "--rpc_role=server", "--rpc_call_style=blocking")
+
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/kotlin/services/BlockingServerBlockingServer.kt",
+        "com/squareup/wire/protos/kotlin/services/SomeResponse.kt",
+        "com/squareup/wire/protos/kotlin/services/SomeRequest.kt"
+    )
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun rpcSuspendingServer() {
+    val sources = arrayOf("service_kotlin.proto")
+    compileToKotlin(sources, "--includes=squareup.protos.kotlin.SuspendingServer",
+        "--rpc_role=server", "--rpc_call_style=suspending")
+
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/kotlin/services/SuspendingServerServer.kt",
         "com/squareup/wire/protos/kotlin/services/SomeResponse.kt",
         "com/squareup/wire/protos/kotlin/services/SomeRequest.kt"
     )
