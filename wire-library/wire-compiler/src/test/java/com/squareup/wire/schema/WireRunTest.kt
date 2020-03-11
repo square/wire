@@ -124,7 +124,7 @@ class WireRunTest {
         "generated/kt/squareup/routes/RouteBlockingServer.kt")
     assertThat(fs.get("generated/kt/squareup/routes/RouteBlockingServer.kt"))
         .contains(
-            "class RouteBlockingServer(\n  private val client: GrpcClient\n) : Service",
+            "interface RouteBlockingServer : Service",
             "fun GetUpdatedRed")
         .doesNotContain("suspend fun GetUpdatedRed")
   }
