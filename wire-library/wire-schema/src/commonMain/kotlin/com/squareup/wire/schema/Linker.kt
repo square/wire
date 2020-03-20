@@ -304,7 +304,7 @@ class Linker {
       field = field.substring(1, field.length - 1)
     }
 
-    val type = get(self.type!!)
+    val type = getForOptions(self.type!!)
     if (type is MessageType) {
       val messageField = type.field(field)
       if (messageField != null) return messageField

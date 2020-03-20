@@ -93,6 +93,7 @@ class OptionsLinkingTest {
              |import "formatting_options.proto";
              |message A {
              |  optional string s = 1 [formatting_options.language.name = "English"];
+             |  optional string t = 2 [(length).max = 80];
              |}
             """.trimMargin())
     fs.add("proto-path/formatting_options.proto", """
@@ -105,6 +106,7 @@ class OptionsLinkingTest {
              |
              |extend google.protobuf.FieldOptions {
              |  optional FormattingOptions formatting_options = 22001;
+             |  optional Range length = 22002;
              |}
              |
              |message Language {
@@ -116,6 +118,11 @@ class OptionsLinkingTest {
              |  LOWER_CASE = 1;
              |  TITLE_CASE = 2;
              |  SENTENCE_CASE = 3;
+             |}
+             |
+             |message Range {
+             |  optional double min = 1;
+             |  optional double max = 2;
              |}
             """.trimMargin())
     val schema = loadAndLinkSchema()
@@ -130,6 +137,12 @@ class OptionsLinkingTest {
             )
         )
     )
+
+    val typeLanguage = schema.getType("Language") as MessageType
+    assertThat(typeLanguage.field("name")).isNotNull()
+
+    val typeRange = schema.getType("Range") as MessageType
+    assertThat(typeRange.field("max")).isNotNull()
   }
 
   private fun loadAndLinkSchema(): Schema {
