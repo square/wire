@@ -145,6 +145,36 @@ class OptionsLinkingTest {
     assertThat(typeRange.field("max")).isNotNull()
   }
 
+  @Test
+  fun extensionTypesInExternalFile() {
+    fs.add("source-path/a.proto", """
+             |import "extensions.proto";
+             |
+             |message A {
+             |  optional string s = 2 [(length).max = 80];
+             |}
+            """.trimMargin())
+    fs.add("proto-path/extensions.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |import "range.proto";
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional Range length = 22002;
+             |}
+            """.trimMargin())
+    fs.add("proto-path/range.proto", """
+             |
+             |message Range {
+             |  optional double min = 1;
+             |  optional double max = 2;
+             |}
+            """.trimMargin())
+    val schema = loadAndLinkSchema()
+
+    val typeRange = schema.getType("Range") as MessageType
+    assertThat(typeRange.field("max")).isNotNull()
+  }
+
   private fun loadAndLinkSchema(): Schema {
     NewSchemaLoader(fs).use { loader ->
       val protoPath = when {

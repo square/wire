@@ -247,8 +247,15 @@ class Linker {
     val result = mutableListOf<FileLinker>()
     for (i in contextStack.indices.reversed()) {
       val context = contextStack[i]
-      if (context is ProtoFile) {
-        val path = context.location.path
+
+      val location = when {
+        context is ProtoFile -> context.location
+        context is Field && context.isExtension -> context.location
+        else -> null
+      }
+
+      if (location != null) {
+        val path = location.path
         val fileLinker = getFileLinker(path)
         for (effectiveImport in fileLinker.effectiveImports()) {
           result.add(getFileLinker(effectiveImport))
