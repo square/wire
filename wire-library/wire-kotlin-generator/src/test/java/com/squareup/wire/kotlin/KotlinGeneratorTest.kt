@@ -76,10 +76,12 @@ class KotlinGeneratorTest {
         |message Message {
         |  required float when = 1;
         |  required int32 ADAPTER = 2;
+        |  optional int64 adapter = 3;
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Message")
     assertTrue(code.contains("val when_: Float"))
     assertTrue(code.contains("val ADAPTER_: Int"))
+    assertTrue(code.contains("val adapter_: Long?"))
     assertTrue(code.contains("ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.when_) +"))
     assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
     assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
