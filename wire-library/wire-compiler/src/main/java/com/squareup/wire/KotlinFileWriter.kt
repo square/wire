@@ -39,27 +39,26 @@ internal class KotlinFileWriter(
   override fun call() {
     while (true) {
       val pendingFile = queue.poll() ?: return
-      val kotlinFile = when (pendingFile) {
-        is PendingTypeFileSpec -> generateFileForType(pendingFile.type)
-        is PendingServiceFileSpec -> generateFileForService(pendingFile.service)
+      val kotlinFiles = when (pendingFile) {
+        is PendingTypeFileSpec -> listOf(generateFileForType(pendingFile.type))
+        is PendingServiceFileSpec -> generateFilesForService(pendingFile.service)
       }
 
       val path = fs.getPath(destination)
-      log.artifact(path, kotlinFile)
+      kotlinFiles.forEach { file -> log.artifact(path, file) }
       if (dryRun) return
 
-      try {
-        kotlinFile.writeTo(path)
-      } catch (e: IOException) {
-        val className = when (pendingFile) {
-          is PendingTypeFileSpec ->
-            kotlinGenerator.generatedTypeName(pendingFile.type).canonicalName
-          is PendingServiceFileSpec ->
-            pendingFile.service.type().toString()
+      kotlinFiles.forEach { file ->
+        try {
+          file.writeTo(path)
+        } catch (e: IOException) {
+          val className = when (pendingFile) {
+            is PendingTypeFileSpec ->
+              kotlinGenerator.generatedTypeName(pendingFile.type).canonicalName
+            is PendingServiceFileSpec -> pendingFile.service.type().toString()
+          }
+          throw IOException("Error emitting ${file.packageName}.$className to $destination", e)
         }
-        throw IOException(
-            "Error emitting ${kotlinFile.packageName}.$className to $destination",
-            e)
       }
     }
   }
@@ -72,12 +71,17 @@ internal class KotlinFileWriter(
     )
   }
 
-  private fun generateFileForService(service: Service): FileSpec {
-    return generateFile(
-        packageName = kotlinGenerator.generatedServiceName(service).packageName,
-        typeSpec = kotlinGenerator.generateService(service),
-        location = service.location()
-    )
+  private fun generateFilesForService(service: Service): List<FileSpec> {
+    val files = mutableListOf<FileSpec>()
+    val packageName = kotlinGenerator.generatedServiceName(service).packageName
+    for (typeSpec in kotlinGenerator.generateServiceTypeSpecs(service)) {
+      files.add(generateFile(
+          packageName = packageName,
+          typeSpec = typeSpec,
+          location = service.location()
+      ))
+    }
+    return files
   }
 
   private fun generateFile(packageName: String, typeSpec: TypeSpec, location: Location?): FileSpec {

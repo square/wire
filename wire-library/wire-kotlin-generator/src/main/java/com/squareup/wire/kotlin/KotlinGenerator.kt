@@ -26,6 +26,7 @@ import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.KModifier.ABSTRACT
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.LONG
@@ -143,21 +144,44 @@ class KotlinGenerator private constructor(
   }
 
   /**
+   * Generates all [TypeSpec]s for the given [Service].
+   *
    * If [onlyRpc] isn't null, this will generate code only for this onlyRpc; otherwise, all RPCs of
    * the [service] will be code generated.
    */
-  fun generateService(service: Service, onlyRpc: Rpc? = null): TypeSpec {
-    val serviceName = generatedServiceName(service, onlyRpc)
-    val builder = if (rpcRole == RpcRole.SERVER) {
-      TypeSpec.interfaceBuilder(serviceName)
+  fun generateServiceTypeSpecs(service: Service, onlyRpc: Rpc? = null): List<TypeSpec> {
+    val typeSpecs = mutableListOf<TypeSpec>()
+    if (rpcRole == RpcRole.SERVER) {
+      typeSpecs.add(generateService(service, onlyRpc))
     } else {
-      TypeSpec.classBuilder(serviceName)
+      typeSpecs.add(generateService(service, onlyRpc, generateClientImplementation = false))
+      typeSpecs.add(generateService(service, onlyRpc, generateClientImplementation = true))
+    }
+    return typeSpecs
+  }
+
+  private fun generateService(
+    service: Service,
+    onlyRpc: Rpc?,
+    generateClientImplementation: Boolean
+  ): TypeSpec {
+    val serviceName = generatedServiceName(service, onlyRpc)
+    val builder = if (rpcRole == RpcRole.SERVER || !generateClientImplementation) {
+      TypeSpec.interfaceBuilder(serviceName)
+          .addSuperinterface(com.squareup.wire.Service::class.java)
+    } else {
+      val serviceImplementationName = ClassName(
+          serviceName.packageName,
+          "Real${serviceName.simpleName}"
+      )
+      TypeSpec.classBuilder(serviceImplementationName)
           .primaryConstructor(FunSpec.constructorBuilder()
               .addParameter("client", GrpcClient::class)
               .build())
           .addProperty(PropertySpec.builder("client", GrpcClient::class, PRIVATE)
               .initializer("client")
               .build())
+          .addSuperinterface(serviceName)
     }
     builder
         .apply {
@@ -165,21 +189,34 @@ class KotlinGenerator private constructor(
             addKdoc("%L\n", service.documentation().sanitizeKdoc())
           }
         }
-        .addSuperinterface(com.squareup.wire.Service::class.java)
 
     val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
     for (rpc in rpcs) {
       builder.addFunction(generateRpcFunction(
-          rpc, service.name(), service.type().enclosingTypeOrPackage))
+          rpc, service.name(), service.type().enclosingTypeOrPackage, generateClientImplementation))
     }
 
     return builder.build()
   }
 
+  /**
+   * If [onlyRpc] isn't null, this will generate code only for this onlyRpc; otherwise, all RPCs of
+   * the [service] will be code generated.
+   */
+  @Deprecated(
+      message = "Client generated code now includes two TypeSpecs - interface and " +
+          "implementation. Use generateServiceTypeSpecs to generate correct definitions.",
+      replaceWith = ReplaceWith("generateServiceTypeSpecs")
+  )
+  fun generateService(service: Service, onlyRpc: Rpc? = null): TypeSpec {
+    return generateService(service, onlyRpc, generateClientImplementation = true)
+  }
+
   private fun generateRpcFunction(
     rpc: Rpc,
     serviceName: String,
-    servicePackageName: String?
+    servicePackageName: String?,
+    generateClientImplementation: Boolean
   ): FunSpec {
     val packageName = if (servicePackageName.isNullOrBlank()) "" else "$servicePackageName."
     val funSpecBuilder = FunSpec.builder(rpc.name)
@@ -241,14 +278,26 @@ class KotlinGenerator private constructor(
               .returns(
                   GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType)
               )
-              .addStatement("return client.newStreamingCall(%L)", grpcMethod)
+          if (generateClientImplementation) {
+            funSpecBuilder
+                .addModifiers(OVERRIDE)
+                .addStatement("return client.newStreamingCall(%L)", grpcMethod)
+          } else {
+            funSpecBuilder.addModifiers(ABSTRACT)
+          }
         }
         else -> {
           funSpecBuilder
               .returns(
                   GrpcCall::class.asClassName().parameterizedBy(requestType, responseType)
               )
-              .addStatement("return client.newCall(%L)", grpcMethod)
+          if (generateClientImplementation) {
+            funSpecBuilder
+                .addModifiers(OVERRIDE)
+                .addStatement("return client.newCall(%L)", grpcMethod)
+          } else {
+            funSpecBuilder.addModifiers(ABSTRACT)
+          }
         }
       }
     }
