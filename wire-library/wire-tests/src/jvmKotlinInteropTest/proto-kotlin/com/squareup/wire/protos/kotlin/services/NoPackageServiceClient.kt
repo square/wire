@@ -3,16 +3,8 @@
 package com.squareup.wire.protos.kotlin.services
 
 import com.squareup.wire.GrpcCall
-import com.squareup.wire.GrpcClient
-import com.squareup.wire.GrpcMethod
 import com.squareup.wire.Service
 
-class NoPackageServiceClient(
-  private val client: GrpcClient
-) : Service {
-  fun NoPackageMethod(): GrpcCall<NoPackageRequest, NoPackageResponse> = client.newCall(GrpcMethod(
-      path = "/NoPackageService/NoPackageMethod",
-      requestAdapter = NoPackageRequest.ADAPTER,
-      responseAdapter = NoPackageResponse.ADAPTER
-  ))
+interface NoPackageServiceClient : Service {
+  fun NoPackageMethod(): GrpcCall<NoPackageRequest, NoPackageResponse>
 }
