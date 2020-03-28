@@ -295,6 +295,7 @@ class KotlinGenerator private constructor(
           is MessageType -> {
             newName("unknownFields", "unknownFields")
             newName("ADAPTER", "ADAPTER")
+            newName("adapter", "adapter")
             newName("reader", "reader")
             newName("Builder", "Builder")
             newName("builder", "builder")
