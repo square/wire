@@ -172,7 +172,7 @@ class KotlinGenerator private constructor(
     } else {
       val serviceImplementationName = ClassName(
           serviceName.packageName,
-          "Real${serviceName.simpleName}"
+          "Grpc${serviceName.simpleName}"
       )
       TypeSpec.classBuilder(serviceImplementationName)
           .primaryConstructor(FunSpec.constructorBuilder()

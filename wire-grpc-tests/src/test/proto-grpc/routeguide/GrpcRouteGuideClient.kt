@@ -10,7 +10,7 @@ import com.squareup.wire.GrpcStreamingCall
 /**
  * Interface exported by the server.
  */
-class RealRouteGuideClient(
+class GrpcRouteGuideClient(
   private val client: GrpcClient
 ) : RouteGuideClient {
   /**

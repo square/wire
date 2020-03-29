@@ -6,7 +6,7 @@ import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 
-class RealSomeServiceClient(
+class GrpcSomeServiceClient(
   private val client: GrpcClient
 ) : SomeServiceClient {
   override fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse> = client.newCall(GrpcMethod(
