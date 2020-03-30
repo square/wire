@@ -271,7 +271,7 @@ class Linker {
   }
 
   /** Returns the type or null if it doesn't exist. */
-  operator fun get(protoType: ProtoType): Type? {
+  fun get(protoType: ProtoType): Type? {
     var result = protoTypeNames[protoType.toString()]
 
     // If no type could be resolved, load imported files and try again.
