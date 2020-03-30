@@ -40,8 +40,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
 import routeguide.Feature
+import routeguide.GrpcRouteGuideClient
 import routeguide.Point
-import routeguide.RealRouteGuideClient
 import routeguide.Rectangle
 import routeguide.RouteGuideClient
 import routeguide.RouteNote
@@ -80,7 +80,7 @@ class GrpcClientTest {
         .client(okhttpClient)
         .baseUrl(mockService.url)
         .build()
-    routeGuideService = RealRouteGuideClient(grpcClient)
+    routeGuideService = GrpcRouteGuideClient(grpcClient)
   }
 
   @After
