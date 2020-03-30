@@ -33,7 +33,7 @@ class Extend private constructor(
   fun link(linker: Linker) {
     val linker = linker.withContext(this)
     type = linker.resolveMessageType(name)
-    val type = linker[type!!]
+    val type = linker.get(type!!)
     if (type != null) {
       (type as MessageType).addExtensionFields(fields)
     }
