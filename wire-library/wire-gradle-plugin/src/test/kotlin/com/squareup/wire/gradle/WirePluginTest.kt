@@ -600,7 +600,7 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.BattleService")
+        .contains("Writing com.squareup.dinosaurs.GrpcBattleServiceClient")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
