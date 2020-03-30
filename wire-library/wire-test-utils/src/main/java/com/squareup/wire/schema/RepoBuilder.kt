@@ -122,7 +122,7 @@ class RepoBuilder {
     rpcName: String? = null,
     rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
     rpcRole: RpcRole = RpcRole.CLIENT
-  ): String {
+  ): List<String> {
     val schema = schema()
     val grpcGenerator = KotlinGenerator(
         schema = schema,
@@ -133,11 +133,13 @@ class RepoBuilder {
     )
     val service = schema.getService(serviceName)!!
     val rpc = rpcName?.let { service.rpc(rpcName)!! }
-    val typeSpec = grpcGenerator.generateService(service, rpc)
     val packageName = grpcGenerator.generatedServiceName(service).packageName
-    val fileSpec = FileSpec.builder(packageName, "_")
-        .addType(typeSpec)
-        .build()
-    return fileSpec.toString()
+    return grpcGenerator.generateServiceTypeSpecs(service, rpc)
+        .map { typeSpec ->
+          FileSpec.builder(packageName, "_")
+              .addType(typeSpec)
+              .build()
+        }
+        .map(FileSpec::toString)
   }
 }
