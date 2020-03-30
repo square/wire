@@ -8,8 +8,8 @@ wire {
   // Support versions "19.9.5" through "20.0.0" inclusive. This will prune:
   //  * declarations preceding the beginning of the range (wire.until = "19.9.5" and earlier)
   //  * declarations following the end of the range (wire.since = "20.0.1" and later)
-  oldest "19.9.5"
-  newest "20.0.0"
+  sinceVersion "19.9.5"
+  untilVersion "20.0.0"
 
   kotlin {}
 }

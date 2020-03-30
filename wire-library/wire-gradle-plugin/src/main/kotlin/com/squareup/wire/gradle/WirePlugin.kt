@@ -123,8 +123,8 @@ class WirePlugin : Plugin<Project> {
       it.protoInput = protoInput
       it.roots = extension.roots.toList()
       it.prunes = extension.prunes.toList()
-      it.oldest = extension.oldest
-      it.newest = extension.newest
+      it.sinceVersion = extension.since
+      it.untilVersion = extension.until
       it.rules = extension.rules
       it.targets = targets
       it.proto3Preview = extension.proto3Preview

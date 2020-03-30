@@ -47,11 +47,11 @@ open class WireTask : SourceTask() {
 
   @Input
   @Optional
-  var oldest: String? = null
+  var sinceVersion: String? = null
 
   @Input
   @Optional
-  var newest: String? = null
+  var untilVersion: String? = null
 
   @Input
   @Optional
@@ -102,8 +102,8 @@ open class WireTask : SourceTask() {
         protoPath = protoInput.toLocations(),
         treeShakingRoots = if (roots.isEmpty()) includes else roots,
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
-        oldest = oldest,
-        newest = newest,
+        since = sinceVersion,
+        until = untilVersion,
         targets = targets,
         proto3Preview = (proto3Preview == "UNSUPPORTED")
     )
