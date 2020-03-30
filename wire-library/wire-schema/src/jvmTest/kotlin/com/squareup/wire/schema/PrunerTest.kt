@@ -1338,8 +1338,8 @@ class PrunerTest {
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest("1949")
-        .newest("1949")
+        .since("1949")
+        .until("1949")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("radio")).isNotNull()
@@ -1359,8 +1359,8 @@ class PrunerTest {
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest("1950")
-        .newest("1950")
+        .since("1950")
+        .until("1950")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("radio")).isNull()
@@ -1368,7 +1368,7 @@ class PrunerTest {
   }
 
   @Test
-  fun sinceRetainedWhenLessThanOrEqualToNewest() {
+  fun sinceRetainedWhenLessThanOrEqualToUntil() {
     val schema = RepoBuilder()
         .add("message.proto", """
             |import "wire/extensions.proto";
@@ -1385,8 +1385,8 @@ class PrunerTest {
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest("20")
-        .newest("30")
+        .since("20")
+        .until("30")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("since_19")).isNotNull()
@@ -1399,7 +1399,7 @@ class PrunerTest {
   }
 
   @Test
-  fun untilRetainedWhenGreaterThanOldest() {
+  fun untilRetainedWhenGreaterThanSince() {
     val schema = RepoBuilder()
         .add("message.proto", """
             |import "wire/extensions.proto";
@@ -1416,8 +1416,8 @@ class PrunerTest {
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest("20")
-        .newest("30")
+        .since("20")
+        .until("30")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("until_19")).isNull()
@@ -1458,8 +1458,8 @@ class PrunerTest {
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest("20")
-        .newest("30")
+        .since("20")
+        .until("30")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("always")).isNotNull()
@@ -1479,8 +1479,8 @@ class PrunerTest {
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest("29")
-        .newest("29")
+        .since("29")
+        .until("29")
         .build())
     val enum = pruned.getType("Roshambo") as EnumType
     assertThat(enum.constant("ROCK")).isNull()
@@ -1504,8 +1504,8 @@ class PrunerTest {
             """.trimMargin())
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
-        .oldest("1.0.0-alpha.1")
-        .newest("1.0.0-beta")
+        .since("1.0.0-alpha.1")
+        .until("1.0.0-beta")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("field_1")).isNull()

@@ -33,8 +33,8 @@ open class WireExtension(project: Project) {
   internal val protoJars = mutableSetOf<ProtoRootSet>()
   internal val roots = mutableSetOf<String>()
   internal val prunes = mutableSetOf<String>()
-  internal var oldest: String? = null
-  internal var newest: String? = null
+  internal var since: String? = null
+  internal var until: String? = null
 
   @Input
   @Optional
@@ -60,32 +60,32 @@ open class WireExtension(project: Project) {
 
   @Input
   @Optional
-  fun oldest() = oldest
+  fun sinceVersion() = since
 
   /**
-   * See [com.squareup.wire.schema.WireRun.oldest]
+   * See [com.squareup.wire.schema.WireRun.since]
    */
-  fun oldest(oldest: String) {
-    this.oldest = oldest
+  fun sinceVersion(since: String) {
+    this.since = since
   }
 
   @Input
   @Optional
-  fun newest() = newest
+  fun untilVersion() = until
 
   /**
-   * See [com.squareup.wire.schema.WireRun.newest]
+   * See [com.squareup.wire.schema.WireRun.until]
    */
-  fun newest(newest: String) {
-    this.newest = newest
+  fun untilVersion(until: String) {
+    this.until = until
   }
 
   /**
-   * Sets oldest and newest to the same version.
+   * Sets since and until to the same version.
    */
   fun version(version: String) {
-    this.oldest = version
-    this.newest = version
+    this.since = version
+    this.until = version
   }
 
   /**

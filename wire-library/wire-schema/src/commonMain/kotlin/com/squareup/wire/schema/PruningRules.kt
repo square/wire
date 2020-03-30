@@ -72,13 +72,13 @@ import com.squareup.wire.schema.SemVer.Companion.toLowerCaseSemVer
 class PruningRules private constructor(builder: Builder) {
   private val roots = builder.roots.toSet()
   private val prunes = builder.prunes.toSet()
-  private val oldest = builder.oldest
-  private val newest = builder.newest
+  private val since = builder.since
+  private val until = builder.until
   private val usedRoots = mutableSetOf<String>()
   private val usedPrunes = mutableSetOf<String>()
 
   val isEmpty: Boolean
-    get() = roots.isEmpty() && prunes.isEmpty() && oldest == null && newest == null
+    get() = roots.isEmpty() && prunes.isEmpty() && since == null && until == null
 
   /** Returns true unless [options] specifies a version that is outside of the configured range. */
   fun isFieldRetainedVersion(options: Options) =
@@ -93,16 +93,16 @@ class PruningRules private constructor(builder: Builder) {
     sinceMember: ProtoMember,
     untilMember: ProtoMember
   ): Boolean {
-    if (newest != null) {
+    if (until != null) {
       val sinceOption = options.get(sinceMember)
       val since = (sinceOption as? String)?.toLowerCaseSemVer()
-      if (since != null && since > newest) return false
+      if (since != null && since > until) return false
     }
 
-    if (oldest != null) {
+    if (since != null) {
       val untilOption = options.get(untilMember)
       val until = (untilOption as? String)?.toLowerCaseSemVer()
-      if (until != null && until <= oldest) return false
+      if (until != null && until <= since) return false
     }
 
     return true
@@ -191,8 +191,8 @@ class PruningRules private constructor(builder: Builder) {
   class Builder {
     internal val roots = mutableSetOf<String>()
     internal val prunes = mutableSetOf<String>()
-    internal var oldest: SemVer? = null
-    internal var newest: SemVer? = null
+    internal var since: SemVer? = null
+    internal var until: SemVer? = null
 
     fun addRoot(identifier: String) = apply {
       roots.add(identifier)
@@ -214,21 +214,21 @@ class PruningRules private constructor(builder: Builder) {
      * The exclusive lower bound of the version range. Fields with `until` values greater than this
      * are retained.
      */
-    fun oldest(oldest: String?) = apply {
-      this.oldest = oldest?.toLowerCaseSemVer()
+    fun since(since: String?) = apply {
+      this.since = since?.toLowerCaseSemVer()
     }
 
     /**
      * The inclusive upper bound of the version range. Fields with `since` values less than or equal
      * to this are retained.
      */
-    fun newest(newest: String?) = apply {
-      this.newest = newest?.toLowerCaseSemVer()
+    fun until(until: String?) = apply {
+      this.until = until?.toLowerCaseSemVer()
     }
 
     fun build(): PruningRules {
-      check(oldest == null || newest == null || oldest!! <= newest!!) {
-        "expected oldest $oldest <= newest $newest"
+      check(since == null || until == null || since!! <= until!!) {
+        "expected since $since <= until $until"
       }
       val conflictingRules = roots.intersect(prunes)
       check(conflictingRules.isEmpty()) {
