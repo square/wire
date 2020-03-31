@@ -102,6 +102,7 @@ class Proto3WireProtocCompatibilityTests {
     val json = """
         |{
         |  "address": "507 Cross Street",
+        |  "orders": [],
         |  "pizzas": [
         |    {
         |      "toppings": [
@@ -129,6 +130,7 @@ class Proto3WireProtocCompatibilityTests {
 
   @Test fun wireProtocJsonRoundTrip() {
     val protocMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .addAllOrders(listOf(1L, 2L))
         .setAddress("507 Cross Street")
         .addPizzas(PizzaOuterClass.Pizza.newBuilder()
             .addToppings("pineapple")
@@ -149,6 +151,7 @@ class Proto3WireProtocCompatibilityTests {
     val protocMessageJson = jsonPrinter.print(protocMessage)
 
     val wireMessage = PizzaDelivery(
+        orders = listOf(1L, 2L),
         address = "507 Cross Street",
         pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
         promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI"))
@@ -263,5 +266,47 @@ class Proto3WireProtocCompatibilityTests {
     } catch (expected: JsonDataException) {
       assertThat(expected).hasMessage("expected @type in \$.promotion")
     }
+  }
+
+  @Test fun uint64Json() {
+    val pizzaDelivery = PizzaDelivery(
+        orders = listOf(-9223372036854775807 - 1) // that's a large positive number
+    )
+    val json = """
+        |{
+        |  "orders": ["9223372036854775808"],
+        |  "pizzas": []
+        |}
+        """.trimMargin()
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory()
+            .plus(listOf(BuyOneGetOnePromotion.ADAPTER, FreeGarlicBreadPromotion.ADAPTER)))
+        .build()
+    val jsonAdapter = moshi.adapter(PizzaDelivery::class.java).indent("  ")
+    assertJsonEquals(jsonAdapter.toJson(pizzaDelivery), json)
+    assertThat(jsonAdapter.fromJson(json)).isEqualTo(pizzaDelivery)
+  }
+
+  @Test fun uint64JsonProtoc() {
+    val pizzaDelivery = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .addOrders(-9223372036854775807L - 1L)
+        .build()
+    val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
+        .add(PizzaOuterClass.BuyOneGetOnePromotion.getDescriptor())
+        .add(PizzaOuterClass.FreeGarlicBreadPromotion.getDescriptor())
+        .build()
+    val json = """
+        |{
+        |  "orders": ["9223372036854775808"]
+        |}
+        """.trimMargin()
+    val jsonPrinter = JsonFormat.printer()
+        .usingTypeRegistry(typeRegistry)
+    assertThat(jsonPrinter.print(pizzaDelivery)).isEqualTo(json)
+    val jsonParser = JsonFormat.parser().usingTypeRegistry(typeRegistry)
+    val parsed = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .apply { jsonParser.merge(json, this) }
+        .build()
+    assertThat(parsed).isEqualTo(pizzaDelivery)
   }
 }

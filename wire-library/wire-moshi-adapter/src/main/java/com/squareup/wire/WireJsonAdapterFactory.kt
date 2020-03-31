@@ -126,7 +126,7 @@ class WireJsonAdapterFactory private constructor(
       @Throws(IOException::class)
       override fun fromJson(reader: JsonReader): Long? {
         val bigInteger = BigInteger(reader.nextString())
-        return if (bigInteger.compareTo(maxLong) > 0)
+        return if (bigInteger > maxLong)
           bigInteger.subtract(power64).toLong()
         else
           bigInteger.toLong()
@@ -135,10 +135,10 @@ class WireJsonAdapterFactory private constructor(
       @Throws(IOException::class)
       override fun toJson(writer: JsonWriter, value: Long?) {
         if (value!! < 0) {
-          val unsigned = power64.add(BigInteger.valueOf(value))
+          val unsigned = power64.add(BigInteger.valueOf(value)).toString()
           writer.value(unsigned)
         } else {
-          writer.value(value)
+          writer.value(value.toString())
         }
       }
     }.nullSafe()
