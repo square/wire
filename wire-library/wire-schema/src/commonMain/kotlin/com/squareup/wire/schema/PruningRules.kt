@@ -96,7 +96,7 @@ class PruningRules private constructor(builder: Builder) {
     if (until != null) {
       val sinceOption = options.get(sinceMember)
       val since = (sinceOption as? String)?.toLowerCaseSemVer()
-      if (since != null && since > until) return false
+      if (since != null && since >= until) return false
     }
 
     if (since != null) {
@@ -227,8 +227,8 @@ class PruningRules private constructor(builder: Builder) {
     }
 
     fun build(): PruningRules {
-      check(since == null || until == null || since!! <= until!!) {
-        "expected since $since <= until $until"
+      check(since == null || until == null || since!! < until!!) {
+        "expected since $since < until $until"
       }
       val conflictingRules = roots.intersect(prunes)
       check(conflictingRules.isEmpty()) {

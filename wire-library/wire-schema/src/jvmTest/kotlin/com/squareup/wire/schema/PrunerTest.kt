@@ -1339,7 +1339,7 @@ class PrunerTest {
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
         .since("1949")
-        .until("1949")
+        .until("1950")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("radio")).isNotNull()
@@ -1360,7 +1360,7 @@ class PrunerTest {
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
         .since("1950")
-        .until("1950")
+        .until("1951")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("radio")).isNull()
@@ -1394,7 +1394,7 @@ class PrunerTest {
     assertThat(message.field("since_21")).isNotNull()
 
     assertThat(message.field("since_29")).isNotNull()
-    assertThat(message.field("since_30")).isNotNull()
+    assertThat(message.field("since_30")).isNull()
     assertThat(message.field("since_31")).isNull()
   }
 
@@ -1480,7 +1480,7 @@ class PrunerTest {
         .schema()
     val pruned = schema.prune(PruningRules.Builder()
         .since("29")
-        .until("29")
+        .until("30")
         .build())
     val enum = pruned.getType("Roshambo") as EnumType
     assertThat(enum.constant("ROCK")).isNull()
@@ -1511,7 +1511,7 @@ class PrunerTest {
     assertThat(message.field("field_1")).isNull()
     assertThat(message.field("field_2")).isNull()
     assertThat(message.field("field_3")).isNotNull()
-    assertThat(message.field("field_4")).isNotNull()
+    assertThat(message.field("field_4")).isNull()
     assertThat(message.field("field_5")).isNull()
   }
 
