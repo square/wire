@@ -9,7 +9,7 @@ wire {
   //  * declarations preceding the beginning of the range (wire.until = "19.9.5" and earlier)
   //  * declarations following the end of the range (wire.since = "20.0.1" and later)
   sinceVersion "19.9.5"
-  untilVersion "20.0.0"
+  untilVersion "20.0.1"
 
   kotlin {}
 }
