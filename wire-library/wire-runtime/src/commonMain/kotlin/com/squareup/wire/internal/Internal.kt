@@ -148,3 +148,13 @@ fun countNonNull(a: Any?, b: Any?, c: Any?, d: Any?, vararg rest: Any?): Int {
   }
   return result
 }
+
+/** Return a string where `,\]\{}` are escaped with a `\`. */
+fun sanitize(value: String): String {
+  return value.replace("""([,\\\[\]{}])""".toRegex(), """\\$1""")
+}
+
+/** Return a string where `,\]\{}` are escaped with a `\`. */
+fun sanitize(values: List<String>): String {
+  return values.map(::sanitize).toString()
+}

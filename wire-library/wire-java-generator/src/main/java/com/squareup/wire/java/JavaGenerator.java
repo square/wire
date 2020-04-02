@@ -1400,8 +1400,13 @@ public final class JavaGenerator {
       if (field.isRedacted()) {
         result.addStatement("$N.append(\", $N=██\")", builderName, field.getName());
       } else {
-        result.addStatement("$N.append(\", $N=\").append($L)", builderName, field.getName(),
-            fieldName);
+        if (field.getType().equals(ProtoType.STRING)) {
+          result.addStatement("$N.append(\", $N=\").append($T.sanitize($L))", builderName,
+              field.getName(), Internal.class, fieldName);
+        } else {
+          result.addStatement("$N.append(\", $N=\").append($L)", builderName, field.getName(),
+              fieldName);
+        }
       }
     }
 

@@ -1043,6 +1043,35 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("WORK(1),"))
   }
 
+  @Test fun sanitizeStringOnPrinting() {
+    val repoBuilder = RepoBuilder()
+        .add("message.proto", """
+        |message Person {
+        |	required string name = 1;
+        |	required int32 id = 2;
+        |	repeated PhoneNumber phone = 3;
+        |	repeated string aliases = 4;
+        |
+        |	message PhoneNumber {
+        |		required string number = 1;
+        |		optional PhoneType type = 2 [default = HOME];
+        |	}
+        |	enum PhoneType {
+        |		HOME = 0;
+        |		WORK = 1;
+        |		MOBILE = 2;
+        |	}
+        |}""".trimMargin())
+    val code = repoBuilder.generateKotlin("Person")
+    assertTrue(code.contains("import com.squareup.wire.internal.sanitize"))
+    assertTrue(code.contains("result += \"\"\"name=\${sanitize(name)}\"\"\""))
+    assertTrue(code.contains("result += \"\"\"id=\$id\"\"\""))
+    assertTrue(code.contains("result += \"\"\"phone=\$phone\"\"\""))
+    assertTrue(code.contains("result += \"\"\"aliases=\${sanitize(aliases)}\"\"\""))
+    assertTrue(code.contains("result += \"\"\"number=\${sanitize(number)}\"\"\""))
+    assertTrue(code.contains("result += \"\"\"type=\$type\"\"\""))
+  }
+
   @Test fun sanitizeJavadocStripsTrailingWhitespace() {
     val input = "The quick brown fox  \nJumps over  \n\t \t\nThe lazy dog  "
     val expected = "The quick brown fox\nJumps over\n\nThe lazy dog"

@@ -30,4 +30,17 @@ class InternalTest {
     assertEquals(4, countNonNull("xx", "xx", "xx", "xx", null))
     assertEquals(5, countNonNull("xx", "xx", "xx", "xx", "xx"))
   }
+
+  @Test fun sanitizeStrings() {
+    assertEquals("""\,""", sanitize(""","""))
+    assertEquals("""\{""", sanitize("""{"""))
+    assertEquals("""\}""", sanitize("""}"""))
+    assertEquals("""\[""", sanitize("""["""))
+    assertEquals("""\]""", sanitize("""]"""))
+    assertEquals("""\\""", sanitize("""\"""))
+    assertEquals("""Hi\, I'm \{CURRENT_HOST\} dax!""", sanitize("""Hi, I'm {CURRENT_HOST} dax!"""))
+
+    assertEquals(listOf("""\,""", """\{""", """\}""", """\[""", """\]""", """\\""").toString(),
+        sanitize(listOf(""",""", """{""", """}""", """[""", """]""", """\""")))
+  }
 }

@@ -502,4 +502,42 @@ public final class JavaGeneratorTest {
         + "      return this;\n"
         + "    }");
   }
+
+  @Test public void sanitizeStringsOnPrinting() throws Exception {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("example.proto", ""
+            + "message Person {\n"
+            + "  required string name = 1;\n"
+            + "  required int32 id = 2;\n"
+            + "  repeated PhoneNumber phone = 3;\n"
+            + "  repeated string aliases = 4;\n"
+            + "\n"
+            + "  message PhoneNumber {\n"
+            + "    required string number = 1;\n"
+            + "    optional PhoneType type = 2 [default = HOME];\n"
+            + "  }\n"
+            + "  enum PhoneType {\n"
+            + "    HOME = 0;\n"
+            + "    WORK = 1;\n"
+            + "    MOBILE = 2;\n"
+            + "  }\n"
+            + "}\n");
+    String generatedCode = repoBuilder.generateCode("Person");
+    assertThat(generatedCode).contains(""
+        + "  public String toString() {\n"
+        + "    StringBuilder builder = new StringBuilder();\n"
+        + "    builder.append(\", name=\").append(Internal.sanitize(name));\n"
+        + "    builder.append(\", id=\").append(id);\n"
+        + "    if (!phone.isEmpty()) builder.append(\", phone=\").append(phone);\n"
+        + "    if (!aliases.isEmpty()) builder.append(\", aliases=\").append(Internal.sanitize(aliases));\n"
+        + "    return builder.replace(0, 2, \"Person{\").append('}').toString();\n"
+        + "  }");
+    assertThat(generatedCode).contains(""
+        + "    public String toString() {\n"
+        + "      StringBuilder builder = new StringBuilder();\n"
+        + "      builder.append(\", number=\").append(Internal.sanitize(number));\n"
+        + "      if (type != null) builder.append(\", type=\").append(type);\n"
+        + "      return builder.replace(0, 2, \"PhoneNumber{\").append('}').toString();\n"
+        + "    }");
+  }
 }
