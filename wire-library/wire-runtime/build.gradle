@@ -1,7 +1,9 @@
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 kotlin {
-  jvm()
+  jvm {
+    withJava()
+  }
   js {
     configure([compilations.main, compilations.test]) {
       tasks.getByName(compileKotlinTaskName).kotlinOptions {
