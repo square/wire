@@ -373,9 +373,9 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
       StringBuilder builder = new StringBuilder();
       if (!path.isEmpty()) builder.append(", path=").append(path);
       if (!span.isEmpty()) builder.append(", span=").append(span);
-      if (leading_comments != null) builder.append(", leading_comments=").append(leading_comments);
-      if (trailing_comments != null) builder.append(", trailing_comments=").append(trailing_comments);
-      if (!leading_detached_comments.isEmpty()) builder.append(", leading_detached_comments=").append(leading_detached_comments);
+      if (leading_comments != null) builder.append(", leading_comments=").append(Internal.sanitize(leading_comments));
+      if (trailing_comments != null) builder.append(", trailing_comments=").append(Internal.sanitize(trailing_comments));
+      if (!leading_detached_comments.isEmpty()) builder.append(", leading_detached_comments=").append(Internal.sanitize(leading_detached_comments));
       return builder.replace(0, 2, "Location{").append('}').toString();
     }
 

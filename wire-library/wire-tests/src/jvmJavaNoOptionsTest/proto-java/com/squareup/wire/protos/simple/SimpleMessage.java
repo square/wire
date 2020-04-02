@@ -258,10 +258,10 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
     if (!repeated_double.isEmpty()) builder.append(", repeated_double=").append(repeated_double);
     if (default_foreign_enum != null) builder.append(", default_foreign_enum=").append(default_foreign_enum);
     if (no_default_foreign_enum != null) builder.append(", no_default_foreign_enum=").append(no_default_foreign_enum);
-    if (package_ != null) builder.append(", package=").append(package_);
-    if (result != null) builder.append(", result=").append(result);
-    if (other != null) builder.append(", other=").append(other);
-    if (o != null) builder.append(", o=").append(o);
+    if (package_ != null) builder.append(", package=").append(Internal.sanitize(package_));
+    if (result != null) builder.append(", result=").append(Internal.sanitize(result));
+    if (other != null) builder.append(", other=").append(Internal.sanitize(other));
+    if (o != null) builder.append(", o=").append(Internal.sanitize(o));
     return builder.replace(0, 2, "SimpleMessage{").append('}').toString();
   }
 

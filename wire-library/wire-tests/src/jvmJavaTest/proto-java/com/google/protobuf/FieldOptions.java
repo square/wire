@@ -386,10 +386,10 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
     if (my_field_option_two != null) builder.append(", my_field_option_two=").append(my_field_option_two);
     if (my_field_option_three != null) builder.append(", my_field_option_three=").append(my_field_option_three);
     if (my_field_option_four != null) builder.append(", my_field_option_four=").append(my_field_option_four);
-    if (squareup_protos_extension_collision_1_a != null) builder.append(", a=").append(squareup_protos_extension_collision_1_a);
-    if (b != null) builder.append(", b=").append(b);
-    if (squareup_protos_extension_collision_2_a != null) builder.append(", a=").append(squareup_protos_extension_collision_2_a);
-    if (c != null) builder.append(", c=").append(c);
+    if (squareup_protos_extension_collision_1_a != null) builder.append(", a=").append(Internal.sanitize(squareup_protos_extension_collision_1_a));
+    if (b != null) builder.append(", b=").append(Internal.sanitize(b));
+    if (squareup_protos_extension_collision_2_a != null) builder.append(", a=").append(Internal.sanitize(squareup_protos_extension_collision_2_a));
+    if (c != null) builder.append(", c=").append(Internal.sanitize(c));
     if (redacted != null) builder.append(", redacted=").append(redacted);
     if (relevant != null) builder.append(", relevant=").append(relevant);
     if (unused != null) builder.append(", unused=").append(unused);

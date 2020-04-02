@@ -233,9 +233,9 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
-    if (package_ != null) builder.append(", package=").append(package_);
-    if (!dependency.isEmpty()) builder.append(", dependency=").append(dependency);
+    if (name != null) builder.append(", name=").append(Internal.sanitize(name));
+    if (package_ != null) builder.append(", package=").append(Internal.sanitize(package_));
+    if (!dependency.isEmpty()) builder.append(", dependency=").append(Internal.sanitize(dependency));
     if (!public_dependency.isEmpty()) builder.append(", public_dependency=").append(public_dependency);
     if (!weak_dependency.isEmpty()) builder.append(", weak_dependency=").append(weak_dependency);
     if (!message_type.isEmpty()) builder.append(", message_type=").append(message_type);
@@ -244,7 +244,7 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
     if (!extension.isEmpty()) builder.append(", extension=").append(extension);
     if (options != null) builder.append(", options=").append(options);
     if (source_code_info != null) builder.append(", source_code_info=").append(source_code_info);
-    if (syntax != null) builder.append(", syntax=").append(syntax);
+    if (syntax != null) builder.append(", syntax=").append(Internal.sanitize(syntax));
     return builder.replace(0, 2, "FileDescriptorProto{").append('}').toString();
   }
 

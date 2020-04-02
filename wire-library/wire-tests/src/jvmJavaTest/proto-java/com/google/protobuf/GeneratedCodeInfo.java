@@ -212,7 +212,7 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
     public String toString() {
       StringBuilder builder = new StringBuilder();
       if (!path.isEmpty()) builder.append(", path=").append(path);
-      if (source_file != null) builder.append(", source_file=").append(source_file);
+      if (source_file != null) builder.append(", source_file=").append(Internal.sanitize(source_file));
       if (begin != null) builder.append(", begin=").append(begin);
       if (end != null) builder.append(", end=").append(end);
       return builder.replace(0, 2, "Annotation{").append('}').toString();

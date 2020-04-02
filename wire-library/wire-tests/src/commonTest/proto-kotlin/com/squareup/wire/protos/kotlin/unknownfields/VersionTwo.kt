@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -107,10 +108,10 @@ class VersionTwo(
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     if (v2_i != null) result += """v2_i=$v2_i"""
-    if (v2_s != null) result += """v2_s=$v2_s"""
+    if (v2_s != null) result += """v2_s=${sanitize(v2_s)}"""
     if (v2_f32 != null) result += """v2_f32=$v2_f32"""
     if (v2_f64 != null) result += """v2_f64=$v2_f64"""
-    if (v2_rs.isNotEmpty()) result += """v2_rs=$v2_rs"""
+    if (v2_rs.isNotEmpty()) result += """v2_rs=${sanitize(v2_rs)}"""
     if (obj != null) result += """obj=$obj"""
     if (en != null) result += """en=$en"""
     return result.joinToString(prefix = "VersionTwo{", separator = ", ", postfix = "}")

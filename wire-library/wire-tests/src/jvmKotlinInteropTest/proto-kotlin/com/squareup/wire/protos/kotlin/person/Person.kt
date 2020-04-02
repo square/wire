@@ -13,6 +13,7 @@ import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -66,6 +67,13 @@ class Person(
   )
   @JvmField
   val phone: List<PhoneNumber> = emptyList(),
+  @field:WireField(
+    tag = 5,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val aliases: List<String> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
@@ -74,6 +82,7 @@ class Person(
     builder.id = id
     builder.email = email
     builder.phone = phone
+    builder.aliases = aliases
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -86,6 +95,7 @@ class Person(
         && id == other.id
         && email == other.email
         && phone == other.phone
+        && aliases == other.aliases
   }
 
   override fun hashCode(): Int {
@@ -96,6 +106,7 @@ class Person(
       result = result * 37 + id.hashCode()
       result = result * 37 + email.hashCode()
       result = result * 37 + phone.hashCode()
+      result = result * 37 + aliases.hashCode()
       super.hashCode = result
     }
     return result
@@ -103,10 +114,11 @@ class Person(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    result += """name=$name"""
+    result += """name=${sanitize(name)}"""
     result += """id=$id"""
-    if (email != null) result += """email=$email"""
+    if (email != null) result += """email=${sanitize(email)}"""
     if (phone.isNotEmpty()) result += """phone=$phone"""
+    if (aliases.isNotEmpty()) result += """aliases=${sanitize(aliases)}"""
     return result.joinToString(prefix = "Person{", separator = ", ", postfix = "}")
   }
 
@@ -115,8 +127,9 @@ class Person(
     id: Int = this.id,
     email: String? = this.email,
     phone: List<PhoneNumber> = this.phone,
+    aliases: List<String> = this.aliases,
     unknownFields: ByteString = this.unknownFields
-  ): Person = Person(name, id, email, phone, unknownFields)
+  ): Person = Person(name, id, email, phone, aliases, unknownFields)
 
   class Builder : Message.Builder<Person, Builder>() {
     @JvmField
@@ -130,6 +143,9 @@ class Person(
 
     @JvmField
     var phone: List<PhoneNumber> = emptyList()
+
+    @JvmField
+    var aliases: List<String> = emptyList()
 
     /**
      * The customer's full name.
@@ -164,11 +180,18 @@ class Person(
       return this
     }
 
+    fun aliases(aliases: List<String>): Builder {
+      checkElementsNotNull(aliases)
+      this.aliases = aliases
+      return this
+    }
+
     override fun build(): Person = Person(
       name = name ?: throw missingRequiredFields(name, "name"),
       id = id ?: throw missingRequiredFields(id, "id"),
       email = email,
       phone = phone,
+      aliases = aliases,
       unknownFields = buildUnknownFields()
     )
   }
@@ -185,6 +208,7 @@ class Person(
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) +
         ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) +
         PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone) +
+        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: Person) {
@@ -192,6 +216,7 @@ class Person(
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -200,12 +225,14 @@ class Person(
         var id: Int? = null
         var email: String? = null
         val phone = mutableListOf<PhoneNumber>()
+        val aliases = mutableListOf<String>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> name = ProtoAdapter.STRING.decode(reader)
             2 -> id = ProtoAdapter.INT32.decode(reader)
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
+            5 -> aliases.add(ProtoAdapter.STRING.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
@@ -214,6 +241,7 @@ class Person(
           id = id ?: throw missingRequiredFields(id, "id"),
           email = email,
           phone = phone,
+          aliases = aliases,
           unknownFields = unknownFields
         )
       }
@@ -309,7 +337,7 @@ class Person(
 
     override fun toString(): String {
       val result = mutableListOf<String>()
-      result += """number=$number"""
+      result += """number=${sanitize(number)}"""
       if (type != null) result += """type=$type"""
       return result.joinToString(prefix = "PhoneNumber{", separator = ", ", postfix = "}")
     }

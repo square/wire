@@ -107,8 +107,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (foo != null) builder.append(", foo=").append(foo);
-    if (bar != null) builder.append(", bar=").append(bar);
-    if (baz != null) builder.append(", baz=").append(baz);
+    if (bar != null) builder.append(", bar=").append(Internal.sanitize(bar));
+    if (baz != null) builder.append(", baz=").append(Internal.sanitize(baz));
     return builder.replace(0, 2, "OneOfMessage{").append('}').toString();
   }
 

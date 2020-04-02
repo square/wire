@@ -11,6 +11,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
+import com.squareup.wire.internal.sanitize
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
 import kotlin.Any
 import kotlin.AssertionError
@@ -186,10 +187,10 @@ class SimpleMessage(
     if (default_foreign_enum != null) result_ += """default_foreign_enum=$default_foreign_enum"""
     if (no_default_foreign_enum != null) result_ +=
         """no_default_foreign_enum=$no_default_foreign_enum"""
-    if (package_ != null) result_ += """package_=$package_"""
-    if (result != null) result_ += """result=$result"""
-    if (other != null) result_ += """other=$other"""
-    if (o != null) result_ += """o=$o"""
+    if (package_ != null) result_ += """package_=${sanitize(package_)}"""
+    if (result != null) result_ += """result=${sanitize(result)}"""
+    if (other != null) result_ += """other=${sanitize(other)}"""
+    if (o != null) result_ += """o=${sanitize(o)}"""
     return result_.joinToString(prefix = "SimpleMessage{", separator = ", ", postfix = "}")
   }
 

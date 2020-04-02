@@ -180,16 +180,16 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (unknownFields != null) builder.append(", unknownFields=").append(unknownFields);
-    if (other != null) builder.append(", other=").append(other);
-    if (o != null) builder.append(", o=").append(o);
-    if (result != null) builder.append(", result=").append(result);
-    if (hashCode != null) builder.append(", hashCode=").append(hashCode);
-    if (serialVersionUID_ != null) builder.append(", serialVersionUID=").append(serialVersionUID_);
-    if (ADAPTER_ != null) builder.append(", ADAPTER=").append(ADAPTER_);
-    if (MESSAGE_OPTIONS_ != null) builder.append(", MESSAGE_OPTIONS=").append(MESSAGE_OPTIONS_);
-    if (this_ != null) builder.append(", this=").append(this_);
-    if (message != null) builder.append(", message=").append(message);
+    if (unknownFields != null) builder.append(", unknownFields=").append(Internal.sanitize(unknownFields));
+    if (other != null) builder.append(", other=").append(Internal.sanitize(other));
+    if (o != null) builder.append(", o=").append(Internal.sanitize(o));
+    if (result != null) builder.append(", result=").append(Internal.sanitize(result));
+    if (hashCode != null) builder.append(", hashCode=").append(Internal.sanitize(hashCode));
+    if (serialVersionUID_ != null) builder.append(", serialVersionUID=").append(Internal.sanitize(serialVersionUID_));
+    if (ADAPTER_ != null) builder.append(", ADAPTER=").append(Internal.sanitize(ADAPTER_));
+    if (MESSAGE_OPTIONS_ != null) builder.append(", MESSAGE_OPTIONS=").append(Internal.sanitize(MESSAGE_OPTIONS_));
+    if (this_ != null) builder.append(", this=").append(Internal.sanitize(this_));
+    if (message != null) builder.append(", message=").append(Internal.sanitize(message));
     return builder.replace(0, 2, "Message{").append('}').toString();
   }
 

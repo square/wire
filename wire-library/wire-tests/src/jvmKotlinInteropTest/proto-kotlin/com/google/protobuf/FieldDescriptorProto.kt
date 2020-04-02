@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -170,15 +171,15 @@ class FieldDescriptorProto(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (name != null) result += """name=$name"""
+    if (name != null) result += """name=${sanitize(name)}"""
     if (number != null) result += """number=$number"""
     if (label != null) result += """label=$label"""
     if (type != null) result += """type=$type"""
-    if (type_name != null) result += """type_name=$type_name"""
-    if (extendee != null) result += """extendee=$extendee"""
-    if (default_value != null) result += """default_value=$default_value"""
+    if (type_name != null) result += """type_name=${sanitize(type_name)}"""
+    if (extendee != null) result += """extendee=${sanitize(extendee)}"""
+    if (default_value != null) result += """default_value=${sanitize(default_value)}"""
     if (oneof_index != null) result += """oneof_index=$oneof_index"""
-    if (json_name != null) result += """json_name=$json_name"""
+    if (json_name != null) result += """json_name=${sanitize(json_name)}"""
     if (options != null) result += """options=$options"""
     return result.joinToString(prefix = "FieldDescriptorProto{", separator = ", ", postfix = "}")
   }

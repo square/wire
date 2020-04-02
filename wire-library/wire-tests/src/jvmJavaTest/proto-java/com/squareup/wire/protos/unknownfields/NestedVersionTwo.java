@@ -135,10 +135,10 @@ public final class NestedVersionTwo extends Message<NestedVersionTwo, NestedVers
     StringBuilder builder = new StringBuilder();
     if (i != null) builder.append(", i=").append(i);
     if (v2_i != null) builder.append(", v2_i=").append(v2_i);
-    if (v2_s != null) builder.append(", v2_s=").append(v2_s);
+    if (v2_s != null) builder.append(", v2_s=").append(Internal.sanitize(v2_s));
     if (v2_f32 != null) builder.append(", v2_f32=").append(v2_f32);
     if (v2_f64 != null) builder.append(", v2_f64=").append(v2_f64);
-    if (!v2_rs.isEmpty()) builder.append(", v2_rs=").append(v2_rs);
+    if (!v2_rs.isEmpty()) builder.append(", v2_rs=").append(Internal.sanitize(v2_rs));
     return builder.replace(0, 2, "NestedVersionTwo{").append('}').toString();
   }
 

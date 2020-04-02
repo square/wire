@@ -11,6 +11,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -329,29 +330,30 @@ class FileOptions(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (java_package != null) result += """java_package=$java_package"""
-    if (java_outer_classname != null) result += """java_outer_classname=$java_outer_classname"""
+    if (java_package != null) result += """java_package=${sanitize(java_package)}"""
+    if (java_outer_classname != null) result +=
+        """java_outer_classname=${sanitize(java_outer_classname)}"""
     if (java_multiple_files != null) result += """java_multiple_files=$java_multiple_files"""
     if (java_generate_equals_and_hash != null) result +=
         """java_generate_equals_and_hash=$java_generate_equals_and_hash"""
     if (java_string_check_utf8 != null) result +=
         """java_string_check_utf8=$java_string_check_utf8"""
     if (optimize_for != null) result += """optimize_for=$optimize_for"""
-    if (go_package != null) result += """go_package=$go_package"""
+    if (go_package != null) result += """go_package=${sanitize(go_package)}"""
     if (cc_generic_services != null) result += """cc_generic_services=$cc_generic_services"""
     if (java_generic_services != null) result += """java_generic_services=$java_generic_services"""
     if (py_generic_services != null) result += """py_generic_services=$py_generic_services"""
     if (php_generic_services != null) result += """php_generic_services=$php_generic_services"""
     if (deprecated != null) result += """deprecated=$deprecated"""
     if (cc_enable_arenas != null) result += """cc_enable_arenas=$cc_enable_arenas"""
-    if (objc_class_prefix != null) result += """objc_class_prefix=$objc_class_prefix"""
-    if (csharp_namespace != null) result += """csharp_namespace=$csharp_namespace"""
-    if (swift_prefix != null) result += """swift_prefix=$swift_prefix"""
-    if (php_class_prefix != null) result += """php_class_prefix=$php_class_prefix"""
-    if (php_namespace != null) result += """php_namespace=$php_namespace"""
+    if (objc_class_prefix != null) result += """objc_class_prefix=${sanitize(objc_class_prefix)}"""
+    if (csharp_namespace != null) result += """csharp_namespace=${sanitize(csharp_namespace)}"""
+    if (swift_prefix != null) result += """swift_prefix=${sanitize(swift_prefix)}"""
+    if (php_class_prefix != null) result += """php_class_prefix=${sanitize(php_class_prefix)}"""
+    if (php_namespace != null) result += """php_namespace=${sanitize(php_namespace)}"""
     if (php_metadata_namespace != null) result +=
-        """php_metadata_namespace=$php_metadata_namespace"""
-    if (ruby_package != null) result += """ruby_package=$ruby_package"""
+        """php_metadata_namespace=${sanitize(php_metadata_namespace)}"""
+    if (ruby_package != null) result += """ruby_package=${sanitize(ruby_package)}"""
     if (uninterpreted_option.isNotEmpty()) result +=
         """uninterpreted_option=$uninterpreted_option"""
     return result.joinToString(prefix = "FileOptions{", separator = ", ", postfix = "}")

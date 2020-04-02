@@ -129,11 +129,11 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
+    if (name != null) builder.append(", name=").append(Internal.sanitize(name));
     if (!value.isEmpty()) builder.append(", value=").append(value);
     if (options != null) builder.append(", options=").append(options);
     if (!reserved_range.isEmpty()) builder.append(", reserved_range=").append(reserved_range);
-    if (!reserved_name.isEmpty()) builder.append(", reserved_name=").append(reserved_name);
+    if (!reserved_name.isEmpty()) builder.append(", reserved_name=").append(Internal.sanitize(reserved_name));
     return builder.replace(0, 2, "EnumDescriptorProto{").append('}').toString();
   }
 

@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -171,9 +172,9 @@ class FileDescriptorProto(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (name != null) result += """name=$name"""
-    if (package_ != null) result += """package_=$package_"""
-    if (dependency.isNotEmpty()) result += """dependency=$dependency"""
+    if (name != null) result += """name=${sanitize(name)}"""
+    if (package_ != null) result += """package_=${sanitize(package_)}"""
+    if (dependency.isNotEmpty()) result += """dependency=${sanitize(dependency)}"""
     if (public_dependency.isNotEmpty()) result += """public_dependency=$public_dependency"""
     if (weak_dependency.isNotEmpty()) result += """weak_dependency=$weak_dependency"""
     if (message_type.isNotEmpty()) result += """message_type=$message_type"""
@@ -182,7 +183,7 @@ class FileDescriptorProto(
     if (extension.isNotEmpty()) result += """extension=$extension"""
     if (options != null) result += """options=$options"""
     if (source_code_info != null) result += """source_code_info=$source_code_info"""
-    if (syntax != null) result += """syntax=$syntax"""
+    if (syntax != null) result += """syntax=${sanitize(syntax)}"""
     return result.joinToString(prefix = "FileDescriptorProto{", separator = ", ", postfix = "}")
   }
 

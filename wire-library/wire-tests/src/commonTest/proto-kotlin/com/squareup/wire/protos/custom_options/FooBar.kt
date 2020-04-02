@@ -11,6 +11,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -127,7 +128,7 @@ class FooBar(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=$foo"""
-    if (bar != null) result += """bar=$bar"""
+    if (bar != null) result += """bar=${sanitize(bar)}"""
     if (baz != null) result += """baz=$baz"""
     if (qux != null) result += """qux=$qux"""
     if (fred.isNotEmpty()) result += """fred=$fred"""

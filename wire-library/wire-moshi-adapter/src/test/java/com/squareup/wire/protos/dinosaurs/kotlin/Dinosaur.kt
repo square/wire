@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import com.squareup.wire.protos.geology.kotlin.Period
 import kotlin.Any
 import kotlin.AssertionError
@@ -91,8 +92,8 @@ class Dinosaur(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (name != null) result += """name=$name"""
-    if (picture_urls.isNotEmpty()) result += """picture_urls=$picture_urls"""
+    if (name != null) result += """name=${sanitize(name)}"""
+    if (picture_urls.isNotEmpty()) result += """picture_urls=${sanitize(picture_urls)}"""
     if (length_meters != null) result += """length_meters=$length_meters"""
     if (mass_kilograms != null) result += """mass_kilograms=$mass_kilograms"""
     if (period != null) result += """period=$period"""

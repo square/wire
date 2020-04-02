@@ -83,7 +83,7 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (d != null) builder.append(", d=██");
-    if (e != null) builder.append(", e=").append(e);
+    if (e != null) builder.append(", e=").append(Internal.sanitize(e));
     return builder.replace(0, 2, "RedactedExtension{").append('}').toString();
   }
 

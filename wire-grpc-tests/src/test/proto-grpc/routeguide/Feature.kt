@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -71,7 +72,7 @@ class Feature(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (name != null) result += """name=$name"""
+    if (name != null) result += """name=${sanitize(name)}"""
     if (location != null) result += """location=$location"""
     return result.joinToString(prefix = "Feature{", separator = ", ", postfix = "}")
   }

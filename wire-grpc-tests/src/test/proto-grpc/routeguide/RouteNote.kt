@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -70,7 +71,7 @@ class RouteNote(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (location != null) result += """location=$location"""
-    if (message != null) result += """message=$message"""
+    if (message != null) result += """message=${sanitize(message)}"""
     return result.joinToString(prefix = "RouteNote{", separator = ", ", postfix = "}")
   }
 

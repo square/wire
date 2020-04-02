@@ -81,8 +81,8 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (a != null) builder.append(", a=").append(a);
-    if (b != null) builder.append(", b=").append(b);
+    if (a != null) builder.append(", a=").append(Internal.sanitize(a));
+    if (b != null) builder.append(", b=").append(Internal.sanitize(b));
     return builder.replace(0, 2, "NotRedacted{").append('}').toString();
   }
 

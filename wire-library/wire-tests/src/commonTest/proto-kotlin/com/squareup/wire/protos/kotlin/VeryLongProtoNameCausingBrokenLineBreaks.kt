@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -56,7 +57,7 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (foo != null) result += """foo=$foo"""
+    if (foo != null) result += """foo=${sanitize(foo)}"""
     return result.joinToString(prefix = "VeryLongProtoNameCausingBrokenLineBreaks{", separator =
         ", ", postfix = "}")
   }

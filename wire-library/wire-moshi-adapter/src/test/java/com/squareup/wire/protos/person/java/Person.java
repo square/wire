@@ -126,9 +126,9 @@ public final class Person extends Message<Person, Person.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append(", name=").append(name);
+    builder.append(", name=").append(Internal.sanitize(name));
     builder.append(", id=").append(id);
-    if (email != null) builder.append(", email=").append(email);
+    if (email != null) builder.append(", email=").append(Internal.sanitize(email));
     if (!phone.isEmpty()) builder.append(", phone=").append(phone);
     return builder.replace(0, 2, "Person{").append('}').toString();
   }
@@ -312,7 +312,7 @@ public final class Person extends Message<Person, Person.Builder> {
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      builder.append(", number=").append(number);
+      builder.append(", number=").append(Internal.sanitize(number));
       if (type != null) builder.append(", type=").append(type);
       return builder.replace(0, 2, "PhoneNumber{").append('}').toString();
     }

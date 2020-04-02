@@ -217,15 +217,15 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
+    if (name != null) builder.append(", name=").append(Internal.sanitize(name));
     if (number != null) builder.append(", number=").append(number);
     if (label != null) builder.append(", label=").append(label);
     if (type != null) builder.append(", type=").append(type);
-    if (type_name != null) builder.append(", type_name=").append(type_name);
-    if (extendee != null) builder.append(", extendee=").append(extendee);
-    if (default_value != null) builder.append(", default_value=").append(default_value);
+    if (type_name != null) builder.append(", type_name=").append(Internal.sanitize(type_name));
+    if (extendee != null) builder.append(", extendee=").append(Internal.sanitize(extendee));
+    if (default_value != null) builder.append(", default_value=").append(Internal.sanitize(default_value));
     if (oneof_index != null) builder.append(", oneof_index=").append(oneof_index);
-    if (json_name != null) builder.append(", json_name=").append(json_name);
+    if (json_name != null) builder.append(", json_name=").append(Internal.sanitize(json_name));
     if (options != null) builder.append(", options=").append(options);
     return builder.replace(0, 2, "FieldDescriptorProto{").append('}').toString();
   }

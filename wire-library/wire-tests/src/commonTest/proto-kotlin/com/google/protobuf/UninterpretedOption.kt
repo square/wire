@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -114,12 +115,12 @@ class UninterpretedOption(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (name.isNotEmpty()) result += """name=$name"""
-    if (identifier_value != null) result += """identifier_value=$identifier_value"""
+    if (identifier_value != null) result += """identifier_value=${sanitize(identifier_value)}"""
     if (positive_int_value != null) result += """positive_int_value=$positive_int_value"""
     if (negative_int_value != null) result += """negative_int_value=$negative_int_value"""
     if (double_value != null) result += """double_value=$double_value"""
     if (string_value != null) result += """string_value=$string_value"""
-    if (aggregate_value != null) result += """aggregate_value=$aggregate_value"""
+    if (aggregate_value != null) result += """aggregate_value=${sanitize(aggregate_value)}"""
     return result.joinToString(prefix = "UninterpretedOption{", separator = ", ", postfix = "}")
   }
 
@@ -251,7 +252,7 @@ class UninterpretedOption(
 
     override fun toString(): String {
       val result = mutableListOf<String>()
-      result += """name_part=$name_part"""
+      result += """name_part=${sanitize(name_part)}"""
       result += """is_extension=$is_extension"""
       return result.joinToString(prefix = "NamePart{", separator = ", ", postfix = "}")
     }

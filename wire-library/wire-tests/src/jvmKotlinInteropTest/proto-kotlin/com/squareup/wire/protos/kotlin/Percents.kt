@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -54,7 +55,7 @@ class Percents(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (text != null) result += """text=$text"""
+    if (text != null) result += """text=${sanitize(text)}"""
     return result.joinToString(prefix = "Percents{", separator = ", ", postfix = "}")
   }
 

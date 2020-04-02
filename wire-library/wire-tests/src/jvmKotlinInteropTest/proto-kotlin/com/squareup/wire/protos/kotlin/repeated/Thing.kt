@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -51,7 +52,7 @@ class Thing(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (name != null) result += """name=$name"""
+    if (name != null) result += """name=${sanitize(name)}"""
     return result.joinToString(prefix = "Thing{", separator = ", ", postfix = "}")
   }
 
