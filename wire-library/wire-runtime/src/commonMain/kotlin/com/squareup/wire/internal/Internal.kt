@@ -153,9 +153,9 @@ private const val ESCAPED_CHARS = ",[]{}\\"
 
 /** Return a string where `,[]{}\` are escaped with a `\`. */
 fun sanitize(value: String): String {
-  return buildString {
+  return buildString(value.length) {
     value.forEach { char ->
-      if (char in ESCAPED_CHARS) append("\\")
+      if (char in ESCAPED_CHARS) append('\\')
       append(char)
     }
   }
@@ -163,5 +163,5 @@ fun sanitize(value: String): String {
 
 /** Return a string where `,[]{}\` are escaped with a `\`. */
 fun sanitize(values: List<String>): String {
-  return values.map(::sanitize).toString()
+  return values.map(::sanitize).joinToString(prefix = "[", postfix = "]")
 }
