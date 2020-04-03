@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -101,9 +102,9 @@ class MethodDescriptorProto(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (name != null) result += """name=$name"""
-    if (input_type != null) result += """input_type=$input_type"""
-    if (output_type != null) result += """output_type=$output_type"""
+    if (name != null) result += """name=${sanitize(name)}"""
+    if (input_type != null) result += """input_type=${sanitize(input_type)}"""
+    if (output_type != null) result += """output_type=${sanitize(output_type)}"""
     if (options != null) result += """options=$options"""
     if (client_streaming != null) result += """client_streaming=$client_streaming"""
     if (server_streaming != null) result += """server_streaming=$server_streaming"""

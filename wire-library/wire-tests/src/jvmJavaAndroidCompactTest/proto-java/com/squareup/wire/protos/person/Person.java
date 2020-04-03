@@ -70,17 +70,26 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   )
   public final List<PhoneNumber> phone;
 
-  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone) {
-    this(name, id, email, phone, ByteString.EMPTY);
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED
+  )
+  public final List<String> aliases;
+
+  public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
+      List<String> aliases) {
+    this(name, id, email, phone, aliases, ByteString.EMPTY);
   }
 
   public Person(String name, Integer id, @Nullable String email, List<PhoneNumber> phone,
-      ByteString unknownFields) {
+      List<String> aliases, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.id = id;
     this.email = email;
     this.phone = Internal.immutableCopyOf("phone", phone);
+    this.aliases = Internal.immutableCopyOf("aliases", aliases);
   }
 
   @Override
@@ -90,6 +99,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     builder.id = id;
     builder.email = email;
     builder.phone = Internal.copyOf(phone);
+    builder.aliases = Internal.copyOf(aliases);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -103,7 +113,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
         && name.equals(o.name)
         && id.equals(o.id)
         && Internal.equals(email, o.email)
-        && phone.equals(o.phone);
+        && phone.equals(o.phone)
+        && aliases.equals(o.aliases);
   }
 
   @Override
@@ -115,6 +126,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       result = result * 37 + id.hashCode();
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + phone.hashCode();
+      result = result * 37 + aliases.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -129,8 +141,11 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
 
     public List<PhoneNumber> phone;
 
+    public List<String> aliases;
+
     public Builder() {
       phone = Internal.newMutableList();
+      aliases = Internal.newMutableList();
     }
 
     /**
@@ -166,6 +181,12 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       return this;
     }
 
+    public Builder aliases(List<String> aliases) {
+      Internal.checkElementsNotNull(aliases);
+      this.aliases = aliases;
+      return this;
+    }
+
     @Override
     public Person build() {
       if (name == null
@@ -173,7 +194,7 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
         throw Internal.missingRequiredFields(name, "name",
             id, "id");
       }
-      return new Person(name, id, email, phone, super.buildUnknownFields());
+      return new Person(name, id, email, phone, aliases, super.buildUnknownFields());
     }
   }
 

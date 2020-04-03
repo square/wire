@@ -184,7 +184,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
+    if (name != null) builder.append(", name=").append(Internal.sanitize(name));
     if (!field.isEmpty()) builder.append(", field=").append(field);
     if (!extension.isEmpty()) builder.append(", extension=").append(extension);
     if (!nested_type.isEmpty()) builder.append(", nested_type=").append(nested_type);
@@ -193,7 +193,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
     if (!oneof_decl.isEmpty()) builder.append(", oneof_decl=").append(oneof_decl);
     if (options != null) builder.append(", options=").append(options);
     if (!reserved_range.isEmpty()) builder.append(", reserved_range=").append(reserved_range);
-    if (!reserved_name.isEmpty()) builder.append(", reserved_name=").append(reserved_name);
+    if (!reserved_name.isEmpty()) builder.append(", reserved_name=").append(Internal.sanitize(reserved_name));
     return builder.replace(0, 2, "DescriptorProto{").append('}').toString();
   }
 

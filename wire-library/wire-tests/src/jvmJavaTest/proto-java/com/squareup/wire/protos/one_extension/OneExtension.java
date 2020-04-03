@@ -82,7 +82,7 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (id != null) builder.append(", id=").append(id);
+    if (id != null) builder.append(", id=").append(Internal.sanitize(id));
     if (foo != null) builder.append(", foo=").append(foo);
     return builder.replace(0, 2, "OneExtension{").append('}').toString();
   }

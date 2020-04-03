@@ -70,17 +70,26 @@ public final class Person extends Message<Person, Person.Builder> {
   )
   public final List<PhoneNumber> phone;
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phone) {
-    this(name, id, email, phone, ByteString.EMPTY);
+  @WireField(
+      tag = 5,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REPEATED
+  )
+  public final List<String> aliases;
+
+  public Person(String name, Integer id, String email, List<PhoneNumber> phone,
+      List<String> aliases) {
+    this(name, id, email, phone, aliases, ByteString.EMPTY);
   }
 
   public Person(String name, Integer id, String email, List<PhoneNumber> phone,
-      ByteString unknownFields) {
+      List<String> aliases, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.name = name;
     this.id = id;
     this.email = email;
     this.phone = Internal.immutableCopyOf("phone", phone);
+    this.aliases = Internal.immutableCopyOf("aliases", aliases);
   }
 
   @Override
@@ -90,6 +99,7 @@ public final class Person extends Message<Person, Person.Builder> {
     builder.id = id;
     builder.email = email;
     builder.phone = Internal.copyOf(phone);
+    builder.aliases = Internal.copyOf(aliases);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -103,7 +113,8 @@ public final class Person extends Message<Person, Person.Builder> {
         && name.equals(o.name)
         && id.equals(o.id)
         && Internal.equals(email, o.email)
-        && phone.equals(o.phone);
+        && phone.equals(o.phone)
+        && aliases.equals(o.aliases);
   }
 
   @Override
@@ -115,6 +126,7 @@ public final class Person extends Message<Person, Person.Builder> {
       result = result * 37 + id.hashCode();
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + phone.hashCode();
+      result = result * 37 + aliases.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -123,10 +135,11 @@ public final class Person extends Message<Person, Person.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append(", name=").append(name);
+    builder.append(", name=").append(Internal.sanitize(name));
     builder.append(", id=").append(id);
-    if (email != null) builder.append(", email=").append(email);
+    if (email != null) builder.append(", email=").append(Internal.sanitize(email));
     if (!phone.isEmpty()) builder.append(", phone=").append(phone);
+    if (!aliases.isEmpty()) builder.append(", aliases=").append(Internal.sanitize(aliases));
     return builder.replace(0, 2, "Person{").append('}').toString();
   }
 
@@ -139,8 +152,11 @@ public final class Person extends Message<Person, Person.Builder> {
 
     public List<PhoneNumber> phone;
 
+    public List<String> aliases;
+
     public Builder() {
       phone = Internal.newMutableList();
+      aliases = Internal.newMutableList();
     }
 
     /**
@@ -176,6 +192,12 @@ public final class Person extends Message<Person, Person.Builder> {
       return this;
     }
 
+    public Builder aliases(List<String> aliases) {
+      Internal.checkElementsNotNull(aliases);
+      this.aliases = aliases;
+      return this;
+    }
+
     @Override
     public Person build() {
       if (name == null
@@ -183,7 +205,7 @@ public final class Person extends Message<Person, Person.Builder> {
         throw Internal.missingRequiredFields(name, "name",
             id, "id");
       }
-      return new Person(name, id, email, phone, super.buildUnknownFields());
+      return new Person(name, id, email, phone, aliases, super.buildUnknownFields());
     }
   }
 
@@ -306,7 +328,7 @@ public final class Person extends Message<Person, Person.Builder> {
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      builder.append(", number=").append(number);
+      builder.append(", number=").append(Internal.sanitize(number));
       if (type != null) builder.append(", type=").append(type);
       return builder.replace(0, 2, "PhoneNumber{").append('}').toString();
     }
@@ -407,6 +429,7 @@ public final class Person extends Message<Person, Person.Builder> {
           + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
           + ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
           + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
+          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases)
           + value.unknownFields().size();
     }
 
@@ -416,6 +439,7 @@ public final class Person extends Message<Person, Person.Builder> {
       ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
       ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -429,6 +453,7 @@ public final class Person extends Message<Person, Person.Builder> {
           case 2: builder.id(ProtoAdapter.INT32.decode(reader)); break;
           case 3: builder.email(ProtoAdapter.STRING.decode(reader)); break;
           case 4: builder.phone.add(PhoneNumber.ADAPTER.decode(reader)); break;
+          case 5: builder.aliases.add(ProtoAdapter.STRING.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }

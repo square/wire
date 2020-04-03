@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -181,7 +182,7 @@ class GeneratedCodeInfo(
     override fun toString(): String {
       val result = mutableListOf<String>()
       if (path.isNotEmpty()) result += """path=$path"""
-      if (source_file != null) result += """source_file=$source_file"""
+      if (source_file != null) result += """source_file=${sanitize(source_file)}"""
       if (begin != null) result += """begin=$begin"""
       if (end != null) result += """end=$end"""
       return result.joinToString(prefix = "Annotation{", separator = ", ", postfix = "}")

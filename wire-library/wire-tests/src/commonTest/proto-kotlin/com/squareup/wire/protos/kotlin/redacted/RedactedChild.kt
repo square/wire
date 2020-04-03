@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -67,7 +68,7 @@ class RedactedChild(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (a != null) result += """a=$a"""
+    if (a != null) result += """a=${sanitize(a)}"""
     if (b != null) result += """b=$b"""
     if (c != null) result += """c=$c"""
     return result.joinToString(prefix = "RedactedChild{", separator = ", ", postfix = "}")

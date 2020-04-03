@@ -161,12 +161,12 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (!name.isEmpty()) builder.append(", name=").append(name);
-    if (identifier_value != null) builder.append(", identifier_value=").append(identifier_value);
+    if (identifier_value != null) builder.append(", identifier_value=").append(Internal.sanitize(identifier_value));
     if (positive_int_value != null) builder.append(", positive_int_value=").append(positive_int_value);
     if (negative_int_value != null) builder.append(", negative_int_value=").append(negative_int_value);
     if (double_value != null) builder.append(", double_value=").append(double_value);
     if (string_value != null) builder.append(", string_value=").append(string_value);
-    if (aggregate_value != null) builder.append(", aggregate_value=").append(aggregate_value);
+    if (aggregate_value != null) builder.append(", aggregate_value=").append(Internal.sanitize(aggregate_value));
     return builder.replace(0, 2, "UninterpretedOption{").append('}').toString();
   }
 
@@ -309,7 +309,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      builder.append(", name_part=").append(name_part);
+      builder.append(", name_part=").append(Internal.sanitize(name_part));
       builder.append(", is_extension=").append(is_extension);
       return builder.replace(0, 2, "NamePart{").append('}').toString();
     }

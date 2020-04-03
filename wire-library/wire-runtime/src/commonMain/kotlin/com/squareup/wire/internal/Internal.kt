@@ -148,3 +148,20 @@ fun countNonNull(a: Any?, b: Any?, c: Any?, d: Any?, vararg rest: Any?): Int {
   }
   return result
 }
+
+private const val ESCAPED_CHARS = ",[]{}\\"
+
+/** Return a string where `,[]{}\` are escaped with a `\`. */
+fun sanitize(value: String): String {
+  return buildString(value.length) {
+    value.forEach { char ->
+      if (char in ESCAPED_CHARS) append('\\')
+      append(char)
+    }
+  }
+}
+
+/** Return a string where `,[]{}\` are escaped with a `\`. */
+fun sanitize(values: List<String>): String {
+  return values.map(::sanitize).joinToString(prefix = "[", postfix = "]")
+}

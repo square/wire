@@ -127,8 +127,8 @@ public final class Dinosaur extends Message<Dinosaur, Dinosaur.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
-    if (!picture_urls.isEmpty()) builder.append(", picture_urls=").append(picture_urls);
+    if (name != null) builder.append(", name=").append(Internal.sanitize(name));
+    if (!picture_urls.isEmpty()) builder.append(", picture_urls=").append(Internal.sanitize(picture_urls));
     if (length_meters != null) builder.append(", length_meters=").append(length_meters);
     if (mass_kilograms != null) builder.append(", mass_kilograms=").append(mass_kilograms);
     if (period != null) builder.append(", period=").append(period);

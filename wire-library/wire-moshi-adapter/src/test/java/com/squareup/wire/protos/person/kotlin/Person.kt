@@ -12,6 +12,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -98,9 +99,9 @@ class Person(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    result += """name=$name"""
+    result += """name=${sanitize(name)}"""
     result += """id=$id"""
-    if (email != null) result += """email=$email"""
+    if (email != null) result += """email=${sanitize(email)}"""
     if (phone.isNotEmpty()) result += """phone=$phone"""
     return result.joinToString(prefix = "Person{", separator = ", ", postfix = "}")
   }
@@ -245,7 +246,7 @@ class Person(
 
     override fun toString(): String {
       val result = mutableListOf<String>()
-      result += """number=$number"""
+      result += """number=${sanitize(number)}"""
       if (type != null) result += """type=$type"""
       return result.joinToString(prefix = "PhoneNumber{", separator = ", ", postfix = "}")
     }

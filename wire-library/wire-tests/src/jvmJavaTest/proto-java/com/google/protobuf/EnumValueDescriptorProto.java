@@ -96,7 +96,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
+    if (name != null) builder.append(", name=").append(Internal.sanitize(name));
     if (number != null) builder.append(", number=").append(number);
     if (options != null) builder.append(", options=").append(options);
     return builder.replace(0, 2, "EnumValueDescriptorProto{").append('}').toString();

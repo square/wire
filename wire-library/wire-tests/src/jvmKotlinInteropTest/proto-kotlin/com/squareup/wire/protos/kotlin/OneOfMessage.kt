@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -89,8 +90,8 @@ class OneOfMessage(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=$foo"""
-    if (bar != null) result += """bar=$bar"""
-    if (baz != null) result += """baz=$baz"""
+    if (bar != null) result += """bar=${sanitize(bar)}"""
+    if (baz != null) result += """baz=${sanitize(baz)}"""
     return result.joinToString(prefix = "OneOfMessage{", separator = ", ", postfix = "}")
   }
 

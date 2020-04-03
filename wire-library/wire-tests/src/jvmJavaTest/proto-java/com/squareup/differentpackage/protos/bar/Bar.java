@@ -167,7 +167,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       @Override
       public String toString() {
         StringBuilder builder = new StringBuilder();
-        if (boo != null) builder.append(", boo=").append(boo);
+        if (boo != null) builder.append(", boo=").append(Internal.sanitize(boo));
         return builder.replace(0, 2, "Moo{").append('}').toString();
       }
 

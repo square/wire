@@ -109,8 +109,8 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (a != null) builder.append(", a=██");
-    if (b != null) builder.append(", b=").append(b);
-    if (c != null) builder.append(", c=").append(c);
+    if (b != null) builder.append(", b=").append(Internal.sanitize(b));
+    if (c != null) builder.append(", c=").append(Internal.sanitize(c));
     if (extension != null) builder.append(", extension=").append(extension);
     return builder.replace(0, 2, "Redacted{").append('}').toString();
   }

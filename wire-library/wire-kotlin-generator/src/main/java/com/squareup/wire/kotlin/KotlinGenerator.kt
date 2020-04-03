@@ -798,6 +798,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateToStringMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
+    val sanitizeMember = MemberName("com.squareup.wire.internal", "sanitize")
     val localNameAllocator = nameAllocator.copy()
     val className = generatedTypeName(type)
     val fields = type.fieldsAndOneOfFields
@@ -814,13 +815,17 @@ class KotlinGenerator private constructor(
           } else if (!field.isRequired) {
             add("if (%N != null) ", fieldName)
           }
-          addStatement("%N += %P", resultName, buildString {
-            append(fieldName)
+          addStatement("%N += %P", resultName, buildCodeBlock {
+            add(fieldName)
             if (field.isRedacted) {
-              append("=██")
+              add("=██")
             } else {
-              append("=\$")
-              append(fieldName)
+              if (field.type == ProtoType.STRING) {
+                add("=\${%M($fieldName)}", sanitizeMember)
+              } else {
+                add("=\$")
+                add(fieldName)
+              }
             }
           })
         }

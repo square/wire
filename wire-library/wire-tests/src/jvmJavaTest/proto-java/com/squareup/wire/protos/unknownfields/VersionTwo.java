@@ -157,10 +157,10 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
     StringBuilder builder = new StringBuilder();
     if (i != null) builder.append(", i=").append(i);
     if (v2_i != null) builder.append(", v2_i=").append(v2_i);
-    if (v2_s != null) builder.append(", v2_s=").append(v2_s);
+    if (v2_s != null) builder.append(", v2_s=").append(Internal.sanitize(v2_s));
     if (v2_f32 != null) builder.append(", v2_f32=").append(v2_f32);
     if (v2_f64 != null) builder.append(", v2_f64=").append(v2_f64);
-    if (!v2_rs.isEmpty()) builder.append(", v2_rs=").append(v2_rs);
+    if (!v2_rs.isEmpty()) builder.append(", v2_rs=").append(Internal.sanitize(v2_rs));
     if (obj != null) builder.append(", obj=").append(obj);
     if (en != null) builder.append(", en=").append(en);
     return builder.replace(0, 2, "VersionTwo{").append('}').toString();

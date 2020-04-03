@@ -13,6 +13,7 @@ import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Double
@@ -1543,7 +1544,7 @@ class AllTypes(
     if (opt_bool != null) result += """opt_bool=$opt_bool"""
     if (opt_float != null) result += """opt_float=$opt_float"""
     if (opt_double != null) result += """opt_double=$opt_double"""
-    if (opt_string != null) result += """opt_string=$opt_string"""
+    if (opt_string != null) result += """opt_string=${sanitize(opt_string)}"""
     if (opt_bytes != null) result += """opt_bytes=$opt_bytes"""
     if (opt_nested_enum != null) result += """opt_nested_enum=$opt_nested_enum"""
     if (opt_nested_message != null) result += """opt_nested_message=$opt_nested_message"""
@@ -1560,7 +1561,7 @@ class AllTypes(
     result += """req_bool=$req_bool"""
     result += """req_float=$req_float"""
     result += """req_double=$req_double"""
-    result += """req_string=$req_string"""
+    result += """req_string=${sanitize(req_string)}"""
     result += """req_bytes=$req_bytes"""
     result += """req_nested_enum=$req_nested_enum"""
     result += """req_nested_message=$req_nested_message"""
@@ -1577,7 +1578,7 @@ class AllTypes(
     if (rep_bool.isNotEmpty()) result += """rep_bool=$rep_bool"""
     if (rep_float.isNotEmpty()) result += """rep_float=$rep_float"""
     if (rep_double.isNotEmpty()) result += """rep_double=$rep_double"""
-    if (rep_string.isNotEmpty()) result += """rep_string=$rep_string"""
+    if (rep_string.isNotEmpty()) result += """rep_string=${sanitize(rep_string)}"""
     if (rep_bytes.isNotEmpty()) result += """rep_bytes=$rep_bytes"""
     if (rep_nested_enum.isNotEmpty()) result += """rep_nested_enum=$rep_nested_enum"""
     if (rep_nested_message.isNotEmpty()) result += """rep_nested_message=$rep_nested_message"""
@@ -1608,7 +1609,7 @@ class AllTypes(
     if (default_bool != null) result += """default_bool=$default_bool"""
     if (default_float != null) result += """default_float=$default_float"""
     if (default_double != null) result += """default_double=$default_double"""
-    if (default_string != null) result += """default_string=$default_string"""
+    if (default_string != null) result += """default_string=${sanitize(default_string)}"""
     if (default_bytes != null) result += """default_bytes=$default_bytes"""
     if (default_nested_enum != null) result += """default_nested_enum=$default_nested_enum"""
     if (map_int32_int32.isNotEmpty()) result += """map_int32_int32=$map_int32_int32"""
@@ -1628,7 +1629,7 @@ class AllTypes(
     if (ext_opt_bool != null) result += """ext_opt_bool=$ext_opt_bool"""
     if (ext_opt_float != null) result += """ext_opt_float=$ext_opt_float"""
     if (ext_opt_double != null) result += """ext_opt_double=$ext_opt_double"""
-    if (ext_opt_string != null) result += """ext_opt_string=$ext_opt_string"""
+    if (ext_opt_string != null) result += """ext_opt_string=${sanitize(ext_opt_string)}"""
     if (ext_opt_bytes != null) result += """ext_opt_bytes=$ext_opt_bytes"""
     if (ext_opt_nested_enum != null) result += """ext_opt_nested_enum=$ext_opt_nested_enum"""
     if (ext_opt_nested_message != null) result +=
@@ -1646,7 +1647,7 @@ class AllTypes(
     if (ext_rep_bool.isNotEmpty()) result += """ext_rep_bool=$ext_rep_bool"""
     if (ext_rep_float.isNotEmpty()) result += """ext_rep_float=$ext_rep_float"""
     if (ext_rep_double.isNotEmpty()) result += """ext_rep_double=$ext_rep_double"""
-    if (ext_rep_string.isNotEmpty()) result += """ext_rep_string=$ext_rep_string"""
+    if (ext_rep_string.isNotEmpty()) result += """ext_rep_string=${sanitize(ext_rep_string)}"""
     if (ext_rep_bytes.isNotEmpty()) result += """ext_rep_bytes=$ext_rep_bytes"""
     if (ext_rep_nested_enum.isNotEmpty()) result += """ext_rep_nested_enum=$ext_rep_nested_enum"""
     if (ext_rep_nested_message.isNotEmpty()) result +=

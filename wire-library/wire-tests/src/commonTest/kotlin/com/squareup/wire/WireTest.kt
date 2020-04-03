@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.protos.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.simple.ExternalMessage
 import com.squareup.wire.protos.kotlin.simple.SimpleMessage
 import kotlin.test.Test
@@ -65,5 +66,21 @@ class WireTest {
     assertEquals(SimpleMessage.NestedEnum.BAR, newMsg.default_nested_enum)
     assertEquals(456, newMsg.required_int32)
     assertEquals(doubles, msg.repeated_double)
+  }
+
+  @Test fun sanitizedToString() {
+    val person = Person(
+        id = 1,
+        name = "Such, I mean it, such [a] {funny} name.",
+        phone = listOf(Person.PhoneNumber(number = "123,456,789")),
+        aliases = listOf("B-lo,ved", "D{esperado}")
+    )
+    val expected = """Person{
+          |name=Such\, I mean it\, such \[a\] \{funny\} name.
+          |, id=1
+          |, phone=[PhoneNumber{number=123\,456\,789}]
+          |, aliases=[B-lo\,ved, D\{esperado\}]
+          |}""".trimMargin().replace("\n", "")
+    assertEquals(expected, person.toString())
   }
 }

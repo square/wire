@@ -15,6 +15,7 @@
  */
 package com.squareup.wire;
 
+import com.google.common.collect.Lists;
 import com.squareup.wire.protos.edgecases.NoFields;
 import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.person.Person.PhoneNumber;
@@ -374,5 +375,22 @@ public class WireTest {
   @Test public void emptyMessageToString() {
     NoFields empty = new NoFields();
     assertThat(empty.toString()).isEqualTo("NoFields{}");
+  }
+
+  @Test public void sanitizedToString() {
+    Person person = new Person.Builder().id(1).name("Such, I mean it, such [a] {funny} name.")
+        .phone(singletonList(new PhoneNumber.Builder().number("123,456,789").build()))
+        .aliases(Arrays.asList("B-lo,ved", "D{esperado}"))
+        .build();
+
+    String printedPerson = person.toString();
+    System.out.println(printedPerson);
+    assertThat(printedPerson).isEqualTo(
+        "Person{"
+            + "name=Such\\, I mean it\\, such \\[a\\] \\{funny\\} name., "
+            + "id=1, "
+            + "phone=[PhoneNumber{number=123\\,456\\,789}], "
+            + "aliases=[B-lo\\,ved, D\\{esperado\\}]"
+            + "}");
   }
 }

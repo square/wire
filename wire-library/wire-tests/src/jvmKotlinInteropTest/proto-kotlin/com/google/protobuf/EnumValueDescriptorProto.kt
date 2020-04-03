@@ -8,6 +8,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -72,7 +73,7 @@ class EnumValueDescriptorProto(
 
   override fun toString(): String {
     val result = mutableListOf<String>()
-    if (name != null) result += """name=$name"""
+    if (name != null) result += """name=${sanitize(name)}"""
     if (number != null) result += """number=$number"""
     if (options != null) result += """options=$options"""
     return result.joinToString(prefix = "EnumValueDescriptorProto{", separator = ", ", postfix =

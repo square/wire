@@ -48,4 +48,6 @@ message Person {
 
   // A list of the customer's phone numbers.
   repeated PhoneNumber phone = 4;
+
+  repeated string aliases = 5;
 }

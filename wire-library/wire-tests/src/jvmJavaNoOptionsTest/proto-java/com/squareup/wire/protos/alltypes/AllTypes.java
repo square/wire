@@ -1817,7 +1817,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (opt_bool != null) builder.append(", opt_bool=").append(opt_bool);
     if (opt_float != null) builder.append(", opt_float=").append(opt_float);
     if (opt_double != null) builder.append(", opt_double=").append(opt_double);
-    if (opt_string != null) builder.append(", opt_string=").append(opt_string);
+    if (opt_string != null) builder.append(", opt_string=").append(Internal.sanitize(opt_string));
     if (opt_bytes != null) builder.append(", opt_bytes=").append(opt_bytes);
     if (opt_nested_enum != null) builder.append(", opt_nested_enum=").append(opt_nested_enum);
     if (opt_nested_message != null) builder.append(", opt_nested_message=").append(opt_nested_message);
@@ -1834,7 +1834,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.append(", req_bool=").append(req_bool);
     builder.append(", req_float=").append(req_float);
     builder.append(", req_double=").append(req_double);
-    builder.append(", req_string=").append(req_string);
+    builder.append(", req_string=").append(Internal.sanitize(req_string));
     builder.append(", req_bytes=").append(req_bytes);
     builder.append(", req_nested_enum=").append(req_nested_enum);
     builder.append(", req_nested_message=").append(req_nested_message);
@@ -1851,7 +1851,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (!rep_bool.isEmpty()) builder.append(", rep_bool=").append(rep_bool);
     if (!rep_float.isEmpty()) builder.append(", rep_float=").append(rep_float);
     if (!rep_double.isEmpty()) builder.append(", rep_double=").append(rep_double);
-    if (!rep_string.isEmpty()) builder.append(", rep_string=").append(rep_string);
+    if (!rep_string.isEmpty()) builder.append(", rep_string=").append(Internal.sanitize(rep_string));
     if (!rep_bytes.isEmpty()) builder.append(", rep_bytes=").append(rep_bytes);
     if (!rep_nested_enum.isEmpty()) builder.append(", rep_nested_enum=").append(rep_nested_enum);
     if (!rep_nested_message.isEmpty()) builder.append(", rep_nested_message=").append(rep_nested_message);
@@ -1882,7 +1882,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (default_bool != null) builder.append(", default_bool=").append(default_bool);
     if (default_float != null) builder.append(", default_float=").append(default_float);
     if (default_double != null) builder.append(", default_double=").append(default_double);
-    if (default_string != null) builder.append(", default_string=").append(default_string);
+    if (default_string != null) builder.append(", default_string=").append(Internal.sanitize(default_string));
     if (default_bytes != null) builder.append(", default_bytes=").append(default_bytes);
     if (default_nested_enum != null) builder.append(", default_nested_enum=").append(default_nested_enum);
     if (!map_int32_int32.isEmpty()) builder.append(", map_int32_int32=").append(map_int32_int32);
@@ -1902,7 +1902,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (ext_opt_bool != null) builder.append(", ext_opt_bool=").append(ext_opt_bool);
     if (ext_opt_float != null) builder.append(", ext_opt_float=").append(ext_opt_float);
     if (ext_opt_double != null) builder.append(", ext_opt_double=").append(ext_opt_double);
-    if (ext_opt_string != null) builder.append(", ext_opt_string=").append(ext_opt_string);
+    if (ext_opt_string != null) builder.append(", ext_opt_string=").append(Internal.sanitize(ext_opt_string));
     if (ext_opt_bytes != null) builder.append(", ext_opt_bytes=").append(ext_opt_bytes);
     if (ext_opt_nested_enum != null) builder.append(", ext_opt_nested_enum=").append(ext_opt_nested_enum);
     if (ext_opt_nested_message != null) builder.append(", ext_opt_nested_message=").append(ext_opt_nested_message);
@@ -1919,7 +1919,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (!ext_rep_bool.isEmpty()) builder.append(", ext_rep_bool=").append(ext_rep_bool);
     if (!ext_rep_float.isEmpty()) builder.append(", ext_rep_float=").append(ext_rep_float);
     if (!ext_rep_double.isEmpty()) builder.append(", ext_rep_double=").append(ext_rep_double);
-    if (!ext_rep_string.isEmpty()) builder.append(", ext_rep_string=").append(ext_rep_string);
+    if (!ext_rep_string.isEmpty()) builder.append(", ext_rep_string=").append(Internal.sanitize(ext_rep_string));
     if (!ext_rep_bytes.isEmpty()) builder.append(", ext_rep_bytes=").append(ext_rep_bytes);
     if (!ext_rep_nested_enum.isEmpty()) builder.append(", ext_rep_nested_enum=").append(ext_rep_nested_enum);
     if (!ext_rep_nested_message.isEmpty()) builder.append(", ext_rep_nested_message=").append(ext_rep_nested_message);

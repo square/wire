@@ -409,25 +409,25 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (java_package != null) builder.append(", java_package=").append(java_package);
-    if (java_outer_classname != null) builder.append(", java_outer_classname=").append(java_outer_classname);
+    if (java_package != null) builder.append(", java_package=").append(Internal.sanitize(java_package));
+    if (java_outer_classname != null) builder.append(", java_outer_classname=").append(Internal.sanitize(java_outer_classname));
     if (java_multiple_files != null) builder.append(", java_multiple_files=").append(java_multiple_files);
     if (java_generate_equals_and_hash != null) builder.append(", java_generate_equals_and_hash=").append(java_generate_equals_and_hash);
     if (java_string_check_utf8 != null) builder.append(", java_string_check_utf8=").append(java_string_check_utf8);
-    if (go_package != null) builder.append(", go_package=").append(go_package);
+    if (go_package != null) builder.append(", go_package=").append(Internal.sanitize(go_package));
     if (cc_generic_services != null) builder.append(", cc_generic_services=").append(cc_generic_services);
     if (java_generic_services != null) builder.append(", java_generic_services=").append(java_generic_services);
     if (py_generic_services != null) builder.append(", py_generic_services=").append(py_generic_services);
     if (php_generic_services != null) builder.append(", php_generic_services=").append(php_generic_services);
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (cc_enable_arenas != null) builder.append(", cc_enable_arenas=").append(cc_enable_arenas);
-    if (objc_class_prefix != null) builder.append(", objc_class_prefix=").append(objc_class_prefix);
-    if (csharp_namespace != null) builder.append(", csharp_namespace=").append(csharp_namespace);
-    if (swift_prefix != null) builder.append(", swift_prefix=").append(swift_prefix);
-    if (php_class_prefix != null) builder.append(", php_class_prefix=").append(php_class_prefix);
-    if (php_namespace != null) builder.append(", php_namespace=").append(php_namespace);
-    if (php_metadata_namespace != null) builder.append(", php_metadata_namespace=").append(php_metadata_namespace);
-    if (ruby_package != null) builder.append(", ruby_package=").append(ruby_package);
+    if (objc_class_prefix != null) builder.append(", objc_class_prefix=").append(Internal.sanitize(objc_class_prefix));
+    if (csharp_namespace != null) builder.append(", csharp_namespace=").append(Internal.sanitize(csharp_namespace));
+    if (swift_prefix != null) builder.append(", swift_prefix=").append(Internal.sanitize(swift_prefix));
+    if (php_class_prefix != null) builder.append(", php_class_prefix=").append(Internal.sanitize(php_class_prefix));
+    if (php_namespace != null) builder.append(", php_namespace=").append(Internal.sanitize(php_namespace));
+    if (php_metadata_namespace != null) builder.append(", php_metadata_namespace=").append(Internal.sanitize(php_metadata_namespace));
+    if (ruby_package != null) builder.append(", ruby_package=").append(Internal.sanitize(ruby_package));
     return builder.replace(0, 2, "FileOptions{").append('}').toString();
   }
 

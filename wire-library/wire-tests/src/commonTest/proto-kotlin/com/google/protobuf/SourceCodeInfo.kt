@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
+import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -298,10 +299,11 @@ class SourceCodeInfo(
       val result = mutableListOf<String>()
       if (path.isNotEmpty()) result += """path=$path"""
       if (span.isNotEmpty()) result += """span=$span"""
-      if (leading_comments != null) result += """leading_comments=$leading_comments"""
-      if (trailing_comments != null) result += """trailing_comments=$trailing_comments"""
+      if (leading_comments != null) result += """leading_comments=${sanitize(leading_comments)}"""
+      if (trailing_comments != null) result +=
+          """trailing_comments=${sanitize(trailing_comments)}"""
       if (leading_detached_comments.isNotEmpty()) result +=
-          """leading_detached_comments=$leading_detached_comments"""
+          """leading_detached_comments=${sanitize(leading_detached_comments)}"""
       return result.joinToString(prefix = "Location{", separator = ", ", postfix = "}")
     }
 

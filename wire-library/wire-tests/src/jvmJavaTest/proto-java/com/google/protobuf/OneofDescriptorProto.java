@@ -82,7 +82,7 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (name != null) builder.append(", name=").append(name);
+    if (name != null) builder.append(", name=").append(Internal.sanitize(name));
     if (options != null) builder.append(", options=").append(options);
     return builder.replace(0, 2, "OneofDescriptorProto{").append('}').toString();
   }

@@ -89,7 +89,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (a != null) builder.append(", a=").append(a);
+    if (a != null) builder.append(", a=").append(Internal.sanitize(a));
     if (b != null) builder.append(", b=").append(b);
     if (c != null) builder.append(", c=").append(c);
     return builder.replace(0, 2, "RedactedChild{").append('}').toString();

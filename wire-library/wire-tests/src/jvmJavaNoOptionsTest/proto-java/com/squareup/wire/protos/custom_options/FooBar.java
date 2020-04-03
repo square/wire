@@ -178,7 +178,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (foo != null) builder.append(", foo=").append(foo);
-    if (bar != null) builder.append(", bar=").append(bar);
+    if (bar != null) builder.append(", bar=").append(Internal.sanitize(bar));
     if (baz != null) builder.append(", baz=").append(baz);
     if (qux != null) builder.append(", qux=").append(qux);
     if (!fred.isEmpty()) builder.append(", fred=").append(fred);
