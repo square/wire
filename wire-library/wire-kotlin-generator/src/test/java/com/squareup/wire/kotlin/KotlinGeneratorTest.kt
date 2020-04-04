@@ -1084,6 +1084,21 @@ class KotlinGeneratorTest {
     assertEquals(expected, input.sanitizeKdoc())
   }
 
+  @Test fun handleLongIdentifiers() {
+    val longType = "MessageWithNameLongerThan100Chars00000000000000000000000000000000000000000000000000000000000000000000"
+    val longMember = "member_with_name_which_is_longer_then_100_chars_00000000000000000000000000000000000000000000000000000"
+    val repoBuilder = RepoBuilder()
+        .add("$longType.proto", """
+        |message $longType {
+        |  required string $longMember = 1;
+        |}""".trimMargin())
+    val code = repoBuilder.generateKotlin(longType)
+    assertTrue(code.contains("return false"))
+    assertTrue(code.contains("return $longType("))
+    assertTrue(code.contains("$longMember =="))
+    assertTrue(code.contains("$longMember =\n"))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

@@ -486,12 +486,12 @@ class KotlinGenerator private constructor(
 
     val body = buildCodeBlock {
       addStatement("if (%N === this) return true", otherName)
-      addStatement("if (%N !is %T) return false", otherName, kotlinType)
+      addStatement("if (%N !is %T) return·false", otherName, kotlinType)
       add("«return unknownFields == %N.unknownFields", otherName)
       val fields = type.fieldsAndOneOfFields
       for (field in fields) {
         val fieldName = localNameAllocator[field]
-        add("\n&& %1L == %2N.%1L", fieldName, otherName)
+        add("\n&& %1L·== %2N.%1L", fieldName, otherName)
       }
       add("\n»")
     }
@@ -909,7 +909,7 @@ class KotlinGenerator private constructor(
       val nameAllocator = nameAllocator(schema.getType(protoType)!!)
       if (!first) add(",")
       first = false
-      add("\n⇥%L = %L⇤", nameAllocator[field], valueInitializer)
+      add("\n⇥%L·= %L⇤", nameAllocator[field], valueInitializer)
     }
     add("\n)")
   }
@@ -1072,7 +1072,7 @@ class KotlinGenerator private constructor(
     }
 
     val returnBody = buildCodeBlock {
-      addStatement("return %T(⇥", className)
+      addStatement("return·%T(⇥", className)
 
       val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
       message.fieldsAndOneOfFields.forEach { field ->
@@ -1135,7 +1135,7 @@ class KotlinGenerator private constructor(
     return CodeBlock.of(when {
       field.isRepeated -> "%L.add(%L)"
       field.isMap -> "%L.putAll(%L)"
-      else -> "%L = %L"
+      else -> "%L·= %L"
     }, fieldName, decode)
   }
 
