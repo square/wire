@@ -15,7 +15,9 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.GrpcResponse
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.use
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -28,7 +30,6 @@ import okhttp3.Callback
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
-import okhttp3.Response
 import okio.BufferedSink
 import okio.IOException
 
@@ -85,7 +86,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
       close(e)
     }
 
-    override fun onResponse(call: Call, response: Response) {
+    override fun onResponse(call: Call, response: GrpcResponse) {
       runBlocking {
         response.use {
           response.messageSource(responseAdapter).use { reader ->
@@ -130,7 +131,7 @@ internal fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
 }
 
 /** Reads messages from the response body. */
-internal fun <R : Any> Response.messageSource(
+internal fun <R : Any> GrpcResponse.messageSource(
   protoAdapter: ProtoAdapter<R>
 ): GrpcMessageSource<R> {
   val grpcEncoding = header("grpc-encoding")
@@ -139,7 +140,7 @@ internal fun <R : Any> Response.messageSource(
 }
 
 /** Maps the response trailer to either success (null) or an exception. */
-internal fun Response.grpcStatusToException(): IOException? {
+internal fun GrpcResponse.grpcStatusToException(): IOException? {
   val grpcStatus = trailers().get("grpc-status") ?: header("grpc-status")
   return when (grpcStatus) {
     "0" -> null
