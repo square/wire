@@ -20,7 +20,7 @@ import com.squareup.wire.ProtoAdapter
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
-import java.io.IOException
+import okio.IOException
 import java.util.concurrent.LinkedBlockingDeque
 
 /**
