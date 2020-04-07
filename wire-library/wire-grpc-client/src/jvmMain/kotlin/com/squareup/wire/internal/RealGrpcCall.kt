@@ -18,10 +18,10 @@ package com.squareup.wire.internal
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
+import com.squareup.wire.GrpcResponse
+import com.squareup.wire.use
 import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Response
 import okio.IOException
 import okio.Timeout
 import java.util.concurrent.TimeUnit
@@ -58,7 +58,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
           continuation.resumeWithException(e)
         }
 
-        override fun onResponse(call: Call, response: Response) {
+        override fun onResponse(call: Call, response: GrpcResponse) {
           var message: R? = null
           var exception: IOException? = null
           try {
@@ -96,7 +96,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
         callback.onFailure(this@RealGrpcCall, e)
       }
 
-      override fun onResponse(call: Call, response: Response) {
+      override fun onResponse(call: Call, response: GrpcResponse) {
         response.use {
           var message: R? = null
           var exception: IOException?

@@ -15,12 +15,17 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.GrpcResponse
+import okio.IOException
 import okio.Sink
 import okio.Source
 
 // TODO make internal https://youtrack.jetbrains.com/issue/KT-37316
 expect interface Call {
   fun cancel()
+
+  @Throws(IOException::class)
+  fun execute(): GrpcResponse
 }
 
 internal expect fun Sink.asGzip(): Sink

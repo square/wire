@@ -15,11 +15,12 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.GrpcResponse
 import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.use
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Response
 import okio.IOException
 import java.util.concurrent.LinkedBlockingDeque
 
@@ -63,7 +64,7 @@ internal class BlockingMessageSource<R : Any>(
         queue.put(Failure(e))
       }
 
-      override fun onResponse(call: Call, response: Response) {
+      override fun onResponse(call: Call, response: GrpcResponse) {
         try {
           response.use {
             response.messageSource(responseAdapter).use { reader ->

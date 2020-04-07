@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.internal
+package com.squareup.wire
 
-import com.squareup.wire.GrpcResponse
-import okio.Sink
-import okio.Source
+actual class GrpcResponse {
+  actual val body: GrpcResponseBody?
+    get() = TODO("Not yet implemented")
 
-actual interface Call {
-  actual fun cancel()
-  actual fun execute(): GrpcResponse
-}
+  actual fun header(
+    name: String,
+    defaultValue: String?
+  ): String? {
+    TODO("Not yet implemented")
+  }
 
-internal actual fun Sink.asGzip(): Sink {
-  throw UnsupportedOperationException("Gzip not implemented for JS")
-}
+  actual fun trailers(): GrpcHeaders = TODO("Not yet implemented")
 
-internal actual fun Source.asGzip(): Source {
-  throw UnsupportedOperationException("Gzip not implemented for JS")
-}
-
-internal actual fun Throwable.addSuppressed(other: Throwable) {
+  actual fun close() {
+    TODO("Not yet implemented")
+  }
 }
