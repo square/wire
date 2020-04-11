@@ -26,7 +26,8 @@ class Field private constructor(
 
   val location: Location,
 
-  /** May be null for proto3 fields. */
+  // TODO(oldergod) Make private, we wanna expose encodeMode instead.
+  /** May be null for proto3 fields, or one-of's. */
   val label: Label?,
 
   val name: String,
@@ -51,20 +52,23 @@ class Field private constructor(
   private var deprecated: Any? = null
 
   // Null until this field is linked.
-  private var packed: Any? = null
-
-  // Null until this field is linked.
   var isRedacted: Boolean = false
     private set
 
   val isRepeated: Boolean
     get() = label == Label.REPEATED
 
+  @Deprecated("Proto2 concept inexistent in proto3. Use EncodeMode instead.")
   val isOptional: Boolean
     get() = label == Label.OPTIONAL
 
+  @Deprecated("Proto2 concept inexistent in proto3. Use EncodeMode instead.")
   val isRequired: Boolean
     get() = label == Label.REQUIRED
+
+  // Null until this field is linked.
+  var encodeMode: EncodeMode? = null
+    private set
 
   /**
    * Returns this field's name, prefixed with its package name. Uniquely identifies extension
@@ -82,7 +86,7 @@ class Field private constructor(
     get() = "true" == deprecated
 
   val isPacked: Boolean
-    get() = "true" == packed
+    get() = encodeMode == EncodeMode.PACKED
 
   private fun isPackable(linker: Linker, type: ProtoType): Boolean {
     return type != ProtoType.STRING &&
@@ -98,10 +102,12 @@ class Field private constructor(
     val linker = linker.withContext(this)
     options.link(linker)
     deprecated = options.get(DEPRECATED)
-    packed = options.get(PACKED)
+    val packed = options.get(PACKED)
         ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
     // We allow any package name to be used as long as it ends with '.redacted'.
     isRedacted = options.optionMatches(".*\\.redacted", "true")
+
+    encodeMode = syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true")
   }
 
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
@@ -155,7 +161,7 @@ class Field private constructor(
     )
     result.type = type
     result.deprecated = deprecated
-    result.packed = packed
+    result.encodeMode = encodeMode
     result.isRedacted = isRedacted
     return result
   }
@@ -209,8 +215,26 @@ class Field private constructor(
     OPTIONAL,
     REQUIRED,
     REPEATED,
+
     /** Indicates the field is a member of a `oneof` block.  */
     ONE_OF
+  }
+
+  enum class EncodeMode {
+    /** Optional from proto2. */
+    NULL_IF_ABSENT,
+
+    /** Required from proto2. */
+    THROW_IF_ABSENT,
+
+    /** Non-repeated fields in proto3. Identify can be `0`, `false`, `""`, or `null`. */
+    IDENTITY_IF_ABSENT,
+
+    /** List. */
+    REPEATED,
+
+    /** Packed encoded list. */
+    PACKED,
   }
 
   companion object {

@@ -995,7 +995,8 @@ class PrunerTest {
              |option java_package = "p";
              |
              |message Message {
-             |  optional int32 a = 1 [packed = true, deprecated = true, default = 5];
+             |  optional int32 a = 1 [deprecated = true, default = 5];
+             |  repeated int32 b = 2 [packed = true, deprecated = true];
              |}
              |enum Enum {
              |  option allow_alias = true;
@@ -1012,10 +1013,12 @@ class PrunerTest {
     assertThat(protoFile!!.javaPackage()).isEqualTo("p")
 
     val message = pruned.getType("Message") as MessageType
-    val field = message.field("a")
-    assertThat(field!!.default).isEqualTo("5")
-    assertThat(field.isDeprecated).isTrue()
-    assertThat(field.isPacked).isTrue()
+    val fieldA = message.field("a")!!
+    assertThat(fieldA.default).isEqualTo("5")
+    assertThat(fieldA.isDeprecated).isTrue()
+    val fieldB = message.field("b")!!
+    assertThat(fieldB.isDeprecated).isTrue()
+    assertThat(fieldB.isPacked).isTrue()
 
     val enumType = pruned.getType("Enum") as EnumType
     assertThat(enumType.allowAlias()).isTrue()
