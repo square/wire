@@ -16,7 +16,6 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Field.Companion.retainAll
-import com.squareup.wire.schema.Options.Companion.GOOGLE_PROTOBUF_OPTION_TYPES
 import com.squareup.wire.schema.internal.parser.ExtendElement
 import kotlin.jvm.JvmStatic
 
