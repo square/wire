@@ -66,7 +66,7 @@ class OneOf private constructor(
       return@map OneOf(
           name = it.name,
           documentation = it.documentation,
-          fields = Field.fromElements(packageName, it.fields, extension)
+          fields = Field.fromElements(packageName, it.fields, extension, oneOf = true)
       )
     }
 

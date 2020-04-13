@@ -183,6 +183,20 @@ task generateKotlinTests(type: JavaExec) {
   ]
 }
 
+// KOTLIN PROTO3
+
+task generateProto3KotlinTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes from the test proto3s'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-library/wire-tests/src/commonTest/proto3/kotlin',
+          '--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin',
+          'person.proto',
+  ]
+}
+
 // KOTLIN SERVICES
 
 task generateKotlinServicesTests(type: JavaExec) {
@@ -330,7 +344,8 @@ task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generate
     generateAndroidCompactTests, generateKotlinTests, generateKotlinServicesTests,
     generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateGrpcTests,
     generateMoshiAdapterCompactJavaTests, generateMoshiAdapterJavaTests,
-    generateMoshiAdapterKotlinTests, generateMoshiAdapterInteropKotlinTests]) {
+    generateMoshiAdapterKotlinTests, generateMoshiAdapterInteropKotlinTests,
+    generateProto3KotlinTests]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
 }

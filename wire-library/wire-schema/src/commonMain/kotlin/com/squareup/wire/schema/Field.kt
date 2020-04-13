@@ -42,7 +42,9 @@ class Field private constructor(
 
   val options: Options,
 
-  val isExtension: Boolean
+  val isExtension: Boolean,
+
+  val isOneOf: Boolean
 ) {
   // Null until this field is linked.
   var type: ProtoType? = null
@@ -51,7 +53,7 @@ class Field private constructor(
   // Null until this field is linked.
   private var deprecated: Any? = null
 
-  // Null until this field is linked.
+  // False until this field is linked.
   var isRedacted: Boolean = false
     private set
 
@@ -64,7 +66,7 @@ class Field private constructor(
 
   @Deprecated("Proto2 concept inexistent in proto3. Use EncodeMode instead.")
   val isRequired: Boolean
-    get() = label == Label.REQUIRED
+    get() = encodeMode == EncodeMode.THROW_IF_ABSENT
 
   // Null until this field is linked.
   var encodeMode: EncodeMode? = null
@@ -157,7 +159,8 @@ class Field private constructor(
         default = default,
         elementType = elementType,
         options = options,
-        isExtension = isExtension
+        isExtension = isExtension,
+        isOneOf = isOneOf
     )
     result.type = type
     result.deprecated = deprecated
@@ -221,7 +224,7 @@ class Field private constructor(
   }
 
   enum class EncodeMode {
-    /** Optional from proto2. */
+    /** Optional, Map, or OneOf from proto2. */
     NULL_IF_ABSENT,
 
     /** Required from proto2. */
@@ -245,7 +248,8 @@ class Field private constructor(
     fun fromElements(
       packageName: String?,
       fieldElements: List<FieldElement>,
-      extension: Boolean
+      extension: Boolean,
+      oneOf: Boolean
     ) = fieldElements.map {
       Field(
           packageName = packageName,
@@ -257,7 +261,8 @@ class Field private constructor(
           default = it.defaultValue,
           elementType = it.type,
           options = Options(FIELD_OPTIONS, it.options),
-          isExtension = extension
+          isExtension = extension,
+          isOneOf = oneOf
       )
     }
 

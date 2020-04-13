@@ -1099,6 +1099,41 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("$longMember =\n"))
   }
 
+  @Test fun constructorForProto3() {
+    val repoBuilder = RepoBuilder()
+        .add("label.proto", """
+        |syntax = "proto3";
+        |package common.proto;
+        |message LabelMessage {
+        |  string text = 1;
+        |  Author author = 2;
+        |  Enum enum = 3;
+        |  oneof choice {
+        |    int32 foo = 4;
+        |    string bar = 5;
+        |    Baz baz = 6;
+        |  }
+        |  int64 count = 7;
+        |  enum Enum {
+        |    UNKNOWN = 0;
+        |    A = 1;
+        |  }
+        |  message Author {
+        |    string name = 1;
+        |  }
+        |  message Baz {}
+        |}
+        |""".trimMargin())
+    val code = repoBuilder.generateKotlin("common.proto.LabelMessage")
+    assertTrue(code.contains("""val text: String = "","""))
+    assertTrue(code.contains("""val author: Author? = null,"""))
+    assertTrue(code.contains("""val enum: Enum = Enum.UNKNOWN,"""))
+    assertTrue(code.contains("""val foo: Int? = null,"""))
+    assertTrue(code.contains("""val bar: String? = null,"""))
+    assertTrue(code.contains("""val baz: Baz? = null,"""))
+    assertTrue(code.contains("""val count: Long = 0"""))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {
