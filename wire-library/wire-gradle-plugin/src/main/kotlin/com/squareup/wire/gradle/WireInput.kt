@@ -32,33 +32,30 @@ import java.net.URI
  * directory trees, jars, and coordinates). This includes registering dependencies with the project
  * so they can be resolved for us.
  */
-internal class WireInput(
-  var project: Project,
-  var configuration: Configuration
-) {
+internal class WireInput(var configuration: Configuration) {
   val name: String
     get() = configuration.name
 
   private val dependencyToIncludes = mutableMapOf<Dependency, List<String>>()
 
-  fun addPaths(paths: Set<String>) {
+  fun addPaths(project: Project, paths: Set<String>) {
     for (path in paths) {
-      val dependency = resolveDependency(path)
+      val dependency = resolveDependency(project, path)
       configuration.dependencies.add(dependency)
     }
   }
 
-  fun addJars(jars: Set<ProtoRootSet>) {
+  fun addJars(project: Project, jars: Set<ProtoRootSet>) {
     for (jar in jars) {
       jar.srcJar?.let { path ->
-        val dependency = resolveDependency(path)
+        val dependency = resolveDependency(project, path)
         dependencyToIncludes[dependency] = jar.includes
         configuration.dependencies.add(dependency)
       }
     }
   }
 
-  fun addTrees(trees: Set<SourceDirectorySet>) {
+  fun addTrees(project: Project, trees: Set<SourceDirectorySet>) {
     for (tree in trees) {
       // TODO: this eagerly resolves dependencies; fix this!
       tree.srcDirs.forEach {
@@ -71,7 +68,7 @@ internal class WireInput(
     }
   }
 
-  private fun resolveDependency(path: String): Dependency {
+  private fun resolveDependency(project: Project, path: String): Dependency {
     val parser = FileOrUriNotationConverter.parser()
 
     val converted = parser.parseNotation(path)

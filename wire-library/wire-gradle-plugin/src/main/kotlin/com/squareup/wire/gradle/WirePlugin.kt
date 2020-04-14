@@ -78,24 +78,24 @@ class WirePlugin : Plugin<Project> {
     project: Project,
     extension: WireExtension
   ) {
-    val sourceInput = WireInput(project, project.configurations.getByName("protoSource"))
+    val sourceInput = WireInput(project.configurations.getByName("protoSource"))
     if (extension.sourcePaths.isNotEmpty() ||
         extension.sourceTrees.isNotEmpty() ||
         extension.sourceJars.isNotEmpty()) {
-      sourceInput.addTrees(extension.sourceTrees)
-      sourceInput.addJars(extension.sourceJars)
-      sourceInput.addPaths(extension.sourcePaths)
+      sourceInput.addTrees(project, extension.sourceTrees)
+      sourceInput.addJars(project, extension.sourceJars)
+      sourceInput.addPaths(project, extension.sourcePaths)
     } else {
-      sourceInput.addPaths(setOf("src/main/proto"))
+      sourceInput.addPaths(project, setOf("src/main/proto"))
     }
 
-    val protoInput = WireInput(project, project.configurations.getByName("protoPath"))
+    val protoInput = WireInput(project.configurations.getByName("protoPath"))
     if (extension.protoPaths.isNotEmpty() ||
         extension.protoTrees.isNotEmpty() ||
         extension.protoJars.isNotEmpty()) {
-      protoInput.addTrees(extension.protoTrees)
-      protoInput.addJars(extension.protoJars)
-      protoInput.addPaths(extension.protoPaths)
+      protoInput.addTrees(project, extension.protoTrees)
+      protoInput.addJars(project, extension.protoJars)
+      protoInput.addPaths(project, extension.protoPaths)
     }
 
     // At this point, all source and proto file references should be set up for Gradle to resolve.
