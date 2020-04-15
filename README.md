@@ -1,7 +1,7 @@
 Wire
 ====
 
-*“A man must have a code!”* - Bunk Moreland
+*“A man must have a code.”* - Bunk Moreland
 
 See the [project website][wire] for documentation and APIs.
 
