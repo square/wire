@@ -1,7 +1,7 @@
 Wire
 ====
 
-*“A man got to have a code!”* - Omar Little
+*“A man must have a code!”* - Bunk Moreland
 
 See the [project website][wire] for documentation and APIs.
 
