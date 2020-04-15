@@ -112,9 +112,16 @@ class KotlinGenerator private constructor(
    * Returns the full name of the class generated for [service]#[rpc]. This returns a name like
    * `RouteGuideClient` or `RouteGuideGetFeatureBlockingServer`.
    */
-  fun generatedServiceName(service: Service, rpc: Rpc? = null): ClassName {
+  fun generatedServiceName(
+    service: Service,
+    rpc: Rpc? = null,
+    isImplementation: Boolean = false
+  ): ClassName {
     val typeName = service.serviceName
     val simpleName = buildString {
+      if (isImplementation) {
+        append("Grpc")
+      }
       append(typeName.simpleName)
       if (rpc != null) {
         append(rpc.name)
@@ -149,39 +156,42 @@ class KotlinGenerator private constructor(
    * If [onlyRpc] isn't null, this will generate code only for this onlyRpc; otherwise, all RPCs of
    * the [service] will be code generated.
    */
-  fun generateServiceTypeSpecs(service: Service, onlyRpc: Rpc? = null): List<TypeSpec> {
-    val typeSpecs = mutableListOf<TypeSpec>()
-    if (rpcRole == RpcRole.SERVER) {
-      typeSpecs.add(generateService(service, onlyRpc))
-    } else {
-      typeSpecs.add(generateService(service, onlyRpc, generateClientImplementation = false))
-      typeSpecs.add(generateService(service, onlyRpc, generateClientImplementation = true))
+  fun generateServiceTypeSpecs(service: Service, onlyRpc: Rpc? = null): Map<ClassName, TypeSpec> {
+    val result = mutableMapOf<ClassName, TypeSpec>()
+
+    val (interfaceName, interfaceSpec) = generateService(service, onlyRpc, false)
+    result[interfaceName] = interfaceSpec
+
+    if (rpcRole == RpcRole.CLIENT) {
+      val (implementationName, implementationSpec) = generateService(service, onlyRpc, true)
+      result[implementationName] = implementationSpec
     }
-    return typeSpecs
+
+    return result
   }
 
   private fun generateService(
     service: Service,
     onlyRpc: Rpc?,
-    generateClientImplementation: Boolean
-  ): TypeSpec {
-    val serviceName = generatedServiceName(service, onlyRpc)
-    val builder = if (rpcRole == RpcRole.SERVER || !generateClientImplementation) {
-      TypeSpec.interfaceBuilder(serviceName)
+    isImplementation: Boolean
+  ): Pair<ClassName, TypeSpec> {
+    check(rpcRole == RpcRole.CLIENT || !isImplementation) {
+      "only clients may generate implementations"
+    }
+    val interfaceName = generatedServiceName(service, onlyRpc, isImplementation = false)
+    val implementationName = generatedServiceName(service, onlyRpc, isImplementation = true)
+    val builder = if (!isImplementation) {
+      TypeSpec.interfaceBuilder(interfaceName)
           .addSuperinterface(com.squareup.wire.Service::class.java)
     } else {
-      val serviceImplementationName = ClassName(
-          serviceName.packageName,
-          "Grpc${serviceName.simpleName}"
-      )
-      TypeSpec.classBuilder(serviceImplementationName)
+      TypeSpec.classBuilder(implementationName)
           .primaryConstructor(FunSpec.constructorBuilder()
               .addParameter("client", GrpcClient::class)
               .build())
           .addProperty(PropertySpec.builder("client", GrpcClient::class, PRIVATE)
               .initializer("client")
               .build())
-          .addSuperinterface(serviceName)
+          .addSuperinterface(interfaceName)
     }
     builder
         .apply {
@@ -193,30 +203,18 @@ class KotlinGenerator private constructor(
     val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
     for (rpc in rpcs) {
       builder.addFunction(generateRpcFunction(
-          rpc, service.name(), service.type().enclosingTypeOrPackage, generateClientImplementation))
+          rpc, service.name(), service.type().enclosingTypeOrPackage, isImplementation))
     }
 
-    return builder.build()
-  }
-
-  /**
-   * If [onlyRpc] isn't null, this will generate code only for this onlyRpc; otherwise, all RPCs of
-   * the [service] will be code generated.
-   */
-  @Deprecated(
-      message = "Client generated code now includes two TypeSpecs - interface and " +
-          "implementation. Use generateServiceTypeSpecs to generate correct definitions.",
-      replaceWith = ReplaceWith("generateServiceTypeSpecs")
-  )
-  fun generateService(service: Service, onlyRpc: Rpc? = null): TypeSpec {
-    return generateService(service, onlyRpc, generateClientImplementation = true)
+    val key = if (isImplementation) implementationName else interfaceName
+    return key to builder.build()
   }
 
   private fun generateRpcFunction(
     rpc: Rpc,
     serviceName: String,
     servicePackageName: String?,
-    generateClientImplementation: Boolean
+    isImplementation: Boolean
   ): FunSpec {
     val packageName = if (servicePackageName.isNullOrBlank()) "" else "$servicePackageName."
     val funSpecBuilder = FunSpec.builder(rpc.name)
@@ -278,7 +276,7 @@ class KotlinGenerator private constructor(
               .returns(
                   GrpcStreamingCall::class.asClassName().parameterizedBy(requestType, responseType)
               )
-          if (generateClientImplementation) {
+          if (isImplementation) {
             funSpecBuilder
                 .addModifiers(OVERRIDE)
                 .addStatement("return client.newStreamingCall(%L)", grpcMethod)
@@ -291,7 +289,7 @@ class KotlinGenerator private constructor(
               .returns(
                   GrpcCall::class.asClassName().parameterizedBy(requestType, responseType)
               )
-          if (generateClientImplementation) {
+          if (isImplementation) {
             funSpecBuilder
                 .addModifiers(OVERRIDE)
                 .addStatement("return client.newCall(%L)", grpcMethod)
