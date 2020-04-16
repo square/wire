@@ -1431,8 +1431,9 @@ class KotlinGenerator private constructor(
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
       EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
+      EncodeMode.MAP -> baseClass.copy(nullable = false)
       EncodeMode.NULL_IF_ABSENT -> {
-        if (isOneOf || isMap) baseClass.copy(nullable = false)
+        if (isOneOf) baseClass.copy(nullable = false)
         else baseClass.copy(nullable = true)
       }
       else -> baseClass.copy(nullable = false)
@@ -1441,11 +1442,9 @@ class KotlinGenerator private constructor(
 
   private val Field.typeName: TypeName
     get() {
-      if (isMap) {
-        return Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
-      }
-
       return when (encodeMode!!) {
+        EncodeMode.MAP ->
+          Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
         EncodeMode.REPEATED,
         EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(type!!.typeName)
         EncodeMode.NULL_IF_ABSENT -> type!!.typeName.copy(nullable = true)
@@ -1462,9 +1461,8 @@ class KotlinGenerator private constructor(
 
   private val Field.identityValue: CodeBlock
     get() {
-      if (isMap) return CodeBlock.of("emptyMap()")
-
       return when (encodeMode!!) {
+        EncodeMode.MAP -> CodeBlock.of("emptyMap()")
         EncodeMode.REPEATED,
         EncodeMode.PACKED -> CodeBlock.of("emptyList()")
         EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
@@ -1506,10 +1504,8 @@ class KotlinGenerator private constructor(
 
   private val Field.acceptsNull: Boolean
     get() {
-      // Maybe add an encodeMode for Map?
-      if (isMap) return false
-
       return when (encodeMode!!) {
+        EncodeMode.MAP,
         EncodeMode.REPEATED,
         EncodeMode.PACKED,
         EncodeMode.THROW_IF_ABSENT -> false
