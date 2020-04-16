@@ -163,7 +163,7 @@ class KotlinGenerator private constructor(
     result[interfaceName] = interfaceSpec
 
     if (rpcRole == RpcRole.CLIENT) {
-      val (implementationName, implementationSpec) = generateService(service, onlyRpc, true)
+      val (implementationName, implementationSpec) = generateService(service, onlyRpc, isImplementation = true)
       result[implementationName] = implementationSpec
     }
 
