@@ -90,7 +90,6 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    println(fs.find("generated"))
     assertThat(fs.find("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/routes/RouteClient.kt",
         "generated/kt/squareup/routes/GrpcRouteClient.kt")
