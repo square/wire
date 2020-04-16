@@ -1431,12 +1431,11 @@ class KotlinGenerator private constructor(
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
       EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
-      EncodeMode.MAP -> baseClass.copy(nullable = false)
-      EncodeMode.NULL_IF_ABSENT -> {
-        if (isOneOf) baseClass.copy(nullable = false)
-        else baseClass.copy(nullable = true)
-      }
-      else -> baseClass.copy(nullable = false)
+      EncodeMode.MAP,
+      EncodeMode.ONE_OF,
+      EncodeMode.THROW_IF_ABSENT,
+      EncodeMode.IDENTITY_IF_ABSENT -> baseClass.copy(nullable = false)
+      EncodeMode.NULL_IF_ABSENT -> baseClass.copy(nullable = true)
     }
   }
 
@@ -1449,9 +1448,9 @@ class KotlinGenerator private constructor(
         EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(type!!.typeName)
         EncodeMode.NULL_IF_ABSENT -> type!!.typeName.copy(nullable = true)
         EncodeMode.THROW_IF_ABSENT -> type!!.typeName
+        EncodeMode.ONE_OF -> type!!.typeName.copy(nullable = true)
         EncodeMode.IDENTITY_IF_ABSENT -> {
           when {
-            isOneOf -> type!!.typeName.copy(nullable = true)
             type!!.isMessage -> type!!.typeName.copy(nullable = true)
             else -> type!!.typeName
           }
@@ -1466,8 +1465,8 @@ class KotlinGenerator private constructor(
         EncodeMode.REPEATED,
         EncodeMode.PACKED -> CodeBlock.of("emptyList()")
         EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
+        EncodeMode.ONE_OF -> CodeBlock.of("null")
         EncodeMode.IDENTITY_IF_ABSENT -> {
-          if (isOneOf) return CodeBlock.of("null")
           val protoType = type!!
           val type: Type? = schema.getType(protoType)
           when {
@@ -1509,10 +1508,10 @@ class KotlinGenerator private constructor(
         EncodeMode.REPEATED,
         EncodeMode.PACKED,
         EncodeMode.THROW_IF_ABSENT -> false
+        EncodeMode.ONE_OF,
         EncodeMode.NULL_IF_ABSENT -> true
         EncodeMode.IDENTITY_IF_ABSENT -> {
           when {
-            isOneOf -> true
             type!!.isMessage -> true
             else -> false
           }

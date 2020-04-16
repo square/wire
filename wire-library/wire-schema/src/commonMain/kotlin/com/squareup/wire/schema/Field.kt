@@ -44,7 +44,7 @@ class Field private constructor(
 
   val isExtension: Boolean,
 
-  val isOneOf: Boolean
+  private val isOneOf: Boolean
 ) {
   // Null until this field is linked.
   var type: ProtoType? = null
@@ -109,7 +109,8 @@ class Field private constructor(
     // We allow any package name to be used as long as it ends with '.redacted'.
     isRedacted = options.optionMatches(".*\\.redacted", "true")
 
-    encodeMode = syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true")
+    encodeMode =
+        syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true", isOneOf = isOneOf)
   }
 
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
@@ -224,7 +225,7 @@ class Field private constructor(
   }
 
   enum class EncodeMode {
-    /** Optional, or OneOf from proto2. */
+    /** Optional from proto2. */
     NULL_IF_ABSENT,
 
     /** Required from proto2. */
@@ -241,6 +242,9 @@ class Field private constructor(
 
     /** Map. */
     MAP,
+
+    /** OneOf */
+    ONE_OF,
   }
 
   companion object {

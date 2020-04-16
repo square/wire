@@ -28,7 +28,8 @@ interface SyntaxRules {
   fun getEncodeMode(
     protoType: ProtoType,
     label: Field.Label?,
-    isPacked: Boolean
+    isPacked: Boolean,
+    isOneOf: Boolean
   ): Field.EncodeMode
 
   companion object {
@@ -52,7 +53,8 @@ interface SyntaxRules {
       override fun getEncodeMode(
         protoType: ProtoType,
         label: Field.Label?,
-        isPacked: Boolean
+        isPacked: Boolean,
+        isOneOf: Boolean
       ): Field.EncodeMode {
         return when (label) {
           Field.Label.REPEATED ->
@@ -60,8 +62,12 @@ interface SyntaxRules {
             else Field.EncodeMode.REPEATED
           Field.Label.OPTIONAL -> Field.EncodeMode.NULL_IF_ABSENT
           Field.Label.REQUIRED -> Field.EncodeMode.THROW_IF_ABSENT
-          Field.Label.ONE_OF,
-          null -> if (protoType.isMap) Field.EncodeMode.MAP else Field.EncodeMode.NULL_IF_ABSENT
+          Field.Label.ONE_OF -> Field.EncodeMode.ONE_OF
+          null -> when {
+            protoType.isMap -> Field.EncodeMode.MAP
+            isOneOf -> Field.EncodeMode.ONE_OF
+            else -> Field.EncodeMode.NULL_IF_ABSENT
+          }
         }
       }
     }
@@ -83,7 +89,8 @@ interface SyntaxRules {
       override fun getEncodeMode(
         protoType: ProtoType,
         label: Field.Label?,
-        isPacked: Boolean
+        isPacked: Boolean,
+        isOneOf: Boolean
       ): Field.EncodeMode {
         if (label == Field.Label.REPEATED) {
           return if (isPacked) {
@@ -92,7 +99,10 @@ interface SyntaxRules {
             Field.EncodeMode.REPEATED
           }
         }
+
         if (protoType.isMap) return Field.EncodeMode.MAP
+
+        if (isOneOf) return Field.EncodeMode.ONE_OF
 
         return Field.EncodeMode.IDENTITY_IF_ABSENT
       }
