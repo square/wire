@@ -225,18 +225,16 @@ data class KotlinTarget(
       override fun handle(service: Service) {
         if (singleMethodServices) {
           service.rpcs().forEach { rpc ->
-            write(
-                service,
-                kotlinGenerator.generatedServiceName(service, rpc),
-                kotlinGenerator.generateService(service, rpc)
-            )
+            val map = kotlinGenerator.generateServiceTypeSpecs(service, rpc)
+            for ((className, typeSpec) in map) {
+              write(service, className, typeSpec)
+            }
           }
         } else {
-          write(
-              service,
-              kotlinGenerator.generatedServiceName(service),
-              kotlinGenerator.generateService(service)
-          )
+          val map = kotlinGenerator.generateServiceTypeSpecs(service, null)
+          for ((className, typeSpec) in map) {
+            write(service, className, typeSpec)
+          }
         }
       }
 

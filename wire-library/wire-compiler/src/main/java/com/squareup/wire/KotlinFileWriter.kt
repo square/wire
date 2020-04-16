@@ -73,10 +73,9 @@ internal class KotlinFileWriter(
 
   private fun generateFilesForService(service: Service): List<FileSpec> {
     val files = mutableListOf<FileSpec>()
-    val packageName = kotlinGenerator.generatedServiceName(service).packageName
-    for (typeSpec in kotlinGenerator.generateServiceTypeSpecs(service)) {
+    for ((className, typeSpec) in kotlinGenerator.generateServiceTypeSpecs(service)) {
       files.add(generateFile(
-          packageName = packageName,
+          packageName = className.packageName,
           typeSpec = typeSpec,
           location = service.location()
       ))

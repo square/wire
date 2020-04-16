@@ -90,12 +90,18 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
-        "generated/kt/squareup/routes/RouteClient.kt")
+    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+        "generated/kt/squareup/routes/RouteClient.kt",
+        "generated/kt/squareup/routes/GrpcRouteClient.kt")
     assertThat(fs.get("generated/kt/squareup/routes/RouteClient.kt"))
         .contains(
-            "class GrpcRouteClient(\n  private val client: GrpcClient\n) : RouteClient",
+            "interface RouteClient : Service",
             "fun GetUpdatedBlue()"
+        )
+    assertThat(fs.get("generated/kt/squareup/routes/GrpcRouteClient.kt"))
+        .contains(
+            "class GrpcRouteClient(\n  private val client: GrpcClient\n) : RouteClient",
+            "override fun GetUpdatedBlue()"
         )
   }
 
@@ -145,13 +151,19 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt",
-        "generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt")
+        "generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt",
+        "generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt",
+        "generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt")
     assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt"))
+        .contains("interface RouteGetUpdatedBlueClient : Service")
+    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt"))
+        .contains("interface RouteGetUpdatedRedClient : Service")
+    assertThat(fs.get("generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt"))
         .contains("class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedBlueClient")
         .doesNotContain("RouteGetUpdatedRedClient")
-    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt"))
+    assertThat(fs.get("generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt"))
         .contains("class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedRedClient")
         .doesNotContain("RouteGetUpdatedBlueClient")
   }
