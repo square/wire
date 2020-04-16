@@ -159,7 +159,7 @@ class KotlinGenerator private constructor(
   fun generateServiceTypeSpecs(service: Service, onlyRpc: Rpc? = null): Map<ClassName, TypeSpec> {
     val result = mutableMapOf<ClassName, TypeSpec>()
 
-    val (interfaceName, interfaceSpec) = generateService(service, onlyRpc, false)
+    val (interfaceName, interfaceSpec) = generateService(service, onlyRpc, isImplementation = false)
     result[interfaceName] = interfaceSpec
 
     if (rpcRole == RpcRole.CLIENT) {
