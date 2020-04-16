@@ -224,7 +224,7 @@ class Field private constructor(
   }
 
   enum class EncodeMode {
-    /** Optional, or OneOf from proto2. */
+    /** Optional or OneOf from proto2. */
     NULL_IF_ABSENT,
 
     /** Required from proto2. */
