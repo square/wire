@@ -17,8 +17,10 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.wire.json.JsonUtils;
 import com.squareup.wire.protos.RepeatedPackedAndMap;
 import com.squareup.wire.protos.alltypes.AllTypes;
+import com.squareup.wire.protos.kotlin.Keyword;
 import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
@@ -149,7 +151,7 @@ public class GsonTest {
   }
 
   private static AllTypes.Builder createBuilder() {
-      ByteString bytes = ByteString.of((byte) 123, (byte) 125);
+    ByteString bytes = ByteString.of((byte) 123, (byte) 125);
     AllTypes.NestedMessage nestedMessage = new AllTypes.NestedMessage.Builder().a(999).build();
     return new AllTypes.Builder()
         .opt_int32(111)
@@ -297,5 +299,13 @@ public class GsonTest {
     assertThat(parsed.rep_int32).isEmpty();
     assertThat(parsed.pack_int32).isEmpty();
     assertThat(parsed.map_int32_int32).isEmpty();
+  }
+
+  @Test public void usedKeywordsInKotlin() {
+    Keyword keyword = new Keyword.Builder().object_("object").when_(1).build();
+    String json = gson.toJson(keyword);
+    JsonUtils.assertJsonEquals("{\"object_\":\"object\",\"when_\":1}", json);
+    Keyword parseKeyword = gson.fromJson(json, Keyword.class);
+    assertThat(parseKeyword).isEqualTo(keyword);
   }
 }
