@@ -65,6 +65,7 @@ import com.squareup.wire.WireRpc
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
+import com.squareup.wire.schema.Field.EncodeMode
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
 import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
@@ -100,6 +101,8 @@ class KotlinGenerator private constructor(
     get() = nameToKotlinName.getValue(this)
   private val ProtoType.isEnum
     get() = schema.getType(this) is EnumType
+  private val ProtoType.isMessage
+    get() = schema.getType(this) is MessageType
   private val Type.typeName
     get() = type.typeName
   private val Service.serviceName
@@ -638,7 +641,7 @@ class KotlinGenerator private constructor(
 
       val propertyBuilder = PropertySpec.builder(fieldName, field.declarationClass)
           .mutable(true)
-          .initializer(field.defaultValue)
+          .initializer(field.identityValue)
 
       if (javaInterOp) {
         propertyBuilder.addAnnotation(JvmField::class)
@@ -729,7 +732,7 @@ class KotlinGenerator private constructor(
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
       if (!field.isRequired) {
-        parameterSpec.defaultValue(field.defaultValue)
+        parameterSpec.defaultValue(field.identityValue)
       }
 
       if (field.isDeprecated) {
@@ -812,7 +815,7 @@ class KotlinGenerator private constructor(
           val fieldName = localNameAllocator[field]
           if (field.isRepeated || field.isMap) {
             add("if (%N.isNotEmpty()) ", fieldName)
-          } else if (!field.isRequired) {
+          } else if (field.acceptsNull) {
             add("if (%N != null) ", fieldName)
           }
           addStatement("%N += %P", resultName, buildCodeBlock {
@@ -1043,6 +1046,9 @@ class KotlinGenerator private constructor(
 
       message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
+        if (field.encodeMode == EncodeMode.IDENTITY_IF_ABSENT) {
+          add("if (value.%L != %L) ", fieldName, field.identityValue)
+        }
         addStatement("%L.encodeWithTag(writer, %L, value.%L)",
             adapterFor(field),
             field.tag,
@@ -1403,13 +1409,16 @@ class KotlinGenerator private constructor(
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of("val $allocatedName = mutableMapOf<%T, %T>()",
         keyType.typeName, valueType.typeName)
-    else -> CodeBlock.of("var $allocatedName: %T = %L", declarationClass, defaultValue)
+    else -> CodeBlock.of("var $allocatedName: %T = %L", declarationClass, identityValue)
   }
 
   private val Field.declarationClass: TypeName
     get() = when {
       isRepeated || isMap -> getClass()
-      else -> getClass().copy(nullable = true)
+      else -> {
+        val nullable = encodeMode != EncodeMode.IDENTITY_IF_ABSENT || acceptsNull
+        getClass().copy(nullable = nullable)
+      }
     }
 
   private fun ProtoType.asTypeName(): TypeName = when {
@@ -1418,25 +1427,101 @@ class KotlinGenerator private constructor(
     else -> nameToKotlinName.getValue(this)
   }
 
-  private fun Field.getClass(baseClass: TypeName = type!!.asTypeName()) = when {
-    isRepeated -> List::class.asClassName().parameterizedBy(baseClass)
-    isOptional -> baseClass.copy(nullable = true)
-    else -> baseClass.copy(nullable = false)
+  private fun Field.getClass(baseClass: TypeName = type!!.asTypeName()): TypeName {
+    return when (encodeMode!!) {
+      EncodeMode.REPEATED,
+      EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
+      EncodeMode.NULL_IF_ABSENT -> {
+        if (isOneOf || isMap) baseClass.copy(nullable = false)
+        else baseClass.copy(nullable = true)
+      }
+      else -> baseClass.copy(nullable = false)
+    }
   }
 
   private val Field.typeName: TypeName
-    get() = when {
-      isRepeated -> List::class.asClassName().parameterizedBy(type!!.typeName)
-      isMap -> Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
-      !isRequired -> type!!.typeName.copy(nullable = true)
-      else -> type!!.typeName
+    get() {
+      if (isMap) {
+        return Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
+      }
+
+      return when (encodeMode!!) {
+        EncodeMode.REPEATED,
+        EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(type!!.typeName)
+        EncodeMode.NULL_IF_ABSENT -> type!!.typeName.copy(nullable = true)
+        EncodeMode.THROW_IF_ABSENT -> type!!.typeName
+        EncodeMode.IDENTITY_IF_ABSENT -> {
+          when {
+            isOneOf -> type!!.typeName.copy(nullable = true)
+            type!!.isMessage -> type!!.typeName.copy(nullable = true)
+            else -> type!!.typeName
+          }
+        }
+      }
     }
 
-  private val Field.defaultValue: CodeBlock
-    get() = when {
-      isRepeated -> CodeBlock.of("emptyList()")
-      isMap -> CodeBlock.of("emptyMap()")
-      else -> CodeBlock.of("null")
+  private val Field.identityValue: CodeBlock
+    get() {
+      if (isMap) return CodeBlock.of("emptyMap()")
+
+      return when (encodeMode!!) {
+        EncodeMode.REPEATED,
+        EncodeMode.PACKED -> CodeBlock.of("emptyList()")
+        EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
+        EncodeMode.IDENTITY_IF_ABSENT -> {
+          if (isOneOf) return CodeBlock.of("null")
+          val protoType = type!!
+          val type: Type? = schema.getType(protoType)
+          when {
+            protoType.isScalar -> {
+              when (protoType) {
+                ProtoType.BOOL -> CodeBlock.of("false")
+                ProtoType.STRING -> CodeBlock.of("\"\"")
+                ProtoType.BYTES -> CodeBlock.of("%T.%L", ByteString::class, "EMPTY")
+                ProtoType.DOUBLE -> CodeBlock.of("0.0")
+                ProtoType.FLOAT -> CodeBlock.of("0f")
+                ProtoType.FIXED64,
+                ProtoType.INT64,
+                ProtoType.SFIXED64,
+                ProtoType.SINT64,
+                ProtoType.UINT64 -> CodeBlock.of("0L")
+                ProtoType.FIXED32,
+                ProtoType.INT32,
+                ProtoType.SFIXED32,
+                ProtoType.SINT32,
+                ProtoType.UINT32 -> CodeBlock.of("0")
+                else -> throw IllegalArgumentException("Unexpected scalar proto type: $protoType")
+              }
+            }
+            type is MessageType -> CodeBlock.of("null")
+            type is EnumType -> CodeBlock.of("%T.%L", protoType.typeName, type.constant(0)!!.name)
+            else -> throw IllegalArgumentException(
+                "Unexpected type $protoType for IDENTITY_IF_ABSENT")
+          }
+        }
+        // We run this code even if when we're not using the default value so we return something.
+        EncodeMode.THROW_IF_ABSENT -> CodeBlock.of("null")
+      }
+    }
+
+  private val Field.acceptsNull: Boolean
+    get() {
+      // Maybe add an encodeMode for Map?
+      if (isMap) return false
+
+      return when (encodeMode!!) {
+        EncodeMode.REPEATED,
+        EncodeMode.PACKED,
+        EncodeMode.THROW_IF_ABSENT -> false
+        EncodeMode.NULL_IF_ABSENT -> true
+        EncodeMode.IDENTITY_IF_ABSENT -> {
+          when {
+            isOneOf -> true
+            type!!.isMessage -> true
+            else -> false
+          }
+        }
+      }
     }
 
   companion object {

@@ -238,7 +238,8 @@ class MessageType private constructor(
           location = messageElement.location,
           documentation = messageElement.documentation,
           name = messageElement.name,
-          declaredFields = fromElements(packageName, messageElement.fields, false),
+          declaredFields =
+              fromElements(packageName, messageElement.fields, extension = false, oneOf = false),
           extensionFields = mutableListOf(), // Extension fields are populated during linking.
           oneOfs = fromElements(packageName, messageElement.oneOfs, false),
           nestedTypes = nestedTypes,
