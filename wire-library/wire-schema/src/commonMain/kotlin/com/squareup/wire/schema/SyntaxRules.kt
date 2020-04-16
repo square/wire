@@ -61,7 +61,7 @@ interface SyntaxRules {
           Field.Label.OPTIONAL -> Field.EncodeMode.NULL_IF_ABSENT
           Field.Label.REQUIRED -> Field.EncodeMode.THROW_IF_ABSENT
           Field.Label.ONE_OF,
-          null -> Field.EncodeMode.NULL_IF_ABSENT
+          null -> if (protoType.isMap) Field.EncodeMode.MAP else Field.EncodeMode.NULL_IF_ABSENT
         }
       }
     }
@@ -92,6 +92,7 @@ interface SyntaxRules {
             Field.EncodeMode.REPEATED
           }
         }
+        if (protoType.isMap) return Field.EncodeMode.MAP
 
         return Field.EncodeMode.IDENTITY_IF_ABSENT
       }
