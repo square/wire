@@ -134,9 +134,9 @@ class RepoBuilder {
     val service = schema.getService(serviceName)!!
     val rpc = rpcName?.let { service.rpc(rpcName)!! }
     return grpcGenerator.generateServiceTypeSpecs(service, rpc)
-        .map { entry ->
-          FileSpec.builder(entry.key.packageName, "_")
-              .addType(entry.value)
+        .map { (typeName, typeSpec) ->
+          FileSpec.builder(typeName.packageName, "_")
+              .addType(typeSpec)
               .build()
         }
         .map(FileSpec::toString)
