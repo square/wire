@@ -96,10 +96,24 @@ task copyRepeatedPackedAndMapTest(type: Copy) {
   from 'wire-tests/src/jvmTest/proto-java.compact/com/squareup/wire/protos/RepeatedPackedAndMap.java'
   into 'wire-gson-support/src/test/java/com/squareup/wire/protos'
 }
-task generateGsonTests(dependsOn: [copyAllTypesTest, copyRepeatedPackedAndMapTest]) {
+task generateKotlinGsonTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes for gson tests'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+          '--kotlin_out=wire-library/wire-gson-support/src/test/java',
+          '--java_interop',
+          'keyword.proto',
+  ]
+}
+task generateGsonTests(
+        dependsOn: [copyAllTypesTest, copyRepeatedPackedAndMapTest, generateKotlinGsonTests]) {
   group = 'Generate Tests'
   description = 'Generates Java classes that use Gson from the test protos'
 }
+
 
 // INCLUDES / EXCLUDES
 
@@ -322,7 +336,8 @@ task generateMoshiAdapterInteropKotlinTests(type: JavaExec) {
           '--kotlin_out=wire-library/wire-moshi-adapter/src/test/java',
           '--java_interop',
           'person_java_interop_kotlin.proto',
-          'dinosaur_java_interop_kotlin.proto'
+          'dinosaur_java_interop_kotlin.proto',
+          'keyword.proto',
   ]
 }
 

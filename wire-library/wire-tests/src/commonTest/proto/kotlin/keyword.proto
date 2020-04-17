@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmName("JsonUtils")
-package com.squareup.wire.json
+syntax = "proto2";
 
-import com.squareup.moshi.JsonReader
-import okio.Buffer
-import org.assertj.core.api.Assertions.assertThat
+package com.squareup.wire.protos.kotlin;
 
-fun assertJsonEquals(a: String, b: String) {
-  assertThat(JsonReader.of(Buffer().writeUtf8(a)).readJsonValue())
-      .isEqualTo(JsonReader.of(Buffer().writeUtf8(b)).readJsonValue())
+message Keyword {
+  optional string object = 1;
+  optional int32 when = 2;
 }

@@ -17,15 +17,18 @@ package com.squareup.wire;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.wire.json.JsonUtils;
 import com.squareup.wire.protos.RepeatedPackedAndMap;
 import com.squareup.wire.protos.alltypes.AllTypes;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
+import org.junit.Ignore;
 import org.junit.Test;
+import squareup.keywords.Keyword;
 
-import static com.squareup.wire.json.JsonKt.assertJsonEquals;
+import static com.squareup.wire.json.JsonUtils.assertJsonEquals;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -292,5 +295,17 @@ public class MoshiTest {
     assertThat(parsed.rep_int32).isEmpty();
     assertThat(parsed.pack_int32).isEmpty();
     assertThat(parsed.map_int32_int32).isEmpty();
+  }
+
+  /** Need to fix it first. */
+  @Ignore
+  @Test public void usedKeywordsInKotlin() throws IOException {
+    JsonAdapter<Keyword> adapter = moshi.adapter(Keyword.class);
+
+    Keyword keyword = new Keyword.Builder().object_("object").when_(1).build();
+    String json = adapter.toJson(keyword);
+    JsonUtils.assertJsonEquals("{\"object\":\"object\",\"when\":1}", json);
+    Keyword parseKeyword = adapter.fromJson(json);
+    assertThat(parseKeyword).isEqualTo(keyword);
   }
 }
