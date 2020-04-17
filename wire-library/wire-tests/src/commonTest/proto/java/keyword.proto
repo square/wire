@@ -15,9 +15,9 @@
  */
 syntax = "proto2";
 
-package squareup.keywords;
+package com.squareup.wire.protos.java;
 
-message Keyword {
-  optional string object = 1;
-  optional int32 when = 2;
+message KeywordJava {
+  optional string final = 1;
+  optional bool public = 2;
 }

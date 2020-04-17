@@ -15,7 +15,7 @@
  */
 syntax = "proto2";
 
-package com.squareup.wire.protos.kotlin;
+package squareup.keywords;
 
 message KeywordKotlin {
   optional string object = 1;
