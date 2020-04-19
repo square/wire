@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.WireField.Label
 import kotlin.jvm.JvmName
 
 /**
@@ -44,7 +45,13 @@ annotation class WireField(
   /**
    * Redacted fields are omitted from toString() to protect sensitive data. Defaults to false.
    */
-  val redacted: Boolean = false
+  val redacted: Boolean = false,
+  /**
+   * Original name of this field as defined in the proto schema. This value is set to a non-empty
+   * string only when the original name differs from the generated one; for instance, a proto field
+   * named `object` generated in Java will be renamed `object_`.
+   */
+  val declaredName: String = ""
 ) {
 
   /** A protocol buffer label.  */

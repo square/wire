@@ -562,7 +562,7 @@ public final class JavaGenerator {
 
       String fieldName = nameAllocator.get(field);
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldJavaType, fieldName, PUBLIC, FINAL);
-      fieldBuilder.addAnnotation(wireFieldAnnotation(field));
+      fieldBuilder.addAnnotation(wireFieldAnnotation(nameAllocator, field));
       if (!field.getDocumentation().isEmpty()) {
         fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(field.getDocumentation()));
       }
@@ -1136,8 +1136,10 @@ public final class JavaGenerator {
   //   type = INT32
   // )
   //
-  private AnnotationSpec wireFieldAnnotation(Field field) {
+  private AnnotationSpec wireFieldAnnotation(NameAllocator nameAllocator, Field field) {
     AnnotationSpec.Builder result = AnnotationSpec.builder(WireField.class);
+
+    NameAllocator localNameAllocator = nameAllocator.clone();
 
     int tag = field.getTag();
     result.addMember("tag", String.valueOf(tag));
@@ -1158,6 +1160,11 @@ public final class JavaGenerator {
 
     if (field.isRedacted()) {
       result.addMember("redacted", "true");
+    }
+
+    String generatedName = localNameAllocator.get(field);
+    if (!generatedName.equals(field.getName())) {
+      result.addMember("declaredName", "$S", field.getName());
     }
 
     return result.build();

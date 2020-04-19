@@ -212,7 +212,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    */
   @WireField(
       tag = 22101,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "a"
   )
   public final String squareup_protos_extension_collision_1_a;
 
@@ -230,7 +231,8 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
    */
   @WireField(
       tag = 22103,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "a"
   )
   public final String squareup_protos_extension_collision_2_a;
 

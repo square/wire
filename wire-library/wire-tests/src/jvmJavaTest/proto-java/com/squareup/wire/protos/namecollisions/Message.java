@@ -72,25 +72,29 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   @WireField(
       tag = 6,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "serialVersionUID"
   )
   public final String serialVersionUID_;
 
   @WireField(
       tag = 7,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "ADAPTER"
   )
   public final String ADAPTER_;
 
   @WireField(
       tag = 8,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "MESSAGE_OPTIONS"
   )
   public final String MESSAGE_OPTIONS_;
 
   @WireField(
       tag = 9,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "this"
   )
   public final String this_;
 

@@ -128,7 +128,8 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
    */
   @WireField(
       tag = 9,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "package"
   )
   public final String package_;
 
