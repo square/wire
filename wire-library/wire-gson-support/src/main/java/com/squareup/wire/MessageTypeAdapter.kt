@@ -38,7 +38,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val messageAdapter: RuntimeMessageAdapter<M, B> =
       RuntimeMessageAdapter.create(type.rawType as Class<M>, "square.github.io/wire/unknown")
   private val fieldBindings: Map<String, FieldBinding<M, B>> =
-      messageAdapter.fieldBindings.values.associateBy { it.name }
+      messageAdapter.fieldBindings.values.associateBy { it.declaredName }
 
   @Throws(IOException::class)
   override fun write(out: JsonWriter, message: M?) {
@@ -50,7 +50,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     out.beginObject()
     for (tagBinding in messageAdapter.fieldBindings.values) {
       val value = tagBinding[message] ?: continue
-      out.name(tagBinding.name)
+      out.name(tagBinding.declaredName)
       emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label)
     }
     out.endObject()

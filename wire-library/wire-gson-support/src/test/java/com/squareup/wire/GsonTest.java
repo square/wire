@@ -303,8 +303,6 @@ public class GsonTest {
     assertThat(parsed.map_int32_int32).isEmpty();
   }
 
-  /** We need to fix it first. */
-  @Ignore
   @Test public void usedKeywordsInKotlin() {
     KeywordKotlin keyword = new KeywordKotlin.Builder().object_("object").when_(1).build();
     String json = gson.toJson(keyword);
@@ -313,12 +311,10 @@ public class GsonTest {
     assertThat(parseKeyword).isEqualTo(keyword);
   }
 
-  /** We need to fix it first. */
-  @Ignore
   @Test public void usedKeywordsInJava() {
-    KeywordJava keyword = new KeywordJava.Builder().final_("object").public_(true).build();
+    KeywordJava keyword = new KeywordJava.Builder().final_("final").public_(true).build();
     String json = gson.toJson(keyword);
-    JsonUtils.assertJsonEquals(json, "{\"final\"=\"final\", \"public\"=true}");
+    JsonUtils.assertJsonEquals(json, "{\"final\":\"final\", \"public\":true}");
     KeywordJava parseKeyword = gson.fromJson(json, KeywordJava.class);
     assertThat(parseKeyword).isEqualTo(keyword);
   }
