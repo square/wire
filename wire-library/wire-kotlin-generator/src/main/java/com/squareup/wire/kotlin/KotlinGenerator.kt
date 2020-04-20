@@ -739,7 +739,7 @@ class KotlinGenerator private constructor(
             .build())
       }
 
-      parameterSpec.addAnnotation(wireFieldAnnotation(field))
+      parameterSpec.addAnnotation(wireFieldAnnotation(message, field))
 
       if (javaInterOp) {
         parameterSpec.addAnnotation(JvmField::class)
@@ -768,7 +768,7 @@ class KotlinGenerator private constructor(
     classBuilder.primaryConstructor(constructorBuilder.build())
   }
 
-  private fun wireFieldAnnotation(field: Field): AnnotationSpec {
+  private fun wireFieldAnnotation(message: MessageType, field: Field): AnnotationSpec {
     return AnnotationSpec.builder(WireField::class)
         .useSiteTarget(FIELD)
         .addMember("tag = %L", field.tag)
@@ -790,6 +790,12 @@ class KotlinGenerator private constructor(
           }
         }
         .apply { if (field.isRedacted) addMember("redacted = true") }
+        .apply {
+          val generatedName = nameAllocator(message)[field]
+          if (generatedName != field.name) {
+            addMember("declaredName = %S", field.name)
+          }
+        }
         .build()
   }
 

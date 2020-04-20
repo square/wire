@@ -20,13 +20,15 @@ import okio.ByteString
 class KeywordKotlin(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    declaredName = "object"
   )
   @JvmField
   val object_: String? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    declaredName = "when"
   )
   @JvmField
   val when_: Int? = null,

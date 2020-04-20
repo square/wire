@@ -108,7 +108,8 @@ class SimpleMessage(
    */
   @field:WireField(
     tag = 9,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    declaredName = "package"
   )
   @JvmField
   val package_: String? = null,

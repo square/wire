@@ -28,13 +28,15 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
 
   @WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "final"
   )
   public final String final_;
 
   @WireField(
       tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      declaredName = "public"
   )
   public final Boolean public_;
 
