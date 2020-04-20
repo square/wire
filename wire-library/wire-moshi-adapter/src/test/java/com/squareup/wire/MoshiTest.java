@@ -26,7 +26,8 @@ import java.util.List;
 import okio.ByteString;
 import org.junit.Ignore;
 import org.junit.Test;
-import squareup.keywords.Keyword;
+import squareup.keywords.KeywordJava;
+import squareup.keywords.KeywordKotlin;
 
 import static com.squareup.wire.json.JsonUtils.assertJsonEquals;
 import static java.util.Collections.singletonMap;
@@ -300,12 +301,24 @@ public class MoshiTest {
   /** Need to fix it first. */
   @Ignore
   @Test public void usedKeywordsInKotlin() throws IOException {
-    JsonAdapter<Keyword> adapter = moshi.adapter(Keyword.class);
+    JsonAdapter<KeywordKotlin> adapter = moshi.adapter(KeywordKotlin.class);
 
-    Keyword keyword = new Keyword.Builder().object_("object").when_(1).build();
+    KeywordKotlin keyword = new KeywordKotlin.Builder().object_("object").when_(1).build();
     String json = adapter.toJson(keyword);
-    JsonUtils.assertJsonEquals("{\"object\":\"object\",\"when\":1}", json);
-    Keyword parseKeyword = adapter.fromJson(json);
+    JsonUtils.assertJsonEquals(json, "{\"object\":\"object\",\"when\":1}");
+    KeywordKotlin parseKeyword = adapter.fromJson(json);
+    assertThat(parseKeyword).isEqualTo(keyword);
+  }
+
+  /** Need to fix it first. */
+  @Ignore
+  @Test public void usedKeywordsInJava() throws IOException {
+    JsonAdapter<KeywordJava> adapter = moshi.adapter(KeywordJava.class);
+
+    KeywordJava keyword = new KeywordJava.Builder().public_(true).final_("final").build();
+    String json = adapter.toJson(keyword);
+    JsonUtils.assertJsonEquals(json, "{\"final\"=\"final\", \"public\"=true}");
+    KeywordJava parseKeyword = adapter.fromJson(json);
     assertThat(parseKeyword).isEqualTo(keyword);
   }
 }
