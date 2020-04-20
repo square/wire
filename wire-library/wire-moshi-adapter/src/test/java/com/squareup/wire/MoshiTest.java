@@ -298,8 +298,6 @@ public class MoshiTest {
     assertThat(parsed.map_int32_int32).isEmpty();
   }
 
-  /** Need to fix it first. */
-  @Ignore
   @Test public void usedKeywordsInKotlin() throws IOException {
     JsonAdapter<KeywordKotlin> adapter = moshi.adapter(KeywordKotlin.class);
 
@@ -310,14 +308,12 @@ public class MoshiTest {
     assertThat(parseKeyword).isEqualTo(keyword);
   }
 
-  /** Need to fix it first. */
-  @Ignore
   @Test public void usedKeywordsInJava() throws IOException {
     JsonAdapter<KeywordJava> adapter = moshi.adapter(KeywordJava.class);
 
     KeywordJava keyword = new KeywordJava.Builder().public_(true).final_("final").build();
     String json = adapter.toJson(keyword);
-    JsonUtils.assertJsonEquals(json, "{\"final\"=\"final\", \"public\"=true}");
+    JsonUtils.assertJsonEquals(json, "{\"final\":\"final\", \"public\":true}");
     KeywordJava parseKeyword = adapter.fromJson(json);
     assertThat(parseKeyword).isEqualTo(keyword);
   }

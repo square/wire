@@ -30,7 +30,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 ) : JsonAdapter<M>() {
   private val messageAdapter = RuntimeMessageAdapter.create(type as Class<M>, "square.github.io/wire/unknown")
   private val fieldBindings = messageAdapter.fieldBindings.values.toTypedArray()
-  private val options = JsonReader.Options.of(*fieldBindings.map { it.name }.toTypedArray())
+  private val options = JsonReader.Options.of(*fieldBindings.map { it.declaredName }.toTypedArray())
 
   private val jsonAdapters = fieldBindings.map { fieldBinding ->
     var fieldType: Type = fieldBinding.singleAdapter().type?.javaObjectType as Type
@@ -55,7 +55,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     }
     out.beginObject()
     fieldBindings.forEachIndexed { index, fieldBinding ->
-      out.name(fieldBinding.name)
+      out.name(fieldBinding.declaredName)
       val value = fieldBinding[message]
       jsonAdapters[index]?.toJson(out, value)
     }
