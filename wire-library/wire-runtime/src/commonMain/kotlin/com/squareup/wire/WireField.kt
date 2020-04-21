@@ -47,9 +47,9 @@ annotation class WireField(
    */
   val redacted: Boolean = false,
   /**
-   * Original name of this field as defined in the proto schema. This value is set to a non-empty
-   * string only when the original name differs from the generated one; for instance, a proto field
-   * named `object` generated in Java will be renamed `object_`.
+   * Name of this field as declared in the proto schema. This value is set to a non-empty string
+   * only when the declared name differs from the generated one; for instance, a proto field named
+   * `final` generated in Java will be renamed to `final_`.
    */
   val declaredName: String = ""
 ) {
