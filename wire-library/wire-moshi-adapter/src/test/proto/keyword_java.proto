@@ -19,6 +19,7 @@ package squareup.keywords;
 
 message KeywordJava {
   optional string final = 1;
-  optional bool public = 2;
+  required bool public = 2;
   map<string, string> package = 3;
+  repeated bool return = 4;
 }
