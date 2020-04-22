@@ -15,6 +15,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import java.util.Map;
 import okio.ByteString;
 
 public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder> {
@@ -40,14 +41,24 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
   )
   public final Boolean public_;
 
-  public KeywordJava(String final_, Boolean public_) {
-    this(final_, public_, ByteString.EMPTY);
+  @WireField(
+      tag = 3,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      declaredName = "package"
+  )
+  public final Map<String, String> package_;
+
+  public KeywordJava(String final_, Boolean public_, Map<String, String> package_) {
+    this(final_, public_, package_, ByteString.EMPTY);
   }
 
-  public KeywordJava(String final_, Boolean public_, ByteString unknownFields) {
+  public KeywordJava(String final_, Boolean public_, Map<String, String> package_,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.final_ = final_;
     this.public_ = public_;
+    this.package_ = Internal.immutableCopyOf("package_", package_);
   }
 
   @Override
@@ -55,6 +66,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     Builder builder = new Builder();
     builder.final_ = final_;
     builder.public_ = public_;
+    builder.package_ = Internal.copyOf(package_);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -66,7 +78,8 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     KeywordJava o = (KeywordJava) other;
     return unknownFields().equals(o.unknownFields())
         && Internal.equals(final_, o.final_)
-        && Internal.equals(public_, o.public_);
+        && Internal.equals(public_, o.public_)
+        && package_.equals(o.package_);
   }
 
   @Override
@@ -76,6 +89,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       result = unknownFields().hashCode();
       result = result * 37 + (final_ != null ? final_.hashCode() : 0);
       result = result * 37 + (public_ != null ? public_.hashCode() : 0);
+      result = result * 37 + package_.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -86,6 +100,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     StringBuilder builder = new StringBuilder();
     if (final_ != null) builder.append(", final=").append(Internal.sanitize(final_));
     if (public_ != null) builder.append(", public=").append(public_);
+    if (!package_.isEmpty()) builder.append(", package=").append(package_);
     return builder.replace(0, 2, "KeywordJava{").append('}').toString();
   }
 
@@ -94,7 +109,10 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
 
     public Boolean public_;
 
+    public Map<String, String> package_;
+
     public Builder() {
+      package_ = Internal.newMutableMap();
     }
 
     public Builder final_(String final_) {
@@ -107,13 +125,21 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       return this;
     }
 
+    public Builder package_(Map<String, String> package_) {
+      Internal.checkElementsNotNull(package_);
+      this.package_ = package_;
+      return this;
+    }
+
     @Override
     public KeywordJava build() {
-      return new KeywordJava(final_, public_, super.buildUnknownFields());
+      return new KeywordJava(final_, public_, package_, super.buildUnknownFields());
     }
   }
 
   private static final class ProtoAdapter_KeywordJava extends ProtoAdapter<KeywordJava> {
+    private final ProtoAdapter<Map<String, String>> package_ = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+
     public ProtoAdapter_KeywordJava() {
       super(FieldEncoding.LENGTH_DELIMITED, KeywordJava.class, "type.googleapis.com/squareup.keywords.KeywordJava");
     }
@@ -122,6 +148,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     public int encodedSize(KeywordJava value) {
       return ProtoAdapter.STRING.encodedSizeWithTag(1, value.final_)
           + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.public_)
+          + package.encodedSizeWithTag(3, value.package_)
           + value.unknownFields().size();
     }
 
@@ -129,6 +156,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     public void encode(ProtoWriter writer, KeywordJava value) throws IOException {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.final_);
       ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.public_);
+      package.encodeWithTag(writer, 3, value.package_);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -140,6 +168,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
         switch (tag) {
           case 1: builder.final_(ProtoAdapter.STRING.decode(reader)); break;
           case 2: builder.public_(ProtoAdapter.BOOL.decode(reader)); break;
+          case 3: builder.package_.putAll(package.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }

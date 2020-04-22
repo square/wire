@@ -867,7 +867,8 @@ public final class JavaGenerator {
     for (Field field : type.getFieldsAndOneOfFields()) {
       if (field.getType().isMap()) {
         TypeName adapterType = adapterOf(fieldType(field));
-        adapter.addField(FieldSpec.builder(adapterType, field.getName(), PRIVATE, FINAL)
+        String fieldName = nameAllocator.get(field);
+        adapter.addField(FieldSpec.builder(adapterType, fieldName, PRIVATE, FINAL)
             .initializer("$T.newMapAdapter($L, $L)", ADAPTER,
                 singleAdapterFor(field.getType().getKeyType()),
                 singleAdapterFor(field.getType().getValueType()))
