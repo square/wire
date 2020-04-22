@@ -1222,7 +1222,7 @@ class KotlinGenerator private constructor(
   // TODO add support for custom adapters.
   private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
     return if (type!!.isMap) {
-      CodeBlock.of("%NAdapter", name)
+      CodeBlock.of("%N", name + "Adapter")
     } else {
       type!!.getAdapterName(nameDelimiter)
     }

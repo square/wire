@@ -134,13 +134,13 @@ class KeywordKotlin(
       override fun encodedSize(value: KeywordKotlin): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_) +
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_) +
-        `fun`Adapter.encodedSizeWithTag(3, value.fun_) +
+        funAdapter.encodedSizeWithTag(3, value.fun_) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: KeywordKotlin) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.when_)
-        `fun`Adapter.encodeWithTag(writer, 3, value.fun_)
+        funAdapter.encodeWithTag(writer, 3, value.fun_)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -152,7 +152,7 @@ class KeywordKotlin(
           when (tag) {
             1 -> object_ = ProtoAdapter.STRING.decode(reader)
             2 -> when_ = ProtoAdapter.INT32.decode(reader)
-            3 -> fun_.putAll(`fun`Adapter.decode(reader))
+            3 -> fun_.putAll(funAdapter.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
