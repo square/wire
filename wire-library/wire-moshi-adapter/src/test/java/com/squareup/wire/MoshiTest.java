@@ -303,7 +303,7 @@ public class MoshiTest {
 
     KeywordKotlin keyword = new KeywordKotlin.Builder().object_("object").when_(1).build();
     String json = adapter.toJson(keyword);
-    JsonUtils.assertJsonEquals(json, "{\"object\":\"object\",\"when\":1, \"fun\":{}}");
+    JsonUtils.assertJsonEquals(json, "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[]}");
     KeywordKotlin parseKeyword = adapter.fromJson(json);
     assertThat(parseKeyword).isEqualTo(keyword);
   }
@@ -313,7 +313,7 @@ public class MoshiTest {
 
     KeywordJava keyword = new KeywordJava.Builder().public_(true).final_("final").build();
     String json = adapter.toJson(keyword);
-    JsonUtils.assertJsonEquals(json, "{\"final\":\"final\", \"public\":true, \"package\":{}}");
+    JsonUtils.assertJsonEquals(json, "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[]}");
     KeywordJava parseKeyword = adapter.fromJson(json);
     assertThat(parseKeyword).isEqualTo(keyword);
   }

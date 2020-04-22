@@ -8,11 +8,14 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
+import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
 import kotlin.jvm.JvmField
@@ -29,10 +32,11 @@ class KeywordKotlin(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.REQUIRED,
     declaredName = "when"
   )
   @JvmField
-  val when_: Int? = null,
+  val when_: Int,
   @field:WireField(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -41,6 +45,14 @@ class KeywordKotlin(
   )
   @JvmField
   val fun_: Map<String, String> = emptyMap(),
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+    label = WireField.Label.REPEATED,
+    declaredName = "return"
+  )
+  @JvmField
+  val return_: List<Boolean> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<KeywordKotlin, KeywordKotlin.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
@@ -48,6 +60,7 @@ class KeywordKotlin(
     builder.object_ = object_
     builder.when_ = when_
     builder.fun_ = fun_
+    builder.return_ = return_
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -59,6 +72,7 @@ class KeywordKotlin(
         && object_ == other.object_
         && when_ == other.when_
         && fun_ == other.fun_
+        && return_ == other.return_
   }
 
   override fun hashCode(): Int {
@@ -68,6 +82,7 @@ class KeywordKotlin(
       result = result * 37 + object_.hashCode()
       result = result * 37 + when_.hashCode()
       result = result * 37 + fun_.hashCode()
+      result = result * 37 + return_.hashCode()
       super.hashCode = result
     }
     return result
@@ -76,17 +91,19 @@ class KeywordKotlin(
   override fun toString(): String {
     val result = mutableListOf<String>()
     if (object_ != null) result += """object_=${sanitize(object_)}"""
-    if (when_ != null) result += """when_=$when_"""
+    result += """when_=$when_"""
     if (fun_.isNotEmpty()) result += """fun_=$fun_"""
+    if (return_.isNotEmpty()) result += """return_=$return_"""
     return result.joinToString(prefix = "KeywordKotlin{", separator = ", ", postfix = "}")
   }
 
   fun copy(
     object_: String? = this.object_,
-    when_: Int? = this.when_,
+    when_: Int = this.when_,
     fun_: Map<String, String> = this.fun_,
+    return_: List<Boolean> = this.return_,
     unknownFields: ByteString = this.unknownFields
-  ): KeywordKotlin = KeywordKotlin(object_, when_, fun_, unknownFields)
+  ): KeywordKotlin = KeywordKotlin(object_, when_, fun_, return_, unknownFields)
 
   class Builder : Message.Builder<KeywordKotlin, Builder>() {
     @JvmField
@@ -98,12 +115,15 @@ class KeywordKotlin(
     @JvmField
     var fun_: Map<String, String> = emptyMap()
 
+    @JvmField
+    var return_: List<Boolean> = emptyList()
+
     fun object_(object_: String?): Builder {
       this.object_ = object_
       return this
     }
 
-    fun when_(when_: Int?): Builder {
+    fun when_(when_: Int): Builder {
       this.when_ = when_
       return this
     }
@@ -113,10 +133,17 @@ class KeywordKotlin(
       return this
     }
 
+    fun return_(return_: List<Boolean>): Builder {
+      checkElementsNotNull(return_)
+      this.return_ = return_
+      return this
+    }
+
     override fun build(): KeywordKotlin = KeywordKotlin(
       object_ = object_,
-      when_ = when_,
+      when_ = when_ ?: throw missingRequiredFields(when_, "when_"),
       fun_ = fun_,
+      return_ = return_,
       unknownFields = buildUnknownFields()
     )
   }
@@ -135,12 +162,14 @@ class KeywordKotlin(
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_) +
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_) +
         funAdapter.encodedSizeWithTag(3, value.fun_) +
+        ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.return_) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: KeywordKotlin) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.when_)
         funAdapter.encodeWithTag(writer, 3, value.fun_)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -148,18 +177,21 @@ class KeywordKotlin(
         var object_: String? = null
         var when_: Int? = null
         val fun_ = mutableMapOf<String, String>()
+        val return_ = mutableListOf<Boolean>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> object_ = ProtoAdapter.STRING.decode(reader)
             2 -> when_ = ProtoAdapter.INT32.decode(reader)
             3 -> fun_.putAll(funAdapter.decode(reader))
+            4 -> return_.add(ProtoAdapter.BOOL.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
         return KeywordKotlin(
           object_ = object_,
-          when_ = when_,
+          when_ = when_ ?: throw missingRequiredFields(when_, "when"),
           fun_ = fun_,
+          return_ = return_,
           unknownFields = unknownFields
         )
       }
