@@ -75,16 +75,30 @@ class WireJsonAdapterFactory private constructor(
     annotations: Set<Annotation>,
     moshi: Moshi
   ): JsonAdapter<*>? {
-    if ((type === Long::class.javaObjectType || type === Long::class.javaPrimitiveType) &&
-        Types.nextAnnotations(annotations, Uint64::class.java) != null) {
-      return UINT64_JSON_ADAPTER
-    }
     val rawType = Types.getRawType(type)
-    if (rawType == List::class.java &&
-        (type as ParameterizedType).actualTypeArguments[0] === Long::class.javaObjectType &&
-        Types.nextAnnotations(annotations, Uint64::class.java) != null) {
-      return LIST_OF_UINT64_JSON_ADAPTER
+
+    val nextAnnotations = Types.nextAnnotations(annotations, IdentityIfAbsent::class.java)
+    if (nextAnnotations != null) {
+      return when (type) {
+        Int::class.javaObjectType -> INT_JSON_ADAPTER
+        Int::class.javaPrimitiveType -> INT_JSON_ADAPTER
+        String::class.java -> STRING_JSON_ADAPTER
+        else -> moshi.adapter<Any>(type, nextAnnotations)
+      }
     }
+
+    if (Types.nextAnnotations(annotations, Uint64::class.java) != null) {
+      when (rawType) {
+        Long::class.javaObjectType -> return UINT64_JSON_ADAPTER
+        Long::class.javaPrimitiveType -> return UINT64_JSON_ADAPTER
+        List::class.java -> {
+          if ((type as ParameterizedType).actualTypeArguments[0] == Long::class.javaObjectType) {
+            return LIST_OF_UINT64_JSON_ADAPTER
+          }
+        }
+      }
+    }
+
     if (annotations.isNotEmpty()) {
       return null
     }
@@ -140,6 +154,26 @@ class WireJsonAdapterFactory private constructor(
         } else {
           writer.value(value)
         }
+      }
+    }.nullSafe()
+
+    /** Emit null instead of 0, which will cause Wire to omit the value altogether. */
+    internal val INT_JSON_ADAPTER = object : JsonAdapter<Int>() {
+      override fun fromJson(reader: JsonReader): Int = reader.nextInt()
+
+      override fun toJson(writer: JsonWriter, value: Int?) {
+        if (value == 0) writer.nullValue()
+        else writer.value(value)
+      }
+    }.nullSafe()
+
+    /** Emit null instead of "", which will cause Wire to omit the value altogether. */
+    internal val STRING_JSON_ADAPTER = object : JsonAdapter<String>() {
+      override fun fromJson(reader: JsonReader): String = reader.nextString()
+
+      override fun toJson(writer: JsonWriter, value: String?) {
+        if (value == "") writer.nullValue()
+        else writer.value(value)
       }
     }.nullSafe()
 

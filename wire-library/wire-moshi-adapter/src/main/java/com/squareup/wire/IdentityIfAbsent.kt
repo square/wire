@@ -18,9 +18,9 @@ package com.squareup.wire
 import com.squareup.moshi.JsonQualifier
 
 /**
- * Annotates longs that should be encoded as unsigned. For example, -1L is encoded as
- * 18446744073709551615.
+ * Annotates fields inside of Wire messages. For example, Wire won't emit '0' even though other
+ * JSON fields with value 0 do get emitted.
  */
 @Retention(AnnotationRetention.RUNTIME)
 @JsonQualifier
-internal annotation class Uint64
+internal annotation class IdentityIfAbsent
