@@ -112,6 +112,7 @@ class ProtoType {
     @JvmField val UINT32 = ProtoType(true, "uint32")
     @JvmField val UINT64 = ProtoType(true, "uint64")
     @JvmField val ANY = ProtoType(false, "google.protobuf.Any")
+    @JvmField val DURATION = ProtoType(false, "google.protobuf.Duration")
 
     private val SCALAR_TYPES: Map<String, ProtoType> = listOf(
         BOOL,

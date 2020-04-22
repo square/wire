@@ -32,11 +32,13 @@ import okio.source
 actual object CoreLoader : Loader {
   const val ANY_PROTO = "google/protobuf/any.proto"
   const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
+  const val DURATION_PROTO = "google/protobuf/duration.proto"
   const val WIRE_EXTENSIONS_PROTO = "wire/extensions.proto"
 
   override fun load(path: String): ProtoFile {
     if (path == ANY_PROTO ||
         path == DESCRIPTOR_PROTO ||
+        path == DURATION_PROTO ||
         path == WIRE_EXTENSIONS_PROTO) {
       val resourceAsStream = SchemaLoader::class.java.getResourceAsStream("/$path")
       resourceAsStream.source().buffer().use { source ->

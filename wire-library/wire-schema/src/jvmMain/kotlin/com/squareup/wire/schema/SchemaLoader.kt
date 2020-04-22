@@ -126,6 +126,7 @@ class SchemaLoader {
     val loaded = mutableMapOf<String, ProtoFile>()
     loaded[DESCRIPTOR_PROTO] = loadSpecialProto(DESCRIPTOR_PROTO)
     loaded[ANY_PROTO] = loadSpecialProto(ANY_PROTO)
+    loaded[DURATION_PROTO] = loadSpecialProto(DURATION_PROTO)
 
     while (!protos.isEmpty()) {
       val proto = protos.removeFirst()
@@ -178,6 +179,7 @@ class SchemaLoader {
   companion object {
     private const val ANY_PROTO = "google/protobuf/any.proto"
     private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
+    private const val DURATION_PROTO = "google/protobuf/duration.proto"
 
     @Throws(IOException::class)
     private fun source(base: Path, path: String): Source? {

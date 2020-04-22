@@ -18,12 +18,14 @@ syntax = "proto3";
 package squareup.proto3.pizza;
 
 import 'google/protobuf/any.proto';
+import 'google/protobuf/duration.proto';
 
 message PizzaDelivery {
   string phone_number = 1;
   string address = 2;
   repeated Pizza pizzas = 3;
   google.protobuf.Any promotion = 4;
+  google.protobuf.Duration delivered_within_or_free = 5;
 }
 
 message Pizza {

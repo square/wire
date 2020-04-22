@@ -118,6 +118,7 @@ class NewSchemaLoader(
 
     if (path == CoreLoader.ANY_PROTO ||
         path == CoreLoader.DESCRIPTOR_PROTO ||
+        path == CoreLoader.DURATION_PROTO ||
         path == CoreLoader.WIRE_EXTENSIONS_PROTO) {
       return CoreLoader.load(path)
     }
