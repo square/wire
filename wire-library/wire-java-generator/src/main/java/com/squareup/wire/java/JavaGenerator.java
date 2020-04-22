@@ -282,9 +282,9 @@ public final class JavaGenerator {
         : javaName.peerClass("Abstract" + javaName.simpleName() + "Adapter");
   }
 
-  private CodeBlock singleAdapterFor(Field field) {
+  private CodeBlock singleAdapterFor(Field field, NameAllocator nameAllocator) {
     return field.getType().isMap()
-        ? CodeBlock.of("$N", field.getName())
+        ? CodeBlock.of("$N", nameAllocator.get(field))
         : singleAdapterFor(field.getType());
   }
 
@@ -305,8 +305,8 @@ public final class JavaGenerator {
     return result.build();
   }
 
-  private CodeBlock adapterFor(Field field) {
-    CodeBlock.Builder result = singleAdapterFor(field).toBuilder();
+  private CodeBlock adapterFor(Field field, NameAllocator nameAllocator) {
+    CodeBlock.Builder result = singleAdapterFor(field, nameAllocator).toBuilder();
     if (field.isPacked()) {
       result.add(".asPacked()");
     } else if (field.isRepeated()) {
@@ -892,7 +892,7 @@ public final class JavaGenerator {
     for (Field field : type.getFieldsAndOneOfFields()) {
       int fieldTag = field.getTag();
       String fieldName = nameAllocator.get(field);
-      CodeBlock adapter = adapterFor(field);
+      CodeBlock adapter = adapterFor(field, nameAllocator);
       result.addCode("$L $L.encodedSizeWithTag($L, ", leading, adapter, fieldTag)
           .addCode((useBuilder ? "value.$L" : "$L(value)"), fieldName)
           .addCode(")");
@@ -917,7 +917,7 @@ public final class JavaGenerator {
 
     for (Field field : type.getFieldsAndOneOfFields()) {
       int fieldTag = field.getTag();
-      CodeBlock adapter = adapterFor(field);
+      CodeBlock adapter = adapterFor(field, nameAllocator);
       result.addCode("$L.encodeWithTag(writer, $L, ", adapter, fieldTag)
           .addCode((useBuilder ? "value.$L" : "$L(value)"), nameAllocator.get(field))
           .addCode(");\n");
@@ -1013,7 +1013,7 @@ public final class JavaGenerator {
 
   private CodeBlock decodeAndAssign(Field field, NameAllocator nameAllocator, boolean useBuilder) {
     String fieldName = nameAllocator.get(field);
-    CodeBlock decode = CodeBlock.of("$L.decode(reader)", singleAdapterFor(field));
+    CodeBlock decode = CodeBlock.of("$L.decode(reader)", singleAdapterFor(field, nameAllocator));
     if (field.isRepeated()) {
       return useBuilder
           ? CodeBlock.of("builder.$L.add($L)", fieldName, decode)
@@ -1075,7 +1075,7 @@ public final class JavaGenerator {
         }
       } else if (!field.getType().isScalar() && !isEnum(field.getType())) {
         if (field.isRepeated()) {
-          CodeBlock adapter = singleAdapterFor(field);
+          CodeBlock adapter = singleAdapterFor(field, nameAllocator);
           result.addStatement("$T.redactElements(builder.$N, $L)", Internal.class, fieldName,
               adapter);
         } else if (field.getType().isMap()) {
@@ -1087,7 +1087,7 @@ public final class JavaGenerator {
                 adapter);
           }
         } else {
-          CodeBlock adapter = adapterFor(field);
+          CodeBlock adapter = adapterFor(field, nameAllocator);
           if (!field.isRequired()) {
             result.addCode("if (builder.$N != null) ", fieldName);
           }

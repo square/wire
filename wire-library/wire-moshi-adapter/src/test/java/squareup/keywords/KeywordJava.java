@@ -148,7 +148,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     public int encodedSize(KeywordJava value) {
       return ProtoAdapter.STRING.encodedSizeWithTag(1, value.final_)
           + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.public_)
-          + package.encodedSizeWithTag(3, value.package_)
+          + package_.encodedSizeWithTag(3, value.package_)
           + value.unknownFields().size();
     }
 
@@ -156,7 +156,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     public void encode(ProtoWriter writer, KeywordJava value) throws IOException {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.final_);
       ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.public_);
-      package.encodeWithTag(writer, 3, value.package_);
+      package_.encodeWithTag(writer, 3, value.package_);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -168,7 +168,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
         switch (tag) {
           case 1: builder.final_(ProtoAdapter.STRING.decode(reader)); break;
           case 2: builder.public_(ProtoAdapter.BOOL.decode(reader)); break;
-          case 3: builder.package_.putAll(package.decode(reader)); break;
+          case 3: builder.package_.putAll(package_.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
