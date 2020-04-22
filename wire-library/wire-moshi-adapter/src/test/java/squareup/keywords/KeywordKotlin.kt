@@ -13,6 +13,7 @@ import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
+import kotlin.collections.Map
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -32,12 +33,21 @@ class KeywordKotlin(
   )
   @JvmField
   val when_: Int? = null,
+  @field:WireField(
+    tag = 3,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    declaredName = "fun"
+  )
+  @JvmField
+  val fun_: Map<String, String> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<KeywordKotlin, KeywordKotlin.Builder>(ADAPTER, unknownFields) {
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.object_ = object_
     builder.when_ = when_
+    builder.fun_ = fun_
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -48,6 +58,7 @@ class KeywordKotlin(
     return unknownFields == other.unknownFields
         && object_ == other.object_
         && when_ == other.when_
+        && fun_ == other.fun_
   }
 
   override fun hashCode(): Int {
@@ -56,6 +67,7 @@ class KeywordKotlin(
       result = unknownFields.hashCode()
       result = result * 37 + object_.hashCode()
       result = result * 37 + when_.hashCode()
+      result = result * 37 + fun_.hashCode()
       super.hashCode = result
     }
     return result
@@ -65,14 +77,16 @@ class KeywordKotlin(
     val result = mutableListOf<String>()
     if (object_ != null) result += """object_=${sanitize(object_)}"""
     if (when_ != null) result += """when_=$when_"""
+    if (fun_.isNotEmpty()) result += """fun_=$fun_"""
     return result.joinToString(prefix = "KeywordKotlin{", separator = ", ", postfix = "}")
   }
 
   fun copy(
     object_: String? = this.object_,
     when_: Int? = this.when_,
+    fun_: Map<String, String> = this.fun_,
     unknownFields: ByteString = this.unknownFields
-  ): KeywordKotlin = KeywordKotlin(object_, when_, unknownFields)
+  ): KeywordKotlin = KeywordKotlin(object_, when_, fun_, unknownFields)
 
   class Builder : Message.Builder<KeywordKotlin, Builder>() {
     @JvmField
@@ -80,6 +94,9 @@ class KeywordKotlin(
 
     @JvmField
     var when_: Int? = null
+
+    @JvmField
+    var fun_: Map<String, String> = emptyMap()
 
     fun object_(object_: String?): Builder {
       this.object_ = object_
@@ -91,9 +108,15 @@ class KeywordKotlin(
       return this
     }
 
+    fun fun_(fun_: Map<String, String>): Builder {
+      this.fun_ = fun_
+      return this
+    }
+
     override fun build(): KeywordKotlin = KeywordKotlin(
       object_ = object_,
       when_ = when_,
+      fun_ = fun_,
       unknownFields = buildUnknownFields()
     )
   }
@@ -105,30 +128,38 @@ class KeywordKotlin(
       KeywordKotlin::class, 
       "type.googleapis.com/squareup.keywords.KeywordKotlin"
     ) {
+      private val funAdapter: ProtoAdapter<Map<String, String>> =
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING)
+
       override fun encodedSize(value: KeywordKotlin): Int = 
         ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_) +
         ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_) +
+        funAdapter.encodedSizeWithTag(3, value.fun_) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: KeywordKotlin) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.when_)
+        funAdapter.encodeWithTag(writer, 3, value.fun_)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun decode(reader: ProtoReader): KeywordKotlin {
         var object_: String? = null
         var when_: Int? = null
+        val fun_ = mutableMapOf<String, String>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> object_ = ProtoAdapter.STRING.decode(reader)
             2 -> when_ = ProtoAdapter.INT32.decode(reader)
+            3 -> fun_.putAll(funAdapter.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
         return KeywordKotlin(
           object_ = object_,
           when_ = when_,
+          fun_ = fun_,
           unknownFields = unknownFields
         )
       }

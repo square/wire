@@ -20,4 +20,5 @@ package squareup.keywords;
 message KeywordKotlin {
   optional string object = 1;
   optional int32 when = 2;
+  map<string, string> fun = 3;
 }
