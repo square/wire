@@ -9,7 +9,7 @@ enum Period {
   CRETACEOUS = 1;
 
   /** 201.3 million years ago — 145.0 million years ago. */
-  JURASSIC = 2;
+  JURASSIC = 2 [deprecated = true];
 
   /** 252.17 million years ago — 201.3 million years ago. */
   TRIASSIC = 3;

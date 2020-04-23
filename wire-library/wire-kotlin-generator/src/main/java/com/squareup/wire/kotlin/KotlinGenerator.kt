@@ -1440,26 +1440,30 @@ class KotlinGenerator private constructor(
         if (isOneOf) baseClass.copy(nullable = false)
         else baseClass.copy(nullable = true)
       }
-      else -> baseClass.copy(nullable = false)
+      EncodeMode.THROW_IF_ABSENT,
+      EncodeMode.IDENTITY_IF_ABSENT -> baseClass.copy(nullable = false)
     }
   }
 
   private val Field.typeName: TypeName
     get() {
-      return when (encodeMode!!) {
+      val type = type!!
+
+      return when (encodeMode) {
         EncodeMode.MAP ->
           Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
         EncodeMode.REPEATED,
-        EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(type!!.typeName)
-        EncodeMode.NULL_IF_ABSENT -> type!!.typeName.copy(nullable = true)
-        EncodeMode.THROW_IF_ABSENT -> type!!.typeName
+        EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(type.typeName)
+        EncodeMode.NULL_IF_ABSENT -> type.typeName.copy(nullable = true)
+        EncodeMode.THROW_IF_ABSENT -> type.typeName
         EncodeMode.IDENTITY_IF_ABSENT -> {
           when {
-            isOneOf -> type!!.typeName.copy(nullable = true)
-            type!!.isMessage -> type!!.typeName.copy(nullable = true)
-            else -> type!!.typeName
+            isOneOf -> type.typeName.copy(nullable = true)
+            type.isMessage -> type.typeName.copy(nullable = true)
+            else -> type.typeName
           }
         }
+        null -> type.typeName.copy(nullable = true)
       }
     }
 
