@@ -28,7 +28,6 @@ import com.squareup.wire.proto3.requiredextension.RequiredExtension
 import com.squareup.wire.proto3.requiredextension.RequiredExtensionMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 import squareup.proto3.pizza.BuyOneGetOnePromotion
 import squareup.proto3.pizza.FreeGarlicBreadPromotion
@@ -103,7 +102,6 @@ class Proto3WireProtocCompatibilityTests {
     val json = """
         |{
         |  "address": "507 Cross Street",
-        |  "phone_number": "",
         |  "pizzas": [
         |    {
         |      "toppings": [
@@ -129,7 +127,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(jsonAdapter.fromJson(json)).isEqualTo(pizzaDelivery)
   }
 
-  @Ignore("Needs to fix the adapter not to print identity values.")
   @Test fun wireProtocJsonRoundTrip() {
     val protocMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
         .setAddress("507 Cross Street")

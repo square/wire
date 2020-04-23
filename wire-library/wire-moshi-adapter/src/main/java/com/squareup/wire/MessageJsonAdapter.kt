@@ -40,11 +40,18 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     } else if (fieldBinding.label.isRepeated) {
       fieldType = Types.newParameterizedType(List::class.java, fieldType)
     }
-    var qualifiers: Array<Class<out Annotation>> = emptyArray()
-    if (fieldBinding.singleAdapter() === ProtoAdapter.UINT64) {
-      qualifiers = arrayOf(Uint64::class.java)
+
+    // TODO: use encode mode instead of fieldBinding.label.
+    val syntheticQualifier: Class<out Annotation>? = when {
+      fieldBinding.singleAdapter() === ProtoAdapter.UINT64 -> Uint64::class.java
+      fieldBinding.label.isOneOf -> null
+      else -> IdentityIfAbsent::class.java
     }
-    return@map moshi.adapter<Any>(fieldType, *qualifiers)
+
+    return@map when {
+      syntheticQualifier != null -> moshi.adapter<Any>(fieldType, syntheticQualifier)
+      else -> moshi.adapter(fieldType)
+    }
   }
 
   @Throws(IOException::class)
@@ -78,10 +85,6 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
         continue
       }
       val fieldBinding = fieldBindings[index]
-      if (fieldBinding == null) {
-        input.skipValue()
-        continue
-      }
       val value = jsonAdapters[index]?.fromJson(input) ?: continue
 
       // If the value was explicitly null we ignore it rather than forcing null into the field.
