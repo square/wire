@@ -13,6 +13,9 @@ out/
 .gradle
 build
 generated
+wire-library/gradle
+wire-library/gradlew
+wire-library/gradlew.bat
 
 # Maven
 plugin*.xml
