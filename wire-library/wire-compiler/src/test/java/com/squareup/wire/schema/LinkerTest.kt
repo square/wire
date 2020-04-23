@@ -22,7 +22,6 @@ import com.google.common.jimfs.Jimfs
 import com.squareup.wire.testing.add
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import kotlin.test.fail
 
 class LinkerTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
@@ -170,6 +169,24 @@ class LinkerTest {
     val schema = loadAndLinkSchema()
 
     assertThat(schema.protoFile("b.proto")!!.javaPackage()).isEqualTo("com.squareup.b")
+  }
+
+  @Test
+  fun descriptorProtoIsLinked() {
+    fs.add("source-path/a.proto", """
+             |import "google/protobuf/descriptor.proto";
+             |
+             |enum Roshambo {
+             |  ROCK = 1 [deprecated = true];
+             |  SCISSORS = 2;
+             |  PAPER = 3;
+             |}
+            """.trimMargin())
+    fs.add("proto-path/b.proto", "")
+    val schema = loadAndLinkSchema()
+
+    val enumValueDeprecated = schema.getField(Options.ENUM_VALUE_OPTIONS, "deprecated")
+    assertThat(enumValueDeprecated!!.encodeMode).isNotNull()
   }
 
   private fun loadAndLinkSchema(): Schema {

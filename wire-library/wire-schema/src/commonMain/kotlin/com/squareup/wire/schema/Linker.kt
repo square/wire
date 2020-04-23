@@ -67,20 +67,17 @@ class Linker {
    * partially link any imported files necessary.
    */
   fun link(sourceProtoFiles: Iterable<ProtoFile>): Schema {
-    val sourceFiles: List<FileLinker> = sourceProtoFiles.map { sourceFile ->
-      FileLinker(sourceFile, withContext(sourceFile))
-          .also { fileLinker ->
-            fileLinkers[sourceFile.location.path] = fileLinker
-          }
+    val sourceFiles = mutableListOf<FileLinker>()
+    sourceFiles += getFileLinker("google/protobuf/descriptor.proto")
+    for (sourceFile in sourceProtoFiles) {
+      val fileLinker = FileLinker(sourceFile, withContext(sourceFile))
+      fileLinkers[sourceFile.location.path] = fileLinker
+      sourceFiles += fileLinker
     }
 
     for (fileLinker in sourceFiles) {
       fileLinker.requireTypesRegistered()
     }
-
-    // Also link descriptor.proto's types, which are necessary for options.
-    val descriptorProto = getFileLinker("google/protobuf/descriptor.proto")
-    descriptorProto.requireTypesRegistered()
 
     for (fileLinker in sourceFiles) {
       fileLinker.requireExtensionsLinked()
