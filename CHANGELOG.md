@@ -1,6 +1,22 @@
 Change Log
 ==========
 
+Version 3.2.0
+-------------
+
+_2020-04-23_
+
+ * New: `wire.since` and `wire.until` options on members and enum values. You can prune fields or
+   constants using these two options. When generating code with the Wire Gradle plugin, define
+   `sinceVersion` and/or `untilVersion` to scope the generated code.
+ * New: Messages' `toString` method on Kotlin and Java now escape string values for easy parsing.
+ * Fix: Link the entire `descriptor.proto` every time when building the `Schema`.
+ * Fix: Properly handle members named after keywords of the target language for both Java and
+   Kotlin.
+ * Fix: Use the declared name for keys in JSON when emitting/reading keyword named members.
+ * Fix: Generated Kotlin code is malformed for long identifiers.
+ * Fix: Make the Wire Gradle plugin compatible with instant execution.
+
 Version 3.1.0
 -------------
 
