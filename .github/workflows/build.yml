@@ -1,0 +1,84 @@
+name: build
+
+on: [push, pull_request]
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
+
+jobs:
+  all:
+    runs-on: macOS-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version:
+          - 1.8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+          - 15-ea
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Configure JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java-version }}
+
+      - name: Check test files
+        run: |
+          ./gradlew clean generateTests
+          if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
+
+      - name: Install Chrome
+        run: |
+          brew update
+          brew cask install google-chrome
+
+      - name: Test
+        run: |
+          ./gradlew -p wire-library build
+          ./gradlew build
+
+  publish:
+    runs-on: macOS-latest
+    if: github.ref == 'refs/heads/master'
+    needs:
+      - all
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+      - name: Upload Artifacts
+        run: |
+          cd wire-library
+          ../gradlew clean uploadArchives publish
+          cd ..
+        env:
+          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+
+      # TODO(egorand): Publish website
+      #
+      # - name: Prep mkdocs
+      #   run: .buildscript/prepare_mkdocs.sh
+      #
+      # - name: Deploy docs
+      #   uses: mhausenblas/mkdocs-deploy-gh-pages@master
+      #   env:
+      #     PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
