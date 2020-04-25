@@ -39,15 +39,24 @@ jobs:
           ./gradlew clean generateTests
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
-      - name: Install Chrome
-        run: |
-          brew update
-          brew cask install google-chrome
-
       - name: Test
         run: |
-          ./gradlew -p wire-library build
-          ./gradlew build
+          ./gradlew -p wire-library \
+            wire-compiler:build \
+            wire-gradle-plugin:build \
+            wire-grpc-client:jvmTest \
+            wire-gson-support:build \
+            wire-java-generator:build \
+            wire-kotlin-generator:build \
+            wire-moshi-adapter:build \
+            wire-runtime:jvmTest \
+            wire-schema:build \
+            wire-tests:jvmTest
+          ./gradlew \
+            sample:build \
+            wire-codegen-sample:build \
+            wire-grpc-tests:build \
+            wire-protoc-compatibility-tests:build
 
   native:
     runs-on: macOS-latest
