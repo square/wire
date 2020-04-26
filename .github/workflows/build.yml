@@ -41,24 +41,10 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -p wire-library \
-            wire-compiler:build \
-            wire-gradle-plugin:build \
-            wire-grpc-client:jvmTest \
-            wire-gson-support:build \
-            wire-java-generator:build \
-            wire-kotlin-generator:build \
-            wire-moshi-adapter:build \
-            wire-runtime:jvmTest \
-            wire-schema:build \
-            wire-tests:jvmTest
-          ./gradlew \
-            sample:build \
-            wire-codegen-sample:build \
-            wire-grpc-tests:build \
-            wire-protoc-compatibility-tests:build
+          ./gradlew -p wire-library -Dkjs=false -Dknative=false build
+          ./gradlew build
 
-  native:
+  multiplatform:
     runs-on: macOS-latest
 
     steps:
@@ -91,7 +77,7 @@ jobs:
   publish:
     runs-on: macOS-latest
     if: github.ref == 'refs/heads/master'
-    needs: [jvm, native]
+    needs: [jvm, multiplatform]
 
     steps:
       - name: Checkout

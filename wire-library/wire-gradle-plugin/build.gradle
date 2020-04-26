@@ -55,3 +55,9 @@ tasks.withType(Test).configureEach {
   dependsOn(installProtoJars)
   dependsOn(':wire-runtime:installLocally')
 }
+
+test {
+  // Fixtures run in a separate JVM, routing properties from the VM running the build into test VM.
+  systemProperty "kjs", System.getProperty("kjs")
+  systemProperty "knative", System.getProperty("knative")
+}
