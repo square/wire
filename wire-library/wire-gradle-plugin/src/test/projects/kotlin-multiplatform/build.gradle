@@ -12,8 +12,11 @@ repositories {
 
 kotlin {
   jvm()
-  js {
-    nodejs()
+  def kmpJsEnabled = Boolean.parseBoolean(System.getProperty('kjs', 'true'))
+  if (kmpJsEnabled) {
+    js {
+      nodejs()
+    }
   }
   sourceSets {
     commonMain {

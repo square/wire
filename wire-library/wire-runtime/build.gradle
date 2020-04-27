@@ -4,22 +4,26 @@ kotlin {
   jvm {
     withJava()
   }
-  js {
-    configure([compilations.main, compilations.test]) {
-      tasks.getByName(compileKotlinTaskName).kotlinOptions {
-        moduleKind = 'umd'
-        sourceMap = true
-        metaInfo = true
+  if (kmpJsEnabled) {
+    js {
+      configure([compilations.main, compilations.test]) {
+        tasks.getByName(compileKotlinTaskName).kotlinOptions {
+          moduleKind = 'umd'
+          sourceMap = true
+          metaInfo = true
+        }
       }
+      nodejs()
+      browser()
     }
-    nodejs()
-    browser()
   }
-  iosX64()
-  iosArm64()
-  // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
-  linuxX64()
-  macosX64()
+  if (kmpNativeEnabled) {
+    iosX64()
+    iosArm64()
+    // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
+    linuxX64()
+    macosX64()
+  }
   sourceSets {
     all {
       languageSettings {
@@ -81,7 +85,9 @@ afterEvaluate {
     dependsOn 'publishKotlinMultiplatformPublicationToTestRepository'
     dependsOn 'publishMetadataPublicationToTestRepository'
     dependsOn 'publishJvmPublicationToTestRepository'
-    dependsOn 'publishJsPublicationToTestRepository'
+    if (kmpJsEnabled) {
+      dependsOn 'publishJsPublicationToTestRepository'
+    }
   }
 }
 

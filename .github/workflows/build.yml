@@ -6,8 +6,8 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
 
 jobs:
-  all:
-    runs-on: macOS-latest
+  jvm:
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
@@ -39,6 +39,31 @@ jobs:
           ./gradlew clean generateTests
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
+      - name: Test
+        run: |
+          ./gradlew -p wire-library -Dkjs=false -Dknative=false build
+          ./gradlew build
+
+  multiplatform:
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Configure JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+      - name: Check test files
+        run: |
+          ./gradlew clean generateTests
+          if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
+
       - name: Install Chrome
         run: |
           brew update
@@ -52,8 +77,7 @@ jobs:
   publish:
     runs-on: macOS-latest
     if: github.ref == 'refs/heads/master'
-    needs:
-      - all
+    needs: [jvm, multiplatform]
 
     steps:
       - name: Checkout
