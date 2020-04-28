@@ -23,11 +23,39 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import kotlin.reflect.KClass
+import com.squareup.wire.Service
 
 actual class GrpcClient private constructor(
   internal val client: OkHttpClient,
   internal val baseUrl: HttpUrl
 ) {
+  /** Returns a [T] that makes gRPC calls using this client. */
+  inline fun <reified T : Service> create(): T = create(T::class)
+
+  /** Returns a [service] that makes gRPC calls using this client. */
+  fun <T : Service> create(service: KClass<T>): T {
+    // Use reflection to find the implementing class like "routeguide.GrpcRouteGuideClient" for a
+    // generated interface like "routeguide.RouteGuideClient".
+    try {
+      val implementationClass = implementationClass(service)
+      val onlyConstructor = implementationClass.declaredConstructors.single()
+      val instance = onlyConstructor.newInstance(this)
+      return service.java.cast(instance)
+    } catch (_: Exception) {
+      error("failed to create gRPC class for $service: is it a Wire-generated gRPC interface?")
+    }
+  }
+
+  private fun <T : Service> implementationClass(service: KClass<T>): Class<*> {
+    val interfaceName = service.qualifiedName!!
+    val simpleNameOffset = interfaceName.lastIndexOf(".") + 1
+    val packageName = interfaceName.substring(0, simpleNameOffset)
+    val interfaceSimpleName = interfaceName.substring(simpleNameOffset)
+    val implementationName = "${packageName}Grpc$interfaceSimpleName"
+    return Class.forName(implementationName)
+  }
+
   actual fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
     return RealGrpcCall(this, method)
   }
