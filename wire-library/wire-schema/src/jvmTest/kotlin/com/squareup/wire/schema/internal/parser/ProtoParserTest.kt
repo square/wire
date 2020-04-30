@@ -715,21 +715,34 @@ class ProtoParserTest {
   }
 
   @Test
-  fun proto3MessageFieldsForbidOptional() {
+  fun proto3MessageFieldsAllowOptional() {
     val proto = """
         |syntax = "proto3";
         |message Message {
         |  optional string a = 1;
         |}
         """.trimMargin()
-    try {
-      ProtoParser.parse(location, proto)
-      fail()
-    } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage(
-          "Syntax error in file.proto at 3:3: 'optional' label forbidden in proto3 field declarations"
-      )
-    }
+
+    val expected = ProtoFileElement(
+        location = location,
+        syntax = PROTO_3,
+        types = listOf(
+            MessageElement(
+                location = location.at(2, 1),
+                name = "Message",
+                fields = listOf(
+                    FieldElement(
+                        location = location.at(3, 3),
+                        type = "string",
+                        name = "a",
+                        tag = 1,
+                        label = OPTIONAL
+                    )
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
   @Test
@@ -751,7 +764,7 @@ class ProtoParserTest {
   }
 
   @Test
-  fun proto3ExtensionFieldsForbidsOptional() {
+  fun proto3ExtensionFieldsAllowOptional() {
     val proto = """
         |syntax = "proto3";
         |message Message {
@@ -760,14 +773,32 @@ class ProtoParserTest {
         |  optional string a = 1;
         |}
         """.trimMargin()
-    try {
-      ProtoParser.parse(location, proto)
-      fail()
-    } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage(
-          "Syntax error in file.proto at 5:3: 'optional' label forbidden in proto3 field declarations"
-      )
-    }
+    val expected = ProtoFileElement(
+        location = location,
+        syntax = PROTO_3,
+        types = listOf(
+            MessageElement(
+                location = location.at(2, 1),
+                name = "Message"
+            )
+        ),
+        extendDeclarations = listOf(
+            ExtendElement(
+                location = location.at(4, 1),
+                name = "Message",
+                fields = listOf(
+                    FieldElement(
+                        location = location.at(5, 3),
+                        type = "string",
+                        name = "a",
+                        tag = 1,
+                        label = OPTIONAL
+                    )
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
   @Test
