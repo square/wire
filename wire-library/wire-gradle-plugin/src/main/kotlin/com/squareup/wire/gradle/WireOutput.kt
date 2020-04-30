@@ -138,7 +138,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
       "To generate Kotlin protos, please apply a Kotlin plugin."
     }
     compileKotlinTasks.configureEach {
-      it.source(out)
+      it.source(out!!)
       it.dependsOn(wireTask)
     }
   }
