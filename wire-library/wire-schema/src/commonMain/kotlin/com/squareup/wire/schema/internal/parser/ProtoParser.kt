@@ -296,9 +296,6 @@ class ProtoParser internal constructor(
       }
 
       "optional" -> {
-        reader.expect(syntax != PROTO_3, location) {
-          "'optional' label forbidden in proto3 field declarations"
-        }
         label = Field.Label.OPTIONAL
         type = reader.readDataType()
       }
