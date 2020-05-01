@@ -55,6 +55,10 @@ open class WireTask : SourceTask() {
 
   @Input
   @Optional
+  var onlyVersion: String? = null
+
+  @Input
+  @Optional
   var rules: String? = null
 
   @Input
@@ -104,6 +108,7 @@ open class WireTask : SourceTask() {
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
         since = sinceVersion,
         until = untilVersion,
+        onlyVersion = onlyVersion,
         targets = targets,
         proto3Preview = (proto3Preview == "UNSUPPORTED")
     )

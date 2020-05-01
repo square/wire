@@ -125,6 +125,7 @@ class WirePlugin : Plugin<Project> {
       it.prunes = extension.prunes.toList()
       it.sinceVersion = extension.since
       it.untilVersion = extension.until
+      it.onlyVersion = extension.onlyVersion
       it.rules = extension.rules
       it.targets = targets
       it.proto3Preview = extension.proto3Preview

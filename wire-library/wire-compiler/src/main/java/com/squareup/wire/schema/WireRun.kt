@@ -149,6 +149,12 @@ data class WireRun(
   val until: String? = null,
 
   /**
+   * The only version of the version range. Fields with `until` values greater than this, as well as
+   * fields with `since` values less than or equal to this, are retained.
+   */
+  val onlyVersion: String? = null,
+
+  /**
    * Action to take with the loaded, resolved, and possibly-pruned schema.
    */
   val targets: List<Target>,
@@ -242,6 +248,7 @@ data class WireRun(
         .prune(treeShakingRubbish)
         .since(since)
         .until(until)
+        .only(onlyVersion)
         .build()
 
     val result = schema.prune(pruningRules)
