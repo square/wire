@@ -136,17 +136,17 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo("""
             |tag is out of range: 0
-            |  for field a (/source/message.proto at 2:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field a (/source/message.proto:2:3)
+            |  in message Message (/source/message.proto:1:1)
             |tag is out of range: 19000
-            |  for field d (/source/message.proto at 5:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field d (/source/message.proto:5:3)
+            |  in message Message (/source/message.proto:1:1)
             |tag is out of range: 19999
-            |  for field e (/source/message.proto at 6:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field e (/source/message.proto:6:3)
+            |  in message Message (/source/message.proto:1:1)
             |tag is out of range: 536870912
-            |  for field h (/source/message.proto at 9:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field h (/source/message.proto:9:3)
+            |  in message Message (/source/message.proto:1:1)
             """.trimMargin())
     }
   }
@@ -172,14 +172,14 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |tags are out of range: 0
-            |  for extensions (/source/message.proto at 2:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for extensions (/source/message.proto:2:3)
+            |  in message Message (/source/message.proto:1:1)
             |tags are out of range: 19000, 19001 to 19998, 19999
-            |  for extensions (/source/message.proto at 5:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for extensions (/source/message.proto:5:3)
+            |  in message Message (/source/message.proto:1:1)
             |tags are out of range: 536870912
-            |  for extensions (/source/message.proto at 8:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for extensions (/source/message.proto:8:3)
+            |  in message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -245,17 +245,17 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |packed=true not permitted on bytes
-            |  for field b (/source/message.proto at 3:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field b (/source/message.proto:3:3)
+            |  in message Message (/source/message.proto:1:1)
             |packed=true not permitted on string
-            |  for field d (/source/message.proto at 5:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field d (/source/message.proto:5:3)
+            |  in message Message (/source/message.proto:1:1)
             |packed=true not permitted on Message
-            |  for field f (/source/message.proto at 7:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field f (/source/message.proto:7:3)
+            |  in message Message (/source/message.proto:1:1)
             |packed=true not permitted on bytes
-            |  for field h (/source/message.proto at 11:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field h (/source/message.proto:11:3)
+            |  in message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -355,8 +355,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |conflicting options: red, blue
-            |  for field a (/source/message.proto at 3:3)
-            |  in message Message (/source/message.proto at 2:1)
+            |  for field a (/source/message.proto:3:3)
+            |  in message Message (/source/message.proto:2:1)
             """.trimMargin()
       )
     }
@@ -377,8 +377,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |unable to resolve foo_package.Foo
-            |  for field unknown (/source/message.proto at 2:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field unknown (/source/message.proto:2:3)
+            |  in message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -402,8 +402,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |unable to resolve foo_package.Foo
-            |  for field unknown (/source/message.proto at 4:5)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field unknown (/source/message.proto:4:5)
+            |  in message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -426,8 +426,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |expected a message but was string
-            |  for rpc Call (/source/service.proto at 2:3)
-            |  in service Service (/source/service.proto at 1:1)
+            |  for rpc Call (/source/service.proto:2:3)
+            |  in service Service (/source/service.proto:1:1)
             """.trimMargin()
       )
     }
@@ -447,8 +447,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |expected a message but was string
-            |  for rpc Call (/source/service.proto at 2:3)
-            |  in service Service (/source/service.proto at 1:1)
+            |  for rpc Call (/source/service.proto:2:3)
+            |  in service Service (/source/service.proto:1:1)
             """.trimMargin()
       )
     }
@@ -471,8 +471,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |unable to resolve foo_package.Foo
-            |  for rpc Call (/source/service.proto at 2:3)
-            |  in service Service (/source/service.proto at 1:1)
+            |  for rpc Call (/source/service.proto:2:3)
+            |  in service Service (/source/service.proto:1:1)
             """.trimMargin()
       )
     }
@@ -492,8 +492,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |unable to resolve foo_package.Foo
-            |  for rpc Call (/source/service.proto at 2:3)
-            |  in service Service (/source/service.proto at 1:1)
+            |  for rpc Call (/source/service.proto:2:3)
+            |  in service Service (/source/service.proto:1:1)
             """.trimMargin()
       )
     }
@@ -513,7 +513,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |unable to resolve foo_package.Foo
-            |  for extend (/source/extend.proto at 1:1)
+            |  for extend (/source/extend.proto:1:1)
             """.trimMargin()
       )
     }
@@ -536,7 +536,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |expected a message but was string
-            |  for extend (/source/extend.proto at 1:1)
+            |  for extend (/source/extend.proto:1:1)
             """.trimMargin()
       )
     }
@@ -559,8 +559,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |unable to resolve foo_package.Foo
-            |  for field unknown (/source/message.proto at 4:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field unknown (/source/message.proto:4:3)
+            |  in message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -582,11 +582,11 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |unable to resolve foo_package.Foo
-            |  for field unknown (/source/message.proto at 2:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field unknown (/source/message.proto:2:3)
+            |  in message Message (/source/message.proto:1:1)
             |unable to resolve foo_package.Foo
-            |  for field also_unknown (/source/message.proto at 3:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field also_unknown (/source/message.proto:3:3)
+            |  in message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -608,9 +608,9 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |multiple fields share tag 1:
-            |  1. name1 (/source/message.proto at 2:3)
-            |  2. name2 (/source/message.proto at 3:3)
-            |  for message Message (/source/message.proto at 1:1)
+            |  1. name1 (/source/message.proto:2:3)
+            |  2. name2 (/source/message.proto:3:3)
+            |  for message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -634,9 +634,9 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |multiple fields share tag 1:
-            |  1. name1 (/source/message.proto at 2:3)
-            |  2. name2 (/source/message.proto at 4:5)
-            |  for message Message (/source/message.proto at 1:1)
+            |  1. name1 (/source/message.proto:2:3)
+            |  2. name2 (/source/message.proto:4:5)
+            |  for message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -660,9 +660,9 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |multiple fields share tag 1:
-            |  1. name1 (/source/message.proto at 4:3)
-            |  2. name2 (/source/message.proto at 5:3)
-            |  for message Message (/source/message.proto at 1:1)
+            |  1. name1 (/source/message.proto:4:3)
+            |  2. name2 (/source/message.proto:5:3)
+            |  for message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -684,9 +684,9 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |multiple fields share name a:
-            |  1. a (/source/message.proto at 2:3)
-            |  2. a (/source/message.proto at 3:3)
-            |  for message Message (/source/message.proto at 1:1)
+            |  1. a (/source/message.proto:2:3)
+            |  2. a (/source/message.proto:3:3)
+            |  for message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -741,9 +741,9 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |multiple fields share name a:
-            |  1. a (/source/extend1.proto at 3:3)
-            |  2. a (/source/extend2.proto at 3:3)
-            |  for message Message (/source/message.proto at 1:1)
+            |  1. a (/source/extend1.proto:3:3)
+            |  2. a (/source/extend2.proto:3:3)
+            |  for message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -804,7 +804,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |expected a message but was Enum
-            |  for extend (/source/extend.proto at 2:1)
+            |  for extend (/source/extend.proto:2:1)
             """.trimMargin()
       )
     }
@@ -827,8 +827,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |extension fields cannot be required
-            |  for field a (/source/message.proto at 4:3)
-            |  in message Message (/source/message.proto at 1:1)
+            |  for field a (/source/message.proto:4:3)
+            |  in message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -847,7 +847,7 @@ class SchemaTest {
           .schema()
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("Syntax error in /source/message.proto at 2:17: expected '{'")
+      assertThat(expected).hasMessage("Syntax error in /source/message.proto:2:17: expected '{'")
     }
   }
 
@@ -871,9 +871,9 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |multiple enums share constant VALUE:
-            |  1. Message.Enum1.VALUE (/source/message.proto at 3:5)
-            |  2. Message.Enum2.VALUE (/source/message.proto at 6:5)
-            |  for message Message (/source/message.proto at 1:1)
+            |  1. Message.Enum1.VALUE (/source/message.proto:3:5)
+            |  2. Message.Enum2.VALUE (/source/message.proto:6:5)
+            |  for message Message (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -895,9 +895,9 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |multiple enum constants share tag 1:
-            |  1. A (/source/message.proto at 2:3)
-            |  2. B (/source/message.proto at 3:3)
-            |  for enum Enum (/source/message.proto at 1:1)
+            |  1. A (/source/message.proto:2:3)
+            |  2. B (/source/message.proto:3:3)
+            |  for enum Enum (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -920,9 +920,9 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |multiple enum constants share tag 1:
-            |  1. A (/source/message.proto at 3:3)
-            |  2. B (/source/message.proto at 4:3)
-            |  for enum Enum (/source/message.proto at 1:1)
+            |  1. A (/source/message.proto:3:3)
+            |  2. B (/source/message.proto:4:3)
+            |  for enum Enum (/source/message.proto:1:1)
             """.trimMargin()
       )
     }
@@ -1013,8 +1013,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo("""
             |a.proto needs to import b.proto
-            |  for field b (/source/a.proto at 3:3)
-            |  in message pa.A (/source/a.proto at 2:1)
+            |  for field b (/source/a.proto:3:3)
+            |  in message pa.A (/source/a.proto:2:1)
             """.trimMargin()
       )
     }
@@ -1042,8 +1042,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo("""
             |a.proto needs to import b.proto
-            |  for field b (/source/a.proto at 3:3)
-            |  in message pa.A (/source/a.proto at 2:1)
+            |  for field b (/source/a.proto:3:3)
+            |  in message pa.A (/source/a.proto:2:1)
             """.trimMargin()
       )
     }
@@ -1095,11 +1095,11 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo("""
             |a.proto needs to import b.proto
-            |  for rpc Call (/source/a.proto at 3:3)
-            |  in service pa.Service (/source/a.proto at 2:1)
+            |  for rpc Call (/source/a.proto:3:3)
+            |  in service pa.Service (/source/a.proto:2:1)
             |a.proto needs to import b.proto
-            |  for rpc Call (/source/a.proto at 3:3)
-            |  in service pa.Service (/source/a.proto at 2:1)
+            |  for rpc Call (/source/a.proto:3:3)
+            |  in service pa.Service (/source/a.proto:2:1)
             """.trimMargin()
       )
     }
@@ -1152,7 +1152,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo("""
             |a.proto needs to import b.proto
-            |  for extend pb.B (/source/a.proto at 2:1)
+            |  for extend pb.B (/source/a.proto:2:1)
             """.trimMargin()
       )
     }
@@ -1188,8 +1188,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected.message).isEqualTo("""
             |a.proto needs to import c.proto
-            |  for field c (/source/a.proto at 4:3)
-            |  in message pa.A (/source/a.proto at 3:1)
+            |  for field c (/source/a.proto:4:3)
+            |  in message pa.A (/source/a.proto:3:1)
             """.trimMargin()
       )
     }
@@ -1398,8 +1398,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |unable to resolve .b.MessageB
-            |  for field message_b (/source/a_b_c.proto at 6:3)
-            |  in message a.b.c.MessageC (/source/a_b_c.proto at 5:1)
+            |  for field message_b (/source/a_b_c.proto:6:3)
+            |  in message a.b.c.MessageC (/source/a_b_c.proto:5:1)
             """.trimMargin()
       )
     }
@@ -1422,7 +1422,7 @@ class SchemaTest {
           .schema()
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("/source/test.proto at 2:3: 'group' is not supported")
+      assertThat(expected).hasMessage("/source/test.proto:2:3: 'group' is not supported")
     }
   }
 
@@ -1446,7 +1446,7 @@ class SchemaTest {
           .schema()
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("/source/test.proto at 5:5: 'group' is not supported")
+      assertThat(expected).hasMessage("/source/test.proto:5:5: 'group' is not supported")
     }
   }
 
@@ -1465,9 +1465,9 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-            |tag 1 is reserved (/source/test.proto at 2:3)
-            |  for field name (/source/test.proto at 3:3)
-            |  in message Message (/source/test.proto at 1:1)
+            |tag 1 is reserved (/source/test.proto:2:3)
+            |  for field name (/source/test.proto:3:3)
+            |  in message Message (/source/test.proto:1:1)
             """.trimMargin()
       )
     }
@@ -1488,9 +1488,9 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-            |tag 2 is reserved (/source/test.proto at 2:3)
-            |  for field name (/source/test.proto at 3:3)
-            |  in message Message (/source/test.proto at 1:1)
+            |tag 2 is reserved (/source/test.proto:2:3)
+            |  for field name (/source/test.proto:3:3)
+            |  in message Message (/source/test.proto:1:1)
             """.trimMargin()
       )
     }
@@ -1511,9 +1511,9 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-            |name 'foo' is reserved (/source/test.proto at 2:3)
-            |  for field foo (/source/test.proto at 3:3)
-            |  in message Message (/source/test.proto at 1:1)
+            |name 'foo' is reserved (/source/test.proto:2:3)
+            |  for field foo (/source/test.proto:3:3)
+            |  in message Message (/source/test.proto:1:1)
             """.trimMargin()
       )
     }
@@ -1535,12 +1535,12 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-            |name 'foo' is reserved (/source/test.proto at 2:3)
-            |  for field foo (/source/test.proto at 4:3)
-            |  in message Message (/source/test.proto at 1:1)
-            |tag 1 is reserved (/source/test.proto at 3:3)
-            |  for field foo (/source/test.proto at 4:3)
-            |  in message Message (/source/test.proto at 1:1)
+            |name 'foo' is reserved (/source/test.proto:2:3)
+            |  for field foo (/source/test.proto:4:3)
+            |  in message Message (/source/test.proto:1:1)
+            |tag 1 is reserved (/source/test.proto:3:3)
+            |  for field foo (/source/test.proto:4:3)
+            |  in message Message (/source/test.proto:1:1)
             """.trimMargin()
       )
     }
@@ -1585,7 +1585,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
           |missing a zero value at the first element [proto3]
-          |  for enum Period (/source/period.proto at 3:1)
+          |  for enum Period (/source/period.proto:3:1)
           """.trimMargin()
       )
     }
@@ -1610,7 +1610,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
           |missing a zero value at the first element [proto3]
-          |  for enum Period (/source/period.proto at 3:1)
+          |  for enum Period (/source/period.proto:3:1)
           """.trimMargin()
       )
     }
@@ -1630,7 +1630,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
           |missing a zero value at the first element [proto3]
-          |  for enum Period (/source/period.proto at 3:1)
+          |  for enum Period (/source/period.proto:3:1)
           """.trimMargin()
       )
     }
@@ -1713,7 +1713,7 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
           |extensions are not allowed [proto3]
-          |  for extend Dinosaur (/source/dinosaur.proto at 7:1)
+          |  for extend Dinosaur (/source/dinosaur.proto:7:1)
           """.trimMargin()
       )
     }
@@ -1736,8 +1736,8 @@ class SchemaTest {
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
             |user-defined default values are not permitted [proto3]
-            |  for field name (/source/dinosaur.proto at 4:3)
-            |  in message Dinosaur (/source/dinosaur.proto at 3:1)
+            |  for field name (/source/dinosaur.proto:4:3)
+            |  in message Dinosaur (/source/dinosaur.proto:3:1)
             """.trimMargin()
       )
     }

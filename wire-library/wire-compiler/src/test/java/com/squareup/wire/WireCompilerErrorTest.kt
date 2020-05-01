@@ -69,8 +69,8 @@ class WireCompilerErrorTest {
     }
     assertThat(e).hasMessage("""
           |tag is out of range: 0
-          |  for field f (/source/test.proto at 3:3)
-          |  in message com.squareup.protos.test.Simple (/source/test.proto at 2:1)
+          |  for field f (/source/test.proto:3:3)
+          |  in message com.squareup.protos.test.Simple (/source/test.proto:2:1)
           """.trimMargin())
   }
 
@@ -87,9 +87,9 @@ class WireCompilerErrorTest {
     }
     assertThat(e).hasMessage("""
           |multiple fields share tag 1:
-          |  1. f (/source/test.proto at 3:3)
-          |  2. g (/source/test.proto at 4:3)
-          |  for message com.squareup.protos.test.Simple (/source/test.proto at 2:1)
+          |  1. f (/source/test.proto:3:3)
+          |  2. g (/source/test.proto:4:3)
+          |  for message com.squareup.protos.test.Simple (/source/test.proto:2:1)
           """.trimMargin())
   }
 
@@ -113,9 +113,9 @@ class WireCompilerErrorTest {
     }
     assertThat(e).hasMessage("""
           |multiple enums share constant QUIX:
-          |  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test.proto at 4:5)
-          |  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test.proto at 10:5)
-          |  for message com.squareup.protos.test.Foo (/source/test.proto at 2:1)
+          |  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test.proto:4:5)
+          |  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test.proto:10:5)
+          |  for message com.squareup.protos.test.Foo (/source/test.proto:2:1)
           """.trimMargin())
   }
 
@@ -138,8 +138,8 @@ class WireCompilerErrorTest {
     }
     assertThat(e).hasMessage("""
           |multiple enums share constant QUIX:
-          |  1. com.squareup.protos.test.Bar.QUIX (/source/test.proto at 4:3)
-          |  2. com.squareup.protos.test.Bar2.QUIX (/source/test.proto at 10:3)
+          |  1. com.squareup.protos.test.Bar.QUIX (/source/test.proto:4:3)
+          |  2. com.squareup.protos.test.Bar2.QUIX (/source/test.proto:10:3)
           """.trimMargin())
   }
 
