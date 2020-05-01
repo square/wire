@@ -218,7 +218,7 @@ class ProtoParserTest {
       fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage(
-          "Syntax error in file.proto at 1:15: 'map' type cannot have label"
+          "Syntax error in file.proto:1:15: 'map' type cannot have label"
       )
     }
 
@@ -227,7 +227,7 @@ class ProtoParserTest {
       fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage(
-          "Syntax error in file.proto at 1:15: 'map' type cannot have label"
+          "Syntax error in file.proto:1:15: 'map' type cannot have label"
       )
     }
 
@@ -236,7 +236,7 @@ class ProtoParserTest {
       fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage(
-          "Syntax error in file.proto at 1:15: 'map' type cannot have label"
+          "Syntax error in file.proto:1:15: 'map' type cannot have label"
       )
     }
   }
@@ -495,7 +495,7 @@ class ProtoParserTest {
       ProtoParser.parse(location, proto)
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage(
-          "Syntax error in file.proto at 2:40: no syntax may follow trailing comment"
+          "Syntax error in file.proto:2:40: no syntax may follow trailing comment"
       )
     }
   }
@@ -511,7 +511,7 @@ class ProtoParserTest {
       ProtoParser.parse(location, proto)
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage(
-          "Syntax error in file.proto at 2:13: expected '//' or '/*'"
+          "Syntax error in file.proto:2:13: expected '//' or '/*'"
       )
     }
   }
@@ -578,7 +578,7 @@ class ProtoParserTest {
     try {
       ProtoParser.parse(location, proto)
     } catch (e: IllegalStateException) {
-      assertThat(e).hasMessage("Syntax error in file.proto at 1:1: unexpected syntax: proto4")
+      assertThat(e).hasMessage("Syntax error in file.proto:1:1: unexpected syntax: proto4")
     }
   }
 
@@ -592,7 +592,7 @@ class ProtoParserTest {
     try {
       ProtoParser.parse(location, proto)
     } catch (e: IllegalStateException) {
-      assertThat(e).hasMessage("Syntax error in file.proto at 2:3: 'syntax' in MESSAGE")
+      assertThat(e).hasMessage("Syntax error in file.proto:2:3: 'syntax' in MESSAGE")
     }
   }
 
@@ -607,7 +607,7 @@ class ProtoParserTest {
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected).hasMessage(
-          "Syntax error in file.proto at 2:1: 'syntax' element must be the first declaration in a file"
+          "Syntax error in file.proto:2:1: 'syntax' element must be the first declaration in a file"
       )
     }
   }
@@ -758,7 +758,7 @@ class ProtoParserTest {
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected).hasMessage(
-          "Syntax error in file.proto at 3:3: 'required' label forbidden in proto3 field declarations"
+          "Syntax error in file.proto:3:3: 'required' label forbidden in proto3 field declarations"
       )
     }
   }
@@ -816,7 +816,7 @@ class ProtoParserTest {
       fail()
     } catch (expected: IllegalStateException) {
       assertThat(expected).hasMessage(
-          "Syntax error in file.proto at 5:3: 'required' label forbidden in proto3 field declarations"
+          "Syntax error in file.proto:5:3: 'required' label forbidden in proto3 field declarations"
       )
     }
   }

@@ -50,9 +50,11 @@ data class Location(
     }
     append(path)
     if (line != -1) {
-      append(" at $line")
+      append(':')
+      append(line)
       if (column != -1) {
-        append(":$column")
+        append(':')
+        append(column)
       }
     }
   }

@@ -144,7 +144,7 @@ class NewProfileLoaderTest {
       fail()
     } catch (expected: IllegalArgumentException) {
       assertThat(expected).hasMessage("a/b/android.wire needs to import a/b/message.proto" +
-          " (source-path/a/b/android.wire at 2:1)")
+          " (source-path/a/b/android.wire:2:1)")
     }
   }
 

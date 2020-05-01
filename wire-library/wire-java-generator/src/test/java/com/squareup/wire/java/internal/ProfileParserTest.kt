@@ -88,7 +88,7 @@ class ProfileParserTest {
       parser.read()
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("Syntax error in android.wire at 1:18: expected 'wire2'")
+      assertThat(expected).hasMessage("Syntax error in android.wire:1:18: expected 'wire2'")
     }
   }
 
@@ -108,7 +108,7 @@ class ProfileParserTest {
       parser.read()
       fail()
     } catch (expected: IllegalStateException) {
-      assertThat(expected).hasMessage("Syntax error in android.wire at 5:3: too many targets")
+      assertThat(expected).hasMessage("Syntax error in android.wire:5:3: too many targets")
     }
   }
 

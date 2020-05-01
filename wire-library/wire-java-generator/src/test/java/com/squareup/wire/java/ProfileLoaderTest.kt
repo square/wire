@@ -223,7 +223,7 @@ class ProfileLoaderTest {
     } catch (expected: IllegalArgumentException) {
       assertThat(expected)
           .hasMessage(
-              "a/b/android.wire needs to import a/b/message.proto (/source/a/b/android.wire at 2:1)"
+              "a/b/android.wire needs to import a/b/message.proto (/source/a/b/android.wire:2:1)"
           )
     }
   }
