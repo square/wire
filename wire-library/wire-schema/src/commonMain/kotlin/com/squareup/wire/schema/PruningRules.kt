@@ -242,7 +242,7 @@ class PruningRules private constructor(builder: Builder) {
     }
 
     fun build(): PruningRules {
-      check(only == null || since == null && until == null) {
+      check(only == null || (since == null && until == null)) {
         "only cannot be set along side since and until"
       }
       check(since == null || until == null || since!! < until!!) {

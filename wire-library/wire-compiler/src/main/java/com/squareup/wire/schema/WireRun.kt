@@ -140,17 +140,18 @@ data class WireRun(
    * The exclusive lower bound of the version range. Fields with `until` values greater than this
    * are retained.
    */
-  val since: String? = null,
+  val sinceVersion: String? = null,
 
   /**
    * The inclusive upper bound of the version range. Fields with `since` values less than or equal
    * to this are retained.
    */
-  val until: String? = null,
+  val untilVersion: String? = null,
 
   /**
    * The only version of the version range. Fields with `until` values greater than this, as well as
-   * fields with `since` values less than or equal to this, are retained.
+   * fields with `since` values less than or equal to this, are retained. This field is mutually
+   * exclusive with `sinceVersion` and `untilVersion`.
    */
   val onlyVersion: String? = null,
 
@@ -238,16 +239,16 @@ data class WireRun(
   private fun treeShake(schema: Schema, logger: WireLogger): Schema {
     if (treeShakingRoots == listOf("*") &&
         treeShakingRubbish.isEmpty() &&
-        since == null &&
-        until == null) {
+        sinceVersion == null &&
+        untilVersion == null) {
       return schema
     }
 
     val pruningRules = PruningRules.Builder()
         .addRoot(treeShakingRoots)
         .prune(treeShakingRubbish)
-        .since(since)
-        .until(until)
+        .since(sinceVersion)
+        .until(untilVersion)
         .only(onlyVersion)
         .build()
 

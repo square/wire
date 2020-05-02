@@ -106,8 +106,8 @@ open class WireTask : SourceTask() {
         protoPath = protoInput.toLocations(),
         treeShakingRoots = if (roots.isEmpty()) includes else roots,
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
-        since = sinceVersion,
-        until = untilVersion,
+        sinceVersion = sinceVersion,
+        untilVersion = untilVersion,
         onlyVersion = onlyVersion,
         targets = targets,
         proto3Preview = (proto3Preview == "UNSUPPORTED")
