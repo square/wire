@@ -254,6 +254,32 @@ class PruningRulesTest {
     }
   }
 
+  @Test
+  fun onlyCannotBeSetAlongSideSince() {
+    try {
+      PruningRules.Builder()
+          .only("3")
+          .since("3")
+          .build()
+      fail()
+    } catch (exception: IllegalStateException) {
+      assertThat(exception).hasMessage("only cannot be set along side since and until")
+    }
+  }
+
+  @Test
+  fun onlyCannotBeSetAlongSideUntil() {
+    try {
+      PruningRules.Builder()
+          .only("3")
+          .until("3.1")
+          .build()
+      fail()
+    } catch (exception: IllegalStateException) {
+      assertThat(exception).hasMessage("only cannot be set along side since and until")
+    }
+  }
+
   private fun policy(set: PruningRules, identifier: String): Policy {
     return if (identifier.contains("#")) {
       val protoMember = ProtoMember.get(identifier)

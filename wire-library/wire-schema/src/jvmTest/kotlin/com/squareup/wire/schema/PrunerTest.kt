@@ -1350,6 +1350,26 @@ class PrunerTest {
   }
 
   @Test
+  fun onlyRetainOlder() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |import "wire/extensions.proto";
+            |
+            |message Message {
+            |  optional string radio = 1 [(wire.until) = "1950"];
+            |  optional string video = 2 [(wire.since) = "1950"];
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .only("1949")
+        .build())
+    val message = pruned.getType("Message") as MessageType
+    assertThat(message.field("radio")).isNotNull()
+    assertThat(message.field("video")).isNull()
+  }
+
+  @Test
   fun sinceAndUntilRetainNewer() {
     val schema = RepoBuilder()
         .add("message.proto", """
@@ -1371,6 +1391,26 @@ class PrunerTest {
   }
 
   @Test
+  fun onlyRetainNewer() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |import "wire/extensions.proto";
+            |
+            |message Message {
+            |  optional string radio = 1 [(wire.until) = "1950"];
+            |  optional string video = 2 [(wire.since) = "1950"];
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .only("1950")
+        .build())
+    val message = pruned.getType("Message") as MessageType
+    assertThat(message.field("radio")).isNull()
+    assertThat(message.field("video")).isNotNull()
+  }
+
+  @Test
   fun sinceRetainedWhenLessThanOrEqualToUntil() {
     val schema = RepoBuilder()
         .add("message.proto", """
@@ -1380,7 +1420,7 @@ class PrunerTest {
             |  optional string since_19 = 1 [(wire.since) = "19"];
             |  optional string since_20 = 2 [(wire.since) = "20"];
             |  optional string since_21 = 3 [(wire.since) = "21"];
-            |  
+            |
             |  optional string since_29 = 4 [(wire.since) = "29"];
             |  optional string since_30 = 5 [(wire.since) = "30"];
             |  optional string since_31 = 6 [(wire.since) = "31"];
@@ -1411,7 +1451,7 @@ class PrunerTest {
             |  optional string until_19 = 1 [(wire.until) = "19"];
             |  optional string until_20 = 2 [(wire.until) = "20"];
             |  optional string until_21 = 3 [(wire.until) = "21"];
-            |  
+            |
             |  optional string until_29 = 4 [(wire.until) = "29"];
             |  optional string until_30 = 5 [(wire.until) = "30"];
             |  optional string until_31 = 6 [(wire.until) = "31"];
@@ -1421,6 +1461,65 @@ class PrunerTest {
     val pruned = schema.prune(PruningRules.Builder()
         .since("20")
         .until("30")
+        .build())
+    val message = pruned.getType("Message") as MessageType
+    assertThat(message.field("until_19")).isNull()
+    assertThat(message.field("until_20")).isNull()
+    assertThat(message.field("until_21")).isNotNull()
+    assertThat(message.field("until_29")).isNotNull()
+    assertThat(message.field("until_30")).isNotNull()
+    assertThat(message.field("until_31")).isNotNull()
+  }
+
+  @Test
+  fun sinceRetainedWhenLessThanOrEqualToOnly() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |import "wire/extensions.proto";
+            |
+            |message Message {
+            |  optional string since_19 = 1 [(wire.since) = "19"];
+            |  optional string since_20 = 2 [(wire.since) = "20"];
+            |  optional string since_21 = 3 [(wire.since) = "21"];
+            |
+            |  optional string since_29 = 4 [(wire.since) = "29"];
+            |  optional string since_30 = 5 [(wire.since) = "30"];
+            |  optional string since_31 = 6 [(wire.since) = "31"];
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .only("20")
+        .build())
+    val message = pruned.getType("Message") as MessageType
+    assertThat(message.field("since_19")).isNotNull()
+    assertThat(message.field("since_20")).isNotNull()
+    assertThat(message.field("since_21")).isNull()
+
+    assertThat(message.field("since_29")).isNull()
+    assertThat(message.field("since_30")).isNull()
+    assertThat(message.field("since_31")).isNull()
+  }
+
+  @Test
+  fun untilRetainedWhenGreaterThanOnly() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |import "wire/extensions.proto";
+            |
+            |message Message {
+            |  optional string until_19 = 1 [(wire.until) = "19"];
+            |  optional string until_20 = 2 [(wire.until) = "20"];
+            |  optional string until_21 = 3 [(wire.until) = "21"];
+            |
+            |  optional string until_29 = 4 [(wire.until) = "29"];
+            |  optional string until_30 = 5 [(wire.until) = "30"];
+            |  optional string until_31 = 6 [(wire.until) = "31"];
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .only("20")
         .build())
     val message = pruned.getType("Message") as MessageType
     assertThat(message.field("until_19")).isNull()
@@ -1469,6 +1568,24 @@ class PrunerTest {
   }
 
   @Test
+  fun onlyVersionPruningDoesNotImpactFieldsWithoutSinceAndUntil() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |import "wire/extensions.proto";
+            |
+            |message Message {
+            |  optional string always = 1;
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .only("20")
+        .build())
+    val message = pruned.getType("Message") as MessageType
+    assertThat(message.field("always")).isNotNull()
+  }
+
+  @Test
   fun sinceUntilOnEnumConstant() {
     val schema = RepoBuilder()
         .add("roshambo.proto", """
@@ -1484,6 +1601,28 @@ class PrunerTest {
     val pruned = schema.prune(PruningRules.Builder()
         .since("29")
         .until("30")
+        .build())
+    val enum = pruned.getType("Roshambo") as EnumType
+    assertThat(enum.constant("ROCK")).isNull()
+    assertThat(enum.constant("SCISSORS")).isNull()
+    assertThat(enum.constant("PAPER")).isNotNull()
+  }
+
+  @Test
+  fun onlyOnEnumConstant() {
+    val schema = RepoBuilder()
+        .add("roshambo.proto", """
+            |import "wire/extensions.proto";
+            |
+            |enum Roshambo {
+            |  ROCK = 1 [(wire.until) = "29"];
+            |  SCISSORS = 2 [(wire.since) = "30"];
+            |  PAPER = 3 [(wire.since) = "29"];
+            |}
+            """.trimMargin())
+        .schema()
+    val pruned = schema.prune(PruningRules.Builder()
+        .only("29")
         .build())
     val enum = pruned.getType("Roshambo") as EnumType
     assertThat(enum.constant("ROCK")).isNull()

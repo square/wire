@@ -692,6 +692,25 @@ class WirePluginTest {
   }
 
   @Test
+  fun only() {
+    val fixtureRoot = File("src/test/projects/only-version")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output).contains("Writing com.squareup.media.NewsFlash")
+
+    val generatedProto =
+        File(fixtureRoot, "build/generated/source/wire/com/squareup/media/NewsFlash.kt")
+    assertThat(generatedProto).exists()
+
+    val newsFlash = generatedProto.readText()
+    assertThat(newsFlash).contains("val tv")
+    assertThat(newsFlash).doesNotContain("val website")
+    assertThat(newsFlash).doesNotContain("val radio")
+  }
+
+  @Test
   fun kotlinMultiplatform() {
     val fixtureRoot = File("src/test/projects/kotlin-multiplatform")
     val kmpJsEnabled = System.getProperty("kjs", "true").toBoolean()

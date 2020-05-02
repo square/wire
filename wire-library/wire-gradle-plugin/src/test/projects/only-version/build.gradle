@@ -1,0 +1,14 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+wire {
+  // Targets the version "19.9.5". This will prune:
+  //  * declarations preceding the beginning of the range (wire.until = "19.9.5" and earlier)
+  //  * declarations following the end of the range (wire.since > "19.9.5")
+  onlyVersion "19.9.5"
+
+  kotlin {}
+}
