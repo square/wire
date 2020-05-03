@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+Version 3.2.1
+-------------
+
+_2020-05-02_
+
+ * New: `onlyVersion` option on the Wire Gradle plugin to target a unique version. By and large,
+   service code that supports many clients would target ranges via `sinceVersion` and
+   `untilVersion`, while client code would target a unique version via `onlyVersion`.
+ * New: Support for optional fields in Proto3.
+ * Fix: Restored the `GrpcClient.create` API to create implementations for gRPC interfaces.
+
 Version 3.2.0
 -------------
 

@@ -511,7 +511,7 @@ automatically add the generated Java code to your project's source roots.
     <plugin>
       <groupId>com.squareup.wire</groupId>
       <artifactId>wire-maven-plugin</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.1</version>
       <executions>
         <execution>
           <phase>generate-sources</phase>
@@ -571,14 +571,14 @@ With Maven:
 <dependency>
   <groupId>com.squareup.wire</groupId>
   <artifactId>wire-runtime</artifactId>
-  <version>3.2.0</version>
+  <version>3.2.1</version>
 </dependency>
 ```
 
 With Gradle:
 
 ```groovy
-api "com.squareup.wire:wire-runtime:3.2.0"
+api "com.squareup.wire:wire-runtime:3.2.1"
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
