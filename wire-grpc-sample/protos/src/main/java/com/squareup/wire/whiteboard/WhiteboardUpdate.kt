@@ -85,7 +85,8 @@ class WhiteboardUpdate(
     @JvmField
     val ADAPTER: ProtoAdapter<WhiteboardUpdate> = object : ProtoAdapter<WhiteboardUpdate>(
       FieldEncoding.LENGTH_DELIMITED, 
-      WhiteboardUpdate::class
+      WhiteboardUpdate::class, 
+      "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate"
     ) {
       override fun encodedSize(value: WhiteboardUpdate): Int = 
         InitialiseBoard.ADAPTER.encodedSizeWithTag(1, value.initialise_board) +
@@ -190,7 +191,8 @@ class WhiteboardUpdate(
       @JvmField
       val ADAPTER: ProtoAdapter<InitialiseBoard> = object : ProtoAdapter<InitialiseBoard>(
         FieldEncoding.LENGTH_DELIMITED, 
-        InitialiseBoard::class
+        InitialiseBoard::class, 
+        "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate.InitialiseBoard"
       ) {
         override fun encodedSize(value: InitialiseBoard): Int = 
           ProtoAdapter.INT32.encodedSizeWithTag(1, value.width) +
@@ -277,7 +279,8 @@ class WhiteboardUpdate(
       @JvmField
       val ADAPTER: ProtoAdapter<UpdatePoints> = object : ProtoAdapter<UpdatePoints>(
         FieldEncoding.LENGTH_DELIMITED, 
-        UpdatePoints::class
+        UpdatePoints::class, 
+        "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate.UpdatePoints"
       ) {
         override fun encodedSize(value: UpdatePoints): Int = 
           Point.ADAPTER.asRepeated().encodedSizeWithTag(1, value.points) +

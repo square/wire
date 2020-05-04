@@ -4,13 +4,7 @@ package com.squareup.wire.whiteboard
 
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.Service
-import com.squareup.wire.WireRpc
 
 interface WhiteboardClient : Service {
-  @WireRpc(
-    path = "/com.squareup.wire.whiteboard.Whiteboard/Whiteboard",
-    requestAdapter = "com.squareup.wire.whiteboard.WhiteboardCommand#ADAPTER",
-    responseAdapter = "com.squareup.wire.whiteboard.WhiteboardUpdate#ADAPTER"
-  )
   fun Whiteboard(): GrpcStreamingCall<WhiteboardCommand, WhiteboardUpdate>
 }
