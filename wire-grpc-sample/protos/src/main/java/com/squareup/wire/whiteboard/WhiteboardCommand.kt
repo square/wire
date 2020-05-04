@@ -83,7 +83,8 @@ class WhiteboardCommand(
     @JvmField
     val ADAPTER: ProtoAdapter<WhiteboardCommand> = object : ProtoAdapter<WhiteboardCommand>(
       FieldEncoding.LENGTH_DELIMITED, 
-      WhiteboardCommand::class
+      WhiteboardCommand::class, 
+      "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand"
     ) {
       override fun encodedSize(value: WhiteboardCommand): Int = 
         AddPoint.ADAPTER.encodedSizeWithTag(1, value.add_point) +
@@ -166,7 +167,8 @@ class WhiteboardCommand(
       @JvmField
       val ADAPTER: ProtoAdapter<AddPoint> = object : ProtoAdapter<AddPoint>(
         FieldEncoding.LENGTH_DELIMITED, 
-        AddPoint::class
+        AddPoint::class, 
+        "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.AddPoint"
       ) {
         override fun encodedSize(value: AddPoint): Int = 
           Point.ADAPTER.encodedSizeWithTag(1, value.point) +
@@ -224,7 +226,8 @@ class WhiteboardCommand(
       @JvmField
       val ADAPTER: ProtoAdapter<ClearBoard> = object : ProtoAdapter<ClearBoard>(
         FieldEncoding.LENGTH_DELIMITED, 
-        ClearBoard::class
+        ClearBoard::class, 
+        "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.ClearBoard"
       ) {
         override fun encodedSize(value: ClearBoard): Int = 
           value.unknownFields.size
