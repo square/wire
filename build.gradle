@@ -4,6 +4,7 @@ buildscript {
 
   ext.deps.wire = [
     'compiler': "com.squareup.wire:wire-compiler",
+    'gradlePlugin': "com.squareup.wire:wire-gradle-plugin",
     'grpcClient': "com.squareup.wire:wire-grpc-client",
     'javaGenerator': "com.squareup.wire:wire-java-generator",
     'kotlinGenerator': "com.squareup.wire:wire-kotlin-generator",
@@ -16,15 +17,17 @@ buildscript {
   dependencies {
     classpath deps.plugins.kotlin
     classpath deps.plugins.shadow
-    classpath "com.squareup.wire:wire-gradle-plugin"
+    classpath deps.wire.gradlePlugin
     classpath deps.plugins.japicmp
     classpath deps.plugins.mavenPublish
     classpath deps.animalSniffer.gradle
+    classpath deps.androidGradlePlugin
   }
 
   repositories {
     mavenCentral()
     gradlePluginPortal()
+    google()
   }
 }
 
@@ -32,6 +35,7 @@ allprojects {
   repositories {
     mavenCentral()
     google()
+    jcenter()
   }
 }
 

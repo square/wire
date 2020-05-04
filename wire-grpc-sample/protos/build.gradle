@@ -1,7 +1,5 @@
-plugins {
-  id 'org.jetbrains.kotlin.jvm'
-  id 'com.squareup.wire'
-}
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.squareup.wire'
 
 wire {
   prune 'com.squareup.wire.whiteboard.Whiteboard'
@@ -11,9 +9,6 @@ wire {
 }
 
 dependencies {
-  api deps.kotlin.stdlib
+  api deps.kotlin.stdlib.jdk8
   api deps.wire.runtime
 }
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8

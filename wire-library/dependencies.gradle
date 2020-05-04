@@ -31,8 +31,12 @@ ext.deps = [
     mavenPublish: "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}"
   ],
   'android': "com.google.android:android:${versions.android}",
+  'androidGradlePlugin': "com.android.tools.build:gradle:3.5.0",
   'androidx': [
     annotations: "androidx.annotation:annotation:1.1.0",
+    'appcompat': "androidx.appcompat:appcompat:1.0.2",
+    'constraintLayout': "androidx.constraintlayout:constraintlayout:1.1.3",
+    'ktx': 'androidx.core:core-ktx:1.0.2',
   ],
   'guava': "com.google.guava:guava:${versions.guava}",
   'okio': [
@@ -69,8 +73,10 @@ ext.deps = [
         // see https://twitter.com/benasher44/status/1208944677778534401.
         'common': "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:${versions.coroutines}",
       ],
+      'android': "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
     ],
   ],
+  'misk': "com.squareup.misk:misk:0.11.0",
   'moshi': "com.squareup.moshi:moshi:${versions.moshi}",
   'moshiKotlin': "com.squareup.moshi:moshi-kotlin:${versions.moshi}",
   'junit': "junit:junit:${versions.junit}",
