@@ -116,23 +116,3 @@ kotlin {
 }
 
 apply from: 'jvm.gradle'
-
-task cleanGeneratedTests(type: Delete) {
-  delete '../wire-grpc-tests/src/test/proto-grpc',
-         'wire-moshi-adapter/src/test/java/com/squareup/wire/protos',
-         '../wire-tests/src/commonTest/proto-kotlin',
-         '../wire-tests/src/jvmJavaAndroidCompactTest/proto-java',
-         '../wire-tests/src/jvmJavaAndroidTest/proto-java',
-         '../wire-tests/src/jvmJavaCompactTest/proto-java',
-         '../wire-tests/src/jvmJavaNoOptionsTest/proto-java',
-         '../wire-tests/src/jvmJavaPrunedTest/proto-java',
-         '../wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
-         '../wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
-         '../wire-tests/src/jvmJavaTest/proto-java'
-}
-
-afterEvaluate { project ->
-  project.tasks.named("clean").configure { task ->
-    task.dependsOn(cleanGeneratedTests)
-  }
-}
