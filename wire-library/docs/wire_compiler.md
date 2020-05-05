@@ -236,6 +236,42 @@ wire {
 }
 ```
 
+### Version Matching
+
+Another way to prune obsolete fields is to assign them a version, then to generate your code
+against a version range or a unique version. The fields out of the version range will get pruned.
+
+Members, or enum constants, may be declared with `wire.since` and `wire.until` options. For example,
+these options declare a field `age` that was replaced with `birth_date` in version "5.0":
+
+```proto
+import "wire/extensions.proto";
+
+message Singer {
+  optional string name = 1;
+  optional int32 age = 2 [(wire.until) = "5.0"];
+  optional Date birth_date = 3 [(wire.since) = "5.0"];
+}
+```
+
+Client code should typically target a single version. In this example, clients will have the
+`name` and `birth_date` fields only.
+
+```groovy
+wire {
+  onlyVersion "5.0"
+}
+```
+
+Service code that supports many clients should support the union of versions of all supported
+clients. Such code will have `name`, as well as both the `age` and `birth_date` fields.
+
+```groovy
+wire {
+  sinceVersion "3.0"
+  untilVersion "6.0"
+}
+```
 
 Customizing Output
 ------------------
