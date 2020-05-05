@@ -14,7 +14,7 @@ Misk Grpc Service
 The `server` module is a server powered by [Misk](https://github.com/cashapp/misk) which plays the gRPC backend of our sample project.
 To start the service, use java 11 and follow these steps:
 
-  1. Run `./gradlew server:run`.
+  1. Run `./gradlew wire-grpc-sample:server:run`.
   2. Open `https://localhost:8443`.
 
 Android App Client

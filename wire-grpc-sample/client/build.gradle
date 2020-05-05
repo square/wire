@@ -18,7 +18,7 @@ android {
 
 wire {
   sourcePath {
-    srcDir "$rootDir/protos/src/main/proto"
+    srcDir "$rootDir/wire-grpc-sample/protos/src/main/proto"
   }
   kotlin {
     out "src/main/java"
@@ -30,10 +30,9 @@ wire {
 }
 
 dependencies {
-  implementation project(':protos')
-  implementation deps.kotlin.stdlib
-  implementation deps.kotlin.coroutines
-  implementation deps.kotlin.coroutinesAndroid
+  implementation project(':wire-grpc-sample:protos')
+  implementation deps.kotlin.coroutines.android
+  implementation deps.kotlin.stdlib.jdk8
   implementation deps.androidx.appcompat
   implementation deps.androidx.ktx
   implementation deps.wire.grpcClient
