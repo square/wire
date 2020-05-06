@@ -1,6 +1,7 @@
 web:
   port: 8080
   idle_timeout: 300000
+  http2: true
   ssl:
     port: 8443
     mutual_auth: DESIRED
