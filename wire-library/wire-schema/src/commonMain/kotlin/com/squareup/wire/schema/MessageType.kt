@@ -133,7 +133,7 @@ class MessageType private constructor(
 
   override fun validate(linker: Linker, syntaxRules: SyntaxRules) {
     val linker = linker.withContext(this)
-    linker.validateFields(fieldsAndOneOfFields, reserveds)
+    linker.validateFields(fieldsAndOneOfFields, reserveds, syntaxRules)
     linker.validateEnumConstantNameUniqueness(nestedTypes)
     for (field in fieldsAndOneOfFields) {
       field.validate(linker, syntaxRules)

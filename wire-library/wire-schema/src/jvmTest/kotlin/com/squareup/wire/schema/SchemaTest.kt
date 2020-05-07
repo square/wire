@@ -1839,4 +1839,44 @@ class SchemaTest {
     assertThat(schema.getService("Service")!!.options().elements).contains(deprecatedOptionElement)
     assertThat(schema.getService("Service")!!.rpc("Call")!!.options.elements).contains(deprecatedOptionElement)
   }
+
+  @Test
+  fun forbidConflictingCamelCasedNamesInProto3() {
+    try {
+      RepoBuilder()
+          .add("dinosaur.proto", """
+              |syntax = "proto3";
+              |
+              |message Dinosaur {
+              |  string myName = 1;
+              |  string my_name = 2;
+              |}
+              |""".trimMargin()
+          ).schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple fields share same JSON camel-case name 'myName':
+            |  1. myName (/source/dinosaur.proto:4:3)
+            |  2. my_name (/source/dinosaur.proto:5:3)
+            |  for message Dinosaur (/source/dinosaur.proto:3:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun allowConflictingCamelCasedNamesInProto2() {
+    val schema = RepoBuilder()
+        .add("dinosaur.proto", """
+              |syntax = "proto2";
+              |
+              |message Dinosaur {
+              |  optional string myName = 1;
+              |  optional string my_name = 2;
+              |}
+              |""".trimMargin()
+        ).schema()
+    assertThat(schema.getType("Dinosaur")).isNotNull()
+  }
 }
