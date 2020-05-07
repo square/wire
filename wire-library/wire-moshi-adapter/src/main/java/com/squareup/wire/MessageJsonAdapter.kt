@@ -30,7 +30,27 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 ) : JsonAdapter<M>() {
   private val messageAdapter = RuntimeMessageAdapter.create(type as Class<M>, "square.github.io/wire/unknown")
   private val fieldBindings = messageAdapter.fieldBindings.values.toTypedArray()
-  private val options = JsonReader.Options.of(*fieldBindings.map { it.declaredName }.toTypedArray())
+  private val encodeNames: List<String>
+  private val options: JsonReader.Options
+
+  init {
+    val optionStrings = mutableListOf<String>()
+    val encodeNames = mutableListOf<String>()
+    for (fieldBinding in fieldBindings) {
+      // Add it for the declared name.
+      val declaredName = fieldBinding.declaredName
+      optionStrings += declaredName
+
+      val jsonName = fieldBinding.jsonName
+      encodeNames += jsonName
+
+      // Make sure we have exactly 2*N unique option strings so the indexes line up. If the camel
+      // case name and the declared name are the same, pad the list with a bogus name.
+      optionStrings += if (jsonName == declaredName) "$jsonName\u0000" else jsonName
+    }
+    this.options = JsonReader.Options.of(*optionStrings.toTypedArray())
+    this.encodeNames = encodeNames
+  }
 
   private val jsonAdapters = fieldBindings.map { fieldBinding ->
     var fieldType: Type = fieldBinding.singleAdapter().type?.javaObjectType as Type
@@ -62,7 +82,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     }
     out.beginObject()
     fieldBindings.forEachIndexed { index, fieldBinding ->
-      out.name(fieldBinding.declaredName)
+      out.name(encodeNames[index])
       val value = fieldBinding[message]
       jsonAdapters[index]?.toJson(out, value)
     }
@@ -78,12 +98,13 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     val builder = messageAdapter.newBuilder()
     input.beginObject()
     while (input.hasNext()) {
-      val index = input.selectName(options)
-      if (index == -1) {
+      val option = input.selectName(options)
+      if (option == -1) {
         input.skipName()
         input.skipValue()
         continue
       }
+      val index = option / 2
       val fieldBinding = fieldBindings[index]
       val value = jsonAdapters[index]?.fromJson(input) ?: continue
 

@@ -28,4 +28,26 @@ class InternalTest {
     assertEquals("""[\,, \{, \}, \[, \], \\]""",
         sanitize(listOf(""",""", """{""", """}""", """[""", """]""", """\""")))
   }
+
+  @Test fun `camel case`() {
+    assertEquals("", camelCase(""))
+    assertEquals("", camelCase("_"))
+    assertEquals("", camelCase("__"))
+    assertEquals("aBC", camelCase("a_b_c"))
+    assertEquals("aBC", camelCase("a_b_c_"))
+    assertEquals("aBC", camelCase("ABC"))
+    assertEquals("aBC", camelCase("A_B_C"))
+    assertEquals("aBC", camelCase("A__B__C"))
+    assertEquals("aBC", camelCase("A__B__C__"))
+    assertEquals("ABC", camelCase("__A__B__C__"))
+    assertEquals("helloWorld", camelCase("HelloWorld"))
+    assertEquals("helloWorld", camelCase("helloWorld"))
+    assertEquals("helloWorld", camelCase("hello_world"))
+    assertEquals("HelloWorld", camelCase("_hello_world"))
+    assertEquals("HelloWorld", camelCase("_hello_world_"))
+    assertEquals("🦕", camelCase("🦕"))
+    assertEquals("hello🦕world", camelCase("hello_🦕world"))
+    assertEquals("hello🦕World", camelCase("hello_🦕_world"))
+  }
+
 }

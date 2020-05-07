@@ -34,6 +34,9 @@ import org.junit.Ignore
 import org.junit.Test
 import squareup.proto3.alltypes.AllTypes
 import squareup.proto3.alltypes.AllTypesOuterClass
+import squareup.proto3.alltypes.CamelCase
+import squareup.proto3.alltypes.CamelCase.NestedCamelCase
+import squareup.proto3.alltypes.CamelCaseOuterClass
 import squareup.proto3.pizza.BuyOneGetOnePromotion
 import squareup.proto3.pizza.FreeGarlicBreadPromotion
 import squareup.proto3.pizza.Pizza
@@ -325,7 +328,67 @@ class Proto3WireProtocCompatibilityTests {
     val parsed = allTypesAdapter.fromJson(IDENTITY_ALL_TYPES_JSON)
     assertThat(parsed).isEqualTo(allTypes)
     assertThat(parsed.toString()).isEqualTo(allTypes.toString())
-    assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes))}
+    assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes))
+  }
+
+  @Ignore("TODO")
+  @Test fun `int64s are encoded with quotes and decoded with either`() {
+    val allTypesAdapter: JsonAdapter<AllTypes> = moshi.adapter(AllTypes::class.java)
+
+    val model = AllTypes(squareup_proto3_alltypes_sint64 = 123)
+    assertThat(allTypesAdapter.fromJson("""{"sint64":"123"}""")).isEqualTo(model)
+    assertThat(allTypesAdapter.fromJson("""{"sint64":123}""")).isEqualTo(model)
+    assertThat(allTypesAdapter.fromJson("""{"sint64":123.0}""")).isEqualTo(model)
+
+    assertThat(allTypesAdapter.toJson(model)).isEqualTo("""{"sint64":"123"}""")
+  }
+
+  @Test fun `field names are encoded with camel case and decoded with either`() {
+    val nestedAdapter: JsonAdapter<NestedCamelCase> = moshi.adapter(NestedCamelCase::class.java)
+    val camelAdapter: JsonAdapter<CamelCase> = moshi.adapter(CamelCase::class.java)
+
+    val nested = NestedCamelCase(1)
+    assertThat(nestedAdapter.fromJson("""{"oneInt32":1}""")).isEqualTo(nested)
+    assertThat(nestedAdapter.fromJson("""{"one_int32":1}""")).isEqualTo(nested)
+
+    // Unknown fields.
+    assertThat(nestedAdapter.fromJson("""{"one__int32":1}""")).isEqualTo(NestedCamelCase())
+    assertThat(nestedAdapter.fromJson("""{"oneint32":1}""")).isEqualTo(NestedCamelCase())
+    assertThat(nestedAdapter.fromJson("""{"one_int_32":1}""")).isEqualTo(NestedCamelCase())
+    assertThat(nestedAdapter.fromJson("""{"OneInt32":1}""")).isEqualTo(NestedCamelCase())
+    assertThat(nestedAdapter.fromJson("""{"One_Int32":1}""")).isEqualTo(NestedCamelCase())
+
+    // Encoding.
+    assertThat(nestedAdapter.toJson(nested)).isEqualTo("""{"oneInt32":1}""")
+
+    // More fields
+    assertThat(camelAdapter.fromJson("""{"nestedMessage":{"oneInt32":1}}""")).isEqualTo(CamelCase(nested__message = NestedCamelCase(one_int32 = 1)))
+    assertThat(camelAdapter.fromJson("""{"nested__message":{"one_int32":1}}""")).isEqualTo(CamelCase(nested__message = NestedCamelCase(one_int32 = 1)))
+    assertThat(camelAdapter.fromJson("""{"RepInt32":[1, 2]}""")).isEqualTo(CamelCase(_Rep_int32 = listOf(1, 2)))
+    assertThat(camelAdapter.fromJson("""{"_Rep_int32":[1, 2]}""")).isEqualTo(CamelCase(_Rep_int32 = listOf(1, 2)))
+    assertThat(camelAdapter.fromJson("""{"iDitItMyWAy":"frank"}""")).isEqualTo(CamelCase(IDitIt_my_wAy = "frank"))
+    assertThat(camelAdapter.fromJson("""{"IDitIt_my_wAy":"frank"}""")).isEqualTo(CamelCase(IDitIt_my_wAy = "frank"))
+    assertThat(camelAdapter.fromJson("""{"mapInt32Int32":{"1":2}}""")).isEqualTo(CamelCase(map_int32_Int32 = mapOf(1 to 2)))
+    assertThat(camelAdapter.fromJson("""{"map_int32_Int32":{"1":2}}""")).isEqualTo(CamelCase(map_int32_Int32 = mapOf(1 to 2)))
+
+    // Encoding.
+    val camel = CamelCase(
+        nested__message = NestedCamelCase(1),
+        _Rep_int32 = listOf(1, 2),
+        IDitIt_my_wAy = "frank",
+        map_int32_Int32 = mapOf(1 to 2)
+    )
+    assertThat(camelAdapter.toJson(camel)).isEqualTo(
+        """{"nestedMessage":{"oneInt32":1},"RepInt32":[1,2],"iDitItMyWAy":"frank","mapInt32Int32":{"1":2}}""")
+
+    // Confirm protoc prints the same.
+    val protocCamel = CamelCaseOuterClass.CamelCase.newBuilder()
+        .setNestedMessage(CamelCaseOuterClass.CamelCase.NestedCamelCase.newBuilder().setOneInt32(1))
+        .addAllRepInt32(listOf(1, 2))
+        .setIDitItMyWAy("frank")
+        .putMapInt32Int32(1, 2)
+    assertJsonEquals(camelAdapter.toJson(camel), JsonFormat.printer().print(protocCamel))
+  }
 
   companion object {
     private val moshi = Moshi.Builder()

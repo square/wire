@@ -29,3 +29,29 @@ actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> = this
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> = this
+
+// TODO: Use code points to process each char.
+actual fun camelCase(string: String): String {
+  return buildString(string.length) {
+    var index = 0
+    var uppercase = false
+    while (index < string.length) {
+      var char = string[index]
+      if (index == 0) {
+        if (char in 'A'..'Z') char = char.toLowerCase()
+      }
+
+      index++
+
+      if (char == '_') {
+        uppercase = true
+        continue
+      }
+      if (uppercase) {
+        if (char in 'a'..'z') char = char.toUpperCase()
+      }
+      append(char)
+      uppercase = false
+    }
+  }
+}

@@ -51,7 +51,12 @@ annotation class WireField(
    * only when the declared name differs from the generated one; for instance, a proto field named
    * `final` generated in Java will be renamed to `final_`.
    */
-  val declaredName: String = ""
+  val declaredName: String = "",
+  /**
+   * Name representing this field as it should be used in JSON. This value is set to a non-empty
+   * string only when the json name differs from the name as declared in the proto schema.
+   */
+  val jsonName: String = ""
 ) {
 
   /** A protocol buffer label.  */

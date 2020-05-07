@@ -796,6 +796,11 @@ class KotlinGenerator private constructor(
             addMember("declaredName = %S", field.name)
           }
         }
+        .apply {
+          if (field.jsonName != field.name) {
+            addMember("jsonName = %S", field.jsonName!!)
+          }
+        }
         .build()
   }
 

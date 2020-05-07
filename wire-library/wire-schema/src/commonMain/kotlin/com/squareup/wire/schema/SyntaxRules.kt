@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.internal.camelCase
 import com.squareup.wire.schema.ProtoFile.Syntax
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2
 import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
@@ -30,6 +31,7 @@ interface SyntaxRules {
     label: Field.Label?,
     isPacked: Boolean
   ): Field.EncodeMode
+  fun jsonName(declaredName:String): String
 
   companion object {
     fun get(syntax: Syntax?): SyntaxRules {
@@ -64,6 +66,8 @@ interface SyntaxRules {
           null -> if (protoType.isMap) Field.EncodeMode.MAP else Field.EncodeMode.NULL_IF_ABSENT
         }
       }
+
+      override fun jsonName(declaredName: String): String = declaredName
     }
 
     internal val PROTO_3_SYNTAX_RULES = object : SyntaxRules {
@@ -96,6 +100,8 @@ interface SyntaxRules {
 
         return Field.EncodeMode.IDENTITY_IF_ABSENT
       }
+
+      override fun jsonName(declaredName: String): String = camelCase(declaredName)
     }
   }
 }

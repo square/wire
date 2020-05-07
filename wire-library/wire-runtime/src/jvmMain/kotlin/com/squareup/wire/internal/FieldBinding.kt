@@ -34,6 +34,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   val name: String = messageField.name
   val declaredName: String =
       if (wireField.declaredName.isEmpty()) messageField.name else wireField.declaredName
+  val jsonName: String = if (wireField.jsonName.isEmpty()) declaredName else wireField.jsonName
   val tag: Int = wireField.tag
   private val keyAdapterString = wireField.keyAdapter
   private val adapterString = wireField.adapter

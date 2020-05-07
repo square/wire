@@ -90,6 +90,10 @@ class Field private constructor(
   val isPacked: Boolean
     get() = encodeMode == EncodeMode.PACKED
 
+  // Null until this field is linked.
+  var jsonName: String? = null
+    private set
+
   private fun isPackable(linker: Linker, type: ProtoType): Boolean {
     return type != ProtoType.STRING &&
         type != ProtoType.BYTES &&
@@ -110,6 +114,7 @@ class Field private constructor(
     isRedacted = options.optionMatches(".*\\.redacted", "true")
 
     encodeMode = syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true")
+    jsonName = syntaxRules.jsonName(name)
   }
 
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
@@ -166,6 +171,7 @@ class Field private constructor(
     result.deprecated = deprecated
     result.encodeMode = encodeMode
     result.isRedacted = isRedacted
+    result.jsonName = jsonName
     return result
   }
 
