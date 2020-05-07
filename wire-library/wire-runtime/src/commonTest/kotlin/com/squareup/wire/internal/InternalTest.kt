@@ -49,5 +49,4 @@ class InternalTest {
     assertEquals("hello🦕world", camelCase("hello_🦕world"))
     assertEquals("hello🦕World", camelCase("hello_🦕_world"))
   }
-
 }
