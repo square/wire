@@ -29,7 +29,7 @@ class InternalTest {
         sanitize(listOf(""",""", """{""", """}""", """[""", """]""", """\""")))
   }
 
-  @Test fun `camel case`() {
+  @Test fun camelCase() {
     assertEquals("", camelCase(""))
     assertEquals("", camelCase("_"))
     assertEquals("", camelCase("__"))
