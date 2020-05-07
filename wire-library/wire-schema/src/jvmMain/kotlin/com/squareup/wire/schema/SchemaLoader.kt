@@ -127,6 +127,7 @@ class SchemaLoader {
     loaded[DESCRIPTOR_PROTO] = loadSpecialProto(DESCRIPTOR_PROTO)
     loaded[ANY_PROTO] = loadSpecialProto(ANY_PROTO)
 
+    val skippedForSyntax = mutableListOf<ProtoFile>()
     while (!protos.isEmpty()) {
       val proto = protos.removeFirst()
       if (loaded.containsKey(proto)) continue
@@ -150,12 +151,25 @@ class SchemaLoader {
         throw FileNotFoundException("Failed to locate $proto in $sources")
       }
 
-      loaded[proto] = ProtoFile.get(element)
+      val protoFile = ProtoFile.get(element)
+      if (protoFile.syntax == ProtoFile.Syntax.PROTO_3) {
+        skippedForSyntax += protoFile
+        continue
+      }
+
+      loaded[proto] = protoFile
 
       // Queue dependencies to be loaded.
       for (importPath in element.imports) {
         protos.addLast(importPath)
       }
+    }
+
+    if (skippedForSyntax.isNotEmpty()) {
+      println("""Skipped .proto files with unsupported syntax. Add this line to fix:
+          |  syntax = "proto2";
+          |  ${skippedForSyntax.joinToString(separator = "\n  ") { it.location.toString() }}
+          """.trimMargin())
     }
 
     return Linker(CoreLoader).link(loaded.values)
