@@ -220,6 +220,15 @@ class Field private constructor(
 
   override fun toString() = name
 
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other !is Field) return false
+
+    return name == other.name &&
+        packageName == other.packageName &&
+        elementType == other.elementType &&
+        location.toString() == other.location.toString()
+  }
+
   enum class Label {
     OPTIONAL,
     REQUIRED,

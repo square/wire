@@ -98,7 +98,15 @@ class MessageType private constructor(
   }
 
   fun addExtensionFields(fields: List<Field>) {
-    extensionFields.addAll(fields)
+    fields.forEach { field ->
+      if (field !in extensionFields) {
+        // We keep ordering.
+        extensionFields.remove(field)
+        extensionFields.add(field)
+      } else {
+        println("We're duplicating extension fields: $field to $this")
+      }
+    }
   }
 
   override fun linkMembers(linker: Linker) {

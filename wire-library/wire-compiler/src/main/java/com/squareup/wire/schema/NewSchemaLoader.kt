@@ -135,7 +135,7 @@ class NewSchemaLoader(
     if (protoFilePath.location.base.isEmpty()
         && protoFilePath.location.path != importPath
         && !protoFilePath.location.path.endsWith("/$importPath")) {
-      errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
+//      errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
     }
 
     return protoFile
