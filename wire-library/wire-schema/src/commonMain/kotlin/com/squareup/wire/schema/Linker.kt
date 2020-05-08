@@ -324,10 +324,12 @@ class Linker {
   /** Validate that the tags of [fields] are unique and in range. */
   fun validateFields(
     fields: Iterable<Field>,
-    reserveds: List<Reserved>
+    reserveds: List<Reserved>,
+    syntaxRules: SyntaxRules
   ) {
     val tagToField = linkedMapOf<Int, MutableSet<Field>>()
     val nameToField = linkedMapOf<String, MutableSet<Field>>()
+    val jsonNameToField = linkedMapOf<String, MutableSet<Field>>()
 
     for (field in fields) {
       val tag = field.tag
@@ -344,8 +346,12 @@ class Linker {
         }
       }
 
-      tagToField.getOrPut(tag, { mutableSetOf() }).also { it += field }
-      nameToField.getOrPut(field.qualifiedName, { mutableSetOf() }).also { it += field }
+      tagToField.getOrPut(tag, { mutableSetOf() }).add(field)
+      nameToField.getOrPut(field.qualifiedName, { mutableSetOf() }).add(field)
+      // We allow JSON collisions for extensions.
+      if (!field.isExtension) {
+        jsonNameToField.getOrPut(syntaxRules.jsonName(field.name), { mutableSetOf() }).add(field)
+      }
     }
 
     for ((key, values) in tagToField) {
@@ -359,8 +365,10 @@ class Linker {
       }
     }
 
+    var hasCollidingFields = false
     for (collidingFields in nameToField.values) {
       if (collidingFields.size > 1) {
+        hasCollidingFields = true
         val first = collidingFields.iterator().next()
         val error = StringBuilder()
         error.append("multiple fields share name ${first.name}:")
@@ -368,6 +376,19 @@ class Linker {
           error.append("\n  ${index + 1}. ${field.name} (${field.location})")
         }
         addError(error.toString())
+      }
+    }
+
+    if (!hasCollidingFields) {
+      for ((jsonName, fields) in jsonNameToField) {
+        if (fields.size > 1) {
+          val error = StringBuilder()
+          error.append("multiple fields share same JSON camel-case name '${jsonName}':")
+          fields.forEachIndexed { index, field ->
+            error.append("\n  ${index + 1}. ${field.name} (${field.location})")
+          }
+          addError(error.toString())
+        }
       }
     }
   }

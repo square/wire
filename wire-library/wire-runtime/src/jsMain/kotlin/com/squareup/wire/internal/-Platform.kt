@@ -16,7 +16,6 @@
 package com.squareup.wire.internal
 
 import okio.IOException
-import kotlin.reflect.KClass
 
 actual interface Serializable
 

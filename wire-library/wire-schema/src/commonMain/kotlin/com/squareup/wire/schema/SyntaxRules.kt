@@ -31,7 +31,8 @@ interface SyntaxRules {
     label: Field.Label?,
     isPacked: Boolean
   ): Field.EncodeMode
-  fun jsonName(declaredName:String): String
+
+  fun jsonName(name: String): String
 
   companion object {
     fun get(syntax: Syntax?): SyntaxRules {
@@ -67,7 +68,7 @@ interface SyntaxRules {
         }
       }
 
-      override fun jsonName(declaredName: String): String = declaredName
+      override fun jsonName(name: String): String = name
     }
 
     internal val PROTO_3_SYNTAX_RULES = object : SyntaxRules {
@@ -101,7 +102,7 @@ interface SyntaxRules {
         return Field.EncodeMode.IDENTITY_IF_ABSENT
       }
 
-      override fun jsonName(declaredName: String): String = camelCase(declaredName)
+      override fun jsonName(name: String): String = camelCase(name)
     }
   }
 }
