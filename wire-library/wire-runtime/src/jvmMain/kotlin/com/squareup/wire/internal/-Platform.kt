@@ -32,3 +32,28 @@ actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T>
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
     Collections.unmodifiableMap(this)
+
+actual fun camelCase(string: String): String {
+  return buildString(string.length) {
+    var index = 0
+    var uppercase = false
+    while (index < string.length) {
+      var codePoint = string.codePointAt(index)
+      if (index == 0) {
+        if (codePoint in 'A'.toInt()..'Z'.toInt()) codePoint -= 'A' - 'a'
+      }
+
+      index += Character.charCount(codePoint)
+
+      if (codePoint == '_'.toInt()) {
+        uppercase = true
+        continue
+      }
+      if (uppercase) {
+        if (codePoint in 'a'.toInt()..'z'.toInt()) codePoint += 'A' - 'a'
+      }
+      appendCodePoint(codePoint)
+      uppercase = false
+    }
+  }
+}
