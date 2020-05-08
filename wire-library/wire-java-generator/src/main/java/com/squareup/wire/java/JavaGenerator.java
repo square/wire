@@ -1169,7 +1169,7 @@ public final class JavaGenerator {
     }
 
     if (!field.getJsonName().equals(field.getName())) {
-      result.addMember("jsonName = %s", field.getJsonName());
+      result.addMember("jsonName", "$S", field.getJsonName());
     }
 
     return result.build();

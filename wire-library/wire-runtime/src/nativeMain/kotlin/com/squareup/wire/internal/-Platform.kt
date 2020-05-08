@@ -38,7 +38,7 @@ actual fun camelCase(string: String): String {
     while (index < string.length) {
       var char = string[index]
       if (index == 0) {
-        if (char in 'A'..'Z') char = char.toLowerCase()
+        if (char in 'A'..'Z') char -= 'A' - 'a'
       }
 
       index++
@@ -48,7 +48,7 @@ actual fun camelCase(string: String): String {
         continue
       }
       if (uppercase) {
-        if (char in 'a'..'z') char = char.toUpperCase()
+        if (char in 'a'..'z') char += 'A' - 'a'
       }
       append(char)
       uppercase = false

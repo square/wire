@@ -40,7 +40,7 @@ actual fun camelCase(string: String): String {
     while (index < string.length) {
       var codePoint = string.codePointAt(index)
       if (index == 0) {
-        if (codePoint in 'A'.toInt()..'Z'.toInt()) codePoint += 'a' - 'A'
+        if (codePoint in 'A'.toInt()..'Z'.toInt()) codePoint -= 'A' - 'a'
       }
 
       index += Character.charCount(codePoint)
