@@ -15,7 +15,6 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.schema.ProtoType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.File
@@ -95,15 +94,14 @@ class CommandLineOptionsTest {
   @Test
   fun roots() {
     var compiler = parseArgs("--java_out=.")
-    assertThat(compiler.pruningRules.isEmpty).isTrue()
+    assertThat(compiler.treeShakingRoots).containsExactly("*")
+    assertThat(compiler.treeShakingRubbish).isEmpty()
 
     compiler = parseArgs("--java_out=.", "--includes=com.example.Foo")
-    assertThat(compiler.pruningRules.isRoot(ProtoType.get("com.example.Foo"))).isTrue()
-    assertThat(compiler.pruningRules.isRoot(ProtoType.get("com.example.Bar"))).isFalse()
+    assertThat(compiler.treeShakingRoots).containsExactly("com.example.Foo")
 
     compiler = parseArgs("--java_out=.", "--includes=com.example.Foo,com.example.Bar")
-    assertThat(compiler.pruningRules.isRoot(ProtoType.get("com.example.Foo"))).isTrue()
-    assertThat(compiler.pruningRules.isRoot(ProtoType.get("com.example.Bar"))).isTrue()
+    assertThat(compiler.treeShakingRoots).containsExactly("com.example.Foo", "com.example.Bar")
   }
 
   private fun parseArgs(vararg args: String) = WireCompiler.forArgs(args = *args)

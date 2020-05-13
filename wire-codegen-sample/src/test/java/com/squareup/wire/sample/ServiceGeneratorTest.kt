@@ -18,8 +18,9 @@ package com.squareup.wire.sample
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import com.squareup.wire.java.JavaGenerator
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.NewSchemaLoader
 import com.squareup.wire.schema.Schema
-import com.squareup.wire.schema.SchemaLoader
 import okio.buffer
 import okio.sink
 import org.assertj.core.api.Assertions.assertThat
@@ -28,6 +29,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 import java.io.IOException
+import java.nio.file.FileSystems
 
 class ServiceGeneratorTest {
   @get:Rule
@@ -88,8 +90,8 @@ class ServiceGeneratorTest {
 
   @Throws(IOException::class)
   private fun schema(fileToProto: Map<String, String>): Schema {
-    val schemaLoader = SchemaLoader()
-    schemaLoader.addSource(temporaryFolder.root)
+    val schemaLoader = NewSchemaLoader(FileSystems.getDefault())
+    schemaLoader.initRoots(listOf(Location.get(temporaryFolder.root.toString())))
     for (entry in fileToProto.entries) {
       val file = File(temporaryFolder.root, entry.key)
       file.parentFile
@@ -97,9 +99,8 @@ class ServiceGeneratorTest {
       file.sink()
           .buffer()
           .use { out -> out.writeUtf8(entry.value) }
-      schemaLoader.addProto(entry.key)
     }
-    return schemaLoader.load()
+    return schemaLoader.loadSchema()
   }
 
   @Throws(IOException::class)
