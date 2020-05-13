@@ -19,9 +19,9 @@ import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
 import com.squareup.javapoet.ClassName
 import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.NewSchemaLoader
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.RepoBuilder
-import com.squareup.wire.schema.SchemaLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.MapEntry
 import org.junit.Assert.fail
@@ -115,9 +115,11 @@ class ProfileLoaderTest {
     )
     zipOutputStream.close()
 
-    val schema = SchemaLoader()
-        .addSource(zip)
-        .load()
+    val schema = NewSchemaLoader(fileSystem)
+        .apply {
+          initRoots(sourcePath = listOf(Location.get(zip.toString())))
+        }
+        .loadSchema()
     val profile = ProfileLoader(fileSystem, "android")
         .schema(schema)
         .load()

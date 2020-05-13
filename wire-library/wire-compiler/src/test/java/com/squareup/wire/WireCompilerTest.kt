@@ -326,9 +326,11 @@ class WireCompilerTest {
     compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService", "--dry_run",
         "--quiet")
 
-    assertThat(logger!!.log).contains(
-        testDir.absolutePath + " com.squareup.wire.protos.roots.TheRequest\n",
-        testDir.absolutePath + " com.squareup.wire.protos.roots.TheResponse\n")
+    assertThat(logger!!.log).isEqualTo("""
+        |skipped squareup.wire.protos.roots.TheRequest
+        |skipped squareup.wire.protos.roots.TheResponse
+        |skipped squareup.wire.protos.roots.TheService
+        |""".trimMargin())
   }
 
   @Test

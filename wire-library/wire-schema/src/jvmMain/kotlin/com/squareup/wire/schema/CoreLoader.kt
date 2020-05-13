@@ -30,15 +30,16 @@ import okio.source
  * If the user has provided their own version of these protos, those are preferred.
  */
 actual object CoreLoader : Loader {
-  const val ANY_PROTO = "google/protobuf/any.proto"
-  const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
-  const val WIRE_EXTENSIONS_PROTO = "wire/extensions.proto"
+  private const val ANY_PROTO = "google/protobuf/any.proto"
+  private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
+  private const val WIRE_EXTENSIONS_PROTO = "wire/extensions.proto"
+
+  /** A special base directory used for Wire's built-in .proto files. */
+  const val WIRE_RUNTIME_JAR = "wire-runtime.jar"
 
   override fun load(path: String): ProtoFile {
-    if (path == ANY_PROTO ||
-        path == DESCRIPTOR_PROTO ||
-        path == WIRE_EXTENSIONS_PROTO) {
-      val resourceAsStream = SchemaLoader::class.java.getResourceAsStream("/$path")
+    if (isWireRuntimeProto(path)) {
+      val resourceAsStream = CoreLoader::class.java.getResourceAsStream("/$path")
       resourceAsStream.source().buffer().use { source ->
         val data = source.readUtf8()
         val location = Location.get(path)
@@ -48,5 +49,16 @@ actual object CoreLoader : Loader {
     }
 
     throw error("unexpected load: $path")
+  }
+
+  fun isWireRuntimeProto(location: Location): Boolean {
+    return location.base == WIRE_RUNTIME_JAR && isWireRuntimeProto(location.path)
+  }
+
+  /** Returns true if [path] is bundled in the wire runtime. */
+  fun isWireRuntimeProto(path: String): Boolean {
+    return path == ANY_PROTO ||
+        path == DESCRIPTOR_PROTO ||
+        path == WIRE_EXTENSIONS_PROTO
   }
 }
