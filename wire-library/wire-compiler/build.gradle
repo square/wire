@@ -39,3 +39,10 @@ artifacts {
 shadowDistTar.enabled = false
 shadowDistZip.enabled = false
 configurations.archives.artifacts.removeAll { it.file =~ 'tar' || it.file =~ 'zip' }
+
+test {
+  testLogging {
+    events "skipped", "failed"
+    exceptionFormat "full"
+  }
+}
