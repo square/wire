@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 3.2.2
+-------------
+
+_2020-05-15_
+
+ * Fix: JSON serialization correctly emits all values.
+
 Version 3.2.1
 -------------
 
