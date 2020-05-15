@@ -65,7 +65,9 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     val syntheticQualifier: Class<out Annotation>? = when {
       fieldBinding.singleAdapter() === ProtoAdapter.UINT64 -> Uint64::class.java
       fieldBinding.label.isOneOf -> null
-      else -> IdentityIfAbsent::class.java
+      // TODO(benoit) We cannot use it until we read the `encodeMode` instead of the `label`.
+      // else -> IdentityIfAbsent::class.java
+      else -> null
     }
 
     return@map when {

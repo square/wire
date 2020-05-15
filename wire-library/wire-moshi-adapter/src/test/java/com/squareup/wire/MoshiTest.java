@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
-import org.junit.Ignore;
 import org.junit.Test;
 import squareup.keywords.KeywordJava;
 import squareup.keywords.KeywordKotlin;
@@ -103,6 +102,7 @@ public class MoshiTest {
       + "\"map_string_string\":{\"key\":\"value\"},"
       + "\"map_string_message\":{\"message\":{\"a\":1}},"
       + "\"map_string_enum\":{\"enum\":\"A\"},"
+      + "\"oneof_int32\":4444,"
       + "\"ext_opt_int32\":2147483647,"
       + "\"ext_opt_int64\":-4611686018427387726,"
       + "\"ext_opt_uint64\":13835058055282163890,"
@@ -148,10 +148,155 @@ public class MoshiTest {
       + "\"ext_map_string_message\":{\"message\":{\"a\":1}},"
       + "\"ext_map_string_enum\":{\"enum\":\"A\"}}";
 
+  // Note: In proto2, all values, including what is considered identity values in proto3 should be
+  // emitted.
+  private static final String JSON_IDENTITY = "{\n"
+      + "\"opt_int32\":0,\n"
+      + "\"opt_uint32\":0,\n"
+      + "\"opt_sint32\":0,\n"
+      + "\"opt_fixed32\":0,\n"
+      + "\"opt_sfixed32\":0,\n"
+      + "\"opt_int64\":0,\n"
+      + "\"opt_uint64\":0,\n"
+      + "\"opt_sint64\":0,\n"
+      + "\"opt_fixed64\":0,\n"
+      + "\"opt_sfixed64\":0,\n"
+      + "\"opt_bool\":false,\n"
+      + "\"opt_float\":0.0,\n"
+      + "\"opt_double\":0.0,\n"
+      + "\"opt_string\":\"\",\n"
+      + "\"opt_bytes\":\"\",\n"
+      + "\"opt_nested_enum\":\"A\",\n"
+      + "\"req_int32\":0,\n"
+      + "\"req_uint32\":0,\n"
+      + "\"req_sint32\":0,\n"
+      + "\"req_fixed32\":0,\n"
+      + "\"req_sfixed32\":0,\n"
+      + "\"req_int64\":0,\n"
+      + "\"req_uint64\":0,\n"
+      + "\"req_sint64\":0,\n"
+      + "\"req_fixed64\":0,\n"
+      + "\"req_sfixed64\":0,\n"
+      + "\"req_bool\":true,\n"
+      + "\"req_float\":0.0,\n"
+      + "\"req_double\":0.0,\n"
+      + "\"req_string\":\"\",\n"
+      + "\"req_bytes\":\"\",\n"
+      + "\"req_nested_enum\":\"A\",\n"
+      + "\"req_nested_message\":{\"a\":0},\n"
+      + "\"rep_int32\":[],\n"
+      + "\"rep_uint32\":[],\n"
+      + "\"rep_sint32\":[],\n"
+      + "\"rep_fixed32\":[],\n"
+      + "\"rep_sfixed32\":[],\n"
+      + "\"rep_int64\":[],\n"
+      + "\"rep_uint64\":[],\n"
+      + "\"rep_sint64\":[],\n"
+      + "\"rep_fixed64\":[],\n"
+      + "\"rep_sfixed64\":[],\n"
+      + "\"rep_bool\":[],\n"
+      + "\"rep_float\":[],\n"
+      + "\"rep_double\":[],\n"
+      + "\"rep_string\":[],\n"
+      + "\"rep_bytes\":[],\n"
+      + "\"rep_nested_enum\":[],\n"
+      + "\"rep_nested_message\":[],\n"
+      + "\"pack_int32\":[],\n"
+      + "\"pack_uint32\":[],\n"
+      + "\"pack_sint32\":[],\n"
+      + "\"pack_fixed32\":[],\n"
+      + "\"pack_sfixed32\":[],\n"
+      + "\"pack_int64\":[],\n"
+      + "\"pack_uint64\":[],\n"
+      + "\"pack_sint64\":[],\n"
+      + "\"pack_fixed64\":[],\n"
+      + "\"pack_sfixed64\":[],\n"
+      + "\"pack_bool\":[],\n"
+      + "\"pack_float\":[],\n"
+      + "\"pack_double\":[],\n"
+      + "\"pack_nested_enum\":[],\n"
+      + "\"map_int32_int32\":{},\n"
+      + "\"map_string_string\":{},\n"
+      + "\"map_string_message\":{},\n"
+      + "\"map_string_enum\":{},\n"
+      + "\"ext_rep_int32\":[],\n"
+      + "\"ext_rep_uint32\":[],\n"
+      + "\"ext_rep_sint32\":[],\n"
+      + "\"ext_rep_fixed32\":[],\n"
+      + "\"ext_rep_sfixed32\":[],\n"
+      + "\"ext_rep_int64\":[],\n"
+      + "\"ext_rep_uint64\":[],\n"
+      + "\"ext_rep_sint64\":[],\n"
+      + "\"ext_rep_fixed64\":[],\n"
+      + "\"ext_rep_sfixed64\":[],\n"
+      + "\"ext_rep_bool\":[],\n"
+      + "\"ext_rep_float\":[],\n"
+      + "\"ext_rep_double\":[],\n"
+      + "\"ext_rep_string\":[],\n"
+      + "\"ext_rep_bytes\":[],\n"
+      + "\"ext_rep_nested_enum\":[],\n"
+      + "\"ext_rep_nested_message\":[],\n"
+      + "\"ext_pack_int32\":[],\n"
+      + "\"ext_pack_uint32\":[],\n"
+      + "\"ext_pack_sint32\":[],\n"
+      + "\"ext_pack_fixed32\":[],\n"
+      + "\"ext_pack_sfixed32\":[],\n"
+      + "\"ext_pack_int64\":[],\n"
+      + "\"ext_pack_uint64\":[],\n"
+      + "\"ext_pack_sint64\":[],\n"
+      + "\"ext_pack_fixed64\":[],\n"
+      + "\"ext_pack_sfixed64\":[],\n"
+      + "\"ext_pack_bool\":[],\n"
+      + "\"ext_pack_float\":[],\n"
+      + "\"ext_pack_double\":[],\n"
+      + "\"ext_pack_nested_enum\":[],\n"
+      + "\"ext_map_int32_int32\":{},\n"
+      + "\"ext_map_string_string\":{},\n"
+      + "\"ext_map_string_message\":{},\n"
+      + "\"ext_map_string_enum\":{}}";
+
   // Return a two-element list with a given repeated value
   @SuppressWarnings("unchecked")
   private static <T> List<T> list(T x) {
     return Arrays.asList(x, x);
+  }
+
+  private static AllTypes.Builder createIdentityBuilder() {
+    return new AllTypes.Builder()
+        .opt_int32(0)
+        .opt_uint32(0)
+        .opt_sint32(0)
+        .opt_fixed32(0)
+        .opt_sfixed32(0)
+        .opt_int64(0L)
+        .opt_uint64(0L)
+        .opt_sint64(0L)
+        .opt_fixed64(0L)
+        .opt_sfixed64(0L)
+        .opt_bool(false)
+        .opt_float(0F)
+        .opt_double(0.0)
+        .opt_string("")
+        .opt_bytes(ByteString.EMPTY)
+        .opt_nested_enum(AllTypes.NestedEnum.A)
+        .opt_nested_message(null)
+        .req_int32(0)
+        .req_uint32(0)
+        .req_sint32(0)
+        .req_fixed32(0)
+        .req_sfixed32(0)
+        .req_int64(0L)
+        .req_uint64(0L)
+        .req_sint64(0L)
+        .req_fixed64(0L)
+        .req_sfixed64(0L)
+        .req_bool(true)
+        .req_float(0F)
+        .req_double(0.0)
+        .req_string("")
+        .req_bytes(ByteString.EMPTY)
+        .req_nested_enum(AllTypes.NestedEnum.A)
+        .req_nested_message(new AllTypes.NestedMessage.Builder().a(0).build());
   }
 
   private static AllTypes.Builder createBuilder() {
@@ -227,6 +372,7 @@ public class MoshiTest {
         .map_string_string(singletonMap("key", "value"))
         .map_string_message(singletonMap("message", new AllTypes.NestedMessage(1)))
         .map_string_enum(singletonMap("enum", AllTypes.NestedEnum.A))
+        .oneof_int32(4444)
         .ext_opt_int32(Integer.MAX_VALUE)
         .ext_opt_int64(Long.MIN_VALUE / 2 + 178)
         .ext_opt_uint64(Long.MIN_VALUE / 2 + 178)
@@ -275,6 +421,36 @@ public class MoshiTest {
     assertThat(parsed).isEqualTo(allTypes);
     assertThat(parsed.toString()).isEqualTo(allTypes.toString());
     assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes));
+  }
+
+  @Test public void serializationOfIdentityAllTypes() {
+    AllTypes allTypes = createIdentityBuilder().build();
+    assertJsonEquals(moshi.adapter(AllTypes.class).toJson(allTypes), JSON_IDENTITY);
+  }
+
+  @SuppressWarnings("ConstantConditions")
+  @Test public void deserializationOfIdentityAllTypes() throws IOException {
+    JsonAdapter<AllTypes> allTypesAdapter = moshi.adapter(AllTypes.class);
+
+    AllTypes allTypes = createIdentityBuilder().build();
+    AllTypes parsed = allTypesAdapter.fromJson(JSON_IDENTITY);
+    assertThat(parsed).isEqualTo(allTypes);
+    assertThat(parsed.toString()).isEqualTo(allTypes.toString());
+    assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes));
+  }
+
+  @SuppressWarnings("ConstantConditions")
+  @Test public void notIdentityOneOf() throws IOException {
+    JsonAdapter<AllTypes> allTypesAdapter = moshi.adapter(AllTypes.class);
+
+    AllTypes allTypes = createIdentityBuilder().oneof_int32(0).build();
+    assertThat(allTypesAdapter.toJson(allTypes)).contains("\"oneof_int32\":0");
+
+    AllTypes parsed = allTypesAdapter.fromJson(JSON_IDENTITY);
+    assertThat(parsed.oneof_int32).isNull();
+    String json = JSON_IDENTITY.substring(0, JSON_IDENTITY.length() - 1) + ",\"oneof_int32\":0}";
+    parsed = allTypesAdapter.fromJson(json);
+    assertThat(parsed.oneof_int32).isEqualTo(0);
   }
 
   @Test public void omitsUnknownFields() {
