@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.protos3.kotlin.person.Person
+import okio.ByteString.Companion.decodeHex
 import squareup.protos.packed_encoding.EmbeddedMessage
 import squareup.protos.packed_encoding.OuterMessage
 import kotlin.test.Test
@@ -37,5 +39,15 @@ class ProtoAdapterTest {
     val outerMessagesAfterSerialisation = OuterMessage.ADAPTER
         .decode(OuterMessage.ADAPTER.encode(outerMessage))
     assertEquals(outerMessagesAfterSerialisation, outerMessage)
+  }
+
+  @Test fun getFromClassProto3() {
+    val person = Person(
+        name = "Somebody",
+        phones = listOf(Person.PhoneNumber())
+    )
+    val hexByteString = "0a08536f6d65626f64792200"
+    assertEquals(hexByteString, Person.ADAPTER.encodeByteString(person).hex())
+    assertEquals(person, Person.ADAPTER.decode(hexByteString.decodeHex()))
   }
 }

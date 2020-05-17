@@ -1027,6 +1027,9 @@ class KotlinGenerator private constructor(
       add("return \n⇥")
       message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
+        if (field.encodeMode == EncodeMode.IDENTITY_IF_ABSENT) {
+          add("if (value.%L == %L) 0\nelse ", fieldName, field.identityValue)
+        }
         add("%L.encodedSizeWithTag(%L, value.%L) +\n", adapterFor(field), field.tag, fieldName)
       }
       add("value.unknownFields.size⇤\n")
