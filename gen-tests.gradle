@@ -108,6 +108,18 @@ task generateKotlinGsonTests(type: JavaExec) {
           'keyword.proto',
   ]
 }
+task generateGsonTypeAdapterTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes for gson tests'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-library/wire-gson-support/src/test/proto3',
+          '--kotlin_out=wire-library/wire-gson-support/src/test/kotlin',
+          '--java_interop',
+          'airport_location.proto',
+  ]
+}
 task generateJavaGsonTests(type: JavaExec) {
   group = 'Generate Tests'
   description = 'Generates Java classes for gson tests'
@@ -120,7 +132,7 @@ task generateJavaGsonTests(type: JavaExec) {
   ]
 }
 task generateGsonTests(dependsOn: [copyAllTypesTest, copyRepeatedPackedAndMapTest,
-    generateKotlinGsonTests, generateJavaGsonTests]) {
+    generateKotlinGsonTests, generateJavaGsonTests, generateGsonTypeAdapterTests]) {
   group = 'Generate Tests'
   description = 'Generates Java and Kotlin classes that use Gson from the test protos'
 }

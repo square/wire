@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package squareup.protos.airoport;
+
+option java_package = "com.squareup.wire.protos";
+
+message AirportLocation {
+  string airport_name = 1;
+  string city_name = 2;
+  string country_name = 3;
+}
