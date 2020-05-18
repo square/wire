@@ -403,5 +403,6 @@ task cleanGeneratedTests(type: Delete) {
          'wire-library/wire-tests/src/jvmJavaPrunedTest/proto-java',
          'wire-library/wire-tests/src/jvmJavaTest/proto-java',
          'wire-library/wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
-         'wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin'
+         'wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
+         'wire-library/wire-gson-support/src/test/kotlin/com/squareup/wire/protos'
 }
