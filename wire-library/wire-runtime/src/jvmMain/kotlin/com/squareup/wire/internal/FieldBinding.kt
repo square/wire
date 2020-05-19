@@ -59,10 +59,20 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   private fun getBuilderMethod(builderType: Class<*>, name: String, type: Class<*>): Method {
+    val errorMessage = "No builder method ${builderType.name}.$name(${type.name})"
     try {
       return builderType.getMethod(name, type)
     } catch (_: NoSuchMethodException) {
-      throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
+      val primitiveType = BOXED_TO_PRIMITIVE[type]
+      if (primitiveType != null) {
+        try {
+          return builderType.getMethod(name, primitiveType)
+        } catch (_: NoSuchMethodException) {
+          throw AssertionError(errorMessage)
+        }
+      }
+
+      throw AssertionError(errorMessage)
     }
   }
 
@@ -136,4 +146,18 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   operator fun get(message: M): Any? = messageField.get(message)
 
   internal fun getFromBuilder(builder: B): Any? = builderField.get(builder)
+
+  companion object {
+    private val BOXED_TO_PRIMITIVE = mapOf(
+        Boolean::class.java to Boolean::class.javaPrimitiveType,
+        Byte::class.java to Byte::class.javaPrimitiveType,
+        Character::class.java to Character::class.javaPrimitiveType,
+        Double::class.java to Double::class.javaPrimitiveType,
+        Float::class.java to Float::class.javaPrimitiveType,
+        Integer::class.java to Integer::class.javaPrimitiveType,
+        Long::class.java to Long::class.javaPrimitiveType,
+        Short::class.java to Short::class.javaPrimitiveType,
+        Void::class.java to Void::class.javaPrimitiveType
+    )
+  }
 }
