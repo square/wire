@@ -25,9 +25,11 @@ import com.squareup.wire.protos.simple.SimpleMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import okio.Buffer;
 import okio.ByteString;
+import org.junit.Ignore;
 import org.junit.Test;
 import squareup.protos.extension_collision.CollisionSubject;
 
@@ -392,5 +394,16 @@ public class WireTest {
             + "phone=[PhoneNumber{number=123\\,456\\,789}], "
             + "aliases=[B-lo\\,ved, D\\{esperado\\}]"
             + "}");
+  }
+
+  @Ignore("Need to fix #1545")
+  @Test public void createUseResursiveMapBuilderWithoutCrashing() {
+    ModelEvaluation model = new ModelEvaluation.Builder()
+        .name("name")
+        .score(33.0)
+        .models(new LinkedHashMap<>())
+        .build();
+    assertThat(ModelEvaluation.ADAPTER.encodeByteString(model).hex())
+        .isEqualTo("0a046e616d65110000000000804040");
   }
 }

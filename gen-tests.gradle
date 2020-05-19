@@ -68,6 +68,7 @@ task generateNoOptionsTests(type: JavaExec) {
       'google/protobuf/descriptor.proto',
       '--excludes=google.protobuf.*',
       '--excludes=squareup.options.*',
+      '--excludes=com.squareup.wire.ModelEvaluation',
   ] + PROTOS
 }
 
@@ -273,6 +274,7 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
       'packed_encoding.proto',
       'percents_in_kdoc.proto',
       'person.proto',
+      'resursive_map.proto',
       'redacted_one_of.proto',
       'repeated.proto',
       'same_name_enum.proto',
