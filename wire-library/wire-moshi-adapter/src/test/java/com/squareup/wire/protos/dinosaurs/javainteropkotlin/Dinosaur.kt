@@ -37,7 +37,8 @@ class Dinosaur(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val picture_urls: List<String> = emptyList(),

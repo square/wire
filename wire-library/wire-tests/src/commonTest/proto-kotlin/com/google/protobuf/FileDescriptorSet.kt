@@ -29,7 +29,8 @@ class FileDescriptorSet(
   @field:WireField(
     tag = 1,
     adapter = "com.google.protobuf.FileDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val file: List<FileDescriptorProto> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY

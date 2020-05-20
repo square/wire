@@ -47,7 +47,8 @@ public final class Dinosaur extends Message<Dinosaur, Dinosaur.Builder> {
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<String> picture_urls;
 

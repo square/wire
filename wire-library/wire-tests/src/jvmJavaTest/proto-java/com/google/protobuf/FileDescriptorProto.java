@@ -57,7 +57,8 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
   @WireField(
       tag = 3,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<String> dependency;
 
@@ -67,7 +68,8 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
   @WireField(
       tag = 10,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Integer> public_dependency;
 
@@ -78,7 +80,8 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
   @WireField(
       tag = 11,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Integer> weak_dependency;
 
@@ -88,28 +91,32 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
   @WireField(
       tag = 4,
       adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<DescriptorProto> message_type;
 
   @WireField(
       tag = 5,
       adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @WireField(
       tag = 6,
       adapter = "com.google.protobuf.ServiceDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<ServiceDescriptorProto> service;
 
   @WireField(
       tag = 7,
       adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 

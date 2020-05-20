@@ -44,7 +44,8 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
   @WireField(
       tag = 125,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Integer> fooext;
 

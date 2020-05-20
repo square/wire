@@ -37,7 +37,8 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   @WireField(
       tag = 2,
       adapter = "com.google.protobuf.EnumValueDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<EnumValueDescriptorProto> value;
 
@@ -55,7 +56,8 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   @WireField(
       tag = 4,
       adapter = "com.google.protobuf.EnumDescriptorProto$EnumReservedRange#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<EnumReservedRange> reserved_range;
 
@@ -66,7 +68,8 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<String> reserved_name;
 

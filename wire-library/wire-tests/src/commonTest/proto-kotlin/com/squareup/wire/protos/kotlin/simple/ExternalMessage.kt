@@ -34,7 +34,8 @@ class ExternalMessage(
   @field:WireField(
     tag = 125,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val fooext: List<Int> = emptyList(),
   /**

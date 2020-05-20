@@ -36,7 +36,8 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
   @WireField(
       tag = 3,
       keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.ModelEvaluation#ADAPTER"
+      adapter = "com.squareup.wire.ModelEvaluation#ADAPTER",
+      encodeMode = WireField.EncodeMode.MAP
   )
   public final Map<String, ModelEvaluation> models;
 

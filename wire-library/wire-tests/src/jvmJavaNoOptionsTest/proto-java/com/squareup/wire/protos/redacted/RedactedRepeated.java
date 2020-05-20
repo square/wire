@@ -27,7 +27,8 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REPEATED,
-      redacted = true
+      redacted = true,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<String> a;
 
@@ -37,7 +38,8 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.protos.redacted.Redacted#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Redacted> b;
 

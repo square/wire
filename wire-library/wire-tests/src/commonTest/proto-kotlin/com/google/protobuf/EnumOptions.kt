@@ -49,7 +49,8 @@ class EnumOptions(
   @field:WireField(
     tag = 999,
     adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**

@@ -37,42 +37,48 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   @WireField(
       tag = 2,
       adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<FieldDescriptorProto> field;
 
   @WireField(
       tag = 6,
       adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<FieldDescriptorProto> extension;
 
   @WireField(
       tag = 3,
       adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<DescriptorProto> nested_type;
 
   @WireField(
       tag = 4,
       adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<EnumDescriptorProto> enum_type;
 
   @WireField(
       tag = 5,
       adapter = "com.google.protobuf.DescriptorProto$ExtensionRange#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<ExtensionRange> extension_range;
 
   @WireField(
       tag = 8,
       adapter = "com.google.protobuf.OneofDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<OneofDescriptorProto> oneof_decl;
 
@@ -85,7 +91,8 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   @WireField(
       tag = 9,
       adapter = "com.google.protobuf.DescriptorProto$ReservedRange#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<ReservedRange> reserved_range;
 
@@ -96,7 +103,8 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
   @WireField(
       tag = 10,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<String> reserved_name;
 

@@ -69,7 +69,8 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
   @WireField(
       tag = 6,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<String> v2_rs;
 

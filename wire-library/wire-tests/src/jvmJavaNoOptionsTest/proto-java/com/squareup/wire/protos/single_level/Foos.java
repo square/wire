@@ -25,7 +25,8 @@ public final class Foos extends Message<Foos, Foos.Builder> {
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.protos.single_level.Foo#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Foo> foos;
 

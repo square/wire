@@ -22,7 +22,8 @@ class Repeated(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.repeated.Thing#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val things: List<Thing> = emptyList(),

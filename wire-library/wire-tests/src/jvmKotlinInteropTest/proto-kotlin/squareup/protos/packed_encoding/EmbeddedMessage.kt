@@ -22,7 +22,8 @@ class EmbeddedMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.PACKED
+    label = WireField.Label.PACKED,
+    encodeMode = WireField.EncodeMode.PACKED
   )
   @JvmField
   val inner_repeated_number: List<Int> = emptyList(),

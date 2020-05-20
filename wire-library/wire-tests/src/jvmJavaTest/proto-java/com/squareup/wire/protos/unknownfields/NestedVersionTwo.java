@@ -67,7 +67,8 @@ public final class NestedVersionTwo extends Message<NestedVersionTwo, NestedVers
   @WireField(
       tag = 6,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<String> v2_rs;
 

@@ -53,7 +53,8 @@ class FooBar(
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val fred: List<Float> = emptyList(),
   @field:WireField(
@@ -64,7 +65,8 @@ class FooBar(
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val nested: List<FooBar> = emptyList(),
   /**
@@ -81,7 +83,8 @@ class FooBar(
   @field:WireField(
     tag = 102,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val rep: List<FooBarBazEnum> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
@@ -323,7 +326,8 @@ class FooBar(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
     )
     val serial: List<Int> = emptyList(),
     unknownFields: ByteString = ByteString.EMPTY

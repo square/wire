@@ -38,7 +38,8 @@ class UninterpretedOption(
   @field:WireField(
     tag = 2,
     adapter = "com.google.protobuf.UninterpretedOption${'$'}NamePart#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val name: List<NamePart> = emptyList(),
   /**
@@ -214,13 +215,15 @@ class UninterpretedOption(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REQUIRED
+      label = WireField.Label.REQUIRED,
+      encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
     )
     val name_part: String,
     @field:WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-      label = WireField.Label.REQUIRED
+      label = WireField.Label.REQUIRED,
+      encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
     )
     val is_extension: Boolean,
     unknownFields: ByteString = ByteString.EMPTY

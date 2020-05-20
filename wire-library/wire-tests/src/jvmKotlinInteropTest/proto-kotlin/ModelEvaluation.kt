@@ -49,7 +49,8 @@ class ModelEvaluation(
   @field:WireField(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "ModelEvaluation#ADAPTER"
+    adapter = "ModelEvaluation#ADAPTER",
+    encodeMode = WireField.EncodeMode.MAP
   )
   @JvmField
   val models: Map<String, ModelEvaluation> = emptyMap(),

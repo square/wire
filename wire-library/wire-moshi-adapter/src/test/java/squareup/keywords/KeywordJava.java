@@ -39,7 +39,8 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
       label = WireField.Label.REQUIRED,
-      declaredName = "public"
+      declaredName = "public",
+      encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
   )
   public final Boolean public_;
 
@@ -47,7 +48,8 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       tag = 3,
       keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      declaredName = "package"
+      declaredName = "package",
+      encodeMode = WireField.EncodeMode.MAP
   )
   public final Map<String, String> package_;
 
@@ -55,7 +57,8 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       tag = 4,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
       label = WireField.Label.REPEATED,
-      declaredName = "return"
+      declaredName = "return",
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Boolean> return_;
 

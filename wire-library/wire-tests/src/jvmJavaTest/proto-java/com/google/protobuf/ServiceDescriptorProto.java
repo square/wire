@@ -36,7 +36,8 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
   @WireField(
       tag = 2,
       adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<MethodDescriptorProto> method;
 

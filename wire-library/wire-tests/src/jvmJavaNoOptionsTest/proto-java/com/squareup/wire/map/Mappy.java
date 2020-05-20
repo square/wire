@@ -25,7 +25,8 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
   @WireField(
       tag = 1,
       keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.map.Thing#ADAPTER"
+      adapter = "com.squareup.wire.map.Thing#ADAPTER",
+      encodeMode = WireField.EncodeMode.MAP
   )
   public final Map<String, Thing> things;
 

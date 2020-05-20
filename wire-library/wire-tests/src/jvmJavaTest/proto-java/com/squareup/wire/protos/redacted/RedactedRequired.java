@@ -28,7 +28,8 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REQUIRED,
-      redacted = true
+      redacted = true,
+      encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
   )
   public final String a;
 

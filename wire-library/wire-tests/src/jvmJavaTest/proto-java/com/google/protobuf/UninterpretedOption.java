@@ -48,7 +48,8 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
   @WireField(
       tag = 2,
       adapter = "com.google.protobuf.UninterpretedOption$NamePart#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<NamePart> name;
 
@@ -254,14 +255,16 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#STRING",
-        label = WireField.Label.REQUIRED
+        label = WireField.Label.REQUIRED,
+        encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
     )
     public final String name_part;
 
     @WireField(
         tag = 2,
         adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-        label = WireField.Label.REQUIRED
+        label = WireField.Label.REQUIRED,
+        encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
     )
     public final Boolean is_extension;
 

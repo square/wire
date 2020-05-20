@@ -42,7 +42,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REQUIRED
+      label = WireField.Label.REQUIRED,
+      encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
   )
   public final String name;
 
@@ -52,7 +53,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REQUIRED
+      label = WireField.Label.REQUIRED,
+      encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
   )
   public final Integer id;
 
@@ -72,14 +74,16 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
   @WireField(
       tag = 4,
       adapter = "com.squareup.wire.protos.person.Person$PhoneNumber#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<PhoneNumber> phone;
 
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<String> aliases;
 
@@ -279,7 +283,8 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#STRING",
-        label = WireField.Label.REQUIRED
+        label = WireField.Label.REQUIRED,
+        encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
     )
     public final String number;
 

@@ -90,7 +90,8 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REQUIRED
+      label = WireField.Label.REQUIRED,
+      encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
   )
   public final Integer required_int32;
 
@@ -100,7 +101,8 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
   @WireField(
       tag = 6,
       adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   @Deprecated
   public final List<Double> repeated_double;

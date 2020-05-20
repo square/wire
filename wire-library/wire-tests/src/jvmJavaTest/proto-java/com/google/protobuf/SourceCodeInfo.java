@@ -77,7 +77,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
   @WireField(
       tag = 1,
       adapter = "com.google.protobuf.SourceCodeInfo$Location#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Location> location;
 
@@ -226,7 +227,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#INT32",
-        label = WireField.Label.PACKED
+        label = WireField.Label.PACKED,
+        encodeMode = WireField.EncodeMode.PACKED
     )
     public final List<Integer> path;
 
@@ -240,7 +242,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     @WireField(
         tag = 2,
         adapter = "com.squareup.wire.ProtoAdapter#INT32",
-        label = WireField.Label.PACKED
+        label = WireField.Label.PACKED,
+        encodeMode = WireField.EncodeMode.PACKED
     )
     public final List<Integer> span;
 
@@ -308,7 +311,8 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
     @WireField(
         tag = 6,
         adapter = "com.squareup.wire.ProtoAdapter#STRING",
-        label = WireField.Label.REPEATED
+        label = WireField.Label.REPEATED,
+        encodeMode = WireField.EncodeMode.REPEATED
     )
     public final List<String> leading_detached_comments;
 

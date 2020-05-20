@@ -33,42 +33,48 @@ class DescriptorProto(
   @field:WireField(
     tag = 2,
     adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val field: List<FieldDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 6,
     adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val extension: List<FieldDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val nested_type: List<DescriptorProto> = emptyList(),
   @field:WireField(
     tag = 4,
     adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val enum_type: List<EnumDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 5,
     adapter = "com.google.protobuf.DescriptorProto${'$'}ExtensionRange#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val extension_range: List<ExtensionRange> = emptyList(),
   @field:WireField(
     tag = 8,
     adapter = "com.google.protobuf.OneofDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val oneof_decl: List<OneofDescriptorProto> = emptyList(),
@@ -81,7 +87,8 @@ class DescriptorProto(
   @field:WireField(
     tag = 9,
     adapter = "com.google.protobuf.DescriptorProto${'$'}ReservedRange#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val reserved_range: List<ReservedRange> = emptyList(),
@@ -92,7 +99,8 @@ class DescriptorProto(
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val reserved_name: List<String> = emptyList(),

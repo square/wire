@@ -25,7 +25,8 @@ public final class Bars extends Message<Bars, Bars.Builder> {
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.protos.single_level.Bar#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Bar> bars;
 

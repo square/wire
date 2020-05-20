@@ -35,7 +35,8 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
   @WireField(
       tag = 1,
       adapter = "com.google.protobuf.GeneratedCodeInfo$Annotation#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Annotation> annotation;
 
@@ -124,7 +125,8 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#INT32",
-        label = WireField.Label.PACKED
+        label = WireField.Label.PACKED,
+        encodeMode = WireField.EncodeMode.PACKED
     )
     public final List<Integer> path;
 

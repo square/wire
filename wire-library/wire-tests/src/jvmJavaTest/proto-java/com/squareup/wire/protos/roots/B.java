@@ -24,7 +24,8 @@ public final class B extends Message<B, B.Builder> {
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.protos.roots.C#ADAPTER",
-      label = WireField.Label.REQUIRED
+      label = WireField.Label.REQUIRED,
+      encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
   )
   public final C c;
 

@@ -75,7 +75,8 @@ class SourceCodeInfo(
   @field:WireField(
     tag = 1,
     adapter = "com.google.protobuf.SourceCodeInfo${'$'}Location#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val location: List<Location> = emptyList(),
@@ -241,7 +242,8 @@ class SourceCodeInfo(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED
+      label = WireField.Label.PACKED,
+      encodeMode = WireField.EncodeMode.PACKED
     )
     @JvmField
     val path: List<Int> = emptyList(),
@@ -255,7 +257,8 @@ class SourceCodeInfo(
     @field:WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED
+      label = WireField.Label.PACKED,
+      encodeMode = WireField.EncodeMode.PACKED
     )
     @JvmField
     val span: List<Int> = emptyList(),
@@ -323,7 +326,8 @@ class SourceCodeInfo(
     @field:WireField(
       tag = 6,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
     )
     @JvmField
     val leading_detached_comments: List<String> = emptyList(),

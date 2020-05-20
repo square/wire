@@ -26,7 +26,8 @@ class RedactedRequired(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REQUIRED,
-    redacted = true
+    redacted = true,
+    encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
   )
   val a: String,
   unknownFields: ByteString = ByteString.EMPTY

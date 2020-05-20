@@ -33,7 +33,8 @@ class KeywordKotlin(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED,
-    declaredName = "when"
+    declaredName = "when",
+    encodeMode = WireField.EncodeMode.THROW_IF_ABSENT
   )
   @JvmField
   val when_: Int,
@@ -41,7 +42,8 @@ class KeywordKotlin(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    declaredName = "fun"
+    declaredName = "fun",
+    encodeMode = WireField.EncodeMode.MAP
   )
   @JvmField
   val fun_: Map<String, String> = emptyMap(),
@@ -49,7 +51,8 @@ class KeywordKotlin(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REPEATED,
-    declaredName = "return"
+    declaredName = "return",
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val return_: List<Boolean> = emptyList(),

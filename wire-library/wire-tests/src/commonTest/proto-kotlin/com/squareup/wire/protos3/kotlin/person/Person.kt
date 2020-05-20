@@ -36,7 +36,8 @@ class Person(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    encodeMode = WireField.EncodeMode.IDENTITY_IF_ABSENT
   )
   val name: String = "",
   /**
@@ -44,7 +45,8 @@ class Person(
    */
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    encodeMode = WireField.EncodeMode.IDENTITY_IF_ABSENT
   )
   val id: Int = 0,
   /**
@@ -52,7 +54,8 @@ class Person(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    encodeMode = WireField.EncodeMode.IDENTITY_IF_ABSENT
   )
   val email: String = "",
   /**
@@ -61,13 +64,15 @@ class Person(
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.protos3.kotlin.person.Person${'$'}PhoneNumber#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val phones: List<PhoneNumber> = emptyList(),
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val aliases: List<String> = emptyList(),
   @field:WireField(
@@ -252,7 +257,8 @@ class Person(
      */
     @field:WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      encodeMode = WireField.EncodeMode.IDENTITY_IF_ABSENT
     )
     val number: String = "",
     /**
@@ -260,7 +266,8 @@ class Person(
      */
     @field:WireField(
       tag = 2,
-      adapter = "com.squareup.wire.protos3.kotlin.person.Person${'$'}PhoneType#ADAPTER"
+      adapter = "com.squareup.wire.protos3.kotlin.person.Person${'$'}PhoneType#ADAPTER",
+      encodeMode = WireField.EncodeMode.IDENTITY_IF_ABSENT
     )
     val type: PhoneType = PhoneType.MOBILE,
     unknownFields: ByteString = ByteString.EMPTY

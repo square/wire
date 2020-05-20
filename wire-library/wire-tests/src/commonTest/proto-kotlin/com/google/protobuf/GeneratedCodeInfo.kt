@@ -36,7 +36,8 @@ class GeneratedCodeInfo(
   @field:WireField(
     tag = 1,
     adapter = "com.google.protobuf.GeneratedCodeInfo${'$'}Annotation#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val annotation: List<Annotation> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
@@ -118,7 +119,8 @@ class GeneratedCodeInfo(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED
+      label = WireField.Label.PACKED,
+      encodeMode = WireField.EncodeMode.PACKED
     )
     val path: List<Int> = emptyList(),
     /**

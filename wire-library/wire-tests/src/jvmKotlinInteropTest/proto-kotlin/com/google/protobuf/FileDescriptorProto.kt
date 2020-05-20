@@ -49,7 +49,8 @@ class FileDescriptorProto(
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val dependency: List<String> = emptyList(),
@@ -59,7 +60,8 @@ class FileDescriptorProto(
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val public_dependency: List<Int> = emptyList(),
@@ -70,7 +72,8 @@ class FileDescriptorProto(
   @field:WireField(
     tag = 11,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val weak_dependency: List<Int> = emptyList(),
@@ -80,28 +83,32 @@ class FileDescriptorProto(
   @field:WireField(
     tag = 4,
     adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val message_type: List<DescriptorProto> = emptyList(),
   @field:WireField(
     tag = 5,
     adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val enum_type: List<EnumDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 6,
     adapter = "com.google.protobuf.ServiceDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val service: List<ServiceDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 7,
     adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val extension: List<FieldDescriptorProto> = emptyList(),

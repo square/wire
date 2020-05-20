@@ -54,7 +54,8 @@ class NestedVersionTwo(
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val v2_rs: List<String> = emptyList(),

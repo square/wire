@@ -124,7 +124,8 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   @WireField(
       tag = 999,
       adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<UninterpretedOption> uninterpreted_option;
 

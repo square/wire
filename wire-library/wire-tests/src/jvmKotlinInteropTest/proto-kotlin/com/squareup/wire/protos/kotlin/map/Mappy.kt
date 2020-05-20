@@ -21,7 +21,8 @@ class Mappy(
   @field:WireField(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER",
+    encodeMode = WireField.EncodeMode.MAP
   )
   @JvmField
   val things: Map<String, Thing> = emptyMap(),

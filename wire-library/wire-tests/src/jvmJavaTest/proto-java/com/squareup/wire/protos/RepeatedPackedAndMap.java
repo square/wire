@@ -27,21 +27,24 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
   @WireField(
       tag = 201,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Integer> rep_int32;
 
   @WireField(
       tag = 301,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED
+      label = WireField.Label.PACKED,
+      encodeMode = WireField.EncodeMode.PACKED
   )
   public final List<Integer> pack_int32;
 
   @WireField(
       tag = 401,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      encodeMode = WireField.EncodeMode.MAP
   )
   public final Map<Integer, Integer> map_int32_int32;
 

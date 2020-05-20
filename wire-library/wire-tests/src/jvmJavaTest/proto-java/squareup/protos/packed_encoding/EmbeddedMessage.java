@@ -28,7 +28,8 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED
+      label = WireField.Label.PACKED,
+      encodeMode = WireField.EncodeMode.PACKED
   )
   public final List<Integer> inner_repeated_number;
 

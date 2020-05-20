@@ -33,7 +33,8 @@ class EnumDescriptorProto(
   @field:WireField(
     tag = 2,
     adapter = "com.google.protobuf.EnumValueDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val value: List<EnumValueDescriptorProto> = emptyList(),
@@ -51,7 +52,8 @@ class EnumDescriptorProto(
   @field:WireField(
     tag = 4,
     adapter = "com.google.protobuf.EnumDescriptorProto${'$'}EnumReservedRange#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val reserved_range: List<EnumReservedRange> = emptyList(),
@@ -62,7 +64,8 @@ class EnumDescriptorProto(
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val reserved_name: List<String> = emptyList(),

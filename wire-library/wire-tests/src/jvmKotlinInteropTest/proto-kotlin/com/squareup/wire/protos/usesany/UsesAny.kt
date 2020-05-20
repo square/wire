@@ -30,7 +30,8 @@ class UsesAny(
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val many_anys: List<AnyMessage> = emptyList(),

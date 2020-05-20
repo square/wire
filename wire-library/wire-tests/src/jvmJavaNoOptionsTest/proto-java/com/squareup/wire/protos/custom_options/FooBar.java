@@ -66,7 +66,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<Float> fred;
 
@@ -83,7 +84,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       tag = 7,
       adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
       label = WireField.Label.REPEATED,
-      redacted = true
+      redacted = true,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<FooBar> nested;
 
@@ -102,7 +104,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   @WireField(
       tag = 102,
       adapter = "com.squareup.wire.protos.custom_options.FooBar$FooBarBazEnum#ADAPTER",
-      label = WireField.Label.REPEATED
+      label = WireField.Label.REPEATED,
+      encodeMode = WireField.EncodeMode.REPEATED
   )
   public final List<FooBarBazEnum> rep;
 
@@ -405,7 +408,8 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#INT32",
-        label = WireField.Label.REPEATED
+        label = WireField.Label.REPEATED,
+        encodeMode = WireField.EncodeMode.REPEATED
     )
     public final List<Integer> serial;
 

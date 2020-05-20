@@ -28,7 +28,8 @@ class FeatureDatabase(
   @field:WireField(
     tag = 1,
     adapter = "routeguide.Feature#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   val feature: List<Feature> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY

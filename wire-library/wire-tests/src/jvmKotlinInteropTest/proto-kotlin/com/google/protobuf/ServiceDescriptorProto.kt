@@ -33,7 +33,8 @@ class ServiceDescriptorProto(
   @field:WireField(
     tag = 2,
     adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    encodeMode = WireField.EncodeMode.REPEATED
   )
   @JvmField
   val method: List<MethodDescriptorProto> = emptyList(),
