@@ -801,6 +801,11 @@ class KotlinGenerator private constructor(
             addMember("jsonName = %S", field.jsonName!!)
           }
         }
+        .apply {
+          if (field.encodeMode != EncodeMode.NULL_IF_ABSENT) {
+            addMember("encodeMode = %T.%L", WireField.EncodeMode::class, field.encodeMode!!)
+          }
+        }
         .build()
   }
 

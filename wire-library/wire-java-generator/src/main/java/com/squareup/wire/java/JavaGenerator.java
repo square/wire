@@ -1172,6 +1172,10 @@ public final class JavaGenerator {
       result.addMember("jsonName", "$S", field.getJsonName());
     }
 
+    if (field.getEncodeMode() != Field.EncodeMode.NULL_IF_ABSENT) {
+      result.addMember("encodeMode", "$T.$L", WireField.EncodeMode.class, field.getEncodeMode());
+    }
+
     return result.build();
   }
 

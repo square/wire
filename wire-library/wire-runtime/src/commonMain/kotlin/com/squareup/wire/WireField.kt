@@ -56,7 +56,13 @@ annotation class WireField(
    * Name representing this field as it should be used in JSON. This value is set to a non-empty
    * string only when the json name differs from the name as declared in the proto schema.
    */
-  val jsonName: String = ""
+  val jsonName: String = "",
+  /**
+   * The field's encode mode, one of [EncodeModel.NULL_IF_ABSENT], [EncodeModel.REQUIRED],
+   * [EncodeModel.IDENTITY_IF_ABSENT], [EncodeModel.REPEATED], [EncodeModel.PACKED], or
+   * [EncodeModel.MAP]. Defaults to [EncodeModel.NULL_IF_ABSENT].
+   */
+  val encodeMode: EncodeMode = EncodeMode.NULL_IF_ABSENT
 ) {
 
   /** A protocol buffer label.  */
@@ -76,5 +82,23 @@ annotation class WireField(
 
     val isOneOf: Boolean
       @JvmName("isOneOf") get() = this == ONE_OF
+  }
+
+  /** Sets how a member should be treated on encoding, and decoding. */
+  enum class EncodeMode {
+    /** Absence is treated as the equivalent of a null value. */
+    NULL_IF_ABSENT,
+    /** Absence isn't allowed. */
+    THROW_IF_ABSENT,
+    /**
+     * Absence is treated as the equivalent to the field's type identity values.
+     * e.g: `0` for `int32` */
+    IDENTITY_IF_ABSENT,
+    /** List. */
+    REPEATED,
+    /** Packed encoded list. */
+    PACKED,
+    /** Map. */
+    MAP,
   }
 }
