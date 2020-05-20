@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.google.protobuf.ExtensionRegistry
 import com.squareup.wire.proto2.simple.SimpleMessage
 import com.squareup.wire.proto2.simple.SimpleMessageOuterClass
 import okio.ByteString
@@ -64,9 +65,8 @@ class Proto2WireProtocCompatibilityTests {
     val byteArrayWire = AllTypes.ADAPTER.encode(defaultAllTypesWire)
     val byteArrayProtoc = defaultAllTypesProtoc.toByteArray()
 
-    assertThat(byteArrayWire).isEqualTo(byteArrayProtoc)
     assertThat(AllTypes.ADAPTER.decode(byteArrayProtoc)).isEqualTo(defaultAllTypesWire)
-    assertThat(AllTypesOuterClass.AllTypes.parseFrom(byteArrayWire))
+    assertThat(AllTypesOuterClass.AllTypes.parseFrom(byteArrayWire, allTypesRegistry))
         .isEqualTo(defaultAllTypesProtoc)
   }
 
@@ -74,13 +74,19 @@ class Proto2WireProtocCompatibilityTests {
     val byteArrayWire = AllTypes.ADAPTER.encode(identityAllTypesWire)
     val byteArrayProtoc = identityAllTypesProtoc.toByteArray()
 
-    assertThat(byteArrayWire).isEqualTo(byteArrayProtoc)
     assertThat(AllTypes.ADAPTER.decode(byteArrayProtoc)).isEqualTo(identityAllTypesWire)
-    assertThat(AllTypesOuterClass.AllTypes.parseFrom(byteArrayWire))
+
+    assertThat(AllTypesOuterClass.AllTypes.parseFrom(byteArrayWire, allTypesRegistry))
         .isEqualTo(identityAllTypesProtoc)
   }
 
   companion object {
+    private val allTypesRegistry = ExtensionRegistry.newInstance().apply {
+    add(extOptBool)
+    add(extRepBool)
+    add(extPackBool)
+    }
+
     private val defaultAllTypesWire = AllTypes(
         opt_int32 = 111,
         opt_uint32 = 112,
@@ -151,7 +157,10 @@ class Proto2WireProtocCompatibilityTests {
         map_string_string = mapOf("key" to "value"),
         map_string_message = mapOf("message" to AllTypes.NestedMessage(a = 1)),
         map_string_enum = mapOf("enum" to AllTypes.NestedEnum.A),
-        oneof_int32 = 0
+        oneof_int32 = 0,
+        ext_opt_bool = true,
+        ext_rep_bool = list(true),
+        ext_pack_bool = list(true)
     )
 
     private val defaultAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
@@ -230,6 +239,9 @@ class Proto2WireProtocCompatibilityTests {
             AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(1).build())
         .putMapStringEnum("enum", AllTypesOuterClass.AllTypes.NestedEnum.A)
         .setOneofInt32(0)
+        .setExtension(extOptBool, true)
+        .setExtension(extRepBool, list(true))
+        .setExtension(extPackBool, list(true))
         .build()
 
     private val identityAllTypesWire = AllTypes(
@@ -283,7 +295,10 @@ class Proto2WireProtocCompatibilityTests {
         pack_nested_enum = list(AllTypes.NestedEnum.UNKNOWN),
         map_int32_int32 = mapOf(0 to 0),
         map_string_message = mapOf("" to AllTypes.NestedMessage()),
-        map_string_enum = mapOf("" to AllTypes.NestedEnum.UNKNOWN)
+        map_string_enum = mapOf("" to AllTypes.NestedEnum.UNKNOWN),
+        ext_opt_bool = false,
+        ext_rep_bool = list(false),
+        ext_pack_bool = list(false)
     )
 
     private val identityAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
@@ -338,6 +353,9 @@ class Proto2WireProtocCompatibilityTests {
         .putMapInt32Int32(0, 0)
         .putMapStringMessage("", AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().build())
         .putMapStringEnum("", AllTypesOuterClass.AllTypes.NestedEnum.UNKNOWN)
+        .setExtension(extOptBool, false)
+        .setExtension(extRepBool, list(false))
+        .setExtension(extPackBool, list(false))
         .build()
 
     private fun <T : kotlin.Any> list(t: T): List<T> {
