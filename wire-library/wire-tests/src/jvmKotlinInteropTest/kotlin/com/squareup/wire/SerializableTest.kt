@@ -55,7 +55,6 @@ class SerializableTest {
         .required_int32(99)
         .result("tacos")
         .build()
-    println(serialize(goldenValue).base64())
     val goldenSerialized = ("rO0ABXNyACdjb20uc3F1YXJldXAud2lyZS5NZXNzYWdlU2VyaWFsaXplZEZvcm0AAAAA" +
         "AAAAAAIAAlsABWJ5dGVzdAACW0JMAAxtZXNzYWdlQ2xhc3N0ABFMamF2YS9sYW5nL0NsYXNzO3hwdXIAAltCrPMX" +
         "+AYIVOACAAB4cAAAAAkoY1IFdGFjb3N2cgA0Y29tLnNxdWFyZXVwLndpcmUucHJvdG9zLmtvdGxpbi5zaW1wbGUu" +

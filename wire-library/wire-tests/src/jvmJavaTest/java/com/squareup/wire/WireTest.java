@@ -386,7 +386,6 @@ public class WireTest {
         .build();
 
     String printedPerson = person.toString();
-    System.out.println(printedPerson);
     assertThat(printedPerson).isEqualTo(
         "Person{"
             + "name=Such\\, I mean it\\, such \\[a\\] \\{funny\\} name., "
