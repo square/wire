@@ -162,10 +162,8 @@ class Person(
         else ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) +
         PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phones) +
         ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases) +
-        if (value.foo == null) 0
-        else ProtoAdapter.INT32.encodedSizeWithTag(6, value.foo) +
-        if (value.bar == null) 0
-        else ProtoAdapter.STRING.encodedSizeWithTag(7, value.bar) +
+        ProtoAdapter.INT32.encodedSizeWithTag(6, value.foo) +
+        ProtoAdapter.STRING.encodedSizeWithTag(7, value.bar) +
         value.unknownFields.size
 
       override fun encode(writer: ProtoWriter, value: Person) {
@@ -174,8 +172,8 @@ class Person(
         if (value.email != "") ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phones)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases)
-        if (value.foo != null) ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo)
-        if (value.bar != null) ProtoAdapter.STRING.encodeWithTag(writer, 7, value.bar)
+        ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo)
+        ProtoAdapter.STRING.encodeWithTag(writer, 7, value.bar)
         writer.writeBytes(value.unknownFields)
       }
 
