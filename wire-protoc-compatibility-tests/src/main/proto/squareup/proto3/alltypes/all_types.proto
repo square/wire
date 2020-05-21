@@ -82,4 +82,10 @@ message AllTypes {
   map<string, string> map_string_string = 502;
   map<string, NestedMessage> map_string_message = 503;
   map<string, NestedEnum> map_string_enum = 504;
+
+  oneof choice {
+    string oneof_string = 601;
+    int32 oneof_int32 = 602;
+    NestedMessage oneof_nested_message = 603;
+  }
 }
