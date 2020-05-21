@@ -29,7 +29,8 @@ interface SyntaxRules {
   fun getEncodeMode(
     protoType: ProtoType,
     label: Field.Label?,
-    isPacked: Boolean
+    isPacked: Boolean,
+    isOneOf: Boolean
   ): Field.EncodeMode
 
   fun jsonName(name: String): String
@@ -55,7 +56,8 @@ interface SyntaxRules {
       override fun getEncodeMode(
         protoType: ProtoType,
         label: Field.Label?,
-        isPacked: Boolean
+        isPacked: Boolean,
+        isOneOf: Boolean
       ): Field.EncodeMode {
         return when (label) {
           Field.Label.REPEATED ->
@@ -88,7 +90,8 @@ interface SyntaxRules {
       override fun getEncodeMode(
         protoType: ProtoType,
         label: Field.Label?,
-        isPacked: Boolean
+        isPacked: Boolean,
+        isOneOf: Boolean
       ): Field.EncodeMode {
         if (label == Field.Label.REPEATED) {
           return if (isPacked) {
@@ -98,6 +101,7 @@ interface SyntaxRules {
           }
         }
         if (protoType.isMap) return Field.EncodeMode.MAP
+        if (isOneOf) return Field.EncodeMode.NULL_IF_ABSENT
 
         return Field.EncodeMode.IDENTITY_IF_ABSENT
       }

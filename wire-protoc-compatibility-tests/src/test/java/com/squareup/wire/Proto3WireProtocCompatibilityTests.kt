@@ -271,7 +271,7 @@ class Proto3WireProtocCompatibilityTests {
   @Ignore("TODO")
   @Test fun serializeDefaultAllTypesMoshi() {
     assertJsonEquals(DEFAULT_ALL_TYPES_JSON,
-        moshi.adapter(AllTypes::class.java).toJson(defaultAllTypesMoshi))
+        moshi.adapter(AllTypes::class.java).toJson(defaultAllTypesWire))
   }
 
   @Test fun deserializeDefaultAllTypesProtoc() {
@@ -291,7 +291,7 @@ class Proto3WireProtocCompatibilityTests {
   @Test fun deserializeDefaultAllTypesMoshi() {
     val allTypesAdapter: JsonAdapter<AllTypes> = moshi.adapter(AllTypes::class.java)
 
-    val allTypes = defaultAllTypesMoshi
+    val allTypes = defaultAllTypesWire
     val parsed = allTypesAdapter.fromJson(DEFAULT_ALL_TYPES_JSON)
     assertThat(parsed).isEqualTo(allTypes)
     assertThat(parsed.toString()).isEqualTo(allTypes.toString())
@@ -453,9 +453,10 @@ class Proto3WireProtocCompatibilityTests {
         .putMapStringMessage("message",
             AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(1).build())
         .putMapStringEnum("enum", AllTypesOuterClass.AllTypes.NestedEnum.A)
+        .setOneofInt32(0)
         .build()
 
-    private val defaultAllTypesMoshi = AllTypes(
+    private val defaultAllTypesWire = AllTypes(
         squareup_proto3_alltypes_int32 = 111,
         squareup_proto3_alltypes_uint32 = 112,
         squareup_proto3_alltypes_sint32 = 113,
@@ -507,7 +508,8 @@ class Proto3WireProtocCompatibilityTests {
         map_int32_int32 = mapOf(1 to 2),
         map_string_string = mapOf("key" to "value"),
         map_string_message = mapOf("message" to AllTypes.NestedMessage(1)),
-        map_string_enum = mapOf("enum" to AllTypes.NestedEnum.A)
+        map_string_enum = mapOf("enum" to AllTypes.NestedEnum.A),
+        oneof_int32 = 0
     )
 
     private val DEFAULT_ALL_TYPES_JSON = """{
@@ -562,7 +564,8 @@ class Proto3WireProtocCompatibilityTests {
         |"mapInt32Int32":{"1":2},
         |"mapStringString":{"key":"value"},
         |"mapStringMessage":{"message":{"a":1}},
-        |"mapStringEnum":{"enum":"A"}
+        |"mapStringEnum":{"enum":"A"},
+        |"oneofInt32" : 0.0
         |}""".trimMargin()
 
     private const val IDENTITY_ALL_TYPES_JSON = "{}"

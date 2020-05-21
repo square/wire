@@ -1444,10 +1444,7 @@ class KotlinGenerator private constructor(
       EncodeMode.REPEATED,
       EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
       EncodeMode.MAP -> baseClass.copy(nullable = false)
-      EncodeMode.NULL_IF_ABSENT -> {
-        if (isOneOf) baseClass.copy(nullable = false)
-        else baseClass.copy(nullable = true)
-      }
+      EncodeMode.NULL_IF_ABSENT -> baseClass.copy(nullable = true)
       else -> baseClass.copy(nullable = false)
     }
   }

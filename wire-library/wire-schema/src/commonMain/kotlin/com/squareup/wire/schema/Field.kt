@@ -113,7 +113,8 @@ class Field private constructor(
     // We allow any package name to be used as long as it ends with '.redacted'.
     isRedacted = options.optionMatches(".*\\.redacted", "true")
 
-    encodeMode = syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true")
+    encodeMode =
+        syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true", isOneOf = isOneOf)
     jsonName = syntaxRules.jsonName(name)
   }
 

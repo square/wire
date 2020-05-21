@@ -115,7 +115,7 @@ class OneOfMessage(
     /**
      * What foo.
      */
-    fun foo(foo: Int): Builder {
+    fun foo(foo: Int?): Builder {
       this.foo = foo
       this.bar = null
       this.baz = null
@@ -125,7 +125,7 @@ class OneOfMessage(
     /**
      * Such bar.
      */
-    fun bar(bar: String): Builder {
+    fun bar(bar: String?): Builder {
       this.bar = bar
       this.foo = null
       this.baz = null
@@ -135,7 +135,7 @@ class OneOfMessage(
     /**
      * Nice baz.
      */
-    fun baz(baz: String): Builder {
+    fun baz(baz: String?): Builder {
       this.baz = baz
       this.foo = null
       this.bar = null

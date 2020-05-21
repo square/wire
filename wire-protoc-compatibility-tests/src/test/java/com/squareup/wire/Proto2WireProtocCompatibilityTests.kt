@@ -82,9 +82,9 @@ class Proto2WireProtocCompatibilityTests {
 
   companion object {
     private val allTypesRegistry = ExtensionRegistry.newInstance().apply {
-    add(extOptBool)
-    add(extRepBool)
-    add(extPackBool)
+      add(extOptBool)
+      add(extRepBool)
+      add(extPackBool)
     }
 
     private val defaultAllTypesWire = AllTypes(
