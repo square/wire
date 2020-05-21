@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.google.common.io.Closer
 import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.java.internal.ProfileParser
+import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoParser
 import okio.buffer
 import okio.source
@@ -28,6 +29,7 @@ import java.nio.file.FileVisitOption
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.nio.file.ProviderNotFoundException
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
@@ -53,7 +55,10 @@ internal fun Location.roots(
   closer: Closer,
   baseToRoots: MutableMap<String, List<Root>> = mutableMapOf()
 ): List<Root> {
-  if (base.isNotEmpty()) {
+  if (isWireRuntimeProto(this)) {
+    // Handle descriptor.proto, etc. by returning a placeholder path.
+    return listOf(ProtoFilePath(this, Paths.get(path)))
+  } else if (base.isNotEmpty()) {
     val roots = baseToRoots.computeIfAbsent(base) {
       Location.get(it).roots(fs, closer)
     }

@@ -15,13 +15,15 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.java.JavaGenerator
-import com.squareup.wire.java.ProfileLoader
-import com.squareup.wire.kotlin.KotlinGenerator
-import com.squareup.wire.schema.PruningRules
-import com.squareup.wire.schema.SchemaLoader
-import com.squareup.wire.schema.Service
-import com.squareup.wire.schema.Type
+import com.google.common.io.Closer
+import com.squareup.wire.schema.CoreLoader.WIRE_RUNTIME_JAR
+import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
+import com.squareup.wire.schema.JavaTarget
+import com.squareup.wire.schema.KotlinTarget
+import com.squareup.wire.schema.Location
+import com.squareup.wire.schema.NullTarget
+import com.squareup.wire.schema.Target
+import com.squareup.wire.schema.WireRun
 import okio.buffer
 import okio.source
 import java.io.File
@@ -29,11 +31,8 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
-import java.util.ArrayList
-import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
+import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * Command line interface to the Wire Java generator.
@@ -90,96 +89,96 @@ class WireCompiler internal constructor(
   val javaOut: String?,
   val kotlinOut: String?,
   val sourceFileNames: List<String>,
-  val pruningRules: PruningRules,
+  val treeShakingRoots: List<String>,
+  val treeShakingRubbish: List<String>,
   val dryRun: Boolean,
   val namedFilesOnly: Boolean,
   val emitAndroid: Boolean,
   val emitAndroidAnnotations: Boolean,
   val emitCompact: Boolean,
-  val javaInterop: Boolean
+  val javaInterop: Boolean,
+  val proto3Preview: String?
 ) {
 
   @Throws(IOException::class)
   fun compile() {
-    val schemaLoader = SchemaLoader()
-    for (protoPath in protoPaths) {
-      schemaLoader.addSource(fs.getPath(protoPath))
+    val targets = mutableListOf<Target>()
+    if (dryRun) {
+      targets += NullTarget()
+    } else if (javaOut != null) {
+      targets += JavaTarget(
+          outDirectory = javaOut,
+          android = emitAndroid,
+          androidAnnotations = emitAndroidAnnotations,
+          compact = emitCompact
+      )
+    } else if (kotlinOut != null) {
+      targets += KotlinTarget(
+          outDirectory = kotlinOut,
+          android = emitAndroid,
+          javaInterop = javaInterop
+      )
     }
-    for (sourceFileName in sourceFileNames) {
-      schemaLoader.addProto(sourceFileName)
-    }
-    var schema = schemaLoader.load()
 
-    if (!pruningRules.isEmpty) {
-      log.info("Analyzing dependencies of root types.")
-      schema = schema.prune(pruningRules)
-      for (rule in pruningRules.unusedRoots()) {
-        log.info("Unused include: $rule")
+    val wireRun = Closer.create().use { closer ->
+      val sources = protoPaths.map { fs.getPath(it) }
+      val directories = directoryPaths(closer, sources)
+
+      val allDirectories = directories.map { Location.get(it.key.toString()) }.toList()
+      val sourcePath: List<Location>
+      val protoPath: List<Location>
+
+      if (sourceFileNames.isNotEmpty()) {
+        sourcePath = sourceFileNames.map { locationOfProto(directories, it) }
+        protoPath = allDirectories
+      } else {
+        sourcePath = allDirectories
+        protoPath = listOf()
       }
-      for (rule in pruningRules.unusedPrunes()) {
-        log.info("Unused exclude: $rule")
-      }
+
+      return@use WireRun(
+          sourcePath = sourcePath,
+          protoPath = protoPath,
+          treeShakingRoots = treeShakingRoots,
+          treeShakingRubbish = treeShakingRubbish,
+          targets = targets,
+          proto3Preview = proto3Preview == "UNSUPPORTED"
+      )
     }
 
-    /** Queue which can contain both [Type]s and [Service]s. */
-    val queue = ConcurrentLinkedQueue<PendingFileSpec>()
-    for (protoFile in schema.protoFiles) {
-      // Check if we're skipping files not explicitly named.
-      if (!sourceFileNames.isEmpty() && protoFile.location.path !in sourceFileNames) {
-        if (namedFilesOnly || protoFile.location.path == DESCRIPTOR_PROTO) continue
-      }
-      if (protoFile.location.path == ANY_PROTO) continue
-      queue.addAll(protoFile.types.map(::PendingTypeFileSpec))
-      queue.addAll(protoFile.services.map(::PendingServiceFileSpec))
-    }
+    wireRun.execute(fs, log)
+  }
 
-    val executor = Executors.newCachedThreadPool()
-    val futures = ArrayList<Future<Unit>>(MAX_WRITE_CONCURRENCY)
-
-    when {
-      javaOut != null -> {
-        val profileName = if (emitAndroid) "android" else "java"
-        val profile = ProfileLoader(profileName)
-            .schema(schema)
-            .load()
-
-        val javaGenerator = JavaGenerator.get(schema)
-            .withProfile(profile)
-            .withAndroid(emitAndroid)
-            .withAndroidAnnotations(emitAndroidAnnotations)
-            .withCompact(emitCompact)
-
-        // No services for Java.
-        val types = ConcurrentLinkedQueue(queue.filterIsInstance<PendingTypeFileSpec>())
-        for (i in 0 until MAX_WRITE_CONCURRENCY) {
-          val task = JavaFileWriter(javaOut, javaGenerator, types, dryRun, fs, log)
-          futures.add(executor.submit(task))
+  /**
+   * Map the physical path to the file system root. For regular directories the key and the
+   * value are equal. For ZIP files the key is the path to the .zip, and the value is the root
+   * of the file system within it.
+   */
+  private fun directoryPaths(closer: Closer, sources: List<Path>): Map<Path, Path> {
+    val directories = mutableMapOf<Path, Path>()
+    for (source in sources) {
+      directories[source] = when {
+        Files.isRegularFile(source) -> {
+          val sourceFs = FileSystems.newFileSystem(source, javaClass.classLoader)
+              .also { closer.register(it) }
+          sourceFs.rootDirectories.single()
         }
+        else -> source
       }
+    }
+    return directories
+  }
 
-      kotlinOut != null -> {
-        val kotlinGenerator = KotlinGenerator(schema, emitAndroid, javaInterop)
+  /** Searches [directories] trying to resolve [proto]. Returns the location if it is found. */
+  private fun locationOfProto(directories: Map<Path, Path>, proto: String): Location {
+    val directoryEntry = directories.entries.find { Files.exists(it.value.resolve(proto)) }
 
-        for (i in 0 until MAX_WRITE_CONCURRENCY) {
-          val task = KotlinFileWriter(kotlinOut, kotlinGenerator, queue, fs, log, dryRun)
-          futures.add(executor.submit(task))
-        }
-      }
-
-      else -> throw AssertionError()
+    if (directoryEntry == null) {
+      if (isWireRuntimeProto(proto)) return Location.get(WIRE_RUNTIME_JAR, proto)
+      throw FileNotFoundException("Failed to locate $proto in ${directories.keys}")
     }
 
-    executor.shutdown()
-
-    try {
-      for (future in futures) {
-        future.get()
-      }
-    } catch (e: ExecutionException) {
-      throw IOException(e.message, e)
-    } catch (e: InterruptedException) {
-      throw RuntimeException(e.message, e)
-    }
+    return Location.get(directoryEntry.key.toString(), proto)
   }
 
   companion object {
@@ -199,9 +198,7 @@ class WireCompiler internal constructor(
     private const val ANDROID_ANNOTATIONS = "--android-annotations"
     private const val COMPACT = "--compact"
     private const val JAVA_INTEROP = "--java_interop"
-    private const val MAX_WRITE_CONCURRENCY = 8
-    private const val DESCRIPTOR_PROTO = "google/protobuf/descriptor.proto"
-    private const val ANY_PROTO = "google/protobuf/any.proto"
+    private const val PROTO3_PREVIEW = "--proto3-preview="
 
     @Throws(IOException::class)
     @JvmStatic fun main(args: Array<String>) {
@@ -224,7 +221,8 @@ class WireCompiler internal constructor(
       vararg args: String
     ): WireCompiler {
       val sourceFileNames = mutableListOf<String>()
-      val pruningRulesBuilder = PruningRules.Builder()
+      val treeShakingRoots = mutableListOf<String>()
+      val treeShakingRubbish = mutableListOf<String>()
       val protoPaths = mutableListOf<String>()
       var javaOut: String? = null
       var kotlinOut: String? = null
@@ -235,6 +233,7 @@ class WireCompiler internal constructor(
       var emitAndroidAnnotations = false
       var emitCompact = false
       var javaInterop = false
+      var proto3Preview: String? = null
 
       for (arg in args) {
         when {
@@ -267,13 +266,15 @@ class WireCompiler internal constructor(
           }
 
           arg.startsWith(INCLUDES_FLAG) -> {
-            val includes = arg.substring(INCLUDES_FLAG.length)
-            pruningRulesBuilder.addRoot(includes.split(Regex(",")))
+            treeShakingRoots += arg.substring(INCLUDES_FLAG.length).split(Regex(","))
           }
 
           arg.startsWith(EXCLUDES_FLAG) -> {
-            val excludes = arg.substring(EXCLUDES_FLAG.length)
-            pruningRulesBuilder.prune(excludes.split(Regex(",")))
+            treeShakingRubbish += arg.substring(EXCLUDES_FLAG.length).split(Regex(","))
+          }
+
+          arg.startsWith(PROTO3_PREVIEW) -> {
+            proto3Preview = arg.substring(PROTO3_PREVIEW.length)
           }
 
           arg == QUIET_FLAG -> quiet = true
@@ -294,9 +295,13 @@ class WireCompiler internal constructor(
 
       logger.setQuiet(quiet)
 
+      if (treeShakingRoots.isEmpty()) {
+        treeShakingRoots += "*"
+      }
+
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, sourceFileNames,
-          pruningRulesBuilder.build(), dryRun, namedFilesOnly, emitAndroid, emitAndroidAnnotations,
-          emitCompact, javaInterop)
+          treeShakingRoots, treeShakingRubbish, dryRun, namedFilesOnly, emitAndroid,
+          emitAndroidAnnotations, emitCompact, javaInterop, proto3Preview)
     }
   }
 }

@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.google.common.io.Closer
 import com.squareup.wire.java.Profile
 import com.squareup.wire.java.internal.ProfileFileElement
+import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 import java.io.Closeable
 import java.io.IOException
@@ -116,9 +117,7 @@ class NewSchemaLoader(
       return load(loadFrom)
     }
 
-    if (path == CoreLoader.ANY_PROTO ||
-        path == CoreLoader.DESCRIPTOR_PROTO ||
-        path == CoreLoader.WIRE_EXTENSIONS_PROTO) {
+    if (isWireRuntimeProto(path)) {
       return CoreLoader.load(path)
     }
 
@@ -127,6 +126,10 @@ class NewSchemaLoader(
   }
 
   private fun load(protoFilePath: ProtoFilePath): ProtoFile {
+    if (isWireRuntimeProto(protoFilePath.location)) {
+      return CoreLoader.load(protoFilePath.location.path)
+    }
+
     val protoFile = protoFilePath.parse()
     val importPath = protoFile.importPath(protoFilePath.location)
 
