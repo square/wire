@@ -1879,4 +1879,26 @@ class SchemaTest {
         ).schema()
     assertThat(schema.getType("Dinosaur")).isNotNull()
   }
+
+  @Test
+  fun nestedOptionSetting() {
+    val schema = RepoBuilder()
+        .add("dinosaur.proto", """
+              |package wire;
+              |import 'google/protobuf/descriptor.proto';
+              |extend google.protobuf.FieldOptions {
+              |  optional Foo my_field_option = 60004;
+              |}
+              |message Foo {
+              |  optional double a = 1 [(wire.my_field_option).baz.value = "b"];
+              |  optional Nested baz = 2;
+              |}
+              |message Nested {
+              |  optional string value = 1;
+              |}
+              |""".trimMargin()
+        )
+        .schema()
+    assertThat(schema.getType("wire.Foo")).isNotNull()
+  }
 }

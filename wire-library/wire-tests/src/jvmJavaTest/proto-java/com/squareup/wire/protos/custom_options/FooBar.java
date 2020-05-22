@@ -72,9 +72,6 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   )
   public final List<Float> fred;
 
-  /**
-   * We should use parentheses but https://github.com/square/wire/issues/1541
-   */
   @WireField(
       tag = 6,
       adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
@@ -245,9 +242,6 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       return this;
     }
 
-    /**
-     * We should use parentheses but https://github.com/square/wire/issues/1541
-     */
     public Builder daisy(Double daisy) {
       this.daisy = daisy;
       return this;

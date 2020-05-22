@@ -2329,4 +2329,50 @@ class ProtoParserTest {
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
+
+  @Test
+  fun deepOptionAssignments() {
+    val proto = """
+      |message Foo {
+      |  optional string a = 1 [(wire.my_field_option).baz.value = "a"];
+      |}
+      |""".trimMargin()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
+            MessageElement(
+                location = location.at(1, 1),
+                name = "Foo",
+                fields = listOf(
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = OPTIONAL,
+                        type = "string",
+                        name = "a",
+                        tag = 1,
+                        options = listOf(
+                            OptionElement(
+                                name = "wire.my_field_option",
+                                kind = Kind.OPTION,
+                                isParenthesized = true,
+                                value = OptionElement(
+                                    name = "baz",
+                                    kind = Kind.OPTION,
+                                    isParenthesized = false,
+                                    value = OptionElement(
+                                        name = "value",
+                                        kind = Kind.STRING,
+                                        isParenthesized = false,
+                                        value = "a"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
 }
