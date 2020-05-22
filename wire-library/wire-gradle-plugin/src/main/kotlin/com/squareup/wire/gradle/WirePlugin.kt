@@ -119,8 +119,8 @@ class WirePlugin : Plugin<Project> {
     wireTask.configure {
       it.outputDirectories = outputs.map { output -> File(output.out!!) }
       it.source(sourceInput.configuration)
-      it.sourceInput = sourceInput
-      it.protoInput = protoInput
+      it.sourceInput = sourceInput.toLocations()
+      it.protoInput = protoInput.toLocations()
       it.roots = extension.roots.toList()
       it.prunes = extension.prunes.toList()
       it.sinceVersion = extension.sinceVersion
