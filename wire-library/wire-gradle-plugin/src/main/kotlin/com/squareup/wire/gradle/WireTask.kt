@@ -93,14 +93,12 @@ open class WireTask : SourceTask() {
     }
     if (includes.isEmpty() && excludes.isEmpty()) logger.info("NO INCLUDES OR EXCLUDES")
 
-    /*if (logger.isDebugEnabled) {
-      sourceInput.debug(logger)
-      protoInput.debug(logger)
+    if (logger.isDebugEnabled) {
       logger.debug("roots: $roots")
       logger.debug("prunes: $prunes")
       logger.debug("rules: $rules")
       logger.debug("targets: $targets")
-    }*/
+    }
 
     val wireRun = WireRun(
         sourcePath = sourceInput,

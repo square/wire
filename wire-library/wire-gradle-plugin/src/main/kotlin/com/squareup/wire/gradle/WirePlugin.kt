@@ -114,9 +114,12 @@ class WirePlugin : Plugin<Project> {
     }
 
     val targets = outputs.map { it.toTarget() }
-
     val wireTask = project.tasks.named("generateProtos") as TaskProvider<WireTask>
     wireTask.configure {
+      if (it.logger.isDebugEnabled) {
+        sourceInput.debug(it.logger)
+        protoInput.debug(it.logger)
+      }
       it.outputDirectories = outputs.map { output -> File(output.out!!) }
       it.source(sourceInput.configuration)
       it.sourceInput = sourceInput.toLocations()
