@@ -1154,11 +1154,11 @@ public final class JavaGenerator {
     WireField.Label wireFieldLabel;
     //noinspection ConstantConditions
     switch (field.getEncodeMode()) {
-      case THROW_IF_ABSENT:
+      case REQUIRED:
         wireFieldLabel = WireField.Label.REQUIRED;
         break;
-      case IDENTITY_IF_ABSENT:
-        wireFieldLabel = WireField.Label.IDENTITY_IF_ABSENT;
+      case OMIT_IDENTITY:
+        wireFieldLabel = WireField.Label.OMIT_IDENTITY;
         break;
       case REPEATED:
         wireFieldLabel = WireField.Label.REPEATED;

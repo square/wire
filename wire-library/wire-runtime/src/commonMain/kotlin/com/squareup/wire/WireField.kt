@@ -39,7 +39,7 @@ annotation class WireField(
   val adapter: String,
   /**
    * The field's protocol buffer label, one of [Label.OPTIONAL], [Label.REQUIRED], [Label.REPEATED],
-   * [Label.PACKED], or [Label.IDENTITY_IF_ABSENT]. Defaults to [Label.OPTIONAL].
+   * [Label.PACKED], or [Label.OMIT_IDENTITY]. Defaults to [Label.OPTIONAL].
    */
   val label: Label = Label.OPTIONAL,
   /**
@@ -72,7 +72,7 @@ annotation class WireField(
      * to their type's respective identity value. E.g.: a field of type `int32` will not get emitted
      * if its value is `0`.
      */
-    IDENTITY_IF_ABSENT,
+    OMIT_IDENTITY,
     ;
 
     val isRepeated: Boolean

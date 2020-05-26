@@ -64,7 +64,7 @@ interface SyntaxRules {
             if (isPacked) Field.EncodeMode.PACKED
             else Field.EncodeMode.REPEATED
           Field.Label.OPTIONAL -> Field.EncodeMode.NULL_IF_ABSENT
-          Field.Label.REQUIRED -> Field.EncodeMode.THROW_IF_ABSENT
+          Field.Label.REQUIRED -> Field.EncodeMode.REQUIRED
           Field.Label.ONE_OF,
           null -> if (protoType.isMap) Field.EncodeMode.MAP else Field.EncodeMode.NULL_IF_ABSENT
         }
@@ -103,7 +103,7 @@ interface SyntaxRules {
         if (protoType.isMap) return Field.EncodeMode.MAP
         if (isOneOf) return Field.EncodeMode.NULL_IF_ABSENT
 
-        return Field.EncodeMode.IDENTITY_IF_ABSENT
+        return Field.EncodeMode.OMIT_IDENTITY
       }
 
       override fun jsonName(name: String): String = camelCase(name)

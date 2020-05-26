@@ -66,7 +66,7 @@ class Field private constructor(
 
   @Deprecated("Proto2 concept inexistent in proto3. Use EncodeMode instead.")
   val isRequired: Boolean
-    get() = encodeMode == EncodeMode.THROW_IF_ABSENT
+    get() = encodeMode == EncodeMode.REQUIRED
 
   // Null until this field is linked.
   var encodeMode: EncodeMode? = null
@@ -235,10 +235,10 @@ class Field private constructor(
     NULL_IF_ABSENT,
 
     /** Required from proto2. */
-    THROW_IF_ABSENT,
+    REQUIRED,
 
     /** Non-repeated fields in proto3. Identify can be `0`, `false`, `""`, or `null`. */
-    IDENTITY_IF_ABSENT,
+    OMIT_IDENTITY,
 
     /** List. */
     REPEATED,

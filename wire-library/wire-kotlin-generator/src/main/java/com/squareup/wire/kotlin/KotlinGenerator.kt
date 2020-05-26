@@ -783,10 +783,10 @@ class KotlinGenerator private constructor(
         .apply {
           val wireFieldLabel: WireField.Label? =
               when (field.encodeMode!!) {
-                EncodeMode.THROW_IF_ABSENT ->
+                EncodeMode.REQUIRED ->
                   WireField.Label.REQUIRED
-                EncodeMode.IDENTITY_IF_ABSENT ->
-                  WireField.Label.IDENTITY_IF_ABSENT
+                EncodeMode.OMIT_IDENTITY ->
+                  WireField.Label.OMIT_IDENTITY
                 EncodeMode.REPEATED ->
                   WireField.Label.REPEATED
                 EncodeMode.PACKED ->
@@ -1036,7 +1036,7 @@ class KotlinGenerator private constructor(
       add("return \n⇥")
       message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
-        if (field.encodeMode == EncodeMode.IDENTITY_IF_ABSENT) {
+        if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           add("if (value.%L == %L) 0\nelse ", fieldName, field.identityValue)
         }
         add("%L.encodedSizeWithTag(%L, value.%L) +\n", adapterFor(field), field.tag, fieldName)
@@ -1067,7 +1067,7 @@ class KotlinGenerator private constructor(
 
       message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = nameAllocator[field]
-        if (field.encodeMode == EncodeMode.IDENTITY_IF_ABSENT) {
+        if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           add("if (value.%L != %L) ", fieldName, field.identityValue)
         }
         addStatement("%L.encodeWithTag(writer, %L, value.%L)",
@@ -1437,7 +1437,7 @@ class KotlinGenerator private constructor(
     get() = when {
       isRepeated || isMap -> getClass()
       else -> {
-        val nullable = encodeMode != EncodeMode.IDENTITY_IF_ABSENT || acceptsNull
+        val nullable = encodeMode != EncodeMode.OMIT_IDENTITY || acceptsNull
         getClass().copy(nullable = nullable)
       }
     }
@@ -1466,8 +1466,8 @@ class KotlinGenerator private constructor(
         EncodeMode.REPEATED,
         EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(type!!.typeName)
         EncodeMode.NULL_IF_ABSENT -> type!!.typeName.copy(nullable = true)
-        EncodeMode.THROW_IF_ABSENT -> type!!.typeName
-        EncodeMode.IDENTITY_IF_ABSENT -> {
+        EncodeMode.REQUIRED -> type!!.typeName
+        EncodeMode.OMIT_IDENTITY -> {
           when {
             isOneOf -> type!!.typeName.copy(nullable = true)
             type!!.isMessage -> type!!.typeName.copy(nullable = true)
@@ -1484,7 +1484,7 @@ class KotlinGenerator private constructor(
         EncodeMode.REPEATED,
         EncodeMode.PACKED -> CodeBlock.of("emptyList()")
         EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
-        EncodeMode.IDENTITY_IF_ABSENT -> {
+        EncodeMode.OMIT_IDENTITY -> {
           if (isOneOf) return CodeBlock.of("null")
           val protoType = type!!
           val type: Type? = schema.getType(protoType)
@@ -1516,7 +1516,7 @@ class KotlinGenerator private constructor(
           }
         }
         // We run this code even if when we're not using the default value so we return something.
-        EncodeMode.THROW_IF_ABSENT -> CodeBlock.of("null")
+        EncodeMode.REQUIRED -> CodeBlock.of("null")
       }
     }
 
@@ -1526,9 +1526,9 @@ class KotlinGenerator private constructor(
         EncodeMode.MAP,
         EncodeMode.REPEATED,
         EncodeMode.PACKED,
-        EncodeMode.THROW_IF_ABSENT -> false
+        EncodeMode.REQUIRED -> false
         EncodeMode.NULL_IF_ABSENT -> true
-        EncodeMode.IDENTITY_IF_ABSENT -> {
+        EncodeMode.OMIT_IDENTITY -> {
           when {
             isOneOf -> true
             type!!.isMessage -> true
