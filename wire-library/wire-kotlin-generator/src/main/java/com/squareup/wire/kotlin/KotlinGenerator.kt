@@ -781,12 +781,21 @@ class KotlinGenerator private constructor(
           }
         }
         .apply {
-          if (!field.isOptional) {
-            if (field.isPacked) {
-              addMember("label = %T.PACKED", WireField.Label::class)
-            } else if (field.label != null) {
-              addMember("label = %T.%L", WireField.Label::class, field.label!!)
-            }
+          val wireFieldLabel: WireField.Label? =
+              when (field.encodeMode!!) {
+                EncodeMode.THROW_IF_ABSENT ->
+                  WireField.Label.REQUIRED
+                EncodeMode.IDENTITY_IF_ABSENT ->
+                  WireField.Label.IDENTITY_IF_ABSENT
+                EncodeMode.REPEATED ->
+                  WireField.Label.REPEATED
+                EncodeMode.PACKED ->
+                  WireField.Label.PACKED
+                EncodeMode.MAP,
+                EncodeMode.NULL_IF_ABSENT -> null
+              }
+          if (wireFieldLabel != null) {
+            addMember("label = %T.%L", WireField.Label::class, wireFieldLabel)
           }
         }
         .apply { if (field.isRedacted) addMember("redacted = true") }

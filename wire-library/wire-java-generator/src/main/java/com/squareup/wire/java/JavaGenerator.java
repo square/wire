@@ -1151,12 +1151,28 @@ public final class JavaGenerator {
       result.addMember("adapter", "$S", adapterString(field.getType()));
     }
 
-    if (!field.isOptional()) {
-      if (field.isPacked()) {
-        result.addMember("label", "$T.PACKED", WireField.Label.class);
-      } else if (field.getLabel() != null) {
-        result.addMember("label", "$T.$L", WireField.Label.class, field.getLabel());
-      }
+    WireField.Label wireFieldLabel;
+    //noinspection ConstantConditions
+    switch (field.getEncodeMode()) {
+      case THROW_IF_ABSENT:
+        wireFieldLabel = WireField.Label.REQUIRED;
+        break;
+      case IDENTITY_IF_ABSENT:
+        wireFieldLabel = WireField.Label.IDENTITY_IF_ABSENT;
+        break;
+      case REPEATED:
+        wireFieldLabel = WireField.Label.REPEATED;
+        break;
+      case PACKED:
+        wireFieldLabel = WireField.Label.PACKED;
+        break;
+      case MAP:
+      case NULL_IF_ABSENT:
+      default:
+        wireFieldLabel = null;
+    }
+    if (wireFieldLabel != null) {
+      result.addMember("label", "$T.$L", WireField.Label.class, wireFieldLabel);
     }
 
     if (field.isRedacted()) {

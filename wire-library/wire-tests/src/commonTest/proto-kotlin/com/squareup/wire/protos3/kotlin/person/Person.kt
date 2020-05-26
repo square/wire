@@ -36,7 +36,8 @@ class Person(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.IDENTITY_IF_ABSENT
   )
   val name: String = "",
   /**
@@ -44,7 +45,8 @@ class Person(
    */
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.IDENTITY_IF_ABSENT
   )
   val id: Int = 0,
   /**
@@ -52,7 +54,8 @@ class Person(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.IDENTITY_IF_ABSENT
   )
   val email: String = "",
   /**
@@ -255,7 +258,8 @@ class Person(
      */
     @field:WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.IDENTITY_IF_ABSENT
     )
     val number: String = "",
     /**
@@ -263,7 +267,8 @@ class Person(
      */
     @field:WireField(
       tag = 2,
-      adapter = "com.squareup.wire.protos3.kotlin.person.Person${'$'}PhoneType#ADAPTER"
+      adapter = "com.squareup.wire.protos3.kotlin.person.Person${'$'}PhoneType#ADAPTER",
+      label = WireField.Label.IDENTITY_IF_ABSENT
     )
     val type: PhoneType = PhoneType.MOBILE,
     unknownFields: ByteString = ByteString.EMPTY
