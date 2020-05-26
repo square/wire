@@ -39,7 +39,7 @@ annotation class WireField(
   val adapter: String,
   /**
    * The field's protocol buffer label, one of [Label.OPTIONAL], [Label.REQUIRED], [Label.REPEATED],
-   * or [Label.PACKED]. Defaults to [Label.OPTIONAL].
+   * [Label.PACKED], or [Label.OMIT_IDENTITY]. Defaults to [Label.OPTIONAL].
    */
   val label: Label = Label.OPTIONAL,
   /**
@@ -66,7 +66,14 @@ annotation class WireField(
     REPEATED,
     ONE_OF,
     /** Implies [REPEATED]. */
-    PACKED;
+    PACKED,
+    /**
+     * Special label to defines proto3 fields which should not be emitted if their value is equal
+     * to their type's respective identity value. E.g.: a field of type `int32` will not get emitted
+     * if its value is `0`.
+     */
+    OMIT_IDENTITY,
+    ;
 
     val isRepeated: Boolean
       @JvmName("isRepeated") get() = this == REPEATED || this == PACKED
