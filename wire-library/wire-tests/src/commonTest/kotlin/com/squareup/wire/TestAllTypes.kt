@@ -111,7 +111,7 @@ class TestAllTypes {
     assertEquals(allTypes.hashCode(), messageHashCode)
   }
 
-  @Test @Ignore fun testBuilder() {
+  @Test fun testBuilder() {
     var builder = message()
     val nestedMessage = AllTypes.NestedMessage(a = 999)
 
