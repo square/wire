@@ -28,7 +28,8 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   moshi: Moshi,
   type: Type
 ) : JsonAdapter<M>() {
-  private val messageAdapter = RuntimeMessageAdapter.create(type as Class<M>, "square.github.io/wire/unknown")
+  private val messageAdapter =
+      RuntimeMessageAdapter.create(type as Class<M>, "square.github.io/wire/unknown")
   private val fieldBindings = messageAdapter.fieldBindings.values.toTypedArray()
   private val encodeNames: List<String>
   private val options: JsonReader.Options
@@ -61,12 +62,9 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       fieldType = Types.newParameterizedType(List::class.java, fieldType)
     }
 
-    // TODO: use encode mode instead of fieldBinding.label.
     val syntheticQualifier: Class<out Annotation>? = when {
       fieldBinding.singleAdapter() === ProtoAdapter.UINT64 -> Uint64::class.java
-      fieldBinding.label.isOneOf -> null
-      // TODO(benoit) We cannot use it until we read the `encodeMode` instead of the `label`.
-      // else -> IdentityIfAbsent::class.java
+      fieldBinding.label == WireField.Label.OMIT_IDENTITY -> OmitIdentity::class.java
       else -> null
     }
 

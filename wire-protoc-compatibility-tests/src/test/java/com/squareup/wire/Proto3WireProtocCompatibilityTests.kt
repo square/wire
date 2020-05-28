@@ -101,7 +101,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(pizzaDelivery)
   }
 
-  @Ignore("Need to finish @IdentityIfAbsent")
   @Test fun wireJson() {
     val pizzaDelivery = PizzaDelivery(
         address = "507 Cross Street",
@@ -136,7 +135,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(jsonAdapter.fromJson(json)).isEqualTo(pizzaDelivery)
   }
 
-  @Ignore("Need to finish @IdentityIfAbsent")
   @Test fun wireProtocJsonRoundTrip() {
     val protocMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
         .setAddress("507 Cross Street")
