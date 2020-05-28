@@ -572,7 +572,7 @@ public final class JavaGenerator {
       if (field.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
       }
-      if (emitAndroidAnnotations && field.isOptional()) {
+      if (emitAndroidAnnotations && field.getEncodeMode() == Field.EncodeMode.NULL_IF_ABSENT) {
         fieldBuilder.addAnnotation(NULLABLE);
       }
       builder.addField(fieldBuilder.build());
@@ -1224,7 +1224,7 @@ public final class JavaGenerator {
       TypeName javaType = fieldType(field);
       String fieldName = nameAllocator.get(field);
       ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
-      if (emitAndroidAnnotations && field.isOptional()) {
+      if (emitAndroidAnnotations && field.getEncodeMode() == Field.EncodeMode.NULL_IF_ABSENT) {
         param.addAnnotation(NULLABLE);
       }
       result.addParameter(param.build());
@@ -1293,7 +1293,7 @@ public final class JavaGenerator {
 
       if (constructorTakesAllFields) {
         ParameterSpec.Builder param = ParameterSpec.builder(javaType, fieldName);
-        if (emitAndroidAnnotations && field.isOptional()) {
+        if (emitAndroidAnnotations && field.getEncodeMode() == Field.EncodeMode.NULL_IF_ABSENT) {
           param.addAnnotation(NULLABLE);
         }
         result.addParameter(param.build());
