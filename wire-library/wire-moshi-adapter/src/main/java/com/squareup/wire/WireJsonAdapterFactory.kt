@@ -77,7 +77,7 @@ class WireJsonAdapterFactory private constructor(
   ): JsonAdapter<*>? {
     val rawType = Types.getRawType(type)
 
-    val nextAnnotations = Types.nextAnnotations(annotations, IdentityIfAbsent::class.java)
+    val nextAnnotations = Types.nextAnnotations(annotations, OmitIdentity::class.java)
     if (nextAnnotations != null) {
       return when (type) {
         Int::class.javaObjectType -> INT_JSON_ADAPTER
