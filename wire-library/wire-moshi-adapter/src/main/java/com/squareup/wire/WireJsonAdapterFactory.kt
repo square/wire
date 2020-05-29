@@ -16,6 +16,7 @@
 package com.squareup.wire
 
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
@@ -80,8 +81,17 @@ class WireJsonAdapterFactory private constructor(
     val nextAnnotations = Types.nextAnnotations(annotations, OmitIdentity::class.java)
     if (nextAnnotations != null) {
       return when (type) {
-        Int::class.javaObjectType -> INT_JSON_ADAPTER
+        Boolean::class.javaObjectType,
+        Boolean::class.javaPrimitiveType -> BOOLEAN_JSON_ADAPTER
+        ByteString::class.javaObjectType -> IDENTITY_BYTE_STRING_JSON_ADAPTER
+        Double::class.javaObjectType,
+        Double::class.javaPrimitiveType -> DOUBLE_JSON_ADAPTER
+        Float::class.javaObjectType,
+        Float::class.javaPrimitiveType -> FLOAT_JSON_ADAPTER
+        Int::class.javaObjectType,
         Int::class.javaPrimitiveType -> INT_JSON_ADAPTER
+        Long::class.javaObjectType,
+        Long::class.javaPrimitiveType -> LONG_JSON_ADAPTER
         String::class.java -> STRING_JSON_ADAPTER
         else -> moshi.adapter<Any>(type, nextAnnotations)
       }
@@ -157,12 +167,74 @@ class WireJsonAdapterFactory private constructor(
       }
     }.nullSafe()
 
+    /** Emit null instead of false, which will cause Wire to omit the value altogether. */
+    internal val BOOLEAN_JSON_ADAPTER = object : JsonAdapter<Boolean>() {
+      override fun fromJson(reader: JsonReader): Boolean = reader.nextBoolean()
+
+      override fun toJson(writer: JsonWriter, value: Boolean?) {
+        if (value != true) writer.nullValue()
+        else writer.value(value)
+      }
+    }.nullSafe()
+
+    /**
+     * Emit null instead of an empty byte string, which will cause Wire to omit the value
+     * altogether.
+     */
+    internal val IDENTITY_BYTE_STRING_JSON_ADAPTER = object : JsonAdapter<ByteString>() {
+      override fun fromJson(reader: JsonReader): ByteString? {
+        return reader.nextString().decodeBase64()
+      }
+
+      override fun toJson(writer: JsonWriter, value: ByteString?) {
+        if (value == ByteString.EMPTY) writer.nullValue()
+        else writer.value(value?.base64Url())
+      }
+    }.nullSafe()
+
+    /** Emit null instead of 0, which will cause Wire to omit the value altogether. */
+    internal val DOUBLE_JSON_ADAPTER = object : JsonAdapter<Double>() {
+      override fun fromJson(reader: JsonReader): Double = reader.nextDouble()
+
+      override fun toJson(writer: JsonWriter, value: Double?) {
+        if (value == 0.0) writer.nullValue()
+        else writer.value(value)
+      }
+    }.nullSafe()
+
+    /** Emit null instead of 0, which will cause Wire to omit the value altogether. */
+    internal val FLOAT_JSON_ADAPTER = object : JsonAdapter<Float>() {
+      override fun fromJson(reader: JsonReader): Float {
+        val value = reader.nextDouble().toFloat()
+        // Double check for infinity after float conversion; many doubles > Float.MAX
+        if (!reader.isLenient && value.isInfinite()) {
+          throw JsonDataException("JSON forbids NaN and infinities: $value at path ${reader.path}")
+        }
+        return value
+      }
+
+      override fun toJson(writer: JsonWriter, value: Float?) {
+        if (value == 0f) writer.nullValue()
+        else writer.value(value)
+      }
+    }.nullSafe()
+
     /** Emit null instead of 0, which will cause Wire to omit the value altogether. */
     internal val INT_JSON_ADAPTER = object : JsonAdapter<Int>() {
       override fun fromJson(reader: JsonReader): Int = reader.nextInt()
 
       override fun toJson(writer: JsonWriter, value: Int?) {
         if (value == 0) writer.nullValue()
+        else writer.value(value)
+      }
+    }.nullSafe()
+
+    /** Emit null instead of 0, which will cause Wire to omit the value altogether. */
+    internal val LONG_JSON_ADAPTER = object : JsonAdapter<Long>() {
+      override fun fromJson(reader: JsonReader): Long = reader.nextLong()
+
+      override fun toJson(writer: JsonWriter, value: Long?) {
+        if (value == 0L) writer.nullValue()
         else writer.value(value)
       }
     }.nullSafe()
