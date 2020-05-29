@@ -32,6 +32,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Ignore
 import org.junit.Test
+import squareup.proto3.alltypes.All64
+import squareup.proto3.alltypes.All64OuterClass
 import squareup.proto3.alltypes.AllTypes
 import squareup.proto3.alltypes.AllTypesOuterClass
 import squareup.proto3.alltypes.CamelCase
@@ -390,6 +392,67 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(camelAdapter.toJson(camel), JsonFormat.printer().print(protocCamel))
   }
 
+  @Test fun all64JsonProtoc(){
+    val all64 = All64OuterClass.All64.newBuilder()
+        .setMyInt64(Long.MIN_VALUE)
+        .setMyUint64(Long.MIN_VALUE)
+        .setMySint64(Long.MIN_VALUE)
+        .setMyFixed64(Long.MIN_VALUE)
+        .setMySfixed64(Long.MIN_VALUE)
+        .addAllRepInt64(list(Long.MIN_VALUE))
+        .addAllRepUint64(list(Long.MIN_VALUE))
+        .addAllRepSint64(list(Long.MIN_VALUE))
+        .addAllRepFixed64(list(Long.MIN_VALUE))
+        .addAllRepSfixed64(list(Long.MIN_VALUE))
+        .addAllPackInt64(list(Long.MIN_VALUE))
+        .addAllPackUint64(list(Long.MIN_VALUE))
+        .addAllPackSint64(list(Long.MIN_VALUE))
+        .addAllPackFixed64(list(Long.MIN_VALUE))
+        .addAllPackSfixed64(list(Long.MIN_VALUE))
+        .setOneofInt64(Long.MIN_VALUE)
+        .putMapInt64Sfixed64(Long.MIN_VALUE, Long.MIN_VALUE)
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(all64), ALL_64_JSON)
+
+    val jsonParser = JsonFormat.parser()
+    val parsed = All64OuterClass.All64.newBuilder()
+        .apply { jsonParser.merge(ALL_64_JSON, this) }
+        .build()
+    assertThat(parsed).isEqualTo(all64)
+  }
+
+  @Ignore("TODO")
+  @Test fun all64JsonMoshi() {
+    val all64 = All64(
+        my_int64 = Long.MIN_VALUE,
+        my_uint64 = Long.MIN_VALUE,
+        my_sint64 = Long.MIN_VALUE,
+        my_fixed64 = Long.MIN_VALUE,
+        my_sfixed64 = Long.MIN_VALUE,
+        rep_int64 = list(Long.MIN_VALUE),
+        rep_uint64 = list(Long.MIN_VALUE),
+        rep_sint64 = list(Long.MIN_VALUE),
+        rep_fixed64 = list(Long.MIN_VALUE),
+        rep_sfixed64 = list(Long.MIN_VALUE),
+        pack_int64 = list(Long.MIN_VALUE),
+        pack_uint64 = list(Long.MIN_VALUE),
+        pack_sint64 = list(Long.MIN_VALUE),
+        pack_fixed64 = list(Long.MIN_VALUE),
+        pack_sfixed64 = list(Long.MIN_VALUE),
+        oneof_int64 = Long.MIN_VALUE,
+        map_int64_sfixed64 = mapOf(Long.MIN_VALUE to Long.MIN_VALUE)
+    )
+
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory())
+        .build()
+    val jsonAdapter = moshi.adapter(All64::class.java).indent("  ")
+    assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON)
+    assertThat(jsonAdapter.fromJson(ALL_64_JSON)).isEqualTo(all64)
+  }
+
   companion object {
     private val moshi = Moshi.Builder()
         .add(WireJsonAdapterFactory())
@@ -564,6 +627,29 @@ class Proto3WireProtocCompatibilityTests {
         |"mapStringMessage":{"message":{"a":1}},
         |"mapStringEnum":{"enum":"A"},
         |"oneofInt32" : 0.0
+        |}""".trimMargin()
+
+    private val ALL_64_JSON = """
+        |{
+        |  "myInt64": "-9223372036854775808",
+        |  "myUint64": "9223372036854775808",
+        |  "mySint64": "-9223372036854775808",
+        |  "myFixed64": "9223372036854775808",
+        |  "mySfixed64": "-9223372036854775808",
+        |  "repInt64": ["-9223372036854775808", "-9223372036854775808"],
+        |  "repUint64": ["9223372036854775808", "9223372036854775808"],
+        |  "repSint64": ["-9223372036854775808", "-9223372036854775808"],
+        |  "repFixed64": ["9223372036854775808", "9223372036854775808"],
+        |  "repSfixed64": ["-9223372036854775808", "-9223372036854775808"],
+        |  "packInt64": ["-9223372036854775808", "-9223372036854775808"],
+        |  "packUint64": ["9223372036854775808", "9223372036854775808"],
+        |  "packSint64": ["-9223372036854775808", "-9223372036854775808"],
+        |  "packFixed64": ["9223372036854775808", "9223372036854775808"],
+        |  "packSfixed64": ["-9223372036854775808", "-9223372036854775808"],
+        |  "oneofInt64": "-9223372036854775808",
+        |  "mapInt64Sfixed64": {
+        |    "-9223372036854775808": "-9223372036854775808"
+        |  }
         |}""".trimMargin()
 
     private const val IDENTITY_ALL_TYPES_JSON = "{}"
