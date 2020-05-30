@@ -26,9 +26,8 @@ class Field private constructor(
 
   val location: Location,
 
-  // TODO(oldergod) Make private, we wanna expose encodeMode instead.
-  /** May be null for proto3 fields, or one-of's. */
-  val label: Label?,
+  /** May be null for proto3 fields, one-of's, or maps. */
+  private val label: Label?,
 
   val name: String,
 
@@ -60,11 +59,6 @@ class Field private constructor(
   val isRepeated: Boolean
     get() = label == Label.REPEATED
 
-  @Deprecated("Proto2 concept inexistent in proto3. Use EncodeMode instead.")
-  val isOptional: Boolean
-    get() = label == Label.OPTIONAL
-
-  @Deprecated("Proto2 concept inexistent in proto3. Use EncodeMode instead.")
   val isRequired: Boolean
     get() = encodeMode == EncodeMode.REQUIRED
 
