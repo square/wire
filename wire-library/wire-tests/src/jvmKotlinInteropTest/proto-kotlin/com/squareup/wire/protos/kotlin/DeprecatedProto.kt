@@ -38,8 +38,9 @@ class DeprecatedProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is DeprecatedProto) return false
-    return unknownFields == other.unknownFields
-        && foo == other.foo
+    var result = unknownFields == other.unknownFields
+    result = result && (foo == other.foo)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -84,9 +85,11 @@ class DeprecatedProto(
       DeprecatedProto::class, 
       "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto"
     ) {
-      override fun encodedSize(value: DeprecatedProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
-        value.unknownFields.size
+      override fun encodedSize(value: DeprecatedProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: DeprecatedProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)

@@ -50,9 +50,10 @@ class RedactedOneOf(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedOneOf) return false
-    return unknownFields == other.unknownFields
-        && b == other.b
-        && c == other.c
+    var result = unknownFields == other.unknownFields
+    result = result && (b == other.b)
+    result = result && (c == other.c)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -86,10 +87,12 @@ class RedactedOneOf(
       RedactedOneOf::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedOneOf"
     ) {
-      override fun encodedSize(value: RedactedOneOf): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.b) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.c) +
-        value.unknownFields.size
+      override fun encodedSize(value: RedactedOneOf): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.b)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.c)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: RedactedOneOf) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)

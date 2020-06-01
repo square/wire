@@ -69,10 +69,11 @@ class MethodOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MethodOptions) return false
-    return unknownFields == other.unknownFields
-        && deprecated == other.deprecated
-        && idempotency_level == other.idempotency_level
-        && uninterpreted_option == other.uninterpreted_option
+    var result = unknownFields == other.unknownFields
+    result = result && (deprecated == other.deprecated)
+    result = result && (idempotency_level == other.idempotency_level)
+    result = result && (uninterpreted_option == other.uninterpreted_option)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -163,12 +164,14 @@ class MethodOptions(
       MethodOptions::class, 
       "type.googleapis.com/google.protobuf.MethodOptions"
     ) {
-      override fun encodedSize(value: MethodOptions): Int = 
-        ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated) +
-        IdempotencyLevel.ADAPTER.encodedSizeWithTag(34, value.idempotency_level) +
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: MethodOptions): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
+        size += IdempotencyLevel.ADAPTER.encodedSizeWithTag(34, value.idempotency_level)
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: MethodOptions) {
         ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated)

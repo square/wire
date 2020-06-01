@@ -54,10 +54,11 @@ class ServiceDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ServiceDescriptorProto) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && method == other.method
-        && options == other.options
+    var result = unknownFields == other.unknownFields
+    result = result && (name == other.name)
+    result = result && (method == other.method)
+    result = result && (options == other.options)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -95,11 +96,13 @@ class ServiceDescriptorProto(
       ServiceDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.ServiceDescriptorProto"
     ) {
-      override fun encodedSize(value: ServiceDescriptorProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        MethodDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.method) +
-        ServiceOptions.ADAPTER.encodedSizeWithTag(3, value.options) +
-        value.unknownFields.size
+      override fun encodedSize(value: ServiceDescriptorProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += MethodDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.method)
+        size += ServiceOptions.ADAPTER.encodedSizeWithTag(3, value.options)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: ServiceDescriptorProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

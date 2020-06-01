@@ -67,10 +67,11 @@ class OneOfMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneOfMessage) return false
-    return unknownFields == other.unknownFields
-        && foo == other.foo
-        && bar == other.bar
-        && baz == other.baz
+    var result = unknownFields == other.unknownFields
+    result = result && (foo == other.foo)
+    result = result && (bar == other.bar)
+    result = result && (baz == other.baz)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -107,11 +108,13 @@ class OneOfMessage(
       OneOfMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage"
     ) {
-      override fun encodedSize(value: OneOfMessage): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
-        ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar) +
-        ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz) +
-        value.unknownFields.size
+      override fun encodedSize(value: OneOfMessage): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: OneOfMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)

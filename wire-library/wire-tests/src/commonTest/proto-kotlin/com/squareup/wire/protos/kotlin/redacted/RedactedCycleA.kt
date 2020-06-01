@@ -37,8 +37,9 @@ class RedactedCycleA(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedCycleA) return false
-    return unknownFields == other.unknownFields
-        && b == other.b
+    var result = unknownFields == other.unknownFields
+    result = result && (b == other.b)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -67,9 +68,11 @@ class RedactedCycleA(
       RedactedCycleA::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedCycleA"
     ) {
-      override fun encodedSize(value: RedactedCycleA): Int = 
-        RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b) +
-        value.unknownFields.size
+      override fun encodedSize(value: RedactedCycleA): Int {
+        var size = value.unknownFields.size
+        size += RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: RedactedCycleA) {
         RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b)

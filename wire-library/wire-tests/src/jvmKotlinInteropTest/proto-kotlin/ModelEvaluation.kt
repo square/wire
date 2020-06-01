@@ -67,10 +67,11 @@ class ModelEvaluation(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ModelEvaluation) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && score == other.score
-        && models == other.models
+    var result = unknownFields == other.unknownFields
+    result = result && (name == other.name)
+    result = result && (score == other.score)
+    result = result && (models == other.models)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -143,11 +144,13 @@ class ModelEvaluation(
       private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> =
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER)
 
-      override fun encodedSize(value: ModelEvaluation): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(2, value.score) +
-        modelsAdapter.encodedSizeWithTag(3, value.models) +
-        value.unknownFields.size
+      override fun encodedSize(value: ModelEvaluation): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(2, value.score)
+        size += modelsAdapter.encodedSizeWithTag(3, value.models)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: ModelEvaluation) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

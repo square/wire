@@ -37,8 +37,9 @@ class OneBytesField(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneBytesField) return false
-    return unknownFields == other.unknownFields
-        && opt_bytes == other.opt_bytes
+    var result = unknownFields == other.unknownFields
+    result = result && (opt_bytes == other.opt_bytes)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -67,9 +68,11 @@ class OneBytesField(
       OneBytesField::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.OneBytesField"
     ) {
-      override fun encodedSize(value: OneBytesField): Int = 
-        ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes) +
-        value.unknownFields.size
+      override fun encodedSize(value: OneBytesField): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: OneBytesField) {
         ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes)

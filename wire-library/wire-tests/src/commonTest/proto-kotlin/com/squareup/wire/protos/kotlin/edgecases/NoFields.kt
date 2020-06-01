@@ -30,7 +30,8 @@ class NoFields(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoFields) return false
-    return unknownFields == other.unknownFields
+    var result = unknownFields == other.unknownFields
+    return result
   }
 
   override fun hashCode(): Int = unknownFields.hashCode()
@@ -46,8 +47,10 @@ class NoFields(
       NoFields::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.NoFields"
     ) {
-      override fun encodedSize(value: NoFields): Int = 
-        value.unknownFields.size
+      override fun encodedSize(value: NoFields): Int {
+        var size = value.unknownFields.size
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: NoFields) {
         writer.writeBytes(value.unknownFields)

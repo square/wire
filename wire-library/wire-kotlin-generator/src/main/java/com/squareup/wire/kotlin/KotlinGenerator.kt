@@ -473,7 +473,7 @@ class KotlinGenerator private constructor(
   // override fun equals(other: Any?): Boolean {
   //   if (other === this) return true
   //   if (other !is SimpleMessage) return false
-  //   var result unknownFields == other.unknownFields
+  //   var result = unknownFields == other.unknownFields
   //   result = result && (optional_int32 == other.optional_int32)
   //   return result
   // }

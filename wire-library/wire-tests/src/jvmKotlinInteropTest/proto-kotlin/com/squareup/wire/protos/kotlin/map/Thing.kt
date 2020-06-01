@@ -36,8 +36,9 @@ class Thing(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Thing) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
+    var result = unknownFields == other.unknownFields
+    result = result && (name == other.name)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -81,9 +82,11 @@ class Thing(
       Thing::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Thing"
     ) {
-      override fun encodedSize(value: Thing): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        value.unknownFields.size
+      override fun encodedSize(value: Thing): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Thing) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

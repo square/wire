@@ -45,9 +45,10 @@ class KeywordKotlin(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is KeywordKotlin) return false
-    return unknownFields == other.unknownFields
-        && object_ == other.object_
-        && when_ == other.when_
+    var result = unknownFields == other.unknownFields
+    result = result && (object_ == other.object_)
+    result = result && (when_ == other.when_)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -105,10 +106,12 @@ class KeywordKotlin(
       KeywordKotlin::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.KeywordKotlin"
     ) {
-      override fun encodedSize(value: KeywordKotlin): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_) +
-        value.unknownFields.size
+      override fun encodedSize(value: KeywordKotlin): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: KeywordKotlin) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)

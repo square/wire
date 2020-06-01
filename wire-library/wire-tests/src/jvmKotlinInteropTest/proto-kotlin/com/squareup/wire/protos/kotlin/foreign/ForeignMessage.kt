@@ -45,9 +45,10 @@ class ForeignMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ForeignMessage) return false
-    return unknownFields == other.unknownFields
-        && i == other.i
-        && j == other.j
+    var result = unknownFields == other.unknownFields
+    result = result && (i == other.i)
+    result = result && (j == other.j)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -105,10 +106,12 @@ class ForeignMessage(
       ForeignMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.foreign.ForeignMessage"
     ) {
-      override fun encodedSize(value: ForeignMessage): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) +
-        ProtoAdapter.INT32.encodedSizeWithTag(100, value.j) +
-        value.unknownFields.size
+      override fun encodedSize(value: ForeignMessage): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(100, value.j)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: ForeignMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)

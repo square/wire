@@ -135,13 +135,14 @@ class MessageOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageOptions) return false
-    return unknownFields == other.unknownFields
-        && message_set_wire_format == other.message_set_wire_format
-        && no_standard_descriptor_accessor == other.no_standard_descriptor_accessor
-        && deprecated == other.deprecated
-        && map_entry == other.map_entry
-        && uninterpreted_option == other.uninterpreted_option
-        && foreign_message_option == other.foreign_message_option
+    var result = unknownFields == other.unknownFields
+    result = result && (message_set_wire_format == other.message_set_wire_format)
+    result = result && (no_standard_descriptor_accessor == other.no_standard_descriptor_accessor)
+    result = result && (deprecated == other.deprecated)
+    result = result && (map_entry == other.map_entry)
+    result = result && (uninterpreted_option == other.uninterpreted_option)
+    result = result && (foreign_message_option == other.foreign_message_option)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -316,15 +317,17 @@ class MessageOptions(
       MessageOptions::class, 
       "type.googleapis.com/google.protobuf.MessageOptions"
     ) {
-      override fun encodedSize(value: MessageOptions): Int = 
-        ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry) +
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: MessageOptions): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry)
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        size += ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: MessageOptions) {
         ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.message_set_wire_format)

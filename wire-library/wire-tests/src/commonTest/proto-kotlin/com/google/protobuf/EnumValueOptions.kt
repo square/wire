@@ -79,12 +79,13 @@ class EnumValueOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EnumValueOptions) return false
-    return unknownFields == other.unknownFields
-        && deprecated == other.deprecated
-        && uninterpreted_option == other.uninterpreted_option
-        && enum_value_option == other.enum_value_option
-        && complex_enum_value_option == other.complex_enum_value_option
-        && foreign_enum_value_option == other.foreign_enum_value_option
+    var result = unknownFields == other.unknownFields
+    result = result && (deprecated == other.deprecated)
+    result = result && (uninterpreted_option == other.uninterpreted_option)
+    result = result && (enum_value_option == other.enum_value_option)
+    result = result && (complex_enum_value_option == other.complex_enum_value_option)
+    result = result && (foreign_enum_value_option == other.foreign_enum_value_option)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -133,14 +134,16 @@ class EnumValueOptions(
       EnumValueOptions::class, 
       "type.googleapis.com/google.protobuf.EnumValueOptions"
     ) {
-      override fun encodedSize(value: EnumValueOptions): Int = 
-        ProtoAdapter.BOOL.encodedSizeWithTag(1, value.deprecated) +
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        ProtoAdapter.INT32.encodedSizeWithTag(70000, value.enum_value_option) +
-        FooBar.More.ADAPTER.encodedSizeWithTag(70001, value.complex_enum_value_option) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(70002, value.foreign_enum_value_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: EnumValueOptions): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.deprecated)
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(70000, value.enum_value_option)
+        size += FooBar.More.ADAPTER.encodedSizeWithTag(70001, value.complex_enum_value_option)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(70002, value.foreign_enum_value_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: EnumValueOptions) {
         ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.deprecated)

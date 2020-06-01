@@ -54,9 +54,10 @@ class Feature(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Feature) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && location == other.location
+    var result = unknownFields == other.unknownFields
+    result = result && (name == other.name)
+    result = result && (location == other.location)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -90,10 +91,12 @@ class Feature(
       Feature::class, 
       "type.googleapis.com/routeguide.Feature"
     ) {
-      override fun encodedSize(value: Feature): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        Point.ADAPTER.encodedSizeWithTag(2, value.location) +
-        value.unknownFields.size
+      override fun encodedSize(value: Feature): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += Point.ADAPTER.encodedSizeWithTag(2, value.location)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Feature) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

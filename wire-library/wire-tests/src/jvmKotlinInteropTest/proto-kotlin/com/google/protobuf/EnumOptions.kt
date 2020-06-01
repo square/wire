@@ -66,10 +66,11 @@ class EnumOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EnumOptions) return false
-    return unknownFields == other.unknownFields
-        && allow_alias == other.allow_alias
-        && deprecated == other.deprecated
-        && uninterpreted_option == other.uninterpreted_option
+    var result = unknownFields == other.unknownFields
+    result = result && (allow_alias == other.allow_alias)
+    result = result && (deprecated == other.deprecated)
+    result = result && (uninterpreted_option == other.uninterpreted_option)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -156,12 +157,14 @@ class EnumOptions(
       EnumOptions::class, 
       "type.googleapis.com/google.protobuf.EnumOptions"
     ) {
-      override fun encodedSize(value: EnumOptions): Int = 
-        ProtoAdapter.BOOL.encodedSizeWithTag(2, value.allow_alias) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) +
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: EnumOptions): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.allow_alias)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: EnumOptions) {
         ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.allow_alias)

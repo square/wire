@@ -97,14 +97,15 @@ class UninterpretedOption(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is UninterpretedOption) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && identifier_value == other.identifier_value
-        && positive_int_value == other.positive_int_value
-        && negative_int_value == other.negative_int_value
-        && double_value == other.double_value
-        && string_value == other.string_value
-        && aggregate_value == other.aggregate_value
+    var result = unknownFields == other.unknownFields
+    result = result && (name == other.name)
+    result = result && (identifier_value == other.identifier_value)
+    result = result && (positive_int_value == other.positive_int_value)
+    result = result && (negative_int_value == other.negative_int_value)
+    result = result && (double_value == other.double_value)
+    result = result && (string_value == other.string_value)
+    result = result && (aggregate_value == other.aggregate_value)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -228,15 +229,17 @@ class UninterpretedOption(
       UninterpretedOption::class, 
       "type.googleapis.com/google.protobuf.UninterpretedOption"
     ) {
-      override fun encodedSize(value: UninterpretedOption): Int = 
-        NamePart.ADAPTER.asRepeated().encodedSizeWithTag(2, value.name) +
-        ProtoAdapter.STRING.encodedSizeWithTag(3, value.identifier_value) +
-        ProtoAdapter.UINT64.encodedSizeWithTag(4, value.positive_int_value) +
-        ProtoAdapter.INT64.encodedSizeWithTag(5, value.negative_int_value) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.double_value) +
-        ProtoAdapter.BYTES.encodedSizeWithTag(7, value.string_value) +
-        ProtoAdapter.STRING.encodedSizeWithTag(8, value.aggregate_value) +
-        value.unknownFields.size
+      override fun encodedSize(value: UninterpretedOption): Int {
+        var size = value.unknownFields.size
+        size += NamePart.ADAPTER.asRepeated().encodedSizeWithTag(2, value.name)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.identifier_value)
+        size += ProtoAdapter.UINT64.encodedSizeWithTag(4, value.positive_int_value)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(5, value.negative_int_value)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.double_value)
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(7, value.string_value)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(8, value.aggregate_value)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: UninterpretedOption) {
         NamePart.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.name)
@@ -323,9 +326,10 @@ class UninterpretedOption(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NamePart) return false
-      return unknownFields == other.unknownFields
-          && name_part == other.name_part
-          && is_extension == other.is_extension
+      var result = unknownFields == other.unknownFields
+      result = result && (name_part == other.name_part)
+      result = result && (is_extension == other.is_extension)
+      return result
     }
 
     override fun hashCode(): Int {
@@ -383,10 +387,12 @@ class UninterpretedOption(
         NamePart::class, 
         "type.googleapis.com/google.protobuf.UninterpretedOption.NamePart"
       ) {
-        override fun encodedSize(value: NamePart): Int = 
-          ProtoAdapter.STRING.encodedSizeWithTag(1, value.name_part) +
-          ProtoAdapter.BOOL.encodedSizeWithTag(2, value.is_extension) +
-          value.unknownFields.size
+        override fun encodedSize(value: NamePart): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name_part)
+          size += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.is_extension)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: NamePart) {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name_part)

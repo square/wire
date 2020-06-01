@@ -40,8 +40,9 @@ class OptionalEnumUser(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OptionalEnumUser) return false
-    return unknownFields == other.unknownFields
-        && optional_enum == other.optional_enum
+    var result = unknownFields == other.unknownFields
+    result = result && (optional_enum == other.optional_enum)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -70,9 +71,11 @@ class OptionalEnumUser(
       OptionalEnumUser::class, 
       "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser"
     ) {
-      override fun encodedSize(value: OptionalEnumUser): Int = 
-        OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum) +
-        value.unknownFields.size
+      override fun encodedSize(value: OptionalEnumUser): Int {
+        var size = value.unknownFields.size
+        size += OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: OptionalEnumUser) {
         OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)

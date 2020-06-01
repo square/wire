@@ -48,10 +48,11 @@ class RedactedChild(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedChild) return false
-    return unknownFields == other.unknownFields
-        && a == other.a
-        && b == other.b
-        && c == other.c
+    var result = unknownFields == other.unknownFields
+    result = result && (a == other.a)
+    result = result && (b == other.b)
+    result = result && (c == other.c)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -88,11 +89,13 @@ class RedactedChild(
       RedactedChild::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedChild"
     ) {
-      override fun encodedSize(value: RedactedChild): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
-        Redacted.ADAPTER.encodedSizeWithTag(2, value.b) +
-        NotRedacted.ADAPTER.encodedSizeWithTag(3, value.c) +
-        value.unknownFields.size
+      override fun encodedSize(value: RedactedChild): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
+        size += Redacted.ADAPTER.encodedSizeWithTag(2, value.b)
+        size += NotRedacted.ADAPTER.encodedSizeWithTag(3, value.c)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: RedactedChild) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)

@@ -57,11 +57,12 @@ class Redacted(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Redacted) return false
-    return unknownFields == other.unknownFields
-        && a == other.a
-        && b == other.b
-        && c == other.c
-        && extension == other.extension
+    var result = unknownFields == other.unknownFields
+    result = result && (a == other.a)
+    result = result && (b == other.b)
+    result = result && (c == other.c)
+    result = result && (extension == other.extension)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -101,12 +102,14 @@ class Redacted(
       Redacted::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.Redacted"
     ) {
-      override fun encodedSize(value: Redacted): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) +
-        ProtoAdapter.STRING.encodedSizeWithTag(3, value.c) +
-        RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension) +
-        value.unknownFields.size
+      override fun encodedSize(value: Redacted): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.c)
+        size += RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Redacted) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)

@@ -42,8 +42,9 @@ class OneofOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneofOptions) return false
-    return unknownFields == other.unknownFields
-        && uninterpreted_option == other.uninterpreted_option
+    var result = unknownFields == other.unknownFields
+    result = result && (uninterpreted_option == other.uninterpreted_option)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -74,10 +75,12 @@ class OneofOptions(
       OneofOptions::class, 
       "type.googleapis.com/google.protobuf.OneofOptions"
     ) {
-      override fun encodedSize(value: OneofOptions): Int = 
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: OneofOptions): Int {
+        var size = value.unknownFields.size
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: OneofOptions) {
         UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999,

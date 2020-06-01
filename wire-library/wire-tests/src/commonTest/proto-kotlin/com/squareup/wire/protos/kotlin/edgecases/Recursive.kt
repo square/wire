@@ -42,9 +42,10 @@ class Recursive(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Recursive) return false
-    return unknownFields == other.unknownFields
-        && value == other.value
-        && recursive == other.recursive
+    var result = unknownFields == other.unknownFields
+    result = result && (value == other.value)
+    result = result && (recursive == other.recursive)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -78,10 +79,12 @@ class Recursive(
       Recursive::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.Recursive"
     ) {
-      override fun encodedSize(value: Recursive): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.value) +
-        Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive) +
-        value.unknownFields.size
+      override fun encodedSize(value: Recursive): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.value)
+        size += Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Recursive) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value)

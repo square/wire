@@ -58,9 +58,10 @@ class ServiceOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ServiceOptions) return false
-    return unknownFields == other.unknownFields
-        && deprecated == other.deprecated
-        && uninterpreted_option == other.uninterpreted_option
+    var result = unknownFields == other.unknownFields
+    result = result && (deprecated == other.deprecated)
+    result = result && (uninterpreted_option == other.uninterpreted_option)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -97,11 +98,13 @@ class ServiceOptions(
       ServiceOptions::class, 
       "type.googleapis.com/google.protobuf.ServiceOptions"
     ) {
-      override fun encodedSize(value: ServiceOptions): Int = 
-        ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated) +
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: ServiceOptions): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: ServiceOptions) {
         ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated)

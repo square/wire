@@ -156,19 +156,20 @@ class FileDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FileDescriptorProto) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && package_ == other.package_
-        && dependency == other.dependency
-        && public_dependency == other.public_dependency
-        && weak_dependency == other.weak_dependency
-        && message_type == other.message_type
-        && enum_type == other.enum_type
-        && service == other.service
-        && extension == other.extension
-        && options == other.options
-        && source_code_info == other.source_code_info
-        && syntax == other.syntax
+    var result = unknownFields == other.unknownFields
+    result = result && (name == other.name)
+    result = result && (package_ == other.package_)
+    result = result && (dependency == other.dependency)
+    result = result && (public_dependency == other.public_dependency)
+    result = result && (weak_dependency == other.weak_dependency)
+    result = result && (message_type == other.message_type)
+    result = result && (enum_type == other.enum_type)
+    result = result && (service == other.service)
+    result = result && (extension == other.extension)
+    result = result && (options == other.options)
+    result = result && (source_code_info == other.source_code_info)
+    result = result && (syntax == other.syntax)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -384,20 +385,22 @@ class FileDescriptorProto(
       FileDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.FileDescriptorProto"
     ) {
-      override fun encodedSize(value: FileDescriptorProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.package_) +
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(3, value.dependency) +
-        ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(10, value.public_dependency) +
-        ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(11, value.weak_dependency) +
-        DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.message_type) +
-        EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enum_type) +
-        ServiceDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.service) +
-        FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(7, value.extension) +
-        FileOptions.ADAPTER.encodedSizeWithTag(8, value.options) +
-        SourceCodeInfo.ADAPTER.encodedSizeWithTag(9, value.source_code_info) +
-        ProtoAdapter.STRING.encodedSizeWithTag(12, value.syntax) +
-        value.unknownFields.size
+      override fun encodedSize(value: FileDescriptorProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.package_)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(3, value.dependency)
+        size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(10, value.public_dependency)
+        size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(11, value.weak_dependency)
+        size += DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.message_type)
+        size += EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enum_type)
+        size += ServiceDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.service)
+        size += FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(7, value.extension)
+        size += FileOptions.ADAPTER.encodedSizeWithTag(8, value.options)
+        size += SourceCodeInfo.ADAPTER.encodedSizeWithTag(9, value.source_code_info)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(12, value.syntax)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: FileDescriptorProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

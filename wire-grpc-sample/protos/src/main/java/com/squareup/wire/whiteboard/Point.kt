@@ -50,10 +50,11 @@ class Point(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Point) return false
-    return unknownFields == other.unknownFields
-        && x == other.x
-        && y == other.y
-        && color == other.color
+    var result = unknownFields == other.unknownFields
+    result = result && (x == other.x)
+    result = result && (y == other.y)
+    result = result && (color == other.color)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -90,11 +91,13 @@ class Point(
       Point::class, 
       "type.googleapis.com/com.squareup.wire.whiteboard.Point"
     ) {
-      override fun encodedSize(value: Point): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.x) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.y) +
-        ProtoAdapter.INT32.encodedSizeWithTag(3, value.color) +
-        value.unknownFields.size
+      override fun encodedSize(value: Point): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.x)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.y)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(3, value.color)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Point) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.x)

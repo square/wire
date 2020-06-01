@@ -46,9 +46,10 @@ class OneofDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneofDescriptorProto) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && options == other.options
+    var result = unknownFields == other.unknownFields
+    result = result && (name == other.name)
+    result = result && (options == other.options)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -82,10 +83,12 @@ class OneofDescriptorProto(
       OneofDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.OneofDescriptorProto"
     ) {
-      override fun encodedSize(value: OneofDescriptorProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        OneofOptions.ADAPTER.encodedSizeWithTag(2, value.options) +
-        value.unknownFields.size
+      override fun encodedSize(value: OneofDescriptorProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += OneofOptions.ADAPTER.encodedSizeWithTag(2, value.options)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: OneofDescriptorProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

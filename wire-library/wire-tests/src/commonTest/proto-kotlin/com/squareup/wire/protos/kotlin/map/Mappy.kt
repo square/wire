@@ -39,8 +39,9 @@ class Mappy(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Mappy) return false
-    return unknownFields == other.unknownFields
-        && things == other.things
+    var result = unknownFields == other.unknownFields
+    result = result && (things == other.things)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -72,9 +73,11 @@ class Mappy(
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> =
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER)
 
-      override fun encodedSize(value: Mappy): Int = 
-        thingsAdapter.encodedSizeWithTag(1, value.things) +
-        value.unknownFields.size
+      override fun encodedSize(value: Mappy): Int {
+        var size = value.unknownFields.size
+        size += thingsAdapter.encodedSizeWithTag(1, value.things)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Mappy) {
         thingsAdapter.encodeWithTag(writer, 1, value.things)

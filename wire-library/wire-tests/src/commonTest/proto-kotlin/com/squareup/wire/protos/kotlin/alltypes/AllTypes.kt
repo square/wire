@@ -972,144 +972,145 @@ class AllTypes(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllTypes) return false
-    return unknownFields == other.unknownFields
-        && opt_int32 == other.opt_int32
-        && opt_uint32 == other.opt_uint32
-        && opt_sint32 == other.opt_sint32
-        && opt_fixed32 == other.opt_fixed32
-        && opt_sfixed32 == other.opt_sfixed32
-        && opt_int64 == other.opt_int64
-        && opt_uint64 == other.opt_uint64
-        && opt_sint64 == other.opt_sint64
-        && opt_fixed64 == other.opt_fixed64
-        && opt_sfixed64 == other.opt_sfixed64
-        && opt_bool == other.opt_bool
-        && opt_float == other.opt_float
-        && opt_double == other.opt_double
-        && opt_string == other.opt_string
-        && opt_bytes == other.opt_bytes
-        && opt_nested_enum == other.opt_nested_enum
-        && opt_nested_message == other.opt_nested_message
-        && req_int32 == other.req_int32
-        && req_uint32 == other.req_uint32
-        && req_sint32 == other.req_sint32
-        && req_fixed32 == other.req_fixed32
-        && req_sfixed32 == other.req_sfixed32
-        && req_int64 == other.req_int64
-        && req_uint64 == other.req_uint64
-        && req_sint64 == other.req_sint64
-        && req_fixed64 == other.req_fixed64
-        && req_sfixed64 == other.req_sfixed64
-        && req_bool == other.req_bool
-        && req_float == other.req_float
-        && req_double == other.req_double
-        && req_string == other.req_string
-        && req_bytes == other.req_bytes
-        && req_nested_enum == other.req_nested_enum
-        && req_nested_message == other.req_nested_message
-        && rep_int32 == other.rep_int32
-        && rep_uint32 == other.rep_uint32
-        && rep_sint32 == other.rep_sint32
-        && rep_fixed32 == other.rep_fixed32
-        && rep_sfixed32 == other.rep_sfixed32
-        && rep_int64 == other.rep_int64
-        && rep_uint64 == other.rep_uint64
-        && rep_sint64 == other.rep_sint64
-        && rep_fixed64 == other.rep_fixed64
-        && rep_sfixed64 == other.rep_sfixed64
-        && rep_bool == other.rep_bool
-        && rep_float == other.rep_float
-        && rep_double == other.rep_double
-        && rep_string == other.rep_string
-        && rep_bytes == other.rep_bytes
-        && rep_nested_enum == other.rep_nested_enum
-        && rep_nested_message == other.rep_nested_message
-        && pack_int32 == other.pack_int32
-        && pack_uint32 == other.pack_uint32
-        && pack_sint32 == other.pack_sint32
-        && pack_fixed32 == other.pack_fixed32
-        && pack_sfixed32 == other.pack_sfixed32
-        && pack_int64 == other.pack_int64
-        && pack_uint64 == other.pack_uint64
-        && pack_sint64 == other.pack_sint64
-        && pack_fixed64 == other.pack_fixed64
-        && pack_sfixed64 == other.pack_sfixed64
-        && pack_bool == other.pack_bool
-        && pack_float == other.pack_float
-        && pack_double == other.pack_double
-        && pack_nested_enum == other.pack_nested_enum
-        && default_int32 == other.default_int32
-        && default_uint32 == other.default_uint32
-        && default_sint32 == other.default_sint32
-        && default_fixed32 == other.default_fixed32
-        && default_sfixed32 == other.default_sfixed32
-        && default_int64 == other.default_int64
-        && default_uint64 == other.default_uint64
-        && default_sint64 == other.default_sint64
-        && default_fixed64 == other.default_fixed64
-        && default_sfixed64 == other.default_sfixed64
-        && default_bool == other.default_bool
-        && default_float == other.default_float
-        && default_double == other.default_double
-        && default_string == other.default_string
-        && default_bytes == other.default_bytes
-        && default_nested_enum == other.default_nested_enum
-        && map_int32_int32 == other.map_int32_int32
-        && map_string_string == other.map_string_string
-        && map_string_message == other.map_string_message
-        && map_string_enum == other.map_string_enum
-        && ext_opt_int32 == other.ext_opt_int32
-        && ext_opt_uint32 == other.ext_opt_uint32
-        && ext_opt_sint32 == other.ext_opt_sint32
-        && ext_opt_fixed32 == other.ext_opt_fixed32
-        && ext_opt_sfixed32 == other.ext_opt_sfixed32
-        && ext_opt_int64 == other.ext_opt_int64
-        && ext_opt_uint64 == other.ext_opt_uint64
-        && ext_opt_sint64 == other.ext_opt_sint64
-        && ext_opt_fixed64 == other.ext_opt_fixed64
-        && ext_opt_sfixed64 == other.ext_opt_sfixed64
-        && ext_opt_bool == other.ext_opt_bool
-        && ext_opt_float == other.ext_opt_float
-        && ext_opt_double == other.ext_opt_double
-        && ext_opt_string == other.ext_opt_string
-        && ext_opt_bytes == other.ext_opt_bytes
-        && ext_opt_nested_enum == other.ext_opt_nested_enum
-        && ext_opt_nested_message == other.ext_opt_nested_message
-        && ext_rep_int32 == other.ext_rep_int32
-        && ext_rep_uint32 == other.ext_rep_uint32
-        && ext_rep_sint32 == other.ext_rep_sint32
-        && ext_rep_fixed32 == other.ext_rep_fixed32
-        && ext_rep_sfixed32 == other.ext_rep_sfixed32
-        && ext_rep_int64 == other.ext_rep_int64
-        && ext_rep_uint64 == other.ext_rep_uint64
-        && ext_rep_sint64 == other.ext_rep_sint64
-        && ext_rep_fixed64 == other.ext_rep_fixed64
-        && ext_rep_sfixed64 == other.ext_rep_sfixed64
-        && ext_rep_bool == other.ext_rep_bool
-        && ext_rep_float == other.ext_rep_float
-        && ext_rep_double == other.ext_rep_double
-        && ext_rep_string == other.ext_rep_string
-        && ext_rep_bytes == other.ext_rep_bytes
-        && ext_rep_nested_enum == other.ext_rep_nested_enum
-        && ext_rep_nested_message == other.ext_rep_nested_message
-        && ext_pack_int32 == other.ext_pack_int32
-        && ext_pack_uint32 == other.ext_pack_uint32
-        && ext_pack_sint32 == other.ext_pack_sint32
-        && ext_pack_fixed32 == other.ext_pack_fixed32
-        && ext_pack_sfixed32 == other.ext_pack_sfixed32
-        && ext_pack_int64 == other.ext_pack_int64
-        && ext_pack_uint64 == other.ext_pack_uint64
-        && ext_pack_sint64 == other.ext_pack_sint64
-        && ext_pack_fixed64 == other.ext_pack_fixed64
-        && ext_pack_sfixed64 == other.ext_pack_sfixed64
-        && ext_pack_bool == other.ext_pack_bool
-        && ext_pack_float == other.ext_pack_float
-        && ext_pack_double == other.ext_pack_double
-        && ext_pack_nested_enum == other.ext_pack_nested_enum
-        && ext_map_int32_int32 == other.ext_map_int32_int32
-        && ext_map_string_string == other.ext_map_string_string
-        && ext_map_string_message == other.ext_map_string_message
-        && ext_map_string_enum == other.ext_map_string_enum
+    var result = unknownFields == other.unknownFields
+    result = result && (opt_int32 == other.opt_int32)
+    result = result && (opt_uint32 == other.opt_uint32)
+    result = result && (opt_sint32 == other.opt_sint32)
+    result = result && (opt_fixed32 == other.opt_fixed32)
+    result = result && (opt_sfixed32 == other.opt_sfixed32)
+    result = result && (opt_int64 == other.opt_int64)
+    result = result && (opt_uint64 == other.opt_uint64)
+    result = result && (opt_sint64 == other.opt_sint64)
+    result = result && (opt_fixed64 == other.opt_fixed64)
+    result = result && (opt_sfixed64 == other.opt_sfixed64)
+    result = result && (opt_bool == other.opt_bool)
+    result = result && (opt_float == other.opt_float)
+    result = result && (opt_double == other.opt_double)
+    result = result && (opt_string == other.opt_string)
+    result = result && (opt_bytes == other.opt_bytes)
+    result = result && (opt_nested_enum == other.opt_nested_enum)
+    result = result && (opt_nested_message == other.opt_nested_message)
+    result = result && (req_int32 == other.req_int32)
+    result = result && (req_uint32 == other.req_uint32)
+    result = result && (req_sint32 == other.req_sint32)
+    result = result && (req_fixed32 == other.req_fixed32)
+    result = result && (req_sfixed32 == other.req_sfixed32)
+    result = result && (req_int64 == other.req_int64)
+    result = result && (req_uint64 == other.req_uint64)
+    result = result && (req_sint64 == other.req_sint64)
+    result = result && (req_fixed64 == other.req_fixed64)
+    result = result && (req_sfixed64 == other.req_sfixed64)
+    result = result && (req_bool == other.req_bool)
+    result = result && (req_float == other.req_float)
+    result = result && (req_double == other.req_double)
+    result = result && (req_string == other.req_string)
+    result = result && (req_bytes == other.req_bytes)
+    result = result && (req_nested_enum == other.req_nested_enum)
+    result = result && (req_nested_message == other.req_nested_message)
+    result = result && (rep_int32 == other.rep_int32)
+    result = result && (rep_uint32 == other.rep_uint32)
+    result = result && (rep_sint32 == other.rep_sint32)
+    result = result && (rep_fixed32 == other.rep_fixed32)
+    result = result && (rep_sfixed32 == other.rep_sfixed32)
+    result = result && (rep_int64 == other.rep_int64)
+    result = result && (rep_uint64 == other.rep_uint64)
+    result = result && (rep_sint64 == other.rep_sint64)
+    result = result && (rep_fixed64 == other.rep_fixed64)
+    result = result && (rep_sfixed64 == other.rep_sfixed64)
+    result = result && (rep_bool == other.rep_bool)
+    result = result && (rep_float == other.rep_float)
+    result = result && (rep_double == other.rep_double)
+    result = result && (rep_string == other.rep_string)
+    result = result && (rep_bytes == other.rep_bytes)
+    result = result && (rep_nested_enum == other.rep_nested_enum)
+    result = result && (rep_nested_message == other.rep_nested_message)
+    result = result && (pack_int32 == other.pack_int32)
+    result = result && (pack_uint32 == other.pack_uint32)
+    result = result && (pack_sint32 == other.pack_sint32)
+    result = result && (pack_fixed32 == other.pack_fixed32)
+    result = result && (pack_sfixed32 == other.pack_sfixed32)
+    result = result && (pack_int64 == other.pack_int64)
+    result = result && (pack_uint64 == other.pack_uint64)
+    result = result && (pack_sint64 == other.pack_sint64)
+    result = result && (pack_fixed64 == other.pack_fixed64)
+    result = result && (pack_sfixed64 == other.pack_sfixed64)
+    result = result && (pack_bool == other.pack_bool)
+    result = result && (pack_float == other.pack_float)
+    result = result && (pack_double == other.pack_double)
+    result = result && (pack_nested_enum == other.pack_nested_enum)
+    result = result && (default_int32 == other.default_int32)
+    result = result && (default_uint32 == other.default_uint32)
+    result = result && (default_sint32 == other.default_sint32)
+    result = result && (default_fixed32 == other.default_fixed32)
+    result = result && (default_sfixed32 == other.default_sfixed32)
+    result = result && (default_int64 == other.default_int64)
+    result = result && (default_uint64 == other.default_uint64)
+    result = result && (default_sint64 == other.default_sint64)
+    result = result && (default_fixed64 == other.default_fixed64)
+    result = result && (default_sfixed64 == other.default_sfixed64)
+    result = result && (default_bool == other.default_bool)
+    result = result && (default_float == other.default_float)
+    result = result && (default_double == other.default_double)
+    result = result && (default_string == other.default_string)
+    result = result && (default_bytes == other.default_bytes)
+    result = result && (default_nested_enum == other.default_nested_enum)
+    result = result && (map_int32_int32 == other.map_int32_int32)
+    result = result && (map_string_string == other.map_string_string)
+    result = result && (map_string_message == other.map_string_message)
+    result = result && (map_string_enum == other.map_string_enum)
+    result = result && (ext_opt_int32 == other.ext_opt_int32)
+    result = result && (ext_opt_uint32 == other.ext_opt_uint32)
+    result = result && (ext_opt_sint32 == other.ext_opt_sint32)
+    result = result && (ext_opt_fixed32 == other.ext_opt_fixed32)
+    result = result && (ext_opt_sfixed32 == other.ext_opt_sfixed32)
+    result = result && (ext_opt_int64 == other.ext_opt_int64)
+    result = result && (ext_opt_uint64 == other.ext_opt_uint64)
+    result = result && (ext_opt_sint64 == other.ext_opt_sint64)
+    result = result && (ext_opt_fixed64 == other.ext_opt_fixed64)
+    result = result && (ext_opt_sfixed64 == other.ext_opt_sfixed64)
+    result = result && (ext_opt_bool == other.ext_opt_bool)
+    result = result && (ext_opt_float == other.ext_opt_float)
+    result = result && (ext_opt_double == other.ext_opt_double)
+    result = result && (ext_opt_string == other.ext_opt_string)
+    result = result && (ext_opt_bytes == other.ext_opt_bytes)
+    result = result && (ext_opt_nested_enum == other.ext_opt_nested_enum)
+    result = result && (ext_opt_nested_message == other.ext_opt_nested_message)
+    result = result && (ext_rep_int32 == other.ext_rep_int32)
+    result = result && (ext_rep_uint32 == other.ext_rep_uint32)
+    result = result && (ext_rep_sint32 == other.ext_rep_sint32)
+    result = result && (ext_rep_fixed32 == other.ext_rep_fixed32)
+    result = result && (ext_rep_sfixed32 == other.ext_rep_sfixed32)
+    result = result && (ext_rep_int64 == other.ext_rep_int64)
+    result = result && (ext_rep_uint64 == other.ext_rep_uint64)
+    result = result && (ext_rep_sint64 == other.ext_rep_sint64)
+    result = result && (ext_rep_fixed64 == other.ext_rep_fixed64)
+    result = result && (ext_rep_sfixed64 == other.ext_rep_sfixed64)
+    result = result && (ext_rep_bool == other.ext_rep_bool)
+    result = result && (ext_rep_float == other.ext_rep_float)
+    result = result && (ext_rep_double == other.ext_rep_double)
+    result = result && (ext_rep_string == other.ext_rep_string)
+    result = result && (ext_rep_bytes == other.ext_rep_bytes)
+    result = result && (ext_rep_nested_enum == other.ext_rep_nested_enum)
+    result = result && (ext_rep_nested_message == other.ext_rep_nested_message)
+    result = result && (ext_pack_int32 == other.ext_pack_int32)
+    result = result && (ext_pack_uint32 == other.ext_pack_uint32)
+    result = result && (ext_pack_sint32 == other.ext_pack_sint32)
+    result = result && (ext_pack_fixed32 == other.ext_pack_fixed32)
+    result = result && (ext_pack_sfixed32 == other.ext_pack_sfixed32)
+    result = result && (ext_pack_int64 == other.ext_pack_int64)
+    result = result && (ext_pack_uint64 == other.ext_pack_uint64)
+    result = result && (ext_pack_sint64 == other.ext_pack_sint64)
+    result = result && (ext_pack_fixed64 == other.ext_pack_fixed64)
+    result = result && (ext_pack_sfixed64 == other.ext_pack_sfixed64)
+    result = result && (ext_pack_bool == other.ext_pack_bool)
+    result = result && (ext_pack_float == other.ext_pack_float)
+    result = result && (ext_pack_double == other.ext_pack_double)
+    result = result && (ext_pack_nested_enum == other.ext_pack_nested_enum)
+    result = result && (ext_map_int32_int32 == other.ext_map_int32_int32)
+    result = result && (ext_map_string_string == other.ext_map_string_string)
+    result = result && (ext_map_string_message == other.ext_map_string_message)
+    result = result && (ext_map_string_enum == other.ext_map_string_enum)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -1636,145 +1637,148 @@ class AllTypes(
       private val ext_map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> =
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER)
 
-      override fun encodedSize(value: AllTypes): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32) +
-        ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32) +
-        ProtoAdapter.SINT32.encodedSizeWithTag(3, value.opt_sint32) +
-        ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.opt_fixed32) +
-        ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.opt_sfixed32) +
-        ProtoAdapter.INT64.encodedSizeWithTag(6, value.opt_int64) +
-        ProtoAdapter.UINT64.encodedSizeWithTag(7, value.opt_uint64) +
-        ProtoAdapter.SINT64.encodedSizeWithTag(8, value.opt_sint64) +
-        ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.opt_fixed64) +
-        ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.opt_sfixed64) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(11, value.opt_bool) +
-        ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.opt_float) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.opt_double) +
-        ProtoAdapter.STRING.encodedSizeWithTag(14, value.opt_string) +
-        ProtoAdapter.BYTES.encodedSizeWithTag(15, value.opt_bytes) +
-        NestedEnum.ADAPTER.encodedSizeWithTag(16, value.opt_nested_enum) +
-        NestedMessage.ADAPTER.encodedSizeWithTag(17, value.opt_nested_message) +
-        ProtoAdapter.INT32.encodedSizeWithTag(101, value.req_int32) +
-        ProtoAdapter.UINT32.encodedSizeWithTag(102, value.req_uint32) +
-        ProtoAdapter.SINT32.encodedSizeWithTag(103, value.req_sint32) +
-        ProtoAdapter.FIXED32.encodedSizeWithTag(104, value.req_fixed32) +
-        ProtoAdapter.SFIXED32.encodedSizeWithTag(105, value.req_sfixed32) +
-        ProtoAdapter.INT64.encodedSizeWithTag(106, value.req_int64) +
-        ProtoAdapter.UINT64.encodedSizeWithTag(107, value.req_uint64) +
-        ProtoAdapter.SINT64.encodedSizeWithTag(108, value.req_sint64) +
-        ProtoAdapter.FIXED64.encodedSizeWithTag(109, value.req_fixed64) +
-        ProtoAdapter.SFIXED64.encodedSizeWithTag(110, value.req_sfixed64) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(111, value.req_bool) +
-        ProtoAdapter.FLOAT.encodedSizeWithTag(112, value.req_float) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(113, value.req_double) +
-        ProtoAdapter.STRING.encodedSizeWithTag(114, value.req_string) +
-        ProtoAdapter.BYTES.encodedSizeWithTag(115, value.req_bytes) +
-        NestedEnum.ADAPTER.encodedSizeWithTag(116, value.req_nested_enum) +
-        NestedMessage.ADAPTER.encodedSizeWithTag(117, value.req_nested_message) +
-        ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32) +
-        ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32) +
-        ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32) +
-        ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(204, value.rep_fixed32) +
-        ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(205, value.rep_sfixed32) +
-        ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(206, value.rep_int64) +
-        ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(207, value.rep_uint64) +
-        ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(208, value.rep_sint64) +
-        ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(209, value.rep_fixed64) +
-        ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(210, value.rep_sfixed64) +
-        ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(211, value.rep_bool) +
-        ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(212, value.rep_float) +
-        ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(213, value.rep_double) +
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(214, value.rep_string) +
-        ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(215, value.rep_bytes) +
-        NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum) +
-        NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message) +
-        ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32) +
-        ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32) +
-        ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32) +
-        ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32) +
-        ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32) +
-        ProtoAdapter.INT64.asPacked().encodedSizeWithTag(306, value.pack_int64) +
-        ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(307, value.pack_uint64) +
-        ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(308, value.pack_sint64) +
-        ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(309, value.pack_fixed64) +
-        ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(310, value.pack_sfixed64) +
-        ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(311, value.pack_bool) +
-        ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float) +
-        ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double) +
-        NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum) +
-        ProtoAdapter.INT32.encodedSizeWithTag(401, value.default_int32) +
-        ProtoAdapter.UINT32.encodedSizeWithTag(402, value.default_uint32) +
-        ProtoAdapter.SINT32.encodedSizeWithTag(403, value.default_sint32) +
-        ProtoAdapter.FIXED32.encodedSizeWithTag(404, value.default_fixed32) +
-        ProtoAdapter.SFIXED32.encodedSizeWithTag(405, value.default_sfixed32) +
-        ProtoAdapter.INT64.encodedSizeWithTag(406, value.default_int64) +
-        ProtoAdapter.UINT64.encodedSizeWithTag(407, value.default_uint64) +
-        ProtoAdapter.SINT64.encodedSizeWithTag(408, value.default_sint64) +
-        ProtoAdapter.FIXED64.encodedSizeWithTag(409, value.default_fixed64) +
-        ProtoAdapter.SFIXED64.encodedSizeWithTag(410, value.default_sfixed64) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(411, value.default_bool) +
-        ProtoAdapter.FLOAT.encodedSizeWithTag(412, value.default_float) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(413, value.default_double) +
-        ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string) +
-        ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes) +
-        NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum) +
-        map_int32_int32Adapter.encodedSizeWithTag(501, value.map_int32_int32) +
-        map_string_stringAdapter.encodedSizeWithTag(502, value.map_string_string) +
-        map_string_messageAdapter.encodedSizeWithTag(503, value.map_string_message) +
-        map_string_enumAdapter.encodedSizeWithTag(504, value.map_string_enum) +
-        ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32) +
-        ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32) +
-        ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32) +
-        ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32) +
-        ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32) +
-        ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64) +
-        ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64) +
-        ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64) +
-        ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64) +
-        ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool) +
-        ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double) +
-        ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string) +
-        ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes) +
-        NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum) +
-        NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message) +
-        ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1101, value.ext_rep_int32) +
-        ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1102, value.ext_rep_uint32) +
-        ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1103, value.ext_rep_sint32) +
-        ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(1104, value.ext_rep_fixed32) +
-        ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(1105, value.ext_rep_sfixed32) +
-        ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(1106, value.ext_rep_int64) +
-        ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(1107, value.ext_rep_uint64) +
-        ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(1108, value.ext_rep_sint64) +
-        ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(1109, value.ext_rep_fixed64) +
-        ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(1110, value.ext_rep_sfixed64) +
-        ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(1111, value.ext_rep_bool) +
-        ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(1112, value.ext_rep_float) +
-        ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(1113, value.ext_rep_double) +
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1114, value.ext_rep_string) +
-        ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1115, value.ext_rep_bytes) +
-        NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1116, value.ext_rep_nested_enum) +
-        NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1117, value.ext_rep_nested_message) +
-        ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1201, value.ext_pack_int32) +
-        ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1202, value.ext_pack_uint32) +
-        ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1203, value.ext_pack_sint32) +
-        ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(1204, value.ext_pack_fixed32) +
-        ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(1205, value.ext_pack_sfixed32) +
-        ProtoAdapter.INT64.asPacked().encodedSizeWithTag(1206, value.ext_pack_int64) +
-        ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(1207, value.ext_pack_uint64) +
-        ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(1208, value.ext_pack_sint64) +
-        ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(1209, value.ext_pack_fixed64) +
-        ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(1210, value.ext_pack_sfixed64) +
-        ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(1211, value.ext_pack_bool) +
-        ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float) +
-        ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double) +
-        NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum) +
-        ext_map_int32_int32Adapter.encodedSizeWithTag(1301, value.ext_map_int32_int32) +
-        ext_map_string_stringAdapter.encodedSizeWithTag(1402, value.ext_map_string_string) +
-        ext_map_string_messageAdapter.encodedSizeWithTag(1503, value.ext_map_string_message) +
-        ext_map_string_enumAdapter.encodedSizeWithTag(1504, value.ext_map_string_enum) +
-        value.unknownFields.size
+      override fun encodedSize(value: AllTypes): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
+        size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32)
+        size += ProtoAdapter.SINT32.encodedSizeWithTag(3, value.opt_sint32)
+        size += ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.opt_fixed32)
+        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.opt_sfixed32)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(6, value.opt_int64)
+        size += ProtoAdapter.UINT64.encodedSizeWithTag(7, value.opt_uint64)
+        size += ProtoAdapter.SINT64.encodedSizeWithTag(8, value.opt_sint64)
+        size += ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.opt_fixed64)
+        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.opt_sfixed64)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(11, value.opt_bool)
+        size += ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.opt_float)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.opt_double)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(14, value.opt_string)
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(15, value.opt_bytes)
+        size += NestedEnum.ADAPTER.encodedSizeWithTag(16, value.opt_nested_enum)
+        size += NestedMessage.ADAPTER.encodedSizeWithTag(17, value.opt_nested_message)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(101, value.req_int32)
+        size += ProtoAdapter.UINT32.encodedSizeWithTag(102, value.req_uint32)
+        size += ProtoAdapter.SINT32.encodedSizeWithTag(103, value.req_sint32)
+        size += ProtoAdapter.FIXED32.encodedSizeWithTag(104, value.req_fixed32)
+        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(105, value.req_sfixed32)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(106, value.req_int64)
+        size += ProtoAdapter.UINT64.encodedSizeWithTag(107, value.req_uint64)
+        size += ProtoAdapter.SINT64.encodedSizeWithTag(108, value.req_sint64)
+        size += ProtoAdapter.FIXED64.encodedSizeWithTag(109, value.req_fixed64)
+        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(110, value.req_sfixed64)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(111, value.req_bool)
+        size += ProtoAdapter.FLOAT.encodedSizeWithTag(112, value.req_float)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(113, value.req_double)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(114, value.req_string)
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(115, value.req_bytes)
+        size += NestedEnum.ADAPTER.encodedSizeWithTag(116, value.req_nested_enum)
+        size += NestedMessage.ADAPTER.encodedSizeWithTag(117, value.req_nested_message)
+        size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
+        size += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
+        size += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
+        size += ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(204, value.rep_fixed32)
+        size += ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(205, value.rep_sfixed32)
+        size += ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(206, value.rep_int64)
+        size += ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(207, value.rep_uint64)
+        size += ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(208, value.rep_sint64)
+        size += ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(209, value.rep_fixed64)
+        size += ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(210, value.rep_sfixed64)
+        size += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(211, value.rep_bool)
+        size += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(212, value.rep_float)
+        size += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(213, value.rep_double)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(214, value.rep_string)
+        size += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(215, value.rep_bytes)
+        size += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum)
+        size += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message)
+        size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
+        size += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32)
+        size += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32)
+        size += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32)
+        size += ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32)
+        size += ProtoAdapter.INT64.asPacked().encodedSizeWithTag(306, value.pack_int64)
+        size += ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(307, value.pack_uint64)
+        size += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(308, value.pack_sint64)
+        size += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(309, value.pack_fixed64)
+        size += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(310, value.pack_sfixed64)
+        size += ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(311, value.pack_bool)
+        size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float)
+        size += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double)
+        size += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(401, value.default_int32)
+        size += ProtoAdapter.UINT32.encodedSizeWithTag(402, value.default_uint32)
+        size += ProtoAdapter.SINT32.encodedSizeWithTag(403, value.default_sint32)
+        size += ProtoAdapter.FIXED32.encodedSizeWithTag(404, value.default_fixed32)
+        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(405, value.default_sfixed32)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(406, value.default_int64)
+        size += ProtoAdapter.UINT64.encodedSizeWithTag(407, value.default_uint64)
+        size += ProtoAdapter.SINT64.encodedSizeWithTag(408, value.default_sint64)
+        size += ProtoAdapter.FIXED64.encodedSizeWithTag(409, value.default_fixed64)
+        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(410, value.default_sfixed64)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(411, value.default_bool)
+        size += ProtoAdapter.FLOAT.encodedSizeWithTag(412, value.default_float)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(413, value.default_double)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string)
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes)
+        size += NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum)
+        size += map_int32_int32Adapter.encodedSizeWithTag(501, value.map_int32_int32)
+        size += map_string_stringAdapter.encodedSizeWithTag(502, value.map_string_string)
+        size += map_string_messageAdapter.encodedSizeWithTag(503, value.map_string_message)
+        size += map_string_enumAdapter.encodedSizeWithTag(504, value.map_string_enum)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
+        size += ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
+        size += ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
+        size += ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32)
+        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64)
+        size += ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64)
+        size += ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64)
+        size += ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64)
+        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool)
+        size += ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string)
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes)
+        size += NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum)
+        size += NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message)
+        size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1101, value.ext_rep_int32)
+        size += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1102, value.ext_rep_uint32)
+        size += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1103, value.ext_rep_sint32)
+        size += ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(1104, value.ext_rep_fixed32)
+        size += ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(1105, value.ext_rep_sfixed32)
+        size += ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(1106, value.ext_rep_int64)
+        size += ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(1107, value.ext_rep_uint64)
+        size += ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(1108, value.ext_rep_sint64)
+        size += ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(1109, value.ext_rep_fixed64)
+        size += ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(1110, value.ext_rep_sfixed64)
+        size += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(1111, value.ext_rep_bool)
+        size += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(1112, value.ext_rep_float)
+        size += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(1113, value.ext_rep_double)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1114, value.ext_rep_string)
+        size += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1115, value.ext_rep_bytes)
+        size += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1116, value.ext_rep_nested_enum)
+        size += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1117,
+            value.ext_rep_nested_message)
+        size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1201, value.ext_pack_int32)
+        size += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1202, value.ext_pack_uint32)
+        size += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1203, value.ext_pack_sint32)
+        size += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(1204, value.ext_pack_fixed32)
+        size += ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(1205, value.ext_pack_sfixed32)
+        size += ProtoAdapter.INT64.asPacked().encodedSizeWithTag(1206, value.ext_pack_int64)
+        size += ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(1207, value.ext_pack_uint64)
+        size += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(1208, value.ext_pack_sint64)
+        size += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(1209, value.ext_pack_fixed64)
+        size += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(1210, value.ext_pack_sfixed64)
+        size += ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(1211, value.ext_pack_bool)
+        size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
+        size += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
+        size += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
+        size += ext_map_int32_int32Adapter.encodedSizeWithTag(1301, value.ext_map_int32_int32)
+        size += ext_map_string_stringAdapter.encodedSizeWithTag(1402, value.ext_map_string_string)
+        size += ext_map_string_messageAdapter.encodedSizeWithTag(1503, value.ext_map_string_message)
+        size += ext_map_string_enumAdapter.encodedSizeWithTag(1504, value.ext_map_string_enum)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: AllTypes) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
@@ -2424,8 +2428,9 @@ class AllTypes(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
-      return unknownFields == other.unknownFields
-          && a == other.a
+      var result = unknownFields == other.unknownFields
+      result = result && (a == other.a)
+      return result
     }
 
     override fun hashCode(): Int {
@@ -2454,9 +2459,11 @@ class AllTypes(
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes.NestedMessage"
       ) {
-        override fun encodedSize(value: NestedMessage): Int = 
-          ProtoAdapter.INT32.encodedSizeWithTag(1, value.a) +
-          value.unknownFields.size
+        override fun encodedSize(value: NestedMessage): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: NestedMessage) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)

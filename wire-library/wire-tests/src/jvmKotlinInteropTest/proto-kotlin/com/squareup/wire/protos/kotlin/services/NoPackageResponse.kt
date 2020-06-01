@@ -30,7 +30,8 @@ class NoPackageResponse(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoPackageResponse) return false
-    return unknownFields == other.unknownFields
+    var result = unknownFields == other.unknownFields
+    return result
   }
 
   override fun hashCode(): Int = unknownFields.hashCode()
@@ -47,8 +48,10 @@ class NoPackageResponse(
       NoPackageResponse::class, 
       "type.googleapis.com/NoPackageResponse"
     ) {
-      override fun encodedSize(value: NoPackageResponse): Int = 
-        value.unknownFields.size
+      override fun encodedSize(value: NoPackageResponse): Int {
+        var size = value.unknownFields.size
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: NoPackageResponse) {
         writer.writeBytes(value.unknownFields)

@@ -95,16 +95,17 @@ class FooBar(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FooBar) return false
-    return unknownFields == other.unknownFields
-        && foo == other.foo
-        && bar == other.bar
-        && baz == other.baz
-        && qux == other.qux
-        && fred == other.fred
-        && daisy == other.daisy
-        && nested == other.nested
-        && ext == other.ext
-        && rep == other.rep
+    var result = unknownFields == other.unknownFields
+    result = result && (foo == other.foo)
+    result = result && (bar == other.bar)
+    result = result && (baz == other.baz)
+    result = result && (qux == other.qux)
+    result = result && (fred == other.fred)
+    result = result && (daisy == other.daisy)
+    result = result && (nested == other.nested)
+    result = result && (ext == other.ext)
+    result = result && (rep == other.rep)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -159,17 +160,19 @@ class FooBar(
       FooBar::class, 
       "type.googleapis.com/squareup.protos.custom_options.FooBar"
     ) {
-      override fun encodedSize(value: FooBar): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar) +
-        Nested.ADAPTER.encodedSizeWithTag(3, value.baz) +
-        ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux) +
-        ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy) +
-        FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested) +
-        FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext) +
-        FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep) +
-        value.unknownFields.size
+      override fun encodedSize(value: FooBar): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar)
+        size += Nested.ADAPTER.encodedSizeWithTag(3, value.baz)
+        size += ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux)
+        size += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy)
+        size += FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested)
+        size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext)
+        size += FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: FooBar) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
@@ -255,8 +258,9 @@ class FooBar(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is Nested) return false
-      return unknownFields == other.unknownFields
-          && value == other.value
+      var result = unknownFields == other.unknownFields
+      result = result && (value == other.value)
+      return result
     }
 
     override fun hashCode(): Int {
@@ -285,9 +289,11 @@ class FooBar(
         Nested::class, 
         "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested"
       ) {
-        override fun encodedSize(value: Nested): Int = 
-          FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value) +
-          value.unknownFields.size
+        override fun encodedSize(value: Nested): Int {
+          var size = value.unknownFields.size
+          size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: Nested) {
           FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value)
@@ -337,8 +343,9 @@ class FooBar(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is More) return false
-      return unknownFields == other.unknownFields
-          && serial == other.serial
+      var result = unknownFields == other.unknownFields
+      result = result && (serial == other.serial)
+      return result
     }
 
     override fun hashCode(): Int {
@@ -367,9 +374,11 @@ class FooBar(
         More::class, 
         "type.googleapis.com/squareup.protos.custom_options.FooBar.More"
       ) {
-        override fun encodedSize(value: More): Int = 
-          ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial) +
-          value.unknownFields.size
+        override fun encodedSize(value: More): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: More) {
           ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial)

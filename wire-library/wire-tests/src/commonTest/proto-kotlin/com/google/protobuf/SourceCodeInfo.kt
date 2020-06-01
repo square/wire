@@ -92,8 +92,9 @@ class SourceCodeInfo(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is SourceCodeInfo) return false
-    return unknownFields == other.unknownFields
-        && location == other.location
+    var result = unknownFields == other.unknownFields
+    result = result && (location == other.location)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -122,9 +123,11 @@ class SourceCodeInfo(
       SourceCodeInfo::class, 
       "type.googleapis.com/google.protobuf.SourceCodeInfo"
     ) {
-      override fun encodedSize(value: SourceCodeInfo): Int = 
-        Location.ADAPTER.asRepeated().encodedSizeWithTag(1, value.location) +
-        value.unknownFields.size
+      override fun encodedSize(value: SourceCodeInfo): Int {
+        var size = value.unknownFields.size
+        size += Location.ADAPTER.asRepeated().encodedSizeWithTag(1, value.location)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: SourceCodeInfo) {
         Location.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.location)
@@ -273,12 +276,13 @@ class SourceCodeInfo(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is Location) return false
-      return unknownFields == other.unknownFields
-          && path == other.path
-          && span == other.span
-          && leading_comments == other.leading_comments
-          && trailing_comments == other.trailing_comments
-          && leading_detached_comments == other.leading_detached_comments
+      var result = unknownFields == other.unknownFields
+      result = result && (path == other.path)
+      result = result && (span == other.span)
+      result = result && (leading_comments == other.leading_comments)
+      result = result && (trailing_comments == other.trailing_comments)
+      result = result && (leading_detached_comments == other.leading_detached_comments)
+      return result
     }
 
     override fun hashCode(): Int {
@@ -324,13 +328,16 @@ class SourceCodeInfo(
         Location::class, 
         "type.googleapis.com/google.protobuf.SourceCodeInfo.Location"
       ) {
-        override fun encodedSize(value: Location): Int = 
-          ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path) +
-          ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value.span) +
-          ProtoAdapter.STRING.encodedSizeWithTag(3, value.leading_comments) +
-          ProtoAdapter.STRING.encodedSizeWithTag(4, value.trailing_comments) +
-          ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.leading_detached_comments) +
-          value.unknownFields.size
+        override fun encodedSize(value: Location): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path)
+          size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value.span)
+          size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.leading_comments)
+          size += ProtoAdapter.STRING.encodedSizeWithTag(4, value.trailing_comments)
+          size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6,
+              value.leading_detached_comments)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: Location) {
           ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.path)

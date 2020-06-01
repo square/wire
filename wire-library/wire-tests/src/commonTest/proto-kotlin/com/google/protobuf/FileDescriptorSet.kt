@@ -43,8 +43,9 @@ class FileDescriptorSet(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FileDescriptorSet) return false
-    return unknownFields == other.unknownFields
-        && file == other.file
+    var result = unknownFields == other.unknownFields
+    result = result && (file == other.file)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -73,9 +74,11 @@ class FileDescriptorSet(
       FileDescriptorSet::class, 
       "type.googleapis.com/google.protobuf.FileDescriptorSet"
     ) {
-      override fun encodedSize(value: FileDescriptorSet): Int = 
-        FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file) +
-        value.unknownFields.size
+      override fun encodedSize(value: FileDescriptorSet): Int {
+        var size = value.unknownFields.size
+        size += FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: FileDescriptorSet) {
         FileDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.file)

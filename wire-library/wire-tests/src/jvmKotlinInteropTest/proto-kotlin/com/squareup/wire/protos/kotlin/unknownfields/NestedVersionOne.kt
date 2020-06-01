@@ -35,8 +35,9 @@ class NestedVersionOne(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NestedVersionOne) return false
-    return unknownFields == other.unknownFields
-        && i == other.i
+    var result = unknownFields == other.unknownFields
+    result = result && (i == other.i)
+    return result
   }
 
   override fun hashCode(): Int {
@@ -80,9 +81,11 @@ class NestedVersionOne(
       NestedVersionOne::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionOne"
     ) {
-      override fun encodedSize(value: NestedVersionOne): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) +
-        value.unknownFields.size
+      override fun encodedSize(value: NestedVersionOne): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: NestedVersionOne) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
