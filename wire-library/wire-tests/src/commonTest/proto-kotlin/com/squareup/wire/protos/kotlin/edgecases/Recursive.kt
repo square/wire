@@ -42,10 +42,10 @@ class Recursive(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Recursive) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (value == other.value)
-    result = result && (recursive == other.recursive)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (value != other.value) return false
+    if (recursive != other.recursive) return false
+    return true
   }
 
   override fun hashCode(): Int {

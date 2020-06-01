@@ -86,15 +86,15 @@ class UninterpretedOption(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is UninterpretedOption) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (identifier_value == other.identifier_value)
-    result = result && (positive_int_value == other.positive_int_value)
-    result = result && (negative_int_value == other.negative_int_value)
-    result = result && (double_value == other.double_value)
-    result = result && (string_value == other.string_value)
-    result = result && (aggregate_value == other.aggregate_value)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (identifier_value != other.identifier_value) return false
+    if (positive_int_value != other.positive_int_value) return false
+    if (negative_int_value != other.negative_int_value) return false
+    if (double_value != other.double_value) return false
+    if (string_value != other.string_value) return false
+    if (aggregate_value != other.aggregate_value) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -237,10 +237,10 @@ class UninterpretedOption(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NamePart) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (name_part == other.name_part)
-      result = result && (is_extension == other.is_extension)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (name_part != other.name_part) return false
+      if (is_extension != other.is_extension) return false
+      return true
     }
 
     override fun hashCode(): Int {

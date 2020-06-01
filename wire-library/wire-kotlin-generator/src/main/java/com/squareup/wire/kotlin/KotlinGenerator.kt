@@ -473,14 +473,13 @@ class KotlinGenerator private constructor(
   // override fun equals(other: Any?): Boolean {
   //   if (other === this) return true
   //   if (other !is SimpleMessage) return false
-  //   var result = unknownFields == other.unknownFields
-  //   result = result && (optional_int32 == other.optional_int32)
-  //   return result
+  //   if (unknownFields != other.unknownFields) return false
+  //   if (optional_int32 != other.optional_int32) return false
+  //   return true
   // }
   private fun generateEqualsMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val localNameAllocator = nameAllocator.copy()
     val otherName = localNameAllocator.newName("other")
-    val resultName = localNameAllocator.newName("result")
     val kotlinType = type.typeName
     val result = FunSpec.builder("equals")
         .addModifiers(OVERRIDE)
@@ -490,14 +489,14 @@ class KotlinGenerator private constructor(
     val body = buildCodeBlock {
       addStatement("if (%N === this) return true", otherName)
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
-      addStatement("var %N = unknownFields == %N.unknownFields", resultName, otherName)
+      addStatement("if (unknownFields != %N.unknownFields) return false", otherName)
 
       val fields = type.fieldsAndOneOfFields
       for (field in fields) {
           val fieldName = localNameAllocator[field]
-          addStatement("%1N = %1N && (%2L·== %3N.%2L)", resultName, fieldName, otherName)
+          addStatement("if (%1L != %2N.%1L) return false", fieldName, otherName)
       }
-      addStatement("return %N", resultName)
+      addStatement("return true")
     }
     result.addCode(body)
 

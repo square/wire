@@ -48,11 +48,11 @@ class RedactedChild(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedChild) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (a == other.a)
-    result = result && (b == other.b)
-    result = result && (c == other.c)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (a != other.a) return false
+    if (b != other.b) return false
+    if (c != other.c) return false
+    return true
   }
 
   override fun hashCode(): Int {

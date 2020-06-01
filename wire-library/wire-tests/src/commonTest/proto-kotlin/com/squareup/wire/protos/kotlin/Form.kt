@@ -101,21 +101,20 @@ class Form(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Form) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (button_element == other.button_element)
-    result = result && (local_image_element == other.local_image_element)
-    result = result && (remote_image_element == other.remote_image_element)
-    result = result && (money_element == other.money_element)
-    result = result && (spacer_element == other.spacer_element)
-    result = result && (text_element == other.text_element)
-    result = result && (customized_card_element == other.customized_card_element)
-    result = result && (address_element == other.address_element)
-    result = result && (text_input_element == other.text_input_element)
-    result = result && (option_picker_element == other.option_picker_element)
-    result = result && (detail_row_element == other.detail_row_element)
-    result = result && (currency_conversion_flags_element ==
-        other.currency_conversion_flags_element)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (button_element != other.button_element) return false
+    if (local_image_element != other.local_image_element) return false
+    if (remote_image_element != other.remote_image_element) return false
+    if (money_element != other.money_element) return false
+    if (spacer_element != other.spacer_element) return false
+    if (text_element != other.text_element) return false
+    if (customized_card_element != other.customized_card_element) return false
+    if (address_element != other.address_element) return false
+    if (text_input_element != other.text_input_element) return false
+    if (option_picker_element != other.option_picker_element) return false
+    if (detail_row_element != other.detail_row_element) return false
+    if (currency_conversion_flags_element != other.currency_conversion_flags_element) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -300,8 +299,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ButtonElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -353,8 +352,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is LocalImageElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -406,8 +405,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is RemoteImageElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -459,8 +458,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is MoneyElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -512,8 +511,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is SpacerElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -565,8 +564,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -618,8 +617,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CustomizedCardElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -672,8 +671,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is AddressElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -725,8 +724,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextInputElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -778,8 +777,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is OptionPickerElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -831,8 +830,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is DetailRowElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -884,8 +883,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CurrencyConversionFlagsElement) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()

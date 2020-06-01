@@ -972,145 +972,145 @@ class AllTypes(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllTypes) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (opt_int32 == other.opt_int32)
-    result = result && (opt_uint32 == other.opt_uint32)
-    result = result && (opt_sint32 == other.opt_sint32)
-    result = result && (opt_fixed32 == other.opt_fixed32)
-    result = result && (opt_sfixed32 == other.opt_sfixed32)
-    result = result && (opt_int64 == other.opt_int64)
-    result = result && (opt_uint64 == other.opt_uint64)
-    result = result && (opt_sint64 == other.opt_sint64)
-    result = result && (opt_fixed64 == other.opt_fixed64)
-    result = result && (opt_sfixed64 == other.opt_sfixed64)
-    result = result && (opt_bool == other.opt_bool)
-    result = result && (opt_float == other.opt_float)
-    result = result && (opt_double == other.opt_double)
-    result = result && (opt_string == other.opt_string)
-    result = result && (opt_bytes == other.opt_bytes)
-    result = result && (opt_nested_enum == other.opt_nested_enum)
-    result = result && (opt_nested_message == other.opt_nested_message)
-    result = result && (req_int32 == other.req_int32)
-    result = result && (req_uint32 == other.req_uint32)
-    result = result && (req_sint32 == other.req_sint32)
-    result = result && (req_fixed32 == other.req_fixed32)
-    result = result && (req_sfixed32 == other.req_sfixed32)
-    result = result && (req_int64 == other.req_int64)
-    result = result && (req_uint64 == other.req_uint64)
-    result = result && (req_sint64 == other.req_sint64)
-    result = result && (req_fixed64 == other.req_fixed64)
-    result = result && (req_sfixed64 == other.req_sfixed64)
-    result = result && (req_bool == other.req_bool)
-    result = result && (req_float == other.req_float)
-    result = result && (req_double == other.req_double)
-    result = result && (req_string == other.req_string)
-    result = result && (req_bytes == other.req_bytes)
-    result = result && (req_nested_enum == other.req_nested_enum)
-    result = result && (req_nested_message == other.req_nested_message)
-    result = result && (rep_int32 == other.rep_int32)
-    result = result && (rep_uint32 == other.rep_uint32)
-    result = result && (rep_sint32 == other.rep_sint32)
-    result = result && (rep_fixed32 == other.rep_fixed32)
-    result = result && (rep_sfixed32 == other.rep_sfixed32)
-    result = result && (rep_int64 == other.rep_int64)
-    result = result && (rep_uint64 == other.rep_uint64)
-    result = result && (rep_sint64 == other.rep_sint64)
-    result = result && (rep_fixed64 == other.rep_fixed64)
-    result = result && (rep_sfixed64 == other.rep_sfixed64)
-    result = result && (rep_bool == other.rep_bool)
-    result = result && (rep_float == other.rep_float)
-    result = result && (rep_double == other.rep_double)
-    result = result && (rep_string == other.rep_string)
-    result = result && (rep_bytes == other.rep_bytes)
-    result = result && (rep_nested_enum == other.rep_nested_enum)
-    result = result && (rep_nested_message == other.rep_nested_message)
-    result = result && (pack_int32 == other.pack_int32)
-    result = result && (pack_uint32 == other.pack_uint32)
-    result = result && (pack_sint32 == other.pack_sint32)
-    result = result && (pack_fixed32 == other.pack_fixed32)
-    result = result && (pack_sfixed32 == other.pack_sfixed32)
-    result = result && (pack_int64 == other.pack_int64)
-    result = result && (pack_uint64 == other.pack_uint64)
-    result = result && (pack_sint64 == other.pack_sint64)
-    result = result && (pack_fixed64 == other.pack_fixed64)
-    result = result && (pack_sfixed64 == other.pack_sfixed64)
-    result = result && (pack_bool == other.pack_bool)
-    result = result && (pack_float == other.pack_float)
-    result = result && (pack_double == other.pack_double)
-    result = result && (pack_nested_enum == other.pack_nested_enum)
-    result = result && (default_int32 == other.default_int32)
-    result = result && (default_uint32 == other.default_uint32)
-    result = result && (default_sint32 == other.default_sint32)
-    result = result && (default_fixed32 == other.default_fixed32)
-    result = result && (default_sfixed32 == other.default_sfixed32)
-    result = result && (default_int64 == other.default_int64)
-    result = result && (default_uint64 == other.default_uint64)
-    result = result && (default_sint64 == other.default_sint64)
-    result = result && (default_fixed64 == other.default_fixed64)
-    result = result && (default_sfixed64 == other.default_sfixed64)
-    result = result && (default_bool == other.default_bool)
-    result = result && (default_float == other.default_float)
-    result = result && (default_double == other.default_double)
-    result = result && (default_string == other.default_string)
-    result = result && (default_bytes == other.default_bytes)
-    result = result && (default_nested_enum == other.default_nested_enum)
-    result = result && (map_int32_int32 == other.map_int32_int32)
-    result = result && (map_string_string == other.map_string_string)
-    result = result && (map_string_message == other.map_string_message)
-    result = result && (map_string_enum == other.map_string_enum)
-    result = result && (ext_opt_int32 == other.ext_opt_int32)
-    result = result && (ext_opt_uint32 == other.ext_opt_uint32)
-    result = result && (ext_opt_sint32 == other.ext_opt_sint32)
-    result = result && (ext_opt_fixed32 == other.ext_opt_fixed32)
-    result = result && (ext_opt_sfixed32 == other.ext_opt_sfixed32)
-    result = result && (ext_opt_int64 == other.ext_opt_int64)
-    result = result && (ext_opt_uint64 == other.ext_opt_uint64)
-    result = result && (ext_opt_sint64 == other.ext_opt_sint64)
-    result = result && (ext_opt_fixed64 == other.ext_opt_fixed64)
-    result = result && (ext_opt_sfixed64 == other.ext_opt_sfixed64)
-    result = result && (ext_opt_bool == other.ext_opt_bool)
-    result = result && (ext_opt_float == other.ext_opt_float)
-    result = result && (ext_opt_double == other.ext_opt_double)
-    result = result && (ext_opt_string == other.ext_opt_string)
-    result = result && (ext_opt_bytes == other.ext_opt_bytes)
-    result = result && (ext_opt_nested_enum == other.ext_opt_nested_enum)
-    result = result && (ext_opt_nested_message == other.ext_opt_nested_message)
-    result = result && (ext_rep_int32 == other.ext_rep_int32)
-    result = result && (ext_rep_uint32 == other.ext_rep_uint32)
-    result = result && (ext_rep_sint32 == other.ext_rep_sint32)
-    result = result && (ext_rep_fixed32 == other.ext_rep_fixed32)
-    result = result && (ext_rep_sfixed32 == other.ext_rep_sfixed32)
-    result = result && (ext_rep_int64 == other.ext_rep_int64)
-    result = result && (ext_rep_uint64 == other.ext_rep_uint64)
-    result = result && (ext_rep_sint64 == other.ext_rep_sint64)
-    result = result && (ext_rep_fixed64 == other.ext_rep_fixed64)
-    result = result && (ext_rep_sfixed64 == other.ext_rep_sfixed64)
-    result = result && (ext_rep_bool == other.ext_rep_bool)
-    result = result && (ext_rep_float == other.ext_rep_float)
-    result = result && (ext_rep_double == other.ext_rep_double)
-    result = result && (ext_rep_string == other.ext_rep_string)
-    result = result && (ext_rep_bytes == other.ext_rep_bytes)
-    result = result && (ext_rep_nested_enum == other.ext_rep_nested_enum)
-    result = result && (ext_rep_nested_message == other.ext_rep_nested_message)
-    result = result && (ext_pack_int32 == other.ext_pack_int32)
-    result = result && (ext_pack_uint32 == other.ext_pack_uint32)
-    result = result && (ext_pack_sint32 == other.ext_pack_sint32)
-    result = result && (ext_pack_fixed32 == other.ext_pack_fixed32)
-    result = result && (ext_pack_sfixed32 == other.ext_pack_sfixed32)
-    result = result && (ext_pack_int64 == other.ext_pack_int64)
-    result = result && (ext_pack_uint64 == other.ext_pack_uint64)
-    result = result && (ext_pack_sint64 == other.ext_pack_sint64)
-    result = result && (ext_pack_fixed64 == other.ext_pack_fixed64)
-    result = result && (ext_pack_sfixed64 == other.ext_pack_sfixed64)
-    result = result && (ext_pack_bool == other.ext_pack_bool)
-    result = result && (ext_pack_float == other.ext_pack_float)
-    result = result && (ext_pack_double == other.ext_pack_double)
-    result = result && (ext_pack_nested_enum == other.ext_pack_nested_enum)
-    result = result && (ext_map_int32_int32 == other.ext_map_int32_int32)
-    result = result && (ext_map_string_string == other.ext_map_string_string)
-    result = result && (ext_map_string_message == other.ext_map_string_message)
-    result = result && (ext_map_string_enum == other.ext_map_string_enum)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (opt_int32 != other.opt_int32) return false
+    if (opt_uint32 != other.opt_uint32) return false
+    if (opt_sint32 != other.opt_sint32) return false
+    if (opt_fixed32 != other.opt_fixed32) return false
+    if (opt_sfixed32 != other.opt_sfixed32) return false
+    if (opt_int64 != other.opt_int64) return false
+    if (opt_uint64 != other.opt_uint64) return false
+    if (opt_sint64 != other.opt_sint64) return false
+    if (opt_fixed64 != other.opt_fixed64) return false
+    if (opt_sfixed64 != other.opt_sfixed64) return false
+    if (opt_bool != other.opt_bool) return false
+    if (opt_float != other.opt_float) return false
+    if (opt_double != other.opt_double) return false
+    if (opt_string != other.opt_string) return false
+    if (opt_bytes != other.opt_bytes) return false
+    if (opt_nested_enum != other.opt_nested_enum) return false
+    if (opt_nested_message != other.opt_nested_message) return false
+    if (req_int32 != other.req_int32) return false
+    if (req_uint32 != other.req_uint32) return false
+    if (req_sint32 != other.req_sint32) return false
+    if (req_fixed32 != other.req_fixed32) return false
+    if (req_sfixed32 != other.req_sfixed32) return false
+    if (req_int64 != other.req_int64) return false
+    if (req_uint64 != other.req_uint64) return false
+    if (req_sint64 != other.req_sint64) return false
+    if (req_fixed64 != other.req_fixed64) return false
+    if (req_sfixed64 != other.req_sfixed64) return false
+    if (req_bool != other.req_bool) return false
+    if (req_float != other.req_float) return false
+    if (req_double != other.req_double) return false
+    if (req_string != other.req_string) return false
+    if (req_bytes != other.req_bytes) return false
+    if (req_nested_enum != other.req_nested_enum) return false
+    if (req_nested_message != other.req_nested_message) return false
+    if (rep_int32 != other.rep_int32) return false
+    if (rep_uint32 != other.rep_uint32) return false
+    if (rep_sint32 != other.rep_sint32) return false
+    if (rep_fixed32 != other.rep_fixed32) return false
+    if (rep_sfixed32 != other.rep_sfixed32) return false
+    if (rep_int64 != other.rep_int64) return false
+    if (rep_uint64 != other.rep_uint64) return false
+    if (rep_sint64 != other.rep_sint64) return false
+    if (rep_fixed64 != other.rep_fixed64) return false
+    if (rep_sfixed64 != other.rep_sfixed64) return false
+    if (rep_bool != other.rep_bool) return false
+    if (rep_float != other.rep_float) return false
+    if (rep_double != other.rep_double) return false
+    if (rep_string != other.rep_string) return false
+    if (rep_bytes != other.rep_bytes) return false
+    if (rep_nested_enum != other.rep_nested_enum) return false
+    if (rep_nested_message != other.rep_nested_message) return false
+    if (pack_int32 != other.pack_int32) return false
+    if (pack_uint32 != other.pack_uint32) return false
+    if (pack_sint32 != other.pack_sint32) return false
+    if (pack_fixed32 != other.pack_fixed32) return false
+    if (pack_sfixed32 != other.pack_sfixed32) return false
+    if (pack_int64 != other.pack_int64) return false
+    if (pack_uint64 != other.pack_uint64) return false
+    if (pack_sint64 != other.pack_sint64) return false
+    if (pack_fixed64 != other.pack_fixed64) return false
+    if (pack_sfixed64 != other.pack_sfixed64) return false
+    if (pack_bool != other.pack_bool) return false
+    if (pack_float != other.pack_float) return false
+    if (pack_double != other.pack_double) return false
+    if (pack_nested_enum != other.pack_nested_enum) return false
+    if (default_int32 != other.default_int32) return false
+    if (default_uint32 != other.default_uint32) return false
+    if (default_sint32 != other.default_sint32) return false
+    if (default_fixed32 != other.default_fixed32) return false
+    if (default_sfixed32 != other.default_sfixed32) return false
+    if (default_int64 != other.default_int64) return false
+    if (default_uint64 != other.default_uint64) return false
+    if (default_sint64 != other.default_sint64) return false
+    if (default_fixed64 != other.default_fixed64) return false
+    if (default_sfixed64 != other.default_sfixed64) return false
+    if (default_bool != other.default_bool) return false
+    if (default_float != other.default_float) return false
+    if (default_double != other.default_double) return false
+    if (default_string != other.default_string) return false
+    if (default_bytes != other.default_bytes) return false
+    if (default_nested_enum != other.default_nested_enum) return false
+    if (map_int32_int32 != other.map_int32_int32) return false
+    if (map_string_string != other.map_string_string) return false
+    if (map_string_message != other.map_string_message) return false
+    if (map_string_enum != other.map_string_enum) return false
+    if (ext_opt_int32 != other.ext_opt_int32) return false
+    if (ext_opt_uint32 != other.ext_opt_uint32) return false
+    if (ext_opt_sint32 != other.ext_opt_sint32) return false
+    if (ext_opt_fixed32 != other.ext_opt_fixed32) return false
+    if (ext_opt_sfixed32 != other.ext_opt_sfixed32) return false
+    if (ext_opt_int64 != other.ext_opt_int64) return false
+    if (ext_opt_uint64 != other.ext_opt_uint64) return false
+    if (ext_opt_sint64 != other.ext_opt_sint64) return false
+    if (ext_opt_fixed64 != other.ext_opt_fixed64) return false
+    if (ext_opt_sfixed64 != other.ext_opt_sfixed64) return false
+    if (ext_opt_bool != other.ext_opt_bool) return false
+    if (ext_opt_float != other.ext_opt_float) return false
+    if (ext_opt_double != other.ext_opt_double) return false
+    if (ext_opt_string != other.ext_opt_string) return false
+    if (ext_opt_bytes != other.ext_opt_bytes) return false
+    if (ext_opt_nested_enum != other.ext_opt_nested_enum) return false
+    if (ext_opt_nested_message != other.ext_opt_nested_message) return false
+    if (ext_rep_int32 != other.ext_rep_int32) return false
+    if (ext_rep_uint32 != other.ext_rep_uint32) return false
+    if (ext_rep_sint32 != other.ext_rep_sint32) return false
+    if (ext_rep_fixed32 != other.ext_rep_fixed32) return false
+    if (ext_rep_sfixed32 != other.ext_rep_sfixed32) return false
+    if (ext_rep_int64 != other.ext_rep_int64) return false
+    if (ext_rep_uint64 != other.ext_rep_uint64) return false
+    if (ext_rep_sint64 != other.ext_rep_sint64) return false
+    if (ext_rep_fixed64 != other.ext_rep_fixed64) return false
+    if (ext_rep_sfixed64 != other.ext_rep_sfixed64) return false
+    if (ext_rep_bool != other.ext_rep_bool) return false
+    if (ext_rep_float != other.ext_rep_float) return false
+    if (ext_rep_double != other.ext_rep_double) return false
+    if (ext_rep_string != other.ext_rep_string) return false
+    if (ext_rep_bytes != other.ext_rep_bytes) return false
+    if (ext_rep_nested_enum != other.ext_rep_nested_enum) return false
+    if (ext_rep_nested_message != other.ext_rep_nested_message) return false
+    if (ext_pack_int32 != other.ext_pack_int32) return false
+    if (ext_pack_uint32 != other.ext_pack_uint32) return false
+    if (ext_pack_sint32 != other.ext_pack_sint32) return false
+    if (ext_pack_fixed32 != other.ext_pack_fixed32) return false
+    if (ext_pack_sfixed32 != other.ext_pack_sfixed32) return false
+    if (ext_pack_int64 != other.ext_pack_int64) return false
+    if (ext_pack_uint64 != other.ext_pack_uint64) return false
+    if (ext_pack_sint64 != other.ext_pack_sint64) return false
+    if (ext_pack_fixed64 != other.ext_pack_fixed64) return false
+    if (ext_pack_sfixed64 != other.ext_pack_sfixed64) return false
+    if (ext_pack_bool != other.ext_pack_bool) return false
+    if (ext_pack_float != other.ext_pack_float) return false
+    if (ext_pack_double != other.ext_pack_double) return false
+    if (ext_pack_nested_enum != other.ext_pack_nested_enum) return false
+    if (ext_map_int32_int32 != other.ext_map_int32_int32) return false
+    if (ext_map_string_string != other.ext_map_string_string) return false
+    if (ext_map_string_message != other.ext_map_string_message) return false
+    if (ext_map_string_enum != other.ext_map_string_enum) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -2428,9 +2428,9 @@ class AllTypes(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (a == other.a)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (a != other.a) return false
+      return true
     }
 
     override fun hashCode(): Int {

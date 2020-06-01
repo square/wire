@@ -42,9 +42,9 @@ class OneofOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneofOptions) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (uninterpreted_option == other.uninterpreted_option)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    return true
   }
 
   override fun hashCode(): Int {

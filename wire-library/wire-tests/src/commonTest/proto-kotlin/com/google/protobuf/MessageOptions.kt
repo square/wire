@@ -176,20 +176,20 @@ class MessageOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageOptions) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (message_set_wire_format == other.message_set_wire_format)
-    result = result && (no_standard_descriptor_accessor == other.no_standard_descriptor_accessor)
-    result = result && (deprecated == other.deprecated)
-    result = result && (map_entry == other.map_entry)
-    result = result && (uninterpreted_option == other.uninterpreted_option)
-    result = result && (my_message_option_one == other.my_message_option_one)
-    result = result && (my_message_option_two == other.my_message_option_two)
-    result = result && (my_message_option_three == other.my_message_option_three)
-    result = result && (my_message_option_four == other.my_message_option_four)
-    result = result && (my_message_option_five == other.my_message_option_five)
-    result = result && (my_message_option_six == other.my_message_option_six)
-    result = result && (foreign_message_option == other.foreign_message_option)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (message_set_wire_format != other.message_set_wire_format) return false
+    if (no_standard_descriptor_accessor != other.no_standard_descriptor_accessor) return false
+    if (deprecated != other.deprecated) return false
+    if (map_entry != other.map_entry) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    if (my_message_option_one != other.my_message_option_one) return false
+    if (my_message_option_two != other.my_message_option_two) return false
+    if (my_message_option_three != other.my_message_option_three) return false
+    if (my_message_option_four != other.my_message_option_four) return false
+    if (my_message_option_five != other.my_message_option_five) return false
+    if (my_message_option_six != other.my_message_option_six) return false
+    if (foreign_message_option != other.foreign_message_option) return false
+    return true
   }
 
   override fun hashCode(): Int {

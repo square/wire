@@ -54,10 +54,10 @@ class Feature(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Feature) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (location == other.location)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (location != other.location) return false
+    return true
   }
 
   override fun hashCode(): Int {

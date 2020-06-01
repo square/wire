@@ -37,9 +37,9 @@ class RedactedCycleA(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedCycleA) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (b == other.b)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (b != other.b) return false
+    return true
   }
 
   override fun hashCode(): Int {

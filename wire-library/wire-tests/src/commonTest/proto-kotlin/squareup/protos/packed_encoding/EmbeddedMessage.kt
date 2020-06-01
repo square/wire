@@ -44,10 +44,10 @@ class EmbeddedMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EmbeddedMessage) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (inner_repeated_number == other.inner_repeated_number)
-    result = result && (inner_number_after == other.inner_number_after)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (inner_repeated_number != other.inner_repeated_number) return false
+    if (inner_number_after != other.inner_number_after) return false
+    return true
   }
 
   override fun hashCode(): Int {

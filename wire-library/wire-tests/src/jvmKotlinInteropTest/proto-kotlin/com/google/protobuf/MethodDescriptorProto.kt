@@ -84,14 +84,14 @@ class MethodDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MethodDescriptorProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (input_type == other.input_type)
-    result = result && (output_type == other.output_type)
-    result = result && (options == other.options)
-    result = result && (client_streaming == other.client_streaming)
-    result = result && (server_streaming == other.server_streaming)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (input_type != other.input_type) return false
+    if (output_type != other.output_type) return false
+    if (options != other.options) return false
+    if (client_streaming != other.client_streaming) return false
+    if (server_streaming != other.server_streaming) return false
+    return true
   }
 
   override fun hashCode(): Int {

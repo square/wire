@@ -46,10 +46,10 @@ class UsesAny(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is UsesAny) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (just_one == other.just_one)
-    result = result && (many_anys == other.many_anys)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (just_one != other.just_one) return false
+    if (many_anys != other.many_anys) return false
+    return true
   }
 
   override fun hashCode(): Int {

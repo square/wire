@@ -40,9 +40,9 @@ class RedactedRequired(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedRequired) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (a == other.a)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (a != other.a) return false
+    return true
   }
 
   override fun hashCode(): Int {

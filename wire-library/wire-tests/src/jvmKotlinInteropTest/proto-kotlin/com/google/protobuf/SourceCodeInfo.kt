@@ -91,9 +91,9 @@ class SourceCodeInfo(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is SourceCodeInfo) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (location == other.location)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (location != other.location) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -346,13 +346,13 @@ class SourceCodeInfo(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is Location) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (path == other.path)
-      result = result && (span == other.span)
-      result = result && (leading_comments == other.leading_comments)
-      result = result && (trailing_comments == other.trailing_comments)
-      result = result && (leading_detached_comments == other.leading_detached_comments)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (path != other.path) return false
+      if (span != other.span) return false
+      if (leading_comments != other.leading_comments) return false
+      if (trailing_comments != other.trailing_comments) return false
+      if (leading_detached_comments != other.leading_detached_comments) return false
+      return true
     }
 
     override fun hashCode(): Int {

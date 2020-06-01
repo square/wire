@@ -121,18 +121,18 @@ class FieldDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FieldDescriptorProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (number == other.number)
-    result = result && (label == other.label)
-    result = result && (type == other.type)
-    result = result && (type_name == other.type_name)
-    result = result && (extendee == other.extendee)
-    result = result && (default_value == other.default_value)
-    result = result && (oneof_index == other.oneof_index)
-    result = result && (json_name == other.json_name)
-    result = result && (options == other.options)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (number != other.number) return false
+    if (label != other.label) return false
+    if (type != other.type) return false
+    if (type_name != other.type_name) return false
+    if (extendee != other.extendee) return false
+    if (default_value != other.default_value) return false
+    if (oneof_index != other.oneof_index) return false
+    if (json_name != other.json_name) return false
+    if (options != other.options) return false
+    return true
   }
 
   override fun hashCode(): Int {

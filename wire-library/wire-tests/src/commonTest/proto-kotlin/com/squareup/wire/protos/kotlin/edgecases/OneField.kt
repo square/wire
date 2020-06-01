@@ -37,9 +37,9 @@ class OneField(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneField) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (opt_int32 == other.opt_int32)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (opt_int32 != other.opt_int32) return false
+    return true
   }
 
   override fun hashCode(): Int {

@@ -69,11 +69,11 @@ class OneOfMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneOfMessage) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (foo == other.foo)
-    result = result && (bar == other.bar)
-    result = result && (baz == other.baz)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (foo != other.foo) return false
+    if (bar != other.bar) return false
+    if (baz != other.baz) return false
+    return true
   }
 
   override fun hashCode(): Int {

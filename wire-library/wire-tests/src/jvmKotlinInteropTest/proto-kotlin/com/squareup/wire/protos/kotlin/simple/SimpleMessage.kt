@@ -163,20 +163,20 @@ class SimpleMessage(
   override fun equals(other_: Any?): Boolean {
     if (other_ === this) return true
     if (other_ !is SimpleMessage) return false
-    var result_ = unknownFields == other_.unknownFields
-    result_ = result_ && (optional_int32 == other_.optional_int32)
-    result_ = result_ && (optional_nested_msg == other_.optional_nested_msg)
-    result_ = result_ && (optional_external_msg == other_.optional_external_msg)
-    result_ = result_ && (default_nested_enum == other_.default_nested_enum)
-    result_ = result_ && (required_int32 == other_.required_int32)
-    result_ = result_ && (repeated_double == other_.repeated_double)
-    result_ = result_ && (default_foreign_enum == other_.default_foreign_enum)
-    result_ = result_ && (no_default_foreign_enum == other_.no_default_foreign_enum)
-    result_ = result_ && (package_ == other_.package_)
-    result_ = result_ && (result == other_.result)
-    result_ = result_ && (other == other_.other)
-    result_ = result_ && (o == other_.o)
-    return result_
+    if (unknownFields != other_.unknownFields) return false
+    if (optional_int32 != other_.optional_int32) return false
+    if (optional_nested_msg != other_.optional_nested_msg) return false
+    if (optional_external_msg != other_.optional_external_msg) return false
+    if (default_nested_enum != other_.default_nested_enum) return false
+    if (required_int32 != other_.required_int32) return false
+    if (repeated_double != other_.repeated_double) return false
+    if (default_foreign_enum != other_.default_foreign_enum) return false
+    if (no_default_foreign_enum != other_.no_default_foreign_enum) return false
+    if (package_ != other_.package_) return false
+    if (result != other_.result) return false
+    if (other != other_.other) return false
+    if (o != other_.o) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -527,9 +527,9 @@ class SimpleMessage(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (bb == other.bb)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (bb != other.bb) return false
+      return true
     }
 
     override fun hashCode(): Int {

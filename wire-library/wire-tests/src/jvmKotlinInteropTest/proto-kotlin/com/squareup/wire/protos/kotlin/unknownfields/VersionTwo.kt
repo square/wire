@@ -89,16 +89,16 @@ class VersionTwo(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VersionTwo) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (i == other.i)
-    result = result && (v2_i == other.v2_i)
-    result = result && (v2_s == other.v2_s)
-    result = result && (v2_f32 == other.v2_f32)
-    result = result && (v2_f64 == other.v2_f64)
-    result = result && (v2_rs == other.v2_rs)
-    result = result && (obj == other.obj)
-    result = result && (en == other.en)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (i != other.i) return false
+    if (v2_i != other.v2_i) return false
+    if (v2_s != other.v2_s) return false
+    if (v2_f32 != other.v2_f32) return false
+    if (v2_f64 != other.v2_f64) return false
+    if (v2_rs != other.v2_rs) return false
+    if (obj != other.obj) return false
+    if (en != other.en) return false
+    return true
   }
 
   override fun hashCode(): Int {

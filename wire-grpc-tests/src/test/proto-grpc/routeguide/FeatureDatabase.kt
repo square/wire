@@ -42,9 +42,9 @@ class FeatureDatabase(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FeatureDatabase) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (feature == other.feature)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (feature != other.feature) return false
+    return true
   }
 
   override fun hashCode(): Int {

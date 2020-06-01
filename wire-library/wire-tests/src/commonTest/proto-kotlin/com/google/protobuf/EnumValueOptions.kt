@@ -79,13 +79,13 @@ class EnumValueOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EnumValueOptions) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (deprecated == other.deprecated)
-    result = result && (uninterpreted_option == other.uninterpreted_option)
-    result = result && (enum_value_option == other.enum_value_option)
-    result = result && (complex_enum_value_option == other.complex_enum_value_option)
-    result = result && (foreign_enum_value_option == other.foreign_enum_value_option)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (deprecated != other.deprecated) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    if (enum_value_option != other.enum_value_option) return false
+    if (complex_enum_value_option != other.complex_enum_value_option) return false
+    if (foreign_enum_value_option != other.foreign_enum_value_option) return false
+    return true
   }
 
   override fun hashCode(): Int {

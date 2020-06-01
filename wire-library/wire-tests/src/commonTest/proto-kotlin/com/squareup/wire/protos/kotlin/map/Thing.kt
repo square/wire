@@ -38,9 +38,9 @@ class Thing(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Thing) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    return true
   }
 
   override fun hashCode(): Int {

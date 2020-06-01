@@ -37,9 +37,9 @@ class Mappy(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Mappy) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (things == other.things)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (things != other.things) return false
+    return true
   }
 
   override fun hashCode(): Int {

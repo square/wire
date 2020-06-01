@@ -314,29 +314,29 @@ class FileOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FileOptions) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (java_package == other.java_package)
-    result = result && (java_outer_classname == other.java_outer_classname)
-    result = result && (java_multiple_files == other.java_multiple_files)
-    result = result && (java_generate_equals_and_hash == other.java_generate_equals_and_hash)
-    result = result && (java_string_check_utf8 == other.java_string_check_utf8)
-    result = result && (optimize_for == other.optimize_for)
-    result = result && (go_package == other.go_package)
-    result = result && (cc_generic_services == other.cc_generic_services)
-    result = result && (java_generic_services == other.java_generic_services)
-    result = result && (py_generic_services == other.py_generic_services)
-    result = result && (php_generic_services == other.php_generic_services)
-    result = result && (deprecated == other.deprecated)
-    result = result && (cc_enable_arenas == other.cc_enable_arenas)
-    result = result && (objc_class_prefix == other.objc_class_prefix)
-    result = result && (csharp_namespace == other.csharp_namespace)
-    result = result && (swift_prefix == other.swift_prefix)
-    result = result && (php_class_prefix == other.php_class_prefix)
-    result = result && (php_namespace == other.php_namespace)
-    result = result && (php_metadata_namespace == other.php_metadata_namespace)
-    result = result && (ruby_package == other.ruby_package)
-    result = result && (uninterpreted_option == other.uninterpreted_option)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (java_package != other.java_package) return false
+    if (java_outer_classname != other.java_outer_classname) return false
+    if (java_multiple_files != other.java_multiple_files) return false
+    if (java_generate_equals_and_hash != other.java_generate_equals_and_hash) return false
+    if (java_string_check_utf8 != other.java_string_check_utf8) return false
+    if (optimize_for != other.optimize_for) return false
+    if (go_package != other.go_package) return false
+    if (cc_generic_services != other.cc_generic_services) return false
+    if (java_generic_services != other.java_generic_services) return false
+    if (py_generic_services != other.py_generic_services) return false
+    if (php_generic_services != other.php_generic_services) return false
+    if (deprecated != other.deprecated) return false
+    if (cc_enable_arenas != other.cc_enable_arenas) return false
+    if (objc_class_prefix != other.objc_class_prefix) return false
+    if (csharp_namespace != other.csharp_namespace) return false
+    if (swift_prefix != other.swift_prefix) return false
+    if (php_class_prefix != other.php_class_prefix) return false
+    if (php_namespace != other.php_namespace) return false
+    if (php_metadata_namespace != other.php_metadata_namespace) return false
+    if (ruby_package != other.ruby_package) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    return true
   }
 
   override fun hashCode(): Int {

@@ -53,11 +53,11 @@ class EnumValueDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EnumValueDescriptorProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (number == other.number)
-    result = result && (options == other.options)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (number != other.number) return false
+    if (options != other.options) return false
+    return true
   }
 
   override fun hashCode(): Int {

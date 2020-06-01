@@ -45,10 +45,10 @@ class ForeignMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ForeignMessage) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (i == other.i)
-    result = result && (j == other.j)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (i != other.i) return false
+    if (j != other.j) return false
+    return true
   }
 
   override fun hashCode(): Int {

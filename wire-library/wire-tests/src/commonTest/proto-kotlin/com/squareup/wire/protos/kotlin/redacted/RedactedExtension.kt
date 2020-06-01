@@ -44,10 +44,10 @@ class RedactedExtension(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedExtension) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (d == other.d)
-    result = result && (e == other.e)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (d != other.d) return false
+    if (e != other.e) return false
+    return true
   }
 
   override fun hashCode(): Int {

@@ -50,9 +50,9 @@ class GeneratedCodeInfo(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is GeneratedCodeInfo) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (annotation == other.annotation)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (annotation != other.annotation) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -162,12 +162,12 @@ class GeneratedCodeInfo(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is Annotation) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (path == other.path)
-      result = result && (source_file == other.source_file)
-      result = result && (begin == other.begin)
-      result = result && (end == other.end)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (path != other.path) return false
+      if (source_file != other.source_file) return false
+      if (begin != other.begin) return false
+      if (end != other.end) return false
+      return true
     }
 
     override fun hashCode(): Int {

@@ -71,12 +71,12 @@ class RouteSummary(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteSummary) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (point_count == other.point_count)
-    result = result && (feature_count == other.feature_count)
-    result = result && (distance == other.distance)
-    result = result && (elapsed_time == other.elapsed_time)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (point_count != other.point_count) return false
+    if (feature_count != other.feature_count) return false
+    if (distance != other.distance) return false
+    if (elapsed_time != other.elapsed_time) return false
+    return true
   }
 
   override fun hashCode(): Int {

@@ -47,11 +47,11 @@ class VersionOne(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VersionOne) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (i == other.i)
-    result = result && (obj == other.obj)
-    result = result && (en == other.en)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (i != other.i) return false
+    if (obj != other.obj) return false
+    if (en != other.en) return false
+    return true
   }
 
   override fun hashCode(): Int {

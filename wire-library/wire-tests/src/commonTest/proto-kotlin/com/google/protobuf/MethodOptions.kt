@@ -66,11 +66,11 @@ class MethodOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MethodOptions) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (deprecated == other.deprecated)
-    result = result && (idempotency_level == other.idempotency_level)
-    result = result && (uninterpreted_option == other.uninterpreted_option)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (deprecated != other.deprecated) return false
+    if (idempotency_level != other.idempotency_level) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    return true
   }
 
   override fun hashCode(): Int {

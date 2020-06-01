@@ -71,12 +71,12 @@ class EnumOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EnumOptions) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (allow_alias == other.allow_alias)
-    result = result && (deprecated == other.deprecated)
-    result = result && (uninterpreted_option == other.uninterpreted_option)
-    result = result && (enum_option == other.enum_option)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (allow_alias != other.allow_alias) return false
+    if (deprecated != other.deprecated) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    if (enum_option != other.enum_option) return false
+    return true
   }
 
   override fun hashCode(): Int {

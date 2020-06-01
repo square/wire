@@ -52,10 +52,10 @@ class RouteNote(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteNote) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (location == other.location)
-    result = result && (message == other.message)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (location != other.location) return false
+    if (message != other.message) return false
+    return true
   }
 
   override fun hashCode(): Int {

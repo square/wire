@@ -37,9 +37,9 @@ class OneBytesField(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneBytesField) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (opt_bytes == other.opt_bytes)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (opt_bytes != other.opt_bytes) return false
+    return true
   }
 
   override fun hashCode(): Int {

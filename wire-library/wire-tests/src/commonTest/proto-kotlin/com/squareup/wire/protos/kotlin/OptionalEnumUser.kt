@@ -40,9 +40,9 @@ class OptionalEnumUser(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OptionalEnumUser) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (optional_enum == other.optional_enum)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (optional_enum != other.optional_enum) return false
+    return true
   }
 
   override fun hashCode(): Int {

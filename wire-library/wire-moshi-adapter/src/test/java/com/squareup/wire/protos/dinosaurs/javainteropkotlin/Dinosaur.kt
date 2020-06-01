@@ -75,13 +75,13 @@ class Dinosaur(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Dinosaur) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (picture_urls == other.picture_urls)
-    result = result && (length_meters == other.length_meters)
-    result = result && (mass_kilograms == other.mass_kilograms)
-    result = result && (period == other.period)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (picture_urls != other.picture_urls) return false
+    if (length_meters != other.length_meters) return false
+    if (mass_kilograms != other.mass_kilograms) return false
+    if (period != other.period) return false
+    return true
   }
 
   override fun hashCode(): Int {

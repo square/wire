@@ -89,14 +89,14 @@ class ExternalMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ExternalMessage) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (f == other.f)
-    result = result && (fooext == other.fooext)
-    result = result && (barext == other.barext)
-    result = result && (bazext == other.bazext)
-    result = result && (nested_message_ext == other.nested_message_ext)
-    result = result && (nested_enum_ext == other.nested_enum_ext)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (f != other.f) return false
+    if (fooext != other.fooext) return false
+    if (barext != other.barext) return false
+    if (bazext != other.bazext) return false
+    if (nested_message_ext != other.nested_message_ext) return false
+    if (nested_enum_ext != other.nested_enum_ext) return false
+    return true
   }
 
   override fun hashCode(): Int {

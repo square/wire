@@ -52,10 +52,10 @@ class Rectangle(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Rectangle) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (lo == other.lo)
-    result = result && (hi == other.hi)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (lo != other.lo) return false
+    if (hi != other.hi) return false
+    return true
   }
 
   override fun hashCode(): Int {

@@ -50,10 +50,10 @@ class RedactedOneOf(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedOneOf) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (b == other.b)
-    result = result && (c == other.c)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (b != other.b) return false
+    if (c != other.c) return false
+    return true
   }
 
   override fun hashCode(): Int {

@@ -68,12 +68,12 @@ class KeywordKotlin(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is KeywordKotlin) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (object_ == other.object_)
-    result = result && (when_ == other.when_)
-    result = result && (fun_ == other.fun_)
-    result = result && (return_ == other.return_)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (object_ != other.object_) return false
+    if (when_ != other.when_) return false
+    if (fun_ != other.fun_) return false
+    if (return_ != other.return_) return false
+    return true
   }
 
   override fun hashCode(): Int {

@@ -82,13 +82,13 @@ class EnumDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EnumDescriptorProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (value == other.value)
-    result = result && (options == other.options)
-    result = result && (reserved_range == other.reserved_range)
-    result = result && (reserved_name == other.reserved_name)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (value != other.value) return false
+    if (options != other.options) return false
+    if (reserved_range != other.reserved_range) return false
+    if (reserved_name != other.reserved_name) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -289,10 +289,10 @@ class EnumDescriptorProto(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is EnumReservedRange) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (start == other.start)
-      result = result && (end == other.end)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (start != other.start) return false
+      if (end != other.end) return false
+      return true
     }
 
     override fun hashCode(): Int {

@@ -135,20 +135,20 @@ class FileDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FileDescriptorProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (package_ == other.package_)
-    result = result && (dependency == other.dependency)
-    result = result && (public_dependency == other.public_dependency)
-    result = result && (weak_dependency == other.weak_dependency)
-    result = result && (message_type == other.message_type)
-    result = result && (enum_type == other.enum_type)
-    result = result && (service == other.service)
-    result = result && (extension == other.extension)
-    result = result && (options == other.options)
-    result = result && (source_code_info == other.source_code_info)
-    result = result && (syntax == other.syntax)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (package_ != other.package_) return false
+    if (dependency != other.dependency) return false
+    if (public_dependency != other.public_dependency) return false
+    if (weak_dependency != other.weak_dependency) return false
+    if (message_type != other.message_type) return false
+    if (enum_type != other.enum_type) return false
+    if (service != other.service) return false
+    if (extension != other.extension) return false
+    if (options != other.options) return false
+    if (source_code_info != other.source_code_info) return false
+    if (syntax != other.syntax) return false
+    return true
   }
 
   override fun hashCode(): Int {

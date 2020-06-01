@@ -95,17 +95,17 @@ class FooBar(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FooBar) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (foo == other.foo)
-    result = result && (bar == other.bar)
-    result = result && (baz == other.baz)
-    result = result && (qux == other.qux)
-    result = result && (fred == other.fred)
-    result = result && (daisy == other.daisy)
-    result = result && (nested == other.nested)
-    result = result && (ext == other.ext)
-    result = result && (rep == other.rep)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (foo != other.foo) return false
+    if (bar != other.bar) return false
+    if (baz != other.baz) return false
+    if (qux != other.qux) return false
+    if (fred != other.fred) return false
+    if (daisy != other.daisy) return false
+    if (nested != other.nested) return false
+    if (ext != other.ext) return false
+    if (rep != other.rep) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -258,9 +258,9 @@ class FooBar(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is Nested) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (value == other.value)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (value != other.value) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -343,9 +343,9 @@ class FooBar(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is More) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (serial == other.serial)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (serial != other.serial) return false
+      return true
     }
 
     override fun hashCode(): Int {

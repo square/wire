@@ -46,10 +46,10 @@ class OneofDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneofDescriptorProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (options == other.options)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (options != other.options) return false
+    return true
   }
 
   override fun hashCode(): Int {

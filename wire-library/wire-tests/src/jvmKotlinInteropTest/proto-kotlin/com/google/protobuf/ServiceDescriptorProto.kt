@@ -57,11 +57,11 @@ class ServiceDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ServiceDescriptorProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (method == other.method)
-    result = result && (options == other.options)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (method != other.method) return false
+    if (options != other.options) return false
+    return true
   }
 
   override fun hashCode(): Int {

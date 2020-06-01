@@ -184,20 +184,20 @@ class FieldOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FieldOptions) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (ctype == other.ctype)
-    result = result && (packed == other.packed)
-    result = result && (jstype == other.jstype)
-    result = result && (lazy == other.lazy)
-    result = result && (deprecated == other.deprecated)
-    result = result && (weak == other.weak)
-    result = result && (uninterpreted_option == other.uninterpreted_option)
-    result = result && (my_field_option_one == other.my_field_option_one)
-    result = result && (my_field_option_two == other.my_field_option_two)
-    result = result && (my_field_option_three == other.my_field_option_three)
-    result = result && (my_field_option_four == other.my_field_option_four)
-    result = result && (redacted == other.redacted)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (ctype != other.ctype) return false
+    if (packed != other.packed) return false
+    if (jstype != other.jstype) return false
+    if (lazy != other.lazy) return false
+    if (deprecated != other.deprecated) return false
+    if (weak != other.weak) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    if (my_field_option_one != other.my_field_option_one) return false
+    if (my_field_option_two != other.my_field_option_two) return false
+    if (my_field_option_three != other.my_field_option_three) return false
+    if (my_field_option_four != other.my_field_option_four) return false
+    if (redacted != other.redacted) return false
+    return true
   }
 
   override fun hashCode(): Int {

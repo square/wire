@@ -42,10 +42,10 @@ class OuterMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OuterMessage) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (outer_number_before == other.outer_number_before)
-    result = result && (embedded_message == other.embedded_message)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (outer_number_before != other.outer_number_before) return false
+    if (embedded_message != other.embedded_message) return false
+    return true
   }
 
   override fun hashCode(): Int {

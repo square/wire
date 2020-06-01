@@ -33,8 +33,8 @@ class MessageWithStatus(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageWithStatus) return false
-    var result = unknownFields == other.unknownFields
-    return result
+    if (unknownFields != other.unknownFields) return false
+    return true
   }
 
   override fun hashCode(): Int = unknownFields.hashCode()

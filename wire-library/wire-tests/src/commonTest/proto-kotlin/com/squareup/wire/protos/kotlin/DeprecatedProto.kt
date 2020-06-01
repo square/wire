@@ -39,9 +39,9 @@ class DeprecatedProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is DeprecatedProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (foo == other.foo)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (foo != other.foo) return false
+    return true
   }
 
   override fun hashCode(): Int {

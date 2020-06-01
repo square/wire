@@ -100,18 +100,18 @@ class DescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is DescriptorProto) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (field == other.field)
-    result = result && (extension == other.extension)
-    result = result && (nested_type == other.nested_type)
-    result = result && (enum_type == other.enum_type)
-    result = result && (extension_range == other.extension_range)
-    result = result && (oneof_decl == other.oneof_decl)
-    result = result && (options == other.options)
-    result = result && (reserved_range == other.reserved_range)
-    result = result && (reserved_name == other.reserved_name)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (field != other.field) return false
+    if (extension != other.extension) return false
+    if (nested_type != other.nested_type) return false
+    if (enum_type != other.enum_type) return false
+    if (extension_range != other.extension_range) return false
+    if (oneof_decl != other.oneof_decl) return false
+    if (options != other.options) return false
+    if (reserved_range != other.reserved_range) return false
+    if (reserved_name != other.reserved_name) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -287,11 +287,11 @@ class DescriptorProto(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ExtensionRange) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (start == other.start)
-      result = result && (end == other.end)
-      result = result && (options == other.options)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (start != other.start) return false
+      if (end != other.end) return false
+      if (options != other.options) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -404,10 +404,10 @@ class DescriptorProto(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ReservedRange) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (start == other.start)
-      result = result && (end == other.end)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (start != other.start) return false
+      if (end != other.end) return false
+      return true
     }
 
     override fun hashCode(): Int {

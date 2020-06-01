@@ -39,9 +39,9 @@ class Percents(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Percents) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (text == other.text)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (text != other.text) return false
+    return true
   }
 
   override fun hashCode(): Int {

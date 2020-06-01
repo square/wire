@@ -43,9 +43,9 @@ class FileDescriptorSet(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FileDescriptorSet) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (file == other.file)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (file != other.file) return false
+    return true
   }
 
   override fun hashCode(): Int {

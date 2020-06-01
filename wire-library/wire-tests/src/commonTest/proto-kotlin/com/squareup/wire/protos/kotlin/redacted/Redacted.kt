@@ -57,12 +57,12 @@ class Redacted(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Redacted) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (a == other.a)
-    result = result && (b == other.b)
-    result = result && (c == other.c)
-    result = result && (extension == other.extension)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (a != other.a) return false
+    if (b != other.b) return false
+    if (c != other.c) return false
+    if (extension != other.extension) return false
+    return true
   }
 
   override fun hashCode(): Int {

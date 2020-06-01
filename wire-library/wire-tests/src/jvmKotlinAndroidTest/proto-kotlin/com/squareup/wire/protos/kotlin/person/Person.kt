@@ -84,13 +84,13 @@ class Person(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Person) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (name == other.name)
-    result = result && (id == other.id)
-    result = result && (email == other.email)
-    result = result && (phone == other.phone)
-    result = result && (aliases == other.aliases)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (id != other.id) return false
+    if (email != other.email) return false
+    if (phone != other.phone) return false
+    if (aliases != other.aliases) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -250,10 +250,10 @@ class Person(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is PhoneNumber) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (number == other.number)
-      result = result && (type == other.type)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (number != other.number) return false
+      if (type != other.type) return false
+      return true
     }
 
     override fun hashCode(): Int {
