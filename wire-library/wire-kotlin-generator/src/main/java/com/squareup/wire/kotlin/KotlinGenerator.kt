@@ -473,12 +473,14 @@ class KotlinGenerator private constructor(
   // override fun equals(other: Any?): Boolean {
   //   if (other === this) return true
   //   if (other !is SimpleMessage) return false
-  //   return unknownFields == other.unknownFields
-  //       && optional_int32 == other.optional_int32
+  //   var result unknownFields == other.unknownFields
+  //   result = result && (optional_int32 == other.optional_int32)
+  //   return result
   // }
   private fun generateEqualsMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val localNameAllocator = nameAllocator.copy()
     val otherName = localNameAllocator.newName("other")
+    val resultName = localNameAllocator.newName("result")
     val kotlinType = type.typeName
     val result = FunSpec.builder("equals")
         .addModifiers(OVERRIDE)
@@ -488,13 +490,14 @@ class KotlinGenerator private constructor(
     val body = buildCodeBlock {
       addStatement("if (%N === this) return true", otherName)
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
-      add("«return unknownFields == %N.unknownFields", otherName)
+      addStatement("var %N = unknownFields == %N.unknownFields", resultName, otherName)
+
       val fields = type.fieldsAndOneOfFields
       for (field in fields) {
-        val fieldName = localNameAllocator[field]
-        add("\n&& %1L·== %2N.%1L", fieldName, otherName)
+          val fieldName = localNameAllocator[field]
+          addStatement("%1N = %1N && (%2L·== %3N.%2L)", resultName, fieldName, otherName)
       }
-      add("\n»")
+      addStatement("return %N", resultName)
     }
     result.addCode(body)
 
@@ -1031,17 +1034,19 @@ class KotlinGenerator private constructor(
 
   private fun encodedSizeFun(message: MessageType): FunSpec {
     val className = generatedTypeName(message)
-    val nameAllocator = nameAllocator(message)
+    val localNameAllocator = nameAllocator(message).copy()
+    val sizeName = localNameAllocator.newName("size")
+
     val body = buildCodeBlock {
-      add("return \n⇥")
-      message.fieldsAndOneOfFields.forEach { field ->
-        val fieldName = nameAllocator[field]
+      addStatement("var %N = value.unknownFields.size", sizeName)
+      message.fieldsAndOneOfFields.forEach{ field ->
+        val fieldName = localNameAllocator[field]
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           add("if (value.%L == %L) 0\nelse ", fieldName, field.identityValue)
         }
-        add("%L.encodedSizeWithTag(%L, value.%L) +\n", adapterFor(field), field.tag, fieldName)
+        addStatement("%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(field), field.tag, fieldName)
       }
-      add("value.unknownFields.size⇤\n")
+      addStatement("return %N", sizeName)
     }
     return FunSpec.builder("encodedSize")
         .addParameter("value", className)
