@@ -45,9 +45,10 @@ class MessageUsingMultipleEnums(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageUsingMultipleEnums) return false
-    return unknownFields == other.unknownFields
-        && a == other.a
-        && b == other.b
+    if (unknownFields != other.unknownFields) return false
+    if (a != other.a) return false
+    if (b != other.b) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -83,10 +84,12 @@ class MessageUsingMultipleEnums(
       MessageUsingMultipleEnums::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums"
     ) {
-      override fun encodedSize(value: MessageUsingMultipleEnums): Int = 
-        MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a) +
-        OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b) +
-        value.unknownFields.size
+      override fun encodedSize(value: MessageUsingMultipleEnums): Int {
+        var size = value.unknownFields.size
+        size += MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a)
+        size += OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums) {
         MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)

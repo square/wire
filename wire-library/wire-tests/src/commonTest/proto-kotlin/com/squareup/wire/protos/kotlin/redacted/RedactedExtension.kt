@@ -44,9 +44,10 @@ class RedactedExtension(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedExtension) return false
-    return unknownFields == other.unknownFields
-        && d == other.d
-        && e == other.e
+    if (unknownFields != other.unknownFields) return false
+    if (d != other.d) return false
+    if (e != other.e) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -80,10 +81,12 @@ class RedactedExtension(
       RedactedExtension::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedExtension"
     ) {
-      override fun encodedSize(value: RedactedExtension): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.d) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.e) +
-        value.unknownFields.size
+      override fun encodedSize(value: RedactedExtension): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.d)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.e)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: RedactedExtension) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d)

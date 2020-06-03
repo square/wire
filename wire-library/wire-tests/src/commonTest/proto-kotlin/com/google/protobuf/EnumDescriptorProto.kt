@@ -75,12 +75,13 @@ class EnumDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EnumDescriptorProto) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && value == other.value
-        && options == other.options
-        && reserved_range == other.reserved_range
-        && reserved_name == other.reserved_name
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (value != other.value) return false
+    if (options != other.options) return false
+    if (reserved_range != other.reserved_range) return false
+    if (reserved_name != other.reserved_name) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -124,13 +125,15 @@ class EnumDescriptorProto(
       EnumDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.EnumDescriptorProto"
     ) {
-      override fun encodedSize(value: EnumDescriptorProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.value) +
-        EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options) +
-        EnumReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(4, value.reserved_range) +
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.reserved_name) +
-        value.unknownFields.size
+      override fun encodedSize(value: EnumDescriptorProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.value)
+        size += EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options)
+        size += EnumReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(4, value.reserved_range)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.reserved_name)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: EnumDescriptorProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
@@ -212,9 +215,10 @@ class EnumDescriptorProto(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is EnumReservedRange) return false
-      return unknownFields == other.unknownFields
-          && start == other.start
-          && end == other.end
+      if (unknownFields != other.unknownFields) return false
+      if (start != other.start) return false
+      if (end != other.end) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -248,10 +252,12 @@ class EnumDescriptorProto(
         EnumReservedRange::class, 
         "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange"
       ) {
-        override fun encodedSize(value: EnumReservedRange): Int = 
-          ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) +
-          ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) +
-          value.unknownFields.size
+        override fun encodedSize(value: EnumReservedRange): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
+          size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: EnumReservedRange) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start)

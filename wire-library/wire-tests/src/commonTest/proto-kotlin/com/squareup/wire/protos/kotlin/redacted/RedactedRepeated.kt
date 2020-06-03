@@ -49,9 +49,10 @@ class RedactedRepeated(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedRepeated) return false
-    return unknownFields == other.unknownFields
-        && a == other.a
-        && b == other.b
+    if (unknownFields != other.unknownFields) return false
+    if (a != other.a) return false
+    if (b != other.b) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -85,10 +86,12 @@ class RedactedRepeated(
       RedactedRepeated::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRepeated"
     ) {
-      override fun encodedSize(value: RedactedRepeated): Int = 
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a) +
-        Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b) +
-        value.unknownFields.size
+      override fun encodedSize(value: RedactedRepeated): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
+        size += Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: RedactedRepeated) {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)

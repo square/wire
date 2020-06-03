@@ -52,9 +52,10 @@ class RouteNote(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteNote) return false
-    return unknownFields == other.unknownFields
-        && location == other.location
-        && message == other.message
+    if (unknownFields != other.unknownFields) return false
+    if (location != other.location) return false
+    if (message != other.message) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -88,10 +89,12 @@ class RouteNote(
       RouteNote::class, 
       "type.googleapis.com/routeguide.RouteNote"
     ) {
-      override fun encodedSize(value: RouteNote): Int = 
-        Point.ADAPTER.encodedSizeWithTag(1, value.location) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.message) +
-        value.unknownFields.size
+      override fun encodedSize(value: RouteNote): Int {
+        var size = value.unknownFields.size
+        size += Point.ADAPTER.encodedSizeWithTag(1, value.location)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.message)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: RouteNote) {
         Point.ADAPTER.encodeWithTag(writer, 1, value.location)

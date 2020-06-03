@@ -38,8 +38,9 @@ class Repeated(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Repeated) return false
-    return unknownFields == other.unknownFields
-        && things == other.things
+    if (unknownFields != other.unknownFields) return false
+    if (things != other.things) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -84,9 +85,11 @@ class Repeated(
       Repeated::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Repeated"
     ) {
-      override fun encodedSize(value: Repeated): Int = 
-        Thing.ADAPTER.asRepeated().encodedSizeWithTag(1, value.things) +
-        value.unknownFields.size
+      override fun encodedSize(value: Repeated): Int {
+        var size = value.unknownFields.size
+        size += Thing.ADAPTER.asRepeated().encodedSizeWithTag(1, value.things)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Repeated) {
         Thing.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.things)

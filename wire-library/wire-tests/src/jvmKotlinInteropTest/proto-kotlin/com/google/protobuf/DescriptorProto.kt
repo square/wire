@@ -117,17 +117,18 @@ class DescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is DescriptorProto) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && field == other.field
-        && extension == other.extension
-        && nested_type == other.nested_type
-        && enum_type == other.enum_type
-        && extension_range == other.extension_range
-        && oneof_decl == other.oneof_decl
-        && options == other.options
-        && reserved_range == other.reserved_range
-        && reserved_name == other.reserved_name
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (field != other.field) return false
+    if (extension != other.extension) return false
+    if (nested_type != other.nested_type) return false
+    if (enum_type != other.enum_type) return false
+    if (extension_range != other.extension_range) return false
+    if (oneof_decl != other.oneof_decl) return false
+    if (options != other.options) return false
+    if (reserved_range != other.reserved_range) return false
+    if (reserved_name != other.reserved_name) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -294,18 +295,20 @@ class DescriptorProto(
       DescriptorProto::class, 
       "type.googleapis.com/google.protobuf.DescriptorProto"
     ) {
-      override fun encodedSize(value: DescriptorProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.field) +
-        FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.extension) +
-        DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(3, value.nested_type) +
-        EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.enum_type) +
-        ExtensionRange.ADAPTER.asRepeated().encodedSizeWithTag(5, value.extension_range) +
-        OneofDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(8, value.oneof_decl) +
-        MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options) +
-        ReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(9, value.reserved_range) +
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(10, value.reserved_name) +
-        value.unknownFields.size
+      override fun encodedSize(value: DescriptorProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.field)
+        size += FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.extension)
+        size += DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(3, value.nested_type)
+        size += EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.enum_type)
+        size += ExtensionRange.ADAPTER.asRepeated().encodedSizeWithTag(5, value.extension_range)
+        size += OneofDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(8, value.oneof_decl)
+        size += MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options)
+        size += ReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(9, value.reserved_range)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(10, value.reserved_name)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: DescriptorProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
@@ -415,10 +418,11 @@ class DescriptorProto(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ExtensionRange) return false
-      return unknownFields == other.unknownFields
-          && start == other.start
-          && end == other.end
-          && options == other.options
+      if (unknownFields != other.unknownFields) return false
+      if (start != other.start) return false
+      if (end != other.end) return false
+      if (options != other.options) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -494,11 +498,13 @@ class DescriptorProto(
         ExtensionRange::class, 
         "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange"
       ) {
-        override fun encodedSize(value: ExtensionRange): Int = 
-          ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) +
-          ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) +
-          ExtensionRangeOptions.ADAPTER.encodedSizeWithTag(3, value.options) +
-          value.unknownFields.size
+        override fun encodedSize(value: ExtensionRange): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
+          size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
+          size += ExtensionRangeOptions.ADAPTER.encodedSizeWithTag(3, value.options)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: ExtensionRange) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start)
@@ -572,9 +578,10 @@ class DescriptorProto(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ReservedRange) return false
-      return unknownFields == other.unknownFields
-          && start == other.start
-          && end == other.end
+      if (unknownFields != other.unknownFields) return false
+      if (start != other.start) return false
+      if (end != other.end) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -638,10 +645,12 @@ class DescriptorProto(
         ReservedRange::class, 
         "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange"
       ) {
-        override fun encodedSize(value: ReservedRange): Int = 
-          ProtoAdapter.INT32.encodedSizeWithTag(1, value.start) +
-          ProtoAdapter.INT32.encodedSizeWithTag(2, value.end) +
-          value.unknownFields.size
+        override fun encodedSize(value: ReservedRange): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
+          size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: ReservedRange) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.start)

@@ -47,10 +47,11 @@ class VersionOne(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VersionOne) return false
-    return unknownFields == other.unknownFields
-        && i == other.i
-        && obj == other.obj
-        && en == other.en
+    if (unknownFields != other.unknownFields) return false
+    if (i != other.i) return false
+    if (obj != other.obj) return false
+    if (en != other.en) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -87,11 +88,13 @@ class VersionOne(
       VersionOne::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionOne"
     ) {
-      override fun encodedSize(value: VersionOne): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) +
-        NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj) +
-        EnumVersionOne.ADAPTER.encodedSizeWithTag(8, value.en) +
-        value.unknownFields.size
+      override fun encodedSize(value: VersionOne): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
+        size += NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj)
+        size += EnumVersionOne.ADAPTER.encodedSizeWithTag(8, value.en)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: VersionOne) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)

@@ -52,9 +52,10 @@ class Rectangle(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Rectangle) return false
-    return unknownFields == other.unknownFields
-        && lo == other.lo
-        && hi == other.hi
+    if (unknownFields != other.unknownFields) return false
+    if (lo != other.lo) return false
+    if (hi != other.hi) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -88,10 +89,12 @@ class Rectangle(
       Rectangle::class, 
       "type.googleapis.com/routeguide.Rectangle"
     ) {
-      override fun encodedSize(value: Rectangle): Int = 
-        Point.ADAPTER.encodedSizeWithTag(1, value.lo) +
-        Point.ADAPTER.encodedSizeWithTag(2, value.hi) +
-        value.unknownFields.size
+      override fun encodedSize(value: Rectangle): Int {
+        var size = value.unknownFields.size
+        size += Point.ADAPTER.encodedSizeWithTag(1, value.lo)
+        size += Point.ADAPTER.encodedSizeWithTag(2, value.hi)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Rectangle) {
         Point.ADAPTER.encodeWithTag(writer, 1, value.lo)

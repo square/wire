@@ -39,8 +39,9 @@ class Percents(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Percents) return false
-    return unknownFields == other.unknownFields
-        && text == other.text
+    if (unknownFields != other.unknownFields) return false
+    if (text != other.text) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -87,9 +88,11 @@ class Percents(
       Percents::class, 
       "type.googleapis.com/squareup.protos.kotlin.Percents"
     ) {
-      override fun encodedSize(value: Percents): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.text) +
-        value.unknownFields.size
+      override fun encodedSize(value: Percents): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Percents) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)

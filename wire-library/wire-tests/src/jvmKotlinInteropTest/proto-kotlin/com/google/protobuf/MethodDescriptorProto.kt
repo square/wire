@@ -84,13 +84,14 @@ class MethodDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MethodDescriptorProto) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && input_type == other.input_type
-        && output_type == other.output_type
-        && options == other.options
-        && client_streaming == other.client_streaming
-        && server_streaming == other.server_streaming
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (input_type != other.input_type) return false
+    if (output_type != other.output_type) return false
+    if (options != other.options) return false
+    if (client_streaming != other.client_streaming) return false
+    if (server_streaming != other.server_streaming) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -211,14 +212,16 @@ class MethodDescriptorProto(
       MethodDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.MethodDescriptorProto"
     ) {
-      override fun encodedSize(value: MethodDescriptorProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type) +
-        ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type) +
-        MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(5, value.client_streaming) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(6, value.server_streaming) +
-        value.unknownFields.size
+      override fun encodedSize(value: MethodDescriptorProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type)
+        size += MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(5, value.client_streaming)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(6, value.server_streaming)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: MethodDescriptorProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

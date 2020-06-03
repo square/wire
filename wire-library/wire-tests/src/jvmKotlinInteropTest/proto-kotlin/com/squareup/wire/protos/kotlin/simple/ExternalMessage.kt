@@ -89,13 +89,14 @@ class ExternalMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ExternalMessage) return false
-    return unknownFields == other.unknownFields
-        && f == other.f
-        && fooext == other.fooext
-        && barext == other.barext
-        && bazext == other.bazext
-        && nested_message_ext == other.nested_message_ext
-        && nested_enum_ext == other.nested_enum_ext
+    if (unknownFields != other.unknownFields) return false
+    if (f != other.f) return false
+    if (fooext != other.fooext) return false
+    if (barext != other.barext) return false
+    if (bazext != other.bazext) return false
+    if (nested_message_ext != other.nested_message_ext) return false
+    if (nested_enum_ext != other.nested_enum_ext) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -205,14 +206,17 @@ class ExternalMessage(
       ExternalMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage"
     ) {
-      override fun encodedSize(value: ExternalMessage): Int = 
-        ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f) +
-        ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext) +
-        ProtoAdapter.INT32.encodedSizeWithTag(126, value.barext) +
-        ProtoAdapter.INT32.encodedSizeWithTag(127, value.bazext) +
-        SimpleMessage.NestedMessage.ADAPTER.encodedSizeWithTag(128, value.nested_message_ext) +
-        SimpleMessage.NestedEnum.ADAPTER.encodedSizeWithTag(129, value.nested_enum_ext) +
-        value.unknownFields.size
+      override fun encodedSize(value: ExternalMessage): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f)
+        size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(126, value.barext)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(127, value.bazext)
+        size += SimpleMessage.NestedMessage.ADAPTER.encodedSizeWithTag(128,
+            value.nested_message_ext)
+        size += SimpleMessage.NestedEnum.ADAPTER.encodedSizeWithTag(129, value.nested_enum_ext)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: ExternalMessage) {
         ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f)

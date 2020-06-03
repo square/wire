@@ -42,9 +42,10 @@ class OuterMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OuterMessage) return false
-    return unknownFields == other.unknownFields
-        && outer_number_before == other.outer_number_before
-        && embedded_message == other.embedded_message
+    if (unknownFields != other.unknownFields) return false
+    if (outer_number_before != other.outer_number_before) return false
+    if (embedded_message != other.embedded_message) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -102,10 +103,12 @@ class OuterMessage(
       OuterMessage::class, 
       "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage"
     ) {
-      override fun encodedSize(value: OuterMessage): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before) +
-        EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message) +
-        value.unknownFields.size
+      override fun encodedSize(value: OuterMessage): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before)
+        size += EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: OuterMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)

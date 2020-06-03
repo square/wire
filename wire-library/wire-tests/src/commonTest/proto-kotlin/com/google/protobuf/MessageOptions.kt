@@ -176,19 +176,20 @@ class MessageOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageOptions) return false
-    return unknownFields == other.unknownFields
-        && message_set_wire_format == other.message_set_wire_format
-        && no_standard_descriptor_accessor == other.no_standard_descriptor_accessor
-        && deprecated == other.deprecated
-        && map_entry == other.map_entry
-        && uninterpreted_option == other.uninterpreted_option
-        && my_message_option_one == other.my_message_option_one
-        && my_message_option_two == other.my_message_option_two
-        && my_message_option_three == other.my_message_option_three
-        && my_message_option_four == other.my_message_option_four
-        && my_message_option_five == other.my_message_option_five
-        && my_message_option_six == other.my_message_option_six
-        && foreign_message_option == other.foreign_message_option
+    if (unknownFields != other.unknownFields) return false
+    if (message_set_wire_format != other.message_set_wire_format) return false
+    if (no_standard_descriptor_accessor != other.no_standard_descriptor_accessor) return false
+    if (deprecated != other.deprecated) return false
+    if (map_entry != other.map_entry) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    if (my_message_option_one != other.my_message_option_one) return false
+    if (my_message_option_two != other.my_message_option_two) return false
+    if (my_message_option_three != other.my_message_option_three) return false
+    if (my_message_option_four != other.my_message_option_four) return false
+    if (my_message_option_five != other.my_message_option_five) return false
+    if (my_message_option_six != other.my_message_option_six) return false
+    if (foreign_message_option != other.foreign_message_option) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -268,21 +269,23 @@ class MessageOptions(
       MessageOptions::class, 
       "type.googleapis.com/google.protobuf.MessageOptions"
     ) {
-      override fun encodedSize(value: MessageOptions): Int = 
-        ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry) +
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        FooBar.ADAPTER.encodedSizeWithTag(50001, value.my_message_option_one) +
-        ProtoAdapter.FLOAT.encodedSizeWithTag(50002, value.my_message_option_two) +
-        FooBar.ADAPTER.encodedSizeWithTag(50003, value.my_message_option_three) +
-        FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(50004, value.my_message_option_four) +
-        FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five) +
-        FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six) +
-        ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: MessageOptions): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry)
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        size += FooBar.ADAPTER.encodedSizeWithTag(50001, value.my_message_option_one)
+        size += ProtoAdapter.FLOAT.encodedSizeWithTag(50002, value.my_message_option_two)
+        size += FooBar.ADAPTER.encodedSizeWithTag(50003, value.my_message_option_three)
+        size += FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(50004, value.my_message_option_four)
+        size += FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five)
+        size += FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six)
+        size += ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: MessageOptions) {
         ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.message_set_wire_format)

@@ -76,15 +76,16 @@ class VersionTwo(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VersionTwo) return false
-    return unknownFields == other.unknownFields
-        && i == other.i
-        && v2_i == other.v2_i
-        && v2_s == other.v2_s
-        && v2_f32 == other.v2_f32
-        && v2_f64 == other.v2_f64
-        && v2_rs == other.v2_rs
-        && obj == other.obj
-        && en == other.en
+    if (unknownFields != other.unknownFields) return false
+    if (i != other.i) return false
+    if (v2_i != other.v2_i) return false
+    if (v2_s != other.v2_s) return false
+    if (v2_f32 != other.v2_f32) return false
+    if (v2_f64 != other.v2_f64) return false
+    if (v2_rs != other.v2_rs) return false
+    if (obj != other.obj) return false
+    if (en != other.en) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -136,16 +137,18 @@ class VersionTwo(
       VersionTwo::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionTwo"
     ) {
-      override fun encodedSize(value: VersionTwo): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.i) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i) +
-        ProtoAdapter.STRING.encodedSizeWithTag(3, value.v2_s) +
-        ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.v2_f32) +
-        ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64) +
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs) +
-        NestedVersionTwo.ADAPTER.encodedSizeWithTag(7, value.obj) +
-        EnumVersionTwo.ADAPTER.encodedSizeWithTag(8, value.en) +
-        value.unknownFields.size
+      override fun encodedSize(value: VersionTwo): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.v2_s)
+        size += ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.v2_f32)
+        size += ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs)
+        size += NestedVersionTwo.ADAPTER.encodedSizeWithTag(7, value.obj)
+        size += EnumVersionTwo.ADAPTER.encodedSizeWithTag(8, value.en)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: VersionTwo) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)

@@ -41,8 +41,9 @@ class ExtensionRangeOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ExtensionRangeOptions) return false
-    return unknownFields == other.unknownFields
-        && uninterpreted_option == other.uninterpreted_option
+    if (unknownFields != other.unknownFields) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -92,10 +93,12 @@ class ExtensionRangeOptions(
       ExtensionRangeOptions::class, 
       "type.googleapis.com/google.protobuf.ExtensionRangeOptions"
     ) {
-      override fun encodedSize(value: ExtensionRangeOptions): Int = 
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: ExtensionRangeOptions): Int {
+        var size = value.unknownFields.size
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: ExtensionRangeOptions) {
         UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999,

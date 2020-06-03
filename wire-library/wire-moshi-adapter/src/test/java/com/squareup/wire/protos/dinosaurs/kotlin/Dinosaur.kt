@@ -68,12 +68,13 @@ class Dinosaur(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Dinosaur) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && picture_urls == other.picture_urls
-        && length_meters == other.length_meters
-        && mass_kilograms == other.mass_kilograms
-        && period == other.period
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (picture_urls != other.picture_urls) return false
+    if (length_meters != other.length_meters) return false
+    if (mass_kilograms != other.mass_kilograms) return false
+    if (period != other.period) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -116,13 +117,15 @@ class Dinosaur(
       Dinosaur::class, 
       "type.googleapis.com/squareup.dinosaurs.Dinosaur"
     ) {
-      override fun encodedSize(value: Dinosaur): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(3, value.length_meters) +
-        ProtoAdapter.DOUBLE.encodedSizeWithTag(4, value.mass_kilograms) +
-        Period.ADAPTER.encodedSizeWithTag(5, value.period) +
-        value.unknownFields.size
+      override fun encodedSize(value: Dinosaur): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(3, value.length_meters)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(4, value.mass_kilograms)
+        size += Period.ADAPTER.encodedSizeWithTag(5, value.period)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Dinosaur) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

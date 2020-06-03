@@ -52,9 +52,10 @@ class WhiteboardUpdate(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is WhiteboardUpdate) return false
-    return unknownFields == other.unknownFields
-        && initialise_board == other.initialise_board
-        && update_points == other.update_points
+    if (unknownFields != other.unknownFields) return false
+    if (initialise_board != other.initialise_board) return false
+    if (update_points != other.update_points) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -88,10 +89,12 @@ class WhiteboardUpdate(
       WhiteboardUpdate::class, 
       "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate"
     ) {
-      override fun encodedSize(value: WhiteboardUpdate): Int = 
-        InitialiseBoard.ADAPTER.encodedSizeWithTag(1, value.initialise_board) +
-        UpdatePoints.ADAPTER.encodedSizeWithTag(2, value.update_points) +
-        value.unknownFields.size
+      override fun encodedSize(value: WhiteboardUpdate): Int {
+        var size = value.unknownFields.size
+        size += InitialiseBoard.ADAPTER.encodedSizeWithTag(1, value.initialise_board)
+        size += UpdatePoints.ADAPTER.encodedSizeWithTag(2, value.update_points)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: WhiteboardUpdate) {
         InitialiseBoard.ADAPTER.encodeWithTag(writer, 1, value.initialise_board)
@@ -154,10 +157,11 @@ class WhiteboardUpdate(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is InitialiseBoard) return false
-      return unknownFields == other.unknownFields
-          && width == other.width
-          && height == other.height
-          && color == other.color
+      if (unknownFields != other.unknownFields) return false
+      if (width != other.width) return false
+      if (height != other.height) return false
+      if (color != other.color) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -194,11 +198,13 @@ class WhiteboardUpdate(
         InitialiseBoard::class, 
         "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate.InitialiseBoard"
       ) {
-        override fun encodedSize(value: InitialiseBoard): Int = 
-          ProtoAdapter.INT32.encodedSizeWithTag(1, value.width) +
-          ProtoAdapter.INT32.encodedSizeWithTag(2, value.height) +
-          ProtoAdapter.INT32.encodedSizeWithTag(3, value.color) +
-          value.unknownFields.size
+        override fun encodedSize(value: InitialiseBoard): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.width)
+          size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.height)
+          size += ProtoAdapter.INT32.encodedSizeWithTag(3, value.color)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: InitialiseBoard) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.width)
@@ -252,8 +258,9 @@ class WhiteboardUpdate(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is UpdatePoints) return false
-      return unknownFields == other.unknownFields
-          && points == other.points
+      if (unknownFields != other.unknownFields) return false
+      if (points != other.points) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -282,9 +289,11 @@ class WhiteboardUpdate(
         UpdatePoints::class, 
         "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate.UpdatePoints"
       ) {
-        override fun encodedSize(value: UpdatePoints): Int = 
-          Point.ADAPTER.asRepeated().encodedSizeWithTag(1, value.points) +
-          value.unknownFields.size
+        override fun encodedSize(value: UpdatePoints): Int {
+          var size = value.unknownFields.size
+          size += Point.ADAPTER.asRepeated().encodedSizeWithTag(1, value.points)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: UpdatePoints) {
           Point.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.points)

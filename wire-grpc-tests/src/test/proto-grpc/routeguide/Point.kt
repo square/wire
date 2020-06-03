@@ -48,9 +48,10 @@ class Point(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Point) return false
-    return unknownFields == other.unknownFields
-        && latitude == other.latitude
-        && longitude == other.longitude
+    if (unknownFields != other.unknownFields) return false
+    if (latitude != other.latitude) return false
+    if (longitude != other.longitude) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -84,10 +85,12 @@ class Point(
       Point::class, 
       "type.googleapis.com/routeguide.Point"
     ) {
-      override fun encodedSize(value: Point): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.latitude) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.longitude) +
-        value.unknownFields.size
+      override fun encodedSize(value: Point): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.latitude)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.longitude)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Point) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.latitude)

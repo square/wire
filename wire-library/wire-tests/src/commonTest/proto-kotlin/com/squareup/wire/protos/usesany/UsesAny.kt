@@ -46,9 +46,10 @@ class UsesAny(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is UsesAny) return false
-    return unknownFields == other.unknownFields
-        && just_one == other.just_one
-        && many_anys == other.many_anys
+    if (unknownFields != other.unknownFields) return false
+    if (just_one != other.just_one) return false
+    if (many_anys != other.many_anys) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -82,10 +83,12 @@ class UsesAny(
       UsesAny::class, 
       "type.googleapis.com/squareup.protos.usesany.UsesAny"
     ) {
-      override fun encodedSize(value: UsesAny): Int = 
-        AnyMessage.ADAPTER.encodedSizeWithTag(1, value.just_one) +
-        AnyMessage.ADAPTER.asRepeated().encodedSizeWithTag(2, value.many_anys) +
-        value.unknownFields.size
+      override fun encodedSize(value: UsesAny): Int {
+        var size = value.unknownFields.size
+        size += AnyMessage.ADAPTER.encodedSizeWithTag(1, value.just_one)
+        size += AnyMessage.ADAPTER.asRepeated().encodedSizeWithTag(2, value.many_anys)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: UsesAny) {
         AnyMessage.ADAPTER.encodeWithTag(writer, 1, value.just_one)

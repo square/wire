@@ -30,7 +30,8 @@ class MessageWithOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageWithOptions) return false
-    return unknownFields == other.unknownFields
+    if (unknownFields != other.unknownFields) return false
+    return true
   }
 
   override fun hashCode(): Int = unknownFields.hashCode()
@@ -47,8 +48,10 @@ class MessageWithOptions(
       MessageWithOptions::class, 
       "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions"
     ) {
-      override fun encodedSize(value: MessageWithOptions): Int = 
-        value.unknownFields.size
+      override fun encodedSize(value: MessageWithOptions): Int {
+        var size = value.unknownFields.size
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: MessageWithOptions) {
         writer.writeBytes(value.unknownFields)

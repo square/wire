@@ -45,9 +45,10 @@ class EmbeddedMessage(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EmbeddedMessage) return false
-    return unknownFields == other.unknownFields
-        && inner_repeated_number == other.inner_repeated_number
-        && inner_number_after == other.inner_number_after
+    if (unknownFields != other.unknownFields) return false
+    if (inner_repeated_number != other.inner_repeated_number) return false
+    if (inner_number_after != other.inner_number_after) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -107,10 +108,12 @@ class EmbeddedMessage(
       EmbeddedMessage::class, 
       "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage"
     ) {
-      override fun encodedSize(value: EmbeddedMessage): Int = 
-        ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after) +
-        value.unknownFields.size
+      override fun encodedSize(value: EmbeddedMessage): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: EmbeddedMessage) {
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number)

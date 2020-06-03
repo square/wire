@@ -37,8 +37,9 @@ class OneField(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneField) return false
-    return unknownFields == other.unknownFields
-        && opt_int32 == other.opt_int32
+    if (unknownFields != other.unknownFields) return false
+    if (opt_int32 != other.opt_int32) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -67,9 +68,11 @@ class OneField(
       OneField::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.OneField"
     ) {
-      override fun encodedSize(value: OneField): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32) +
-        value.unknownFields.size
+      override fun encodedSize(value: OneField): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: OneField) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)

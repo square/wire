@@ -40,8 +40,9 @@ class RedactedRequired(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedRequired) return false
-    return unknownFields == other.unknownFields
-        && a == other.a
+    if (unknownFields != other.unknownFields) return false
+    if (a != other.a) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -70,9 +71,11 @@ class RedactedRequired(
       RedactedRequired::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRequired"
     ) {
-      override fun encodedSize(value: RedactedRequired): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
-        value.unknownFields.size
+      override fun encodedSize(value: RedactedRequired): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: RedactedRequired) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)

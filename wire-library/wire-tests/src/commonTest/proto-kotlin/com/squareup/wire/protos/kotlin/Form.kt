@@ -101,19 +101,20 @@ class Form(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Form) return false
-    return unknownFields == other.unknownFields
-        && button_element == other.button_element
-        && local_image_element == other.local_image_element
-        && remote_image_element == other.remote_image_element
-        && money_element == other.money_element
-        && spacer_element == other.spacer_element
-        && text_element == other.text_element
-        && customized_card_element == other.customized_card_element
-        && address_element == other.address_element
-        && text_input_element == other.text_input_element
-        && option_picker_element == other.option_picker_element
-        && detail_row_element == other.detail_row_element
-        && currency_conversion_flags_element == other.currency_conversion_flags_element
+    if (unknownFields != other.unknownFields) return false
+    if (button_element != other.button_element) return false
+    if (local_image_element != other.local_image_element) return false
+    if (remote_image_element != other.remote_image_element) return false
+    if (money_element != other.money_element) return false
+    if (spacer_element != other.spacer_element) return false
+    if (text_element != other.text_element) return false
+    if (customized_card_element != other.customized_card_element) return false
+    if (address_element != other.address_element) return false
+    if (text_input_element != other.text_input_element) return false
+    if (option_picker_element != other.option_picker_element) return false
+    if (detail_row_element != other.detail_row_element) return false
+    if (currency_conversion_flags_element != other.currency_conversion_flags_element) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -182,21 +183,23 @@ class Form(
       Form::class, 
       "type.googleapis.com/squareup.protos.kotlin.oneof.Form"
     ) {
-      override fun encodedSize(value: Form): Int = 
-        ButtonElement.ADAPTER.encodedSizeWithTag(1, value.button_element) +
-        LocalImageElement.ADAPTER.encodedSizeWithTag(2, value.local_image_element) +
-        RemoteImageElement.ADAPTER.encodedSizeWithTag(3, value.remote_image_element) +
-        MoneyElement.ADAPTER.encodedSizeWithTag(4, value.money_element) +
-        SpacerElement.ADAPTER.encodedSizeWithTag(5, value.spacer_element) +
-        TextElement.ADAPTER.encodedSizeWithTag(6, value.text_element) +
-        CustomizedCardElement.ADAPTER.encodedSizeWithTag(7, value.customized_card_element) +
-        AddressElement.ADAPTER.encodedSizeWithTag(8, value.address_element) +
-        TextInputElement.ADAPTER.encodedSizeWithTag(9, value.text_input_element) +
-        OptionPickerElement.ADAPTER.encodedSizeWithTag(10, value.option_picker_element) +
-        DetailRowElement.ADAPTER.encodedSizeWithTag(11, value.detail_row_element) +
-        CurrencyConversionFlagsElement.ADAPTER.encodedSizeWithTag(12,
-            value.currency_conversion_flags_element) +
-        value.unknownFields.size
+      override fun encodedSize(value: Form): Int {
+        var size = value.unknownFields.size
+        size += ButtonElement.ADAPTER.encodedSizeWithTag(1, value.button_element)
+        size += LocalImageElement.ADAPTER.encodedSizeWithTag(2, value.local_image_element)
+        size += RemoteImageElement.ADAPTER.encodedSizeWithTag(3, value.remote_image_element)
+        size += MoneyElement.ADAPTER.encodedSizeWithTag(4, value.money_element)
+        size += SpacerElement.ADAPTER.encodedSizeWithTag(5, value.spacer_element)
+        size += TextElement.ADAPTER.encodedSizeWithTag(6, value.text_element)
+        size += CustomizedCardElement.ADAPTER.encodedSizeWithTag(7, value.customized_card_element)
+        size += AddressElement.ADAPTER.encodedSizeWithTag(8, value.address_element)
+        size += TextInputElement.ADAPTER.encodedSizeWithTag(9, value.text_input_element)
+        size += OptionPickerElement.ADAPTER.encodedSizeWithTag(10, value.option_picker_element)
+        size += DetailRowElement.ADAPTER.encodedSizeWithTag(11, value.detail_row_element)
+        size += CurrencyConversionFlagsElement.ADAPTER.encodedSizeWithTag(12,
+            value.currency_conversion_flags_element)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Form) {
         ButtonElement.ADAPTER.encodeWithTag(writer, 1, value.button_element)
@@ -296,7 +299,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ButtonElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -313,8 +317,10 @@ class Form(
         ButtonElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.ButtonElement"
       ) {
-        override fun encodedSize(value: ButtonElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: ButtonElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: ButtonElement) {
           writer.writeBytes(value.unknownFields)
@@ -346,7 +352,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is LocalImageElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -363,8 +370,10 @@ class Form(
         LocalImageElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement"
       ) {
-        override fun encodedSize(value: LocalImageElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: LocalImageElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: LocalImageElement) {
           writer.writeBytes(value.unknownFields)
@@ -396,7 +405,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is RemoteImageElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -413,8 +423,10 @@ class Form(
         RemoteImageElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.RemoteImageElement"
       ) {
-        override fun encodedSize(value: RemoteImageElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: RemoteImageElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: RemoteImageElement) {
           writer.writeBytes(value.unknownFields)
@@ -446,7 +458,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is MoneyElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -463,8 +476,10 @@ class Form(
         MoneyElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.MoneyElement"
       ) {
-        override fun encodedSize(value: MoneyElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: MoneyElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: MoneyElement) {
           writer.writeBytes(value.unknownFields)
@@ -496,7 +511,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is SpacerElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -513,8 +529,10 @@ class Form(
         SpacerElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.SpacerElement"
       ) {
-        override fun encodedSize(value: SpacerElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: SpacerElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: SpacerElement) {
           writer.writeBytes(value.unknownFields)
@@ -546,7 +564,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -563,8 +582,10 @@ class Form(
         TextElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextElement"
       ) {
-        override fun encodedSize(value: TextElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: TextElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: TextElement) {
           writer.writeBytes(value.unknownFields)
@@ -596,7 +617,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CustomizedCardElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -614,8 +636,10 @@ class Form(
         CustomizedCardElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CustomizedCardElement"
       ) {
-        override fun encodedSize(value: CustomizedCardElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: CustomizedCardElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: CustomizedCardElement) {
           writer.writeBytes(value.unknownFields)
@@ -647,7 +671,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is AddressElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -664,8 +689,10 @@ class Form(
         AddressElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.AddressElement"
       ) {
-        override fun encodedSize(value: AddressElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: AddressElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: AddressElement) {
           writer.writeBytes(value.unknownFields)
@@ -697,7 +724,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextInputElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -714,8 +742,10 @@ class Form(
         TextInputElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextInputElement"
       ) {
-        override fun encodedSize(value: TextInputElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: TextInputElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: TextInputElement) {
           writer.writeBytes(value.unknownFields)
@@ -747,7 +777,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is OptionPickerElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -764,8 +795,10 @@ class Form(
         OptionPickerElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.OptionPickerElement"
       ) {
-        override fun encodedSize(value: OptionPickerElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: OptionPickerElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: OptionPickerElement) {
           writer.writeBytes(value.unknownFields)
@@ -797,7 +830,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is DetailRowElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -814,8 +848,10 @@ class Form(
         DetailRowElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.DetailRowElement"
       ) {
-        override fun encodedSize(value: DetailRowElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: DetailRowElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: DetailRowElement) {
           writer.writeBytes(value.unknownFields)
@@ -847,7 +883,8 @@ class Form(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CurrencyConversionFlagsElement) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -865,8 +902,10 @@ class Form(
         CurrencyConversionFlagsElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.CurrencyConversionFlagsElement"
       ) {
-        override fun encodedSize(value: CurrencyConversionFlagsElement): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: CurrencyConversionFlagsElement): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: CurrencyConversionFlagsElement) {
           writer.writeBytes(value.unknownFields)

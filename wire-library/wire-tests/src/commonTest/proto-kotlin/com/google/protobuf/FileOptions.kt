@@ -274,28 +274,29 @@ class FileOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FileOptions) return false
-    return unknownFields == other.unknownFields
-        && java_package == other.java_package
-        && java_outer_classname == other.java_outer_classname
-        && java_multiple_files == other.java_multiple_files
-        && java_generate_equals_and_hash == other.java_generate_equals_and_hash
-        && java_string_check_utf8 == other.java_string_check_utf8
-        && optimize_for == other.optimize_for
-        && go_package == other.go_package
-        && cc_generic_services == other.cc_generic_services
-        && java_generic_services == other.java_generic_services
-        && py_generic_services == other.py_generic_services
-        && php_generic_services == other.php_generic_services
-        && deprecated == other.deprecated
-        && cc_enable_arenas == other.cc_enable_arenas
-        && objc_class_prefix == other.objc_class_prefix
-        && csharp_namespace == other.csharp_namespace
-        && swift_prefix == other.swift_prefix
-        && php_class_prefix == other.php_class_prefix
-        && php_namespace == other.php_namespace
-        && php_metadata_namespace == other.php_metadata_namespace
-        && ruby_package == other.ruby_package
-        && uninterpreted_option == other.uninterpreted_option
+    if (unknownFields != other.unknownFields) return false
+    if (java_package != other.java_package) return false
+    if (java_outer_classname != other.java_outer_classname) return false
+    if (java_multiple_files != other.java_multiple_files) return false
+    if (java_generate_equals_and_hash != other.java_generate_equals_and_hash) return false
+    if (java_string_check_utf8 != other.java_string_check_utf8) return false
+    if (optimize_for != other.optimize_for) return false
+    if (go_package != other.go_package) return false
+    if (cc_generic_services != other.cc_generic_services) return false
+    if (java_generic_services != other.java_generic_services) return false
+    if (py_generic_services != other.py_generic_services) return false
+    if (php_generic_services != other.php_generic_services) return false
+    if (deprecated != other.deprecated) return false
+    if (cc_enable_arenas != other.cc_enable_arenas) return false
+    if (objc_class_prefix != other.objc_class_prefix) return false
+    if (csharp_namespace != other.csharp_namespace) return false
+    if (swift_prefix != other.swift_prefix) return false
+    if (php_class_prefix != other.php_class_prefix) return false
+    if (php_namespace != other.php_namespace) return false
+    if (php_metadata_namespace != other.php_metadata_namespace) return false
+    if (ruby_package != other.ruby_package) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -415,30 +416,32 @@ class FileOptions(
       FileOptions::class, 
       "type.googleapis.com/google.protobuf.FileOptions"
     ) {
-      override fun encodedSize(value: FileOptions): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.java_package) +
-        ProtoAdapter.STRING.encodedSizeWithTag(8, value.java_outer_classname) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(10, value.java_multiple_files) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(20, value.java_generate_equals_and_hash) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(27, value.java_string_check_utf8) +
-        OptimizeMode.ADAPTER.encodedSizeWithTag(9, value.optimize_for) +
-        ProtoAdapter.STRING.encodedSizeWithTag(11, value.go_package) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(16, value.cc_generic_services) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(17, value.java_generic_services) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(18, value.py_generic_services) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(42, value.php_generic_services) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(23, value.deprecated) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(31, value.cc_enable_arenas) +
-        ProtoAdapter.STRING.encodedSizeWithTag(36, value.objc_class_prefix) +
-        ProtoAdapter.STRING.encodedSizeWithTag(37, value.csharp_namespace) +
-        ProtoAdapter.STRING.encodedSizeWithTag(39, value.swift_prefix) +
-        ProtoAdapter.STRING.encodedSizeWithTag(40, value.php_class_prefix) +
-        ProtoAdapter.STRING.encodedSizeWithTag(41, value.php_namespace) +
-        ProtoAdapter.STRING.encodedSizeWithTag(44, value.php_metadata_namespace) +
-        ProtoAdapter.STRING.encodedSizeWithTag(45, value.ruby_package) +
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        value.unknownFields.size
+      override fun encodedSize(value: FileOptions): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.java_package)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(8, value.java_outer_classname)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(10, value.java_multiple_files)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(20, value.java_generate_equals_and_hash)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(27, value.java_string_check_utf8)
+        size += OptimizeMode.ADAPTER.encodedSizeWithTag(9, value.optimize_for)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(11, value.go_package)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(16, value.cc_generic_services)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(17, value.java_generic_services)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(18, value.py_generic_services)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(42, value.php_generic_services)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(23, value.deprecated)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(31, value.cc_enable_arenas)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(36, value.objc_class_prefix)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(37, value.csharp_namespace)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(39, value.swift_prefix)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(40, value.php_class_prefix)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(41, value.php_namespace)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(44, value.php_metadata_namespace)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(45, value.ruby_package)
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: FileOptions) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.java_package)

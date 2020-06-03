@@ -49,8 +49,9 @@ class GeneratedCodeInfo(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is GeneratedCodeInfo) return false
-    return unknownFields == other.unknownFields
-        && annotation == other.annotation
+    if (unknownFields != other.unknownFields) return false
+    if (annotation != other.annotation) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -99,9 +100,11 @@ class GeneratedCodeInfo(
       GeneratedCodeInfo::class, 
       "type.googleapis.com/google.protobuf.GeneratedCodeInfo"
     ) {
-      override fun encodedSize(value: GeneratedCodeInfo): Int = 
-        Annotation.ADAPTER.asRepeated().encodedSizeWithTag(1, value.annotation) +
-        value.unknownFields.size
+      override fun encodedSize(value: GeneratedCodeInfo): Int {
+        var size = value.unknownFields.size
+        size += Annotation.ADAPTER.asRepeated().encodedSizeWithTag(1, value.annotation)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: GeneratedCodeInfo) {
         Annotation.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.annotation)
@@ -186,11 +189,12 @@ class GeneratedCodeInfo(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is Annotation) return false
-      return unknownFields == other.unknownFields
-          && path == other.path
-          && source_file == other.source_file
-          && begin == other.begin
-          && end == other.end
+      if (unknownFields != other.unknownFields) return false
+      if (path != other.path) return false
+      if (source_file != other.source_file) return false
+      if (begin != other.begin) return false
+      if (end != other.end) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -289,12 +293,14 @@ class GeneratedCodeInfo(
         Annotation::class, 
         "type.googleapis.com/google.protobuf.GeneratedCodeInfo.Annotation"
       ) {
-        override fun encodedSize(value: Annotation): Int = 
-          ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path) +
-          ProtoAdapter.STRING.encodedSizeWithTag(2, value.source_file) +
-          ProtoAdapter.INT32.encodedSizeWithTag(3, value.begin) +
-          ProtoAdapter.INT32.encodedSizeWithTag(4, value.end) +
-          value.unknownFields.size
+        override fun encodedSize(value: Annotation): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path)
+          size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.source_file)
+          size += ProtoAdapter.INT32.encodedSizeWithTag(3, value.begin)
+          size += ProtoAdapter.INT32.encodedSizeWithTag(4, value.end)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: Annotation) {
           ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.path)

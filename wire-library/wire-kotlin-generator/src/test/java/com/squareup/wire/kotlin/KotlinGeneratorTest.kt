@@ -82,7 +82,8 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("val when_: Float"))
     assertTrue(code.contains("val ADAPTER_: Int"))
     assertTrue(code.contains("val adapter_: Long?"))
-    assertTrue(code.contains("ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.when_) +"))
+    assertTrue(code.contains("var size = value.unknownFields.size"))
+    assertTrue(code.contains("size += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.when_)"))
     assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
     assertTrue(code.contains("ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.when_)"))
     assertTrue(code.contains("1 -> when_ = ProtoAdapter.FLOAT.decode(reader)"))
@@ -1093,9 +1094,15 @@ class KotlinGeneratorTest {
         |  required string $longMember = 1;
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin(longType)
+    val expectedEqualsConditionImplementation = """
+          |        ($longMember
+          |        !=
+          |        other.$longMember)
+          """.trimMargin()
+
     assertTrue(code.contains("return false"))
     assertTrue(code.contains("return $longType("))
-    assertTrue(code.contains("$longMember =="))
+    assertTrue(code.contains(expectedEqualsConditionImplementation))
     assertTrue(code.contains("$longMember =\n"))
   }
 

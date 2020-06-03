@@ -141,19 +141,20 @@ class SimpleMessage(
   override fun equals(other_: Any?): Boolean {
     if (other_ === this) return true
     if (other_ !is SimpleMessage) return false
-    return unknownFields == other_.unknownFields
-        && optional_int32 == other_.optional_int32
-        && optional_nested_msg == other_.optional_nested_msg
-        && optional_external_msg == other_.optional_external_msg
-        && default_nested_enum == other_.default_nested_enum
-        && required_int32 == other_.required_int32
-        && repeated_double == other_.repeated_double
-        && default_foreign_enum == other_.default_foreign_enum
-        && no_default_foreign_enum == other_.no_default_foreign_enum
-        && package_ == other_.package_
-        && result == other_.result
-        && other == other_.other
-        && o == other_.o
+    if (unknownFields != other_.unknownFields) return false
+    if (optional_int32 != other_.optional_int32) return false
+    if (optional_nested_msg != other_.optional_nested_msg) return false
+    if (optional_external_msg != other_.optional_external_msg) return false
+    if (default_nested_enum != other_.default_nested_enum) return false
+    if (required_int32 != other_.required_int32) return false
+    if (repeated_double != other_.repeated_double) return false
+    if (default_foreign_enum != other_.default_foreign_enum) return false
+    if (no_default_foreign_enum != other_.no_default_foreign_enum) return false
+    if (package_ != other_.package_) return false
+    if (result != other_.result) return false
+    if (other != other_.other) return false
+    if (o != other_.o) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -230,20 +231,22 @@ class SimpleMessage(
       SimpleMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage"
     ) {
-      override fun encodedSize(value: SimpleMessage): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32) +
-        NestedMessage.ADAPTER.encodedSizeWithTag(2, value.optional_nested_msg) +
-        ExternalMessage.ADAPTER.encodedSizeWithTag(3, value.optional_external_msg) +
-        NestedEnum.ADAPTER.encodedSizeWithTag(4, value.default_nested_enum) +
-        ProtoAdapter.INT32.encodedSizeWithTag(5, value.required_int32) +
-        ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(6, value.repeated_double) +
-        ForeignEnum.ADAPTER.encodedSizeWithTag(7, value.default_foreign_enum) +
-        ForeignEnum.ADAPTER.encodedSizeWithTag(8, value.no_default_foreign_enum) +
-        ProtoAdapter.STRING.encodedSizeWithTag(9, value.package_) +
-        ProtoAdapter.STRING.encodedSizeWithTag(10, value.result) +
-        ProtoAdapter.STRING.encodedSizeWithTag(11, value.other) +
-        ProtoAdapter.STRING.encodedSizeWithTag(12, value.o) +
-        value.unknownFields.size
+      override fun encodedSize(value: SimpleMessage): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32)
+        size += NestedMessage.ADAPTER.encodedSizeWithTag(2, value.optional_nested_msg)
+        size += ExternalMessage.ADAPTER.encodedSizeWithTag(3, value.optional_external_msg)
+        size += NestedEnum.ADAPTER.encodedSizeWithTag(4, value.default_nested_enum)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(5, value.required_int32)
+        size += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(6, value.repeated_double)
+        size += ForeignEnum.ADAPTER.encodedSizeWithTag(7, value.default_foreign_enum)
+        size += ForeignEnum.ADAPTER.encodedSizeWithTag(8, value.no_default_foreign_enum)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(9, value.package_)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(10, value.result)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(11, value.other)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(12, value.o)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: SimpleMessage) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32)
@@ -349,8 +352,9 @@ class SimpleMessage(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
-      return unknownFields == other.unknownFields
-          && bb == other.bb
+      if (unknownFields != other.unknownFields) return false
+      if (bb != other.bb) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -379,9 +383,11 @@ class SimpleMessage(
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage"
       ) {
-        override fun encodedSize(value: NestedMessage): Int = 
-          ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb) +
-          value.unknownFields.size
+        override fun encodedSize(value: NestedMessage): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: NestedMessage) {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)

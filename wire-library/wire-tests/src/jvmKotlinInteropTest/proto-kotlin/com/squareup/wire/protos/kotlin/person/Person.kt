@@ -90,12 +90,13 @@ class Person(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Person) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && id == other.id
-        && email == other.email
-        && phone == other.phone
-        && aliases == other.aliases
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (id != other.id) return false
+    if (email != other.email) return false
+    if (phone != other.phone) return false
+    if (aliases != other.aliases) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -203,13 +204,15 @@ class Person(
       Person::class, 
       "type.googleapis.com/squareup.protos.kotlin.person.Person"
     ) {
-      override fun encodedSize(value: Person): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.id) +
-        ProtoAdapter.STRING.encodedSizeWithTag(3, value.email) +
-        PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone) +
-        ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases) +
-        value.unknownFields.size
+      override fun encodedSize(value: Person): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
+        size += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
+        size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: Person) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
@@ -319,9 +322,10 @@ class Person(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is PhoneNumber) return false
-      return unknownFields == other.unknownFields
-          && number == other.number
-          && type == other.type
+      if (unknownFields != other.unknownFields) return false
+      if (number != other.number) return false
+      if (type != other.type) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -388,10 +392,12 @@ class Person(
         PhoneNumber::class, 
         "type.googleapis.com/squareup.protos.kotlin.person.Person.PhoneNumber"
       ) {
-        override fun encodedSize(value: PhoneNumber): Int = 
-          ProtoAdapter.STRING.encodedSizeWithTag(1, value.number) +
-          PhoneType.ADAPTER.encodedSizeWithTag(2, value.type) +
-          value.unknownFields.size
+        override fun encodedSize(value: PhoneNumber): Int {
+          var size = value.unknownFields.size
+          size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
+          size += PhoneType.ADAPTER.encodedSizeWithTag(2, value.type)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: PhoneNumber) {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)

@@ -50,9 +50,10 @@ class WhiteboardCommand(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is WhiteboardCommand) return false
-    return unknownFields == other.unknownFields
-        && add_point == other.add_point
-        && clear_board == other.clear_board
+    if (unknownFields != other.unknownFields) return false
+    if (add_point != other.add_point) return false
+    if (clear_board != other.clear_board) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -86,10 +87,12 @@ class WhiteboardCommand(
       WhiteboardCommand::class, 
       "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand"
     ) {
-      override fun encodedSize(value: WhiteboardCommand): Int = 
-        AddPoint.ADAPTER.encodedSizeWithTag(1, value.add_point) +
-        ClearBoard.ADAPTER.encodedSizeWithTag(2, value.clear_board) +
-        value.unknownFields.size
+      override fun encodedSize(value: WhiteboardCommand): Int {
+        var size = value.unknownFields.size
+        size += AddPoint.ADAPTER.encodedSizeWithTag(1, value.add_point)
+        size += ClearBoard.ADAPTER.encodedSizeWithTag(2, value.clear_board)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: WhiteboardCommand) {
         AddPoint.ADAPTER.encodeWithTag(writer, 1, value.add_point)
@@ -140,8 +143,9 @@ class WhiteboardCommand(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is AddPoint) return false
-      return unknownFields == other.unknownFields
-          && point == other.point
+      if (unknownFields != other.unknownFields) return false
+      if (point != other.point) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -170,9 +174,11 @@ class WhiteboardCommand(
         AddPoint::class, 
         "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.AddPoint"
       ) {
-        override fun encodedSize(value: AddPoint): Int = 
-          Point.ADAPTER.encodedSizeWithTag(1, value.point) +
-          value.unknownFields.size
+        override fun encodedSize(value: AddPoint): Int {
+          var size = value.unknownFields.size
+          size += Point.ADAPTER.encodedSizeWithTag(1, value.point)
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: AddPoint) {
           Point.ADAPTER.encodeWithTag(writer, 1, value.point)
@@ -213,7 +219,8 @@ class WhiteboardCommand(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ClearBoard) return false
-      return unknownFields == other.unknownFields
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()
@@ -229,8 +236,10 @@ class WhiteboardCommand(
         ClearBoard::class, 
         "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.ClearBoard"
       ) {
-        override fun encodedSize(value: ClearBoard): Int = 
-          value.unknownFields.size
+        override fun encodedSize(value: ClearBoard): Int {
+          var size = value.unknownFields.size
+          return size
+        }
 
         override fun encode(writer: ProtoWriter, value: ClearBoard) {
           writer.writeBytes(value.unknownFields)

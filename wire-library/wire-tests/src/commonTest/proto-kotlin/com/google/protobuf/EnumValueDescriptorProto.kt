@@ -51,10 +51,11 @@ class EnumValueDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is EnumValueDescriptorProto) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && number == other.number
-        && options == other.options
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (number != other.number) return false
+    if (options != other.options) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -93,11 +94,13 @@ class EnumValueDescriptorProto(
       EnumValueDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.EnumValueDescriptorProto"
     ) {
-      override fun encodedSize(value: EnumValueDescriptorProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.number) +
-        EnumValueOptions.ADAPTER.encodedSizeWithTag(3, value.options) +
-        value.unknownFields.size
+      override fun encodedSize(value: EnumValueDescriptorProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.number)
+        size += EnumValueOptions.ADAPTER.encodedSizeWithTag(3, value.options)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: EnumValueDescriptorProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

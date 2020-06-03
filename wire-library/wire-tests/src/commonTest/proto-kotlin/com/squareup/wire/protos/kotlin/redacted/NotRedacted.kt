@@ -43,9 +43,10 @@ class NotRedacted(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NotRedacted) return false
-    return unknownFields == other.unknownFields
-        && a == other.a
-        && b == other.b
+    if (unknownFields != other.unknownFields) return false
+    if (a != other.a) return false
+    if (b != other.b) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -79,10 +80,12 @@ class NotRedacted(
       NotRedacted::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.NotRedacted"
     ) {
-      override fun encodedSize(value: NotRedacted): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.a) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.b) +
-        value.unknownFields.size
+      override fun encodedSize(value: NotRedacted): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: NotRedacted) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)

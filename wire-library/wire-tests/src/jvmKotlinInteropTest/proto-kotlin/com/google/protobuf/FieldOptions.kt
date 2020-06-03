@@ -163,15 +163,16 @@ class FieldOptions(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FieldOptions) return false
-    return unknownFields == other.unknownFields
-        && ctype == other.ctype
-        && packed == other.packed
-        && jstype == other.jstype
-        && lazy == other.lazy
-        && deprecated == other.deprecated
-        && weak == other.weak
-        && uninterpreted_option == other.uninterpreted_option
-        && redacted == other.redacted
+    if (unknownFields != other.unknownFields) return false
+    if (ctype != other.ctype) return false
+    if (packed != other.packed) return false
+    if (jstype != other.jstype) return false
+    if (lazy != other.lazy) return false
+    if (deprecated != other.deprecated) return false
+    if (weak != other.weak) return false
+    if (uninterpreted_option != other.uninterpreted_option) return false
+    if (redacted != other.redacted) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -387,17 +388,19 @@ class FieldOptions(
       FieldOptions::class, 
       "type.googleapis.com/google.protobuf.FieldOptions"
     ) {
-      override fun encodedSize(value: FieldOptions): Int = 
-        CType.ADAPTER.encodedSizeWithTag(1, value.ctype) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed) +
-        JSType.ADAPTER.encodedSizeWithTag(6, value.jstype) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak) +
-        UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
-            value.uninterpreted_option) +
-        ProtoAdapter.BOOL.encodedSizeWithTag(22300, value.redacted) +
-        value.unknownFields.size
+      override fun encodedSize(value: FieldOptions): Int {
+        var size = value.unknownFields.size
+        size += CType.ADAPTER.encodedSizeWithTag(1, value.ctype)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed)
+        size += JSType.ADAPTER.encodedSizeWithTag(6, value.jstype)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak)
+        size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
+            value.uninterpreted_option)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(22300, value.redacted)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: FieldOptions) {
         CType.ADAPTER.encodeWithTag(writer, 1, value.ctype)

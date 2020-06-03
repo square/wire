@@ -30,7 +30,8 @@ class NoPackageRequest(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoPackageRequest) return false
-    return unknownFields == other.unknownFields
+    if (unknownFields != other.unknownFields) return false
+    return true
   }
 
   override fun hashCode(): Int = unknownFields.hashCode()
@@ -47,8 +48,10 @@ class NoPackageRequest(
       NoPackageRequest::class, 
       "type.googleapis.com/NoPackageRequest"
     ) {
-      override fun encodedSize(value: NoPackageRequest): Int = 
-        value.unknownFields.size
+      override fun encodedSize(value: NoPackageRequest): Int {
+        var size = value.unknownFields.size
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: NoPackageRequest) {
         writer.writeBytes(value.unknownFields)

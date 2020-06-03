@@ -30,7 +30,8 @@ class SomeResponse(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is SomeResponse) return false
-    return unknownFields == other.unknownFields
+    if (unknownFields != other.unknownFields) return false
+    return true
   }
 
   override fun hashCode(): Int = unknownFields.hashCode()
@@ -47,8 +48,10 @@ class SomeResponse(
       SomeResponse::class, 
       "type.googleapis.com/squareup.protos.kotlin.SomeResponse"
     ) {
-      override fun encodedSize(value: SomeResponse): Int = 
-        value.unknownFields.size
+      override fun encodedSize(value: SomeResponse): Int {
+        var size = value.unknownFields.size
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: SomeResponse) {
         writer.writeBytes(value.unknownFields)

@@ -41,8 +41,9 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VeryLongProtoNameCausingBrokenLineBreaks) return false
-    return unknownFields == other.unknownFields
-        && foo == other.foo
+    if (unknownFields != other.unknownFields) return false
+    if (foo != other.foo) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -74,9 +75,11 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
       VeryLongProtoNameCausingBrokenLineBreaks::class, 
       "type.googleapis.com/squareup.protos.tostring.VeryLongProtoNameCausingBrokenLineBreaks"
     ) {
-      override fun encodedSize(value: VeryLongProtoNameCausingBrokenLineBreaks): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo) +
-        value.unknownFields.size
+      override fun encodedSize(value: VeryLongProtoNameCausingBrokenLineBreaks): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: VeryLongProtoNameCausingBrokenLineBreaks) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)

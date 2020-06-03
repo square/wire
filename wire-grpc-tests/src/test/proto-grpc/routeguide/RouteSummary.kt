@@ -71,11 +71,12 @@ class RouteSummary(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteSummary) return false
-    return unknownFields == other.unknownFields
-        && point_count == other.point_count
-        && feature_count == other.feature_count
-        && distance == other.distance
-        && elapsed_time == other.elapsed_time
+    if (unknownFields != other.unknownFields) return false
+    if (point_count != other.point_count) return false
+    if (feature_count != other.feature_count) return false
+    if (distance != other.distance) return false
+    if (elapsed_time != other.elapsed_time) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -115,12 +116,14 @@ class RouteSummary(
       RouteSummary::class, 
       "type.googleapis.com/routeguide.RouteSummary"
     ) {
-      override fun encodedSize(value: RouteSummary): Int = 
-        ProtoAdapter.INT32.encodedSizeWithTag(1, value.point_count) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.feature_count) +
-        ProtoAdapter.INT32.encodedSizeWithTag(3, value.distance) +
-        ProtoAdapter.INT32.encodedSizeWithTag(4, value.elapsed_time) +
-        value.unknownFields.size
+      override fun encodedSize(value: RouteSummary): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.point_count)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.feature_count)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(3, value.distance)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(4, value.elapsed_time)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: RouteSummary) {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.point_count)

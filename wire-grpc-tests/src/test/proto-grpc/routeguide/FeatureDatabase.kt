@@ -42,8 +42,9 @@ class FeatureDatabase(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FeatureDatabase) return false
-    return unknownFields == other.unknownFields
-        && feature == other.feature
+    if (unknownFields != other.unknownFields) return false
+    if (feature != other.feature) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -72,9 +73,11 @@ class FeatureDatabase(
       FeatureDatabase::class, 
       "type.googleapis.com/routeguide.FeatureDatabase"
     ) {
-      override fun encodedSize(value: FeatureDatabase): Int = 
-        Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature) +
-        value.unknownFields.size
+      override fun encodedSize(value: FeatureDatabase): Int {
+        var size = value.unknownFields.size
+        size += Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: FeatureDatabase) {
         Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)

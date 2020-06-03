@@ -137,17 +137,18 @@ class FieldDescriptorProto(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FieldDescriptorProto) return false
-    return unknownFields == other.unknownFields
-        && name == other.name
-        && number == other.number
-        && label == other.label
-        && type == other.type
-        && type_name == other.type_name
-        && extendee == other.extendee
-        && default_value == other.default_value
-        && oneof_index == other.oneof_index
-        && json_name == other.json_name
-        && options == other.options
+    if (unknownFields != other.unknownFields) return false
+    if (name != other.name) return false
+    if (number != other.number) return false
+    if (label != other.label) return false
+    if (type != other.type) return false
+    if (type_name != other.type_name) return false
+    if (extendee != other.extendee) return false
+    if (default_value != other.default_value) return false
+    if (oneof_index != other.oneof_index) return false
+    if (json_name != other.json_name) return false
+    if (options != other.options) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -334,18 +335,20 @@ class FieldDescriptorProto(
       FieldDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.FieldDescriptorProto"
     ) {
-      override fun encodedSize(value: FieldDescriptorProto): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.name) +
-        ProtoAdapter.INT32.encodedSizeWithTag(3, value.number) +
-        Label.ADAPTER.encodedSizeWithTag(4, value.label) +
-        Type.ADAPTER.encodedSizeWithTag(5, value.type) +
-        ProtoAdapter.STRING.encodedSizeWithTag(6, value.type_name) +
-        ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee) +
-        ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value) +
-        ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index) +
-        ProtoAdapter.STRING.encodedSizeWithTag(10, value.json_name) +
-        FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options) +
-        value.unknownFields.size
+      override fun encodedSize(value: FieldDescriptorProto): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(3, value.number)
+        size += Label.ADAPTER.encodedSizeWithTag(4, value.label)
+        size += Type.ADAPTER.encodedSizeWithTag(5, value.type)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(6, value.type_name)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(10, value.json_name)
+        size += FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: FieldDescriptorProto) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)

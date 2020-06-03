@@ -29,7 +29,8 @@ class MessageWithStatus(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageWithStatus) return false
-    return unknownFields == other.unknownFields
+    if (unknownFields != other.unknownFields) return false
+    return true
   }
 
   override fun hashCode(): Int = unknownFields.hashCode()
@@ -52,8 +53,10 @@ class MessageWithStatus(
       MessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus"
     ) {
-      override fun encodedSize(value: MessageWithStatus): Int = 
-        value.unknownFields.size
+      override fun encodedSize(value: MessageWithStatus): Int {
+        var size = value.unknownFields.size
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: MessageWithStatus) {
         writer.writeBytes(value.unknownFields)

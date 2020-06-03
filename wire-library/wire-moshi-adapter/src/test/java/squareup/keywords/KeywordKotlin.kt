@@ -68,11 +68,12 @@ class KeywordKotlin(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is KeywordKotlin) return false
-    return unknownFields == other.unknownFields
-        && object_ == other.object_
-        && when_ == other.when_
-        && fun_ == other.fun_
-        && return_ == other.return_
+    if (unknownFields != other.unknownFields) return false
+    if (object_ != other.object_) return false
+    if (when_ != other.when_) return false
+    if (fun_ != other.fun_) return false
+    if (return_ != other.return_) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -158,12 +159,14 @@ class KeywordKotlin(
       private val funAdapter: ProtoAdapter<Map<String, String>> =
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING)
 
-      override fun encodedSize(value: KeywordKotlin): Int = 
-        ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_) +
-        ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_) +
-        funAdapter.encodedSizeWithTag(3, value.fun_) +
-        ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.return_) +
-        value.unknownFields.size
+      override fun encodedSize(value: KeywordKotlin): Int {
+        var size = value.unknownFields.size
+        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.object_)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.when_)
+        size += funAdapter.encodedSizeWithTag(3, value.fun_)
+        size += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.return_)
+        return size
+      }
 
       override fun encode(writer: ProtoWriter, value: KeywordKotlin) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
