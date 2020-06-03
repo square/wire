@@ -25,6 +25,7 @@ import okio.source
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.time.Duration
 import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
@@ -215,5 +216,6 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmField actual val DOUBLE: ProtoAdapter<Double> = commonDouble()
     @JvmField actual val BYTES: ProtoAdapter<ByteString> = commonBytes()
     @JvmField actual val STRING: ProtoAdapter<String> = commonString()
+    @JvmField actual val DURATION: ProtoAdapter<Duration> = commonDuration()
   }
 }

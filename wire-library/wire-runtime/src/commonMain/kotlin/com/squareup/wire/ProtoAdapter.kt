@@ -654,10 +654,10 @@ internal fun commonBytes(): ProtoAdapter<ByteString> = object : ProtoAdapter<Byt
   override fun redact(value: ByteString): ByteString = throw UnsupportedOperationException()
 }
 
-internal fun commonDurations(): ProtoAdapter<Duration> = object : ProtoAdapter<Duration>(
-    fieldEncoding = FieldEncoding.LENGTH_DELIMITED,
-    type = Duration::class,
-    typeUrl = "type.googleapis.com/google.protobuf.Duration"
+internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Duration>(
+    FieldEncoding.LENGTH_DELIMITED,
+    Duration::class,
+    "type.googleapis.com/google.protobuf.Duration"
 ) {
   override fun encodedSize(value: Duration): Int {
     var result = 0

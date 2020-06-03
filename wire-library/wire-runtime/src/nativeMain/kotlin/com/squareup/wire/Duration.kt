@@ -32,7 +32,7 @@ actual fun durationOfSeconds(
   seconds: Long,
   nanoAdjustment: Long
 ): Duration {
-  val secs = addExactLong(seconds, floorDivLong(nanoAdjustment, NANOS_PER_SECOND))
-  val nos = floorModLong(nanoAdjustment, NANOS_PER_SECOND).toInt()
-  return Duration(secs, nos)
+  val s = addExactLong(seconds, floorDivLong(nanoAdjustment, NANOS_PER_SECOND))
+  val ns = floorModLong(nanoAdjustment, NANOS_PER_SECOND).toInt()
+  return Duration(s, ns)
 }

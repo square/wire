@@ -15,8 +15,19 @@
  */
 package com.squareup.wire
 
+/**
+ * A measurement of time. Durations may be positive, zero, or negative.
+ *
+ * Positive durations are measured in seconds, with both [#getSeconds] and [#getNano] parts with
+ * non-negative signs.
+ *
+ * Negative durations may be surprising. The [#getSeconds] property is negative, but the [#getNano]
+ * property is non-negative! To represent -1.3 seconds the seconds property is -2 and the nanos
+ * property is 700,000,000.
+ */
 expect class Duration {
   fun getSeconds(): Long
+  /** Returns a value in `[0..1,000,000,000)`. */
   fun getNano(): Int
 }
 

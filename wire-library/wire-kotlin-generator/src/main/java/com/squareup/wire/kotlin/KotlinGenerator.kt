@@ -816,11 +816,6 @@ class KotlinGenerator private constructor(
         .build()
   }
 
-  private fun ProtoType.adapterString() = when {
-    isScalar -> ProtoAdapter::class.java.name + '#' + toString().toUpperCase(Locale.US)
-    else -> typeName.reflectionName() + "#ADAPTER"
-  }
-
   private fun generateToStringMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val sanitizeMember = MemberName("com.squareup.wire.internal", "sanitize")
     val localNameAllocator = nameAllocator.copy()
@@ -1256,13 +1251,20 @@ class KotlinGenerator private constructor(
 
   private fun ProtoType.getAdapterName(adapterFieldDelimiterName: Char = '.'): CodeBlock {
     return when {
-      isScalar -> CodeBlock.of(
+      isScalar || this == ProtoType.DURATION -> CodeBlock.of(
           "%T$adapterFieldDelimiterName%L",
           ProtoAdapter::class, simpleName.toUpperCase(Locale.US)
       )
       isMap -> throw IllegalArgumentException("Can't create single adapter for map type $this")
       else -> CodeBlock.of("%T${adapterFieldDelimiterName}ADAPTER", typeName)
     }
+  }
+
+  private fun ProtoType.adapterString() = when {
+    isScalar || this == ProtoType.DURATION -> {
+      ProtoAdapter::class.java.name + '#' + simpleName.toUpperCase(Locale.US)
+    }
+    else -> typeName.reflectionName() + "#ADAPTER"
   }
 
   /**
@@ -1565,6 +1567,7 @@ class KotlinGenerator private constructor(
         ProtoType.UINT32 to INT,
         ProtoType.UINT64 to LONG,
         ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
+        ProtoType.DURATION to ClassName("java.time", "Duration"),
         FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
         MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
         ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")

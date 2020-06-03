@@ -19,6 +19,7 @@ package com.squareup.wire
 
 import com.google.protobuf.Any
 import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.Duration
 import com.google.protobuf.FieldOptions
 import com.google.protobuf.util.JsonFormat
 import com.squareup.moshi.JsonAdapter
@@ -65,6 +66,10 @@ class Proto3WireProtocCompatibilityTests {
   @Test fun protocJson() {
     val pizzaDelivery = PizzaOuterClass.PizzaDelivery.newBuilder()
         .setAddress("507 Cross Street")
+        .setDeliveredWithinOrFree(Duration.newBuilder()
+            .setSeconds(1_799)
+            .setNanos(500_000_000)
+            .build())
         .addPizzas(PizzaOuterClass.Pizza.newBuilder()
             .addToppings("pineapple")
             .addToppings("onion")
@@ -83,7 +88,8 @@ class Proto3WireProtocCompatibilityTests {
         |  "promotion": {
         |    "@type": "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion",
         |    "coupon": "MAUI"
-        |  }
+        |  },
+        |  "deliveredWithinOrFree": "1799.500s"
         |}
         """.trimMargin()
 
@@ -107,11 +113,13 @@ class Proto3WireProtocCompatibilityTests {
     val pizzaDelivery = PizzaDelivery(
         address = "507 Cross Street",
         pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI"))
+        promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI")),
+        delivered_within_or_free = java.time.Duration.ofSeconds(1_799L, 500_000_000L)
     )
     val json = """
         |{
         |  "address": "507 Cross Street",
+        |  "deliveredWithinOrFree": "1799.500s",
         |  "pizzas": [
         |    {
         |      "toppings": [
@@ -451,6 +459,23 @@ class Proto3WireProtocCompatibilityTests {
     val jsonAdapter = moshi.adapter(All64::class.java).indent("  ")
     assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON)
     assertThat(jsonAdapter.fromJson(ALL_64_JSON)).isEqualTo(all64)
+  }
+
+  @Test fun durationProto() {
+    val googleMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .setDeliveredWithinOrFree(Duration.newBuilder()
+            .setSeconds(1_799)
+            .setNanos(500_000_000)
+            .build())
+        .build()
+
+    val wireMessage = PizzaDelivery(
+        delivered_within_or_free = java.time.Duration.ofSeconds(1_799L, 500_000_000L)
+    )
+
+    val googleMessageBytes = googleMessage.toByteArray()
+    assertThat(wireMessage.encode()).isEqualTo(googleMessageBytes)
+    assertThat(PizzaDelivery.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessage)
   }
 
   companion object {

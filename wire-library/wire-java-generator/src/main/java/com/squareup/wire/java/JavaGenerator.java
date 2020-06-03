@@ -131,6 +131,7 @@ public final class JavaGenerator {
           .put(ProtoType.UINT32, (ClassName) TypeName.INT.box())
           .put(ProtoType.UINT64, (ClassName) TypeName.LONG.box())
           .put(ProtoType.ANY, ClassName.get("com.squareup.wire", "AnyMessage"))
+          .put(ProtoType.DURATION, ClassName.get("java.time", "Duration"))
           .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
           .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
           .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
