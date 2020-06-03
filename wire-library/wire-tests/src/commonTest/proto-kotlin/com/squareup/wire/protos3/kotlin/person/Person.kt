@@ -159,12 +159,9 @@ class Person(
     ) {
       override fun encodedSize(value: Person): Int {
         var size = value.unknownFields.size
-        if (value.name == "") 0
-        else size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-        if (value.id == 0) 0
-        else size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
-        if (value.email == "") 0
-        else size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
+        if (value.name != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        if (value.id != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
+        if (value.email != "") size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
         size += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phones)
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases)
         size += ProtoAdapter.INT32.encodedSizeWithTag(6, value.foo)
@@ -324,10 +321,9 @@ class Person(
       ) {
         override fun encodedSize(value: PhoneNumber): Int {
           var size = value.unknownFields.size
-          if (value.number == "") 0
-          else size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
-          if (value.type == PhoneType.MOBILE) 0
-          else size += PhoneType.ADAPTER.encodedSizeWithTag(2, value.type)
+          if (value.number != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
+          if (value.type != PhoneType.MOBILE) size += PhoneType.ADAPTER.encodedSizeWithTag(2,
+              value.type)
           return size
         }
 

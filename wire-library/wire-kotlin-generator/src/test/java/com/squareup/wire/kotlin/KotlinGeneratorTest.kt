@@ -1094,9 +1094,15 @@ class KotlinGeneratorTest {
         |  required string $longMember = 1;
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin(longType)
+    val expectedEqualsConditionImplementation = """
+          |        ($longMember
+          |        !=
+          |        other.$longMember)
+          """.trimMargin()
+
     assertTrue(code.contains("return false"))
     assertTrue(code.contains("return $longType("))
-    assertTrue(code.contains("\\($longMember\\s+!=\\s+other.$longMember\\)".toRegex()))
+    assertTrue(code.contains(expectedEqualsConditionImplementation))
     assertTrue(code.contains("$longMember =\n"))
   }
 

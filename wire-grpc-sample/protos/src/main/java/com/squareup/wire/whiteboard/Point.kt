@@ -50,11 +50,11 @@ class Point(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Point) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (x == other.x)
-    result = result && (y == other.y)
-    result = result && (color == other.color)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (x != other.x) return false
+    if (y != other.y) return false
+    if (color != other.color) return false
+    return true
   }
 
   override fun hashCode(): Int {

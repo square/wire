@@ -493,8 +493,8 @@ class KotlinGenerator private constructor(
 
       val fields = type.fieldsAndOneOfFields
       for (field in fields) {
-          val fieldName = localNameAllocator[field]
-          addStatement("if (%1L != %2N.%1L) return false", fieldName, otherName)
+        val fieldName = localNameAllocator[field]
+        addStatement("if (%1L != %2N.%1L) return false", fieldName, otherName)
       }
       addStatement("return true")
     }
@@ -1041,7 +1041,7 @@ class KotlinGenerator private constructor(
       message.fieldsAndOneOfFields.forEach{ field ->
         val fieldName = localNameAllocator[field]
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
-          add("if (value.%L == %L) 0\nelse ", fieldName, field.identityValue)
+          add("if (value.%1L != %2L) ", fieldName, field.identityValue)
         }
         addStatement("%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(field), field.tag, fieldName)
       }

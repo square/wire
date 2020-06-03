@@ -50,10 +50,10 @@ class WhiteboardCommand(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is WhiteboardCommand) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (add_point == other.add_point)
-    result = result && (clear_board == other.clear_board)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (add_point != other.add_point) return false
+    if (clear_board != other.clear_board) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -143,9 +143,9 @@ class WhiteboardCommand(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is AddPoint) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (point == other.point)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (point != other.point) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -219,8 +219,8 @@ class WhiteboardCommand(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ClearBoard) return false
-      var result = unknownFields == other.unknownFields
-      return result
+      if (unknownFields != other.unknownFields) return false
+      return true
     }
 
     override fun hashCode(): Int = unknownFields.hashCode()

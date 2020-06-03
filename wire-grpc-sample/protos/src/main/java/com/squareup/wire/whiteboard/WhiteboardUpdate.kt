@@ -52,10 +52,10 @@ class WhiteboardUpdate(
   override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is WhiteboardUpdate) return false
-    var result = unknownFields == other.unknownFields
-    result = result && (initialise_board == other.initialise_board)
-    result = result && (update_points == other.update_points)
-    return result
+    if (unknownFields != other.unknownFields) return false
+    if (initialise_board != other.initialise_board) return false
+    if (update_points != other.update_points) return false
+    return true
   }
 
   override fun hashCode(): Int {
@@ -157,11 +157,11 @@ class WhiteboardUpdate(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is InitialiseBoard) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (width == other.width)
-      result = result && (height == other.height)
-      result = result && (color == other.color)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (width != other.width) return false
+      if (height != other.height) return false
+      if (color != other.color) return false
+      return true
     }
 
     override fun hashCode(): Int {
@@ -258,9 +258,9 @@ class WhiteboardUpdate(
     override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is UpdatePoints) return false
-      var result = unknownFields == other.unknownFields
-      result = result && (points == other.points)
-      return result
+      if (unknownFields != other.unknownFields) return false
+      if (points != other.points) return false
+      return true
     }
 
     override fun hashCode(): Int {
