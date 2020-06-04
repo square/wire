@@ -35,10 +35,10 @@ open class WireTask : SourceTask() {
   var pluginVersion: String = VERSION
 
   @get:Internal
-  internal lateinit var sourceInput: List<Location>
+  internal val sourceInput = project.objects.listProperty(Location::class.java)
 
   @get:Internal
-  internal lateinit var protoInput: List<Location>
+  internal val protoInput = project.objects.listProperty(Location::class.java)
 
   @Input
   lateinit var roots: List<String>
@@ -101,8 +101,8 @@ open class WireTask : SourceTask() {
     }
 
     val wireRun = WireRun(
-        sourcePath = sourceInput,
-        protoPath = protoInput,
+        sourcePath = sourceInput.get(),
+        protoPath = protoInput.get(),
         treeShakingRoots = if (roots.isEmpty()) includes else roots,
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
         sinceVersion = sinceVersion,
