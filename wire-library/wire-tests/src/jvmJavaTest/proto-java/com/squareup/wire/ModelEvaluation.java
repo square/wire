@@ -129,7 +129,7 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
   }
 
   private static final class ProtoAdapter_ModelEvaluation extends ProtoAdapter<ModelEvaluation> {
-    private final ProtoAdapter<Map<String, ModelEvaluation>> models = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER);
+    private ProtoAdapter<Map<String, ModelEvaluation>> models;
 
     public ProtoAdapter_ModelEvaluation() {
       super(FieldEncoding.LENGTH_DELIMITED, ModelEvaluation.class, "type.googleapis.com/com.squareup.wire.ModelEvaluation");
@@ -139,7 +139,7 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
     public int encodedSize(ModelEvaluation value) {
       return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
           + ProtoAdapter.DOUBLE.encodedSizeWithTag(2, value.score)
-          + models.encodedSizeWithTag(3, value.models)
+          + modelsAdapter().encodedSizeWithTag(3, value.models)
           + value.unknownFields().size();
     }
 
@@ -147,7 +147,7 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
     public void encode(ProtoWriter writer, ModelEvaluation value) throws IOException {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
       ProtoAdapter.DOUBLE.encodeWithTag(writer, 2, value.score);
-      models.encodeWithTag(writer, 3, value.models);
+      modelsAdapter().encodeWithTag(writer, 3, value.models);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -159,7 +159,7 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
         switch (tag) {
           case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
           case 2: builder.score(ProtoAdapter.DOUBLE.decode(reader)); break;
-          case 3: builder.models.putAll(models.decode(reader)); break;
+          case 3: builder.models.putAll(modelsAdapter().decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -175,6 +175,15 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
       Internal.redactElements(builder.models, ModelEvaluation.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
+    }
+
+    private ProtoAdapter<Map<String, ModelEvaluation>> modelsAdapter() {
+      ProtoAdapter<Map<String, ModelEvaluation>> result = models;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER);
+        models = result;
+      }
+      return result;
     }
   }
 }

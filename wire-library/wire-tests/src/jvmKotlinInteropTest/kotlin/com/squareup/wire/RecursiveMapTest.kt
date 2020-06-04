@@ -23,7 +23,6 @@ import org.junit.Ignore
 import org.junit.Test
 
 class RecursiveMapTest {
-  @Ignore("Need to fix #1545")
   @Test
   fun createUseBuilderWithoutCrashing() {
     val model = ModelEvaluation.Builder()

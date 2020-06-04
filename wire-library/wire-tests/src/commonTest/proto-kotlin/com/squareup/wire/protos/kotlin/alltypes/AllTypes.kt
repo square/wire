@@ -29,6 +29,7 @@ import kotlin.collections.Map
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
+import kotlin.lazy
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
 
@@ -1613,29 +1614,29 @@ class AllTypes(
       AllTypes::class, 
       "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes"
     ) {
-      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32)
+      private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING)
+      private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
-      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER)
+      private val map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
 
-      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER)
+      private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
-      private val ext_map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32)
+      private val ext_map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      private val ext_map_string_stringAdapter: ProtoAdapter<Map<String, String>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING)
+      private val ext_map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
-      private val ext_map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER)
+      private val ext_map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
 
-      private val ext_map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER)
+      private val ext_map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
       override fun encodedSize(value: AllTypes): Int {
         var size = value.unknownFields.size

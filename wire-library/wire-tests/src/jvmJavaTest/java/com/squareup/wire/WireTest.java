@@ -395,7 +395,6 @@ public class WireTest {
             + "}");
   }
 
-  @Ignore("Need to fix #1545")
   @Test public void createUseResursiveMapBuilderWithoutCrashing() {
     ModelEvaluation model = new ModelEvaluation.Builder()
         .name("name")

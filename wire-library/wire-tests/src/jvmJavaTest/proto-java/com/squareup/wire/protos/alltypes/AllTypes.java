@@ -3256,21 +3256,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   private static final class ProtoAdapter_AllTypes extends ProtoAdapter<AllTypes> {
-    private final ProtoAdapter<Map<Integer, Integer>> map_int32_int32 = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
+    private ProtoAdapter<Map<Integer, Integer>> map_int32_int32;
 
-    private final ProtoAdapter<Map<String, String>> map_string_string = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+    private ProtoAdapter<Map<String, String>> map_string_string;
 
-    private final ProtoAdapter<Map<String, NestedMessage>> map_string_message = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER);
+    private ProtoAdapter<Map<String, NestedMessage>> map_string_message;
 
-    private final ProtoAdapter<Map<String, NestedEnum>> map_string_enum = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
+    private ProtoAdapter<Map<String, NestedEnum>> map_string_enum;
 
-    private final ProtoAdapter<Map<Integer, Integer>> ext_map_int32_int32 = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
+    private ProtoAdapter<Map<Integer, Integer>> ext_map_int32_int32;
 
-    private final ProtoAdapter<Map<String, String>> ext_map_string_string = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+    private ProtoAdapter<Map<String, String>> ext_map_string_string;
 
-    private final ProtoAdapter<Map<String, NestedMessage>> ext_map_string_message = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER);
+    private ProtoAdapter<Map<String, NestedMessage>> ext_map_string_message;
 
-    private final ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enum = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
+    private ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enum;
 
     public ProtoAdapter_AllTypes() {
       super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes");
@@ -3359,10 +3359,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string)
           + ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes)
           + NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum)
-          + map_int32_int32.encodedSizeWithTag(501, value.map_int32_int32)
-          + map_string_string.encodedSizeWithTag(502, value.map_string_string)
-          + map_string_message.encodedSizeWithTag(503, value.map_string_message)
-          + map_string_enum.encodedSizeWithTag(504, value.map_string_enum)
+          + map_int32_int32Adapter().encodedSizeWithTag(501, value.map_int32_int32)
+          + map_string_stringAdapter().encodedSizeWithTag(502, value.map_string_string)
+          + map_string_messageAdapter().encodedSizeWithTag(503, value.map_string_message)
+          + map_string_enumAdapter().encodedSizeWithTag(504, value.map_string_enum)
           + ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
           + ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
           + ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
@@ -3411,10 +3411,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
           + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
           + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
-          + ext_map_int32_int32.encodedSizeWithTag(1301, value.ext_map_int32_int32)
-          + ext_map_string_string.encodedSizeWithTag(1402, value.ext_map_string_string)
-          + ext_map_string_message.encodedSizeWithTag(1503, value.ext_map_string_message)
-          + ext_map_string_enum.encodedSizeWithTag(1504, value.ext_map_string_enum)
+          + ext_map_int32_int32Adapter().encodedSizeWithTag(1301, value.ext_map_int32_int32)
+          + ext_map_string_stringAdapter().encodedSizeWithTag(1402, value.ext_map_string_string)
+          + ext_map_string_messageAdapter().encodedSizeWithTag(1503, value.ext_map_string_message)
+          + ext_map_string_enumAdapter().encodedSizeWithTag(1504, value.ext_map_string_enum)
           + value.unknownFields().size();
     }
 
@@ -3501,10 +3501,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ProtoAdapter.STRING.encodeWithTag(writer, 414, value.default_string);
       ProtoAdapter.BYTES.encodeWithTag(writer, 415, value.default_bytes);
       NestedEnum.ADAPTER.encodeWithTag(writer, 416, value.default_nested_enum);
-      map_int32_int32.encodeWithTag(writer, 501, value.map_int32_int32);
-      map_string_string.encodeWithTag(writer, 502, value.map_string_string);
-      map_string_message.encodeWithTag(writer, 503, value.map_string_message);
-      map_string_enum.encodeWithTag(writer, 504, value.map_string_enum);
+      map_int32_int32Adapter().encodeWithTag(writer, 501, value.map_int32_int32);
+      map_string_stringAdapter().encodeWithTag(writer, 502, value.map_string_string);
+      map_string_messageAdapter().encodeWithTag(writer, 503, value.map_string_message);
+      map_string_enumAdapter().encodeWithTag(writer, 504, value.map_string_enum);
       ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32);
       ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32);
       ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32);
@@ -3553,10 +3553,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float);
       ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double);
       NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum);
-      ext_map_int32_int32.encodeWithTag(writer, 1301, value.ext_map_int32_int32);
-      ext_map_string_string.encodeWithTag(writer, 1402, value.ext_map_string_string);
-      ext_map_string_message.encodeWithTag(writer, 1503, value.ext_map_string_message);
-      ext_map_string_enum.encodeWithTag(writer, 1504, value.ext_map_string_enum);
+      ext_map_int32_int32Adapter().encodeWithTag(writer, 1301, value.ext_map_int32_int32);
+      ext_map_string_stringAdapter().encodeWithTag(writer, 1402, value.ext_map_string_string);
+      ext_map_string_messageAdapter().encodeWithTag(writer, 1503, value.ext_map_string_message);
+      ext_map_string_enumAdapter().encodeWithTag(writer, 1504, value.ext_map_string_enum);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -3682,10 +3682,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             }
             break;
           }
-          case 501: builder.map_int32_int32.putAll(map_int32_int32.decode(reader)); break;
-          case 502: builder.map_string_string.putAll(map_string_string.decode(reader)); break;
-          case 503: builder.map_string_message.putAll(map_string_message.decode(reader)); break;
-          case 504: builder.map_string_enum.putAll(map_string_enum.decode(reader)); break;
+          case 501: builder.map_int32_int32.putAll(map_int32_int32Adapter().decode(reader)); break;
+          case 502: builder.map_string_string.putAll(map_string_stringAdapter().decode(reader)); break;
+          case 503: builder.map_string_message.putAll(map_string_messageAdapter().decode(reader)); break;
+          case 504: builder.map_string_enum.putAll(map_string_enumAdapter().decode(reader)); break;
           case 1001: builder.ext_opt_int32(ProtoAdapter.INT32.decode(reader)); break;
           case 1002: builder.ext_opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
           case 1003: builder.ext_opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;
@@ -3755,10 +3755,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             }
             break;
           }
-          case 1301: builder.ext_map_int32_int32.putAll(ext_map_int32_int32.decode(reader)); break;
-          case 1402: builder.ext_map_string_string.putAll(ext_map_string_string.decode(reader)); break;
-          case 1503: builder.ext_map_string_message.putAll(ext_map_string_message.decode(reader)); break;
-          case 1504: builder.ext_map_string_enum.putAll(ext_map_string_enum.decode(reader)); break;
+          case 1301: builder.ext_map_int32_int32.putAll(ext_map_int32_int32Adapter().decode(reader)); break;
+          case 1402: builder.ext_map_string_string.putAll(ext_map_string_stringAdapter().decode(reader)); break;
+          case 1503: builder.ext_map_string_message.putAll(ext_map_string_messageAdapter().decode(reader)); break;
+          case 1504: builder.ext_map_string_enum.putAll(ext_map_string_enumAdapter().decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -3780,6 +3780,78 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       Internal.redactElements(builder.ext_map_string_message, NestedMessage.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
+    }
+
+    private ProtoAdapter<Map<Integer, Integer>> map_int32_int32Adapter() {
+      ProtoAdapter<Map<Integer, Integer>> result = map_int32_int32;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
+        map_int32_int32 = result;
+      }
+      return result;
+    }
+
+    private ProtoAdapter<Map<String, String>> map_string_stringAdapter() {
+      ProtoAdapter<Map<String, String>> result = map_string_string;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+        map_string_string = result;
+      }
+      return result;
+    }
+
+    private ProtoAdapter<Map<String, NestedMessage>> map_string_messageAdapter() {
+      ProtoAdapter<Map<String, NestedMessage>> result = map_string_message;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER);
+        map_string_message = result;
+      }
+      return result;
+    }
+
+    private ProtoAdapter<Map<String, NestedEnum>> map_string_enumAdapter() {
+      ProtoAdapter<Map<String, NestedEnum>> result = map_string_enum;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
+        map_string_enum = result;
+      }
+      return result;
+    }
+
+    private ProtoAdapter<Map<Integer, Integer>> ext_map_int32_int32Adapter() {
+      ProtoAdapter<Map<Integer, Integer>> result = ext_map_int32_int32;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
+        ext_map_int32_int32 = result;
+      }
+      return result;
+    }
+
+    private ProtoAdapter<Map<String, String>> ext_map_string_stringAdapter() {
+      ProtoAdapter<Map<String, String>> result = ext_map_string_string;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+        ext_map_string_string = result;
+      }
+      return result;
+    }
+
+    private ProtoAdapter<Map<String, NestedMessage>> ext_map_string_messageAdapter() {
+      ProtoAdapter<Map<String, NestedMessage>> result = ext_map_string_message;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER);
+        ext_map_string_message = result;
+      }
+      return result;
+    }
+
+    private ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enumAdapter() {
+      ProtoAdapter<Map<String, NestedEnum>> result = ext_map_string_enum;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
+        ext_map_string_enum = result;
+      }
+      return result;
     }
   }
 }

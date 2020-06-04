@@ -166,7 +166,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
   }
 
   private static final class ProtoAdapter_KeywordJava extends ProtoAdapter<KeywordJava> {
-    private final ProtoAdapter<Map<String, String>> package_ = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+    private ProtoAdapter<Map<String, String>> package_;
 
     public ProtoAdapter_KeywordJava() {
       super(FieldEncoding.LENGTH_DELIMITED, KeywordJava.class, "type.googleapis.com/squareup.keywords.KeywordJava");
@@ -176,7 +176,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     public int encodedSize(KeywordJava value) {
       return ProtoAdapter.STRING.encodedSizeWithTag(1, value.final_)
           + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.public_)
-          + package_.encodedSizeWithTag(3, value.package_)
+          + package_Adapter().encodedSizeWithTag(3, value.package_)
           + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.return_)
           + value.unknownFields().size();
     }
@@ -185,7 +185,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     public void encode(ProtoWriter writer, KeywordJava value) throws IOException {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.final_);
       ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.public_);
-      package_.encodeWithTag(writer, 3, value.package_);
+      package_Adapter().encodeWithTag(writer, 3, value.package_);
       ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_);
       writer.writeBytes(value.unknownFields());
     }
@@ -198,7 +198,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
         switch (tag) {
           case 1: builder.final_(ProtoAdapter.STRING.decode(reader)); break;
           case 2: builder.public_(ProtoAdapter.BOOL.decode(reader)); break;
-          case 3: builder.package_.putAll(package_.decode(reader)); break;
+          case 3: builder.package_.putAll(package_Adapter().decode(reader)); break;
           case 4: builder.return_.add(ProtoAdapter.BOOL.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
@@ -214,6 +214,15 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       Builder builder = value.newBuilder();
       builder.clearUnknownFields();
       return builder.build();
+    }
+
+    private ProtoAdapter<Map<String, String>> package_Adapter() {
+      ProtoAdapter<Map<String, String>> result = package_;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
+        package_ = result;
+      }
+      return result;
     }
   }
 }

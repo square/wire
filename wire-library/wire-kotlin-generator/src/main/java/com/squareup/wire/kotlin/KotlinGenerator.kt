@@ -166,7 +166,8 @@ class KotlinGenerator private constructor(
     result[interfaceName] = interfaceSpec
 
     if (rpcRole == RpcRole.CLIENT) {
-      val (implementationName, implementationSpec) = generateService(service, onlyRpc, isImplementation = true)
+      val (implementationName, implementationSpec) = generateService(service, onlyRpc,
+          isImplementation = true)
       result[implementationName] = implementationSpec
     }
 
@@ -1021,9 +1022,12 @@ class KotlinGenerator private constructor(
         .parameterizedBy(Map::class.asTypeName()
             .parameterizedBy(keyType.typeName, valueType.typeName))
 
+    // Map adapters have to be lazy in order to avoid a circular reference when its value type
+    // is the same as its enclosing type.
     return PropertySpec.builder("${name}Adapter", adapterType, PRIVATE)
-        .initializer(
-            "%T.newMapAdapter(%L, %L)",
+        .delegate(
+            "%M { %T.newMapAdapter(%L, %L) }",
+            MemberName("kotlin", "lazy"),
             ProtoAdapter::class,
             keyType.getAdapterName(),
             valueType.getAdapterName()
@@ -1038,12 +1042,13 @@ class KotlinGenerator private constructor(
 
     val body = buildCodeBlock {
       addStatement("var %N = value.unknownFields.size", sizeName)
-      message.fieldsAndOneOfFields.forEach{ field ->
+      message.fieldsAndOneOfFields.forEach { field ->
         val fieldName = localNameAllocator[field]
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           add("if (value.%1L != %2L) ", fieldName, field.identityValue)
         }
-        addStatement("%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(field), field.tag, fieldName)
+        addStatement("%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(field),
+            field.tag, fieldName)
       }
       addStatement("return %N", sizeName)
     }
@@ -1243,7 +1248,7 @@ class KotlinGenerator private constructor(
   // TODO add support for custom adapters.
   private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
     return if (type!!.isMap) {
-      CodeBlock.of("%N", name + "Adapter")
+      CodeBlock.of("%N", "${name}Adapter")
     } else {
       type!!.getAdapterName(nameDelimiter)
     }
