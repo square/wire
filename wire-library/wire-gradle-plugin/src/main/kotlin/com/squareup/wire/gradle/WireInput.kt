@@ -24,6 +24,7 @@ import org.gradle.api.artifacts.FileCollectionDependency
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
+import org.gradle.api.provider.Provider
 import java.io.File
 import java.net.URI
 
@@ -32,16 +33,16 @@ import java.net.URI
  * directory trees, jars, and coordinates). This includes registering dependencies with the project
  * so they can be resolved for us.
  */
-internal class WireInput(var configuration: Configuration) {
+internal class WireInput(var configuration: Provider<Configuration>) {
   val name: String
-    get() = configuration.name
+    get() = configuration.get().name
 
   private val dependencyToIncludes = mutableMapOf<Dependency, List<String>>()
 
   fun addPaths(project: Project, paths: Set<String>) {
     for (path in paths) {
       val dependency = resolveDependency(project, path)
-      configuration.dependencies.add(dependency)
+      configuration.get().dependencies.add(dependency)
     }
   }
 
@@ -50,7 +51,7 @@ internal class WireInput(var configuration: Configuration) {
       jar.srcJar?.let { path ->
         val dependency = resolveDependency(project, path)
         dependencyToIncludes[dependency] = jar.includes
-        configuration.dependencies.add(dependency)
+        configuration.get().dependencies.add(dependency)
       }
     }
   }
@@ -64,7 +65,7 @@ internal class WireInput(var configuration: Configuration) {
         }
       }
       val dependency = project.dependencies.create(tree)
-      configuration.dependencies.add(dependency)
+      configuration.get().dependencies.add(dependency)
     }
   }
 
@@ -113,23 +114,23 @@ internal class WireInput(var configuration: Configuration) {
       }
 
   fun debug(logger: Logger) {
-    configuration.dependencies.forEach { dep ->
+    configuration.get().dependencies.forEach { dep ->
       val srcDirs = ((dep as? FileCollectionDependency)?.files as? SourceDirectorySet)?.srcDirs
       val includes = dependencyToIncludes[dep] ?: listOf()
       logger.debug("dep: $dep -> $srcDirs")
-      logger.debug("$name.files for dep: ${configuration.files(dep)}")
+      logger.debug("$name.files for dep: ${configuration.get().files(dep)}")
       logger.debug("$name.includes for dep: $includes")
     }
   }
 
-  fun toLocations(): List<Location> {
-    return configuration.dependencies
-        .flatMap { dep ->
-          configuration.files(dep)
-              .flatMap { file ->
-                file.toLocations(dep)
-              }
-        }
+  fun toLocations(): Provider<List<Location>> = configuration.map {
+    it.dependencies.flatMap { dep ->
+      configuration.get()
+          .files(dep)
+          .flatMap { file ->
+            file.toLocations(dep)
+          }
+    }
   }
 
   private fun File.toLocations(dependency: Dependency): List<Location> {

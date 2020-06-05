@@ -16,6 +16,7 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
+import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
 import org.gradle.api.tasks.Input
@@ -34,10 +35,10 @@ open class WireTask : SourceTask() {
   var pluginVersion: String = VERSION
 
   @get:Internal
-  internal lateinit var sourceInput: WireInput
+  internal val sourceInput = project.objects.listProperty(Location::class.java)
 
   @get:Internal
-  internal lateinit var protoInput: WireInput
+  internal val protoInput = project.objects.listProperty(Location::class.java)
 
   @Input
   lateinit var roots: List<String>
@@ -93,8 +94,6 @@ open class WireTask : SourceTask() {
     if (includes.isEmpty() && excludes.isEmpty()) logger.info("NO INCLUDES OR EXCLUDES")
 
     if (logger.isDebugEnabled) {
-      sourceInput.debug(logger)
-      protoInput.debug(logger)
       logger.debug("roots: $roots")
       logger.debug("prunes: $prunes")
       logger.debug("rules: $rules")
@@ -102,8 +101,8 @@ open class WireTask : SourceTask() {
     }
 
     val wireRun = WireRun(
-        sourcePath = sourceInput.toLocations(),
-        protoPath = protoInput.toLocations(),
+        sourcePath = sourceInput.get(),
+        protoPath = protoInput.get(),
         treeShakingRoots = if (roots.isEmpty()) includes else roots,
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
         sinceVersion = sinceVersion,
