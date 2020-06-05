@@ -93,7 +93,7 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
   }
 
   private static final class ProtoAdapter_Mappy extends ProtoAdapter<Mappy> {
-    private final ProtoAdapter<Map<String, Thing>> things = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER);
+    private ProtoAdapter<Map<String, Thing>> things;
 
     public ProtoAdapter_Mappy() {
       super(FieldEncoding.LENGTH_DELIMITED, Mappy.class, "type.googleapis.com/com.squareup.wire.map.Mappy");
@@ -101,13 +101,13 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
 
     @Override
     public int encodedSize(Mappy value) {
-      return things.encodedSizeWithTag(1, value.things)
+      return thingsAdapter().encodedSizeWithTag(1, value.things)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, Mappy value) throws IOException {
-      things.encodeWithTag(writer, 1, value.things);
+      thingsAdapter().encodeWithTag(writer, 1, value.things);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -117,7 +117,7 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
-          case 1: builder.things.putAll(things.decode(reader)); break;
+          case 1: builder.things.putAll(thingsAdapter().decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -133,6 +133,15 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
       Internal.redactElements(builder.things, Thing.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
+    }
+
+    private ProtoAdapter<Map<String, Thing>> thingsAdapter() {
+      ProtoAdapter<Map<String, Thing>> result = things;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER);
+        things = result;
+      }
+      return result;
     }
   }
 }

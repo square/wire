@@ -284,7 +284,7 @@ public final class JavaGenerator {
 
   private CodeBlock singleAdapterFor(Field field, NameAllocator nameAllocator) {
     return field.getType().isMap()
-        ? CodeBlock.of("$N", nameAllocator.get(field))
+        ? CodeBlock.of("$NAdapter()", nameAllocator.get(field))
         : singleAdapterFor(field.getType());
   }
 
@@ -868,11 +868,10 @@ public final class JavaGenerator {
       if (field.getType().isMap()) {
         TypeName adapterType = adapterOf(fieldType(field));
         String fieldName = nameAllocator.get(field);
-        adapter.addField(FieldSpec.builder(adapterType, fieldName, PRIVATE, FINAL)
-            .initializer("$T.newMapAdapter($L, $L)", ADAPTER,
-                singleAdapterFor(field.getType().getKeyType()),
-                singleAdapterFor(field.getType().getValueType()))
-            .build());
+        adapter.addField(FieldSpec.builder(adapterType, fieldName, PRIVATE).build());
+        // Map adapters have to be lazy in order to avoid a circular reference when its value type
+        // is the same as its enclosing type.
+        adapter.addMethod(mapAdapter(nameAllocator, adapterType, fieldName, field.getType()));
       }
     }
 
@@ -1402,6 +1401,36 @@ public final class JavaGenerator {
       }
     }
     result.addStatement("super.hashCode = $N", resultName);
+    result.endControlFlow();
+    result.addStatement("return $N", resultName);
+    return result.build();
+  }
+
+  // Example:
+  //
+  // private ProtoAdapter<Map<String, ModelEvaluation>> modelsAdapter() {
+  //   ProtoAdapter<Map<String, ModelEvaluation>> result = models;
+  //   if (result == null) {
+  //     result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER);
+  //     models = result;
+  //   }
+  //   return result;
+  // }
+  //
+  private MethodSpec mapAdapter(NameAllocator nameAllocator, TypeName adapterType, String fieldName,
+      ProtoType mapType) {
+    NameAllocator localNameAllocator = nameAllocator.clone();
+
+    String resultName = localNameAllocator.newName("result");
+    MethodSpec.Builder result = MethodSpec.methodBuilder(fieldName + "Adapter")
+        .addModifiers(PRIVATE)
+        .returns(adapterType);
+
+    result.addStatement("$T $N = $N", adapterType, resultName, fieldName);
+    result.beginControlFlow("if ($N == null)", resultName);
+    result.addStatement("$N = $T.newMapAdapter($L, $L)", resultName, ADAPTER,
+        singleAdapterFor(mapType.getKeyType()), singleAdapterFor(mapType.getValueType()));
+    result.addStatement("$N = $N", fieldName, resultName);
     result.endControlFlow();
     result.addStatement("return $N", resultName);
     return result.build();

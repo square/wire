@@ -139,7 +139,7 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
   }
 
   private static final class ProtoAdapter_RepeatedPackedAndMap extends ProtoAdapter<RepeatedPackedAndMap> {
-    private final ProtoAdapter<Map<Integer, Integer>> map_int32_int32 = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
+    private ProtoAdapter<Map<Integer, Integer>> map_int32_int32;
 
     public ProtoAdapter_RepeatedPackedAndMap() {
       super(FieldEncoding.LENGTH_DELIMITED, RepeatedPackedAndMap.class, "type.googleapis.com/squareup.protos.alltypes.RepeatedPackedAndMap");
@@ -149,7 +149,7 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
     public int encodedSize(RepeatedPackedAndMap value) {
       return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
           + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
-          + map_int32_int32.encodedSizeWithTag(401, value.map_int32_int32)
+          + map_int32_int32Adapter().encodedSizeWithTag(401, value.map_int32_int32)
           + value.unknownFields().size();
     }
 
@@ -157,7 +157,7 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
     public void encode(ProtoWriter writer, RepeatedPackedAndMap value) throws IOException {
       ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
       ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
-      map_int32_int32.encodeWithTag(writer, 401, value.map_int32_int32);
+      map_int32_int32Adapter().encodeWithTag(writer, 401, value.map_int32_int32);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -169,7 +169,7 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
         switch (tag) {
           case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
           case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
-          case 401: builder.map_int32_int32.putAll(map_int32_int32.decode(reader)); break;
+          case 401: builder.map_int32_int32.putAll(map_int32_int32Adapter().decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -184,6 +184,15 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
       Builder builder = value.newBuilder();
       builder.clearUnknownFields();
       return builder.build();
+    }
+
+    private ProtoAdapter<Map<Integer, Integer>> map_int32_int32Adapter() {
+      ProtoAdapter<Map<Integer, Integer>> result = map_int32_int32;
+      if (result == null) {
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
+        map_int32_int32 = result;
+      }
+      return result;
     }
   }
 }

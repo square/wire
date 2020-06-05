@@ -19,6 +19,7 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
+import kotlin.lazy
 import okio.ByteString
 
 class Mappy(
@@ -70,8 +71,8 @@ class Mappy(
       Mappy::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy"
     ) {
-      private val thingsAdapter: ProtoAdapter<Map<String, Thing>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER)
+      private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
 
       override fun encodedSize(value: Mappy): Int {
         var size = value.unknownFields.size

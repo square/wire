@@ -19,6 +19,7 @@ import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
 import kotlin.jvm.JvmField
+import kotlin.lazy
 import okio.ByteString
 
 class KeywordKotlin(
@@ -156,8 +157,8 @@ class KeywordKotlin(
       KeywordKotlin::class, 
       "type.googleapis.com/squareup.keywords.KeywordKotlin"
     ) {
-      private val funAdapter: ProtoAdapter<Map<String, String>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING)
+      private val funAdapter: ProtoAdapter<Map<String, String>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
 
       override fun encodedSize(value: KeywordKotlin): Int {
         var size = value.unknownFields.size

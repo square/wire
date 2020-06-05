@@ -16,6 +16,7 @@ import kotlin.String
 import kotlin.collections.Map
 import kotlin.hashCode
 import kotlin.jvm.JvmField
+import kotlin.lazy
 import okio.ByteString
 
 /**
@@ -141,8 +142,8 @@ class ModelEvaluation(
       ModelEvaluation::class, 
       "type.googleapis.com/ModelEvaluation"
     ) {
-      private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> =
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER)
+      private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }
 
       override fun encodedSize(value: ModelEvaluation): Int {
         var size = value.unknownFields.size
