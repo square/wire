@@ -501,44 +501,15 @@ Since version 3.0.0, Wire supports [gRPC][grpc_docs].
 Generating Code With Wire
 -------------------------
 
-Wire's compiler is available via a Maven plugin. Put `.proto` sources in your project's
-`src/main/proto` directory, then use the plugin to generate `.java` files. The plugin will
-automatically add the generated Java code to your project's source roots.
-
-```xml
-<build>
-  <plugins>
-    <plugin>
-      <groupId>com.squareup.wire</groupId>
-      <artifactId>wire-maven-plugin</artifactId>
-      <version>3.2.2</version>
-      <executions>
-        <execution>
-          <phase>generate-sources</phase>
-          <goals>
-            <goal>generate-sources</goal>
-          </goals>
-          <configuration>
-            <includes>
-              <!-- proto package names to generate code for -->
-              <include>squareup.dinosaurs.*</include>
-              <include>squareup.geology.*</include>
-            </includes>
-          </configuration>
-        </execution>
-      </executions>
-    </plugin>
-  </plugins>
-</build>
-```
-
 Wire can read `.proto` files from the local file system and from within `.jar` files.
 
 The compiler can optionally prune your schema to a subset of root types and their transitive
 dependencies. This is useful when sharing a schema between projects: a Java service and Android app
 may each use a subset of a larger shared schema.
 
-If you don't use Maven, the compiler also has a command line interface. Just substitute
+For more info on how to get started, see [Wire Compiler & Gradle Plugin][compiler_docs].
+
+If you don't use Gradle, the compiler also has a command line interface. Just substitute
 `wire-compiler-VERSION-jar-with-dependencies.jar` with the path to your jar. [Download](https://search.maven.org/remote_content?g=com.squareup.wire&a=wire-compiler&c=jar-with-dependencies&v=LATEST) the latest precompiled jar.
 
     % java -jar wire-compiler-VERSION-jar-with-dependencies.jar \
