@@ -20,6 +20,7 @@ import okio.buffer
 import okio.sink
 import java.nio.file.FileSystem
 import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * This is a sample handler that writes text files that describe types.
@@ -33,20 +34,21 @@ class MarkdownHandler : CustomHandlerBeta {
     newProfileLoader: NewProfileLoader
   ): Target.SchemaHandler {
     return object : Target.SchemaHandler {
-      override fun handle(type: Type) {
-        writeMarkdownFile(type.type, toMarkdown(type))
+      override fun handle(type: Type): Path? {
+        return writeMarkdownFile(type.type, toMarkdown(type))
       }
 
       override fun handle(service: Service) {
         writeMarkdownFile(service.type(), toMarkdown(service))
       }
 
-      private fun writeMarkdownFile(protoType: ProtoType, markdown: String) {
+      private fun writeMarkdownFile(protoType: ProtoType, markdown: String): Path {
         val path = fs.getPath(outDirectory, *toPath(protoType).toTypedArray())
         Files.createDirectories(path.parent)
         path.sink().buffer().use { sink ->
           sink.writeUtf8(markdown)
         }
+        return path
       }
     }
   }
