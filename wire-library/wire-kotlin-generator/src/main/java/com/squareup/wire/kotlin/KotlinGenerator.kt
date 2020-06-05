@@ -489,12 +489,12 @@ class KotlinGenerator private constructor(
     val body = buildCodeBlock {
       addStatement("if (%N === this) return·true", otherName)
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
-      addStatement("if (unknownFields != %N.unknownFields) return ·false", otherName)
+      addStatement("if (unknownFields != %N.unknownFields) return·false", otherName)
 
       val fields = type.fieldsAndOneOfFields
       for (field in fields) {
         val fieldName = localNameAllocator[field]
-        addStatement("if (%1L != %2N.%1L) return ·false", fieldName, otherName)
+        addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
       }
       addStatement("return true")
     }
