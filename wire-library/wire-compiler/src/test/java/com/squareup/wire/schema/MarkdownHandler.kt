@@ -38,8 +38,8 @@ class MarkdownHandler : CustomHandlerBeta {
         return writeMarkdownFile(type.type, toMarkdown(type))
       }
 
-      override fun handle(service: Service) {
-        writeMarkdownFile(service.type(), toMarkdown(service))
+      override fun handle(service: Service): List<Path> {
+        return listOf(writeMarkdownFile(service.type(), toMarkdown(service)))
       }
 
       private fun writeMarkdownFile(protoType: ProtoType, markdown: String): Path {

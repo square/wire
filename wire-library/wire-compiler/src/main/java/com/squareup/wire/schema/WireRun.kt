@@ -192,6 +192,7 @@ data class WireRun(
     // Call each target.
     val skippedForSyntax = mutableListOf<ProtoFile>()
     val claimedTypePaths = mutableMapOf<Path, Type>()
+    val claimedServicePaths = mutableMapOf<Path, Service>()
     for (protoFile in schema.protoFiles) {
       if (protoFile.syntax == ProtoFile.Syntax.PROTO_3 && !proto3Preview) {
         skippedForSyntax += protoFile
@@ -211,8 +212,8 @@ data class WireRun(
             targetToEmittingRules[target]!!,
             claimedDefinitions,
             claimedTypePaths,
-            isExclusive = target.exclusive
-        )
+            claimedServicePaths,
+            isExclusive = target.exclusive)
       }
     }
 
