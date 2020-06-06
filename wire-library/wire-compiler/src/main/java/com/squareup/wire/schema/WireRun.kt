@@ -19,6 +19,7 @@ import com.squareup.wire.ConsoleWireLogger
 import com.squareup.wire.WireLogger
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
+import java.nio.file.Path
 
 /**
  * An invocation of the Wire compiler. Each invocation performs the following operations:
@@ -190,6 +191,7 @@ data class WireRun(
 
     // Call each target.
     val skippedForSyntax = mutableListOf<ProtoFile>()
+    val claimedPaths = mutableMapOf<Path, String>()
     for (protoFile in schema.protoFiles) {
       if (protoFile.syntax == ProtoFile.Syntax.PROTO_3 && !proto3Preview) {
         skippedForSyntax += protoFile
@@ -208,8 +210,8 @@ data class WireRun(
             protoFile,
             targetToEmittingRules[target]!!,
             claimedDefinitions,
-            isExclusive = target.exclusive
-        )
+            claimedPaths,
+            isExclusive = target.exclusive)
       }
     }
 

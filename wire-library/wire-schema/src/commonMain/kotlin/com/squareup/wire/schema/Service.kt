@@ -31,6 +31,7 @@ class Service private constructor(
   private val rpcs: List<Rpc>,
   private val options: Options
 ) {
+  // TODO(Benoit) public val for the followings.
   fun location(): Location {
     return location
   }
