@@ -26,7 +26,7 @@ class DurationTest {
         .setNanos(200_000_000)
         .build()
 
-    val wireMessage = java.time.Duration.ofSeconds(1L, 200_000_000L)
+    val wireMessage = durationOfSeconds(1L, 200_000_000L)
 
     val googleMessageBytes = googleMessage.toByteArray()
     assertThat(ProtoAdapter.DURATION.encode(wireMessage)).isEqualTo(googleMessageBytes)
@@ -40,7 +40,7 @@ class DurationTest {
         .setNanos(0)
         .build()
 
-    val wireMessage = java.time.Duration.ofSeconds(0L, 0L)
+    val wireMessage = durationOfSeconds(0L, 0L)
 
     val googleMessageBytes = googleMessage.toByteArray()
     assertThat(ProtoAdapter.DURATION.encode(wireMessage)).isEqualTo(googleMessageBytes)
@@ -54,7 +54,7 @@ class DurationTest {
         .setNanos(-200_000_000)
         .build()
 
-    val wireMessage = java.time.Duration.ofSeconds(0L, -200_000_000L)
+    val wireMessage = durationOfSeconds(0L, -200_000_000L)
 
     val googleMessageBytes = googleMessage.toByteArray()
     assertThat(ProtoAdapter.DURATION.encode(wireMessage)).isEqualTo(googleMessageBytes)
@@ -68,7 +68,7 @@ class DurationTest {
         .setNanos(-200_000_000)
         .build()
 
-    val wireMessage = java.time.Duration.ofSeconds(-1L, -200_000_000L)
+    val wireMessage = durationOfSeconds(-1L, -200_000_000L)
 
     val googleMessageBytes = googleMessage.toByteArray()
     assertThat(ProtoAdapter.DURATION.encode(wireMessage)).isEqualTo(googleMessageBytes)

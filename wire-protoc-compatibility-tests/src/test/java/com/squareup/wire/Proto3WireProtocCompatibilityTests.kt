@@ -114,7 +114,7 @@ class Proto3WireProtocCompatibilityTests {
         address = "507 Cross Street",
         pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
         promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI")),
-        delivered_within_or_free = java.time.Duration.ofSeconds(1_799L, 500_000_000L)
+        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L)
     )
     val json = """
         |{
@@ -470,7 +470,7 @@ class Proto3WireProtocCompatibilityTests {
         .build()
 
     val wireMessage = PizzaDelivery(
-        delivered_within_or_free = java.time.Duration.ofSeconds(1_799L, 500_000_000L)
+        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L)
     )
 
     val googleMessageBytes = googleMessage.toByteArray()

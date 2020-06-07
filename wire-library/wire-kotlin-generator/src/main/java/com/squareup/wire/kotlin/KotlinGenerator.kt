@@ -1567,7 +1567,7 @@ class KotlinGenerator private constructor(
         ProtoType.UINT32 to INT,
         ProtoType.UINT64 to LONG,
         ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
-        ProtoType.DURATION to ClassName("java.time", "Duration"),
+        ProtoType.DURATION to ClassName("com.squareup.wire", "Duration"),
         FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
         MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
         ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")

@@ -25,7 +25,6 @@ import okio.source
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.time.Duration
 import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
