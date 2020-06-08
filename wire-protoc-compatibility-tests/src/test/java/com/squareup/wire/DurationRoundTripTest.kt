@@ -19,7 +19,7 @@ import com.google.protobuf.Duration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class DurationTest {
+class DurationRoundTripTest {
   @Test fun `positive values`() {
     val googleMessage = Duration.newBuilder()
         .setSeconds(1L)
