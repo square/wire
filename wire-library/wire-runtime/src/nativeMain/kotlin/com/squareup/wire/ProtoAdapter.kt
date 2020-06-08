@@ -163,5 +163,6 @@ actual abstract class ProtoAdapter<E> actual constructor(
     actual val DOUBLE: ProtoAdapter<Double> = commonDouble()
     actual val BYTES: ProtoAdapter<ByteString> = commonBytes()
     actual val STRING: ProtoAdapter<String> = commonString()
+    actual val DURATION: ProtoAdapter<Duration> = commonDuration()
   }
 }

@@ -158,6 +158,7 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val DOUBLE: ProtoAdapter<Double>
     @JvmField val BYTES: ProtoAdapter<ByteString>
     @JvmField val STRING: ProtoAdapter<String>
+    @JvmField val DURATION: ProtoAdapter<Duration>
   }
 }
 
@@ -651,4 +652,65 @@ internal fun commonBytes(): ProtoAdapter<ByteString> = object : ProtoAdapter<Byt
   override fun decode(reader: ProtoReader): ByteString = reader.readBytes()
 
   override fun redact(value: ByteString): ByteString = throw UnsupportedOperationException()
+}
+
+internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Duration>(
+    FieldEncoding.LENGTH_DELIMITED,
+    Duration::class,
+    "type.googleapis.com/google.protobuf.Duration"
+) {
+  override fun encodedSize(value: Duration): Int {
+    var result = 0
+    val seconds = value.sameSignSeconds
+    if (seconds != 0L) result += INT64.encodedSizeWithTag(1, seconds)
+    val nanos = value.sameSignNanos
+    if (nanos != 0) result += INT32.encodedSizeWithTag(2, nanos)
+    return result
+  }
+
+  override fun encode(writer: ProtoWriter, value: Duration) {
+    val seconds = value.sameSignSeconds
+    if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
+    val nanos = value.sameSignNanos
+    if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
+  }
+
+  override fun decode(reader: ProtoReader): Duration {
+    var seconds = 0L
+    var nanos = 0
+    reader.forEachTag { tag ->
+      when (tag) {
+        1 -> seconds = INT64.decode(reader)
+        2 -> nanos = INT32.decode(reader)
+        else -> reader.readUnknownField(tag)
+      }
+    }
+    return durationOfSeconds(seconds, nanos.toLong())
+  }
+
+  override fun redact(value: Duration): Duration = value
+
+  /**
+   * Returns a value like 1 for 1.200s and -1 for -1.200s. This is different from the Duration
+   * seconds field which is always the integer floor when seconds is negative.
+   */
+  private val Duration.sameSignSeconds: Long
+    get() {
+      return when {
+        getSeconds() < 0L && getNano() != 0 -> getSeconds() + 1L
+        else -> getSeconds()
+      }
+    }
+
+  /**
+   * Returns a value like 200_000_000 for 1.200s and -200_000_000 for -1.200s. This is different
+   * from the Duration nanos field which can be positive when seconds is negative.
+   */
+  private val Duration.sameSignNanos: Int
+    get() {
+      return when {
+        getSeconds() < 0L && getNano() != 0 -> getNano() - 1_000_000_000
+        else -> getNano()
+      }
+    }
 }

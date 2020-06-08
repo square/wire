@@ -13,30 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-syntax = "proto3";
+package com.squareup.wire
 
-package squareup.proto3.pizza;
+actual typealias Duration = java.time.Duration
 
-import 'google/protobuf/any.proto';
-import 'google/protobuf/duration.proto';
-
-message PizzaDelivery {
-  string phone_number = 1;
-  string address = 2;
-  repeated Pizza pizzas = 3;
-  google.protobuf.Any promotion = 4;
-  google.protobuf.Duration delivered_within_or_free = 5;
+@Suppress("NOTHING_TO_INLINE")
+actual inline fun durationOfSeconds(seconds: Long, nanoAdjustment: Long): Duration {
+  return Duration.ofSeconds(seconds, nanoAdjustment)
 }
-
-message Pizza {
-  repeated string toppings = 1;
-}
-
-message BuyOneGetOnePromotion {
-  string coupon = 1;
-}
-
-message FreeGarlicBreadPromotion {
-  bool is_extra_cheesey = 1;
-}
-
