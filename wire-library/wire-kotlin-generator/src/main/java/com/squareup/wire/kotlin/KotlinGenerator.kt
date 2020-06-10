@@ -38,6 +38,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
@@ -89,7 +90,7 @@ import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
-  private val nameToKotlinName: Map<ProtoType, ClassName>,
+  private val nameToKotlinName: Map<ProtoType, TypeName>,
   private val emitAndroid: Boolean,
   private val javaInterOp: Boolean,
   private val rpcCallStyle: RpcCallStyle,
@@ -109,7 +110,7 @@ class KotlinGenerator private constructor(
     get() = type().typeName
 
   /** Returns the full name of the class generated for [type].  */
-  fun generatedTypeName(type: Type) = type.typeName
+  fun generatedTypeName(type: Type) = type.typeName as ClassName
 
   /**
    * Returns the full name of the class generated for [service]#[rpc]. This returns a name like
@@ -120,7 +121,7 @@ class KotlinGenerator private constructor(
     rpc: Rpc? = null,
     isImplementation: Boolean = false
   ): ClassName {
-    val typeName = service.serviceName
+    val typeName = service.serviceName as ClassName
     val simpleName = buildString {
       if (isImplementation) {
         append("Grpc")
@@ -370,7 +371,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateMessage(type: MessageType): TypeSpec {
-    val className = type.typeName
+    val className = type.typeName as ClassName
     val builderClassName = className.nestedClass("Builder")
     val nameAllocator = nameAllocator(type)
     val adapterName = nameAllocator["ADAPTER"]
@@ -1251,20 +1252,42 @@ class KotlinGenerator private constructor(
 
   private fun ProtoType.getAdapterName(adapterFieldDelimiterName: Char = '.'): CodeBlock {
     return when {
-      isScalar || this == ProtoType.DURATION -> CodeBlock.of(
-          "%T$adapterFieldDelimiterName%L",
-          ProtoAdapter::class, simpleName.toUpperCase(Locale.US)
-      )
-      isMap -> throw IllegalArgumentException("Can't create single adapter for map type $this")
-      else -> CodeBlock.of("%T${adapterFieldDelimiterName}ADAPTER", typeName)
+      isScalar -> {
+        CodeBlock.of("%T$adapterFieldDelimiterName%L",
+            ProtoAdapter::class, simpleName.toUpperCase(Locale.US))
+      }
+      this == ProtoType.DURATION -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}DURATION", ProtoAdapter::class)
+      }
+      this == ProtoType.STRUCT_MAP -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}STRUCT_MAP", ProtoAdapter::class)
+      }
+      this == ProtoType.STRUCT_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}STRUCT_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.STRUCT_NULL -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}STRUCT_NULL", ProtoAdapter::class)
+      }
+      this == ProtoType.STRUCT_LIST -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}STRUCT_LIST", ProtoAdapter::class)
+      }
+      isMap -> {
+        throw IllegalArgumentException("Can't create single adapter for map type $this")
+      }
+      else -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}ADAPTER", typeName)
+      }
     }
   }
 
   private fun ProtoType.adapterString() = when {
-    isScalar || this == ProtoType.DURATION -> {
-      ProtoAdapter::class.java.name + '#' + simpleName.toUpperCase(Locale.US)
-    }
-    else -> typeName.reflectionName() + "#ADAPTER"
+    isScalar -> ProtoAdapter::class.java.name + '#' + simpleName.toUpperCase(Locale.US)
+    this == ProtoType.DURATION -> ProtoAdapter::class.java.name + "#DURATION"
+    this == ProtoType.STRUCT_MAP -> ProtoAdapter::class.java.name + "#STRUCT_MAP"
+    this == ProtoType.STRUCT_VALUE -> ProtoAdapter::class.java.name + "#STRUCT_VALUE"
+    this == ProtoType.STRUCT_NULL -> ProtoAdapter::class.java.name + "#STRUCT_NULL"
+    this == ProtoType.STRUCT_LIST -> ProtoAdapter::class.java.name + "#STRUCT_LIST"
+    else -> (typeName as ClassName).reflectionName() + "#ADAPTER"
   }
 
   /**
@@ -1429,7 +1452,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun generateEnclosing(type: EnclosingType): TypeSpec {
-    val classBuilder = TypeSpec.classBuilder(type.typeName)
+    val classBuilder = TypeSpec.classBuilder(type.typeName as ClassName)
         .primaryConstructor(FunSpec.constructorBuilder().addModifiers(PRIVATE).build())
 
     type.nestedTypes.forEach { classBuilder.addType(generateType(it)) }
@@ -1568,6 +1591,12 @@ class KotlinGenerator private constructor(
         ProtoType.UINT64 to LONG,
         ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
         ProtoType.DURATION to ClassName("com.squareup.wire", "Duration"),
+        ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
+            .parameterizedBy(ClassName("kotlin", "String"), STAR),
+        ProtoType.STRUCT_VALUE to ClassName("kotlin", "Any"),
+        ProtoType.STRUCT_NULL to ClassName("kotlin", "Unit"),
+        ProtoType.STRUCT_LIST to ClassName("kotlin.collections", "List")
+            .parameterizedBy(STAR),
         FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
         MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
         ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
@@ -1585,7 +1614,7 @@ class KotlinGenerator private constructor(
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT
     ): KotlinGenerator {
-      val map = mutableMapOf<ProtoType, ClassName>()
+      val map = mutableMapOf<ProtoType, TypeName>()
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {

@@ -15,11 +15,14 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.FieldEncoding.LENGTH_DELIMITED
+import com.squareup.wire.FieldEncoding.VARINT
 import com.squareup.wire.ProtoWriter.Companion.decodeZigZag32
 import com.squareup.wire.ProtoWriter.Companion.decodeZigZag64
 import com.squareup.wire.ProtoWriter.Companion.encodeZigZag32
 import com.squareup.wire.ProtoWriter.Companion.encodeZigZag64
 import com.squareup.wire.ProtoWriter.Companion.int32Size
+import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
 import com.squareup.wire.internal.Throws
@@ -159,6 +162,10 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val BYTES: ProtoAdapter<ByteString>
     @JvmField val STRING: ProtoAdapter<String>
     @JvmField val DURATION: ProtoAdapter<Duration>
+    @JvmField val STRUCT_MAP: ProtoAdapter<Map<String, *>>
+    @JvmField val STRUCT_LIST: ProtoAdapter<List<*>>
+    @JvmField val STRUCT_NULL: ProtoAdapter<Unit?>
+    @JvmField val STRUCT_VALUE: ProtoAdapter<Any?>
   }
 }
 
@@ -713,4 +720,191 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> getNano()
       }
     }
+}
+
+internal fun commonStructMap(): ProtoAdapter<Map<String, *>> = object : ProtoAdapter<Map<String, *>>(
+    LENGTH_DELIMITED,
+    Map::class,
+    "type.googleapis.com/google.protobuf.Struct"
+) {
+  override fun encodedSize(value: Map<String, *>): Int {
+    var size = 0
+    for ((k, v) in value) {
+      val entrySize = STRING.encodedSizeWithTag(1, k) + STRUCT_VALUE.encodedSizeWithTag(2, v)
+      size += tagSize(1) + varint32Size(entrySize) + entrySize
+    }
+    return size
+  }
+
+  override fun encode(writer: ProtoWriter, value: Map<String, *>) {
+    for ((k, v) in value) {
+      val entrySize = STRING.encodedSizeWithTag(1, k) + STRUCT_VALUE.encodedSizeWithTag(2, v)
+      writer.writeTag(1, LENGTH_DELIMITED)
+      writer.writeVarint32(entrySize)
+      STRING.encodeWithTag(writer, 1, k)
+      STRUCT_VALUE.encodeWithTag(writer, 2, v)
+    }
+  }
+
+  override fun decode(reader: ProtoReader): Map<String, *> {
+    val result = mutableMapOf<String, Any?>()
+    reader.forEachTag { entryTag ->
+      if (entryTag != 1) return@forEachTag reader.skip()
+
+      var key: String? = null
+      var value: Any? = null
+      reader.forEachTag { tag ->
+        when (tag) {
+          1 -> key = STRING.decode(reader)
+          2 -> value = STRUCT_VALUE.decode(reader)
+          else -> reader.readUnknownField(tag)
+        }
+      }
+      if (key != null) result[key!!] = value
+    }
+    return result
+  }
+
+  override fun redact(value: Map<String, *>) = value.mapValues { STRUCT_VALUE.redact(it) }
+}
+
+internal fun commonStructList(): ProtoAdapter<List<*>> = object : ProtoAdapter<List<*>>(
+    LENGTH_DELIMITED,
+    Map::class,
+    "type.googleapis.com/google.protobuf.ListValue"
+) {
+  override fun encodedSize(value: List<*>): Int {
+    var result = 0
+    for (v in value) {
+      result += STRUCT_VALUE.encodedSizeWithTag(1, v)
+    }
+    return result
+  }
+
+  override fun encode(writer: ProtoWriter, value: List<*>) {
+    for (v in value) {
+      STRUCT_VALUE.encodeWithTag(writer, 1, v)
+    }
+  }
+
+  override fun decode(reader: ProtoReader): List<*> {
+    val result = mutableListOf<Any?>()
+    reader.forEachTag { entryTag ->
+      if (entryTag != 1) return@forEachTag reader.skip()
+      result.add(STRUCT_VALUE.decode(reader))
+    }
+    return result
+  }
+
+  override fun redact(value: List<*>) = value.map { STRUCT_VALUE.redact(it) }
+}
+
+internal fun commonStructNull(): ProtoAdapter<Unit?> = object : ProtoAdapter<Unit?>(
+    VARINT,
+    Unit::class,
+    "type.googleapis.com/google.protobuf.NullValue"
+) {
+  override fun encodedSize(value: Unit?): Int = varint32Size(0)
+
+  override fun encodedSizeWithTag(tag: Int, value: Unit?): Int {
+    val size = encodedSize(value)
+    return tagSize(tag) + varint32Size(size)
+  }
+
+  override fun encode(writer: ProtoWriter, value: Unit?) {
+    writer.writeVarint32(0)
+  }
+
+  override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Unit?) {
+    writer.writeTag(tag, fieldEncoding)
+    encode(writer, value)
+  }
+
+  override fun decode(reader: ProtoReader): Unit? {
+    val value = reader.readVarint32()
+    if (value != 0) throw IOException("expected 0 but was $value")
+    return null
+  }
+
+  override fun redact(value: Unit?): Unit? = null
+}
+
+internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any?>(
+    LENGTH_DELIMITED,
+    Any::class,
+    "type.googleapis.com/google.protobuf.Value"
+) {
+  override fun encodedSize(value: Any?): Int {
+    @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
+    return when (value) {
+      null -> STRUCT_NULL.encodedSizeWithTag(1, value)
+      is Number -> DOUBLE.encodedSizeWithTag(2, value.toDouble())
+      is String -> STRING.encodedSizeWithTag(3, value)
+      is Boolean -> BOOL.encodedSizeWithTag(4, value)
+      is Map<*, *> -> STRUCT_MAP.encodedSizeWithTag(5, value as Map<String, *>)
+      is List<*> -> STRUCT_LIST.encodedSizeWithTag(6, value)
+      else -> throw IllegalArgumentException("unexpected struct value: $value")
+    }
+  }
+
+  override fun encodedSizeWithTag(tag: Int, value: Any?): Int {
+    if (value == null) {
+      val size = encodedSize(value)
+      return tagSize(tag) + varint32Size(size) + size
+    } else {
+      return super.encodedSizeWithTag(tag, value)
+    }
+  }
+
+  override fun encode(writer: ProtoWriter, value: Any?) {
+    @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
+    return when (value) {
+      null -> STRUCT_NULL.encodeWithTag(writer, 1, value)
+      is Number -> DOUBLE.encodeWithTag(writer, 2, value.toDouble())
+      is String -> STRING.encodeWithTag(writer, 3, value)
+      is Boolean -> BOOL.encodeWithTag(writer, 4, value)
+      is Map<*, *> -> STRUCT_MAP.encodeWithTag(writer, 5, value as Map<String, *>)
+      is List<*> -> STRUCT_LIST.encodeWithTag(writer, 6, value)
+      else -> throw IllegalArgumentException("unexpected struct value: $value")
+    }
+  }
+
+  override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Any?) {
+    if (value == null) {
+      writer.writeTag(tag, fieldEncoding)
+      writer.writeVarint32(encodedSize(value))
+      encode(writer, value)
+    } else {
+      super.encodeWithTag(writer, tag, value)
+    }
+  }
+
+  override fun decode(reader: ProtoReader): Any? {
+    var result: Any? = null
+    reader.forEachTag { tag ->
+      when (tag) {
+        1 -> result = STRUCT_NULL.decode(reader)
+        2 -> result = DOUBLE.decode(reader)
+        3 -> result = STRING.decode(reader)
+        4 -> result = BOOL.decode(reader)
+        5 -> result = STRUCT_MAP.decode(reader)
+        6 -> result = STRUCT_LIST.decode(reader)
+        else -> reader.skip()
+      }
+    }
+    return result
+  }
+
+  override fun redact(value: Any?): Any? {
+    @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
+    return when (value) {
+      null -> STRUCT_NULL.redact(value)
+      is Number -> value
+      is String -> null
+      is Boolean -> value
+      is Map<*, *> -> STRUCT_MAP.redact(value as Map<String, *>)
+      is List<*> -> STRUCT_LIST.redact(value)
+      else -> throw IllegalArgumentException("unexpected struct value: $value")
+    }
+  }
 }
