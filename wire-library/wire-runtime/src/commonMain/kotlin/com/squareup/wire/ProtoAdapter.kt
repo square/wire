@@ -164,7 +164,7 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val DURATION: ProtoAdapter<Duration>
     @JvmField val STRUCT_MAP: ProtoAdapter<Map<String, *>>
     @JvmField val STRUCT_LIST: ProtoAdapter<List<*>>
-    @JvmField val STRUCT_NULL: ProtoAdapter<Unit?>
+    @JvmField val STRUCT_NULL: ProtoAdapter<Nothing?>
     @JvmField val STRUCT_VALUE: ProtoAdapter<Any?>
   }
 }
@@ -799,34 +799,34 @@ internal fun commonStructList(): ProtoAdapter<List<*>> = object : ProtoAdapter<L
   override fun redact(value: List<*>) = value.map { STRUCT_VALUE.redact(it) }
 }
 
-internal fun commonStructNull(): ProtoAdapter<Unit?> = object : ProtoAdapter<Unit?>(
+internal fun commonStructNull(): ProtoAdapter<Nothing?> = object : ProtoAdapter<Nothing?>(
     VARINT,
-    Unit::class,
+    Nothing::class,
     "type.googleapis.com/google.protobuf.NullValue"
 ) {
-  override fun encodedSize(value: Unit?): Int = varint32Size(0)
+  override fun encodedSize(value: Nothing?): Int = varint32Size(0)
 
-  override fun encodedSizeWithTag(tag: Int, value: Unit?): Int {
+  override fun encodedSizeWithTag(tag: Int, value: Nothing?): Int {
     val size = encodedSize(value)
     return tagSize(tag) + varint32Size(size)
   }
 
-  override fun encode(writer: ProtoWriter, value: Unit?) {
+  override fun encode(writer: ProtoWriter, value: Nothing?) {
     writer.writeVarint32(0)
   }
 
-  override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Unit?) {
+  override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: Nothing?) {
     writer.writeTag(tag, fieldEncoding)
     encode(writer, value)
   }
 
-  override fun decode(reader: ProtoReader): Unit? {
+  override fun decode(reader: ProtoReader): Nothing? {
     val value = reader.readVarint32()
     if (value != 0) throw IOException("expected 0 but was $value")
     return null
   }
 
-  override fun redact(value: Unit?): Unit? = null
+  override fun redact(value: Nothing?): Nothing? = null
 }
 
 internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any?>(

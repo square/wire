@@ -16,7 +16,6 @@
 package com.squareup.wire
 
 import com.google.protobuf.ListValue
-import com.google.protobuf.NullValue
 import com.google.protobuf.NullValue.NULL_VALUE
 import com.google.protobuf.Struct
 import com.google.protobuf.Value
@@ -27,7 +26,7 @@ import org.junit.Test
 class StructTest {
   @Test fun nullValue() {
     val googleMessage = Value.newBuilder()
-        .setNullValue(NullValue.NULL_VALUE)
+        .setNullValue(NULL_VALUE)
         .build()
 
     val wireMessage = null

@@ -166,7 +166,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     actual val DURATION: ProtoAdapter<Duration> = commonDuration()
     actual val STRUCT_MAP: ProtoAdapter<Map<String, *>> = commonStructMap()
     actual val STRUCT_LIST: ProtoAdapter<List<*>> = commonStructList()
-    actual val STRUCT_NULL: ProtoAdapter<Unit?> = commonStructNull()
+    actual val STRUCT_NULL: ProtoAdapter<Nothing?> = commonStructNull()
     actual val STRUCT_VALUE: ProtoAdapter<Any?> = commonStructValue()
   }
 }
