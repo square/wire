@@ -25,6 +25,7 @@ import okio.ByteString.Companion.decodeBase64
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import java.lang.reflect.WildcardType
 import java.math.BigInteger
 import java.util.ArrayList
 
@@ -120,6 +121,12 @@ class WireJsonAdapterFactory private constructor(
     if (rawType == Duration::class.java) {
       return DurationJsonAdapter.nullSafe()
     }
+    if (rawType == Any::class.java ||
+        rawType == Unit::class.java ||
+        type.isMapStringStar() ||
+        type.isListStar()) {
+      return StructJsonAdapter.serializeNulls()
+    }
     return if (Message::class.java.isAssignableFrom(rawType)) {
       MessageJsonAdapter<Nothing, Nothing>(moshi, type)
     } else {
@@ -197,5 +204,34 @@ class WireJsonAdapterFactory private constructor(
         writer.endArray()
       }
     }.nullSafe()
+
+    /** Returns true if [this] is a `Map<String, *>`. */
+    private fun Type.isMapStringStar(): Boolean {
+      if (this !is ParameterizedType) return false
+      if (rawType != Map::class.java) return false
+
+      val keyType = actualTypeArguments[0]
+      val valueType = actualTypeArguments[1]
+      if (keyType != String::class.java) return false
+
+      if (valueType !is WildcardType) return false
+      if (valueType.lowerBounds.isNotEmpty()) return false
+      if (valueType.upperBounds != Object::class.java) return false
+
+      return true
+    }
+
+    /** Returns true if [this] is a `List<*>`. */
+    private fun Type.isListStar(): Boolean {
+      if (this !is ParameterizedType) return false
+      if (rawType != List::class.java) return false
+
+      val valueType = actualTypeArguments[0]
+      if (valueType !is WildcardType) return false
+      if (valueType.lowerBounds.isNotEmpty()) return false
+      if (valueType.upperBounds != Object::class.java) return false
+
+      return true
+    }
   }
 }

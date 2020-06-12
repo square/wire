@@ -55,6 +55,9 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
   private val jsonAdapters = fieldBindings.map { fieldBinding ->
     var fieldType: Type = fieldBinding.singleAdapter().type?.javaObjectType as Type
+    if (fieldBinding.isStruct) {
+      return@map StructJsonAdapter.serializeNulls()
+    }
     if (fieldBinding.isMap) {
       val keyType = fieldBinding.keyAdapter().type?.javaObjectType
       fieldType = Types.newParameterizedType(Map::class.java, keyType, fieldType)

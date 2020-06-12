@@ -19,9 +19,14 @@ import com.google.protobuf.ListValue
 import com.google.protobuf.NullValue.NULL_VALUE
 import com.google.protobuf.Struct
 import com.google.protobuf.Value
+import com.google.protobuf.util.JsonFormat
+import com.squareup.moshi.Moshi
+import com.squareup.wire.json.assertJsonEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
+import squareup.proto3.alltypes.AllStructs
+import squareup.proto3.alltypes.AllStructsOuterClass
 
 class StructTest {
   @Test fun nullValue() {
@@ -310,5 +315,69 @@ class StructTest {
       fail()
     } catch (_: IllegalArgumentException) {
     }
+  }
+
+  @Test fun structJsonRoundTrip() {
+    val json = """{
+         |  "struct": {"a": 1.0},
+         |  "list": ["a", 3.0],
+         |  "nullValue": null,
+         |  "valueA": "a",
+         |  "valueB": 33.0,
+         |  "valueC": true,
+         |  "valueD": null,
+         |  "valueE": {"a": 1.0},
+         |  "valueF": ["a", 3.0]
+         |}""".trimMargin()
+
+    val wireAllStruct = AllStructs(
+        struct = mapOf("a" to 1.0),
+        list = listOf("a", 3.0),
+        null_value = null,
+        value_a = "a",
+        value_b = 33.0,
+        value_c = true,
+        value_d = null,
+        value_e = mapOf("a" to 1.0),
+        value_f = listOf("a", 3.0)
+    )
+
+    val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
+    val allStructAdapter = moshi.adapter(AllStructs::class.java)
+    assertJsonEquals(allStructAdapter.toJson(wireAllStruct), json)
+    assertThat(allStructAdapter.fromJson(json)).isEqualTo(wireAllStruct)
+  }
+
+  @Test fun structJsonRoundTripWithEmptyOrNestedMapAndList() {
+    val json = """{
+         |  "struct": {"a": null},
+         |  "nullValue": null,
+         |  "valueA": {
+         |    "a": [
+         |      "b",
+         |      2.0,
+         |      {"c": false}
+         |    ]
+         |  },
+         |  "valueB": [{"d": null, "e": "trois"}],
+         |  "valueE": null,
+         |  "valueF": null
+         |}""".trimMargin()
+
+    val wireAllStruct = AllStructs(
+        struct = mapOf("a" to null),
+        list = emptyList<Any>(),
+        value_a = mapOf("a" to listOf("b", 2.0, mapOf("c" to false))),
+        value_b = listOf(mapOf("d" to null, "e" to "trois")),
+        value_c = emptyList<Any>(),
+        value_d = emptyMap<String, Any>()
+    )
+
+    val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
+    val allStructAdapter = moshi.adapter(AllStructs::class.java)
+    assertJsonEquals(allStructAdapter.toJson(wireAllStruct), json)
+    assertThat(allStructAdapter.fromJson(json))
+        // Parsed non-printed map and list are null now.
+        .isEqualTo(wireAllStruct.copy(value_c = null, value_d = null))
   }
 }

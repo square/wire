@@ -1483,6 +1483,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun Field.getClass(baseClass: TypeName = type!!.asTypeName()): TypeName {
+    if (type == ProtoType.STRUCT_NULL) return baseClass
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
       EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
@@ -1494,6 +1495,10 @@ class KotlinGenerator private constructor(
 
   private val Field.typeName: TypeName
     get() {
+      if (type == ProtoType.STRUCT_MAP) return type!!.typeName
+      if (type == ProtoType.STRUCT_LIST) return type!!.typeName
+      if (type == ProtoType.STRUCT_VALUE) return type!!.typeName.copy(nullable = true)
+      if (type == ProtoType.STRUCT_NULL) return type!!.typeName.copy(nullable = true)
       return when (encodeMode!!) {
         EncodeMode.MAP ->
           Map::class.asTypeName().parameterizedBy(keyType.typeName, valueType.typeName)
@@ -1513,6 +1518,10 @@ class KotlinGenerator private constructor(
 
   private val Field.identityValue: CodeBlock
     get() {
+      if (type == ProtoType.STRUCT_MAP) return CodeBlock.of("emptyMap<String, Any>()")
+      if (type == ProtoType.STRUCT_LIST) return CodeBlock.of("emptyList<Any>()")
+      if (type == ProtoType.STRUCT_VALUE) return CodeBlock.of("null")
+      if (type == ProtoType.STRUCT_NULL) return CodeBlock.of("null")
       return when (encodeMode!!) {
         EncodeMode.MAP -> CodeBlock.of("emptyMap()")
         EncodeMode.REPEATED,
@@ -1556,6 +1565,10 @@ class KotlinGenerator private constructor(
 
   private val Field.acceptsNull: Boolean
     get() {
+      if (type == ProtoType.STRUCT_MAP) return false
+      if (type == ProtoType.STRUCT_LIST) return false
+      if (type == ProtoType.STRUCT_VALUE) return true
+      if (type == ProtoType.STRUCT_NULL) return true
       return when (encodeMode!!) {
         EncodeMode.MAP,
         EncodeMode.REPEATED,
@@ -1594,7 +1607,7 @@ class KotlinGenerator private constructor(
         ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
             .parameterizedBy(ClassName("kotlin", "String"), STAR),
         ProtoType.STRUCT_VALUE to ClassName("kotlin", "Any"),
-        ProtoType.STRUCT_NULL to ClassName("kotlin", "Unit"),
+        ProtoType.STRUCT_NULL to ClassName("kotlin", "Nothing").copy(nullable = true),
         ProtoType.STRUCT_LIST to ClassName("kotlin.collections", "List")
             .parameterizedBy(STAR),
         FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
