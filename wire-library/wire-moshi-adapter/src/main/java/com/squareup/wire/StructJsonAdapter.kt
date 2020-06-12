@@ -27,7 +27,7 @@ internal object StructJsonAdapter : JsonAdapter<Any>() {
   override fun toJson(out: JsonWriter, any: Any?) {
     when (any) {
       null -> out.nullValue()
-      is Number -> out.value(any)
+      is Double -> out.value(any)
       is String -> out.value(any)
       is Boolean -> out.value(any)
       is Map<*, *> -> {
