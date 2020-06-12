@@ -22,6 +22,7 @@ buildscript {
     classpath deps.plugins.mavenPublish
     classpath deps.animalSniffer.gradle
     classpath deps.androidGradlePlugin
+    classpath deps.protobuf.gradlePlugin
   }
 
   repositories {
