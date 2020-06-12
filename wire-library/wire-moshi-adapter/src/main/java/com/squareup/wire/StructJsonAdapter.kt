@@ -31,11 +31,6 @@ internal object StructJsonAdapter : JsonAdapter<Any>() {
       is String -> out.value(any)
       is Boolean -> out.value(any)
       is Map<*, *> -> {
-        if (any.isEmpty()) {
-          skip(out)
-          return
-        }
-
         out.beginObject()
         for ((key, value) in any) {
           out.name(key as String)
@@ -44,11 +39,6 @@ internal object StructJsonAdapter : JsonAdapter<Any>() {
         out.endObject()
       }
       is List<*> -> {
-        if (any.isEmpty()) {
-          skip(out)
-          return
-        }
-
         out.beginArray()
         for (value in any) {
           toJson(out, value)
@@ -61,15 +51,5 @@ internal object StructJsonAdapter : JsonAdapter<Any>() {
 
   override fun fromJson(input: JsonReader): Any? {
     return input.readJsonValue()
-  }
-
-  private fun skip(out: JsonWriter) {
-    val serializeNulls: Boolean = out.serializeNulls
-    out.serializeNulls = false
-    try {
-      out.nullValue()
-    } finally {
-      out.serializeNulls = serializeNulls
-    }
   }
 }

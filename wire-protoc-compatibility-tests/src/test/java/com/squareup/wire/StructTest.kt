@@ -351,7 +351,7 @@ class StructTest {
   @Test fun structJsonRoundTripWithEmptyOrNestedMapAndList() {
     val json = """{
          |  "struct": {"a": null},
-         |  "nullValue": null,
+         |  "list": [],
          |  "valueA": {
          |    "a": [
          |      "b",
@@ -360,9 +360,44 @@ class StructTest {
          |    ]
          |  },
          |  "valueB": [{"d": null, "e": "trois"}],
+         |  "valueC": [],
+         |  "valueD": {},
          |  "valueE": null,
          |  "valueF": null
          |}""".trimMargin()
+    // Wire prints null value members while protoc doesn't.
+    val jsonWithNullValue = """{"nullValue": null, ${json.substring(1)}"""
+
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+        .setStruct(
+            Struct.newBuilder().putFields("a", Value.newBuilder().setNullValue(NULL_VALUE).build())
+                .build())
+        .setList(ListValue.newBuilder().build())
+        .setValueA(Value.newBuilder().setStructValue(Struct.newBuilder().putFields("a",
+            Value.newBuilder().setListValue(
+                ListValue.newBuilder().addValues(Value.newBuilder().setStringValue("b").build())
+                    .addValues(Value.newBuilder().setNumberValue(2.0).build()).addValues(
+                    Value.newBuilder().setStructValue(Struct.newBuilder()
+                        .putFields("c", Value.newBuilder().setBoolValue(false).build()).build())
+                        .build()).build()).build())).build())
+        .setValueB(Value.newBuilder().setListValue(ListValue.newBuilder().addValues(
+            Value.newBuilder().setStructValue(Struct.newBuilder()
+                .putFields("d", Value.newBuilder().setNullValue(NULL_VALUE).build())
+                .putFields("e", Value.newBuilder().setStringValue("trois").build()).build())
+                .build()).build()).build())
+        .setValueC(Value.newBuilder().setListValue(ListValue.newBuilder().build()).build())
+        .setValueD(Value.newBuilder().setStructValue(Struct.newBuilder().build()).build())
+        .setValueE(Value.newBuilder().setNullValue(NULL_VALUE).build())
+        .setValueF(Value.newBuilder().setNullValue(NULL_VALUE).build())
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(protocAllStruct), json)
+    val jsonParser = JsonFormat.parser()
+    val protocParsed = AllStructsOuterClass.AllStructs.newBuilder()
+        .apply { jsonParser.merge(json, this) }
+        .build()
+    assertThat(protocParsed).isEqualTo(protocAllStruct)
 
     val wireAllStruct = AllStructs(
         struct = mapOf("a" to null),
@@ -375,9 +410,8 @@ class StructTest {
 
     val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
     val allStructAdapter = moshi.adapter(AllStructs::class.java)
-    assertJsonEquals(allStructAdapter.toJson(wireAllStruct), json)
-    assertThat(allStructAdapter.fromJson(json))
-        // Parsed non-printed map and list are null now.
-        .isEqualTo(wireAllStruct.copy(value_c = null, value_d = null))
+    assertJsonEquals(allStructAdapter.toJson(wireAllStruct), jsonWithNullValue)
+    assertThat(allStructAdapter.fromJson(json)).isEqualTo(wireAllStruct)
+    assertThat(allStructAdapter.fromJson(jsonWithNullValue)).isEqualTo(wireAllStruct)
   }
 }
