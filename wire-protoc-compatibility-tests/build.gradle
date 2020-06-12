@@ -1,17 +1,5 @@
-buildscript {
-  dependencies {
-    classpath deps.protobuf.gradlePlugin
-  }
-
-  repositories {
-    mavenCentral()
-    gradlePluginPortal()
-  }
-}
-
 apply plugin: 'java-library'
 apply plugin: 'org.jetbrains.kotlin.jvm'
-apply plugin: 'ru.vyarus.animalsniffer'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'com.squareup.wire'
 
@@ -46,17 +34,6 @@ wire {
 sourceSets {
   test.java.srcDirs += 'build/generated/source/proto/main/java'
   test.java.srcDirs += 'build/generated/source/wire/'
-}
-
-jar {
-  manifest {
-    attributes('Automatic-Module-Name': 'wire-protoc-compatibility-tests')
-  }
-}
-
-animalsniffer {
-  sourceSets = [sourceSets.main]
-  ignore 'com.squareup.wire.internal'
 }
 
 dependencies {
