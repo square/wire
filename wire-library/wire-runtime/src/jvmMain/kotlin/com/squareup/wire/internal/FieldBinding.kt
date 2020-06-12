@@ -50,6 +50,12 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   val isMap: Boolean
     get() = keyAdapterString.isNotEmpty()
 
+  val isStruct: Boolean =
+      wireField.adapter == "com.squareup.wire.ProtoAdapter#STRUCT_MAP" ||
+          wireField.adapter == "com.squareup.wire.ProtoAdapter#STRUCT_LIST" ||
+          wireField.adapter == "com.squareup.wire.ProtoAdapter#STRUCT_VALUE" ||
+          wireField.adapter == "com.squareup.wire.ProtoAdapter#STRUCT_NULL"
+
   private fun getBuilderField(builderType: Class<*>, name: String): Field {
     try {
       return builderType.getField(name)

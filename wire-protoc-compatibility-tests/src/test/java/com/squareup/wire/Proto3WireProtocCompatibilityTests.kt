@@ -131,6 +131,7 @@ class Proto3WireProtocCompatibilityTests {
         |      ]
         |    }
         |  ],
+        |  "loyalty": {},
         |  "promotion": {
         |    "@type": "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion",
         |    "coupon": "MAUI"
@@ -158,6 +159,7 @@ class Proto3WireProtocCompatibilityTests {
         .setPromotion(Any.pack(PizzaOuterClass.BuyOneGetOnePromotion.newBuilder()
             .setCoupon("MAUI")
             .build()))
+        .setLoyalty(Struct.newBuilder().build())
         .build()
 
     val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
