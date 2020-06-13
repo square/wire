@@ -27,10 +27,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Interceptor
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.Protocol.HTTP_2
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert.fail
@@ -796,6 +801,94 @@ class GrpcClientTest {
 
     mockService.awaitSuccessBlocking()
     latch.await()
+  }
+
+  @Test
+  fun responseStatusIsNot200() {
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        return Response.Builder()
+            .request(chain.request())
+            .protocol(HTTP_2)
+            .code(500)
+            .message("internal server error")
+            .body(ByteString.EMPTY.toResponseBody("application/grpc".toMediaType()))
+            .build()
+      }
+    }
+
+    runBlocking {
+      val grpcCall = routeGuideService.GetFeature()
+      try {
+        grpcCall.execute(Point(latitude = 5, longitude = 6))
+        fail()
+      } catch (expected: IOException) {
+        assertThat(expected).hasMessage("grpc failed: status=500, content-type=application/grpc")
+      }
+    }
+  }
+
+  @Test
+  fun responseContentTypeIsNotGrpc() {
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        return Response.Builder()
+            .request(chain.request())
+            .protocol(HTTP_2)
+            .code(200)
+            .message("ok")
+            .body(ByteString.EMPTY.toResponseBody("text/plain".toMediaType()))
+            .build()
+      }
+    }
+
+    runBlocking {
+      val grpcCall = routeGuideService.GetFeature()
+      try {
+        grpcCall.execute(Point(latitude = 5, longitude = 6))
+        fail()
+      } catch (expected: IOException) {
+        assertThat(expected).hasMessage("grpc failed: status=200, content-type=text/plain")
+      }
+    }
+  }
+
+  /** Confirm the response content-type "application/grpc" is accepted. */
+  @Test
+  fun contentTypeApplicationGrpc() {
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        val response = chain.proceed(chain.request())
+        return response.newBuilder()
+            .body(object : ResponseBody() {
+              override fun contentLength() = response.body!!.contentLength()
+              override fun source() = response.body!!.source()
+              override fun contentType() = "application/grpc".toMediaType()
+            })
+            .build()
+      }
+    }
+
+    requestResponseBlocking()
+  }
+
+  /** Confirm the response content-type "application/grpc+proto" is accepted. */
+  @Test
+  fun contentTypeApplicationGrpcPlusProto() {
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        val response = chain.proceed(chain.request())
+        return response.newBuilder()
+            .body(object : ResponseBody() {
+              override fun contentLength() = response.body!!.contentLength()
+              override fun source() = response.body!!.source()
+              override fun contentType() = "application/grpc+proto".toMediaType()
+            })
+            .build()
+      }
+    }
+
+    requestResponseBlocking()
   }
 
   private fun removeGrpcStatusInterceptor(): Interceptor {

@@ -134,9 +134,22 @@ internal fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
 internal fun <R : Any> GrpcResponse.messageSource(
   protoAdapter: ProtoAdapter<R>
 ): GrpcMessageSource<R> {
+  if (isGrpcFailure()) {
+    throw IOException("grpc failed: status=${code}, content-type=${body!!.contentType()}")
+  }
   val grpcEncoding = header("grpc-encoding")
   val responseSource = body!!.source()
   return GrpcMessageSource(responseSource, protoAdapter, grpcEncoding)
+}
+
+private fun GrpcResponse.isGrpcFailure(): Boolean {
+  if (code != 200) return true
+
+  val contentType = body!!.contentType() ?: return true
+  if (contentType.type != "application") return true
+  if (contentType.subtype != "grpc" && contentType.subtype != "grpc+proto") return true
+
+  return false
 }
 
 /** Maps the response trailer to either success (null) or an exception. */
