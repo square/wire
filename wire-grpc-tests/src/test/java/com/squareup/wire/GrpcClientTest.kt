@@ -891,6 +891,23 @@ class GrpcClientTest {
     requestResponseBlocking()
   }
 
+  @Test
+  fun requestEarlyFailure() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendError(Exception("boom"))
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage("grpc failed: status=200, grpc-status=2")
+    }
+  }
+
   private fun removeGrpcStatusInterceptor(): Interceptor {
     val noTrailersResponse = noTrailersResponse()
     assertThat(noTrailersResponse.trailers().size).isEqualTo(0)
