@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.protos3.kotlin.person.Person
+import com.squareup.wire.proto3.kotlin.person.Person
 import okio.ByteString.Companion.decodeHex
 import squareup.protos.packed_encoding.EmbeddedMessage
 import squareup.protos.packed_encoding.OuterMessage

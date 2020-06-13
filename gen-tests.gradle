@@ -221,6 +221,7 @@ task generateProto3KotlinTests(type: JavaExec) {
           '--proto_path=wire-library/wire-tests/src/commonTest/proto3/kotlin',
           '--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin',
           '--proto3-preview=UNSUPPORTED',
+          'all_types.proto',
           'person.proto',
   ]
 }
