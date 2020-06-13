@@ -576,7 +576,7 @@ class KotlinGenerator private constructor(
     val fieldNames = mutableListOf<String>()
     for (field in type.fieldsAndOneOfFields) {
       val fieldName = nameAllocator[field]
-      result.addParameter(ParameterSpec.builder(fieldName, field.typeName)
+      result.addParameter(ParameterSpec.builder(fieldName, field.typeNameForMessageField)
           .defaultValue("this.%N", fieldName)
           .build())
       fieldNames += fieldName
@@ -641,7 +641,7 @@ class KotlinGenerator private constructor(
     type.fieldsAndOneOfFields.forEach { field ->
       val fieldName = nameAllocator[field]
 
-      val propertyBuilder = PropertySpec.builder(fieldName, field.declarationClass)
+      val propertyBuilder = PropertySpec.builder(fieldName, field.typeNameForBuilderField)
           .mutable(true)
           .initializer(field.identityValue)
 
@@ -680,7 +680,7 @@ class KotlinGenerator private constructor(
   ): FunSpec {
     val fieldName = nameAllocator[field]
     val funBuilder = FunSpec.builder(fieldName)
-        .addParameter(fieldName, field.getClass())
+        .addParameter(fieldName, field.typeNameForBuilderSetter())
         .returns(builderType)
     if (field.documentation.isNotBlank()) {
       funBuilder.addKdoc("%L\n", field.documentation.sanitizeKdoc())
@@ -729,7 +729,7 @@ class KotlinGenerator private constructor(
     val fields = message.fieldsAndOneOfFields
 
     fields.forEach { field ->
-      val fieldClass = field.typeName
+      val fieldClass = field.typeNameForMessageField
       val fieldName = nameAllocator[field]
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
@@ -874,7 +874,7 @@ class KotlinGenerator private constructor(
       val default = field.default ?: continue
 
       val fieldName = "DEFAULT_" + nameAllocator[field].toUpperCase(Locale.US)
-      val fieldType = field.getClass().copy(nullable = false)
+      val fieldType = field.typeNameForMessageField.copy(nullable = false)
       val fieldValue = defaultFieldInitializer(field.type!!, default)
       companionBuilder.addProperty(
           PropertySpec.builder(fieldName, fieldType)
@@ -1333,8 +1333,8 @@ class KotlinGenerator private constructor(
       constant.options.map.keys.forEach { protoMember ->
         if (allOptionFieldsBuilder.add(protoMember)) {
           val optionField = schema.getField(protoMember)!!
-          primaryConstructor.addParameter(optionField.name, optionField.typeName)
-          builder.addProperty(PropertySpec.builder(optionField.name, optionField.typeName)
+          primaryConstructor.addParameter(optionField.name, optionField.typeNameForMessageField)
+          builder.addProperty(PropertySpec.builder(optionField.name, optionField.typeNameForMessageField)
               .initializer(optionField.name)
               .build())
         }
@@ -1464,15 +1464,18 @@ class KotlinGenerator private constructor(
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of("val $allocatedName = mutableMapOf<%T, %T>()",
         keyType.typeName, valueType.typeName)
-    else -> CodeBlock.of("var $allocatedName: %T = %L", declarationClass, identityValue)
+    else -> CodeBlock.of("var $allocatedName: %T = %L", typeNameForBuilderField, identityValue)
   }
 
-  private val Field.declarationClass: TypeName
-    get() = when {
-      isRepeated || isMap -> getClass()
-      else -> {
-        val nullable = encodeMode != EncodeMode.OMIT_IDENTITY || acceptsNull
-        getClass().copy(nullable = nullable)
+  private val Field.typeNameForBuilderField: TypeName
+    get() {
+      val typeNameForBuilderSetter = typeNameForBuilderSetter()
+      return when {
+        isRepeated || isMap -> typeNameForBuilderSetter
+        else -> {
+          val nullable = encodeMode != EncodeMode.OMIT_IDENTITY || acceptsNull
+          typeNameForBuilderSetter.copy(nullable = nullable)
+        }
       }
     }
 
@@ -1482,7 +1485,7 @@ class KotlinGenerator private constructor(
     else -> nameToKotlinName.getValue(this)
   }
 
-  private fun Field.getClass(baseClass: TypeName = type!!.asTypeName()): TypeName {
+  private fun Field.typeNameForBuilderSetter(baseClass: TypeName = type!!.asTypeName()): TypeName {
     if (type == ProtoType.STRUCT_NULL) return baseClass
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
@@ -1493,7 +1496,7 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private val Field.typeName: TypeName
+  private val Field.typeNameForMessageField: TypeName
     get() {
       if (type == ProtoType.STRUCT_MAP) return type!!.typeName
       if (type == ProtoType.STRUCT_LIST) return type!!.typeName
