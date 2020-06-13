@@ -17,7 +17,7 @@ syntax = "proto3";
 
 package squareup.protos3.kotlin.person;
 
-option java_package = "com.squareup.wire.protos3.kotlin.person";
+option java_package = "com.squareup.wire.proto3.kotlin.person";
 option java_outer_classname = "PersonProtos3";
 
 /**
