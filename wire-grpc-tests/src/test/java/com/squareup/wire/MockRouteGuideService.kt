@@ -94,6 +94,10 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
         .build()))
   }
 
+  fun enqueueSendError(error: Throwable) {
+    enqueue(Action.SendError(error))
+  }
+
   suspend fun awaitSuccess() {
     try {
       withTimeout(3000L) {
