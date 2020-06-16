@@ -76,10 +76,10 @@ message AllTypes {
   repeated NestedMessage rep_nested_message = 217 [packed = false];
   repeated google.protobuf.Any rep_any = 218;
   repeated google.protobuf.Duration rep_duration = 219;
-//  repeated google.protobuf.Struct rep_struct = 220;
-//  repeated google.protobuf.ListValue rep_list_value = 221;
-//  repeated google.protobuf.Value rep_value = 222;
-//  repeated google.protobuf.NullValue rep_null_value = 223;
+  repeated google.protobuf.Struct rep_struct = 220;
+  repeated google.protobuf.ListValue rep_list_value = 221;
+  repeated google.protobuf.Value rep_value = 222;
+  repeated google.protobuf.NullValue rep_null_value = 223;
 
   repeated int32 pack_int32 = 301 [packed = true];
   repeated uint32 pack_uint32 = 302 [packed = true];
@@ -95,7 +95,7 @@ message AllTypes {
   repeated float pack_float = 312 [packed = true];
   repeated double pack_double = 313 [packed = true];
   repeated NestedEnum pack_nested_enum = 316 [packed = true];
-//  repeated google.protobuf.NullValue pack_null_value = 323 [packed = true];
+  repeated google.protobuf.NullValue pack_null_value = 323 [packed = true];
 
   map<int32, int32> map_int32_int32 = 501;
   map<string, string> map_string_string = 502;
@@ -103,10 +103,10 @@ message AllTypes {
   map<string, NestedEnum> map_string_enum = 504;
   map<int32, google.protobuf.Any> map_int32_any = 518;
   map<int32, google.protobuf.Duration> map_int32_duration = 519;
-//  map<int32, google.protobuf.Struct> map_int32_struct = 520;
-//  map<int32, google.protobuf.ListValue> map_int32_list_value = 521;
-//  map<int32, google.protobuf.Value> map_int32_value = 522;
-//  map<int32, google.protobuf.NullValue> map_int32_null_value = 523;
+  map<int32, google.protobuf.Struct> map_int32_struct = 520;
+  map<int32, google.protobuf.ListValue> map_int32_list_value = 521;
+  map<int32, google.protobuf.Value> map_int32_value = 522;
+  map<int32, google.protobuf.NullValue> map_int32_null_value = 523;
 
   oneof choice {
     string oneof_string = 601;
@@ -114,9 +114,9 @@ message AllTypes {
     NestedMessage oneof_nested_message = 603;
     google.protobuf.Any oneof_int32_any = 618;
     google.protobuf.Duration oneof_int32_duration = 619;
-//    google.protobuf.Struct oneof_int32_struct = 620;
-//    google.protobuf.ListValue oneof_int32_list_value = 621;
-//    google.protobuf.Value oneof_int32_value = 622;
-//    google.protobuf.NullValue oneof_int32_null_value = 623;
+    google.protobuf.Struct oneof_int32_struct = 620;
+    google.protobuf.ListValue oneof_int32_list_value = 621;
+    google.protobuf.Value oneof_int32_value = 622;
+    google.protobuf.NullValue oneof_int32_null_value = 623;
   }
 }

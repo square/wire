@@ -29,4 +29,21 @@ message AllStructs {
   google.protobuf.Value value_d = 7;
   google.protobuf.Value value_e = 8;
   google.protobuf.Value value_f = 9;
+
+  repeated google.protobuf.Struct rep_struct = 101;
+  repeated google.protobuf.ListValue rep_list = 102;
+  repeated google.protobuf.Value rep_value_a = 103;
+  repeated google.protobuf.NullValue rep_null_value = 104;
+
+  oneof choice {
+    google.protobuf.Struct oneof_struct = 201;
+    google.protobuf.ListValue oneof_list = 202;
+    google.protobuf.Value oneof_value_a = 203;
+    google.protobuf.NullValue oneof_null_value = 204;
+  }
+
+  map<int32, google.protobuf.Struct> map_int32_struct = 301;
+  map<int32, google.protobuf.ListValue> map_int32_list = 302;
+  map<int32, google.protobuf.Value> map_int32_value_a = 303;
+  map<int32, google.protobuf.NullValue> map_int32_null_value = 304;
 }
