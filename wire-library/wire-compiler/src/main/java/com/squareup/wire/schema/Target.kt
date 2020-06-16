@@ -26,6 +26,7 @@ import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.swift.SwiftGenerator
 import okio.buffer
 import okio.sink
 import java.io.IOException
@@ -33,6 +34,7 @@ import java.io.Serializable
 import java.nio.file.FileSystem
 import java.nio.file.Files
 import java.nio.file.Path
+import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 sealed class Target : Serializable {
   /**
@@ -291,6 +293,50 @@ data class KotlinTarget(
               "${kotlinFile.packageName}.${service.type()} to $outDirectory", e)
         }
         return generatedFilePath
+      }
+    }
+  }
+}
+
+data class SwiftTarget(
+  override val includes: List<String> = listOf("*"),
+  override val excludes: List<String> = listOf(),
+  override val exclusive: Boolean = true,
+  val outDirectory: String
+) : Target() {
+  override fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    logger: WireLogger,
+    newProfileLoader: NewProfileLoader
+  ): SchemaHandler {
+    val swiftGenerator = SwiftGenerator(
+        schema = schema
+    )
+
+    return object : SchemaHandler {
+      override fun handle(type: Type): Path {
+        val typeName = swiftGenerator.generatedTypeName(type)
+        val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
+            .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
+            .addComment("\nSource file: %L", type.location.withPathOnly())
+            .addType(swiftGenerator.generateType(type))
+            .build()
+
+        val path = fs.getPath(outDirectory)
+        logger.artifact(path, swiftFile)
+
+        try {
+          swiftFile.writeTo(path)
+        } catch (e: IOException) {
+          throw IOException("Error emitting " +
+              "${swiftFile.moduleName}.${typeName.canonicalName} to $outDirectory", e)
+        }
+        return path.resolve("${swiftFile.name}.swift")
+      }
+
+      override fun handle(service: Service): List<Path> {
+        TODO("Not implemented")
       }
     }
   }

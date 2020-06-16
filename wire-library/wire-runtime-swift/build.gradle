@@ -1,0 +1,5 @@
+apply plugin: 'swift-library'
+
+library {
+  module.set('Wire')
+}

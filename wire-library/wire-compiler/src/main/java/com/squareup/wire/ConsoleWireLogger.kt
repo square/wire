@@ -20,6 +20,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.ProtoType
 import java.nio.file.Path
+import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 internal class ConsoleWireLogger : WireLogger {
   private var quiet: Boolean = false
@@ -56,6 +57,17 @@ internal class ConsoleWireLogger : WireLogger {
       println("${kotlinFile.packageName}.${typeSpec.name}")
     } else {
       println("Writing ${kotlinFile.packageName}.${typeSpec.name} to $outputPath")
+    }
+  }
+
+  override fun artifact(
+    outputPath: Path,
+    swiftFile: SwiftFileSpec
+  ) {
+    if (quiet) {
+      println("${swiftFile.moduleName}.${swiftFile.name}")
+    } else {
+      println("Writing ${swiftFile.moduleName}.${swiftFile.name} to $outputPath")
     }
   }
 

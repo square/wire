@@ -1,0 +1,14 @@
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-swift-generator')
+  }
+}
+
+dependencies {
+  api 'io.outfoxx:swiftpoet:0.3.1'
+  api project(':wire-schema')
+  api deps.kotlin.stdlib.jdk8
+}
