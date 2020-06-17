@@ -23,7 +23,7 @@ import com.google.protobuf.Value
 internal fun Map<String, *>.toStruct(): Struct {
   val builder = Struct.newBuilder()
   for ((key, value) in this) {
-    builder.putFields(key, value.ToValue())
+    builder.putFields(key, value.toValue())
   }
   return builder.build()
 }
@@ -35,7 +35,7 @@ internal fun emptyStruct(): Struct {
 internal fun List<*>.toListValue(): ListValue {
   val builder = ListValue.newBuilder()
   for (any in this) {
-    builder.addValues(any.ToValue())
+    builder.addValues(any.toValue())
   }
   return builder.build()
 }
@@ -44,7 +44,7 @@ internal fun emptyListValue(): ListValue {
   return ListValue.newBuilder().build()
 }
 
-internal fun Any?.ToValue(): Value {
+internal fun Any?.toValue(): Value {
   return when (this) {
     null -> Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build()
     is Double -> Value.newBuilder().setNumberValue(this).build()
