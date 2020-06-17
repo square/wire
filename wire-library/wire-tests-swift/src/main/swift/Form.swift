@@ -47,7 +47,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
       let currency_conversion_flags_element = try container.decode(CurrencyConversionFlagsElement.self, forKey: .currency_conversion_flags_element)
       self.choice = .currency_conversion_flags_element(currency_conversion_flags_element)
     } else {
-      fatalError() // TODO
+      self.choice = nil
     }
     unknownFields = .init()
   }

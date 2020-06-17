@@ -20,7 +20,7 @@ public struct OneOfMessage : Equatable, Proto2Codable, Codable {
       let baz = try container.decode(String.self, forKey: .baz)
       self.choice = .baz(baz)
     } else {
-      fatalError() // TODO
+      self.choice = nil
     }
     unknownFields = .init()
   }

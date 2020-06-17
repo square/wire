@@ -173,7 +173,7 @@ class SwiftGenerator private constructor(
                       addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
                     }
                     nextControlFlow("else")
-                    addStatement("fatalError() // TODO")
+                    addStatement("self.%N = nil", oneOf.name)
                     endControlFlow()
                   }
                 }

@@ -17,7 +17,7 @@ public struct RedactedOneOf : Equatable, Proto2Codable, Codable {
       let c = try container.decode(String.self, forKey: .c)
       self.a = .c(c)
     } else {
-      fatalError() // TODO
+      self.a = nil
     }
     unknownFields = .init()
   }
