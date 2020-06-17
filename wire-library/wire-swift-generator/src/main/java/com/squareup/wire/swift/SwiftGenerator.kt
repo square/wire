@@ -297,13 +297,7 @@ class SwiftGenerator private constructor(
             .throws(true)
             .apply {
               type.declaredFields.forEach { field ->
-                val encoding = field.type!!.encoding
-                if (encoding != null) {
-                  addStatement(
-                      "try writer.encode(tag: %L, value: %N, encoding: .%N)", field.tag, field.name,
-                      encoding
-                  )
-                } else if (field.isMap) {
+                if (field.isMap) {
                   addCode("try writer.encode(tag: %L, value: %N", field.tag, field.name)
                   field.keyType.encoding?.let { keyEncoding ->
                     addCode(", keyEncoding: .%N", keyEncoding)
@@ -312,12 +306,15 @@ class SwiftGenerator private constructor(
                     addCode(", valueEncoding: .%N", valueEncoding)
                   }
                   addCode(")\n")
-                } else if (field.isPacked) {
-                  addStatement(
-                      "try writer.encode(tag: %L, value: %N, packed: true)", field.tag, field.name
-                  )
                 } else {
-                  addStatement("try writer.encode(tag: %L, value: %N)", field.tag, field.name)
+                  addCode("try writer.encode(tag: %L, value: %N", field.tag, field.name)
+                  field.type!!.encoding?.let { encoding ->
+                    addCode(", encoding: .%N", encoding)
+                  }
+                  if (field.isPacked) {
+                    addCode(", packed: true")
+                  }
+                  addCode(")\n")
                 }
               }
               type.oneOfs.forEach { oneOf ->
