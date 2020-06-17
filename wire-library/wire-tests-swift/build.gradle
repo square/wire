@@ -6,4 +6,6 @@ library {
   dependencies {
     api project(':wire-runtime-swift')
   }
+
+  module.set('WireTests')
 }
