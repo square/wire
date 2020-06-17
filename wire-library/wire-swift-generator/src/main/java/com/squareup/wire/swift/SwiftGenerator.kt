@@ -25,6 +25,7 @@ import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
 import io.outfoxx.swiftpoet.Modifier.FINAL
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.OPTIONAL
+import io.outfoxx.swiftpoet.ParameterSpec
 import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeName
 import io.outfoxx.swiftpoet.TypeSpec
@@ -204,6 +205,32 @@ class SwiftGenerator private constructor(
                 .build())
           }
         }
+        .addFunction(FunctionSpec.constructorBuilder()
+            .addModifiers(PUBLIC)
+            .apply {
+              type.declaredFields.forEach { field ->
+                val fieldType = field.typeName
+                addParameter(ParameterSpec.builder(field.name, fieldType)
+                    .apply {
+                      when {
+                        field.isMap -> defaultValue("[:]")
+                        field.isRepeated -> defaultValue("[]")
+                        fieldType.optional -> defaultValue("nil")
+                      }
+                    }
+                    .build())
+                addStatement("self.%1N = %1N", field.name)
+              }
+              type.oneOfs.forEach { oneOf ->
+                val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
+                addParameter(ParameterSpec.builder(oneOf.name, enumName)
+                    .defaultValue("nil")
+                    .build())
+                addStatement("self.%1N = %1N", oneOf.name)
+              }
+            }
+            .addStatement("self.unknownFields = .init()")
+            .build())
         .addFunction(FunctionSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .addParameter("from", "reader", protoReader)

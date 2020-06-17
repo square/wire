@@ -8,6 +8,11 @@ public struct OptionalEnumUser : Equatable, Proto2Codable, Codable {
   public var optional_enum: OptionalEnum?
   public let unknownFields: Data
 
+  public init(optional_enum: OptionalEnum? = nil) {
+    self.optional_enum = optional_enum
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var optional_enum: OptionalEnum? = nil
 

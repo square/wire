@@ -10,6 +10,17 @@ public struct VersionOne : Equatable, Proto2Codable, Codable {
   public var en: EnumVersionOne?
   public let unknownFields: Data
 
+  public init(
+    i: Int32? = nil,
+    obj: NestedVersionOne? = nil,
+    en: EnumVersionOne? = nil
+  ) {
+    self.i = i
+    self.obj = obj
+    self.en = en
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var i: Int32? = nil
     var obj: NestedVersionOne? = nil

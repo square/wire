@@ -9,6 +9,12 @@ public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
   public var b: OtherMessageWithStatus.Status?
   public let unknownFields: Data
 
+  public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
+    self.a = a
+    self.b = b
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var a: MessageWithStatus.Status? = nil
     var b: OtherMessageWithStatus.Status? = nil

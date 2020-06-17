@@ -8,6 +8,11 @@ public struct NestedVersionOne : Equatable, Proto2Codable, Codable {
   public var i: Int32?
   public let unknownFields: Data
 
+  public init(i: Int32? = nil) {
+    self.i = i
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var i: Int32? = nil
 

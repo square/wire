@@ -15,6 +15,27 @@ public struct VersionTwo : Equatable, Proto2Codable, Codable {
   public var en: EnumVersionTwo?
   public let unknownFields: Data
 
+  public init(
+    i: Int32? = nil,
+    v2_i: Int32? = nil,
+    v2_s: String? = nil,
+    v2_f32: Int32? = nil,
+    v2_f64: Int64? = nil,
+    v2_rs: [String] = [],
+    obj: NestedVersionTwo? = nil,
+    en: EnumVersionTwo? = nil
+  ) {
+    self.i = i
+    self.v2_i = v2_i
+    self.v2_s = v2_s
+    self.v2_f32 = v2_f32
+    self.v2_f64 = v2_f64
+    self.v2_rs = v2_rs
+    self.obj = obj
+    self.en = en
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var i: Int32? = nil
     var v2_i: Int32? = nil

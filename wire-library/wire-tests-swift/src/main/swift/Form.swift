@@ -52,6 +52,11 @@ public struct Form : Equatable, Proto2Codable, Codable {
     unknownFields = .init()
   }
 
+  public init(choice: Choice? = nil) {
+    self.choice = choice
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var choice: Choice? = nil
 
@@ -158,6 +163,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
+    public init() {
+      self.unknownFields = .init()
+    }
+
     public init(from reader: ProtoReader) throws {
 
       let unknownFields = try reader.forEachTag { tag in
@@ -178,6 +187,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
   public struct LocalImageElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
+
+    public init() {
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
 
@@ -200,6 +213,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
+    public init() {
+      self.unknownFields = .init()
+    }
+
     public init(from reader: ProtoReader) throws {
 
       let unknownFields = try reader.forEachTag { tag in
@@ -220,6 +237,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
   public struct MoneyElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
+
+    public init() {
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
 
@@ -242,6 +263,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
+    public init() {
+      self.unknownFields = .init()
+    }
+
     public init(from reader: ProtoReader) throws {
 
       let unknownFields = try reader.forEachTag { tag in
@@ -262,6 +287,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
   public struct TextElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
+
+    public init() {
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
 
@@ -284,6 +313,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
+    public init() {
+      self.unknownFields = .init()
+    }
+
     public init(from reader: ProtoReader) throws {
 
       let unknownFields = try reader.forEachTag { tag in
@@ -304,6 +337,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
   public struct AddressElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
+
+    public init() {
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
 
@@ -326,6 +363,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
+    public init() {
+      self.unknownFields = .init()
+    }
+
     public init(from reader: ProtoReader) throws {
 
       let unknownFields = try reader.forEachTag { tag in
@@ -346,6 +387,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
   public struct OptionPickerElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
+
+    public init() {
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
 
@@ -368,6 +413,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
+    public init() {
+      self.unknownFields = .init()
+    }
+
     public init(from reader: ProtoReader) throws {
 
       let unknownFields = try reader.forEachTag { tag in
@@ -388,6 +437,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
   public struct CurrencyConversionFlagsElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
+
+    public init() {
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
 

@@ -8,6 +8,11 @@ public struct Mappy : Equatable, Proto2Codable, Codable {
   public var things: [String : Thing]
   public let unknownFields: Data
 
+  public init(things: [String : Thing] = [:]) {
+    self.things = things
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var things: [String : Thing] = [:]
 

@@ -7,6 +7,10 @@ public struct OtherMessageWithStatus : Equatable, Proto2Codable, Codable {
 
   public let unknownFields: Data
 
+  public init() {
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
 
     let unknownFields = try reader.forEachTag { tag in

@@ -92,6 +92,181 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
   public var map_string_enum: [String : NestedEnum]
   public let unknownFields: Data
 
+  public init(
+    opt_int32: Int32? = nil,
+    opt_uint32: UInt32? = nil,
+    opt_sint32: Int32? = nil,
+    opt_fixed32: Int32? = nil,
+    opt_sfixed32: Int32? = nil,
+    opt_int64: Int64? = nil,
+    opt_uint64: UInt64? = nil,
+    opt_sint64: Int64? = nil,
+    opt_fixed64: Int64? = nil,
+    opt_sfixed64: Int64? = nil,
+    opt_bool: Bool? = nil,
+    opt_float: Float? = nil,
+    opt_double: Double? = nil,
+    opt_string: String? = nil,
+    opt_bytes: Data? = nil,
+    opt_nested_enum: NestedEnum? = nil,
+    opt_nested_message: NestedMessage? = nil,
+    req_int32: Int32,
+    req_uint32: UInt32,
+    req_sint32: Int32,
+    req_fixed32: Int32,
+    req_sfixed32: Int32,
+    req_int64: Int64,
+    req_uint64: UInt64,
+    req_sint64: Int64,
+    req_fixed64: Int64,
+    req_sfixed64: Int64,
+    req_bool: Bool,
+    req_float: Float,
+    req_double: Double,
+    req_string: String,
+    req_bytes: Data,
+    req_nested_enum: NestedEnum,
+    req_nested_message: NestedMessage,
+    rep_int32: [Int32] = [],
+    rep_uint32: [UInt32] = [],
+    rep_sint32: [Int32] = [],
+    rep_fixed32: [Int32] = [],
+    rep_sfixed32: [Int32] = [],
+    rep_int64: [Int64] = [],
+    rep_uint64: [UInt64] = [],
+    rep_sint64: [Int64] = [],
+    rep_fixed64: [Int64] = [],
+    rep_sfixed64: [Int64] = [],
+    rep_bool: [Bool] = [],
+    rep_float: [Float] = [],
+    rep_double: [Double] = [],
+    rep_string: [String] = [],
+    rep_bytes: [Data] = [],
+    rep_nested_enum: [NestedEnum] = [],
+    rep_nested_message: [NestedMessage] = [],
+    pack_int32: [Int32] = [],
+    pack_uint32: [UInt32] = [],
+    pack_sint32: [Int32] = [],
+    pack_fixed32: [Int32] = [],
+    pack_sfixed32: [Int32] = [],
+    pack_int64: [Int64] = [],
+    pack_uint64: [UInt64] = [],
+    pack_sint64: [Int64] = [],
+    pack_fixed64: [Int64] = [],
+    pack_sfixed64: [Int64] = [],
+    pack_bool: [Bool] = [],
+    pack_float: [Float] = [],
+    pack_double: [Double] = [],
+    pack_nested_enum: [NestedEnum] = [],
+    default_int32: Int32? = nil,
+    default_uint32: UInt32? = nil,
+    default_sint32: Int32? = nil,
+    default_fixed32: Int32? = nil,
+    default_sfixed32: Int32? = nil,
+    default_int64: Int64? = nil,
+    default_uint64: UInt64? = nil,
+    default_sint64: Int64? = nil,
+    default_fixed64: Int64? = nil,
+    default_sfixed64: Int64? = nil,
+    default_bool: Bool? = nil,
+    default_float: Float? = nil,
+    default_double: Double? = nil,
+    default_string: String? = nil,
+    default_bytes: Data? = nil,
+    default_nested_enum: NestedEnum? = nil,
+    map_int32_int32: [Int32 : Int32] = [:],
+    map_string_string: [String : String] = [:],
+    map_string_message: [String : NestedMessage] = [:],
+    map_string_enum: [String : NestedEnum] = [:]
+  ) {
+    self.opt_int32 = opt_int32
+    self.opt_uint32 = opt_uint32
+    self.opt_sint32 = opt_sint32
+    self.opt_fixed32 = opt_fixed32
+    self.opt_sfixed32 = opt_sfixed32
+    self.opt_int64 = opt_int64
+    self.opt_uint64 = opt_uint64
+    self.opt_sint64 = opt_sint64
+    self.opt_fixed64 = opt_fixed64
+    self.opt_sfixed64 = opt_sfixed64
+    self.opt_bool = opt_bool
+    self.opt_float = opt_float
+    self.opt_double = opt_double
+    self.opt_string = opt_string
+    self.opt_bytes = opt_bytes
+    self.opt_nested_enum = opt_nested_enum
+    self.opt_nested_message = opt_nested_message
+    self.req_int32 = req_int32
+    self.req_uint32 = req_uint32
+    self.req_sint32 = req_sint32
+    self.req_fixed32 = req_fixed32
+    self.req_sfixed32 = req_sfixed32
+    self.req_int64 = req_int64
+    self.req_uint64 = req_uint64
+    self.req_sint64 = req_sint64
+    self.req_fixed64 = req_fixed64
+    self.req_sfixed64 = req_sfixed64
+    self.req_bool = req_bool
+    self.req_float = req_float
+    self.req_double = req_double
+    self.req_string = req_string
+    self.req_bytes = req_bytes
+    self.req_nested_enum = req_nested_enum
+    self.req_nested_message = req_nested_message
+    self.rep_int32 = rep_int32
+    self.rep_uint32 = rep_uint32
+    self.rep_sint32 = rep_sint32
+    self.rep_fixed32 = rep_fixed32
+    self.rep_sfixed32 = rep_sfixed32
+    self.rep_int64 = rep_int64
+    self.rep_uint64 = rep_uint64
+    self.rep_sint64 = rep_sint64
+    self.rep_fixed64 = rep_fixed64
+    self.rep_sfixed64 = rep_sfixed64
+    self.rep_bool = rep_bool
+    self.rep_float = rep_float
+    self.rep_double = rep_double
+    self.rep_string = rep_string
+    self.rep_bytes = rep_bytes
+    self.rep_nested_enum = rep_nested_enum
+    self.rep_nested_message = rep_nested_message
+    self.pack_int32 = pack_int32
+    self.pack_uint32 = pack_uint32
+    self.pack_sint32 = pack_sint32
+    self.pack_fixed32 = pack_fixed32
+    self.pack_sfixed32 = pack_sfixed32
+    self.pack_int64 = pack_int64
+    self.pack_uint64 = pack_uint64
+    self.pack_sint64 = pack_sint64
+    self.pack_fixed64 = pack_fixed64
+    self.pack_sfixed64 = pack_sfixed64
+    self.pack_bool = pack_bool
+    self.pack_float = pack_float
+    self.pack_double = pack_double
+    self.pack_nested_enum = pack_nested_enum
+    self.default_int32 = default_int32
+    self.default_uint32 = default_uint32
+    self.default_sint32 = default_sint32
+    self.default_fixed32 = default_fixed32
+    self.default_sfixed32 = default_sfixed32
+    self.default_int64 = default_int64
+    self.default_uint64 = default_uint64
+    self.default_sint64 = default_sint64
+    self.default_fixed64 = default_fixed64
+    self.default_sfixed64 = default_sfixed64
+    self.default_bool = default_bool
+    self.default_float = default_float
+    self.default_double = default_double
+    self.default_string = default_string
+    self.default_bytes = default_bytes
+    self.default_nested_enum = default_nested_enum
+    self.map_int32_int32 = map_int32_int32
+    self.map_string_string = map_string_string
+    self.map_string_message = map_string_message
+    self.map_string_enum = map_string_enum
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var opt_int32: Int32? = nil
     var opt_uint32: UInt32? = nil
@@ -457,6 +632,11 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
 
     public var a: Int32?
     public let unknownFields: Data
+
+    public init(a: Int32? = nil) {
+      self.a = a
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
       var a: Int32? = nil

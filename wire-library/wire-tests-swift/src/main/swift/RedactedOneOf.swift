@@ -22,6 +22,11 @@ public struct RedactedOneOf : Equatable, Proto2Codable, Codable {
     unknownFields = .init()
   }
 
+  public init(a: A? = nil) {
+    self.a = a
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var a: A? = nil
 

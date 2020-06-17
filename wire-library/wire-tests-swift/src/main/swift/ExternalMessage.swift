@@ -8,6 +8,11 @@ public struct ExternalMessage : Equatable, Proto2Codable, Codable {
   public var f: Float?
   public let unknownFields: Data
 
+  public init(f: Float? = nil) {
+    self.f = f
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var f: Float? = nil
 

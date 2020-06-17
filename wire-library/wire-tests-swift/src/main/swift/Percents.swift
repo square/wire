@@ -8,6 +8,11 @@ public struct Percents : Equatable, Proto2Codable, Codable {
   public var text: String?
   public let unknownFields: Data
 
+  public init(text: String? = nil) {
+    self.text = text
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var text: String? = nil
 

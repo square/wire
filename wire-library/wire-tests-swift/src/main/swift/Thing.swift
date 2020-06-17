@@ -8,6 +8,11 @@ public struct Thing : Equatable, Proto2Codable, Codable {
   public var name: String?
   public let unknownFields: Data
 
+  public init(name: String? = nil) {
+    self.name = name
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var name: String? = nil
 

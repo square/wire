@@ -14,6 +14,25 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
   public var nested: [FooBar]
   public let unknownFields: Data
 
+  public init(
+    foo: Int32? = nil,
+    bar: String? = nil,
+    baz: Nested? = nil,
+    qux: UInt64? = nil,
+    fred: [Float] = [],
+    daisy: Double? = nil,
+    nested: [FooBar] = []
+  ) {
+    self.foo = foo
+    self.bar = bar
+    self.baz = baz
+    self.qux = qux
+    self.fred = fred
+    self.daisy = daisy
+    self.nested = nested
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var foo: Int32? = nil
     var bar: String? = nil
@@ -62,6 +81,11 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
     public var value: FooBarBazEnum?
     public let unknownFields: Data
 
+    public init(value: FooBarBazEnum? = nil) {
+      self.value = value
+      self.unknownFields = .init()
+    }
+
     public init(from reader: ProtoReader) throws {
       var value: FooBarBazEnum? = nil
 
@@ -87,6 +111,11 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
 
     public var serial: [Int32]
     public let unknownFields: Data
+
+    public init(serial: [Int32] = []) {
+      self.serial = serial
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
       var serial: [Int32] = []

@@ -9,6 +9,12 @@ public struct KeywordKotlin : Equatable, Proto2Codable, Codable {
   public var when: Int32?
   public let unknownFields: Data
 
+  public init(object: String? = nil, when: Int32? = nil) {
+    self.object = object
+    self.when = when
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var object: String? = nil
     var when: Int32? = nil

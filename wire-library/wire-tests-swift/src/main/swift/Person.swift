@@ -12,6 +12,21 @@ public struct Person : Equatable, Proto2Codable, Codable {
   public var aliases: [String]
   public let unknownFields: Data
 
+  public init(
+    name: String,
+    id: Int32,
+    email: String? = nil,
+    phone: [PhoneNumber] = [],
+    aliases: [String] = []
+  ) {
+    self.name = name
+    self.id = id
+    self.email = email
+    self.phone = phone
+    self.aliases = aliases
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var name: String? = nil
     var id: Int32? = nil
@@ -60,6 +75,12 @@ public struct Person : Equatable, Proto2Codable, Codable {
     public var number: String
     public var type: PhoneType?
     public let unknownFields: Data
+
+    public init(number: String, type: PhoneType? = nil) {
+      self.number = number
+      self.type = type
+      self.unknownFields = .init()
+    }
 
     public init(from reader: ProtoReader) throws {
       var number: String? = nil

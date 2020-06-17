@@ -9,6 +9,12 @@ public struct OuterMessage : Equatable, Proto2Codable, Codable {
   public var embedded_message: EmbeddedMessage?
   public let unknownFields: Data
 
+  public init(outer_number_before: Int32? = nil, embedded_message: EmbeddedMessage? = nil) {
+    self.outer_number_before = outer_number_before
+    self.embedded_message = embedded_message
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var outer_number_before: Int32? = nil
     var embedded_message: EmbeddedMessage? = nil

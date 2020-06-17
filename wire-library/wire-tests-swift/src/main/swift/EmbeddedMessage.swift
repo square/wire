@@ -9,6 +9,12 @@ public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
   public var inner_number_after: Int32?
   public let unknownFields: Data
 
+  public init(inner_repeated_number: [Int32] = [], inner_number_after: Int32? = nil) {
+    self.inner_repeated_number = inner_repeated_number
+    self.inner_number_after = inner_number_after
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var inner_repeated_number: [Int32] = []
     var inner_number_after: Int32? = nil

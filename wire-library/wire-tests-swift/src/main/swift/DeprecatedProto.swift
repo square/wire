@@ -8,6 +8,11 @@ public struct DeprecatedProto : Equatable, Proto2Codable, Codable {
   public var foo: String?
   public let unknownFields: Data
 
+  public init(foo: String? = nil) {
+    self.foo = foo
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var foo: String? = nil
 

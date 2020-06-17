@@ -8,6 +8,11 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codabl
   public var foo: String?
   public let unknownFields: Data
 
+  public init(foo: String? = nil) {
+    self.foo = foo
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var foo: String? = nil
 

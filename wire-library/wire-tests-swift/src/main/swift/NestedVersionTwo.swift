@@ -13,6 +13,23 @@ public struct NestedVersionTwo : Equatable, Proto2Codable, Codable {
   public var v2_rs: [String]
   public let unknownFields: Data
 
+  public init(
+    i: Int32? = nil,
+    v2_i: Int32? = nil,
+    v2_s: String? = nil,
+    v2_f32: Int32? = nil,
+    v2_f64: Int64? = nil,
+    v2_rs: [String] = []
+  ) {
+    self.i = i
+    self.v2_i = v2_i
+    self.v2_s = v2_s
+    self.v2_f32 = v2_f32
+    self.v2_f64 = v2_f64
+    self.v2_rs = v2_rs
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var i: Int32? = nil
     var v2_i: Int32? = nil

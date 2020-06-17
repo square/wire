@@ -25,6 +25,11 @@ public struct OneOfMessage : Equatable, Proto2Codable, Codable {
     unknownFields = .init()
   }
 
+  public init(choice: Choice? = nil) {
+    self.choice = choice
+    self.unknownFields = .init()
+  }
+
   public init(from reader: ProtoReader) throws {
     var choice: Choice? = nil
 
