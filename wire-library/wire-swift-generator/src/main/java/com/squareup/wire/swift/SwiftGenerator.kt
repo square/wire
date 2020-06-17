@@ -136,7 +136,8 @@ class SwiftGenerator private constructor(
           if (type.oneOfs.isNotEmpty()) {
             // Define the keys which are the set of all direct properties and the properties within
             // each oneof.
-            addType(TypeSpec.enumBuilder("CodingKeys")
+            val codingKeys = structName.nestedType("CodingKeys")
+            addType(TypeSpec.enumBuilder(codingKeys)
                 .addModifiers(PUBLIC)
                 .addSuperType(STRING)
                 .addSuperType(codingKey)
@@ -151,7 +152,7 @@ class SwiftGenerator private constructor(
                 .addParameter("from", "decoder", decoder)
                 .addModifiers(PUBLIC)
                 .throws(true)
-                .addStatement("let container = try decoder.container(keyedBy: CodingKeys.self)")
+                .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
                 .apply {
                   type.declaredFields.forEach { field ->
                     addStatement(
@@ -183,7 +184,7 @@ class SwiftGenerator private constructor(
                 .addParameter("to", "encoder", encoder)
                 .addModifiers(PUBLIC)
                 .throws(true)
-                .addStatement("var container = encoder.container(keyedBy: CodingKeys.self)")
+                .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
                 .apply {
                   type.declaredFields.forEach { field ->
                     addStatement("try container.encode(%1N, forKey: .%1N)", field.name)
