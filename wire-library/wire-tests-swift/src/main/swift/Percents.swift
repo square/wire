@@ -24,6 +24,7 @@ public struct Percents : Equatable, Proto2Codable, Codable {
 
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: text)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

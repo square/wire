@@ -19,6 +19,7 @@ public struct MessageWithStatus : Equatable, Proto2Codable, Codable {
   }
 
   public func encode(to writer: ProtoWriter) throws {
+    try writer.writeUnknownFields(unknownFields)
   }
 
   public enum Status : UInt32, CaseIterable, Codable {

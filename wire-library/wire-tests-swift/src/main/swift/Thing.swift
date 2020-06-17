@@ -24,6 +24,7 @@ public struct Thing : Equatable, Proto2Codable, Codable {
 
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: name)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

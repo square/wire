@@ -54,6 +54,7 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
     try writer.encode(tag: 5, value: fred)
     try writer.encode(tag: 6, value: daisy)
     try writer.encode(tag: 7, value: nested)
+    try writer.writeUnknownFields(unknownFields)
   }
 
   public struct Nested : Equatable, Proto2Codable, Codable {
@@ -77,6 +78,7 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
 
     public func encode(to writer: ProtoWriter) throws {
       try writer.encode(tag: 1, value: value)
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -102,6 +104,7 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
 
     public func encode(to writer: ProtoWriter) throws {
       try writer.encode(tag: 1, value: serial)
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }

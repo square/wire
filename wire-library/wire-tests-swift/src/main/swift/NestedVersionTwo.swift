@@ -49,6 +49,7 @@ public struct NestedVersionTwo : Equatable, Proto2Codable, Codable {
     try writer.encode(tag: 4, value: v2_f32, encoding: .fixed)
     try writer.encode(tag: 5, value: v2_f64, encoding: .fixed)
     try writer.encode(tag: 6, value: v2_rs)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

@@ -59,6 +59,7 @@ public struct VersionTwo : Equatable, Proto2Codable, Codable {
     try writer.encode(tag: 6, value: v2_rs)
     try writer.encode(tag: 7, value: obj)
     try writer.encode(tag: 8, value: en)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

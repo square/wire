@@ -24,6 +24,7 @@ public struct OptionalEnumUser : Equatable, Proto2Codable, Codable {
 
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: optional_enum)
+    try writer.writeUnknownFields(unknownFields)
   }
 
   public enum OptionalEnum : UInt32, CaseIterable, Codable {

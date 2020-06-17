@@ -50,6 +50,7 @@ public struct RedactedOneOf : Equatable, Proto2Codable, Codable {
     if let a = a {
       try a.encode(to: writer)
     }
+    try writer.writeUnknownFields(unknownFields)
   }
 
   public enum A : Equatable {

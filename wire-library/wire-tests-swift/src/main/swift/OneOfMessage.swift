@@ -55,6 +55,7 @@ public struct OneOfMessage : Equatable, Proto2Codable, Codable {
     if let choice = choice {
       try choice.encode(to: writer)
     }
+    try writer.writeUnknownFields(unknownFields)
   }
 
   public enum Choice : Equatable {

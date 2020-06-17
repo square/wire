@@ -29,6 +29,7 @@ public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: a)
     try writer.encode(tag: 2, value: b)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

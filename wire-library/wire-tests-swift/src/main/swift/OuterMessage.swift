@@ -29,6 +29,7 @@ public struct OuterMessage : Equatable, Proto2Codable, Codable {
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: outer_number_before)
     try writer.encode(tag: 2, value: embedded_message)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

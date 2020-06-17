@@ -19,6 +19,7 @@ public struct NoFields : Equatable, Proto2Codable, Codable {
   }
 
   public func encode(to writer: ProtoWriter) throws {
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

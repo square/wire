@@ -29,6 +29,7 @@ public struct KeywordKotlin : Equatable, Proto2Codable, Codable {
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: object)
     try writer.encode(tag: 2, value: when)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

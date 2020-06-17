@@ -34,6 +34,7 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
     try writer.encode(tag: 1, value: name)
     try writer.encode(tag: 2, value: score)
     try writer.encode(tag: 3, value: models)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

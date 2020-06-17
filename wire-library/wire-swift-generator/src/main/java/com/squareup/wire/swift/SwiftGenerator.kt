@@ -313,8 +313,8 @@ class SwiftGenerator private constructor(
                 addStatement("try %N.encode(to: writer)", oneOf.name)
                 endControlFlow()
               }
-              // TODO unknown fields
             }
+            .addStatement("try writer.writeUnknownFields(unknownFields)")
             .build())
         .apply {
           type.nestedTypes.forEach { nestedType ->

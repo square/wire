@@ -29,6 +29,7 @@ public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: inner_repeated_number, packed: true)
     try writer.encode(tag: 2, value: inner_number_after)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

@@ -100,6 +100,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     if let choice = choice {
       try choice.encode(to: writer)
     }
+    try writer.writeUnknownFields(unknownFields)
   }
 
   public enum Choice : Equatable {
@@ -169,6 +170,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -189,6 +191,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -209,6 +212,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -229,6 +233,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -249,6 +254,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -269,6 +275,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -289,6 +296,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -309,6 +317,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -329,6 +338,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -349,6 +359,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -369,6 +380,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }
@@ -389,6 +401,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }

@@ -444,6 +444,7 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     try writer.encode(tag: 502, value: map_string_string)
     try writer.encode(tag: 503, value: map_string_message)
     try writer.encode(tag: 504, value: map_string_enum)
+    try writer.writeUnknownFields(unknownFields)
   }
 
   public enum NestedEnum : UInt32, CaseIterable, Codable {
@@ -473,6 +474,7 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
 
     public func encode(to writer: ProtoWriter) throws {
       try writer.encode(tag: 1, value: a)
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }

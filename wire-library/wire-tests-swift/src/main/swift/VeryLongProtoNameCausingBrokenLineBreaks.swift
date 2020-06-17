@@ -24,6 +24,7 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codabl
 
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: foo)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }

@@ -44,6 +44,7 @@ public struct Person : Equatable, Proto2Codable, Codable {
     try writer.encode(tag: 3, value: email)
     try writer.encode(tag: 4, value: phone)
     try writer.encode(tag: 5, value: aliases)
+    try writer.writeUnknownFields(unknownFields)
   }
 
   public enum PhoneType : UInt32, CaseIterable, Codable {
@@ -80,6 +81,7 @@ public struct Person : Equatable, Proto2Codable, Codable {
     public func encode(to writer: ProtoWriter) throws {
       try writer.encode(tag: 1, value: number)
       try writer.encode(tag: 2, value: type)
+      try writer.writeUnknownFields(unknownFields)
     }
 
   }

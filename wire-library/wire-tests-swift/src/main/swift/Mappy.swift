@@ -24,6 +24,7 @@ public struct Mappy : Equatable, Proto2Codable, Codable {
 
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: things)
+    try writer.writeUnknownFields(unknownFields)
   }
 
 }
