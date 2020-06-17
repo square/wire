@@ -25,7 +25,6 @@ import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
 import io.outfoxx.swiftpoet.Modifier.FINAL
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.OPTIONAL
-import io.outfoxx.swiftpoet.ParameterizedTypeName
 import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeName
 import io.outfoxx.swiftpoet.TypeSpec
@@ -90,6 +89,8 @@ class SwiftGenerator private constructor(
   @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
   private fun generateMessage(type: MessageType): TypeSpec {
     val structName = type.typeName
+    val oneOfEnumNames = type.oneOfs.associateWith { structName.nestedType(it.name.capitalize(US)) }
+
     return TypeSpec.structBuilder(structName)
         .addModifiers(PUBLIC)
         .addSuperType(equatable)
@@ -100,7 +101,7 @@ class SwiftGenerator private constructor(
             addMutableProperty(field.name, field.typeName, PUBLIC)
           }
           type.oneOfs.forEach { oneOf ->
-            val enumName = structName.nestedType(oneOf.name.capitalize(US)) // TODO centralize
+            val enumName = oneOfEnumNames.getValue(oneOf)
             addMutableProperty(oneOf.name, enumName.makeOptional(), PUBLIC)
             addType(TypeSpec.enumBuilder(enumName)
                 .addModifiers(PUBLIC)
@@ -223,7 +224,7 @@ class SwiftGenerator private constructor(
                 addStatement("var %N: %T = %L", field.name, localType, initializer)
               }
               type.oneOfs.forEach { oneOf ->
-                val enumName = structName.nestedType(oneOf.name.capitalize(US)) // TODO centralize
+                val enumName = oneOfEnumNames.getValue(oneOf)
                 addStatement("var %N: %T = nil", oneOf.name, enumName.makeOptional())
               }
               addStatement("")
