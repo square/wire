@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct AllTypes : Equatable, ProtoCodable, Codable {
+public struct AllTypes : Equatable, Proto2Codable, Codable {
 
   public var opt_int32: Int32?
   public var opt_uint32: UInt32?
@@ -452,7 +452,7 @@ public struct AllTypes : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct NestedMessage : Equatable, ProtoCodable, Codable {
+  public struct NestedMessage : Equatable, Proto2Codable, Codable {
 
     public var a: Int32?
     public let unknownFields: Data

@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct VersionOne : Equatable, ProtoCodable, Codable {
+public struct VersionOne : Equatable, Proto2Codable, Codable {
 
   public var i: Int32?
   public var obj: NestedVersionOne?

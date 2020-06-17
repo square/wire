@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Form : Equatable, ProtoCodable, Codable {
+public struct Form : Equatable, Proto2Codable, Codable {
 
   public var choice: Choice?
   public let unknownFields: Data
@@ -153,7 +153,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct ButtonElement : Equatable, ProtoCodable, Codable {
+  public struct ButtonElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -173,7 +173,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct LocalImageElement : Equatable, ProtoCodable, Codable {
+  public struct LocalImageElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -193,7 +193,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct RemoteImageElement : Equatable, ProtoCodable, Codable {
+  public struct RemoteImageElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -213,7 +213,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct MoneyElement : Equatable, ProtoCodable, Codable {
+  public struct MoneyElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -233,7 +233,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct SpacerElement : Equatable, ProtoCodable, Codable {
+  public struct SpacerElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -253,7 +253,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct TextElement : Equatable, ProtoCodable, Codable {
+  public struct TextElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -273,7 +273,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct CustomizedCardElement : Equatable, ProtoCodable, Codable {
+  public struct CustomizedCardElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -293,7 +293,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct AddressElement : Equatable, ProtoCodable, Codable {
+  public struct AddressElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -313,7 +313,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct TextInputElement : Equatable, ProtoCodable, Codable {
+  public struct TextInputElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -333,7 +333,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct OptionPickerElement : Equatable, ProtoCodable, Codable {
+  public struct OptionPickerElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -353,7 +353,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct DetailRowElement : Equatable, ProtoCodable, Codable {
+  public struct DetailRowElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 
@@ -373,7 +373,7 @@ public struct Form : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct CurrencyConversionFlagsElement : Equatable, ProtoCodable, Codable {
+  public struct CurrencyConversionFlagsElement : Equatable, Proto2Codable, Codable {
 
     public let unknownFields: Data
 

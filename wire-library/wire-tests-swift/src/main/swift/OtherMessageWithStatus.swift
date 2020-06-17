@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct OtherMessageWithStatus : Equatable, ProtoCodable, Codable {
+public struct OtherMessageWithStatus : Equatable, Proto2Codable, Codable {
 
   public let unknownFields: Data
 

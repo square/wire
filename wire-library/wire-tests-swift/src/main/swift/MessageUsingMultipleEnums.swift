@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct MessageUsingMultipleEnums : Equatable, ProtoCodable, Codable {
+public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
 
   public var a: MessageWithStatus.Status?
   public var b: OtherMessageWithStatus.Status?

@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct ForeignMessage : Equatable, ProtoCodable, Codable {
+public struct ForeignMessage : Equatable, Proto2Codable, Codable {
 
   public var i: Int32?
   public let unknownFields: Data

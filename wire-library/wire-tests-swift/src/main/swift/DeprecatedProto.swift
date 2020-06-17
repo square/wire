@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct DeprecatedProto : Equatable, ProtoCodable, Codable {
+public struct DeprecatedProto : Equatable, Proto2Codable, Codable {
 
   public var foo: String?
   public let unknownFields: Data

@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct FooBar : Equatable, ProtoCodable, Codable {
+public struct FooBar : Equatable, Proto2Codable, Codable {
 
   public var foo: Int32?
   public var bar: String?
@@ -56,7 +56,7 @@ public struct FooBar : Equatable, ProtoCodable, Codable {
     try writer.encode(tag: 7, value: nested)
   }
 
-  public struct Nested : Equatable, ProtoCodable, Codable {
+  public struct Nested : Equatable, Proto2Codable, Codable {
 
     public var value: FooBarBazEnum?
     public let unknownFields: Data
@@ -81,7 +81,7 @@ public struct FooBar : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct More : Equatable, ProtoCodable, Codable {
+  public struct More : Equatable, Proto2Codable, Codable {
 
     public var serial: [Int32]
     public let unknownFields: Data

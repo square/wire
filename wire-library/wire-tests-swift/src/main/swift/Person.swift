@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Person : Equatable, ProtoCodable, Codable {
+public struct Person : Equatable, Proto2Codable, Codable {
 
   public var name: String
   public var id: Int32
@@ -54,7 +54,7 @@ public struct Person : Equatable, ProtoCodable, Codable {
 
   }
 
-  public struct PhoneNumber : Equatable, ProtoCodable, Codable {
+  public struct PhoneNumber : Equatable, Proto2Codable, Codable {
 
     public var number: String
     public var type: PhoneType?

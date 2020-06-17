@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Thing : Equatable, ProtoCodable, Codable {
+public struct Thing : Equatable, Proto2Codable, Codable {
 
   public var name: String?
   public let unknownFields: Data

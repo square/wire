@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Percents : Equatable, ProtoCodable, Codable {
+public struct Percents : Equatable, Proto2Codable, Codable {
 
   public var text: String?
   public let unknownFields: Data

@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct NestedVersionOne : Equatable, ProtoCodable, Codable {
+public struct NestedVersionOne : Equatable, Proto2Codable, Codable {
 
   public var i: Int32?
   public let unknownFields: Data

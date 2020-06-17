@@ -38,7 +38,7 @@ class SwiftGenerator private constructor(
   val schema: Schema,
   private val nameToTypeName: Map<ProtoType, DeclaredTypeName>
 ) {
-  private val protoCodable = DeclaredTypeName.typeName("Wire.ProtoCodable") // TODO Proto2Codable
+  private val protoCodable = DeclaredTypeName.typeName("Wire.Proto2Codable")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")

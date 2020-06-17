@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, ProtoCodable, Codable {
+public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codable, Codable {
 
   public var foo: String?
   public let unknownFields: Data

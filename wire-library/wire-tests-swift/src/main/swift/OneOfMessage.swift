@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct OneOfMessage : Equatable, ProtoCodable, Codable {
+public struct OneOfMessage : Equatable, Proto2Codable, Codable {
 
   public var choice: Choice?
   public let unknownFields: Data

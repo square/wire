@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct ModelEvaluation : Equatable, ProtoCodable, Codable {
+public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
 
   public var name: String?
   public var score: Double?

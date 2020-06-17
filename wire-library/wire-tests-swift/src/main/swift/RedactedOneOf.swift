@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct RedactedOneOf : Equatable, ProtoCodable, Codable {
+public struct RedactedOneOf : Equatable, Proto2Codable, Codable {
 
   public var a: A?
   public let unknownFields: Data

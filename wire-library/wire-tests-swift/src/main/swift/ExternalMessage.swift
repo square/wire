@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct ExternalMessage : Equatable, ProtoCodable, Codable {
+public struct ExternalMessage : Equatable, Proto2Codable, Codable {
 
   public var f: Float?
   public let unknownFields: Data

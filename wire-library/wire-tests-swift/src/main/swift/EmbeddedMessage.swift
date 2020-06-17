@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct EmbeddedMessage : Equatable, ProtoCodable, Codable {
+public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
 
   public var inner_repeated_number: [Int32]
   public var inner_number_after: Int32?

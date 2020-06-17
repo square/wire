@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct KeywordKotlin : Equatable, ProtoCodable, Codable {
+public struct KeywordKotlin : Equatable, Proto2Codable, Codable {
 
   public var object: String?
   public var when: Int32?
