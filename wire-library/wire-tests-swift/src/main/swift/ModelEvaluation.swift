@@ -19,7 +19,7 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
       switch tag {
         case 1: name = try reader.decode(String.self)
         case 2: score = try reader.decode(Double.self)
-        case 3: fatalError() // TODO models map<string, ModelEvaluation>
+        case 3: try reader.decode(into: &models)
         default: try reader.readUnknownField(tag: tag)
       }
     }
@@ -33,7 +33,7 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
   public func encode(to writer: ProtoWriter) throws {
     try writer.encode(tag: 1, value: name)
     try writer.encode(tag: 2, value: score)
-    // TODO models map<string, ModelEvaluation>
+    try writer.encode(tag: 3, value: models)
   }
 
 }

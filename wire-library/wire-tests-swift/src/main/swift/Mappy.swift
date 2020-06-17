@@ -13,7 +13,7 @@ public struct Mappy : Equatable, Proto2Codable, Codable {
 
     let unknownFields = try reader.forEachTag { tag in
       switch tag {
-        case 1: fatalError() // TODO things map<string, Thing>
+        case 1: try reader.decode(into: &things)
         default: try reader.readUnknownField(tag: tag)
       }
     }
@@ -23,7 +23,7 @@ public struct Mappy : Equatable, Proto2Codable, Codable {
   }
 
   public func encode(to writer: ProtoWriter) throws {
-    // TODO things map<string, Thing>
+    try writer.encode(tag: 1, value: things)
   }
 
 }

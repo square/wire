@@ -262,10 +262,10 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         case 414: default_string = try reader.decode(String.self)
         case 415: default_bytes = try reader.decode(Data.self)
         case 416: default_nested_enum = try reader.decode(NestedEnum.self)
-        case 501: fatalError() // TODO map_int32_int32 map<int32, int32>
-        case 502: fatalError() // TODO map_string_string map<string, string>
-        case 503: fatalError() // TODO map_string_message map<string, NestedMessage>
-        case 504: fatalError() // TODO map_string_enum map<string, NestedEnum>
+        case 501: try reader.decode(into: &map_int32_int32)
+        case 502: try reader.decode(into: &map_string_string)
+        case 503: try reader.decode(into: &map_string_message)
+        case 504: try reader.decode(into: &map_string_enum)
         default: try reader.readUnknownField(tag: tag)
       }
     }
@@ -440,10 +440,10 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     try writer.encode(tag: 414, value: default_string)
     try writer.encode(tag: 415, value: default_bytes)
     try writer.encode(tag: 416, value: default_nested_enum)
-    // TODO map_int32_int32 map<int32, int32>
-    // TODO map_string_string map<string, string>
-    // TODO map_string_message map<string, NestedMessage>
-    // TODO map_string_enum map<string, NestedEnum>
+    try writer.encode(tag: 501, value: map_int32_int32)
+    try writer.encode(tag: 502, value: map_string_string)
+    try writer.encode(tag: 503, value: map_string_message)
+    try writer.encode(tag: 504, value: map_string_enum)
   }
 
   public enum NestedEnum : UInt32, CaseIterable, Codable {

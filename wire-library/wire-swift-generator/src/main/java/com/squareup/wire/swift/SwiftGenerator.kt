@@ -233,8 +233,14 @@ class SwiftGenerator private constructor(
                   .apply {
                     type.declaredFields.forEach { field ->
                       if (field.isMap) {
-                        // TODO
-                        add("case %L: fatalError() // TODO ${field.name} ${field.type}\n", field.tag)
+                        add("case %L: try reader.decode(into: &%N", field.tag, field.name)
+                        field.keyType.encoding?.let { keyEncoding ->
+                          add(", keyEncoding: .%N", keyEncoding)
+                        }
+                        field.valueType.encoding?.let { valueEncoding ->
+                          add(", valueEncoding: .%N", valueEncoding)
+                        }
+                        add(")\n")
                       } else if (field.isRepeated) {
                         val itemType = (field.typeName as ParameterizedTypeName).typeArguments[0]
                         if (schema.getType(field.type!!) is EnumType) {
@@ -291,18 +297,21 @@ class SwiftGenerator private constructor(
             .throws(true)
             .apply {
               type.declaredFields.forEach { field ->
-                val encoding = when (field.type!!) {
-                  ProtoType.SINT32, ProtoType.SINT64 -> "signed"
-                  ProtoType.FIXED32, ProtoType.FIXED64 -> "fixed"
-                  else -> null
-                }
+                val encoding = field.type!!.encoding
                 if (encoding != null) {
                   addStatement(
                       "try writer.encode(tag: %L, value: %N, encoding: .%N)", field.tag, field.name,
                       encoding
                   )
                 } else if (field.isMap) {
-                  addComment("TODO ${field.name} ${field.type}")
+                  addCode("try writer.encode(tag: %L, value: %N", field.tag, field.name)
+                  field.keyType.encoding?.let { keyEncoding ->
+                    addCode(", keyEncoding: .%N", keyEncoding)
+                  }
+                  field.valueType.encoding?.let { valueEncoding ->
+                    addCode(", valueEncoding: .%N", valueEncoding)
+                  }
+                  addCode(")\n")
                 } else if (field.isPacked) {
                   addStatement(
                       "try writer.encode(tag: %L, value: %N, packed: true)", field.tag, field.name
@@ -326,6 +335,13 @@ class SwiftGenerator private constructor(
         }
         .build()
   }
+
+  private val ProtoType.encoding: String?
+    get() = when (this) {
+      ProtoType.SINT32, ProtoType.SINT64 -> "signed"
+      ProtoType.FIXED32, ProtoType.FIXED64 -> "fixed"
+      else -> null
+    }
 
   private fun generateEnum(type: EnumType): TypeSpec {
     val enumName = type.typeName
