@@ -168,7 +168,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -193,7 +192,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -218,7 +216,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -243,7 +240,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -268,7 +264,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -293,7 +288,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -318,7 +312,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -343,7 +336,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -368,7 +360,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -393,7 +384,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -418,7 +408,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)
@@ -443,7 +432,6 @@ public struct Form : Equatable, Proto2Codable, Codable {
     }
 
     public init(from reader: ProtoReader) throws {
-
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
           default: try reader.readUnknownField(tag: tag)

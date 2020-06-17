@@ -254,7 +254,9 @@ class SwiftGenerator private constructor(
                 val enumName = oneOfEnumNames.getValue(oneOf)
                 addStatement("var %N: %T = nil", oneOf.name, enumName.makeOptional())
               }
-              addStatement("")
+              if (type.fieldsAndOneOfFields.isNotEmpty()) {
+                addStatement("")
+              }
 
               addCode(CodeBlock.builder()
                   .add("let unknownFields = try reader.forEachTag { tag in\n%>")
