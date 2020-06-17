@@ -216,6 +216,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmField actual val BYTES: ProtoAdapter<ByteString> = commonBytes()
     @JvmField actual val STRING: ProtoAdapter<String> = commonString()
     @JvmField actual val DURATION: ProtoAdapter<Duration> = commonDuration()
+    @JvmField actual val EMPTY: ProtoAdapter<Empty> = commonEmpty()
     @JvmField actual val STRUCT_MAP: ProtoAdapter<Map<String, *>> = commonStructMap()
     @JvmField actual val STRUCT_LIST: ProtoAdapter<List<*>> = commonStructList()
     @JvmField actual val STRUCT_NULL: ProtoAdapter<Nothing?> = commonStructNull()
