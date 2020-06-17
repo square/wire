@@ -15,7 +15,7 @@ public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
 
     let unknownFields = try reader.forEachTag { tag in
       switch tag {
-        case 1: inner_repeated_number.append(try reader.decode(Int32.self))
+        case 1: try reader.decode(into: &inner_repeated_number)
         case 2: inner_number_after = try reader.decode(Int32.self)
         default: try reader.readUnknownField(tag: tag)
       }

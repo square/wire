@@ -24,8 +24,8 @@ public struct Person : Equatable, Proto2Codable, Codable {
         case 1: name = try reader.decode(String.self)
         case 2: id = try reader.decode(Int32.self)
         case 3: email = try reader.decode(String.self)
-        case 4: phone.append(try reader.decode(PhoneNumber.self))
-        case 5: aliases.append(try reader.decode(String.self))
+        case 4: try reader.decode(into: &phone)
+        case 5: try reader.decode(into: &aliases)
         default: try reader.readUnknownField(tag: tag)
       }
     }

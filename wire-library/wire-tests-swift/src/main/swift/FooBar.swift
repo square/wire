@@ -29,9 +29,9 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         case 2: bar = try reader.decode(String.self)
         case 3: baz = try reader.decode(Nested.self)
         case 4: qux = try reader.decode(UInt64.self)
-        case 5: fred.append(try reader.decode(Float.self))
+        case 5: try reader.decode(into: &fred)
         case 6: daisy = try reader.decode(Double.self)
-        case 7: nested.append(try reader.decode(FooBar.self))
+        case 7: try reader.decode(into: &nested)
         default: try reader.readUnknownField(tag: tag)
       }
     }
@@ -91,7 +91,7 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
 
       let unknownFields = try reader.forEachTag { tag in
         switch tag {
-          case 1: serial.append(try reader.decode(Int32.self))
+          case 1: try reader.decode(into: &serial)
           default: try reader.readUnknownField(tag: tag)
         }
       }

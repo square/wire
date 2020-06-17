@@ -242,18 +242,7 @@ class SwiftGenerator private constructor(
                         }
                         add(")\n")
                       } else if (field.isRepeated) {
-                        val itemType = (field.typeName as ParameterizedTypeName).typeArguments[0]
-                        if (schema.getType(field.type!!) is EnumType) {
-                          add(
-                              "case %L: try reader.decode(%T.self).flatMap { %N.append($0) }\n",
-                              field.tag, itemType.makeNonOptional(), field.name
-                          )
-                        } else {
-                          add(
-                              "case %L: %N.append(try reader.decode(%T.self))\n", field.tag,
-                              field.name, itemType.makeNonOptional()
-                          )
-                        }
+                        add("case %L: try reader.decode(into: &%N)\n", field.tag, field.name)
                       } else {
                         add(
                             "case %L: %N = try reader.decode(%T.self)\n", field.tag, field.name,
