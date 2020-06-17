@@ -110,7 +110,6 @@ final class ProtoWriterTests: XCTestCase {
         XCTAssertEqual(writer.data, Data(hexEncoded: "0500000000000000_FFFFFFFFFFFFFFFF"))
     }
 
-
     func testWriteVarint32() {
         let writer = ProtoWriter()
         writer.writeVarint(UInt32(5))

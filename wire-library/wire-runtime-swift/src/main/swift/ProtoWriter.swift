@@ -19,7 +19,7 @@ public final class ProtoWriter {
         self.data = data
     }
 
-    // MARK: - Encoding
+    // MARK: - Public Methods - Encoding
 
     public func encode<T: ProtoIntEncodable>(tag: UInt32, value: T?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
@@ -29,7 +29,7 @@ public final class ProtoWriter {
         }
     }
 
-    // MARK: - Internal Methods - Writing Data
+    // MARK: - Internal Methods - Writing Primitives
 
     /** Write a little-endian 32-bit integer.  */
     func writeFixed32(_ value: UInt32) {
@@ -80,13 +80,13 @@ public final class ProtoWriter {
         try encode(value)
     }
 
-    // MARK: - Private Methods - Writing Data
+    // MARK: - Private Methods - Writing Primitives
 
     /**
      * Encode a UInt64 into writable varint representation data. `value` is treated  unsigned, so it won't be sign-extended
      * if negative.
      */
-    func writeVarint(_ value: UInt64, at index: Int) {
+    private func writeVarint(_ value: UInt64, at index: Int) {
         var index = index
         var value = value
 

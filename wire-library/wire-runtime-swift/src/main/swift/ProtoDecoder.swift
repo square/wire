@@ -20,16 +20,28 @@ public final class ProtoDecoder {
 
     public enum Error: Swift.Error, LocalizedError {
 
+        case invalidStructure(message: String)
+
+        case malformedVarint
+
         /** 
          An error thrown when a field that is marked as `required` is not included
          in the data being decoded
          */
         case missingRequiredField(typeName: String, fieldName: String)
-        
+
+        case unexpectedEndOfData
+
         var localizedDescription: String {
             switch self {
+            case let .invalidStructure(message):
+                return "Message structure is invalid: \(message)."
+            case .malformedVarint:
+                return "Encoded varint was not in the correct format."
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) is missing for type \(typeName)."
+            case .unexpectedEndOfData:
+                return "A field indicates that its data extends beyond the end of the available message data."
             }
         }
     }
