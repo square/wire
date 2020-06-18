@@ -240,8 +240,7 @@ public final class ProtoReader {
 
     /**
      * Begin a nested message. A call to this method will restrict the reader so that [nextTag]
-     * returns nil when the message is complete. An accompanying call to [endMessage] must then occur
-     * with the opaque token returned from this method.
+     * returns nil when the message is complete.
      *
      * - parameter decode: A block which is called to actually decode the message. The parameter
      *                     to the block is the end offset of the message.
@@ -273,7 +272,7 @@ public final class ProtoReader {
 
     /**
      * Reads and returns the next tag of the message, or nil if there are no further tags. Use
-     * [peekFieldEncoding] after calling this method to query its encoding. This silently skips
+     * `nextFieldWireType` after calling this method to query its wire type. This silently skips
      * groups.
      */
     private func nextTag(messageEndOffset: Int) throws -> UInt32? {
