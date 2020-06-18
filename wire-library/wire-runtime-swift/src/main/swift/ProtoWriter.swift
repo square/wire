@@ -38,6 +38,15 @@ public final class ProtoWriter {
         }
     }
 
+    /** Encode a repeated integer field */
+    public func encode<T: ProtoIntEncodable>(tag: UInt32, value: [T]?, encoding: ProtoIntEncoding = .variable, packed: Bool = false) throws {
+        guard let value = value else { return }
+        let wireType = ProtoWriter.wireType(for: T.self, encoding: encoding)
+        try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
+            try $0.encode(to: self, encoding: encoding)
+        }
+    }
+
     /**
      Encode a field which has a single encoding mechanism (unlike integers).
      This includes most fields types, such as messages, strings, bytes, and floating point numbers.
@@ -59,7 +68,6 @@ public final class ProtoWriter {
     /** Encode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
     public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]?) throws {
         guard let value = value else { return }
-
 
         let wireType = type(of: value).Element.protoFieldWireType
         try encode(tag: tag, wireType: wireType, value: value, packed: false) { value in
