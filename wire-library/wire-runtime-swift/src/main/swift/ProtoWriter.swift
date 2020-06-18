@@ -76,11 +76,11 @@ public final class ProtoWriter {
     }
 
     func writeVarint(_ value: UInt32) {
-        writeVarint(UInt64(value))
+        data.writeVarint(value, at: data.count)
     }
 
     func writeVarint(_ value: UInt64) {
-        writeVarint(value, at: data.count)
+        data.writeVarint(value, at: data.count)
     }
 
     // MARK: - Private Methods - Field Keys
@@ -133,41 +133,7 @@ public final class ProtoWriter {
             data.insert(contentsOf: zeros, at: startOffset + reservedSize)
         }
 
-        writeVarint(writtenCount, at: startOffset)
-    }
-
-    // MARK: - Private Methods - Writing Primitives
-
-    private func writeVarint(_ value: UInt32, at index: Int) {
-        // Because an unsigned (positive) varint will only use as many bytes as it needs we can
-        // safely up-cast a 32-bit value to a 64-bit one for encoding purposes.
-        writeVarint(UInt64(value), at: index)
-    }
-
-    /**
-     * Encode a UInt64 into writable varint representation data. `value` is treated  unsigned, so it won't be sign-extended
-     * if negative.
-     */
-    private func writeVarint(_ value: UInt64, at index: Int) {
-        var index = index
-        var value = value
-
-        while (value & ~0x7f) != 0 {
-            let byte = UInt8((value & 0x7f) | 0x80)
-            if index < data.count {
-                data[index] = byte
-            } else {
-                data.append(byte)
-            }
-            index += 1
-            value = value >> 7
-        }
-        let byte = UInt8(bitPattern: Int8(value))
-        if index < data.count {
-            data[index] = byte
-        } else {
-            data.append(byte)
-        }
+        data.writeVarint(writtenCount, at: startOffset)
     }
 
 }
