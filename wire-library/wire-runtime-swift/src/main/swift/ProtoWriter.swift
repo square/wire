@@ -60,6 +60,7 @@ public final class ProtoWriter {
     public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]?) throws {
         guard let value = value else { return }
 
+
         let wireType = type(of: value).Element.protoFieldWireType
         try encode(tag: tag, wireType: wireType, value: value, packed: false) { value in
             if wireType == .lengthDelimited {
@@ -71,19 +72,26 @@ public final class ProtoWriter {
     }
 
     /**
+     Encode a repeated `double` field.
+     This method is distinct from the generic repeated `ProtoEncodable` one because doubles can be packed.
+     */
+    public func encode(tag: UInt32, value: [Double]?, packed: Bool = false) throws {
+        guard let value = value else { return }
+
+        try encode(tag: tag, wireType: .fixed64, value: value, packed: packed) { value in
+            try value.encode(to: self)
+        }
+    }
+
+    /**
      Encode a repeated `float` field.
      This method is distinct from the generic repeated `ProtoEncodable` one because floats can be packed.
      */
     public func encode(tag: UInt32, value: [Float]?, packed: Bool = false) throws {
         guard let value = value else { return }
 
-        let wireType = type(of: value).Element.protoFieldWireType
-        try encode(tag: tag, wireType: wireType, value: value, packed: packed) { value in
-            if wireType == .lengthDelimited {
-                try encodeLengthDelimited() { try value.encode(to: self) }
-            } else {
-                try value.encode(to: self)
-            }
+        try encode(tag: tag, wireType: .fixed32, value: value, packed: packed) { value in
+            try value.encode(to: self)
         }
     }
 
