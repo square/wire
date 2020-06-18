@@ -281,6 +281,27 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(DEFAULT_ALL_TYPES_JSON, jsonPrinter.print(defaultAllTypesProtoc))
   }
 
+  @Test fun defaultAllTypes() {
+    val protocBytes = defaultAllTypesProtoc.toByteArray()
+    assertThat(AllTypes.ADAPTER.encode(defaultAllTypesWire)).isEqualTo(protocBytes)
+    assertThat(AllTypes.ADAPTER.decode(protocBytes)).isEqualTo(defaultAllTypesWire)
+  }
+
+  @Test fun explicitIdentityAllTypes() {
+    val protocBytes = explicitIdentityAllTypesProtoc.toByteArray()
+    assertThat(AllTypes.ADAPTER.encode(explicitIdentityAllTypesWire)).isEqualTo(protocBytes)
+    assertThat(AllTypes.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWire)
+  }
+
+  @Test fun implicitIdentityAllTypes() {
+    val protocMessage = AllTypesOuterClass.AllTypes.newBuilder().build()
+    val wireMessage = AllTypes()
+
+    val protocBytes = protocMessage.toByteArray()
+    assertThat(AllTypes.ADAPTER.encode(wireMessage)).isEqualTo(protocBytes)
+    assertThat(AllTypes.ADAPTER.decode(protocBytes)).isEqualTo(wireMessage)
+  }
+
   @Ignore("TODO")
   @Test fun serializeDefaultAllTypesMoshi() {
     assertJsonEquals(DEFAULT_ALL_TYPES_JSON,
@@ -705,6 +726,117 @@ class Proto3WireProtocCompatibilityTests {
         |}""".trimMargin()
 
     private const val IDENTITY_ALL_TYPES_JSON = "{}"
+
+    private val explicitIdentityAllTypesWire = AllTypes(
+        squareup_proto3_alltypes_int32 = 0,
+        squareup_proto3_alltypes_uint32 = 0,
+        squareup_proto3_alltypes_sint32 = 0,
+        squareup_proto3_alltypes_fixed32 = 0,
+        squareup_proto3_alltypes_sfixed32 = 0,
+        squareup_proto3_alltypes_int64 = 0L,
+        squareup_proto3_alltypes_uint64 = 0L,
+        squareup_proto3_alltypes_sint64 = 0L,
+        squareup_proto3_alltypes_fixed64 = 0L,
+        squareup_proto3_alltypes_sfixed64 = 0L,
+        squareup_proto3_alltypes_bool = false,
+        squareup_proto3_alltypes_float = 0F,
+        squareup_proto3_alltypes_double = 0.0,
+        squareup_proto3_alltypes_string = "",
+        squareup_proto3_alltypes_bytes = ByteString.EMPTY,
+        nested_enum = AllTypes.NestedEnum.UNKNOWN,
+        nested_message = AllTypes.NestedMessage(a = 0),
+        rep_int32 = list(0),
+        rep_uint32 = list(0),
+        rep_sint32 = list(0),
+        rep_fixed32 = list(0),
+        rep_sfixed32 = emptyList(),
+        rep_int64 = emptyList(),
+        rep_uint64 = emptyList(),
+        rep_sint64 = emptyList(),
+        rep_fixed64 = emptyList(),
+        rep_sfixed64 = emptyList(),
+        rep_bool = emptyList(),
+        rep_float = emptyList(),
+        rep_double = emptyList(),
+        rep_string = list(""),
+        rep_bytes = list(ByteString.EMPTY),
+        rep_nested_enum = emptyList(),
+        rep_nested_message = emptyList(),
+        pack_int32 = emptyList(),
+        pack_uint32 = emptyList(),
+        pack_sint32 = emptyList(),
+        pack_fixed32 = emptyList(),
+        pack_sfixed32 = list(0),
+        pack_int64 = list(0L),
+        pack_uint64 = list(0L),
+        pack_sint64 = list(0L),
+        pack_fixed64 = list(0L),
+        pack_sfixed64 = list(0L),
+        pack_bool = list(false),
+        pack_float = list(0F),
+        pack_double = list(0.0),
+        pack_nested_enum = list(AllTypes.NestedEnum.UNKNOWN),
+        map_int32_int32 = mapOf(0 to 0),
+        map_string_message = mapOf("" to AllTypes.NestedMessage()),
+        map_string_enum = mapOf("" to AllTypes.NestedEnum.UNKNOWN),
+        oneof_int32 = 0
+    )
+
+    private val explicitIdentityAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
+        .setInt32(0)
+        .setUint32(0)
+        .setSint32(0)
+        .setFixed32(0)
+        .setSfixed32(0)
+        .setInt64(0L)
+        .setUint64(0L)
+        .setSint64(0L)
+        .setFixed64(0L)
+        .setSfixed64(0L)
+        .setBool(false)
+        .setFloat(0F)
+        .setDouble(0.0)
+        .setString("")
+        .setBytes(com.google.protobuf.ByteString.copyFrom(ByteString.EMPTY.toByteArray()))
+        .setNestedEnum(AllTypesOuterClass.AllTypes.NestedEnum.UNKNOWN)
+        .setNestedMessage(AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(0).build())
+        .addAllRepInt32(list(0))
+        .addAllRepUint32(list(0))
+        .addAllRepSint32(list(0))
+        .addAllRepFixed32(list(0))
+        .addAllRepSfixed32(emptyList())
+        .addAllRepInt64(emptyList())
+        .addAllRepUint64(emptyList())
+        .addAllRepSint64(emptyList())
+        .addAllRepFixed64(emptyList())
+        .addAllRepSfixed64(emptyList())
+        .addAllRepBool(emptyList())
+        .addAllRepFloat(emptyList())
+        .addAllRepDouble(emptyList())
+        .addAllRepString(list(""))
+        .addAllRepBytes(list(com.google.protobuf.ByteString.copyFrom(ByteString.EMPTY.toByteArray())))
+        .addAllRepNestedEnum(emptyList())
+        .addAllRepNestedMessage(emptyList())
+        .addAllPackInt32(emptyList())
+        .addAllPackUint32(emptyList())
+        .addAllPackSint32(emptyList())
+        .addAllPackFixed32(emptyList())
+        .addAllPackSfixed32(list(0))
+        .addAllPackInt64(list(0L))
+        .addAllPackUint64(list(0L))
+        .addAllPackSint64(list(0L))
+        .addAllPackFixed64(list(0L))
+        .addAllPackSfixed64(list(0L))
+        .addAllPackBool(list(false))
+        .addAllPackFloat(list(0F))
+        .addAllPackDouble(list(0.0))
+        .addAllPackNestedEnum(list(
+            AllTypesOuterClass.AllTypes.NestedEnum.UNKNOWN))
+        .putMapInt32Int32(0, 0)
+        .putMapStringMessage("", AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().build())
+        .putMapStringEnum("", AllTypesOuterClass.AllTypes.NestedEnum.UNKNOWN)
+        .setOneofInt32(0)
+        .build()
 
     private fun <T : kotlin.Any> list(t: T): List<T> {
       return listOf(t, t)
