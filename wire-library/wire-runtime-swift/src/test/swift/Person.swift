@@ -54,4 +54,40 @@ public struct Person : Equatable, ProtoCodable {
         try writer.encode(tag: 3, value: email)
     }
 
+    // MARK: -
+
+    public enum PhoneType: UInt32, CaseIterable {
+        case MOBILE = 0
+        case HOME = 1
+        case WORK = 2
+    }
+
+    // MARK: -
+
+    public struct PhoneNumber : Equatable, ProtoEncodable {
+
+        // MARK: - Properties
+
+        public var number: String
+        public var type: PhoneType?
+
+        // MARK: - Init
+
+        public init(
+            number: String,
+            type: PhoneType? = nil
+        ) {
+            self.number = number
+            self.type = type
+        }
+
+        // MARK: - ProtoEncodable
+
+        public func encode(to writer: ProtoWriter) throws {
+            try writer.encode(tag: 1, value: number)
+            try writer.encode(tag: 2, value: type)
+        }
+
+    }
+
 }

@@ -153,6 +153,17 @@ final class ProtoWriterTests: XCTestCase {
         XCTAssertEqual(writer.data, Data(hexEncoded: "0A_03_666F6F")!)
     }
 
+    // MARK: - Tests - Encoding Enums
+
+    func testEncodeEnum() throws {
+        let writer = ProtoWriter()
+        let value: Person.PhoneType = .HOME
+        try writer.encode(tag: 1, value: value)
+
+        print(writer.data.hexEncodedString())
+        XCTAssertEqual(writer.data, Data(hexEncoded: "08_01"))
+    }
+
     // MARK: - Tests - Writing Primitives
 
     func testWriteFixed32() {

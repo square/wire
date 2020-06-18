@@ -21,6 +21,14 @@ public final class ProtoWriter {
 
     // MARK: - Public Methods - Encoding
 
+    /** Encode an `enum` field */
+    public func encode<T: RawRepresentable>(tag: UInt32, value: T?) throws where T.RawValue == UInt32 {
+        guard let value = value else { return }
+        encode(tag: tag, wireType: .varint, value: value) {
+            writeVarint($0.rawValue)
+        }
+    }
+
     /** Encode an integer field */
     public func encode<T: ProtoIntEncodable>(tag: UInt32, value: T?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
