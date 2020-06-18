@@ -27,6 +27,7 @@ public final class ProtoDecoder {
         case malformedVarint
         case missingRequiredField(typeName: String, fieldName: String)
         case unexpectedEndOfData
+        case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
 
         var localizedDescription: String {
             switch self {
@@ -44,6 +45,8 @@ public final class ProtoDecoder {
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
             case .unexpectedEndOfData:
                 return "A field indicates that its data extends beyond the end of the available message data."
+            case let .unknownEnumCase(type, fieldNumber):
+                return "Unknown case with value \(fieldNumber) found for enum of type \(String(describing: type))."
             }
         }
     }

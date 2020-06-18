@@ -88,6 +88,13 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertEqual(try reader.decode(String.self), "foo")
     }
 
+    // MARK: - Tests - Decoding Enums
+
+    func testDecodeEnum() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "01")!)
+        XCTAssertEqual(try reader.decode(Person.PhoneType.self), .HOME)
+    }
+
     // MARK: - Tests - Reading Primitives
 
     func testReadFixed32() throws {

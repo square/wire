@@ -73,6 +73,19 @@ public final class ProtoReader {
 
     // MARK: - Public Methods - Decoding
 
+    /**
+     Decode enums. Note that the enums themselves do not need to be `ProtoDecodable`
+     so long as they're RawRepresentable as `UInt32`
+     */
+    public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T where T.RawValue == UInt32 {
+        // Pop the enum int value and pass in to initializer
+        let intValue = try readVarint32()
+        guard let enumValue = T(rawValue: intValue) else {
+            throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+        }
+        return enumValue
+    }
+
     public func decode<T: ProtoIntDecodable>(_ type: T.Type, encoding: ProtoIntEncoding = .variable) throws -> T {
         return try T(from: self, encoding: encoding)
     }

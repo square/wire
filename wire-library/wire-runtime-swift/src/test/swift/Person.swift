@@ -5,7 +5,7 @@
 import Foundation
 import WireRuntime
 
-public struct Person : Equatable, ProtoCodable {
+public struct Person : Equatable, Proto2Codable {
 
     // MARK: - Properties
 
@@ -64,7 +64,7 @@ public struct Person : Equatable, ProtoCodable {
 
     // MARK: -
 
-    public struct PhoneNumber : Equatable, ProtoEncodable {
+    public struct PhoneNumber : Equatable, Proto2Codable {
 
         // MARK: - Properties
 
@@ -78,6 +78,23 @@ public struct Person : Equatable, ProtoCodable {
             type: PhoneType? = nil
         ) {
             self.number = number
+            self.type = type
+        }
+
+        // MARK: - ProtoDecodable
+
+        public init(from reader: ProtoReader) throws {
+            var number: String?
+            var type: PhoneType?
+            try reader.forEachTag { tag in
+                switch tag {
+                case 1: number = try reader.decode(String.self)
+                case 2: type = try reader.decode(PhoneType.self)
+                default: fatalError("Unknown tag")
+                }
+            }
+
+            self.number = try Person.checkIfMissing(number, "number")
             self.type = type
         }
 
