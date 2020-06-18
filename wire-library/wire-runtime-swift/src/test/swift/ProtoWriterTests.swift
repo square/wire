@@ -165,6 +165,22 @@ final class ProtoWriterTests: XCTestCase {
 
     // MARK: - Tests - Encoding Repeated Fields
 
+    func testRepeatedFloats() throws {
+        let writer = ProtoWriter()
+        let floats: [Float] = [1.2345, 6.7890]
+        try writer.encode(tag: 1, value: floats, packed: false)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0D_19049E3F_0D_7D3FD940")!)
+    }
+
+    func testPackedRepeatedFloats() throws {
+        let writer = ProtoWriter()
+        let floats: [Float] = [1.2345, 6.7890]
+        try writer.encode(tag: 1, value: floats, packed: true)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: "08_08_19049E3F_7D3FD940")!)
+    }
+
     func testRepeatedString() throws {
         let writer = ProtoWriter()
         let strings = ["foo", "bar"]

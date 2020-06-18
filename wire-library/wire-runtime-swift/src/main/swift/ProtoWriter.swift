@@ -56,12 +56,29 @@ public final class ProtoWriter {
         }
     }
 
-    /** Encode a repeated message field */
+    /** Encode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
     public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]?) throws {
         guard let value = value else { return }
 
         let wireType = type(of: value).Element.protoFieldWireType
         try encode(tag: tag, wireType: wireType, value: value, packed: false) { value in
+            if wireType == .lengthDelimited {
+                try encodeLengthDelimited() { try value.encode(to: self) }
+            } else {
+                try value.encode(to: self)
+            }
+        }
+    }
+
+    /**
+     Encode a repeated `float` field.
+     This method is distinct from the generic repeated `ProtoEncodable` one because floats can be packed.
+     */
+    public func encode(tag: UInt32, value: [Float]?, packed: Bool = false) throws {
+        guard let value = value else { return }
+
+        let wireType = type(of: value).Element.protoFieldWireType
+        try encode(tag: tag, wireType: wireType, value: value, packed: packed) { value in
             if wireType == .lengthDelimited {
                 try encodeLengthDelimited() { try value.encode(to: self) }
             } else {
