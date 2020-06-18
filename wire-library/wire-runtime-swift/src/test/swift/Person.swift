@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import WireRuntime
+import Wire
 
 public struct Person : Equatable, Proto2Codable {
 

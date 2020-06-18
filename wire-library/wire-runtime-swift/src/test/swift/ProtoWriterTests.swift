@@ -4,7 +4,7 @@
 
 import Foundation
 import XCTest
-@testable import WireRuntime
+@testable import Wire
 
 final class ProtoWriterTests: XCTestCase {
 

@@ -2,5 +2,5 @@ apply plugin: 'swift-library'
 apply plugin: 'xctest'
 
 library {
-  module.set('WireRuntime')
+  module.set('Wire')
 }
