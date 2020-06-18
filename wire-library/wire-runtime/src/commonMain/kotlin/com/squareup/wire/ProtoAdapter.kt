@@ -162,6 +162,7 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val BYTES: ProtoAdapter<ByteString>
     @JvmField val STRING: ProtoAdapter<String>
     @JvmField val DURATION: ProtoAdapter<Duration>
+    @JvmField val EMPTY: ProtoAdapter<Unit>
     @JvmField val STRUCT_MAP: ProtoAdapter<Map<String, *>>
     @JvmField val STRUCT_LIST: ProtoAdapter<List<*>>
     @JvmField val STRUCT_NULL: ProtoAdapter<Nothing?>
@@ -720,6 +721,23 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> getNano()
       }
     }
+}
+
+internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
+    FieldEncoding.LENGTH_DELIMITED,
+    Unit::class,
+    "type.googleapis.com/google.protobuf.Empty"
+) {
+  override fun encodedSize(value: Unit): Int = 0
+
+  override fun encode(writer: ProtoWriter, value: Unit) = Unit
+
+  override fun decode(reader: ProtoReader): Unit {
+    reader.forEachTag { tag -> reader.readUnknownField(tag) }
+    return Unit
+  }
+
+  override fun redact(value: Unit): Unit = value
 }
 
 internal fun commonStructMap(): ProtoAdapter<Map<String, *>> = object : ProtoAdapter<Map<String, *>>(

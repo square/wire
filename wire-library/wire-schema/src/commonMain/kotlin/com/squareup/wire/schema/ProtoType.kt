@@ -113,6 +113,7 @@ class ProtoType {
     @JvmField val UINT64 = ProtoType(true, "uint64")
     @JvmField val ANY = ProtoType(false, "google.protobuf.Any")
     @JvmField val DURATION = ProtoType(false, "google.protobuf.Duration")
+    @JvmField val EMPTY = ProtoType(false, "google.protobuf.Empty")
     @JvmField val STRUCT_MAP = ProtoType(false, "google.protobuf.Struct")
     @JvmField val STRUCT_VALUE = ProtoType(false, "google.protobuf.Value")
     @JvmField val STRUCT_NULL = ProtoType(false, "google.protobuf.NullValue")
