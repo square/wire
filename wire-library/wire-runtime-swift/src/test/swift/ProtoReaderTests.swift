@@ -11,65 +11,77 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Decoding Integers
 
     func testDecodeFixedInt32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "FBFFFFFF")!)
-        XCTAssertEqual(try reader.decode(Int32.self, encoding: .fixed), -5)
+        let reader = ProtoReader(data: Data(hexEncoded: "0D_FBFFFFFF")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Int32.self, encoding: .fixed) }
+        XCTAssertEqual(value, -5)
     }
 
-    func testDecodeFixedInt64() {
-        let reader = ProtoReader(data: Data(hexEncoded: "FBFFFFFFFFFFFFFF")!)
-        XCTAssertEqual(try reader.decode(Int64.self, encoding: .fixed), -5)
+    func testDecodeFixedInt64() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "09_FBFFFFFFFFFFFFFF")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Int64.self, encoding: .fixed) }
+        XCTAssertEqual(value, -5)
     }
 
-    func testDecodeFixedUInt32() {
-        let reader = ProtoReader(data: Data(hexEncoded: "05000000")!)
-        XCTAssertEqual(try reader.decode(UInt32.self, encoding: .fixed), 5)
+    func testDecodeFixedUInt32() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0D_05000000")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(UInt32.self, encoding: .fixed) }
+        XCTAssertEqual(value, 5)
     }
 
-    func testDecodeFixedUInt64() {
-        let reader = ProtoReader(data: Data(hexEncoded: "0500000000000000")!)
-        XCTAssertEqual(try reader.decode(UInt64.self, encoding: .fixed), 5)
+    func testDecodeFixedUInt64() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "09_0500000000000000")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(UInt64.self, encoding: .fixed) }
+        XCTAssertEqual(value, 5)
     }
 
-    func testDecodeSignedInt32() {
-        let reader = ProtoReader(data: Data(hexEncoded: "09")!)
-        XCTAssertEqual(try reader.decode(Int32.self, encoding: .signed), -5)
+    func testDecodeSignedInt32() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "08_09")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Int32.self, encoding: .signed) }
+        XCTAssertEqual(value, -5)
     }
 
-    func testDecodeSignedInt64() {
-        let reader = ProtoReader(data: Data(hexEncoded: "09")!)
-        XCTAssertEqual(try reader.decode(Int64.self, encoding: .signed), -5)
+    func testDecodeSignedInt64() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "08_09")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Int64.self, encoding: .signed) }
+        XCTAssertEqual(value, -5)
     }
 
-    func testDecodeVarintInt32() {
-        let reader = ProtoReader(data: Data(hexEncoded: "FBFFFFFF0F")!)
-        XCTAssertEqual(try reader.decode(Int32.self, encoding: .variable), -5)
+    func testDecodeVarintInt32() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "08_FBFFFFFF0F")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Int32.self, encoding: .variable) }
+        XCTAssertEqual(value, -5)
     }
 
-    func testDecodeVarintInt64() {
-        let reader = ProtoReader(data: Data(hexEncoded: "FBFFFFFFFFFFFFFFFF01")!)
-        XCTAssertEqual(try reader.decode(Int64.self, encoding: .variable), -5)
+    func testDecodeVarintInt64() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "08_FBFFFFFFFFFFFFFFFF01")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Int64.self, encoding: .variable) }
+        XCTAssertEqual(value, -5)
     }
 
-    func testDecodeVarintUInt32() {
-        let reader = ProtoReader(data: Data(hexEncoded: "05")!)
-        XCTAssertEqual(try reader.decode(UInt32.self, encoding: .variable), 5)
+    func testDecodeVarintUInt32() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "08_05")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(UInt32.self, encoding: .variable) }
+        XCTAssertEqual(value, 5)
     }
 
     func testDecodeVarintUInt64() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "05")!)
-        XCTAssertEqual(try reader.decode(UInt64.self, encoding: .variable), 5)
+        let reader = ProtoReader(data: Data(hexEncoded: "08_05")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(UInt64.self, encoding: .variable) }
+        XCTAssertEqual(value, 5)
     }
 
     // MARK: - Tests - Decoding Messages And More
 
     func testDecodeBool() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "01")!)
-        XCTAssertEqual(try reader.decode(Bool.self), true)
+        let reader = ProtoReader(data: Data(hexEncoded: "08_01")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Bool.self) }
+        XCTAssertEqual(value, true)
     }
 
     func testDecodeData() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "001122334455")!)
-        XCTAssertEqual(try reader.decode(Data.self), Data(hexEncoded: "001122334455")!)
+        let reader = ProtoReader(data: Data(hexEncoded: "0A_06_001122334455")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Data.self) }
+        XCTAssertEqual(value, Data(hexEncoded: "001122334455")!)
     }
 
     func testDecodeMessage() throws {
@@ -91,23 +103,35 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Decoding Enums
 
     func testDecodeEnum() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "01")!)
-        XCTAssertEqual(try reader.decode(Person.PhoneType.self), .HOME)
+        let reader = ProtoReader(data: Data(hexEncoded: "08_01")!)
+        let value = try reader.decode(tag: 1) { try reader.decode(Person.PhoneType.self) }
+        XCTAssertEqual(value, .HOME)
     }
 
     // MARK: - Tests - Decoding Repeated Fields
 
     func testDecodeRepeatedStrings() throws {
         let reader = ProtoReader(data: Data(hexEncoded: "0A_03_666F6F_0A_03_626172")!)
-        var strings: [String] = []
-        _ = try reader.forEachTag { tag in
-            switch tag {
-            case 1: try reader.decode(into: &strings)
-            default: XCTFail("Unexpected tag")
-            }
-        }
+        var values: [String] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
 
-        XCTAssertEqual(strings, ["foo", "bar"])
+        XCTAssertEqual(values, ["foo", "bar"])
+    }
+
+    func testDecodeRepeatedFloats() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0D_19049E3F_0D_7D3FD940")!)
+        var values: [Float] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, [1.2345, 6.7890])
+    }
+
+    func testDecodePackedRepeatedFloats() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0A_08_19049E3F_7D3FD940")!)
+        var values: [Float] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, [1.2345, 6.7890])
     }
 
     // MARK: - Tests - Unknown Fields
@@ -115,6 +139,7 @@ final class ProtoReaderTests: XCTestCase {
     func testUnknownFields() throws {
         let data = Data(hexEncoded: "0D_05000000_15_FFFFFFFF")!
         let reader = ProtoReader(data: data)
+
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readFixed32(), 5)
@@ -214,6 +239,23 @@ final class ProtoReaderTests: XCTestCase {
             default: XCTFail("Unexpected field")
             }
         }
+    }
+
+}
+
+// MARK: -
+
+extension ProtoReader {
+
+    fileprivate func decode<T>(tag: UInt32, _ decode: () throws -> T) throws -> T {
+        var value: T?
+        _ = try forEachTag { decodedTag in
+            switch decodedTag {
+            case tag: value = try decode()
+            default: XCTFail("Unexpected tag \(decodedTag)")
+            }
+        }
+        return value!
     }
 
 }

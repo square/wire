@@ -25,18 +25,8 @@ public final class ProtoReader {
         /// Currently reading the tag for a new field
         case tag
 
-        /// Currently reading a packed tag
-        case packedTag
-
-        /// Whether or not this is the length-delimited state.
-        /// This is convenient for comparison since that state has an associated value.
-        var isLengthDelimited: Bool {
-            if case .lengthDelimited(_) = self {
-                return true
-            } else {
-                return false
-            }
-        }
+        /// Currently reading a value in a length-delimited chunk of packed repeated values.
+        case packedValue
     }
 
     // MARK: - Private Properties
@@ -110,6 +100,16 @@ public final class ProtoReader {
         try array.append(T(from: self))
     }
 
+    /**
+     Decode a repeated `float` field.
+     This method is distinct from the generic repeated `ProtoEncodable` one because floats can be packed.
+     */
+    public func decode(into array: inout [Float]) throws {
+        try decode(into: &array) {
+            return try Float(from: self)
+        }
+    }
+
     // MARK: - Public Methods - Unknown Fields
 
     /**
@@ -163,7 +163,7 @@ public final class ProtoReader {
 
     /** Reads a 32-bit little-endian integer from the stream.  */
     func readFixed32() throws -> UInt32 {
-        precondition(state == .fixed32 || state.isLengthDelimited)
+        precondition(state == .fixed32 || state == .packedValue)
 
         let result = try data.readFixed32(at: Int(pos))
         pos += 4
@@ -174,7 +174,7 @@ public final class ProtoReader {
 
     /** Reads a 64-bit little-endian integer from the stream.  */
     func readFixed64() throws -> UInt64 {
-        precondition(state == .fixed64 || state.isLengthDelimited)
+        precondition(state == .fixed64 || state == .packedValue)
 
         let result = try data.readFixed64(at: Int(pos))
         pos += 8
@@ -187,7 +187,7 @@ public final class ProtoReader {
      * Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits.
      */
     func readVarint32() throws -> UInt32 {
-        precondition(state == .varint || state.isLengthDelimited)
+        precondition(state == .varint || state == .packedValue)
 
         let (result, size) = try data.readVarint32(at: Int(pos))
         pos += size
@@ -198,7 +198,7 @@ public final class ProtoReader {
 
     /** Reads a raw varint up to 64 bits in length from the stream.  */
     func readVarint64() throws -> UInt64 {
-        precondition(state == .varint || state.isLengthDelimited)
+        precondition(state == .varint || state == .packedValue)
 
         let (result, size) = try data.readVarint64(at: Int(pos))
         pos += size
@@ -302,6 +302,26 @@ public final class ProtoReader {
         }
 
         return (tag, wireType)
+    }
+
+    // MARK: - Private Methods - Repeated Field Decoding
+
+    private func decode<T>(into array: inout [T], decode: () throws -> T) throws {
+        switch state {
+        case let .lengthDelimited(endOffset):
+            // This is a packed field, so keep decoding until we're out of bytes.
+            while pos < endOffset {
+                // Reading a scalar will set the state to `.tag` because we assume
+                // we're reading a single value most of the time and are then done.
+                // Since we're in a repeated field we'll keep reading values though.
+                state = .packedValue
+
+                array.append(try decode())
+            }
+        default:
+            // This is a single entry in a regular repeated field
+            array.append(try decode())
+        }
     }
 
     // MARK: - Private Methods - Unknown Fields
