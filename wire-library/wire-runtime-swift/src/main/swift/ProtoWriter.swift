@@ -29,6 +29,14 @@ public final class ProtoWriter {
         }
     }
 
+    /** Encoded a repeated `enum` field */
+    public func encode<T: RawRepresentable>(tag: UInt32, value: [T]?, packed: Bool = false) throws where T.RawValue == UInt32 {
+        guard let value = value else { return }
+        encode(tag: tag, wireType: .varint, value: value, packed: packed) {
+            writeVarint($0.rawValue)
+        }
+    }
+
     /** Encode an integer field */
     public func encode<T: ProtoIntEncodable>(tag: UInt32, value: T?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
