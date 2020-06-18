@@ -26,6 +26,7 @@ public final class ProtoDecoder {
         case invalidUTF8StringData(_: Data)
         case malformedVarint
         case missingRequiredField(typeName: String, fieldName: String)
+        case recursionLimitExceeded
         case unexpectedEndOfData
         case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
 
@@ -43,6 +44,8 @@ public final class ProtoDecoder {
                 return "Encoded varint was not in the correct format."
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
+            case .recursionLimitExceeded:
+                return "Message nesting exceeds the maximum allowed depth."
             case .unexpectedEndOfData:
                 return "A field indicates that its data extends beyond the end of the available message data."
             case let .unknownEnumCase(type, fieldNumber):

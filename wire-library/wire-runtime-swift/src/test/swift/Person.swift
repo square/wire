@@ -13,6 +13,8 @@ public struct Person : Equatable, Proto2Codable {
     public var id: Int32
     public var email: String?
 
+    public let unknownFields: Data
+
     // MARK: - Init
 
     public init(
@@ -23,6 +25,7 @@ public struct Person : Equatable, Proto2Codable {
         self.name = name
         self.id = id
         self.email = email
+        self.unknownFields = .init()
     }
 
     // MARK: - ProtoDecodable
@@ -32,7 +35,7 @@ public struct Person : Equatable, Proto2Codable {
         var id: Int32?
         var email: String?
 
-        try reader.forEachTag { tag in
+        let unknownFields = try reader.forEachTag { tag in
             switch tag {
             case 1: name = try reader.decode(String.self)
             case 2: id = try reader.decode(Int32.self)
@@ -44,6 +47,7 @@ public struct Person : Equatable, Proto2Codable {
         self.name = try Person.checkIfMissing(name, "name")
         self.id = try Person.checkIfMissing(id, "id")
         self.email = email
+        self.unknownFields = unknownFields
     }
 
     // MARK: - ProtoEncodable
@@ -71,6 +75,8 @@ public struct Person : Equatable, Proto2Codable {
         public var number: String
         public var type: PhoneType?
 
+        public let unknownFields: Data
+
         // MARK: - Init
 
         public init(
@@ -79,6 +85,7 @@ public struct Person : Equatable, Proto2Codable {
         ) {
             self.number = number
             self.type = type
+            self.unknownFields = .init()
         }
 
         // MARK: - ProtoDecodable
@@ -86,16 +93,17 @@ public struct Person : Equatable, Proto2Codable {
         public init(from reader: ProtoReader) throws {
             var number: String?
             var type: PhoneType?
-            try reader.forEachTag { tag in
+            let unknownFields = try reader.forEachTag { tag in
                 switch tag {
                 case 1: number = try reader.decode(String.self)
                 case 2: type = try reader.decode(PhoneType.self)
-                default: fatalError("Unknown tag")
+                default: try reader.readUnknownField(tag: tag)
                 }
             }
 
             self.number = try Person.checkIfMissing(number, "number")
             self.type = type
+            self.unknownFields = unknownFields
         }
 
         // MARK: - ProtoEncodable

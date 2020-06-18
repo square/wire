@@ -46,24 +46,33 @@ public final class ProtoReader {
     /** The current position in the input source, starting at 0 and increasing monotonically. */
     private var pos: Int = 0
 
+    /** Buffers for unknown fields as a stack corresponding to message nesting.. */
+    private var unknownFieldsStack: [Data?] = []
+
     /** The encoding of the next value to be read. */
     private var nextFieldWireType: FieldWireType? = nil
 
     /** How to interpret the next read call. */
     private var state: State
 
+    // MARK: - Private Properties - Constants
+
+    /** The standard number of levels of message nesting to allow. */
+    private static let recursionLimit: UInt = 65
+
     // MARK: - Initialization
 
     init(data: Data) {
         self.data = data
         self.state = .lengthDelimited(endOffset: data.count)
+        self.unknownFieldsStack.append(nil)
     }
 
     // MARK: - Public Methods - Iterating Tags
 
-    /** Reads each tag within a message and handles it. */
-    public func forEachTag(_ block: (UInt32) throws -> Void) throws {
-        try decodeMessage { endOffset in
+    /** Reads each tag within a message, handles it, and returns a byte string with the unknown fields. */
+    public func forEachTag(_ block: (UInt32) throws -> Void) throws -> Data {
+        return try decodeMessage { endOffset in
             while true {
                 guard let tag = try nextTag(messageEndOffset: endOffset) else { break }
                 try block(tag)
@@ -92,6 +101,35 @@ public final class ProtoReader {
 
     public func decode<T: ProtoDecodable>(_ type: T.Type) throws -> T {
         return try T(from: self)
+    }
+
+    // MARK: - Public Methods - Unknown Fields
+
+    /**
+     * Read an unknown field and store temporarily. The stored unknown fields
+     * will be returned from `decodeMessage`
+     */
+    public func readUnknownField(tag: UInt32) throws {
+        guard let wireType = nextFieldWireType else {
+            fatalError("Calling readUnknownField outside of parsing a message.")
+        }
+        switch wireType {
+        case .fixed32:
+            let value = try readFixed32()
+            try addUnknownField(tag: tag, value: value, encoding: .fixed)
+        case .fixed64:
+            let value = try readFixed64()
+            try addUnknownField(tag: tag, value: value, encoding: .fixed)
+        case .lengthDelimited:
+            // Treat this as bytes. There's no need to decode it fully.
+            let value = try readData()
+            try addUnknownField(tag: tag, value: value)
+        case .varint:
+            let value = try readVarint64()
+            try addUnknownField(tag: tag, value: value, encoding: .variable)
+        case .startGroup, .endGroup:
+            fatalError("Groups are unsupported and shouldn't be our current wire type.")
+        }
     }
 
     // MARK: - Internal Methods - Reading Primitives
@@ -171,21 +209,30 @@ public final class ProtoReader {
      *
      * - parameter decode: A block which is called to actually decode the message. The parameter
      *                     to the block is the end offset of the message.
+     * - returns: Returns all unknown fields in the message, encoded sequentially.
      */
-    private func decodeMessage(_ decode: (_ endOffset: Int) throws -> Void) throws {
+    private func decodeMessage(_ decode: (_ endOffset: Int) throws -> Void) throws -> Data {
         guard case let .lengthDelimited(endOffset) = state else {
             fatalError("Unexpected call to decodeMessage()")
         }
 
+        if unknownFieldsStack.count > ProtoReader.recursionLimit {
+            throw ProtoDecoder.Error.recursionLimitExceeded
+        }
+
         state = .tag
 
+        unknownFieldsStack.append(nil)
         try decode(endOffset)
+        let unknownFieldsData = unknownFieldsStack.popLast()!
 
         if pos != endOffset {
             throw ProtoDecoder.Error.invalidStructure(
                 message: "Expected to end message at \(endOffset), but was at \(pos)"
             )
         }
+
+        return unknownFieldsData ?? Data()
     }
 
     /**
@@ -248,6 +295,24 @@ public final class ProtoReader {
         }
 
         return (tag, wireType)
+    }
+
+    // MARK: - Private Methods - Unknown Fields
+
+    private func addUnknownField<T: ProtoIntEncodable>(tag: UInt32, value: T, encoding: ProtoIntEncoding) throws {
+        try addUnknownField { writer in
+            try writer.encode(tag: tag, value: value, encoding: encoding)
+        }
+    }
+
+    private func addUnknownField(tag: UInt32, value: Data) throws {
+        try addUnknownField { try $0.encode(tag: tag, value: value) }
+    }
+
+    private func addUnknownField(_ block: (ProtoWriter) throws -> Void) rethrows {
+        let unknownFieldsWriter = ProtoWriter(data: unknownFieldsStack.last! ?? Data())
+        try block(unknownFieldsWriter)
+        unknownFieldsStack[unknownFieldsStack.count - 1] = unknownFieldsWriter.data
     }
 
 }

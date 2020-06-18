@@ -95,11 +95,69 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertEqual(try reader.decode(Person.PhoneType.self), .HOME)
     }
 
+    // MARK: - Tests - Unknown Fields
+
+    func testUnknownFields() throws {
+        let data = Data(hexEncoded: "0D_05000000_15_FFFFFFFF")!
+        let reader = ProtoReader(data: data)
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+            case 1: XCTAssertEqual(try reader.readFixed32(), 5)
+            default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        XCTAssertEqual(unknownFields, Data(hexEncoded: "15_FFFFFFFF"))
+    }
+
+    func testNonContiguousUnknownFields() throws {
+        let data = Data(hexEncoded: "08_05_10_AC02_18_FFFFFFFF0F")!
+        let reader = ProtoReader(data: data)
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+            case 2: XCTAssertEqual(try reader.readVarint32(), 300)
+            default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        XCTAssertEqual(unknownFields, Data(hexEncoded: "08_05_18_FFFFFFFF0F"))
+    }
+
+    struct NestedMessage: ProtoDecodable {
+        let unknownFields: Data
+
+        init(from reader: ProtoReader) throws {
+            self.unknownFields = try reader.forEachTag { tag in
+                try reader.readUnknownField(tag: tag)
+            }
+        }
+    }
+
+    func testNestedUnknownFields() throws {
+        // 08_05 - Field 1, varint value 5
+        // 12_0A - Field 2 (nested message) and length
+        // 0D_05000000_15_FFFFFFFF - nested message
+        // 1D_FBFFFFFF - Field 3
+        let data = Data(hexEncoded: "08_05_12_0A_0D_05000000_15_FFFFFFFF_1D_FBFFFFFF")!
+        let reader = ProtoReader(data: data)
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+            case 1: XCTAssertEqual(try reader.readVarint32(), 5)
+            case 2:
+                let nestedMessage = try reader.decode(NestedMessage.self)
+                XCTAssertEqual(nestedMessage.unknownFields, Data(hexEncoded: "0D_05000000_15_FFFFFFFF"))
+            default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        XCTAssertEqual(unknownFields, Data(hexEncoded: "1D_FBFFFFFF"))
+    }
+
     // MARK: - Tests - Reading Primitives
 
     func testReadFixed32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_0D_05000000_15_FFFFFFFF")!)
-        try reader.forEachTag { tag in
+        let reader = ProtoReader(data: Data(hexEncoded: "0D_05000000_15_FFFFFFFF")!)
+        let _ = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readFixed32(), 5)
             case 2: XCTAssertEqual(try reader.readFixed32(), .max)
@@ -109,8 +167,8 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadFixed64() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_09_0500000000000000_11_FFFFFFFFFFFFFFFF")!)
-        try reader.forEachTag { tag in
+        let reader = ProtoReader(data: Data(hexEncoded: "09_0500000000000000_11_FFFFFFFFFFFFFFFF")!)
+        let _ = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readFixed64(), 5)
             case 2: XCTAssertEqual(try reader.readFixed64(), .max)
@@ -120,8 +178,8 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadVarint32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_08_05_10_AC02_18_FFFFFFFF0F")!)
-        try reader.forEachTag { tag in
+        let reader = ProtoReader(data: Data(hexEncoded: "08_05_10_AC02_18_FFFFFFFF0F")!)
+        let _ = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readVarint32(), 5)
             case 2: XCTAssertEqual(try reader.readVarint32(), 300)
@@ -132,8 +190,8 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadVarint64() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_08_05_10_AC02_18_FFFFFFFFFFFFFFFFFF01")!)
-        try reader.forEachTag { tag in
+        let reader = ProtoReader(data: Data(hexEncoded: "08_05_10_AC02_18_FFFFFFFFFFFFFFFFFF01")!)
+        let _ = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readVarint64(), 5)
             case 2: XCTAssertEqual(try reader.readVarint64(), 300)
