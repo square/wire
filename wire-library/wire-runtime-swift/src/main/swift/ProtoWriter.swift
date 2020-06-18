@@ -34,19 +34,19 @@ public final class ProtoWriter {
      Encode a field which has a single encoding mechanism (unlike integers).
      This includes most fields types, such as messages, strings, bytes, and floating point numbers.
      */
-     public func encode(tag: UInt32, value: ProtoEncodable?) throws {
-         guard let value = value else { return }
+    public func encode(tag: UInt32, value: ProtoEncodable?) throws {
+        guard let value = value else { return }
 
-         let wireType = type(of: value).protoFieldWireType
-         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
+        let wireType = type(of: value).protoFieldWireType
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
 
-         writeVarint(key)
-         if wireType == .lengthDelimited {
-             try encodeLengthDelimited() { try value.encode(to: self) }
-         } else {
-             try value.encode(to: self)
-         }
-     }
+        writeVarint(key)
+        if wireType == .lengthDelimited {
+            try encodeLengthDelimited() { try value.encode(to: self) }
+        } else {
+            try value.encode(to: self)
+        }
+    }
 
     // MARK: - Internal Methods - Writing Primitives
 

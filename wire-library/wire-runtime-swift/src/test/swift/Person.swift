@@ -5,7 +5,7 @@
 import Foundation
 import WireRuntime
 
-public struct Person : Equatable, ProtoEncodable {
+public struct Person : Equatable, ProtoCodable {
 
     // MARK: - Properties
 
@@ -22,6 +22,27 @@ public struct Person : Equatable, ProtoEncodable {
     ) {
         self.name = name
         self.id = id
+        self.email = email
+    }
+
+    // MARK: - ProtoDecodable
+
+    public init(from reader: ProtoReader) throws {
+        var name: String?
+        var id: Int32?
+        var email: String?
+
+        try reader.forEachTag { tag in
+            switch tag {
+            case 1: name = try reader.decode(String.self)
+            case 2: id = try reader.decode(Int32.self)
+            case 3: email = try reader.decode(String.self)
+            default: fatalError("Unknown tag")
+            }
+        }
+
+        self.name = try Person.checkIfMissing(name, "name")
+        self.id = try Person.checkIfMissing(id, "id")
         self.email = email
     }
 

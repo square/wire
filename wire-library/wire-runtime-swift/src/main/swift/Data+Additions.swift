@@ -37,12 +37,16 @@ extension Data {
     /**
      * Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits.
      */
-    func readVarint32(at index: Int) throws -> (value: UInt32, size: UInt32) {
+    func readVarint32(at index: Int) throws -> (value: UInt32, size: Int) {
         var shift = 0
         var result: UInt32 = 0
-        var size: UInt32 = 0
+        var size: Int = 0
         while shift < 32 {
-            let byte = self[index + Int(size)]
+            guard index + size <= count else {
+                throw ProtoDecoder.Error.unexpectedEndOfData
+            }
+
+            let byte = self[index + size]
             size += 1
 
             result |= UInt32(byte & 0x7f) << shift
@@ -57,7 +61,11 @@ extension Data {
 
         // Discard upper 32 bits.
         for _ in 0 ..< 4 {
-            let byte = self[index + Int(size)]
+            guard index + size <= count else {
+                throw ProtoDecoder.Error.unexpectedEndOfData
+            }
+
+            let byte = self[index + size]
             size += 1
             if (byte & 0x80) == 0 {
                 return (result, size)
@@ -68,10 +76,10 @@ extension Data {
     }
 
     /** Reads a raw varint up to 64 bits in length from the stream.  */
-    func readVarint64(at index: Int) throws -> (value: UInt64, size: UInt32) {
+    func readVarint64(at index: Int) throws -> (value: UInt64, size: Int) {
         var shift = 0
         var result: UInt64 = 0
-        var size: UInt32 = 0
+        var size: Int = 0
         while shift < 64 {
             let byte = self[index + Int(size)]
             size += 1

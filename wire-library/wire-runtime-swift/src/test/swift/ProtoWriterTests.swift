@@ -108,7 +108,7 @@ final class ProtoWriterTests: XCTestCase {
         XCTAssertEqual(writer.data, Data(hexEncoded: "0D_19049E3F")!)
     }
 
-    // MARK: - Tests - Encoding Length-Delimited Data
+    // MARK: - Tests - Encoding Messages And More
 
     func testEncodeBool() throws {
         let writer = ProtoWriter()

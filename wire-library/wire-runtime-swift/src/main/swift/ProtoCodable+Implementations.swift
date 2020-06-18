@@ -6,7 +6,15 @@ import Foundation
 
 // MARK: -
 
-extension Bool : ProtoEncodable {
+extension Bool : ProtoCodable {
+
+    // MARK: - ProtoDecodable
+
+    public init(from reader: ProtoReader) throws {
+        self = try reader.readVarint32() == 0 ? false : true
+    }
+
+    // MARK: - ProtoEncodable
 
     public static var protoFieldWireType: FieldWireType { .varint }
 
@@ -19,7 +27,15 @@ extension Bool : ProtoEncodable {
 
 // MARK: -
 
-extension Data : ProtoEncodable {
+extension Data : ProtoCodable {
+
+    // MARK: - ProtoDecodable
+
+    public init(from reader: ProtoReader) throws {
+        self = try reader.readData()
+    }
+
+    // MARK: - ProtoEncodable
 
     /** Encode a `bytes` field */
     public func encode(to writer: ProtoWriter) throws {
@@ -30,7 +46,15 @@ extension Data : ProtoEncodable {
 
 // MARK: -
 
-extension Double : ProtoEncodable {
+extension Double : ProtoCodable {
+
+    // MARK: - ProtoDecodable
+
+    public init(from reader: ProtoReader) throws {
+        self = try Double(bitPattern: reader.readFixed64())
+    }
+
+    // MARK: - ProtoEncodable
 
     public static var protoFieldWireType: FieldWireType { .fixed64 }
 
@@ -43,7 +67,15 @@ extension Double : ProtoEncodable {
 
 // MARK: -
 
-extension Float : ProtoEncodable {
+extension Float : ProtoCodable {
+
+    // MARK: - ProtoDecodable
+
+    public init(from reader: ProtoReader) throws {
+        self = try Float(bitPattern: reader.readFixed32())
+    }
+
+    // MARK: - ProtoEncodable
 
     public static var protoFieldWireType: FieldWireType { .fixed32 }
 
@@ -56,7 +88,20 @@ extension Float : ProtoEncodable {
 
 // MARK: -
 
-extension String : ProtoEncodable {
+extension String : ProtoCodable {
+
+    // MARK: - ProtoDecodable
+
+    /** Reads a `string` field value from the stream. */
+    public init(from reader: ProtoReader) throws {
+        let data = try reader.readData()
+        guard let string = String(data: data, encoding: .utf8) else {
+            throw ProtoDecoder.Error.invalidUTF8StringData(data)
+        }
+        self = string
+    }
+
+    // MARK: - ProtoEncodable
 
     /** Encode a `string` field */
     public func encode(to writer: ProtoWriter) throws {

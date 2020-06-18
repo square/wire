@@ -20,26 +20,28 @@ public final class ProtoDecoder {
 
     public enum Error: Swift.Error, LocalizedError {
 
+        case fieldKeyValueZero
+        case invalidFieldWireType(_: UInt32)
         case invalidStructure(message: String)
-
+        case invalidUTF8StringData(_: Data)
         case malformedVarint
-
-        /** 
-         An error thrown when a field that is marked as `required` is not included
-         in the data being decoded
-         */
         case missingRequiredField(typeName: String, fieldName: String)
-
         case unexpectedEndOfData
 
         var localizedDescription: String {
             switch self {
+            case .fieldKeyValueZero:
+                return "Message field has a field number of zero, which is invalid."
+            case let .invalidFieldWireType(value):
+                return "Field has an invalid wire type of \(value)."
             case let .invalidStructure(message):
                 return "Message structure is invalid: \(message)."
+            case let .invalidUTF8StringData(data):
+                return "String field of size \(data.count) is not valid UTF8 encoded data."
             case .malformedVarint:
                 return "Encoded varint was not in the correct format."
             case let .missingRequiredField(typeName, fieldName):
-                return "Required field \(fieldName) is missing for type \(typeName)."
+                return "Required field \(fieldName) for type \(typeName) is not included in the message data."
             case .unexpectedEndOfData:
                 return "A field indicates that its data extends beyond the end of the available message data."
             }
