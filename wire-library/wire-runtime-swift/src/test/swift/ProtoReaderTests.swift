@@ -110,6 +110,22 @@ final class ProtoReaderTests: XCTestCase {
 
     // MARK: - Tests - Decoding Repeated Fields
 
+    func testDecodeRepeatedEnums() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "08_01_08_00")!)
+        var values: [Person.PhoneType] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, [.HOME, .MOBILE])
+    }
+
+    func testDecodePackedRepeatedEnums() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0A_02_01_00")!)
+        var values: [Person.PhoneType] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, [.HOME, .MOBILE])
+    }
+
     func testDecodeRepeatedStrings() throws {
         let reader = ProtoReader(data: Data(hexEncoded: "0A_03_666F6F_0A_03_626172")!)
         var values: [String] = []

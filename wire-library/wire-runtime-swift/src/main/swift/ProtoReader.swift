@@ -85,6 +85,19 @@ public final class ProtoReader {
         return enumValue
     }
 
+    /**
+     Decode a repeated `enum` field.
+     */
+    public func decode<T: RawRepresentable>(into array: inout [T]) throws where T.RawValue == UInt32 {
+        try decode(into: &array) {
+            let intValue = try readVarint32()
+            guard let enumValue = T(rawValue: intValue) else {
+                throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+            }
+            return enumValue
+        }
+    }
+
     public func decode<T: ProtoIntDecodable>(_ type: T.Type, encoding: ProtoIntEncoding = .variable) throws -> T {
         return try T(from: self, encoding: encoding)
     }
