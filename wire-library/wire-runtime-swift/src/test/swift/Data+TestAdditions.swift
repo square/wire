@@ -29,4 +29,9 @@ extension Data {
         self = data
     }
 
+    /** A convenience method used for debugging */
+    func hexEncodedString() -> String {
+        return map { String(format: "%02x", $0) }.joined().uppercased()
+    }
+
 }

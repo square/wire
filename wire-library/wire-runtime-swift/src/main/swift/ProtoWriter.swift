@@ -21,6 +21,7 @@ public final class ProtoWriter {
 
     // MARK: - Public Methods - Encoding
 
+    /** Encode an integer field */
     public func encode<T: ProtoIntEncodable>(tag: UInt32, value: T?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
         let wireType = ProtoWriter.wireType(for: type(of: value), encoding: encoding)
@@ -29,7 +30,61 @@ public final class ProtoWriter {
         }
     }
 
+    /**
+     Encode a field which has a single encoding mechanism (unlike integers).
+     This includes most fields types, such as messages, strings, bytes, and floating point numbers.
+     */
+     public func encode(tag: UInt32, value: ProtoEncodable?) throws {
+         guard let value = value else { return }
+
+         let wireType = type(of: value).protoFieldWireType
+         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
+
+         writeVarint(key)
+         if wireType == .lengthDelimited {
+             try encodeLengthDelimited() { try value.encode(to: self) }
+         } else {
+             try value.encode(to: self)
+         }
+     }
+
     // MARK: - Internal Methods - Writing Primitives
+
+    /** Write arbitrary data */
+    func write(_ data: Data) {
+        self.data.append(data)
+    }
+
+    /** Write a double */
+    func write(_ value: Double) {
+        withUnsafeBytes(of: value) {
+            if CFByteOrderGetCurrent() == Int(CFByteOrderBigEndian.rawValue) {
+                data.append(contentsOf: $0.reversed())
+            } else {
+                data.append(contentsOf: $0)
+            }
+        }
+    }
+
+    /** Write a float */
+    func write(_ value: Float) {
+        withUnsafeBytes(of: value) {
+            if CFByteOrderGetCurrent() == Int(CFByteOrderBigEndian.rawValue) {
+                data.append(contentsOf: $0.reversed())
+            } else {
+                data.append(contentsOf: $0)
+            }
+        }
+    }
+    /** Write a single byte */
+    func write(_ value: UInt8) {
+        data.append(value)
+    }
+
+    /** Write a buffer of bytes */
+    func write(_ buffer: UnsafeRawBufferPointer) {
+        data.append(contentsOf: buffer)
+    }
 
     /** Write a little-endian 32-bit integer.  */
     func writeFixed32(_ value: UInt32) {
@@ -80,7 +135,35 @@ public final class ProtoWriter {
         try encode(value)
     }
 
+    private func encodeLengthDelimited(_ encode: () throws -> Void) rethrows {
+        let startOffset = data.count
+        let reservedSize = 2
+        for _ in 0 ..< reservedSize {
+            data.append(0)
+        }
+
+        try encode()
+
+        let writtenCount = UInt32(data.count - startOffset - reservedSize)
+
+        let sizeSize = Int(writtenCount.varintSize)
+        if sizeSize < reservedSize {
+            data.removeSubrange(startOffset + sizeSize ..< startOffset + reservedSize)
+        } else if sizeSize != reservedSize {
+            let zeros = [UInt8](repeating: 0, count: sizeSize - reservedSize)
+            data.insert(contentsOf: zeros, at: startOffset + reservedSize)
+        }
+
+        writeVarint(writtenCount, at: startOffset)
+    }
+
     // MARK: - Private Methods - Writing Primitives
+
+    private func writeVarint(_ value: UInt32, at index: Int) {
+        // Because an unsigned (positive) varint will only use as many bytes as it needs we can
+        // safely up-cast a 32-bit value to a 64-bit one for encoding purposes.
+        writeVarint(UInt64(value), at: index)
+    }
 
     /**
      * Encode a UInt64 into writable varint representation data. `value` is treated  unsigned, so it won't be sign-extended

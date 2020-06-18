@@ -20,7 +20,20 @@ public protocol ProtoDecodable {
  */
 public protocol ProtoEncodable {
 
+    /** The wire type to use in the key for this field */
+    static var protoFieldWireType: FieldWireType { get }
+
     func encode(to writer: ProtoWriter) throws
+
+}
+
+public extension ProtoEncodable {
+
+    /**
+     The vast majority of fields, including all messages, use a
+     length-delimited wire type, so make it the default.
+     */
+    static var protoFieldWireType: FieldWireType { .lengthDelimited }
 
 }
 

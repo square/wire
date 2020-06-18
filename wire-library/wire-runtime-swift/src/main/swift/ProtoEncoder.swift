@@ -17,6 +17,21 @@ import Foundation
  */
 public final class ProtoEncoder {
 
+    // MARK: -
+
+    public enum Error: Swift.Error, LocalizedError {
+
+        case stringNotConvertibleToUTF8(String)
+
+        var localizedDescription: String {
+            switch self {
+            case let .stringNotConvertibleToUTF8(string):
+                return "The string \"\(string)\" could not be converted to UTF8."
+            }
+        }
+
+    }
+
     // MARK: - Initialization
 
     public init() {}

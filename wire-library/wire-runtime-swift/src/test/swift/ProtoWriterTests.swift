@@ -10,84 +10,147 @@ final class ProtoWriterTests: XCTestCase {
 
     // MARK: - Tests - Encoding Integers
 
-    func testEncodeFixedInt32() {
+    func testEncodeFixedInt32() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: Int32(-5), encoding: .fixed)
+        try writer.encode(tag: 1, value: Int32(-5), encoding: .fixed)
 
         // 0D is (tag 1 << 3 | .fixed32)
         XCTAssertEqual(writer.data, Data(hexEncoded: "0D_FBFFFFFF"))
     }
 
-    func testEncodeFixedInt64() {
+    func testEncodeFixedInt64() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: Int64(-5), encoding: .fixed)
+        try writer.encode(tag: 1, value: Int64(-5), encoding: .fixed)
 
         // 09 is (tag 1 << 3 | .fixed64)
         XCTAssertEqual(writer.data, Data(hexEncoded: "09_FBFFFFFFFFFFFFFF"))
     }
 
-    func testEncodeFixedUInt32() {
+    func testEncodeFixedUInt32() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: UInt32(5), encoding: .fixed)
+        try writer.encode(tag: 1, value: UInt32(5), encoding: .fixed)
 
         // 0D is (tag 1 << 3 | .fixed32)
         XCTAssertEqual(writer.data, Data(hexEncoded: "0D_05000000"))
     }
 
-    func testEncodeFixedUInt64() {
+    func testEncodeFixedUInt64() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: UInt64(5), encoding: .fixed)
+        try writer.encode(tag: 1, value: UInt64(5), encoding: .fixed)
 
         // 09 is (tag 1 << 3 | .fixed64)
         XCTAssertEqual(writer.data, Data(hexEncoded: "09_0500000000000000"))
     }
 
-    func testEncodeSignedInt32() {
+    func testEncodeSignedInt32() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: Int32(-5), encoding: .signed)
+        try writer.encode(tag: 1, value: Int32(-5), encoding: .signed)
 
         // 08 is (tag 1 << 3 | .varint)
         XCTAssertEqual(writer.data, Data(hexEncoded: "08_09"))
     }
 
-    func testEncodeSignedInt64() {
+    func testEncodeSignedInt64() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: Int64(-5), encoding: .signed)
+        try writer.encode(tag: 1, value: Int64(-5), encoding: .signed)
 
         // 08 is (tag 1 << 3 | .varint)
         XCTAssertEqual(writer.data, Data(hexEncoded: "08_09"))
     }
 
-    func testEncodeVarintInt32() {
+    func testEncodeVarintInt32() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: Int32(-5), encoding: .variable)
+        try writer.encode(tag: 1, value: Int32(-5), encoding: .variable)
 
         // 08 is (tag 1 << 3 | .varint)
         XCTAssertEqual(writer.data, Data(hexEncoded: "08_FBFFFFFF0F"))
     }
 
-    func testEncodeVarintInt64() {
+    func testEncodeVarintInt64() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: Int64(-5), encoding: .variable)
+        try writer.encode(tag: 1, value: Int64(-5), encoding: .variable)
 
         // 08 is (tag 1 << 3 | .varint)
         XCTAssertEqual(writer.data, Data(hexEncoded: "08_FBFFFFFFFFFFFFFFFF01"))
     }
 
-    func testEncodeVarintUInt32() {
+    func testEncodeVarintUInt32() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: UInt32(5), encoding: .variable)
+        try writer.encode(tag: 1, value: UInt32(5), encoding: .variable)
 
         // 08 is (tag 1 << 3 | .varint)
         XCTAssertEqual(writer.data, Data(hexEncoded: "08_05"))
     }
 
-    func testEncodeVarintUInt64() {
+    func testEncodeVarintUInt64() throws {
         let writer = ProtoWriter()
-        try! writer.encode(tag: 1, value: UInt64(5), encoding: .variable)
+        try writer.encode(tag: 1, value: UInt64(5), encoding: .variable)
 
         // 08 is (tag 1 << 3 | .varint)
         XCTAssertEqual(writer.data, Data(hexEncoded: "08_05"))
+    }
+
+    // MARK: - Tests - Encoding Floats
+
+    func testEncodeDouble() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: Double(1.2345))
+
+        // 09 is (tag 1 << 3 | .fixed64)
+        XCTAssertEqual(writer.data, Data(hexEncoded: "09_8D976E1283C0F33F")!)
+    }
+
+    func testEncodeFloat() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: Float(1.2345))
+
+        // 0D is (tag 1 << 3 | .fixed32)
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0D_19049E3F")!)
+    }
+
+    // MARK: - Tests - Encoding Length-Delimited Data
+
+    func testEncodeBool() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: true)
+
+        // 08 is (tag 1 << 3 | .varint)
+        XCTAssertEqual(writer.data, Data(hexEncoded: "08_01")!)
+    }
+
+    func testEncodeData() throws {
+        let writer = ProtoWriter()
+        let data = Data(hexEncoded: "001122334455")
+        try writer.encode(tag: 1, value: data)
+
+        // 0A is (tag 1 << 3 | .lengthDelimited)
+        // 06 is the length
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_06_001122334455")!)
+    }
+
+    func testEncodeMessage() throws {
+        let writer = ProtoWriter()
+        let message = Person(name: "Luke", id: 5)
+        try writer.encode(tag: 1, value: message)
+
+        // 0A is (tag 1 << 3 | .lengthDelimited)
+        // 08 is the message length
+        // 0A is (tag 1 << 3 | .lengthDelimited) for the name
+        // 04 is the name length ("Luke")
+        // 4C756B65 is the text "Luke"
+        // 10 is (tag 2 << 3 | .varint) for the ID
+        // 05 is the ID value
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_08_0A_04_4C756B65_10_05")!)
+    }
+
+    func testEncodeString() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: "foo")
+
+        // 0A is (tag 1 << 3 | .lengthDelimited)
+        // 03 is the length
+        // 666F6F is "foo" in UTF8 bytes
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_03_666F6F")!)
     }
 
     // MARK: - Tests - Writing Primitives
