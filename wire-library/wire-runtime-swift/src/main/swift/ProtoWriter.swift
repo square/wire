@@ -175,7 +175,7 @@ public final class ProtoWriter {
      */
     private func encode<T>(tag: UInt32, wireType: FieldWireType, value: [T], packed: Bool, encode: (T) throws -> Void) rethrows {
         if packed {
-            let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .varint)
+            let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
             writeVarint(key)
             try encodeLengthDelimited {
                 try value.forEach { try encode($0) }

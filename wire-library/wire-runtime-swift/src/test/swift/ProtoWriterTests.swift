@@ -178,7 +178,7 @@ final class ProtoWriterTests: XCTestCase {
         let doubles: [Double] = [1.2345, 6.7890]
         try writer.encode(tag: 1, value: doubles, packed: true)
 
-        XCTAssertEqual(writer.data, Data(hexEncoded: "08_10_8D976E1283C0F33F_0E2DB29DEF271B40")!)
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_10_8D976E1283C0F33F_0E2DB29DEF271B40")!)
     }
 
     func testEncodeRepeatedFloats() throws {
@@ -194,7 +194,7 @@ final class ProtoWriterTests: XCTestCase {
         let floats: [Float] = [1.2345, 6.7890]
         try writer.encode(tag: 1, value: floats, packed: true)
 
-        XCTAssertEqual(writer.data, Data(hexEncoded: "08_08_19049E3F_7D3FD940")!)
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_08_19049E3F_7D3FD940")!)
     }
 
     func testEncodeRepeatedString() throws {
@@ -218,7 +218,7 @@ final class ProtoWriterTests: XCTestCase {
         let values: [UInt32] = [1, .max]
         try writer.encode(tag: 1, value: values, encoding: .fixed, packed: true)
 
-        XCTAssertEqual(writer.data, Data(hexEncoded: "08_08_01000000_FFFFFFFF")!)
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_08_01000000_FFFFFFFF")!)
     }
 
     func testEncodeRepeatedVarintUInt32s() throws {
@@ -234,7 +234,7 @@ final class ProtoWriterTests: XCTestCase {
         let values: [UInt32] = [1, .max]
         try writer.encode(tag: 1, value: values, encoding: .variable, packed: true)
 
-        XCTAssertEqual(writer.data, Data(hexEncoded: "08_06_01_FFFFFFFF0F")!)
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_06_01_FFFFFFFF0F")!)
     }
 
     // MARK: - Tests - Writing Primitives
