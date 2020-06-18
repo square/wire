@@ -42,7 +42,7 @@ public extension ProtoEncodable {
 /**
  A convenience protocol which defines a type as being both encodable and decodable as protocol buffer data.
  */
-public protocol ProtoCodable: ProtoDecodable & ProtoEncodable {}
+public typealias ProtoCodable = ProtoDecodable & ProtoEncodable
 
 // MARK: -
 
