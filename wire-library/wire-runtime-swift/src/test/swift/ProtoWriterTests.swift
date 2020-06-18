@@ -160,8 +160,17 @@ final class ProtoWriterTests: XCTestCase {
         let value: Person.PhoneType = .HOME
         try writer.encode(tag: 1, value: value)
 
-        print(writer.data.hexEncodedString())
         XCTAssertEqual(writer.data, Data(hexEncoded: "08_01"))
+    }
+
+    // MARK: - Tests - Encoding Repeated Fields
+
+    func testRepeatedString() throws {
+        let writer = ProtoWriter()
+        let strings = ["foo", "bar"]
+        try writer.encode(tag: 1, value: strings)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_03_666F6F_0A_03_626172")!)
     }
 
     // MARK: - Tests - Writing Primitives

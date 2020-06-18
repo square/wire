@@ -56,6 +56,20 @@ public final class ProtoWriter {
         }
     }
 
+    /** Encode a repeated message field */
+    public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]?) throws {
+        guard let value = value else { return }
+
+        let wireType = type(of: value).Element.protoFieldWireType
+        try encode(tag: tag, wireType: wireType, value: value, packed: false) { value in
+            if wireType == .lengthDelimited {
+                try encodeLengthDelimited() { try value.encode(to: self) }
+            } else {
+                try value.encode(to: self)
+            }
+        }
+    }
+
     // MARK: - Internal Methods - Writing Primitives
 
     /** Write arbitrary data */
@@ -120,6 +134,26 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
         writeVarint(key)
         try encode(value)
+    }
+
+    /**
+     Encode a generic repeated field.
+     The public repeated field encoding methods should call this method to handle
+     */
+    private func encode<T>(tag: UInt32, wireType: FieldWireType, value: [T], packed: Bool, encode: (T) throws -> Void) rethrows {
+        if packed {
+            let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .varint)
+            writeVarint(key)
+            try encodeLengthDelimited {
+                try value.forEach { try encode($0) }
+            }
+        } else {
+            let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
+            try value.forEach {
+                writeVarint(key)
+                try encode($0)
+            }
+        }
     }
 
     private func encodeLengthDelimited(_ encode: () throws -> Void) rethrows {
