@@ -36,7 +36,7 @@ extension Double : ProtoEncodable {
 
     /** Encode a `double` field */
     public func encode(to writer: ProtoWriter) throws {
-        writer.write(self)
+        writer.writeFixed64(self.bitPattern)
     }
 
 }
@@ -49,7 +49,7 @@ extension Float : ProtoEncodable {
 
     /** Encode a `float` field */
     public func encode(to writer: ProtoWriter) throws {
-        writer.write(self)
+        writer.writeFixed32(self.bitPattern)
     }
 
 }

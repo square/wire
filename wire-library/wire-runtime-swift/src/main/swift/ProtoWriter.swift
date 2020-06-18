@@ -55,27 +55,6 @@ public final class ProtoWriter {
         self.data.append(data)
     }
 
-    /** Write a double */
-    func write(_ value: Double) {
-        withUnsafeBytes(of: value) {
-            if CFByteOrderGetCurrent() == Int(CFByteOrderBigEndian.rawValue) {
-                data.append(contentsOf: $0.reversed())
-            } else {
-                data.append(contentsOf: $0)
-            }
-        }
-    }
-
-    /** Write a float */
-    func write(_ value: Float) {
-        withUnsafeBytes(of: value) {
-            if CFByteOrderGetCurrent() == Int(CFByteOrderBigEndian.rawValue) {
-                data.append(contentsOf: $0.reversed())
-            } else {
-                data.append(contentsOf: $0)
-            }
-        }
-    }
     /** Write a single byte */
     func write(_ value: UInt8) {
         data.append(value)
