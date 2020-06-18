@@ -16,7 +16,6 @@
 package com.squareup.wire
 
 import com.google.protobuf.ListValue
-import com.google.protobuf.NullValue
 import com.google.protobuf.util.JsonFormat
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
@@ -28,7 +27,7 @@ import squareup.proto3.alltypes.AllStructsOuterClass
 
 class StructTest {
   @Test fun nullValue() {
-    val googleMessage = null.ToValue()
+    val googleMessage = null.toValue()
 
     val wireMessage = null
 
@@ -38,7 +37,7 @@ class StructTest {
   }
 
   @Test fun doubleValue() {
-    val googleMessage = 0.25.ToValue()
+    val googleMessage = 0.25.toValue()
 
     val wireMessage = 0.25
 
@@ -70,7 +69,7 @@ class StructTest {
   }
 
   @Test fun booleanTrue() {
-    val googleMessage = true.ToValue()
+    val googleMessage = true.toValue()
 
     val wireMessage = true
 
@@ -80,7 +79,7 @@ class StructTest {
   }
 
   @Test fun booleanFalse() {
-    val googleMessage = false.ToValue()
+    val googleMessage = false.toValue()
 
     val wireMessage = false
 
@@ -90,7 +89,7 @@ class StructTest {
   }
 
   @Test fun stringValue() {
-    val googleMessage = "Cash App!".ToValue()
+    val googleMessage = "Cash App!".toValue()
 
     val wireMessage = "Cash App!"
 
@@ -100,7 +99,7 @@ class StructTest {
   }
 
   @Test fun emptyStringValue() {
-    val googleMessage = "".ToValue()
+    val googleMessage = "".toValue()
 
     val wireMessage = ""
 
@@ -110,7 +109,7 @@ class StructTest {
   }
 
   @Test fun utf8StringValue() {
-    val googleMessage = "На берегу пустынных волн".ToValue()
+    val googleMessage = "На берегу пустынных волн".toValue()
 
     val wireMessage = "На берегу пустынных волн"
 
@@ -348,12 +347,12 @@ class StructTest {
     val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
         .setStruct(mapOf("a" to null).toStruct())
         .setList(emptyListValue())
-        .setValueA(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))).ToValue())
-        .setValueB(listOf(mapOf("d" to null, "e" to "trois")).ToValue())
-        .setValueC(emptyList<Any>().ToValue())
-        .setValueD(emptyMap<String, Any>().ToValue())
-        .setValueE(null.ToValue())
-        .setValueF(null.ToValue())
+        .setValueA(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))).toValue())
+        .setValueB(listOf(mapOf("d" to null, "e" to "trois")).toValue())
+        .setValueC(emptyList<Any>().toValue())
+        .setValueD(emptyMap<String, Any>().toValue())
+        .setValueE(null.toValue())
+        .setValueF(null.toValue())
         .build()
 
     val jsonPrinter = JsonFormat.printer()
