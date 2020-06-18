@@ -118,6 +118,22 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertEqual(values, ["foo", "bar"])
     }
 
+    func testDecodeRepeatedDoubles() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "09_8D976E1283C0F33F_09_0E2DB29DEF271B40")!)
+        var values: [Double] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, [1.2345, 6.7890])
+    }
+
+    func testDecodePackedRepeatedDoubles() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0A_10_8D976E1283C0F33F_0E2DB29DEF271B40")!)
+        var values: [Double] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, [1.2345, 6.7890])
+    }
+
     func testDecodeRepeatedFloats() throws {
         let reader = ProtoReader(data: Data(hexEncoded: "0D_19049E3F_0D_7D3FD940")!)
         var values: [Float] = []

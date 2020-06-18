@@ -101,6 +101,16 @@ public final class ProtoReader {
     }
 
     /**
+     Decode a repeated `double` field.
+     This method is distinct from the generic repeated `ProtoEncodable` one because doubles can be packed.
+     */
+    public func decode(into array: inout [Double]) throws {
+        try decode(into: &array) {
+            return try Double(from: self)
+        }
+    }
+
+    /**
      Decode a repeated `float` field.
      This method is distinct from the generic repeated `ProtoEncodable` one because floats can be packed.
      */
