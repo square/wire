@@ -117,7 +117,8 @@ class Proto3WireProtocCompatibilityTests {
         address = "507 Cross Street",
         pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
         promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI")),
-        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L)
+        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L),
+        loyalty = emptyMap<String, Any?>()
     )
     val json = """
         |{
@@ -174,7 +175,8 @@ class Proto3WireProtocCompatibilityTests {
     val wireMessage = PizzaDelivery(
         address = "507 Cross Street",
         pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI"))
+        promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI")),
+        loyalty = emptyMap<String, Any?>()
     )
 
     val moshi = Moshi.Builder()

@@ -163,8 +163,8 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val STRING: ProtoAdapter<String>
     @JvmField val DURATION: ProtoAdapter<Duration>
     @JvmField val EMPTY: ProtoAdapter<Unit>
-    @JvmField val STRUCT_MAP: ProtoAdapter<Map<String, *>>
-    @JvmField val STRUCT_LIST: ProtoAdapter<List<*>>
+    @JvmField val STRUCT_MAP: ProtoAdapter<Map<String, *>?>
+    @JvmField val STRUCT_LIST: ProtoAdapter<List<*>?>
     @JvmField val STRUCT_NULL: ProtoAdapter<Nothing?>
     @JvmField val STRUCT_VALUE: ProtoAdapter<Any?>
   }
@@ -740,12 +740,14 @@ internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
   override fun redact(value: Unit): Unit = value
 }
 
-internal fun commonStructMap(): ProtoAdapter<Map<String, *>> = object : ProtoAdapter<Map<String, *>>(
+internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAdapter<Map<String, *>?>(
     LENGTH_DELIMITED,
     Map::class,
     "type.googleapis.com/google.protobuf.Struct"
 ) {
-  override fun encodedSize(value: Map<String, *>): Int {
+  override fun encodedSize(value: Map<String, *>?): Int {
+    if (value == null) return 0
+
     var size = 0
     for ((k, v) in value) {
       val entrySize = STRING.encodedSizeWithTag(1, k) + STRUCT_VALUE.encodedSizeWithTag(2, v)
@@ -754,7 +756,9 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>> = object : ProtoAda
     return size
   }
 
-  override fun encode(writer: ProtoWriter, value: Map<String, *>) {
+  override fun encode(writer: ProtoWriter, value: Map<String, *>?) {
+    if (value == null) return
+
     for ((k, v) in value) {
       val entrySize = STRING.encodedSizeWithTag(1, k) + STRUCT_VALUE.encodedSizeWithTag(2, v)
       writer.writeTag(1, LENGTH_DELIMITED)
@@ -764,7 +768,7 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>> = object : ProtoAda
     }
   }
 
-  override fun decode(reader: ProtoReader): Map<String, *> {
+  override fun decode(reader: ProtoReader): Map<String, *>? {
     val result = mutableMapOf<String, Any?>()
     reader.forEachTag { entryTag ->
       if (entryTag != 1) return@forEachTag reader.skip()
@@ -783,15 +787,17 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>> = object : ProtoAda
     return result
   }
 
-  override fun redact(value: Map<String, *>) = value.mapValues { STRUCT_VALUE.redact(it) }
+  override fun redact(value: Map<String, *>?) = value?.mapValues { STRUCT_VALUE.redact(it) }
 }
 
-internal fun commonStructList(): ProtoAdapter<List<*>> = object : ProtoAdapter<List<*>>(
+internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<List<*>?>(
     LENGTH_DELIMITED,
-    Map::class,
+    List::class,
     "type.googleapis.com/google.protobuf.ListValue"
 ) {
-  override fun encodedSize(value: List<*>): Int {
+  override fun encodedSize(value: List<*>?): Int {
+    if (value == null) return 0
+
     var result = 0
     for (v in value) {
       result += STRUCT_VALUE.encodedSizeWithTag(1, v)
@@ -799,13 +805,15 @@ internal fun commonStructList(): ProtoAdapter<List<*>> = object : ProtoAdapter<L
     return result
   }
 
-  override fun encode(writer: ProtoWriter, value: List<*>) {
+  override fun encode(writer: ProtoWriter, value: List<*>?) {
+    if (value == null) return
+
     for (v in value) {
       STRUCT_VALUE.encodeWithTag(writer, 1, v)
     }
   }
 
-  override fun decode(reader: ProtoReader): List<*> {
+  override fun decode(reader: ProtoReader): List<*>? {
     val result = mutableListOf<Any?>()
     reader.forEachTag { entryTag ->
       if (entryTag != 1) return@forEachTag reader.skip()
@@ -814,7 +822,7 @@ internal fun commonStructList(): ProtoAdapter<List<*>> = object : ProtoAdapter<L
     return result
   }
 
-  override fun redact(value: List<*>) = value.map { STRUCT_VALUE.redact(it) }
+  override fun redact(value: List<*>?) = value?.map { STRUCT_VALUE.redact(it) }
 }
 
 internal fun commonStructNull(): ProtoAdapter<Nothing?> = object : ProtoAdapter<Nothing?>(

@@ -16,6 +16,7 @@
 package com.squareup.wire
 
 import com.google.protobuf.ListValue
+import com.google.protobuf.Struct
 import com.google.protobuf.util.JsonFormat
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
@@ -273,6 +274,27 @@ class StructTest {
     assertThat(ProtoAdapter.STRUCT_LIST.decode(googleMessageBytes)).isEqualTo(wireMessage)
   }
 
+  @Test fun nullMapAndListAsFields() {
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder().build()
+    val wireAllStruct = AllStructs()
+
+    val protocAllStructBytes = protocAllStruct.toByteArray()
+    assertThat(AllStructs.ADAPTER.encode(wireAllStruct)).isEqualTo(protocAllStructBytes)
+    assertThat(AllStructs.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStruct)
+  }
+
+  @Test fun emptyMapAndListAsFields() {
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+        .setStruct(emptyStruct())
+        .setList(emptyListValue())
+        .build()
+    val wireAllStruct = AllStructs(struct = emptyMap<String, Any?>(), list = emptyList<Any?>())
+
+    val protocAllStructBytes = protocAllStruct.toByteArray()
+    assertThat(AllStructs.ADAPTER.encode(wireAllStruct)).isEqualTo(protocAllStructBytes)
+    assertThat(AllStructs.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStruct)
+  }
+
   @Test fun structJsonRoundTrip() {
     val json = """{
       |  "struct": {"a": 1.0},
@@ -293,9 +315,7 @@ class StructTest {
       |  "mapInt32ValueA": {},
       |  "mapInt32NullValue": {},
       |  "oneofStruct": null,
-      |  "oneofList": null,
-      |  "oneofValueA": null,
-      |  "oneofNullValue": null
+      |  "oneofList": null
       |}""".trimMargin()
 
     val wireAllStruct = AllStructs(
@@ -340,8 +360,6 @@ class StructTest {
       |  "mapInt32NullValue": {},
       |  "oneofStruct": null,
       |  "oneofList": null,
-      |  "oneofValueA": null,
-      |  "oneofNullValue": null,
       |${protocJson.substring(1)}""".trimMargin()
 
     val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
