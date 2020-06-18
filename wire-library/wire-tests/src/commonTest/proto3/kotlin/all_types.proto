@@ -19,6 +19,7 @@ package proto3.kotlin;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 
 option java_package = "com.squareup.wire.proto3.kotlin.all_types";
@@ -56,6 +57,7 @@ message AllTypes {
   google.protobuf.ListValue list_value = 21;
   google.protobuf.Value value = 22;
   google.protobuf.NullValue null_value = 23;
+  google.protobuf.Empty empty = 24;
 
   repeated int32 rep_int32 = 201 [packed = false];
   repeated uint32 rep_uint32 = 202 [packed = false];
@@ -79,7 +81,8 @@ message AllTypes {
   repeated google.protobuf.Struct rep_struct = 220;
   repeated google.protobuf.ListValue rep_list_value = 221;
   repeated google.protobuf.Value rep_value = 222;
-  repeated google.protobuf.NullValue rep_null_value = 223;
+  repeated google.protobuf.NullValue rep_null_value = 223 [packed = false];
+  repeated google.protobuf.Empty rep_empty = 224;
 
   repeated int32 pack_int32 = 301 [packed = true];
   repeated uint32 pack_uint32 = 302 [packed = true];
@@ -107,16 +110,18 @@ message AllTypes {
   map<int32, google.protobuf.ListValue> map_int32_list_value = 521;
   map<int32, google.protobuf.Value> map_int32_value = 522;
   map<int32, google.protobuf.NullValue> map_int32_null_value = 523;
+  map<int32, google.protobuf.Empty> map_int32_empty = 524;
 
   oneof choice {
     string oneof_string = 601;
     int32 oneof_int32 = 602;
     NestedMessage oneof_nested_message = 603;
-    google.protobuf.Any oneof_int32_any = 618;
-    google.protobuf.Duration oneof_int32_duration = 619;
-    google.protobuf.Struct oneof_int32_struct = 620;
-    google.protobuf.ListValue oneof_int32_list_value = 621;
-    google.protobuf.Value oneof_int32_value = 622;
-    google.protobuf.NullValue oneof_int32_null_value = 623;
+    google.protobuf.Any oneof_any = 618;
+    google.protobuf.Duration oneof_duration = 619;
+    google.protobuf.Struct oneof_struct = 620;
+    google.protobuf.ListValue oneof_list_value = 621;
+    google.protobuf.Value oneof_value = 622;
+    google.protobuf.NullValue oneof_null_value = 623;
+    google.protobuf.Empty oneof_empty = 624;
   }
 }

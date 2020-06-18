@@ -20,13 +20,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import squareup.proto3.alltypes.AllEmpty
 import squareup.proto3.alltypes.AllEmptyOuterClass
-import com.squareup.wire.Empty as WireEmpty
 
 class EmptyRoundTripTest {
   @Test fun empty() {
     val googleMessage = Empty.newBuilder().build()
 
-    val wireMessage = WireEmpty
+    val wireMessage = Unit
 
     val googleMessageBytes = googleMessage.toByteArray()
     assertThat(ProtoAdapter.EMPTY.encode(wireMessage)).isEqualTo(googleMessageBytes)
@@ -44,10 +43,10 @@ class EmptyRoundTripTest {
         .build()
 
     val wireMessage = AllEmpty(
-        empty = WireEmpty,
-        rep_empty = listOf(WireEmpty, WireEmpty),
-        map_int32_empty = mapOf(1 to WireEmpty),
-        oneof_empty = WireEmpty
+        empty = Unit,
+        rep_empty = listOf(Unit, Unit),
+        map_int32_empty = mapOf(1 to Unit),
+        oneof_empty = Unit
     )
 
     val googleMessageBytes = googleMessage.toByteArray()

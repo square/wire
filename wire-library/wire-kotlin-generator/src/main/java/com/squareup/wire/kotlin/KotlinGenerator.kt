@@ -1621,7 +1621,7 @@ class KotlinGenerator private constructor(
         ProtoType.UINT64 to LONG,
         ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
         ProtoType.DURATION to ClassName("com.squareup.wire", "Duration"),
-        ProtoType.EMPTY to ClassName("com.squareup.wire", "Empty"),
+        ProtoType.EMPTY to ClassName("kotlin", "Unit"),
         ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
             .parameterizedBy(ClassName("kotlin", "String"), STAR),
         ProtoType.STRUCT_VALUE to ClassName("kotlin", "Any").copy(nullable = true),
