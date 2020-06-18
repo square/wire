@@ -166,6 +166,38 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertEqual(values, [1.2345, 6.7890])
     }
 
+    func testDecodeRepeatedFixedUInt32() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0D_01000000_0D_FFFFFFFF")!)
+        var values: [UInt32] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .fixed) }
+
+        XCTAssertEqual(values, [1, .max])
+    }
+
+    func testDecodePackedRepeatedFixedUInt32() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0A_08_01000000_FFFFFFFF")!)
+        var values: [UInt32] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .fixed) }
+
+        XCTAssertEqual(values, [1, .max])
+    }
+
+    func testDecodeRepeatedVarintUInt32() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "08_01_08_FFFFFFFF0F")!)
+        var values: [UInt32] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .variable) }
+
+        XCTAssertEqual(values, [1, .max])
+    }
+
+    func testDecodePackedRepeatedVarintUInt32() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0A_06_01_FFFFFFFF0F")!)
+        var values: [UInt32] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .variable) }
+
+        XCTAssertEqual(values, [1, .max])
+    }
+
     // MARK: - Tests - Unknown Fields
 
     func testUnknownFields() throws {

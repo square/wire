@@ -85,9 +85,7 @@ public final class ProtoReader {
         return enumValue
     }
 
-    /**
-     Decode a repeated `enum` field.
-     */
+    /** Decode a repeated `enum` field. */
     public func decode<T: RawRepresentable>(into array: inout [T]) throws where T.RawValue == UInt32 {
         try decode(into: &array) {
             let intValue = try readVarint32()
@@ -98,8 +96,16 @@ public final class ProtoReader {
         }
     }
 
+    /** Decode an integer field */
     public func decode<T: ProtoIntDecodable>(_ type: T.Type, encoding: ProtoIntEncoding = .variable) throws -> T {
         return try T(from: self, encoding: encoding)
+    }
+
+    /** Decode a repeated integer field */
+    public func decode<T: ProtoIntDecodable>(into array: inout [T], encoding: ProtoIntEncoding = .variable) throws {
+        try decode(into: &array) {
+            return try T(from: self, encoding: encoding)
+        }
     }
 
     /** Decode a field which has a single encoding mechanism, like messages, strings, and bytes. */
