@@ -99,8 +99,15 @@ public final class ProtoReader {
         return try T(from: self, encoding: encoding)
     }
 
+    /** Decode a field which has a single encoding mechanism, like messages, strings, and bytes. */
     public func decode<T: ProtoDecodable>(_ type: T.Type) throws -> T {
         return try T(from: self)
+    }
+
+    /** Decode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
+    public func decode<T: ProtoDecodable>(into array: inout [T]) throws {
+        // These types do not support packing, so no need to test for it.
+        try array.append(T(from: self))
     }
 
     // MARK: - Public Methods - Unknown Fields

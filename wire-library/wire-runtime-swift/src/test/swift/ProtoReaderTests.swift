@@ -95,6 +95,21 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertEqual(try reader.decode(Person.PhoneType.self), .HOME)
     }
 
+    // MARK: - Tests - Decoding Repeated Fields
+
+    func testDecodeRepeatedStrings() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0A_03_666F6F_0A_03_626172")!)
+        var strings: [String] = []
+        _ = try reader.forEachTag { tag in
+            switch tag {
+            case 1: try reader.decode(into: &strings)
+            default: XCTFail("Unexpected tag")
+            }
+        }
+
+        XCTAssertEqual(strings, ["foo", "bar"])
+    }
+
     // MARK: - Tests - Unknown Fields
 
     func testUnknownFields() throws {
