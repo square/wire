@@ -460,6 +460,16 @@ final class ProtoWriterTests: XCTestCase {
         """))
     }
 
+    // MARK: - Tests - Unknown Fields
+
+    func testWriteUnknownFields() {
+        let writer = ProtoWriter()
+        let data = Data(hexEncoded: "001122334455")!
+        writer.writeUnknownFields(data)
+
+        XCTAssertEqual(writer.data, data)
+    }
+
     // MARK: - Tests - Writing Primitives
 
     func testWriteFixed32() {

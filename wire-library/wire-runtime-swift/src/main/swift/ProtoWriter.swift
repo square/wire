@@ -191,6 +191,12 @@ public final class ProtoWriter {
         }
     }
 
+    // MARK: - Public Methods - Unknown Fields
+
+    public func writeUnknownFields(_ data: Data) {
+        self.data.append(data)
+    }
+
     // MARK: - Internal Methods - Writing Primitives
 
     /** Write arbitrary data */
