@@ -325,6 +325,31 @@ final class ProtoWriterTests: XCTestCase {
         """))
     }
 
+    func testEncodeSignedInt64ToEnumMap() throws {
+        let writer = ProtoWriter()
+        writer.outputFormatting = .sortedKeys
+        let values: [Int64: Person.PhoneType] = [1: .HOME, 2: .MOBILE]
+        try writer.encode(tag: 1, value: values, keyEncoding: .signed)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: """
+            // Key/Value 1
+            0A // (Tag 1 | Length Delimited)
+            04 // Length 4
+            08 // (Tag 1 | Varint)
+            02 // Value 1
+            10 // (Tag 2 | Varint)
+            01 // Value .HOME
+
+            // Key/Value 2
+            0A // (Tag 1 | Length Delimited)
+            04 // Length 4
+            08 // (Tag 1 | Varint)
+            04 // Value 3
+            10 // (Tag 2 | Varint)
+            00 // Value .MOBILE
+        """))
+    }
+
     func testEncodeUInt32ToStringMap() throws {
         let writer = ProtoWriter()
         writer.outputFormatting = .sortedKeys
