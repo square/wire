@@ -165,6 +165,19 @@ public final class ProtoReader {
     }
 
     /**
+     Decode a single key-value pair from a map of values keyed by a `string` with an `enum` value type.
+
+     If the given value was not known at the time of generating these protos then nothing will be added to the map.
+     */
+    public func decode<V: RawRepresentable>(into dictionary: inout [String: V]) throws where V.RawValue == UInt32 {
+        let (key, value) = try decode(
+            decodeKey: { try decode(String.self) },
+            decodeValue: { try decode(V.self) }
+        )
+        dictionary[key] = value
+    }
+
+    /**
      Decode a single key-value pair from a map of values keyed by an integer type
      */
     public func decode<K: ProtoIntDecodable, V: ProtoDecodable>(

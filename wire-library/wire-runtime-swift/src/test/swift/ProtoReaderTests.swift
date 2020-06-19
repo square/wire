@@ -335,7 +335,34 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertEqual(values, [1: "two", 3: "four"])
     }
 
-    func testEncodeStringToInt32FixedMap() throws {
+    func testDecodeStringToEnumMap() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            // Key/Value 1
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            61 // Value "a"
+            10 // (Tag 2 | Varint)
+            01 // Value .HOME
+
+            // Key/Value 2
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            62 // Value "b"
+            10 // (Tag 2 | Varint)
+            00 // Value .MOBILE
+        """)!)
+
+        var values: [String: Person.PhoneType] = [:]
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, ["a": .HOME, "b": .MOBILE])
+    }
+
+    func testDecodeStringToInt32FixedMap() throws {
         let reader = ProtoReader(data: Data(hexEncoded: """
             // Key/Value 1
             0A       // (Tag 1 | Length Delimited)
