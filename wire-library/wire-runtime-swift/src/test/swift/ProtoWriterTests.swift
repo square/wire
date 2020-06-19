@@ -278,7 +278,7 @@ final class ProtoWriterTests: XCTestCase {
     func testEncodeUInt32ToUInt32FixedMap() throws {
         let writer = ProtoWriter()
         writer.outputFormatting = .sortedKeys
-        let values: [UInt32: UInt32] = [1: 2, 3: 4, 5: 6]
+        let values: [UInt32: UInt32] = [1: 2, 3: 4]
         try writer.encode(tag: 1, value: values, keyEncoding: .fixed, valueEncoding: .fixed)
 
         XCTAssertEqual(writer.data, Data(hexEncoded: """
@@ -297,21 +297,13 @@ final class ProtoWriterTests: XCTestCase {
             03000000 // Value 3
             15       // (Tag 2 | Fixed32)
             04000000 // Value 4
-
-            // Key/Value 3
-            0A       // (Tag 1 | Length Delimited)
-            0A       // Length 10
-            0D       // (Tag 1 | Fixed32)
-            05000000 // Value 5
-            15       // (Tag 2 | Fixed32)
-            06000000 // Value 6
         """))
     }
 
     func testEncodeUInt32ToUInt64VarintMap() throws {
         let writer = ProtoWriter()
         writer.outputFormatting = .sortedKeys
-        let values: [UInt32: UInt64] = [1: 2, 3: 4, 5: 6]
+        let values: [UInt32: UInt64] = [1: 2, 3: 4]
         try writer.encode(tag: 1, value: values, keyEncoding: .variable, valueEncoding: .variable)
 
         XCTAssertEqual(writer.data, Data(hexEncoded: """
@@ -330,21 +322,13 @@ final class ProtoWriterTests: XCTestCase {
             03 // Value 3
             10 // (Tag 2 | Varint)
             04 // Value 4
-
-            // Key/Value 3
-            0A // (Tag 1 | Length Delimited)
-            04 // Length 4
-            08 // (Tag 1 | Varint)
-            05 // Value 5
-            10 // (Tag 2 | Varint)
-            06 // Value 6
         """))
     }
 
     func testEncodeUInt32ToStringMap() throws {
         let writer = ProtoWriter()
         writer.outputFormatting = .sortedKeys
-        let values: [UInt32: String] = [1: "two", 3: "four", 5: "six"]
+        let values: [UInt32: String] = [1: "two", 3: "four"]
         try writer.encode(tag: 1, value: values, keyEncoding: .variable)
 
         XCTAssertEqual(writer.data, Data(hexEncoded: """
@@ -365,15 +349,6 @@ final class ProtoWriterTests: XCTestCase {
             12       // (Tag 2 | Length Delimited)
             04       // Length 4
             666F7572 // Value "four"
-
-            // Key/Value 3
-            0A     // (Tag 1 | Length Delimited)
-            07     // Length 7
-            08     // (Tag 1 | Varint)
-            05     // Value 5
-            12     // (Tag 2 | Length Delimited)
-            03     // Length 3
-            736978 // Value 6
         """))
     }
 
