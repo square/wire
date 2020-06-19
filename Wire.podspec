@@ -15,6 +15,8 @@ Pod::Spec.new do |s|
   s.source_files  = 'wire-library/wire-runtime-swift/src/main/swift/*.swift'
 
   s.test_spec do |test_spec|
-    test_spec.source_files = 'wire-library/wire-runtime-swift/src/test/swift/*.swift'
+    test_spec.source_files =
+      'wire-library/wire-runtime-swift/src/test/swift/*.swift',
+      'wire-library/wire-tests-swift/src/main/swift/Person.swift'
   end
 end

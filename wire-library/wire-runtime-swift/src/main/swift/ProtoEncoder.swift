@@ -65,7 +65,15 @@ public final class ProtoEncoder {
     // MARK: - Public Methods
 
     public func encode<T: ProtoEncodable>(_ value: T) throws -> Data {
-        fatalError("TODO")
+        // Use the size of the struct as an initial estimate for the space needed.
+        let structSize = MemoryLayout.size(ofValue: value)
+
+        let writer = ProtoWriter(data: .init(capacity: structSize))
+        writer.outputFormatting = outputFormatting
+        
+        try writer.encode(tag: 1, value: value)
+
+        return Data(writer.data)
     }
 
 }
