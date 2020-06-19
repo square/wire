@@ -144,6 +144,17 @@ public final class ProtoWriter {
         }
     }
 
+    public func encode<K: ProtoIntEncodable, V: ProtoEncodable>(
+        tag: UInt32,
+        value: [K: V],
+        keyEncoding: ProtoIntEncoding = .variable
+    ) throws {
+        try encode(tag: tag, value: value) { key, value in
+            try encode(tag: 1, value: key, encoding: keyEncoding)
+            try encode(tag: 2, value: value)
+        }
+    }
+
     // MARK: - Internal Methods - Writing Primitives
 
     /** Write arbitrary data */
