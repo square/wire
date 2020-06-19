@@ -25,10 +25,13 @@ public final class ProtoDecoder {
         case invalidStructure(message: String)
         case invalidUTF8StringData(_: Data)
         case malformedVarint
+        case mapEntryWithoutKey(value: Any?)
+        case mapEntryWithoutValue(key: Any?)
         case missingRequiredField(typeName: String, fieldName: String)
         case recursionLimitExceeded
         case unexpectedEndOfData
         case unexpectedEndGroupFieldNumber(expected: UInt32?, found: UInt32)
+        case unexpectedFieldNumberInMap(_: UInt32)
         case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
         case unterminatedGroup(fieldNumber: UInt32)
 
@@ -44,6 +47,11 @@ public final class ProtoDecoder {
                 return "String field of size \(data.count) is not valid UTF8 encoded data."
             case .malformedVarint:
                 return "Encoded varint was not in the correct format."
+
+            case let .mapEntryWithoutKey(value):
+                return "Map entry with value \(value ?? "") did not include a key."
+            case let .mapEntryWithoutValue(key):
+                return "Map entry with \(key ?? "") did not include a value."
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
             case .recursionLimitExceeded:
@@ -56,6 +64,8 @@ public final class ProtoDecoder {
                 } else {
                     return "Found end-group key with field number \(found) but no matching start-group key existed."
                 }
+            case let .unexpectedFieldNumberInMap(fieldNumber):
+                return "Map entry includes the field number \(fieldNumber), but only 1 and 2 are allowed."
             case let .unknownEnumCase(type, fieldNumber):
                 return "Unknown case with value \(fieldNumber) found for enum of type \(String(describing: type))."
             case let .unterminatedGroup(fieldNumber):

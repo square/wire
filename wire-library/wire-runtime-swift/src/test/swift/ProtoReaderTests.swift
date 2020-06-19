@@ -256,6 +256,58 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertEqual(values, [1, .max])
     }
 
+    // MARK: - Tests - Decoding Maps
+
+    func testDecodeUInt32ToUInt32FixedMap() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            // Key/Value 1
+            0A       // (Tag 1 | Length Delimited)
+            0A       // Length 10
+            0D       // (Tag 1 | Fixed32)
+            01000000 // Value 1
+            15       // (Tag 2 | Fixed32)
+            02000000 // Value 2
+
+            // Key/Value 2
+            0A       // (Tag 1 | Length Delimited)
+            0A       // Length 10
+            0D       // (Tag 1 | Fixed32)
+            03000000 // Value 3
+            15       // (Tag 2 | Fixed32)
+            04000000 // Value 4
+        """)!)
+
+        var values: [UInt32: UInt32] = [:]
+        try reader.decode(tag: 1) { try reader.decode(into: &values, keyEncoding: .fixed, valueEncoding: .fixed) }
+
+        XCTAssertEqual(values, [1: 2, 3: 4])
+    }
+
+    func testDecodeUInt32ToUInt64VarintMap() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            // Key/Value 1
+            0A // (Tag 1 | Length Delimited)
+            04 // Length 4
+            08 // (Tag 1 | Varint)
+            01 // Value 1
+            10 // (Tag 2 | Varint)
+            02 // Value 2
+
+            // Key/Value 2
+            0A // (Tag 1 | Length Delimited)
+            04 // Length 4
+            08 // (Tag 1 | Varint)
+            03 // Value 3
+            10 // (Tag 2 | Varint)
+            04 // Value 4
+        """)!)
+
+        var values: [UInt32: UInt64] = [:]
+        try reader.decode(tag: 1) { try reader.decode(into: &values, keyEncoding: .variable, valueEncoding: .variable) }
+
+        XCTAssertEqual(values, [1: 2, 3: 4])
+    }
+
     // MARK: - Tests - Groups
 
     func testSkippingGroup() throws {

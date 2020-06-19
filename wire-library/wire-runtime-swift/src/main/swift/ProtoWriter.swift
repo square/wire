@@ -130,7 +130,7 @@ public final class ProtoWriter {
         }
     }
 
-    // MARK: - Public Methods - Maps
+    // MARK: - Public Methods - Encoding - Maps
 
     public func encode<V: ProtoEncodable>(tag: UInt32, value: [String: V]) throws {
         try encode(tag: tag, value: value) { key, value in

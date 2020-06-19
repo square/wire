@@ -151,6 +151,21 @@ public final class ProtoReader {
         try array.append(T(from: self))
     }
 
+    // MARK: - Public Methods - Decoding - Maps
+
+    /**
+     Decode a single key-value pair from a map of two integer types and add it to the given dictionary
+     */
+    public func decode<K: ProtoIntDecodable, V: ProtoIntDecodable>(
+        into dictionary: inout [K: V], keyEncoding: ProtoIntEncoding = .variable, valueEncoding: ProtoIntEncoding = .variable
+    ) throws {
+        let (key, value) = try decode(
+            decodeKey: { try decode(K.self, encoding: keyEncoding) },
+            decodeValue: { try decode(V.self, encoding: valueEncoding) }
+        )
+        dictionary[key] = value
+    }
+
     // MARK: - Public Methods - Unknown Fields
 
     /**
@@ -412,6 +427,28 @@ public final class ProtoReader {
             // This is a single entry in a regular repeated field
             array.append(try decode())
         }
+    }
+
+    private func decode<K, V>(decodeKey: () throws -> K, decodeValue: () throws -> V) throws -> (K, V) {
+        var key: K?
+        var value: V?
+
+        _ = try forEachTag { tag in
+            switch tag {
+            case 1: key = try decodeKey()
+            case 2: value = try decodeValue()
+            default:
+                throw ProtoDecoder.Error.unexpectedFieldNumberInMap(tag)
+            }
+        }
+
+        guard let unwrappedKey = key else {
+            throw ProtoDecoder.Error.mapEntryWithoutKey(value: value)
+        }
+        guard let unwrappedValue = value else {
+            throw ProtoDecoder.Error.mapEntryWithoutValue(key: key)
+        }
+        return (unwrappedKey, unwrappedValue)
     }
 
     // MARK: - Private Methods - Unknown Fields
