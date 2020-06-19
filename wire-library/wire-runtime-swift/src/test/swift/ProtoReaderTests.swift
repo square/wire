@@ -308,6 +308,33 @@ final class ProtoReaderTests: XCTestCase {
         XCTAssertEqual(values, [1: 2, 3: 4])
     }
 
+    func testDecodeUInt32ToStringMap() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            // Key/Value 1
+            0A     // (Tag 1 | Length Delimited)
+            07     // Length 7
+            08     // (Tag 1 | Varint)
+            01     // Value 1
+            12     // (Tag 2 | Length Delimited)
+            03     // Length 3
+            74776F // Value "two"
+
+            // Key/Value 2
+            0A       // (Tag 1 | Length Delimited)
+            08       // Length 8
+            08       // (Tag 1 | Varint)
+            03       // Value 3
+            12       // (Tag 2 | Length Delimited)
+            04       // Length 4
+            666F7572 // Value "four"
+        """)!)
+
+        var values: [UInt32: String] = [:]
+        try reader.decode(tag: 1) { try reader.decode(into: &values, keyEncoding: .variable) }
+
+        XCTAssertEqual(values, [1: "two", 3: "four"])
+    }
+
     // MARK: - Tests - Groups
 
     func testSkippingGroup() throws {

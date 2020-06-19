@@ -154,6 +154,19 @@ public final class ProtoReader {
     // MARK: - Public Methods - Decoding - Maps
 
     /**
+     Decode a single key-value pair from a map of values keyed by an integer type
+     */
+    public func decode<K: ProtoIntDecodable, V: ProtoDecodable>(
+        into dictionary: inout [K: V], keyEncoding: ProtoIntEncoding = .variable
+    ) throws {
+        let (key, value) = try decode(
+            decodeKey: { try decode(K.self, encoding: keyEncoding) },
+            decodeValue: { try decode(V.self) }
+        )
+        dictionary[key] = value
+    }
+
+    /**
      Decode a single key-value pair from a map of two integer types and add it to the given dictionary
      */
     public func decode<K: ProtoIntDecodable, V: ProtoIntDecodable>(
