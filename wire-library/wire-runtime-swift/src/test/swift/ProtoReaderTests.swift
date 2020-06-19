@@ -115,6 +115,22 @@ final class ProtoReaderTests: XCTestCase {
 
     // MARK: - Tests - Decoding Repeated Fields
 
+    func testDecodeRepeatedBools() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "08_01_08_00")!)
+        var values: [Bool] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, [true, false])
+    }
+
+    func testDecodePackedRepeatedBools() throws {
+        let reader = ProtoReader(data: Data(hexEncoded: "0A_02_01_00")!)
+        var values: [Bool] = []
+        try reader.decode(tag: 1) { try reader.decode(into: &values) }
+
+        XCTAssertEqual(values, [true, false])
+    }
+
     func testDecodeRepeatedEnums() throws {
         let reader = ProtoReader(data: Data(hexEncoded: "08_01_08_00")!)
         var values: [Person.PhoneType] = []

@@ -120,6 +120,16 @@ public final class ProtoReader {
     }
 
     /**
+     Decode a repeated `bool` field.
+     This method is distinct from the generic repeated `ProtoEncodable` one because bools can be packed.
+     */
+    public func decode(into array: inout [Bool]) throws {
+        try decode(into: &array) {
+            return try Bool(from: self)
+        }
+    }
+
+    /**
      Decode a repeated `double` field.
      This method is distinct from the generic repeated `ProtoEncodable` one because doubles can be packed.
      */
