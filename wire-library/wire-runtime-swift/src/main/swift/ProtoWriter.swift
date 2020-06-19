@@ -77,13 +77,24 @@ public final class ProtoWriter {
     public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]?) throws {
         guard let value = value else { return }
 
-        let wireType = type(of: value).Element.protoFieldWireType
-        try encode(tag: tag, wireType: wireType, value: value, packed: false) { value in
-            if wireType == .lengthDelimited {
-                try encodeLengthDelimited() { try value.encode(to: self) }
-            } else {
+        // We can assume length-delimited here because `bool`, `double` and `float` have their
+        // own overloads and all other types use wire types of length-delimited.
+        try encode(tag: tag, wireType: .lengthDelimited, value: value, packed: false) { value in
+            try encodeLengthDelimited() {
                 try value.encode(to: self)
             }
+        }
+    }
+
+    /**
+     Encode a repeated `bool` field.
+     This method is distinct from the generic repeated `ProtoEncodable` one because bools can be packed.
+     */
+    public func encode(tag: UInt32, value: [Bool]?, packed: Bool = false) throws {
+        guard let value = value else { return }
+
+        try encode(tag: tag, wireType: .varint, value: value, packed: packed) { value in
+            try value.encode(to: self)
         }
     }
 

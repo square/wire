@@ -194,7 +194,7 @@ public final class ProtoReader {
     func readFixed32() throws -> UInt32 {
         precondition(state == .fixed32 || state == .packedValue)
 
-        let result = try data.readFixed32(at: Int(pos))
+        let result = try data.readFixed32(at: pos)
         pos += 4
         state = .tag
 
@@ -205,7 +205,7 @@ public final class ProtoReader {
     func readFixed64() throws -> UInt64 {
         precondition(state == .fixed64 || state == .packedValue)
 
-        let result = try data.readFixed64(at: Int(pos))
+        let result = try data.readFixed64(at: pos)
         pos += 8
         state = .tag
 
@@ -218,7 +218,7 @@ public final class ProtoReader {
     func readVarint32() throws -> UInt32 {
         precondition(state == .varint || state == .packedValue)
 
-        let (result, size) = try data.readVarint32(at: Int(pos))
+        let (result, size) = try data.readVarint32(at: pos)
         pos += size
         state = .tag
 
@@ -229,7 +229,7 @@ public final class ProtoReader {
     func readVarint64() throws -> UInt64 {
         precondition(state == .varint || state == .packedValue)
 
-        let (result, size) = try data.readVarint64(at: Int(pos))
+        let (result, size) = try data.readVarint64(at: pos)
         pos += size
         state = .tag
 

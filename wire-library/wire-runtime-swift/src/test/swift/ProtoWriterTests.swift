@@ -165,6 +165,22 @@ final class ProtoWriterTests: XCTestCase {
 
     // MARK: - Tests - Encoding Repeated Fields
 
+    func testEncodeRepeatedBools() throws {
+        let writer = ProtoWriter()
+        let values: [Bool] = [true, false]
+        try writer.encode(tag: 1, value: values, packed: false)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: "08_01_08_00")!)
+    }
+
+    func testEncodePackedRepeatedBools() throws {
+        let writer = ProtoWriter()
+        let values: [Bool] = [true, false]
+        try writer.encode(tag: 1, value: values, packed: true)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_02_01_00")!)
+    }
+
     func testEncodeRepeatedEnums() throws {
         let writer = ProtoWriter()
         let values: [Person.PhoneType] = [.HOME, .MOBILE]
