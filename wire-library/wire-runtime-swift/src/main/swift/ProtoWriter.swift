@@ -150,6 +150,17 @@ public final class ProtoWriter {
         }
     }
 
+    public func encode<V: ProtoIntEncodable>(
+        tag: UInt32,
+        value: [String: V],
+        valueEncoding: ProtoIntEncoding = .variable
+    ) throws {
+        try encode(tag: tag, value: value) { key, value in
+            try encode(tag: 1, value: key)
+            try encode(tag: 2, value: value, encoding: valueEncoding)
+        }
+    }
+
     public func encode<K: ProtoIntEncodable, V: ProtoIntEncodable>(
         tag: UInt32,
         value: [K: V],

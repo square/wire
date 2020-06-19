@@ -377,6 +377,33 @@ final class ProtoWriterTests: XCTestCase {
         """))
     }
 
+    func testEncodeStringToInt32FixedMap() throws {
+        let writer = ProtoWriter()
+        writer.outputFormatting = .sortedKeys
+        let values: [String: Int32] = ["a": -1, "b": -2]
+        try writer.encode(tag: 1, value: values, valueEncoding: .fixed)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: """
+            // Key/Value 1
+            0A       // (Tag 1 | Length Delimited)
+            08       // Length 8
+            0A       // (Tag 1 | Length Delimited)
+            01       // Length 1
+            61       // Value "a"
+            15       // (Tag 2 | Fixed32)
+            FFFFFFFF // Value "two"
+
+            // Key/Value 2
+            0A       // (Tag 1 | Length Delimited)
+            08       // Length 8
+            0A       // (Tag 1 | Length Delimited)
+            01       // Length 1
+            62       // Value "b"
+            15       // (Tag 2 | Fixed32)
+            FEFFFFFF // Value "four"
+        """))
+    }
+
     func testEncodeStringToStringMap() throws {
         let writer = ProtoWriter()
         writer.outputFormatting = .sortedKeys
