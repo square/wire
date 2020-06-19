@@ -21,7 +21,7 @@ public protocol ProtoIntDecodable {
  Describes an integer type which can be encoded in protocol buffer data
  using various encodings.
  */
-public protocol ProtoIntEncodable {
+public protocol ProtoIntEncodable: Comparable {
 
     func encode(to writer: ProtoWriter, encoding: ProtoIntEncoding) throws
 
@@ -29,7 +29,7 @@ public protocol ProtoIntEncodable {
 
 // MARK: -
 
-public protocol ProtoIntCodable: ProtoIntDecodable & ProtoIntEncodable {}
+public typealias ProtoIntCodable = ProtoIntDecodable & ProtoIntEncodable
 
 // MARK: -
 

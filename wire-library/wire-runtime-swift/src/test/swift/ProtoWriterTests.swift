@@ -123,9 +123,11 @@ final class ProtoWriterTests: XCTestCase {
         let data = Data(hexEncoded: "001122334455")
         try writer.encode(tag: 1, value: data)
 
-        // 0A is (tag 1 << 3 | .lengthDelimited)
-        // 06 is the length
-        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_06_001122334455")!)
+        XCTAssertEqual(writer.data, Data(hexEncoded: """
+            0A           // (Tag 1 | Length Delimited)
+            06           // Length 6
+            001122334455 // Data value
+        """)!)
     }
 
     func testEncodeMessage() throws {
@@ -133,24 +135,26 @@ final class ProtoWriterTests: XCTestCase {
         let message = Person(name: "Luke", id: 5)
         try writer.encode(tag: 1, value: message)
 
-        // 0A is (tag 1 << 3 | .lengthDelimited)
-        // 08 is the message length
-        // 0A is (tag 1 << 3 | .lengthDelimited) for the name
-        // 04 is the name length ("Luke")
-        // 4C756B65 is the text "Luke"
-        // 10 is (tag 2 << 3 | .varint) for the ID
-        // 05 is the ID value
-        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_08_0A_04_4C756B65_10_05")!)
+        XCTAssertEqual(writer.data, Data(hexEncoded: """
+            0A       // (Tag 1 | Length Delimited)
+            08       // Length 8
+              0A       // (Tag 1 | Length Delimited)
+              04       // Length 4 for name
+              4C756B65 // Value "Luke"
+              10       // (Tag 2 | Varint)
+              05       // Value 5
+        """)!)
     }
 
     func testEncodeString() throws {
         let writer = ProtoWriter()
         try writer.encode(tag: 1, value: "foo")
 
-        // 0A is (tag 1 << 3 | .lengthDelimited)
-        // 03 is the length
-        // 666F6F is "foo" in UTF8 bytes
-        XCTAssertEqual(writer.data, Data(hexEncoded: "0A_03_666F6F")!)
+        XCTAssertEqual(writer.data, Data(hexEncoded: """
+            0A     // (Tag 1 | Length Delimited)
+            03     // Length 3
+            666F6F // Value "foo"
+        """)!)
     }
 
     // MARK: - Tests - Encoding Enums
@@ -267,6 +271,74 @@ final class ProtoWriterTests: XCTestCase {
         try writer.encode(tag: 1, value: values, encoding: .variable, packed: true)
 
         XCTAssertEqual(writer.data, Data(hexEncoded: "0A_06_01_FFFFFFFF0F")!)
+    }
+
+    // MARK: - Tests - Encoding Maps
+
+    func testEncodeUInt32ToUInt32FixedMap() throws {
+        let writer = ProtoWriter()
+        writer.outputFormatting = .sortedKeys
+        let values: [UInt32: UInt32] = [1: 2, 3: 4, 5: 6]
+        try writer.encode(tag: 1, value: values, keyEncoding: .fixed, valueEncoding: .fixed)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: """
+            // Key/Value 1
+            0A       // (Tag 1 | Length Delimited)
+            0A       // Length 10
+            0D       // (Tag 1 | Fixed32)
+            01000000 // Value 1
+            15       // (Tag 2 | Fixed32)
+            02000000 // Value 2
+
+            // Key/Value 2
+            0A       // (Tag 1 | Length Delimited)
+            0A       // Length 10
+            0D       // (Tag 1 | Fixed32)
+            03000000 // Value 3
+            15       // (Tag 2 | Fixed32)
+            04000000 // Value 4
+
+            // Key/Value 3
+            0A       // (Tag 1 | Length Delimited)
+            0A       // Length 10
+            0D       // (Tag 1 | Fixed32)
+            05000000 // Value 5
+            15       // (Tag 2 | Fixed32)
+            06000000 // Value 6
+        """))
+    }
+
+    func testEncodeUInt32ToUInt64VarintMap() throws {
+        let writer = ProtoWriter()
+        writer.outputFormatting = .sortedKeys
+        let values: [UInt32: UInt64] = [1: 2, 3: 4, 5: 6]
+        try writer.encode(tag: 1, value: values, keyEncoding: .variable, valueEncoding: .variable)
+
+        XCTAssertEqual(writer.data, Data(hexEncoded: """
+            // Key/Value 1
+            0A // (Tag 1 | Length Delimited)
+            04 // Length 4
+            08 // (Tag 1 | Varint)
+            01 // Value 1
+            10 // (Tag 2 | Varint)
+            02 // Value 2
+
+            // Key/Value 2
+            0A // (Tag 1 | Length Delimited)
+            04 // Length 4
+            08 // (Tag 1 | Varint)
+            03 // Value 3
+            10 // (Tag 2 | Varint)
+            04 // Value 4
+
+            // Key/Value 3
+            0A // (Tag 1 | Length Delimited)
+            04 // Length 4
+            08 // (Tag 1 | Varint)
+            05 // Value 5
+            10 // (Tag 2 | Varint)
+            06 // Value 6
+        """))
     }
 
     // MARK: - Tests - Writing Primitives

@@ -13,10 +13,16 @@ public final class ProtoWriter {
 
     private(set) var data: Data
 
+    var outputFormatting: ProtoEncoder.OutputFormatting
+
     // MARK: - Life Cycle
 
-    init(data: Data = .init()) {
+    init(
+        data: Data = .init(),
+        outputFormatting: ProtoEncoder.OutputFormatting = []
+    ) {
         self.data = data
+        self.outputFormatting = outputFormatting
     }
 
     // MARK: - Public Methods - Encoding - Single Fields
@@ -124,6 +130,20 @@ public final class ProtoWriter {
         }
     }
 
+    // MARK: - Public Methods - Maps
+
+    public func encode<K: ProtoIntEncodable, V: ProtoIntEncodable>(
+        tag: UInt32,
+        value: [K: V],
+        keyEncoding: ProtoIntEncoding = .variable,
+        valueEncoding: ProtoIntEncoding = .variable
+    ) throws {
+        try encode(tag: tag, value: value) { key, value in
+            try encode(tag: 1, value: key, encoding: keyEncoding)
+            try encode(tag: 2, value: value, encoding: valueEncoding)
+        }
+    }
+
     // MARK: - Internal Methods - Writing Primitives
 
     /** Write arbitrary data */
@@ -191,6 +211,29 @@ public final class ProtoWriter {
             try value.forEach {
                 writeVarint(key)
                 try encode($0)
+            }
+        }
+    }
+
+    private func encode<K: Comparable, V>(tag: UInt32, value: [K: V], encode: (K, V) throws -> Void) throws {
+        let fieldKey = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
+
+        if outputFormatting.contains(.sortedKeys) {
+            // Sort the keys to get a deterministic binary output
+            // This is mostly useful for testing purposes.
+            let sortedKeys = value.keys.sorted()
+            try sortedKeys.forEach { key in
+                writeVarint(fieldKey)
+                try encodeLengthDelimited {
+                    try encode(key, value[key]!)
+                }
+            }
+        } else {
+            try value.forEach { entry in
+                writeVarint(fieldKey)
+                try encodeLengthDelimited {
+                    try encode(entry.key, entry.value)
+                }
             }
         }
     }

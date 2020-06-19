@@ -32,6 +32,32 @@ public final class ProtoEncoder {
 
     }
 
+    // MARK: -
+
+    /// The formatting of the output binary data.
+    public struct OutputFormatting : OptionSet {
+
+        /// The format's numerical value.
+        public let rawValue: UInt
+
+        /// Creates an OutputFormatting value with the given raw value.
+        public init(rawValue: UInt) {
+            self.rawValue = rawValue
+        }
+
+        /**
+         Produce serialized data with map keys sorted in comparable order.
+         This is useful for creating deterministic data output but incurs a minor
+         performance penalty and is not usually necessary in production use cases.
+         */
+        public static let sortedKeys: OutputFormatting = .init(rawValue: 1 << 1)
+
+    }
+
+    // MARK: - Properties
+
+    public var outputFormatting: OutputFormatting = []
+
     // MARK: - Initialization
 
     public init() {}
