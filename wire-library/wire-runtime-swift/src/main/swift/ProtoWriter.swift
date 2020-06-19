@@ -139,6 +139,13 @@ public final class ProtoWriter {
         }
     }
 
+    public func encode<V: RawRepresentable>(tag: UInt32, value: [String: V]) throws where V.RawValue == UInt32 {
+        try encode(tag: tag, value: value) { key, value in
+            try encode(tag: 1, value: key)
+            try encode(tag: 2, value: value.rawValue, encoding: .variable)
+        }
+    }
+
     public func encode<K: ProtoIntEncodable, V: ProtoEncodable>(
         tag: UInt32,
         value: [K: V],
