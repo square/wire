@@ -7,9 +7,14 @@ import Foundation
 extension Data {
 
     init?(hexEncoded string: String) {
-        // Allow underscores for improved readability of the hex constants.
+        // Allow underscores, spaces, newlines, and comments for improved readability of the hex constants.
         // This replacement is slow, but is fine for testing.
-        let string = string.replacingOccurrences(of: "_", with: "")
+        let string = string
+            .split(separator: "\n")
+            .compactMap { $0.split(separator: "/").first }
+            .joined(separator: "")
+            .replacingOccurrences(of: "_", with: "")
+            .replacingOccurrences(of: " ", with: "")
 
         let len = string.count / 2
         var data = Data(capacity: len)

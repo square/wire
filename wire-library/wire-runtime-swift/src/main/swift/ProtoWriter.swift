@@ -146,26 +146,11 @@ public final class ProtoWriter {
         data.writeVarint(value, at: data.count)
     }
 
-    // MARK: - Private Methods - Field Keys
+    // MARK: - Internal Methods - Field Keys
 
     /** Makes a tag value given a field number and wire type. */
-    private static func makeFieldKey(tag: UInt32, wireType: FieldWireType) -> UInt32 {
+    static func makeFieldKey(tag: UInt32, wireType: FieldWireType) -> UInt32 {
         return (tag << Constants.tagFieldEncodingBits) | wireType.rawValue
-    }
-
-    private static func wireType<T: ProtoIntEncodable>(for valueType: T.Type, encoding: ProtoIntEncoding) -> FieldWireType {
-        if encoding == .fixed {
-            let size = MemoryLayout<T>.size
-            if size == 4 {
-                return .fixed32
-            } else if size == 8 {
-                return .fixed64
-            } else {
-                fatalError("Trying to encode integer of unexpected size \(size)")
-            }
-        } else {
-            return .varint
-        }
     }
 
     // MARK: - Private Methods - Field Encoder Helpers
@@ -217,6 +202,21 @@ public final class ProtoWriter {
         }
 
         data.writeVarint(writtenCount, at: startOffset)
+    }
+
+    private static func wireType<T: ProtoIntEncodable>(for valueType: T.Type, encoding: ProtoIntEncoding) -> FieldWireType {
+        if encoding == .fixed {
+            let size = MemoryLayout<T>.size
+            if size == 4 {
+                return .fixed32
+            } else if size == 8 {
+                return .fixed64
+            } else {
+                fatalError("Trying to encode integer of unexpected size \(size)")
+            }
+        } else {
+            return .varint
+        }
     }
 
 }

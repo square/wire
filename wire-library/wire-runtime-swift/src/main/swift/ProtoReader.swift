@@ -236,6 +236,56 @@ public final class ProtoReader {
         return result
     }
 
+    // MARK: - Private Methods - Groups
+
+    /** Skips a section of the input delimited by START_GROUP/END_GROUP type markers. */
+    private func skipGroup(expectedEndTag: UInt32, unknownFieldsWriter: ProtoWriter) throws {
+        // Preserve the group data in the unknown fields.
+        // Rewrite the .startGroup key.
+        let groupStartKey = ProtoWriter.makeFieldKey(tag: expectedEndTag, wireType: .startGroup)
+        unknownFieldsWriter.writeVarint(groupStartKey)
+
+        // Read fields until we find the group's corresponding end tag.
+        while pos < data.count {
+            let (tag, wireType) = try readFieldKey()
+            switch wireType {
+            case .startGroup:
+                // Nested group
+                try skipGroup(expectedEndTag: tag, unknownFieldsWriter: unknownFieldsWriter)
+
+            case .endGroup:
+                guard tag == expectedEndTag else {
+                    throw ProtoDecoder.Error.unexpectedEndGroupFieldNumber(expected: expectedEndTag, found: tag)
+                }
+                // We found the corresponding end tag.
+                // Rewrite it to the unknown data.
+                let groupEndKey = ProtoWriter.makeFieldKey(tag: expectedEndTag, wireType: .endGroup)
+                unknownFieldsWriter.writeVarint(groupEndKey)
+                return
+
+            case .lengthDelimited:
+                let (length, size) = try data.readVarint32(at: pos)
+                pos += size
+                state = .lengthDelimited(endOffset: pos + Int(length))
+                let data = try readData()
+                try unknownFieldsWriter.encode(tag: tag, value: data)
+
+            case .fixed32:
+                state = .fixed32
+                try unknownFieldsWriter.encode(tag: tag, value: try readFixed32(), encoding: .fixed)
+
+            case .fixed64:
+                state = .fixed64
+                try unknownFieldsWriter.encode(tag: tag, value: try readFixed64(), encoding: .fixed)
+
+            case .varint:
+                state = .varint
+                try unknownFieldsWriter.encode(tag: tag, value: try readVarint64(), encoding: .variable)
+            }
+        }
+        throw ProtoDecoder.Error.unterminatedGroup(fieldNumber: expectedEndTag)
+    }
+
     // MARK: - Private Methods - Message Decoding
 
     /**
@@ -283,32 +333,32 @@ public final class ProtoReader {
 
         while pos < messageEndOffset && pos < data.count {
             let (tag, wireType) = try readFieldKey()
+            nextFieldWireType = wireType
+
             switch wireType {
             case .startGroup:
-                fatalError("Unimplemented")
+                try addUnknownField { writer in
+                    try skipGroup(expectedEndTag: tag, unknownFieldsWriter: writer)
+                }
 
             case .endGroup:
-                fatalError("Unimplemented")
+                throw ProtoDecoder.Error.unexpectedEndGroupFieldNumber(expected: nil, found: tag)
 
             case .lengthDelimited:
-                nextFieldWireType = .lengthDelimited
                 let (length, size) = try data.readVarint32(at: pos)
                 pos += size
                 state = .lengthDelimited(endOffset: pos + Int(length))
                 return tag
 
             case .fixed32:
-                nextFieldWireType = .fixed32
                 state = .fixed32
                 return tag
 
             case .fixed64:
-                nextFieldWireType = .fixed64
                 state = .fixed64
                 return tag
 
             case .varint:
-                nextFieldWireType = .varint
                 state = .varint
                 return tag
             }

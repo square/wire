@@ -79,18 +79,23 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeData() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_06_001122334455")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            0A           // (tag 1 | Length Delimited)
+            06           // Data length
+            001122334455 // Random data
+        """)!)
         let value = try reader.decode(tag: 1) { try reader.decode(Data.self) }
         XCTAssertEqual(value, Data(hexEncoded: "001122334455")!)
     }
 
     func testDecodeMessage() throws {
-        // 0A is (tag 1 << 3 | .lengthDelimited) for the name
-        // 04 is the name length ("Luke")
-        // 4C756B65 is the text "Luke"
-        // 10 is (tag 2 << 3 | .varint) for the ID
-        // 05 is the ID value
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_04_4C756B65_10_05")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            0A       // (tag 1 | Length Delimited)
+            04       // Length of name
+            4C756B65 // Name value "Luke"
+            10       // (tag 2 | Varint)
+            05       // ID value 5
+        """)!)
         let message = Person(name: "Luke", id: 5)
         XCTAssertEqual(try reader.decode(Person.self), message)
     }
@@ -127,7 +132,14 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedStrings() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_03_666F6F_0A_03_626172")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            0A     // (Tag 1 | Length Delimited)
+            03     // Length 3
+            666F6F // Value "foo"
+            0A     // (Tag 1 | Length Delimited)
+            03     // Length 3
+            626172 // Value "bar"
+        """)!)
         var values: [String] = []
         try reader.decode(tag: 1) { try reader.decode(into: &values) }
 
@@ -135,7 +147,12 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedDoubles() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "09_8D976E1283C0F33F_09_0E2DB29DEF271B40")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            09               // (Tag 1 | Fixed64)
+            8D976E1283C0F33F // Value 1.2345
+            09               // (Tag 1 | Fixed64)
+            0E2DB29DEF271B40 // Value 6.7890
+        """)!)
         var values: [Double] = []
         try reader.decode(tag: 1) { try reader.decode(into: &values) }
 
@@ -143,7 +160,12 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedDoubles() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_10_8D976E1283C0F33F_0E2DB29DEF271B40")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            0A
+            10
+            8D976E1283C0F33F
+            0E2DB29DEF271B40
+        """)!)
         var values: [Double] = []
         try reader.decode(tag: 1) { try reader.decode(into: &values) }
 
@@ -167,7 +189,12 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedFixedUInt32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0D_01000000_0D_FFFFFFFF")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            0D       // (Tag 1 | Fixed32)
+            01000000 // Value 1
+            0D       // (Tag 1 | Fixed 32)
+            FFFFFFFF // Value UInt32.max
+        """)!)
         var values: [UInt32] = []
         try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .fixed) }
 
@@ -175,7 +202,12 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedFixedUInt32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_08_01000000_FFFFFFFF")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            0A       // (Tag 1 | Length Delimited)
+            08       // Length 8
+            01000000 // Value 1
+            FFFFFFFF // Value UInt32.max
+        """)!)
         var values: [UInt32] = []
         try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .fixed) }
 
@@ -183,7 +215,12 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodeRepeatedVarintUInt32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "08_01_08_FFFFFFFF0F")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            08         // (Tag 1 | Varint)
+            01         // Value 1
+            08         // (Tag 1 | Varint)
+            FFFFFFFF0F // Value UInt32.max
+        """)!)
         var values: [UInt32] = []
         try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .variable) }
 
@@ -191,17 +228,109 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testDecodePackedRepeatedVarintUInt32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0A_06_01_FFFFFFFF0F")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            0A         // (Tag 1 | Varint)
+            06         // Length 6
+            01         // Value 1
+            FFFFFFFF0F // Value UInt32.max
+        """)!)
         var values: [UInt32] = []
         try reader.decode(tag: 1) { try reader.decode(into: &values, encoding: .variable) }
 
         XCTAssertEqual(values, [1, .max])
     }
 
+    // MARK: - Tests - Groups
+
+    func testSkippingGroup() throws {
+        let data = Data(hexEncoded: """
+            0B       // (Tag 1 | Start Group)
+            10       // (Tag 2 | Varint)
+            05       // Value 5
+            1A       // (Tag 3 | Length Delimited)
+            0A       // Length 10
+              0D       // (Tag 1 | Fixed32)
+              05000000 // Value 5
+              15       // (Tag 2 | Fixed32)
+              FFFFFFFF // Value UInt32.max
+            25       // (Tag 4 | Fixed32)
+            FBFFFFFF // Value -5
+            0C       // (Tag 1 | End Group
+        """)!
+        let reader = ProtoReader(data: data)
+        let unknownFields = try reader.forEachTag { tag in
+            XCTFail("The one group tag should have been skipped")
+        }
+
+        // The entire data should have been skipped.
+        XCTAssertEqual(unknownFields, data)
+    }
+
+    func testSkippingRepeatedGroup() throws {
+        let key = ProtoWriter.makeFieldKey(tag: 3, wireType: .endGroup)
+        print("key: \(key)")
+
+        var data = Data(hexEncoded: """
+            0B       // (Tag 1 | Start Group)
+            10       // (Tag 2 | Varint)
+            05       // Value 5
+            1A       // (Tag 3 | Length Delimited)
+            0A       // Length 10
+              0D       // (Tag 1 | Fixed32)
+              05000000 // Value 5
+              15       // (Tag 2 | Fixed32)
+              FFFFFFFF // Value UInt32.max
+            25       // (Tag 4 | Fixed32)
+            FBFFFFFF // Value -5
+            0C       // (Tag 1 | End Group
+        """)!
+        // Repeat it twice
+        data.append(data)
+
+        let reader = ProtoReader(data: data)
+        let unknownFields = try reader.forEachTag { tag in
+            XCTFail("The one group tag should have been skipped")
+        }
+
+        XCTAssertEqual(unknownFields, data)
+    }
+
+    func testSkippingNestedGroups() throws {
+        let key = ProtoWriter.makeFieldKey(tag: 3, wireType: .endGroup)
+        print("key: \(key)")
+
+        let data = Data(hexEncoded: """
+            0B       // (Tag 1 | Start Group)
+            10       // (Tag 2 | Varint)
+            05       // Value 5
+            1B       // (Tag 3 | Start Group)
+              0D       // (Tag 1 | Fixed32)
+              05000000 // Value 5
+              15       // (Tag 2 | Fixed32)
+              FFFFFFFF // Value UInt32.max
+            1C       // (Tag 3 | End Group)
+            25       // (Tag 4 | Fixed32)
+            FBFFFFFF // Value -5
+            0C       // (Tag 1 | End Group
+        """)!
+
+        let reader = ProtoReader(data: data)
+        let unknownFields = try reader.forEachTag { tag in
+            XCTFail("The one group tag should have been skipped")
+        }
+
+        XCTAssertEqual(unknownFields, data)
+    }
+
     // MARK: - Tests - Unknown Fields
 
     func testUnknownFields() throws {
-        let data = Data(hexEncoded: "0D_05000000_15_FFFFFFFF")!
+        let data = Data(hexEncoded: """
+            0D       // (Tag 1 | Fixed32)
+            05000000 // Value 5
+            15       // (Tag 2 | Fixed32)
+            FFFFFFFF // Value UInt32.max
+        """)!
         let reader = ProtoReader(data: data)
 
         let unknownFields = try reader.forEachTag { tag in
@@ -215,7 +344,14 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testNonContiguousUnknownFields() throws {
-        let data = Data(hexEncoded: "08_05_10_AC02_18_FFFFFFFF0F")!
+        let data = Data(hexEncoded: """
+            08         // (Tag 1 | Varint)
+            05         // Value 5
+            10         // (Tag 2 | Varint)
+            AC02       // Value 300
+            18         // (Tag 3 | Varint)
+            FFFFFFFF0F // Value UInt32.max
+        """)!
         let reader = ProtoReader(data: data)
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
@@ -238,11 +374,18 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testNestedUnknownFields() throws {
-        // 08_05 - Field 1, varint value 5
-        // 12_0A - Field 2 (nested message) and length
-        // 0D_05000000_15_FFFFFFFF - nested message
-        // 1D_FBFFFFFF - Field 3
-        let data = Data(hexEncoded: "08_05_12_0A_0D_05000000_15_FFFFFFFF_1D_FBFFFFFF")!
+        let data = Data(hexEncoded: """
+            08       // (Tag 1 | Varint)
+            05       // Value 5
+            12       // (Tag 2 | Length Delimited)
+            0A       // Length 10
+              0D       // (Tag 1 | Fixed32)
+              05000000 // Value 5
+              15       // (Tag 2 | Fixed32)
+              FFFFFFFF // Value UInt32.max
+            1D       // (Tag 3 | Fixed32)
+            FBFFFFFF // Value -5
+        """)!
         let reader = ProtoReader(data: data)
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
@@ -260,7 +403,12 @@ final class ProtoReaderTests: XCTestCase {
     // MARK: - Tests - Reading Primitives
 
     func testReadFixed32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "0D_05000000_15_FFFFFFFF")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            0D       // (Tag 1 | Fixed32)
+            05000000 // Value 5
+            15       // (Tag 2 | Fixed32)
+            FFFFFFFF // Value UInt32.max
+        """)!)
         let _ = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readFixed32(), 5)
@@ -271,7 +419,12 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadFixed64() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "09_0500000000000000_11_FFFFFFFFFFFFFFFF")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            09               // (Tag 1 | Fixed64)
+            0500000000000000 // Value 5
+            11               // (Tag 2 | Fixed64)
+            FFFFFFFFFFFFFFFF // Value UInt64.max
+        """)!)
         let _ = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readFixed64(), 5)
@@ -282,7 +435,14 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadVarint32() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "08_05_10_AC02_18_FFFFFFFF0F")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            08         // (Tag 1 | Varint)
+            05         // Value 5
+            10         // (Tag 2 | Varint)
+            AC02       // Value 300
+            18         // (Tag 3 | Varint)
+            FFFFFFFF0F // Value UInt32.max
+        """)!)
         let _ = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readVarint32(), 5)
@@ -294,7 +454,14 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     func testReadVarint64() throws {
-        let reader = ProtoReader(data: Data(hexEncoded: "08_05_10_AC02_18_FFFFFFFFFFFFFFFFFF01")!)
+        let reader = ProtoReader(data: Data(hexEncoded: """
+            08                   // (Tag 1 | Varint)
+            05                   // Value 5
+            10                   // (Tag 2 | Varint)
+            AC02                 // Value 300
+            18                   // (Tag 3 | Varint)
+            FFFFFFFFFFFFFFFFFF01 // Value UInt64.max
+        """)!)
         let _ = try reader.forEachTag { tag in
             switch tag {
             case 1: XCTAssertEqual(try reader.readVarint64(), 5)

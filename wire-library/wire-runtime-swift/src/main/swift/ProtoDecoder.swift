@@ -28,7 +28,9 @@ public final class ProtoDecoder {
         case missingRequiredField(typeName: String, fieldName: String)
         case recursionLimitExceeded
         case unexpectedEndOfData
+        case unexpectedEndGroupFieldNumber(expected: UInt32?, found: UInt32)
         case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
+        case unterminatedGroup(fieldNumber: UInt32)
 
         var localizedDescription: String {
             switch self {
@@ -48,8 +50,16 @@ public final class ProtoDecoder {
                 return "Message nesting exceeds the maximum allowed depth."
             case .unexpectedEndOfData:
                 return "A field indicates that its data extends beyond the end of the available message data."
+            case let .unexpectedEndGroupFieldNumber(expected, found):
+                if let expected = expected {
+                    return "Found non-matching end-group field number. Expected to end group \(expected), but found end key for \(found)."
+                } else {
+                    return "Found end-group key with field number \(found) but no matching start-group key existed."
+                }
             case let .unknownEnumCase(type, fieldNumber):
                 return "Unknown case with value \(fieldNumber) found for enum of type \(String(describing: type))."
+            case let .unterminatedGroup(fieldNumber):
+                return "The group with field number \(fieldNumber) has no matching end-group key."
             }
         }
     }
