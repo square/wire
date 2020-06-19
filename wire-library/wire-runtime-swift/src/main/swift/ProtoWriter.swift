@@ -19,7 +19,7 @@ public final class ProtoWriter {
         self.data = data
     }
 
-    // MARK: - Public Methods - Encoding
+    // MARK: - Public Methods - Encoding - Single Fields
 
     /** Encode an `enum` field */
     public func encode<T: RawRepresentable>(tag: UInt32, value: T?) throws where T.RawValue == UInt32 {
@@ -29,28 +29,11 @@ public final class ProtoWriter {
         }
     }
 
-    /** Encoded a repeated `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: [T]?, packed: Bool = false) throws where T.RawValue == UInt32 {
-        guard let value = value else { return }
-        encode(tag: tag, wireType: .varint, value: value, packed: packed) {
-            writeVarint($0.rawValue)
-        }
-    }
-
     /** Encode an integer field */
     public func encode<T: ProtoIntEncodable>(tag: UInt32, value: T?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
         let wireType = ProtoWriter.wireType(for: type(of: value), encoding: encoding)
         try encode(tag: tag, wireType: wireType, value: value) {
-            try $0.encode(to: self, encoding: encoding)
-        }
-    }
-
-    /** Encode a repeated integer field */
-    public func encode<T: ProtoIntEncodable>(tag: UInt32, value: [T]?, encoding: ProtoIntEncoding = .variable, packed: Bool = false) throws {
-        guard let value = value else { return }
-        let wireType = ProtoWriter.wireType(for: T.self, encoding: encoding)
-        try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
             try $0.encode(to: self, encoding: encoding)
         }
     }
@@ -73,18 +56,7 @@ public final class ProtoWriter {
         }
     }
 
-    /** Encode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
-    public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]?) throws {
-        guard let value = value else { return }
-
-        // We can assume length-delimited here because `bool`, `double` and `float` have their
-        // own overloads and all other types use wire types of length-delimited.
-        try encode(tag: tag, wireType: .lengthDelimited, value: value, packed: false) { value in
-            try encodeLengthDelimited() {
-                try value.encode(to: self)
-            }
-        }
-    }
+    // MARK: - Public Methods - Encoding - Repeated Fields
 
     /**
      Encode a repeated `bool` field.
@@ -119,6 +91,36 @@ public final class ProtoWriter {
 
         try encode(tag: tag, wireType: .fixed32, value: value, packed: packed) { value in
             try value.encode(to: self)
+        }
+    }
+
+    /** Encoded a repeated `enum` field */
+    public func encode<T: RawRepresentable>(tag: UInt32, value: [T]?, packed: Bool = false) throws where T.RawValue == UInt32 {
+        guard let value = value else { return }
+        encode(tag: tag, wireType: .varint, value: value, packed: packed) {
+            writeVarint($0.rawValue)
+        }
+    }
+
+    /** Encode a repeated integer field */
+    public func encode<T: ProtoIntEncodable>(tag: UInt32, value: [T]?, encoding: ProtoIntEncoding = .variable, packed: Bool = false) throws {
+        guard let value = value else { return }
+        let wireType = ProtoWriter.wireType(for: T.self, encoding: encoding)
+        try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
+            try $0.encode(to: self, encoding: encoding)
+        }
+    }
+
+    /** Encode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
+    public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]?) throws {
+        guard let value = value else { return }
+
+        // We can assume length-delimited here because `bool`, `double` and `float` have their
+        // own overloads and all other types use wire types of length-delimited.
+        try encode(tag: tag, wireType: .lengthDelimited, value: value, packed: false) { value in
+            try encodeLengthDelimited() {
+                try value.encode(to: self)
+            }
         }
     }
 

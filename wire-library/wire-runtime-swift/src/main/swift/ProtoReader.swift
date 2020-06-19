@@ -70,7 +70,7 @@ public final class ProtoReader {
         }
     }
 
-    // MARK: - Public Methods - Decoding
+    // MARK: - Public Methods - Decoding - Single Fields
 
     /**
      Decode enums. Note that the enums themselves do not need to be `ProtoDecodable`
@@ -85,27 +85,9 @@ public final class ProtoReader {
         return enumValue
     }
 
-    /** Decode a repeated `enum` field. */
-    public func decode<T: RawRepresentable>(into array: inout [T]) throws where T.RawValue == UInt32 {
-        try decode(into: &array) {
-            let intValue = try readVarint32()
-            guard let enumValue = T(rawValue: intValue) else {
-                throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
-            }
-            return enumValue
-        }
-    }
-
     /** Decode an integer field */
     public func decode<T: ProtoIntDecodable>(_ type: T.Type, encoding: ProtoIntEncoding = .variable) throws -> T {
         return try T(from: self, encoding: encoding)
-    }
-
-    /** Decode a repeated integer field */
-    public func decode<T: ProtoIntDecodable>(into array: inout [T], encoding: ProtoIntEncoding = .variable) throws {
-        try decode(into: &array) {
-            return try T(from: self, encoding: encoding)
-        }
     }
 
     /** Decode a field which has a single encoding mechanism, like messages, strings, and bytes. */
@@ -113,11 +95,7 @@ public final class ProtoReader {
         return try T(from: self)
     }
 
-    /** Decode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
-    public func decode<T: ProtoDecodable>(into array: inout [T]) throws {
-        // These types do not support packing, so no need to test for it.
-        try array.append(T(from: self))
-    }
+    // MARK: - Public Methods - Decoding - Repeated Fields
 
     /**
      Decode a repeated `bool` field.
@@ -147,6 +125,30 @@ public final class ProtoReader {
         try decode(into: &array) {
             return try Float(from: self)
         }
+    }
+
+    /** Decode a repeated `enum` field. */
+    public func decode<T: RawRepresentable>(into array: inout [T]) throws where T.RawValue == UInt32 {
+        try decode(into: &array) {
+            let intValue = try readVarint32()
+            guard let enumValue = T(rawValue: intValue) else {
+                throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+            }
+            return enumValue
+        }
+    }
+
+    /** Decode a repeated integer field */
+    public func decode<T: ProtoIntDecodable>(into array: inout [T], encoding: ProtoIntEncoding = .variable) throws {
+        try decode(into: &array) {
+            return try T(from: self, encoding: encoding)
+        }
+    }
+
+    /** Decode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
+    public func decode<T: ProtoDecodable>(into array: inout [T]) throws {
+        // These types do not support packing, so no need to test for it.
+        try array.append(T(from: self))
     }
 
     // MARK: - Public Methods - Unknown Fields
