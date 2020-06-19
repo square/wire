@@ -132,15 +132,10 @@ public final class ProtoWriter {
 
     // MARK: - Public Methods - Maps
 
-    public func encode<K: ProtoIntEncodable, V: ProtoIntEncodable>(
-        tag: UInt32,
-        value: [K: V],
-        keyEncoding: ProtoIntEncoding = .variable,
-        valueEncoding: ProtoIntEncoding = .variable
-    ) throws {
+    public func encode<V: ProtoEncodable>(tag: UInt32, value: [String: V]) throws {
         try encode(tag: tag, value: value) { key, value in
-            try encode(tag: 1, value: key, encoding: keyEncoding)
-            try encode(tag: 2, value: value, encoding: valueEncoding)
+            try encode(tag: 1, value: key)
+            try encode(tag: 2, value: value)
         }
     }
 
@@ -152,6 +147,18 @@ public final class ProtoWriter {
         try encode(tag: tag, value: value) { key, value in
             try encode(tag: 1, value: key, encoding: keyEncoding)
             try encode(tag: 2, value: value)
+        }
+    }
+
+    public func encode<K: ProtoIntEncodable, V: ProtoIntEncodable>(
+        tag: UInt32,
+        value: [K: V],
+        keyEncoding: ProtoIntEncoding = .variable,
+        valueEncoding: ProtoIntEncoding = .variable
+    ) throws {
+        try encode(tag: tag, value: value) { key, value in
+            try encode(tag: 1, value: key, encoding: keyEncoding)
+            try encode(tag: 2, value: value, encoding: valueEncoding)
         }
     }
 
