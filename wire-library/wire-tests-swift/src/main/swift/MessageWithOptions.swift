@@ -5,24 +5,24 @@ import Wire
 
 public struct MessageWithOptions : Equatable, Proto2Codable, Codable {
 
-  public let unknownFields: Data
+    public let unknownFields: Data
 
-  public init() {
-    self.unknownFields = .init()
-  }
-
-  public init(from reader: ProtoReader) throws {
-    let unknownFields = try reader.forEachTag { tag in
-      switch tag {
-        default: try reader.readUnknownField(tag: tag)
-      }
+    public init() {
+        self.unknownFields = .init()
     }
 
-    self.unknownFields = unknownFields
-  }
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
 
-  public func encode(to writer: ProtoWriter) throws {
-    try writer.writeUnknownFields(unknownFields)
-  }
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
 
 }

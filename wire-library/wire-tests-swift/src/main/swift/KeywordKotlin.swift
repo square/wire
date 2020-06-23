@@ -5,37 +5,37 @@ import Wire
 
 public struct KeywordKotlin : Equatable, Proto2Codable, Codable {
 
-  public var object: String?
-  public var when: Int32?
-  public let unknownFields: Data
+    public var object: String?
+    public var when: Int32?
+    public let unknownFields: Data
 
-  public init(object: String? = nil, when: Int32? = nil) {
-    self.object = object
-    self.when = when
-    self.unknownFields = .init()
-  }
-
-  public init(from reader: ProtoReader) throws {
-    var object: String? = nil
-    var when: Int32? = nil
-
-    let unknownFields = try reader.forEachTag { tag in
-      switch tag {
-        case 1: object = try reader.decode(String.self)
-        case 2: when = try reader.decode(Int32.self)
-        default: try reader.readUnknownField(tag: tag)
-      }
+    public init(object: String? = nil, when: Int32? = nil) {
+        self.object = object
+        self.when = when
+        self.unknownFields = .init()
     }
 
-    self.object = object
-    self.when = when
-    self.unknownFields = unknownFields
-  }
+    public init(from reader: ProtoReader) throws {
+        var object: String? = nil
+        var when: Int32? = nil
 
-  public func encode(to writer: ProtoWriter) throws {
-    try writer.encode(tag: 1, value: object)
-    try writer.encode(tag: 2, value: when)
-    try writer.writeUnknownFields(unknownFields)
-  }
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: object = try reader.decode(String.self)
+                case 2: when = try reader.decode(Int32.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.object = object
+        self.when = when
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: object)
+        try writer.encode(tag: 2, value: when)
+        try writer.writeUnknownFields(unknownFields)
+    }
 
 }

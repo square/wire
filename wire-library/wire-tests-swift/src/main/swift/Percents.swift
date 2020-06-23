@@ -5,31 +5,31 @@ import Wire
 
 public struct Percents : Equatable, Proto2Codable, Codable {
 
-  public var text: String?
-  public let unknownFields: Data
+    public var text: String?
+    public let unknownFields: Data
 
-  public init(text: String? = nil) {
-    self.text = text
-    self.unknownFields = .init()
-  }
-
-  public init(from reader: ProtoReader) throws {
-    var text: String? = nil
-
-    let unknownFields = try reader.forEachTag { tag in
-      switch tag {
-        case 1: text = try reader.decode(String.self)
-        default: try reader.readUnknownField(tag: tag)
-      }
+    public init(text: String? = nil) {
+        self.text = text
+        self.unknownFields = .init()
     }
 
-    self.text = text
-    self.unknownFields = unknownFields
-  }
+    public init(from reader: ProtoReader) throws {
+        var text: String? = nil
 
-  public func encode(to writer: ProtoWriter) throws {
-    try writer.encode(tag: 1, value: text)
-    try writer.writeUnknownFields(unknownFields)
-  }
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: text = try reader.decode(String.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.text = text
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: text)
+        try writer.writeUnknownFields(unknownFields)
+    }
 
 }

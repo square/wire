@@ -2,8 +2,8 @@
 // Source file: unknown_fields.proto
 public enum EnumVersionOne : UInt32, CaseIterable, Codable {
 
-  case SHREK_V1 = 1
-  case DONKEY_V1 = 2
-  case FIONA_V1 = 3
+    case SHREK_V1 = 1
+    case DONKEY_V1 = 2
+    case FIONA_V1 = 3
 
 }

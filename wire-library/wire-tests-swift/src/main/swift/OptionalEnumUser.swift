@@ -5,38 +5,38 @@ import Wire
 
 public struct OptionalEnumUser : Equatable, Proto2Codable, Codable {
 
-  public var optional_enum: OptionalEnum?
-  public let unknownFields: Data
+    public var optional_enum: OptionalEnum?
+    public let unknownFields: Data
 
-  public init(optional_enum: OptionalEnum? = nil) {
-    self.optional_enum = optional_enum
-    self.unknownFields = .init()
-  }
-
-  public init(from reader: ProtoReader) throws {
-    var optional_enum: OptionalEnum? = nil
-
-    let unknownFields = try reader.forEachTag { tag in
-      switch tag {
-        case 1: optional_enum = try reader.decode(OptionalEnum.self)
-        default: try reader.readUnknownField(tag: tag)
-      }
+    public init(optional_enum: OptionalEnum? = nil) {
+        self.optional_enum = optional_enum
+        self.unknownFields = .init()
     }
 
-    self.optional_enum = optional_enum
-    self.unknownFields = unknownFields
-  }
+    public init(from reader: ProtoReader) throws {
+        var optional_enum: OptionalEnum? = nil
 
-  public func encode(to writer: ProtoWriter) throws {
-    try writer.encode(tag: 1, value: optional_enum)
-    try writer.writeUnknownFields(unknownFields)
-  }
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: optional_enum = try reader.decode(OptionalEnum.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
 
-  public enum OptionalEnum : UInt32, CaseIterable, Codable {
+        self.optional_enum = optional_enum
+        self.unknownFields = unknownFields
+    }
 
-    case FOO = 1
-    case BAR = 2
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: optional_enum)
+        try writer.writeUnknownFields(unknownFields)
+    }
 
-  }
+    public enum OptionalEnum : UInt32, CaseIterable, Codable {
+
+        case FOO = 1
+        case BAR = 2
+
+    }
 
 }

@@ -5,31 +5,31 @@ import Wire
 
 public struct DeprecatedProto : Equatable, Proto2Codable, Codable {
 
-  public var foo: String?
-  public let unknownFields: Data
+    public var foo: String?
+    public let unknownFields: Data
 
-  public init(foo: String? = nil) {
-    self.foo = foo
-    self.unknownFields = .init()
-  }
-
-  public init(from reader: ProtoReader) throws {
-    var foo: String? = nil
-
-    let unknownFields = try reader.forEachTag { tag in
-      switch tag {
-        case 1: foo = try reader.decode(String.self)
-        default: try reader.readUnknownField(tag: tag)
-      }
+    public init(foo: String? = nil) {
+        self.foo = foo
+        self.unknownFields = .init()
     }
 
-    self.foo = foo
-    self.unknownFields = unknownFields
-  }
+    public init(from reader: ProtoReader) throws {
+        var foo: String? = nil
 
-  public func encode(to writer: ProtoWriter) throws {
-    try writer.encode(tag: 1, value: foo)
-    try writer.writeUnknownFields(unknownFields)
-  }
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: foo = try reader.decode(String.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.foo = foo
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: foo)
+        try writer.writeUnknownFields(unknownFields)
+    }
 
 }

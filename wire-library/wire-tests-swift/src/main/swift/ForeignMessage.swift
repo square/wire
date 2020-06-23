@@ -5,31 +5,31 @@ import Wire
 
 public struct ForeignMessage : Equatable, Proto2Codable, Codable {
 
-  public var i: Int32?
-  public let unknownFields: Data
+    public var i: Int32?
+    public let unknownFields: Data
 
-  public init(i: Int32? = nil) {
-    self.i = i
-    self.unknownFields = .init()
-  }
-
-  public init(from reader: ProtoReader) throws {
-    var i: Int32? = nil
-
-    let unknownFields = try reader.forEachTag { tag in
-      switch tag {
-        case 1: i = try reader.decode(Int32.self)
-        default: try reader.readUnknownField(tag: tag)
-      }
+    public init(i: Int32? = nil) {
+        self.i = i
+        self.unknownFields = .init()
     }
 
-    self.i = i
-    self.unknownFields = unknownFields
-  }
+    public init(from reader: ProtoReader) throws {
+        var i: Int32? = nil
 
-  public func encode(to writer: ProtoWriter) throws {
-    try writer.encode(tag: 1, value: i)
-    try writer.writeUnknownFields(unknownFields)
-  }
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: i = try reader.decode(Int32.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.i = i
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: i)
+        try writer.writeUnknownFields(unknownFields)
+    }
 
 }

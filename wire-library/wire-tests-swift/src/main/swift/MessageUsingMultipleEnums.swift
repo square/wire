@@ -5,37 +5,37 @@ import Wire
 
 public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
 
-  public var a: MessageWithStatus.Status?
-  public var b: OtherMessageWithStatus.Status?
-  public let unknownFields: Data
+    public var a: MessageWithStatus.Status?
+    public var b: OtherMessageWithStatus.Status?
+    public let unknownFields: Data
 
-  public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
-    self.a = a
-    self.b = b
-    self.unknownFields = .init()
-  }
-
-  public init(from reader: ProtoReader) throws {
-    var a: MessageWithStatus.Status? = nil
-    var b: OtherMessageWithStatus.Status? = nil
-
-    let unknownFields = try reader.forEachTag { tag in
-      switch tag {
-        case 1: a = try reader.decode(MessageWithStatus.Status.self)
-        case 2: b = try reader.decode(OtherMessageWithStatus.Status.self)
-        default: try reader.readUnknownField(tag: tag)
-      }
+    public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
+        self.a = a
+        self.b = b
+        self.unknownFields = .init()
     }
 
-    self.a = a
-    self.b = b
-    self.unknownFields = unknownFields
-  }
+    public init(from reader: ProtoReader) throws {
+        var a: MessageWithStatus.Status? = nil
+        var b: OtherMessageWithStatus.Status? = nil
 
-  public func encode(to writer: ProtoWriter) throws {
-    try writer.encode(tag: 1, value: a)
-    try writer.encode(tag: 2, value: b)
-    try writer.writeUnknownFields(unknownFields)
-  }
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: a = try reader.decode(MessageWithStatus.Status.self)
+                case 2: b = try reader.decode(OtherMessageWithStatus.Status.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.a = a
+        self.b = b
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: a)
+        try writer.encode(tag: 2, value: b)
+        try writer.writeUnknownFields(unknownFields)
+    }
 
 }

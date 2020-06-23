@@ -319,6 +319,7 @@ data class SwiftTarget(
         val typeName = swiftGenerator.generatedTypeName(type)
         val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
+            .indent("    ")
             .addComment("\nSource file: %L", type.location.withPathOnly())
             .addType(swiftGenerator.generateType(type))
             .build()

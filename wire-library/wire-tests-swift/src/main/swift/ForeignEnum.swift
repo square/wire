@@ -2,7 +2,7 @@
 // Source file: foreign.proto
 public enum ForeignEnum : UInt32, CaseIterable, Codable {
 
-  case BAV = 0
-  case BAX = 1
+    case BAV = 0
+    case BAX = 1
 
 }

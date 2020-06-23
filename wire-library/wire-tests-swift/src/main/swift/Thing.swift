@@ -5,31 +5,31 @@ import Wire
 
 public struct Thing : Equatable, Proto2Codable, Codable {
 
-  public var name: String?
-  public let unknownFields: Data
+    public var name: String?
+    public let unknownFields: Data
 
-  public init(name: String? = nil) {
-    self.name = name
-    self.unknownFields = .init()
-  }
-
-  public init(from reader: ProtoReader) throws {
-    var name: String? = nil
-
-    let unknownFields = try reader.forEachTag { tag in
-      switch tag {
-        case 1: name = try reader.decode(String.self)
-        default: try reader.readUnknownField(tag: tag)
-      }
+    public init(name: String? = nil) {
+        self.name = name
+        self.unknownFields = .init()
     }
 
-    self.name = name
-    self.unknownFields = unknownFields
-  }
+    public init(from reader: ProtoReader) throws {
+        var name: String? = nil
 
-  public func encode(to writer: ProtoWriter) throws {
-    try writer.encode(tag: 1, value: name)
-    try writer.writeUnknownFields(unknownFields)
-  }
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: name = try reader.decode(String.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.name = name
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: name)
+        try writer.writeUnknownFields(unknownFields)
+    }
 
 }
