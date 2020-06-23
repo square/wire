@@ -14,9 +14,14 @@ Pod::Spec.new do |s|
 
   s.source_files  = 'wire-library/wire-runtime-swift/src/main/swift/*.swift'
 
+  # Generate .swift files from .protos for use by tests.
+  s.prepare_command = <<-CMD
+    ./gradlew -p wire-library :wire-runtime-swift:generateTestProtos
+  CMD
+
   s.test_spec do |test_spec|
     test_spec.source_files =
-      'wire-library/wire-runtime-swift/src/test/swift/*.swift',
-      'wire-library/wire-tests-swift/src/main/swift/Person.swift'
+      'wire-library/wire-runtime-swift/src/test/swift/**/*.swift'
   end
+
 end
