@@ -31,7 +31,6 @@ task generateTestProtos(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
       '--proto_path=src/test/proto',
-      "--swift_out=$swiftOut",
-      'person.proto'
+      "--swift_out=$swiftOut"
   ]
 }

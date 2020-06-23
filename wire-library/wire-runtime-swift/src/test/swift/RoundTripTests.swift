@@ -1,5 +1,5 @@
 //
-//  Created by Eric Firestone on 6/19/20.
+//  Copyright © 2020 Square Inc. All rights reserved.
 //
 
 import Foundation
