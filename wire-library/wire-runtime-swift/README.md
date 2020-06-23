@@ -7,8 +7,8 @@
 To develop the runtime or run tests using Xcode, run the following commands from the root of the rep:
 
 ```
-pod gen ./WireRuntime.podspec
-open gen/WireRuntime/WireRuntime.xcworkspace
+pod gen ./Wire.podspec
+open gen/Wire/Wire.xcworkspace
 ```
 
 For these commands to work you'll need the following installed:
