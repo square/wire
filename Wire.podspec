@@ -1,15 +1,15 @@
 Pod::Spec.new do |s|
   s.name          = 'Wire'
-  s.version       = '3.2.2'
-  s.license       = { :file => 'LICENSE.txt' }
+  s.version       = "#{ENV['POD_VERSION']}"
+  s.license       = { :type => 'apache2', :file => 'LICENSE.txt' }
   s.homepage      = 'https://github.com/square/wire'
   s.authors       = { 'Eric Firestone' => '@firetweet' }
-  s.summary       = 'gRPC and protocol buffers for Android, Kotlin, Java, and Swift.'
-  s.source        = { :git => 'https://github.com/square/wire.git', :tag => 'wire-3.2.2' }
+  s.summary       = 'Protocol buffers runtime for Swift.'
+  s.source        = { :git => 'https://github.com/square/wire.git', :tag => "#{ENV['POD_VERSION']}" }
   s.module_name   = 'Wire'
   s.swift_version = '5.0'
 
-  s.ios.deployment_target  = '13.0'
+  s.ios.deployment_target  = '10.0'
   s.osx.deployment_target  = '10.15'
 
   s.source_files  = 'wire-library/wire-runtime-swift/src/main/swift/*.swift'
@@ -29,6 +29,11 @@ Pod::Spec.new do |s|
       # If a new file was added then `pod install` or `pod gen` may need to be run again.
       :script => <<-CMD
         cd ${PODS_ROOT}/../..
+        if [ ! -f /tmp/foo.txt ]; then
+          # This is not development mode.
+          # This pod was installed via a Podfile (not from source) and ./gradlew was removed.
+          exit 0
+        fi
         ./gradlew -p wire-library :wire-runtime-swift:generateTestProtos
       CMD
     }
