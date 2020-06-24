@@ -172,14 +172,14 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     label = WireField.Label.OMIT_IDENTITY
   )
-  val struct: Map<String, *> = emptyMap<String, Any?>(),
+  val struct: Map<String, *>? = null,
   @field:WireField(
     tag = 21,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     label = WireField.Label.OMIT_IDENTITY,
     jsonName = "listValue"
   )
-  val list_value: List<*> = emptyList<Any?>(),
+  val list_value: List<*>? = null,
   @field:WireField(
     tag = 22,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
@@ -338,14 +338,14 @@ class AllTypes(
     label = WireField.Label.REPEATED,
     jsonName = "repStruct"
   )
-  val rep_struct: List<Map<String, *>> = emptyList(),
+  val rep_struct: List<Map<String, *>?> = emptyList(),
   @field:WireField(
     tag = 221,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     label = WireField.Label.REPEATED,
     jsonName = "repListValue"
   )
-  val rep_list_value: List<List<*>> = emptyList(),
+  val rep_list_value: List<List<*>?> = emptyList(),
   @field:WireField(
     tag = 222,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
@@ -520,14 +520,14 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     jsonName = "mapInt32Struct"
   )
-  val map_int32_struct: Map<Int, Map<String, *>> = emptyMap(),
+  val map_int32_struct: Map<Int, Map<String, *>?> = emptyMap(),
   @field:WireField(
     tag = 521,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     jsonName = "mapInt32ListValue"
   )
-  val map_int32_list_value: Map<Int, List<*>> = emptyMap(),
+  val map_int32_list_value: Map<Int, List<*>?> = emptyMap(),
   @field:WireField(
     tag = 522,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -591,18 +591,10 @@ class AllTypes(
     jsonName = "oneofListValue"
   )
   val oneof_list_value: List<*>? = null,
-  @field:WireField(
-    tag = 622,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    jsonName = "oneofValue"
-  )
-  val oneof_value: Any? = null,
-  @field:WireField(
-    tag = 623,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    jsonName = "oneofNullValue"
-  )
-  val oneof_null_value: Nothing? = null,
+  /**
+   * google.protobuf.Value oneof_value = 622;
+   * google.protobuf.NullValue oneof_null_value = 623;
+   */
   @field:WireField(
     tag = 624,
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
@@ -613,8 +605,8 @@ class AllTypes(
 ) : Message<AllTypes, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration,
-        oneof_struct, oneof_list_value, oneof_value, oneof_null_value, oneof_empty) <= 1) {
-      "At most one of oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_value, oneof_null_value, oneof_empty may be non-null"
+        oneof_struct, oneof_list_value, oneof_empty) <= 1) {
+      "At most one of oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_empty may be non-null"
     }
   }
 
@@ -709,8 +701,6 @@ class AllTypes(
     if (oneof_duration != other.oneof_duration) return false
     if (oneof_struct != other.oneof_struct) return false
     if (oneof_list_value != other.oneof_list_value) return false
-    if (oneof_value != other.oneof_value) return false
-    if (oneof_null_value != other.oneof_null_value) return false
     if (oneof_empty != other.oneof_empty) return false
     return true
   }
@@ -800,8 +790,6 @@ class AllTypes(
       result = result * 37 + oneof_duration.hashCode()
       result = result * 37 + oneof_struct.hashCode()
       result = result * 37 + oneof_list_value.hashCode()
-      result = result * 37 + oneof_value.hashCode()
-      result = result * 37 + oneof_null_value.hashCode()
       result = result * 37 + oneof_empty.hashCode()
       super.hashCode = result
     }
@@ -829,8 +817,8 @@ class AllTypes(
     if (nested_message != null) result += """nested_message=$nested_message"""
     if (any != null) result += """any=$any"""
     if (duration != null) result += """duration=$duration"""
-    result += """struct=$struct"""
-    result += """list_value=$list_value"""
+    if (struct != null) result += """struct=$struct"""
+    if (list_value != null) result += """list_value=$list_value"""
     if (value != null) result += """value=$value"""
     if (null_value != null) result += """null_value=$null_value"""
     if (empty != null) result += """empty=$empty"""
@@ -893,8 +881,6 @@ class AllTypes(
     if (oneof_duration != null) result += """oneof_duration=$oneof_duration"""
     if (oneof_struct != null) result += """oneof_struct=$oneof_struct"""
     if (oneof_list_value != null) result += """oneof_list_value=$oneof_list_value"""
-    if (oneof_value != null) result += """oneof_value=$oneof_value"""
-    if (oneof_null_value != null) result += """oneof_null_value=$oneof_null_value"""
     if (oneof_empty != null) result += """oneof_empty=$oneof_empty"""
     return result.joinToString(prefix = "AllTypes{", separator = ", ", postfix = "}")
   }
@@ -919,8 +905,8 @@ class AllTypes(
     nested_message: NestedMessage? = this.nested_message,
     any: AnyMessage? = this.any,
     duration: Duration? = this.duration,
-    struct: Map<String, *> = this.struct,
-    list_value: List<*> = this.list_value,
+    struct: Map<String, *>? = this.struct,
+    list_value: List<*>? = this.list_value,
     value: Any? = this.value,
     null_value: Nothing? = this.null_value,
     empty: Unit? = this.empty,
@@ -943,8 +929,8 @@ class AllTypes(
     rep_nested_message: List<NestedMessage> = this.rep_nested_message,
     rep_any: List<AnyMessage> = this.rep_any,
     rep_duration: List<Duration> = this.rep_duration,
-    rep_struct: List<Map<String, *>> = this.rep_struct,
-    rep_list_value: List<List<*>> = this.rep_list_value,
+    rep_struct: List<Map<String, *>?> = this.rep_struct,
+    rep_list_value: List<List<*>?> = this.rep_list_value,
     rep_value: List<Any?> = this.rep_value,
     rep_null_value: List<Nothing?> = this.rep_null_value,
     rep_empty: List<Unit> = this.rep_empty,
@@ -969,8 +955,8 @@ class AllTypes(
     map_string_enum: Map<String, NestedEnum> = this.map_string_enum,
     map_int32_any: Map<Int, AnyMessage> = this.map_int32_any,
     map_int32_duration: Map<Int, Duration> = this.map_int32_duration,
-    map_int32_struct: Map<Int, Map<String, *>> = this.map_int32_struct,
-    map_int32_list_value: Map<Int, List<*>> = this.map_int32_list_value,
+    map_int32_struct: Map<Int, Map<String, *>?> = this.map_int32_struct,
+    map_int32_list_value: Map<Int, List<*>?> = this.map_int32_list_value,
     map_int32_value: Map<Int, Any?> = this.map_int32_value,
     map_int32_null_value: Map<Int, Nothing?> = this.map_int32_null_value,
     map_int32_empty: Map<Int, Unit> = this.map_int32_empty,
@@ -981,8 +967,6 @@ class AllTypes(
     oneof_duration: Duration? = this.oneof_duration,
     oneof_struct: Map<String, *>? = this.oneof_struct,
     oneof_list_value: List<*>? = this.oneof_list_value,
-    oneof_value: Any? = this.oneof_value,
-    oneof_null_value: Nothing? = this.oneof_null_value,
     oneof_empty: Unit? = this.oneof_empty,
     unknownFields: ByteString = this.unknownFields
   ): AllTypes = AllTypes(proto3_kotlin_int32, proto3_kotlin_uint32, proto3_kotlin_sint32,
@@ -999,7 +983,7 @@ class AllTypes(
       map_string_string, map_string_message, map_string_enum, map_int32_any, map_int32_duration,
       map_int32_struct, map_int32_list_value, map_int32_value, map_int32_null_value,
       map_int32_empty, oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration,
-      oneof_struct, oneof_list_value, oneof_value, oneof_null_value, oneof_empty, unknownFields)
+      oneof_struct, oneof_list_value, oneof_empty, unknownFields)
 
   companion object {
     @JvmField
@@ -1026,10 +1010,10 @@ class AllTypes(
       private val map_int32_durationAdapter: ProtoAdapter<Map<Int, Duration>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.DURATION) }
 
-      private val map_int32_structAdapter: ProtoAdapter<Map<Int, Map<String, *>>> by lazy {
+      private val map_int32_structAdapter: ProtoAdapter<Map<Int, Map<String, *>?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_MAP) }
 
-      private val map_int32_list_valueAdapter: ProtoAdapter<Map<Int, List<*>>> by lazy {
+      private val map_int32_list_valueAdapter: ProtoAdapter<Map<Int, List<*>?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_LIST) }
 
       private val map_int32_valueAdapter: ProtoAdapter<Map<Int, Any?>> by lazy {
@@ -1080,10 +1064,10 @@ class AllTypes(
         if (value.any != null) size += AnyMessage.ADAPTER.encodedSizeWithTag(18, value.any)
         if (value.duration != null) size += ProtoAdapter.DURATION.encodedSizeWithTag(19,
             value.duration)
-        if (value.struct != emptyMap<String, Any?>()) size +=
-            ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(20, value.struct)
-        if (value.list_value != emptyList<Any?>()) size +=
-            ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21, value.list_value)
+        if (value.struct != null) size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(20,
+            value.struct)
+        if (value.list_value != null) size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21,
+            value.list_value)
         if (value.value != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22,
             value.value)
         if (value.null_value != null) size += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23,
@@ -1146,8 +1130,6 @@ class AllTypes(
         size += ProtoAdapter.DURATION.encodedSizeWithTag(619, value.oneof_duration)
         size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(620, value.oneof_struct)
         size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(621, value.oneof_list_value)
-        size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(622, value.oneof_value)
-        size += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(623, value.oneof_null_value)
         size += ProtoAdapter.EMPTY.encodedSizeWithTag(624, value.oneof_empty)
         return size
       }
@@ -1189,10 +1171,9 @@ class AllTypes(
             value.nested_message)
         if (value.any != null) AnyMessage.ADAPTER.encodeWithTag(writer, 18, value.any)
         if (value.duration != null) ProtoAdapter.DURATION.encodeWithTag(writer, 19, value.duration)
-        if (value.struct != emptyMap<String, Any?>()) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer,
-            20, value.struct)
-        if (value.list_value != emptyList<Any?>()) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer,
-            21, value.list_value)
+        if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct)
+        if (value.list_value != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21,
+            value.list_value)
         if (value.value != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value)
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23,
             value.null_value)
@@ -1254,8 +1235,6 @@ class AllTypes(
         ProtoAdapter.DURATION.encodeWithTag(writer, 619, value.oneof_duration)
         ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 620, value.oneof_struct)
         ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 621, value.oneof_list_value)
-        ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 622, value.oneof_value)
-        ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 623, value.oneof_null_value)
         ProtoAdapter.EMPTY.encodeWithTag(writer, 624, value.oneof_empty)
         writer.writeBytes(value.unknownFields)
       }
@@ -1280,8 +1259,8 @@ class AllTypes(
         var nested_message: NestedMessage? = null
         var any: AnyMessage? = null
         var duration: Duration? = null
-        var struct: Map<String, *> = emptyMap<String, Any?>()
-        var list_value: List<*> = emptyList<Any?>()
+        var struct: Map<String, *>? = null
+        var list_value: List<*>? = null
         var value: Any? = null
         var null_value: Nothing? = null
         var empty: Unit? = null
@@ -1304,8 +1283,8 @@ class AllTypes(
         val rep_nested_message = mutableListOf<NestedMessage>()
         val rep_any = mutableListOf<AnyMessage>()
         val rep_duration = mutableListOf<Duration>()
-        val rep_struct = mutableListOf<Map<String, *>>()
-        val rep_list_value = mutableListOf<List<*>>()
+        val rep_struct = mutableListOf<Map<String, *>?>()
+        val rep_list_value = mutableListOf<List<*>?>()
         val rep_value = mutableListOf<Any?>()
         val rep_null_value = mutableListOf<Nothing?>()
         val rep_empty = mutableListOf<Unit>()
@@ -1330,8 +1309,8 @@ class AllTypes(
         val map_string_enum = mutableMapOf<String, NestedEnum>()
         val map_int32_any = mutableMapOf<Int, AnyMessage>()
         val map_int32_duration = mutableMapOf<Int, Duration>()
-        val map_int32_struct = mutableMapOf<Int, Map<String, *>>()
-        val map_int32_list_value = mutableMapOf<Int, List<*>>()
+        val map_int32_struct = mutableMapOf<Int, Map<String, *>?>()
+        val map_int32_list_value = mutableMapOf<Int, List<*>?>()
         val map_int32_value = mutableMapOf<Int, Any?>()
         val map_int32_null_value = mutableMapOf<Int, Nothing?>()
         val map_int32_empty = mutableMapOf<Int, Unit>()
@@ -1342,8 +1321,6 @@ class AllTypes(
         var oneof_duration: Duration? = null
         var oneof_struct: Map<String, *>? = null
         var oneof_list_value: List<*>? = null
-        var oneof_value: Any? = null
-        var oneof_null_value: Nothing? = null
         var oneof_empty: Unit? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -1452,12 +1429,6 @@ class AllTypes(
             619 -> oneof_duration = ProtoAdapter.DURATION.decode(reader)
             620 -> oneof_struct = ProtoAdapter.STRUCT_MAP.decode(reader)
             621 -> oneof_list_value = ProtoAdapter.STRUCT_LIST.decode(reader)
-            622 -> oneof_value = ProtoAdapter.STRUCT_VALUE.decode(reader)
-            623 -> try {
-              oneof_null_value = ProtoAdapter.STRUCT_NULL.decode(reader)
-            } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
-              reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
-            }
             624 -> oneof_empty = ProtoAdapter.EMPTY.decode(reader)
             else -> reader.readUnknownField(tag)
           }
@@ -1544,8 +1515,6 @@ class AllTypes(
           oneof_duration = oneof_duration,
           oneof_struct = oneof_struct,
           oneof_list_value = oneof_list_value,
-          oneof_value = oneof_value,
-          oneof_null_value = oneof_null_value,
           oneof_empty = oneof_empty,
           unknownFields = unknownFields
         )
@@ -1578,7 +1547,6 @@ class AllTypes(
         oneof_duration = value.oneof_duration?.let(ProtoAdapter.DURATION::redact),
         oneof_struct = value.oneof_struct?.let(ProtoAdapter.STRUCT_MAP::redact),
         oneof_list_value = value.oneof_list_value?.let(ProtoAdapter.STRUCT_LIST::redact),
-        oneof_value = value.oneof_value?.let(ProtoAdapter.STRUCT_VALUE::redact),
         oneof_empty = value.oneof_empty?.let(ProtoAdapter.EMPTY::redact),
         unknownFields = ByteString.EMPTY
       )

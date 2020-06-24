@@ -104,12 +104,6 @@ class KotlinGenerator private constructor(
     get() = schema.getType(this) is EnumType
   private val ProtoType.isMessage
     get() = schema.getType(this) is MessageType
-  private val ProtoType.isStructMap
-    get() = this == ProtoType.STRUCT_MAP
-  private val ProtoType.isStructList
-    get() = this == ProtoType.STRUCT_LIST
-  private val ProtoType.isStructValue
-    get() = this == ProtoType.STRUCT_VALUE
   private val ProtoType.isStructNull
     get() = this == ProtoType.STRUCT_NULL
   private val Type.typeName
@@ -1520,9 +1514,6 @@ class KotlinGenerator private constructor(
         EncodeMode.REQUIRED -> type.typeName
         EncodeMode.OMIT_IDENTITY -> {
           when {
-            type.isStructMap -> type.typeName
-            type.isStructList -> type.typeName
-            type.isStructValue -> type.typeName.copy(nullable = true)
             type.isStructNull -> type.typeName.copy(nullable = true)
             isOneOf -> type.typeName.copy(nullable = true)
             type.isMessage -> type.typeName.copy(nullable = true)
@@ -1542,9 +1533,6 @@ class KotlinGenerator private constructor(
         EncodeMode.OMIT_IDENTITY -> {
           val protoType = type!!
           val type: Type? = schema.getType(protoType)
-          if (protoType.isStructMap) return CodeBlock.of("emptyMap<String, Any?>()")
-          if (protoType.isStructList) return CodeBlock.of("emptyList<Any?>()")
-          if (protoType.isStructValue) return CodeBlock.of("null")
           if (protoType.isStructNull) return CodeBlock.of("null")
           if (isOneOf) return CodeBlock.of("null")
           when {
@@ -1590,9 +1578,6 @@ class KotlinGenerator private constructor(
         EncodeMode.NULL_IF_ABSENT -> true
         EncodeMode.OMIT_IDENTITY -> {
           when {
-            type.isStructMap -> false
-            type.isStructList -> false
-            type.isStructValue -> true
             type.isStructNull -> true
             isOneOf -> true
             type.isMessage -> true
@@ -1623,11 +1608,11 @@ class KotlinGenerator private constructor(
         ProtoType.DURATION to ClassName("com.squareup.wire", "Duration"),
         ProtoType.EMPTY to ClassName("kotlin", "Unit"),
         ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
-            .parameterizedBy(ClassName("kotlin", "String"), STAR),
+            .parameterizedBy(ClassName("kotlin", "String"), STAR).copy(nullable = true),
         ProtoType.STRUCT_VALUE to ClassName("kotlin", "Any").copy(nullable = true),
         ProtoType.STRUCT_NULL to ClassName("kotlin", "Nothing").copy(nullable = true),
         ProtoType.STRUCT_LIST to ClassName("kotlin.collections", "List")
-            .parameterizedBy(STAR),
+            .parameterizedBy(STAR).copy(nullable = true),
         FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
         MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
         ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
