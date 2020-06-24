@@ -23,9 +23,11 @@ import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
 import io.outfoxx.swiftpoet.Modifier.FINAL
+import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.OPTIONAL
 import io.outfoxx.swiftpoet.ParameterSpec
+import io.outfoxx.swiftpoet.PropertySpec
 import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeName
 import io.outfoxx.swiftpoet.TypeSpec
@@ -129,27 +131,39 @@ class SwiftGenerator private constructor(
                     .build())
                 .build())
           }
-          addProperty("unknownFields", DATA, PUBLIC)
+
+          addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
+              .initializer(".init()")
+              .build())
+
+          val codingKeys = structName.nestedType("CodingKeys")
+          if (type.fieldsAndOneOfFields.isNotEmpty()) {
+            // Define the keys which are the set of all direct properties and the properties within
+            // each oneof.
+            addType(TypeSpec.enumBuilder(codingKeys)
+                .addModifiers(PRIVATE)
+                .addSuperType(STRING)
+                .addSuperType(codingKey)
+                .apply {
+                  // TODO ideally we could use fieldsAndOneOfFields here but that includes
+                  //  extension fields which don't have properties yet.
+                  type.declaredFields.forEach { field ->
+                    addEnumCase(field.name)
+                  }
+                  type.oneOfs.forEach { oneOf ->
+                    oneOf.fields.forEach { field ->
+                      addEnumCase(field.name)
+                    }
+                  }
+                }
+                .build())
+          }
 
           // If there are any oneofs we cannot rely on the built-in Codable support since the
           // keys of the nested associated enum are flattened into the enclosing parent.
           // TODO are there other examples where we need to intercept encoding/decoding?
           //  Yes, 64-bit ints need to be strings!
           if (type.oneOfs.isNotEmpty()) {
-            // Define the keys which are the set of all direct properties and the properties within
-            // each oneof.
-            val codingKeys = structName.nestedType("CodingKeys")
-            addType(TypeSpec.enumBuilder(codingKeys)
-                .addModifiers(PUBLIC)
-                .addSuperType(STRING)
-                .addSuperType(codingKey)
-                .apply {
-                  type.fieldsAndOneOfFields.forEach { field ->
-                    addEnumCase(field.name)
-                  }
-                }
-                .build())
-
             addFunction(FunctionSpec.constructorBuilder()
                 .addParameter("from", "decoder", decoder)
                 .addModifiers(PUBLIC)
@@ -180,7 +194,6 @@ class SwiftGenerator private constructor(
                     endControlFlow()
                   }
                 }
-                .addStatement("unknownFields = .init()")
                 .build())
             addFunction(FunctionSpec.builder("encode")
                 .addParameter("to", "encoder", encoder)
@@ -229,7 +242,6 @@ class SwiftGenerator private constructor(
                 addStatement("self.%1N = %1N", oneOf.name)
               }
             }
-            .addStatement("self.unknownFields = .init()")
             .build())
         .addFunction(FunctionSpec.constructorBuilder()
             .addModifiers(PUBLIC)

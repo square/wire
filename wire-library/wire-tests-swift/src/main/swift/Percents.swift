@@ -6,11 +6,10 @@ import Wire
 public struct Percents : Equatable, Proto2Codable, Codable {
 
     public var text: String?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(text: String? = nil) {
         self.text = text
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -30,6 +29,12 @@ public struct Percents : Equatable, Proto2Codable, Codable {
     public func encode(to writer: ProtoWriter) throws {
         try writer.encode(tag: 1, value: text)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case text
+
     }
 
 }

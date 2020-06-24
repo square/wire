@@ -12,7 +12,7 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
     public var fred: [Float]
     public var daisy: Double?
     public var nested: [FooBar]
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(
         foo: Int32? = nil,
@@ -30,7 +30,6 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         self.fred = fred
         self.daisy = daisy
         self.nested = nested
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -76,14 +75,25 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         try writer.writeUnknownFields(unknownFields)
     }
 
+    private enum CodingKeys : String, CodingKey {
+
+        case foo
+        case bar
+        case baz
+        case qux
+        case fred
+        case daisy
+        case nested
+
+    }
+
     public struct Nested : Equatable, Proto2Codable, Codable {
 
         public var value: FooBarBazEnum?
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init(value: FooBarBazEnum? = nil) {
             self.value = value
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -105,16 +115,21 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
             try writer.writeUnknownFields(unknownFields)
         }
 
+        private enum CodingKeys : String, CodingKey {
+
+            case value
+
+        }
+
     }
 
     public struct More : Equatable, Proto2Codable, Codable {
 
         public var serial: [Int32]
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init(serial: [Int32] = []) {
             self.serial = serial
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -134,6 +149,12 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         public func encode(to writer: ProtoWriter) throws {
             try writer.encode(tag: 1, value: serial)
             try writer.writeUnknownFields(unknownFields)
+        }
+
+        private enum CodingKeys : String, CodingKey {
+
+            case serial
+
         }
 
     }

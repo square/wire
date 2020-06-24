@@ -7,12 +7,11 @@ public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
 
     public var a: MessageWithStatus.Status?
     public var b: OtherMessageWithStatus.Status?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(a: MessageWithStatus.Status? = nil, b: OtherMessageWithStatus.Status? = nil) {
         self.a = a
         self.b = b
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -36,6 +35,13 @@ public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: a)
         try writer.encode(tag: 2, value: b)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case a
+        case b
+
     }
 
 }

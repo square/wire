@@ -90,7 +90,7 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     public var map_string_string: [String : String]
     public var map_string_message: [String : NestedMessage]
     public var map_string_enum: [String : NestedEnum]
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(
         opt_int32: Int32? = nil,
@@ -264,7 +264,6 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         self.map_string_string = map_string_string
         self.map_string_message = map_string_message
         self.map_string_enum = map_string_enum
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -622,6 +621,96 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         try writer.writeUnknownFields(unknownFields)
     }
 
+    private enum CodingKeys : String, CodingKey {
+
+        case opt_int32
+        case opt_uint32
+        case opt_sint32
+        case opt_fixed32
+        case opt_sfixed32
+        case opt_int64
+        case opt_uint64
+        case opt_sint64
+        case opt_fixed64
+        case opt_sfixed64
+        case opt_bool
+        case opt_float
+        case opt_double
+        case opt_string
+        case opt_bytes
+        case opt_nested_enum
+        case opt_nested_message
+        case req_int32
+        case req_uint32
+        case req_sint32
+        case req_fixed32
+        case req_sfixed32
+        case req_int64
+        case req_uint64
+        case req_sint64
+        case req_fixed64
+        case req_sfixed64
+        case req_bool
+        case req_float
+        case req_double
+        case req_string
+        case req_bytes
+        case req_nested_enum
+        case req_nested_message
+        case rep_int32
+        case rep_uint32
+        case rep_sint32
+        case rep_fixed32
+        case rep_sfixed32
+        case rep_int64
+        case rep_uint64
+        case rep_sint64
+        case rep_fixed64
+        case rep_sfixed64
+        case rep_bool
+        case rep_float
+        case rep_double
+        case rep_string
+        case rep_bytes
+        case rep_nested_enum
+        case rep_nested_message
+        case pack_int32
+        case pack_uint32
+        case pack_sint32
+        case pack_fixed32
+        case pack_sfixed32
+        case pack_int64
+        case pack_uint64
+        case pack_sint64
+        case pack_fixed64
+        case pack_sfixed64
+        case pack_bool
+        case pack_float
+        case pack_double
+        case pack_nested_enum
+        case default_int32
+        case default_uint32
+        case default_sint32
+        case default_fixed32
+        case default_sfixed32
+        case default_int64
+        case default_uint64
+        case default_sint64
+        case default_fixed64
+        case default_sfixed64
+        case default_bool
+        case default_float
+        case default_double
+        case default_string
+        case default_bytes
+        case default_nested_enum
+        case map_int32_int32
+        case map_string_string
+        case map_string_message
+        case map_string_enum
+
+    }
+
     public enum NestedEnum : UInt32, CaseIterable, Codable {
 
         case A = 1
@@ -631,11 +720,10 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     public struct NestedMessage : Equatable, Proto2Codable, Codable {
 
         public var a: Int32?
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init(a: Int32? = nil) {
             self.a = a
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -655,6 +743,12 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         public func encode(to writer: ProtoWriter) throws {
             try writer.encode(tag: 1, value: a)
             try writer.writeUnknownFields(unknownFields)
+        }
+
+        private enum CodingKeys : String, CodingKey {
+
+            case a
+
         }
 
     }

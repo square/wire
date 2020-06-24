@@ -13,7 +13,7 @@ public struct VersionTwo : Equatable, Proto2Codable, Codable {
     public var v2_rs: [String]
     public var obj: NestedVersionTwo?
     public var en: EnumVersionTwo?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(
         i: Int32? = nil,
@@ -33,7 +33,6 @@ public struct VersionTwo : Equatable, Proto2Codable, Codable {
         self.v2_rs = v2_rs
         self.obj = obj
         self.en = en
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -81,6 +80,19 @@ public struct VersionTwo : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 7, value: obj)
         try writer.encode(tag: 8, value: en)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case i
+        case v2_i
+        case v2_s
+        case v2_f32
+        case v2_f64
+        case v2_rs
+        case obj
+        case en
+
     }
 
 }

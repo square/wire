@@ -6,11 +6,10 @@ import Wire
 public struct ExternalMessage : Equatable, Proto2Codable, Codable {
 
     public var f: Float?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(f: Float? = nil) {
         self.f = f
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -30,6 +29,12 @@ public struct ExternalMessage : Equatable, Proto2Codable, Codable {
     public func encode(to writer: ProtoWriter) throws {
         try writer.encode(tag: 1, value: f)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case f
+
     }
 
 }

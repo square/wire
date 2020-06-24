@@ -8,7 +8,7 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
     public var name: String?
     public var score: Double?
     public var models: [String : ModelEvaluation]
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(
         name: String? = nil,
@@ -18,7 +18,6 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
         self.name = name
         self.score = score
         self.models = models
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -46,6 +45,14 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 2, value: score)
         try writer.encode(tag: 3, value: models)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case name
+        case score
+        case models
+
     }
 
 }

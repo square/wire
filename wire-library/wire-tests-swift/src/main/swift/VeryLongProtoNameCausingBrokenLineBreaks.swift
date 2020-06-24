@@ -6,11 +6,10 @@ import Wire
 public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codable, Codable {
 
     public var foo: String?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(foo: String? = nil) {
         self.foo = foo
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -30,6 +29,12 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codabl
     public func encode(to writer: ProtoWriter) throws {
         try writer.encode(tag: 1, value: foo)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case foo
+
     }
 
 }

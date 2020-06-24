@@ -7,12 +7,11 @@ public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
 
     public var inner_repeated_number: [Int32]
     public var inner_number_after: Int32?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(inner_repeated_number: [Int32] = [], inner_number_after: Int32? = nil) {
         self.inner_repeated_number = inner_repeated_number
         self.inner_number_after = inner_number_after
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -36,6 +35,13 @@ public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: inner_repeated_number, packed: true)
         try writer.encode(tag: 2, value: inner_number_after)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case inner_repeated_number
+        case inner_number_after
+
     }
 
 }

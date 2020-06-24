@@ -6,11 +6,10 @@ import Wire
 public struct Mappy : Equatable, Proto2Codable, Codable {
 
     public var things: [String : Thing]
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(things: [String : Thing] = [:]) {
         self.things = things
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -30,6 +29,12 @@ public struct Mappy : Equatable, Proto2Codable, Codable {
     public func encode(to writer: ProtoWriter) throws {
         try writer.encode(tag: 1, value: things)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case things
+
     }
 
 }

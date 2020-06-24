@@ -5,10 +5,9 @@ import Wire
 
 public struct OtherMessageWithStatus : Equatable, Proto2Codable, Codable {
 
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init() {
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {

@@ -6,7 +6,7 @@ import Wire
 public struct RedactedOneOf : Equatable, Proto2Codable, Codable {
 
     public var a: A?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -19,12 +19,10 @@ public struct RedactedOneOf : Equatable, Proto2Codable, Codable {
         } else {
             self.a = nil
         }
-        unknownFields = .init()
     }
 
     public init(a: A? = nil) {
         self.a = a
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -72,7 +70,7 @@ public struct RedactedOneOf : Equatable, Proto2Codable, Codable {
 
     }
 
-    public enum CodingKeys : String, CodingKey {
+    private enum CodingKeys : String, CodingKey {
 
         case b
         case c

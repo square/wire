@@ -6,7 +6,7 @@ import Wire
 public struct Form : Equatable, Proto2Codable, Codable {
 
     public var choice: Choice?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -49,12 +49,10 @@ public struct Form : Equatable, Proto2Codable, Codable {
         } else {
             self.choice = nil
         }
-        unknownFields = .init()
     }
 
     public init(choice: Choice? = nil) {
         self.choice = choice
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -142,7 +140,7 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     }
 
-    public enum CodingKeys : String, CodingKey {
+    private enum CodingKeys : String, CodingKey {
 
         case button_element
         case local_image_element
@@ -161,10 +159,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct ButtonElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -185,10 +182,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct LocalImageElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -209,10 +205,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct RemoteImageElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -233,10 +228,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct MoneyElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -257,10 +251,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct SpacerElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -281,10 +274,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct TextElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -305,10 +297,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct CustomizedCardElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -329,10 +320,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct AddressElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -353,10 +343,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct TextInputElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -377,10 +366,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct OptionPickerElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -401,10 +389,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct DetailRowElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -425,10 +412,9 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     public struct CurrencyConversionFlagsElement : Equatable, Proto2Codable, Codable {
 
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init() {
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {

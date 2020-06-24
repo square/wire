@@ -7,12 +7,11 @@ public struct KeywordKotlin : Equatable, Proto2Codable, Codable {
 
     public var object: String?
     public var when: Int32?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(object: String? = nil, when: Int32? = nil) {
         self.object = object
         self.when = when
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -36,6 +35,13 @@ public struct KeywordKotlin : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: object)
         try writer.encode(tag: 2, value: when)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case object
+        case when
+
     }
 
 }

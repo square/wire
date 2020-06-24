@@ -10,7 +10,7 @@ public struct Person : Equatable, Proto2Codable, Codable {
     public var email: String?
     public var phone: [PhoneNumber]
     public var aliases: [String]
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(
         name: String,
@@ -24,7 +24,6 @@ public struct Person : Equatable, Proto2Codable, Codable {
         self.email = email
         self.phone = phone
         self.aliases = aliases
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -62,6 +61,16 @@ public struct Person : Equatable, Proto2Codable, Codable {
         try writer.writeUnknownFields(unknownFields)
     }
 
+    private enum CodingKeys : String, CodingKey {
+
+        case name
+        case id
+        case email
+        case phone
+        case aliases
+
+    }
+
     public enum PhoneType : UInt32, CaseIterable, Codable {
 
         case MOBILE = 0
@@ -74,12 +83,11 @@ public struct Person : Equatable, Proto2Codable, Codable {
 
         public var number: String
         public var type: PhoneType?
-        public let unknownFields: Data
+        public var unknownFields: Data = .init()
 
         public init(number: String, type: PhoneType? = nil) {
             self.number = number
             self.type = type
-            self.unknownFields = .init()
         }
 
         public init(from reader: ProtoReader) throws {
@@ -103,6 +111,13 @@ public struct Person : Equatable, Proto2Codable, Codable {
             try writer.encode(tag: 1, value: number)
             try writer.encode(tag: 2, value: type)
             try writer.writeUnknownFields(unknownFields)
+        }
+
+        private enum CodingKeys : String, CodingKey {
+
+            case number
+            case type
+
         }
 
     }

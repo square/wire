@@ -6,11 +6,10 @@ import Wire
 public struct OptionalEnumUser : Equatable, Proto2Codable, Codable {
 
     public var optional_enum: OptionalEnum?
-    public let unknownFields: Data
+    public var unknownFields: Data = .init()
 
     public init(optional_enum: OptionalEnum? = nil) {
         self.optional_enum = optional_enum
-        self.unknownFields = .init()
     }
 
     public init(from reader: ProtoReader) throws {
@@ -30,6 +29,12 @@ public struct OptionalEnumUser : Equatable, Proto2Codable, Codable {
     public func encode(to writer: ProtoWriter) throws {
         try writer.encode(tag: 1, value: optional_enum)
         try writer.writeUnknownFields(unknownFields)
+    }
+
+    private enum CodingKeys : String, CodingKey {
+
+        case optional_enum
+
     }
 
     public enum OptionalEnum : UInt32, CaseIterable, Codable {
