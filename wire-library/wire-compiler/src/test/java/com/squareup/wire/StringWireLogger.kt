@@ -19,6 +19,7 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.ProtoType
+import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 import java.nio.file.Path
 
 internal class StringWireLogger : WireLogger {
@@ -42,6 +43,11 @@ internal class StringWireLogger : WireLogger {
   @Synchronized override fun artifact(outputPath: Path, kotlinFile: FileSpec) {
     val typeSpec = kotlinFile.members.single() as TypeSpec
     buffer.append("$outputPath ${kotlinFile.packageName}.${typeSpec.name}\n")
+  }
+
+  @Synchronized override fun artifact(outputPath: Path, swiftFile: SwiftFileSpec) {
+    val typeSpec = swiftFile.members.single() as TypeSpec
+    buffer.append("$outputPath ${swiftFile.moduleName}.${typeSpec.name}\n")
   }
 
   override fun artifactSkipped(type: ProtoType) {
