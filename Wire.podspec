@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
       # If a new file was added then `pod install` or `pod gen` may need to be run again.
       :script => <<-CMD
         cd ${PODS_ROOT}/../..
-        if [ ! -f /tmp/foo.txt ]; then
+        if [ ! -f ./gradlew ]; then
           # This is not development mode.
           # This pod was installed via a Podfile (not from source) and ./gradlew was removed.
           exit 0
