@@ -162,6 +162,7 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val BYTES: ProtoAdapter<ByteString>
     @JvmField val STRING: ProtoAdapter<String>
     @JvmField val DURATION: ProtoAdapter<Duration>
+    @JvmField val INSTANT: ProtoAdapter<Instant>
     @JvmField val EMPTY: ProtoAdapter<Unit>
     @JvmField val STRUCT_MAP: ProtoAdapter<Map<String, *>?>
     @JvmField val STRUCT_LIST: ProtoAdapter<List<*>?>
@@ -721,6 +722,43 @@ internal fun commonDuration(): ProtoAdapter<Duration> = object : ProtoAdapter<Du
         else -> getNano()
       }
     }
+}
+
+internal fun commonInstant(): ProtoAdapter<Instant> = object : ProtoAdapter<Instant>(
+    FieldEncoding.LENGTH_DELIMITED,
+    Instant::class,
+    "type.googleapis.com/google.protobuf.Timestamp"
+) {
+  override fun encodedSize(value: Instant): Int {
+    var result = 0
+    val seconds = value.getEpochSecond()
+    if (seconds != 0L) result += INT64.encodedSizeWithTag(1, seconds)
+    val nanos = value.getNano()
+    if (nanos != 0) result += INT32.encodedSizeWithTag(2, nanos)
+    return result
+  }
+
+  override fun encode(writer: ProtoWriter, value: Instant) {
+    val seconds = value.getEpochSecond()
+    if (seconds != 0L) INT64.encodeWithTag(writer, 1, seconds)
+    val nanos = value.getNano()
+    if (nanos != 0) INT32.encodeWithTag(writer, 2, nanos)
+  }
+
+  override fun decode(reader: ProtoReader): Instant {
+    var seconds = 0L
+    var nanos = 0
+    reader.forEachTag { tag ->
+      when (tag) {
+        1 -> seconds = INT64.decode(reader)
+        2 -> nanos = INT32.decode(reader)
+        else -> reader.readUnknownField(tag)
+      }
+    }
+    return ofEpochSecond(seconds, nanos.toLong())
+  }
+
+  override fun redact(value: Instant): Instant = value
 }
 
 internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(

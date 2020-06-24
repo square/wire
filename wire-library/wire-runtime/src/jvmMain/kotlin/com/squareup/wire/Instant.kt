@@ -15,24 +15,9 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.NANOS_PER_SECOND
-import com.squareup.wire.internal.addExactLong
-import com.squareup.wire.internal.floorDivLong
-import com.squareup.wire.internal.floorModLong
+actual typealias Instant = java.time.Instant
 
-actual class Duration internal constructor(
-  private val seconds: Long,
-  private val nanos: Int
-) {
-  actual fun getSeconds(): Long = seconds
-  actual fun getNano(): Int = nanos
-}
-
-actual fun durationOfSeconds(
-  seconds: Long,
-  nano: Long
-): Duration {
-  val secs = addExactLong(seconds, floorDivLong(nano, NANOS_PER_SECOND))
-  val nos = floorModLong(nano, NANOS_PER_SECOND).toInt()
-  return Duration(secs, nos)
+@Suppress("NOTHING_TO_INLINE")
+actual inline fun ofEpochSecond(epochSecond: Long, nano: Long): Instant {
+  return Instant.ofEpochSecond(epochSecond, nano)
 }

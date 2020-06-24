@@ -109,28 +109,20 @@ class WireJsonAdapterFactory private constructor(
       }
     }
 
-    if (annotations.isNotEmpty()) {
-      return null
-    }
-    if (rawType == ByteString::class.java) {
-      return BYTE_STRING_JSON_ADAPTER
-    }
-    if (rawType == AnyMessage::class.java) {
-      return AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
-    }
-    if (rawType == Duration::class.java) {
-      return DurationJsonAdapter.nullSafe()
-    }
-    if (rawType == Any::class.java ||
-        rawType == Unit::class.java ||
-        type.isMapStringStar() ||
-        type.isListStar()) {
-      return StructJsonAdapter.serializeNulls()
-    }
-    return if (Message::class.java.isAssignableFrom(rawType)) {
-      MessageJsonAdapter<Nothing, Nothing>(moshi, type)
-    } else {
-      null
+    return when {
+      annotations.isNotEmpty() -> null
+      rawType == ByteString::class.java -> BYTE_STRING_JSON_ADAPTER
+      rawType == AnyMessage::class.java -> AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
+      rawType == Duration::class.java -> DurationJsonAdapter.nullSafe()
+      rawType == Instant::class.java -> InstantJsonAdapter.nullSafe()
+      rawType == Any::class.java -> StructJsonAdapter.serializeNulls()
+      rawType == Unit::class.java -> StructJsonAdapter.serializeNulls()
+      type.isMapStringStar() -> StructJsonAdapter.serializeNulls()
+      type.isListStar() -> StructJsonAdapter.serializeNulls()
+      Message::class.java.isAssignableFrom(rawType) -> {
+        MessageJsonAdapter<Nothing, Nothing>(moshi, type)
+      }
+      else -> null
     }
   }
 

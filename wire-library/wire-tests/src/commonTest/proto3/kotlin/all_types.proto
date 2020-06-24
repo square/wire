@@ -21,6 +21,7 @@ import "google/protobuf/any.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 
 option java_package = "com.squareup.wire.proto3.kotlin.all_types";
 
@@ -58,6 +59,7 @@ message AllTypes {
   google.protobuf.Value value = 22;
   google.protobuf.NullValue null_value = 23;
   google.protobuf.Empty empty = 24;
+  google.protobuf.Timestamp timestamp = 25;
 
   repeated int32 rep_int32 = 201 [packed = false];
   repeated uint32 rep_uint32 = 202 [packed = false];
@@ -83,6 +85,7 @@ message AllTypes {
   repeated google.protobuf.Value rep_value = 222;
   repeated google.protobuf.NullValue rep_null_value = 223 [packed = false];
   repeated google.protobuf.Empty rep_empty = 224;
+  repeated google.protobuf.Timestamp rep_timestamp = 225;
 
   repeated int32 pack_int32 = 301 [packed = true];
   repeated uint32 pack_uint32 = 302 [packed = true];
@@ -111,6 +114,7 @@ message AllTypes {
   map<int32, google.protobuf.Value> map_int32_value = 522;
   map<int32, google.protobuf.NullValue> map_int32_null_value = 523;
   map<int32, google.protobuf.Empty> map_int32_empty = 524;
+  map<int32, google.protobuf.Timestamp> map_int32_timestamp = 525;
 
   // We don't support `Value` and `NullValue` in oneof's.
   oneof choice {
@@ -124,5 +128,6 @@ message AllTypes {
     // google.protobuf.Value oneof_value = 622;
     // google.protobuf.NullValue oneof_null_value = 623;
     google.protobuf.Empty oneof_empty = 624;
+    google.protobuf.Timestamp oneof_timestamp = 625;
   }
 }

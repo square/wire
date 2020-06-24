@@ -20,19 +20,16 @@ import com.squareup.wire.internal.addExactLong
 import com.squareup.wire.internal.floorDivLong
 import com.squareup.wire.internal.floorModLong
 
-actual class Duration internal constructor(
-  private val seconds: Long,
+actual class Instant internal constructor(
+  private val epochSeconds: Long,
   private val nanos: Int
 ) {
-  actual fun getSeconds(): Long = seconds
+  actual fun getEpochSecond(): Long = epochSeconds
   actual fun getNano(): Int = nanos
 }
 
-actual fun durationOfSeconds(
-  seconds: Long,
-  nano: Long
-): Duration {
-  val secs = addExactLong(seconds, floorDivLong(nano, NANOS_PER_SECOND))
+actual fun ofEpochSecond(epochSecond: Long, nano: Long): Instant {
+  val secs = addExactLong(epochSecond, floorDivLong(nano, NANOS_PER_SECOND))
   val nos = floorModLong(nano, NANOS_PER_SECOND).toInt()
-  return Duration(secs, nos)
+  return Instant(secs, nos)
 }

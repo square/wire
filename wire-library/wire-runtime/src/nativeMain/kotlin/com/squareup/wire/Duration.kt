@@ -30,9 +30,9 @@ actual class Duration internal constructor(
 
 actual fun durationOfSeconds(
   seconds: Long,
-  nanoAdjustment: Long
+  nano: Long
 ): Duration {
-  val s = addExactLong(seconds, floorDivLong(nanoAdjustment, NANOS_PER_SECOND))
-  val ns = floorModLong(nanoAdjustment, NANOS_PER_SECOND).toInt()
+  val s = addExactLong(seconds, floorDivLong(nano, NANOS_PER_SECOND))
+  val ns = floorModLong(nano, NANOS_PER_SECOND).toInt()
   return Duration(s, ns)
 }
