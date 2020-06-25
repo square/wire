@@ -325,7 +325,7 @@ data class SwiftTarget(
             .build()
 
         val path = fs.getPath(outDirectory)
-        logger.artifact(path, swiftFile)
+        logger.artifact(path, type.type, swiftFile)
 
         try {
           swiftFile.writeTo(path)

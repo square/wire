@@ -45,9 +45,9 @@ internal class StringWireLogger : WireLogger {
     buffer.append("$outputPath ${kotlinFile.packageName}.${typeSpec.name}\n")
   }
 
-  @Synchronized override fun artifact(outputPath: Path, swiftFile: SwiftFileSpec) {
+  @Synchronized override fun artifact(outputPath: Path, type: ProtoType, swiftFile: SwiftFileSpec) {
     val typeSpec = swiftFile.members.single() as TypeSpec
-    buffer.append("$outputPath ${swiftFile.moduleName}.${typeSpec.name}\n")
+    buffer.append("$outputPath $type ${typeSpec.name}\n")
   }
 
   override fun artifactSkipped(type: ProtoType) {

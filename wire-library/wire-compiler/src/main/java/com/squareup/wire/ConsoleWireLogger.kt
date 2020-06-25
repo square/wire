@@ -62,12 +62,13 @@ internal class ConsoleWireLogger : WireLogger {
 
   override fun artifact(
     outputPath: Path,
+    type: ProtoType,
     swiftFile: SwiftFileSpec
   ) {
     if (quiet) {
-      println("${swiftFile.moduleName}.${swiftFile.name}")
+      println(swiftFile.name)
     } else {
-      println("Writing ${swiftFile.moduleName}.${swiftFile.name} to $outputPath")
+      println("Writing $type to $outputPath")
     }
   }
 
