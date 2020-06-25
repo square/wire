@@ -431,7 +431,7 @@ class SwiftGenerator private constructor(
       }
 
       for (protoFile in schema.protoFiles) {
-        val moduleName = protoFile.swiftModule()
+        val moduleName = "" // TODO support batching into modules
         putAll(moduleName, null, protoFile.types)
 
         for (service in protoFile.services) {
@@ -446,5 +446,3 @@ class SwiftGenerator private constructor(
     }
   }
 }
-
-private fun ProtoFile.swiftModule() = javaPackage() ?: packageName ?: ""
