@@ -31,4 +31,4 @@ expect class Duration {
   fun getNano(): Int
 }
 
-expect fun durationOfSeconds(seconds: Long, nanoAdjustment: Long): Duration
+expect fun durationOfSeconds(seconds: Long, nano: Long): Duration

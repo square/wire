@@ -20,6 +20,7 @@ package squareup.proto3.pizza;
 import 'google/protobuf/any.proto';
 import 'google/protobuf/duration.proto';
 import 'google/protobuf/struct.proto';
+import 'google/protobuf/timestamp.proto';
 
 message PizzaDelivery {
   string phone_number = 1;
@@ -28,6 +29,7 @@ message PizzaDelivery {
   google.protobuf.Any promotion = 4;
   google.protobuf.Duration delivered_within_or_free = 5;
   google.protobuf.Struct loyalty = 6;
+  google.protobuf.Timestamp ordered_at = 7;
 }
 
 message Pizza {

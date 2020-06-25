@@ -23,6 +23,7 @@ import com.google.protobuf.Duration
 import com.google.protobuf.FieldOptions
 import com.google.protobuf.ListValue
 import com.google.protobuf.Struct
+import com.google.protobuf.Timestamp
 import com.google.protobuf.Value
 import com.google.protobuf.util.JsonFormat
 import com.squareup.moshi.JsonAdapter
@@ -80,6 +81,10 @@ class Proto3WireProtocCompatibilityTests {
         .setPromotion(Any.pack(PizzaOuterClass.BuyOneGetOnePromotion.newBuilder()
             .setCoupon("MAUI")
             .build()))
+        .setOrderedAt(Timestamp.newBuilder()
+            .setSeconds(-631152000L) // 1950-01-01T00:00:00.250Z.
+            .setNanos(250_000_000)
+            .build())
         .build()
 
     val json = """
@@ -92,7 +97,8 @@ class Proto3WireProtocCompatibilityTests {
         |    "@type": "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion",
         |    "coupon": "MAUI"
         |  },
-        |  "deliveredWithinOrFree": "1799.500s"
+        |  "deliveredWithinOrFree": "1799.500s",
+        |  "orderedAt": "1950-01-01T00:00:00.250Z"
         |}
         """.trimMargin()
 
@@ -118,7 +124,8 @@ class Proto3WireProtocCompatibilityTests {
         pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
         promotion = AnyMessage.pack(BuyOneGetOnePromotion(coupon = "MAUI")),
         delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L),
-        loyalty = emptyMap<String, Any?>()
+        loyalty = emptyMap<String, Any?>(),
+        ordered_at = ofEpochSecond(-631152000L, 250_000_000L)
     )
     val json = """
         |{
@@ -136,7 +143,8 @@ class Proto3WireProtocCompatibilityTests {
         |  "promotion": {
         |    "@type": "type.googleapis.com/squareup.proto3.pizza.BuyOneGetOnePromotion",
         |    "coupon": "MAUI"
-        |  }
+        |  },
+        |  "orderedAt": "1950-01-01T00:00:00.250Z"
         |}
         """.trimMargin()
 
@@ -499,6 +507,23 @@ class Proto3WireProtocCompatibilityTests {
 
     val wireMessage = PizzaDelivery(
         delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L)
+    )
+
+    val googleMessageBytes = googleMessage.toByteArray()
+    assertThat(wireMessage.encode()).isEqualTo(googleMessageBytes)
+    assertThat(PizzaDelivery.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessage)
+  }
+
+  @Test fun instantProto() {
+    val googleMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
+        .setOrderedAt(Timestamp.newBuilder()
+            .setSeconds(-631152000000L) // 1950-01-01T00:00:00.250Z.
+            .setNanos(250_000_000)
+            .build())
+        .build()
+
+    val wireMessage = PizzaDelivery(
+        ordered_at = ofEpochSecond(-631152000000L, 250_000_000L)
     )
 
     val googleMessageBytes = googleMessage.toByteArray()

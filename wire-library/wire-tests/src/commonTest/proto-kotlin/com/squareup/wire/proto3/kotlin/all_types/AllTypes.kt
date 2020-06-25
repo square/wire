@@ -6,6 +6,7 @@ import com.squareup.wire.AnyMessage
 import com.squareup.wire.Duration
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.Instant
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
@@ -200,6 +201,12 @@ class AllTypes(
   )
   val empty: Unit? = null,
   @field:WireField(
+    tag = 25,
+    adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
+    label = WireField.Label.OMIT_IDENTITY
+  )
+  val timestamp: Instant? = null,
+  @field:WireField(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REPEATED,
@@ -367,6 +374,13 @@ class AllTypes(
     jsonName = "repEmpty"
   )
   val rep_empty: List<Unit> = emptyList(),
+  @field:WireField(
+    tag = 225,
+    adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
+    label = WireField.Label.REPEATED,
+    jsonName = "repTimestamp"
+  )
+  val rep_timestamp: List<Instant> = emptyList(),
   @field:WireField(
     tag = 301,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -550,6 +564,13 @@ class AllTypes(
   )
   val map_int32_empty: Map<Int, Unit> = emptyMap(),
   @field:WireField(
+    tag = 525,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
+    jsonName = "mapInt32Timestamp"
+  )
+  val map_int32_timestamp: Map<Int, Instant> = emptyMap(),
+  @field:WireField(
     tag = 601,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     jsonName = "oneofString"
@@ -601,12 +622,18 @@ class AllTypes(
     jsonName = "oneofEmpty"
   )
   val oneof_empty: Unit? = null,
+  @field:WireField(
+    tag = 625,
+    adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
+    jsonName = "oneofTimestamp"
+  )
+  val oneof_timestamp: Instant? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<AllTypes, Nothing>(ADAPTER, unknownFields) {
   init {
     require(countNonNull(oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration,
-        oneof_struct, oneof_list_value, oneof_empty) <= 1) {
-      "At most one of oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_empty may be non-null"
+        oneof_struct, oneof_list_value, oneof_empty, oneof_timestamp) <= 1) {
+      "At most one of oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_empty, oneof_timestamp may be non-null"
     }
   }
 
@@ -644,6 +671,7 @@ class AllTypes(
     if (value != other.value) return false
     if (null_value != other.null_value) return false
     if (empty != other.empty) return false
+    if (timestamp != other.timestamp) return false
     if (rep_int32 != other.rep_int32) return false
     if (rep_uint32 != other.rep_uint32) return false
     if (rep_sint32 != other.rep_sint32) return false
@@ -668,6 +696,7 @@ class AllTypes(
     if (rep_value != other.rep_value) return false
     if (rep_null_value != other.rep_null_value) return false
     if (rep_empty != other.rep_empty) return false
+    if (rep_timestamp != other.rep_timestamp) return false
     if (pack_int32 != other.pack_int32) return false
     if (pack_uint32 != other.pack_uint32) return false
     if (pack_sint32 != other.pack_sint32) return false
@@ -694,6 +723,7 @@ class AllTypes(
     if (map_int32_value != other.map_int32_value) return false
     if (map_int32_null_value != other.map_int32_null_value) return false
     if (map_int32_empty != other.map_int32_empty) return false
+    if (map_int32_timestamp != other.map_int32_timestamp) return false
     if (oneof_string != other.oneof_string) return false
     if (oneof_int32 != other.oneof_int32) return false
     if (oneof_nested_message != other.oneof_nested_message) return false
@@ -702,6 +732,7 @@ class AllTypes(
     if (oneof_struct != other.oneof_struct) return false
     if (oneof_list_value != other.oneof_list_value) return false
     if (oneof_empty != other.oneof_empty) return false
+    if (oneof_timestamp != other.oneof_timestamp) return false
     return true
   }
 
@@ -733,6 +764,7 @@ class AllTypes(
       result = result * 37 + value.hashCode()
       result = result * 37 + null_value.hashCode()
       result = result * 37 + empty.hashCode()
+      result = result * 37 + timestamp.hashCode()
       result = result * 37 + rep_int32.hashCode()
       result = result * 37 + rep_uint32.hashCode()
       result = result * 37 + rep_sint32.hashCode()
@@ -757,6 +789,7 @@ class AllTypes(
       result = result * 37 + rep_value.hashCode()
       result = result * 37 + rep_null_value.hashCode()
       result = result * 37 + rep_empty.hashCode()
+      result = result * 37 + rep_timestamp.hashCode()
       result = result * 37 + pack_int32.hashCode()
       result = result * 37 + pack_uint32.hashCode()
       result = result * 37 + pack_sint32.hashCode()
@@ -783,6 +816,7 @@ class AllTypes(
       result = result * 37 + map_int32_value.hashCode()
       result = result * 37 + map_int32_null_value.hashCode()
       result = result * 37 + map_int32_empty.hashCode()
+      result = result * 37 + map_int32_timestamp.hashCode()
       result = result * 37 + oneof_string.hashCode()
       result = result * 37 + oneof_int32.hashCode()
       result = result * 37 + oneof_nested_message.hashCode()
@@ -791,6 +825,7 @@ class AllTypes(
       result = result * 37 + oneof_struct.hashCode()
       result = result * 37 + oneof_list_value.hashCode()
       result = result * 37 + oneof_empty.hashCode()
+      result = result * 37 + oneof_timestamp.hashCode()
       super.hashCode = result
     }
     return result
@@ -822,6 +857,7 @@ class AllTypes(
     if (value != null) result += """value=$value"""
     if (null_value != null) result += """null_value=$null_value"""
     if (empty != null) result += """empty=$empty"""
+    if (timestamp != null) result += """timestamp=$timestamp"""
     if (rep_int32.isNotEmpty()) result += """rep_int32=$rep_int32"""
     if (rep_uint32.isNotEmpty()) result += """rep_uint32=$rep_uint32"""
     if (rep_sint32.isNotEmpty()) result += """rep_sint32=$rep_sint32"""
@@ -846,6 +882,7 @@ class AllTypes(
     if (rep_value.isNotEmpty()) result += """rep_value=$rep_value"""
     if (rep_null_value.isNotEmpty()) result += """rep_null_value=$rep_null_value"""
     if (rep_empty.isNotEmpty()) result += """rep_empty=$rep_empty"""
+    if (rep_timestamp.isNotEmpty()) result += """rep_timestamp=$rep_timestamp"""
     if (pack_int32.isNotEmpty()) result += """pack_int32=$pack_int32"""
     if (pack_uint32.isNotEmpty()) result += """pack_uint32=$pack_uint32"""
     if (pack_sint32.isNotEmpty()) result += """pack_sint32=$pack_sint32"""
@@ -874,6 +911,7 @@ class AllTypes(
     if (map_int32_null_value.isNotEmpty()) result +=
         """map_int32_null_value=$map_int32_null_value"""
     if (map_int32_empty.isNotEmpty()) result += """map_int32_empty=$map_int32_empty"""
+    if (map_int32_timestamp.isNotEmpty()) result += """map_int32_timestamp=$map_int32_timestamp"""
     if (oneof_string != null) result += """oneof_string=${sanitize(oneof_string)}"""
     if (oneof_int32 != null) result += """oneof_int32=$oneof_int32"""
     if (oneof_nested_message != null) result += """oneof_nested_message=$oneof_nested_message"""
@@ -882,6 +920,7 @@ class AllTypes(
     if (oneof_struct != null) result += """oneof_struct=$oneof_struct"""
     if (oneof_list_value != null) result += """oneof_list_value=$oneof_list_value"""
     if (oneof_empty != null) result += """oneof_empty=$oneof_empty"""
+    if (oneof_timestamp != null) result += """oneof_timestamp=$oneof_timestamp"""
     return result.joinToString(prefix = "AllTypes{", separator = ", ", postfix = "}")
   }
 
@@ -910,6 +949,7 @@ class AllTypes(
     value: Any? = this.value,
     null_value: Nothing? = this.null_value,
     empty: Unit? = this.empty,
+    timestamp: Instant? = this.timestamp,
     rep_int32: List<Int> = this.rep_int32,
     rep_uint32: List<Int> = this.rep_uint32,
     rep_sint32: List<Int> = this.rep_sint32,
@@ -934,6 +974,7 @@ class AllTypes(
     rep_value: List<Any?> = this.rep_value,
     rep_null_value: List<Nothing?> = this.rep_null_value,
     rep_empty: List<Unit> = this.rep_empty,
+    rep_timestamp: List<Instant> = this.rep_timestamp,
     pack_int32: List<Int> = this.pack_int32,
     pack_uint32: List<Int> = this.pack_uint32,
     pack_sint32: List<Int> = this.pack_sint32,
@@ -960,6 +1001,7 @@ class AllTypes(
     map_int32_value: Map<Int, Any?> = this.map_int32_value,
     map_int32_null_value: Map<Int, Nothing?> = this.map_int32_null_value,
     map_int32_empty: Map<Int, Unit> = this.map_int32_empty,
+    map_int32_timestamp: Map<Int, Instant> = this.map_int32_timestamp,
     oneof_string: String? = this.oneof_string,
     oneof_int32: Int? = this.oneof_int32,
     oneof_nested_message: NestedMessage? = this.oneof_nested_message,
@@ -968,22 +1010,24 @@ class AllTypes(
     oneof_struct: Map<String, *>? = this.oneof_struct,
     oneof_list_value: List<*>? = this.oneof_list_value,
     oneof_empty: Unit? = this.oneof_empty,
+    oneof_timestamp: Instant? = this.oneof_timestamp,
     unknownFields: ByteString = this.unknownFields
   ): AllTypes = AllTypes(proto3_kotlin_int32, proto3_kotlin_uint32, proto3_kotlin_sint32,
       proto3_kotlin_fixed32, proto3_kotlin_sfixed32, proto3_kotlin_int64, proto3_kotlin_uint64,
       proto3_kotlin_sint64, proto3_kotlin_fixed64, proto3_kotlin_sfixed64, proto3_kotlin_bool,
       proto3_kotlin_float, proto3_kotlin_double, proto3_kotlin_string, proto3_kotlin_bytes,
       nested_enum, nested_message, any, duration, struct, list_value, value, null_value, empty,
-      rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64, rep_uint64,
-      rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double, rep_string, rep_bytes,
-      rep_nested_enum, rep_nested_message, rep_any, rep_duration, rep_struct, rep_list_value,
-      rep_value, rep_null_value, rep_empty, pack_int32, pack_uint32, pack_sint32, pack_fixed32,
-      pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, pack_bool,
-      pack_float, pack_double, pack_nested_enum, pack_null_value, map_int32_int32,
-      map_string_string, map_string_message, map_string_enum, map_int32_any, map_int32_duration,
-      map_int32_struct, map_int32_list_value, map_int32_value, map_int32_null_value,
-      map_int32_empty, oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration,
-      oneof_struct, oneof_list_value, oneof_empty, unknownFields)
+      timestamp, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64,
+      rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double,
+      rep_string, rep_bytes, rep_nested_enum, rep_nested_message, rep_any, rep_duration, rep_struct,
+      rep_list_value, rep_value, rep_null_value, rep_empty, rep_timestamp, pack_int32, pack_uint32,
+      pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64,
+      pack_sfixed64, pack_bool, pack_float, pack_double, pack_nested_enum, pack_null_value,
+      map_int32_int32, map_string_string, map_string_message, map_string_enum, map_int32_any,
+      map_int32_duration, map_int32_struct, map_int32_list_value, map_int32_value,
+      map_int32_null_value, map_int32_empty, map_int32_timestamp, oneof_string, oneof_int32,
+      oneof_nested_message, oneof_any, oneof_duration, oneof_struct, oneof_list_value, oneof_empty,
+      oneof_timestamp, unknownFields)
 
   companion object {
     @JvmField
@@ -1024,6 +1068,9 @@ class AllTypes(
 
       private val map_int32_emptyAdapter: ProtoAdapter<Map<Int, Unit>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.EMPTY) }
+
+      private val map_int32_timestampAdapter: ProtoAdapter<Map<Int, Instant>> by lazy {
+          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INSTANT) }
 
       override fun encodedSize(value: AllTypes): Int {
         var size = value.unknownFields.size
@@ -1073,6 +1120,8 @@ class AllTypes(
         if (value.null_value != null) size += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23,
             value.null_value)
         if (value.empty != null) size += ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty)
+        if (value.timestamp != null) size += ProtoAdapter.INSTANT.encodedSizeWithTag(25,
+            value.timestamp)
         size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
         size += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
         size += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
@@ -1097,6 +1146,7 @@ class AllTypes(
         size += ProtoAdapter.STRUCT_VALUE.asRepeated().encodedSizeWithTag(222, value.rep_value)
         size += ProtoAdapter.STRUCT_NULL.asRepeated().encodedSizeWithTag(223, value.rep_null_value)
         size += ProtoAdapter.EMPTY.asRepeated().encodedSizeWithTag(224, value.rep_empty)
+        size += ProtoAdapter.INSTANT.asRepeated().encodedSizeWithTag(225, value.rep_timestamp)
         size += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
         size += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32)
         size += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32)
@@ -1123,6 +1173,7 @@ class AllTypes(
         size += map_int32_valueAdapter.encodedSizeWithTag(522, value.map_int32_value)
         size += map_int32_null_valueAdapter.encodedSizeWithTag(523, value.map_int32_null_value)
         size += map_int32_emptyAdapter.encodedSizeWithTag(524, value.map_int32_empty)
+        size += map_int32_timestampAdapter.encodedSizeWithTag(525, value.map_int32_timestamp)
         size += ProtoAdapter.STRING.encodedSizeWithTag(601, value.oneof_string)
         size += ProtoAdapter.INT32.encodedSizeWithTag(602, value.oneof_int32)
         size += NestedMessage.ADAPTER.encodedSizeWithTag(603, value.oneof_nested_message)
@@ -1131,6 +1182,7 @@ class AllTypes(
         size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(620, value.oneof_struct)
         size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(621, value.oneof_list_value)
         size += ProtoAdapter.EMPTY.encodedSizeWithTag(624, value.oneof_empty)
+        size += ProtoAdapter.INSTANT.encodedSizeWithTag(625, value.oneof_timestamp)
         return size
       }
 
@@ -1178,6 +1230,7 @@ class AllTypes(
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23,
             value.null_value)
         if (value.empty != null) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty)
+        if (value.timestamp != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 25, value.timestamp)
         ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32)
         ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32)
         ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32)
@@ -1202,6 +1255,7 @@ class AllTypes(
         ProtoAdapter.STRUCT_VALUE.asRepeated().encodeWithTag(writer, 222, value.rep_value)
         ProtoAdapter.STRUCT_NULL.asRepeated().encodeWithTag(writer, 223, value.rep_null_value)
         ProtoAdapter.EMPTY.asRepeated().encodeWithTag(writer, 224, value.rep_empty)
+        ProtoAdapter.INSTANT.asRepeated().encodeWithTag(writer, 225, value.rep_timestamp)
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32)
         ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32)
         ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32)
@@ -1228,6 +1282,7 @@ class AllTypes(
         map_int32_valueAdapter.encodeWithTag(writer, 522, value.map_int32_value)
         map_int32_null_valueAdapter.encodeWithTag(writer, 523, value.map_int32_null_value)
         map_int32_emptyAdapter.encodeWithTag(writer, 524, value.map_int32_empty)
+        map_int32_timestampAdapter.encodeWithTag(writer, 525, value.map_int32_timestamp)
         ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string)
         ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
         NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
@@ -1236,6 +1291,7 @@ class AllTypes(
         ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 620, value.oneof_struct)
         ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 621, value.oneof_list_value)
         ProtoAdapter.EMPTY.encodeWithTag(writer, 624, value.oneof_empty)
+        ProtoAdapter.INSTANT.encodeWithTag(writer, 625, value.oneof_timestamp)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -1264,6 +1320,7 @@ class AllTypes(
         var value: Any? = null
         var null_value: Nothing? = null
         var empty: Unit? = null
+        var timestamp: Instant? = null
         val rep_int32 = mutableListOf<Int>()
         val rep_uint32 = mutableListOf<Int>()
         val rep_sint32 = mutableListOf<Int>()
@@ -1288,6 +1345,7 @@ class AllTypes(
         val rep_value = mutableListOf<Any?>()
         val rep_null_value = mutableListOf<Nothing?>()
         val rep_empty = mutableListOf<Unit>()
+        val rep_timestamp = mutableListOf<Instant>()
         val pack_int32 = mutableListOf<Int>()
         val pack_uint32 = mutableListOf<Int>()
         val pack_sint32 = mutableListOf<Int>()
@@ -1314,6 +1372,7 @@ class AllTypes(
         val map_int32_value = mutableMapOf<Int, Any?>()
         val map_int32_null_value = mutableMapOf<Int, Nothing?>()
         val map_int32_empty = mutableMapOf<Int, Unit>()
+        val map_int32_timestamp = mutableMapOf<Int, Instant>()
         var oneof_string: String? = null
         var oneof_int32: Int? = null
         var oneof_nested_message: NestedMessage? = null
@@ -1322,6 +1381,7 @@ class AllTypes(
         var oneof_struct: Map<String, *>? = null
         var oneof_list_value: List<*>? = null
         var oneof_empty: Unit? = null
+        var oneof_timestamp: Instant? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> proto3_kotlin_int32 = ProtoAdapter.INT32.decode(reader)
@@ -1356,6 +1416,7 @@ class AllTypes(
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             24 -> empty = ProtoAdapter.EMPTY.decode(reader)
+            25 -> timestamp = ProtoAdapter.INSTANT.decode(reader)
             201 -> rep_int32.add(ProtoAdapter.INT32.decode(reader))
             202 -> rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
             203 -> rep_sint32.add(ProtoAdapter.SINT32.decode(reader))
@@ -1388,6 +1449,7 @@ class AllTypes(
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             224 -> rep_empty.add(ProtoAdapter.EMPTY.decode(reader))
+            225 -> rep_timestamp.add(ProtoAdapter.INSTANT.decode(reader))
             301 -> pack_int32.add(ProtoAdapter.INT32.decode(reader))
             302 -> pack_uint32.add(ProtoAdapter.UINT32.decode(reader))
             303 -> pack_sint32.add(ProtoAdapter.SINT32.decode(reader))
@@ -1422,6 +1484,7 @@ class AllTypes(
             522 -> map_int32_value.putAll(map_int32_valueAdapter.decode(reader))
             523 -> map_int32_null_value.putAll(map_int32_null_valueAdapter.decode(reader))
             524 -> map_int32_empty.putAll(map_int32_emptyAdapter.decode(reader))
+            525 -> map_int32_timestamp.putAll(map_int32_timestampAdapter.decode(reader))
             601 -> oneof_string = ProtoAdapter.STRING.decode(reader)
             602 -> oneof_int32 = ProtoAdapter.INT32.decode(reader)
             603 -> oneof_nested_message = NestedMessage.ADAPTER.decode(reader)
@@ -1430,6 +1493,7 @@ class AllTypes(
             620 -> oneof_struct = ProtoAdapter.STRUCT_MAP.decode(reader)
             621 -> oneof_list_value = ProtoAdapter.STRUCT_LIST.decode(reader)
             624 -> oneof_empty = ProtoAdapter.EMPTY.decode(reader)
+            625 -> oneof_timestamp = ProtoAdapter.INSTANT.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -1458,6 +1522,7 @@ class AllTypes(
           value = value,
           null_value = null_value,
           empty = empty,
+          timestamp = timestamp,
           rep_int32 = rep_int32,
           rep_uint32 = rep_uint32,
           rep_sint32 = rep_sint32,
@@ -1482,6 +1547,7 @@ class AllTypes(
           rep_value = rep_value,
           rep_null_value = rep_null_value,
           rep_empty = rep_empty,
+          rep_timestamp = rep_timestamp,
           pack_int32 = pack_int32,
           pack_uint32 = pack_uint32,
           pack_sint32 = pack_sint32,
@@ -1508,6 +1574,7 @@ class AllTypes(
           map_int32_value = map_int32_value,
           map_int32_null_value = map_int32_null_value,
           map_int32_empty = map_int32_empty,
+          map_int32_timestamp = map_int32_timestamp,
           oneof_string = oneof_string,
           oneof_int32 = oneof_int32,
           oneof_nested_message = oneof_nested_message,
@@ -1516,6 +1583,7 @@ class AllTypes(
           oneof_struct = oneof_struct,
           oneof_list_value = oneof_list_value,
           oneof_empty = oneof_empty,
+          oneof_timestamp = oneof_timestamp,
           unknownFields = unknownFields
         )
       }
@@ -1528,6 +1596,7 @@ class AllTypes(
         list_value = value.list_value?.let(ProtoAdapter.STRUCT_LIST::redact),
         value = value.value?.let(ProtoAdapter.STRUCT_VALUE::redact),
         empty = value.empty?.let(ProtoAdapter.EMPTY::redact),
+        timestamp = value.timestamp?.let(ProtoAdapter.INSTANT::redact),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
         rep_any = value.rep_any.redactElements(AnyMessage.ADAPTER),
         rep_duration = value.rep_duration.redactElements(ProtoAdapter.DURATION),
@@ -1535,6 +1604,7 @@ class AllTypes(
         rep_list_value = value.rep_list_value.redactElements(ProtoAdapter.STRUCT_LIST),
         rep_value = value.rep_value.redactElements(ProtoAdapter.STRUCT_VALUE),
         rep_empty = value.rep_empty.redactElements(ProtoAdapter.EMPTY),
+        rep_timestamp = value.rep_timestamp.redactElements(ProtoAdapter.INSTANT),
         map_string_message = value.map_string_message.redactElements(NestedMessage.ADAPTER),
         map_int32_any = value.map_int32_any.redactElements(AnyMessage.ADAPTER),
         map_int32_duration = value.map_int32_duration.redactElements(ProtoAdapter.DURATION),
@@ -1542,12 +1612,14 @@ class AllTypes(
         map_int32_list_value = value.map_int32_list_value.redactElements(ProtoAdapter.STRUCT_LIST),
         map_int32_value = value.map_int32_value.redactElements(ProtoAdapter.STRUCT_VALUE),
         map_int32_empty = value.map_int32_empty.redactElements(ProtoAdapter.EMPTY),
+        map_int32_timestamp = value.map_int32_timestamp.redactElements(ProtoAdapter.INSTANT),
         oneof_nested_message = value.oneof_nested_message?.let(NestedMessage.ADAPTER::redact),
         oneof_any = value.oneof_any?.let(AnyMessage.ADAPTER::redact),
         oneof_duration = value.oneof_duration?.let(ProtoAdapter.DURATION::redact),
         oneof_struct = value.oneof_struct?.let(ProtoAdapter.STRUCT_MAP::redact),
         oneof_list_value = value.oneof_list_value?.let(ProtoAdapter.STRUCT_LIST::redact),
         oneof_empty = value.oneof_empty?.let(ProtoAdapter.EMPTY::redact),
+        oneof_timestamp = value.oneof_timestamp?.let(ProtoAdapter.INSTANT::redact),
         unknownFields = ByteString.EMPTY
       )
     }

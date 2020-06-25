@@ -1261,6 +1261,9 @@ class KotlinGenerator private constructor(
       this == ProtoType.DURATION -> {
         CodeBlock.of("%T${adapterFieldDelimiterName}DURATION", ProtoAdapter::class)
       }
+      this == ProtoType.TIMESTAMP -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}INSTANT", ProtoAdapter::class)
+      }
       this == ProtoType.EMPTY -> {
         CodeBlock.of("%T${adapterFieldDelimiterName}EMPTY", ProtoAdapter::class)
       }
@@ -1288,6 +1291,7 @@ class KotlinGenerator private constructor(
   private fun ProtoType.adapterString() = when {
     isScalar -> ProtoAdapter::class.java.name + '#' + simpleName.toUpperCase(Locale.US)
     this == ProtoType.DURATION -> ProtoAdapter::class.java.name + "#DURATION"
+    this == ProtoType.TIMESTAMP -> ProtoAdapter::class.java.name + "#INSTANT"
     this == ProtoType.EMPTY -> ProtoAdapter::class.java.name + "#EMPTY"
     this == ProtoType.STRUCT_MAP -> ProtoAdapter::class.java.name + "#STRUCT_MAP"
     this == ProtoType.STRUCT_VALUE -> ProtoAdapter::class.java.name + "#STRUCT_VALUE"
@@ -1606,6 +1610,7 @@ class KotlinGenerator private constructor(
         ProtoType.UINT64 to LONG,
         ProtoType.ANY to ClassName("com.squareup.wire", "AnyMessage"),
         ProtoType.DURATION to ClassName("com.squareup.wire", "Duration"),
+        ProtoType.TIMESTAMP to ClassName("com.squareup.wire", "Instant"),
         ProtoType.EMPTY to ClassName("kotlin", "Unit"),
         ProtoType.STRUCT_MAP to ClassName("kotlin.collections", "Map")
             .parameterizedBy(ClassName("kotlin", "String"), STAR).copy(nullable = true),
