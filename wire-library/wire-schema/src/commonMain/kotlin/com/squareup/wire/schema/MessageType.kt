@@ -26,6 +26,7 @@ import com.squareup.wire.schema.OneOf.Companion.toElements
 import com.squareup.wire.schema.Reserved.Companion.fromElements
 import com.squareup.wire.schema.Reserved.Companion.toElements
 import com.squareup.wire.schema.internal.parser.MessageElement
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 class MessageType private constructor(
@@ -41,7 +42,8 @@ class MessageType private constructor(
   private val reserveds: List<Reserved>,
   override val options: Options
 ) : Type() {
-  fun fields() = declaredFields + extensionFields
+  @get:JvmName("fields")
+  val fields get() = declaredFields + extensionFields
 
   val requiredFields: List<Field>
     get() = fieldsAndOneOfFields.filter { it.isRequired }
