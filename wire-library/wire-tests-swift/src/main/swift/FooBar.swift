@@ -12,6 +12,8 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
     public var fred: [Float]
     public var daisy: Double?
     public var nested: [FooBar]
+    public var ext: FooBarBazEnum?
+    public var rep: [FooBarBazEnum]
     public var unknownFields: Data = .init()
 
     public init(
@@ -21,7 +23,9 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         qux: UInt64? = nil,
         fred: [Float] = [],
         daisy: Double? = nil,
-        nested: [FooBar] = []
+        nested: [FooBar] = [],
+        ext: FooBarBazEnum? = nil,
+        rep: [FooBarBazEnum] = []
     ) {
         self.foo = foo
         self.bar = bar
@@ -30,6 +34,8 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         self.fred = fred
         self.daisy = daisy
         self.nested = nested
+        self.ext = ext
+        self.rep = rep
     }
 
     public init(from reader: ProtoReader) throws {
@@ -40,6 +46,8 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         var fred: [Float] = []
         var daisy: Double? = nil
         var nested: [FooBar] = []
+        var ext: FooBarBazEnum? = nil
+        var rep: [FooBarBazEnum] = []
 
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
@@ -50,6 +58,8 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
                 case 5: try reader.decode(into: &fred)
                 case 6: daisy = try reader.decode(Double.self)
                 case 7: try reader.decode(into: &nested)
+                case 101: ext = try reader.decode(FooBarBazEnum.self)
+                case 102: try reader.decode(into: &rep)
                 default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -61,6 +71,8 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         self.fred = try FooBar.checkIfMissing(fred, "fred")
         self.daisy = daisy
         self.nested = try FooBar.checkIfMissing(nested, "nested")
+        self.ext = ext
+        self.rep = try FooBar.checkIfMissing(rep, "rep")
         self.unknownFields = unknownFields
     }
 
@@ -72,6 +84,8 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 5, value: fred)
         try writer.encode(tag: 6, value: daisy)
         try writer.encode(tag: 7, value: nested)
+        try writer.encode(tag: 101, value: ext)
+        try writer.encode(tag: 102, value: rep)
         try writer.writeUnknownFields(unknownFields)
     }
 
@@ -84,6 +98,8 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         case fred
         case daisy
         case nested
+        case ext
+        case rep
 
     }
 

@@ -100,7 +100,7 @@ class SwiftGenerator private constructor(
         .addSuperType(protoCodable)
         .addSuperType(codable)
         .apply {
-          type.declaredFields.forEach { field ->
+          type.fields.forEach { field ->
             addMutableProperty(field.name, field.typeName, PUBLIC)
           }
           type.oneOfs.forEach { oneOf ->
@@ -145,15 +145,8 @@ class SwiftGenerator private constructor(
                 .addSuperType(STRING)
                 .addSuperType(codingKey)
                 .apply {
-                  // TODO ideally we could use fieldsAndOneOfFields here but that includes
-                  //  extension fields which don't have properties yet.
-                  type.declaredFields.forEach { field ->
+                  type.fieldsAndOneOfFields.forEach { field ->
                     addEnumCase(field.name)
-                  }
-                  type.oneOfs.forEach { oneOf ->
-                    oneOf.fields.forEach { field ->
-                      addEnumCase(field.name)
-                    }
                   }
                 }
                 .build())
@@ -170,7 +163,7 @@ class SwiftGenerator private constructor(
                 .throws(true)
                 .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
                 .apply {
-                  type.declaredFields.forEach { field ->
+                  type.fields.forEach { field ->
                     addStatement(
                         "%1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
                         field.typeName
@@ -201,7 +194,7 @@ class SwiftGenerator private constructor(
                 .throws(true)
                 .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
                 .apply {
-                  type.declaredFields.forEach { field ->
+                  type.fields.forEach { field ->
                     addStatement("try container.encode(%1N, forKey: .%1N)", field.name)
                   }
                   type.oneOfs.forEach { oneOf ->
@@ -221,7 +214,7 @@ class SwiftGenerator private constructor(
         .addFunction(FunctionSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .apply {
-              type.declaredFields.forEach { field ->
+              type.fields.forEach { field ->
                 val fieldType = field.typeName
                 addParameter(ParameterSpec.builder(field.name, fieldType)
                     .apply {
@@ -249,7 +242,7 @@ class SwiftGenerator private constructor(
             .throws(true)
             .apply {
               // Declare locals into which everything is writen before promoting to members.
-              type.declaredFields.forEach { field ->
+              type.fields.forEach { field ->
                 val localType = if (field.isRepeated || field.isMap) {
                   field.typeName
                 } else {
@@ -274,7 +267,7 @@ class SwiftGenerator private constructor(
                   .add("let unknownFields = try reader.forEachTag { tag in\n%>")
                   .beginControlFlow("switch tag")
                   .apply {
-                    type.declaredFields.forEach { field ->
+                    type.fields.forEach { field ->
                       if (field.isMap) {
                         add("case %L: try reader.decode(into: &%N", field.tag, field.name)
                         field.keyType.encoding?.let { keyEncoding ->
@@ -309,7 +302,7 @@ class SwiftGenerator private constructor(
 
               // Check required and bind members.
               addStatement("")
-              type.declaredFields.forEach { field ->
+              type.fields.forEach { field ->
                 val initializer = if (field.typeName.optional) {
                   CodeBlock.of("%N", field.name)
                 } else {
@@ -328,7 +321,7 @@ class SwiftGenerator private constructor(
             .addParameter("to", "writer", protoWriter)
             .throws(true)
             .apply {
-              type.declaredFields.forEach { field ->
+              type.fields.forEach { field ->
                 if (field.isMap) {
                   addCode("try writer.encode(tag: %L, value: %N", field.tag, field.name)
                   field.keyType.encoding?.let { keyEncoding ->

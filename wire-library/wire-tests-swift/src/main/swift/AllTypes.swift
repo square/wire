@@ -90,6 +90,58 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     public var map_string_string: [String : String]
     public var map_string_message: [String : NestedMessage]
     public var map_string_enum: [String : NestedEnum]
+    public var ext_opt_int32: Int32?
+    public var ext_opt_uint32: UInt32?
+    public var ext_opt_sint32: Int32?
+    public var ext_opt_fixed32: Int32?
+    public var ext_opt_sfixed32: Int32?
+    public var ext_opt_int64: Int64?
+    public var ext_opt_uint64: UInt64?
+    public var ext_opt_sint64: Int64?
+    public var ext_opt_fixed64: Int64?
+    public var ext_opt_sfixed64: Int64?
+    public var ext_opt_bool: Bool?
+    public var ext_opt_float: Float?
+    public var ext_opt_double: Double?
+    public var ext_opt_string: String?
+    public var ext_opt_bytes: Data?
+    public var ext_opt_nested_enum: NestedEnum?
+    public var ext_opt_nested_message: NestedMessage?
+    public var ext_rep_int32: [Int32]
+    public var ext_rep_uint32: [UInt32]
+    public var ext_rep_sint32: [Int32]
+    public var ext_rep_fixed32: [Int32]
+    public var ext_rep_sfixed32: [Int32]
+    public var ext_rep_int64: [Int64]
+    public var ext_rep_uint64: [UInt64]
+    public var ext_rep_sint64: [Int64]
+    public var ext_rep_fixed64: [Int64]
+    public var ext_rep_sfixed64: [Int64]
+    public var ext_rep_bool: [Bool]
+    public var ext_rep_float: [Float]
+    public var ext_rep_double: [Double]
+    public var ext_rep_string: [String]
+    public var ext_rep_bytes: [Data]
+    public var ext_rep_nested_enum: [NestedEnum]
+    public var ext_rep_nested_message: [NestedMessage]
+    public var ext_pack_int32: [Int32]
+    public var ext_pack_uint32: [UInt32]
+    public var ext_pack_sint32: [Int32]
+    public var ext_pack_fixed32: [Int32]
+    public var ext_pack_sfixed32: [Int32]
+    public var ext_pack_int64: [Int64]
+    public var ext_pack_uint64: [UInt64]
+    public var ext_pack_sint64: [Int64]
+    public var ext_pack_fixed64: [Int64]
+    public var ext_pack_sfixed64: [Int64]
+    public var ext_pack_bool: [Bool]
+    public var ext_pack_float: [Float]
+    public var ext_pack_double: [Double]
+    public var ext_pack_nested_enum: [NestedEnum]
+    public var ext_map_int32_int32: [Int32 : Int32]
+    public var ext_map_string_string: [String : String]
+    public var ext_map_string_message: [String : NestedMessage]
+    public var ext_map_string_enum: [String : NestedEnum]
     public var unknownFields: Data = .init()
 
     public init(
@@ -177,7 +229,59 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         map_int32_int32: [Int32 : Int32] = [:],
         map_string_string: [String : String] = [:],
         map_string_message: [String : NestedMessage] = [:],
-        map_string_enum: [String : NestedEnum] = [:]
+        map_string_enum: [String : NestedEnum] = [:],
+        ext_opt_int32: Int32? = nil,
+        ext_opt_uint32: UInt32? = nil,
+        ext_opt_sint32: Int32? = nil,
+        ext_opt_fixed32: Int32? = nil,
+        ext_opt_sfixed32: Int32? = nil,
+        ext_opt_int64: Int64? = nil,
+        ext_opt_uint64: UInt64? = nil,
+        ext_opt_sint64: Int64? = nil,
+        ext_opt_fixed64: Int64? = nil,
+        ext_opt_sfixed64: Int64? = nil,
+        ext_opt_bool: Bool? = nil,
+        ext_opt_float: Float? = nil,
+        ext_opt_double: Double? = nil,
+        ext_opt_string: String? = nil,
+        ext_opt_bytes: Data? = nil,
+        ext_opt_nested_enum: NestedEnum? = nil,
+        ext_opt_nested_message: NestedMessage? = nil,
+        ext_rep_int32: [Int32] = [],
+        ext_rep_uint32: [UInt32] = [],
+        ext_rep_sint32: [Int32] = [],
+        ext_rep_fixed32: [Int32] = [],
+        ext_rep_sfixed32: [Int32] = [],
+        ext_rep_int64: [Int64] = [],
+        ext_rep_uint64: [UInt64] = [],
+        ext_rep_sint64: [Int64] = [],
+        ext_rep_fixed64: [Int64] = [],
+        ext_rep_sfixed64: [Int64] = [],
+        ext_rep_bool: [Bool] = [],
+        ext_rep_float: [Float] = [],
+        ext_rep_double: [Double] = [],
+        ext_rep_string: [String] = [],
+        ext_rep_bytes: [Data] = [],
+        ext_rep_nested_enum: [NestedEnum] = [],
+        ext_rep_nested_message: [NestedMessage] = [],
+        ext_pack_int32: [Int32] = [],
+        ext_pack_uint32: [UInt32] = [],
+        ext_pack_sint32: [Int32] = [],
+        ext_pack_fixed32: [Int32] = [],
+        ext_pack_sfixed32: [Int32] = [],
+        ext_pack_int64: [Int64] = [],
+        ext_pack_uint64: [UInt64] = [],
+        ext_pack_sint64: [Int64] = [],
+        ext_pack_fixed64: [Int64] = [],
+        ext_pack_sfixed64: [Int64] = [],
+        ext_pack_bool: [Bool] = [],
+        ext_pack_float: [Float] = [],
+        ext_pack_double: [Double] = [],
+        ext_pack_nested_enum: [NestedEnum] = [],
+        ext_map_int32_int32: [Int32 : Int32] = [:],
+        ext_map_string_string: [String : String] = [:],
+        ext_map_string_message: [String : NestedMessage] = [:],
+        ext_map_string_enum: [String : NestedEnum] = [:]
     ) {
         self.opt_int32 = opt_int32
         self.opt_uint32 = opt_uint32
@@ -264,6 +368,58 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         self.map_string_string = map_string_string
         self.map_string_message = map_string_message
         self.map_string_enum = map_string_enum
+        self.ext_opt_int32 = ext_opt_int32
+        self.ext_opt_uint32 = ext_opt_uint32
+        self.ext_opt_sint32 = ext_opt_sint32
+        self.ext_opt_fixed32 = ext_opt_fixed32
+        self.ext_opt_sfixed32 = ext_opt_sfixed32
+        self.ext_opt_int64 = ext_opt_int64
+        self.ext_opt_uint64 = ext_opt_uint64
+        self.ext_opt_sint64 = ext_opt_sint64
+        self.ext_opt_fixed64 = ext_opt_fixed64
+        self.ext_opt_sfixed64 = ext_opt_sfixed64
+        self.ext_opt_bool = ext_opt_bool
+        self.ext_opt_float = ext_opt_float
+        self.ext_opt_double = ext_opt_double
+        self.ext_opt_string = ext_opt_string
+        self.ext_opt_bytes = ext_opt_bytes
+        self.ext_opt_nested_enum = ext_opt_nested_enum
+        self.ext_opt_nested_message = ext_opt_nested_message
+        self.ext_rep_int32 = ext_rep_int32
+        self.ext_rep_uint32 = ext_rep_uint32
+        self.ext_rep_sint32 = ext_rep_sint32
+        self.ext_rep_fixed32 = ext_rep_fixed32
+        self.ext_rep_sfixed32 = ext_rep_sfixed32
+        self.ext_rep_int64 = ext_rep_int64
+        self.ext_rep_uint64 = ext_rep_uint64
+        self.ext_rep_sint64 = ext_rep_sint64
+        self.ext_rep_fixed64 = ext_rep_fixed64
+        self.ext_rep_sfixed64 = ext_rep_sfixed64
+        self.ext_rep_bool = ext_rep_bool
+        self.ext_rep_float = ext_rep_float
+        self.ext_rep_double = ext_rep_double
+        self.ext_rep_string = ext_rep_string
+        self.ext_rep_bytes = ext_rep_bytes
+        self.ext_rep_nested_enum = ext_rep_nested_enum
+        self.ext_rep_nested_message = ext_rep_nested_message
+        self.ext_pack_int32 = ext_pack_int32
+        self.ext_pack_uint32 = ext_pack_uint32
+        self.ext_pack_sint32 = ext_pack_sint32
+        self.ext_pack_fixed32 = ext_pack_fixed32
+        self.ext_pack_sfixed32 = ext_pack_sfixed32
+        self.ext_pack_int64 = ext_pack_int64
+        self.ext_pack_uint64 = ext_pack_uint64
+        self.ext_pack_sint64 = ext_pack_sint64
+        self.ext_pack_fixed64 = ext_pack_fixed64
+        self.ext_pack_sfixed64 = ext_pack_sfixed64
+        self.ext_pack_bool = ext_pack_bool
+        self.ext_pack_float = ext_pack_float
+        self.ext_pack_double = ext_pack_double
+        self.ext_pack_nested_enum = ext_pack_nested_enum
+        self.ext_map_int32_int32 = ext_map_int32_int32
+        self.ext_map_string_string = ext_map_string_string
+        self.ext_map_string_message = ext_map_string_message
+        self.ext_map_string_enum = ext_map_string_enum
     }
 
     public init(from reader: ProtoReader) throws {
@@ -352,6 +508,58 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var map_string_string: [String : String] = [:]
         var map_string_message: [String : NestedMessage] = [:]
         var map_string_enum: [String : NestedEnum] = [:]
+        var ext_opt_int32: Int32? = nil
+        var ext_opt_uint32: UInt32? = nil
+        var ext_opt_sint32: Int32? = nil
+        var ext_opt_fixed32: Int32? = nil
+        var ext_opt_sfixed32: Int32? = nil
+        var ext_opt_int64: Int64? = nil
+        var ext_opt_uint64: UInt64? = nil
+        var ext_opt_sint64: Int64? = nil
+        var ext_opt_fixed64: Int64? = nil
+        var ext_opt_sfixed64: Int64? = nil
+        var ext_opt_bool: Bool? = nil
+        var ext_opt_float: Float? = nil
+        var ext_opt_double: Double? = nil
+        var ext_opt_string: String? = nil
+        var ext_opt_bytes: Data? = nil
+        var ext_opt_nested_enum: NestedEnum? = nil
+        var ext_opt_nested_message: NestedMessage? = nil
+        var ext_rep_int32: [Int32] = []
+        var ext_rep_uint32: [UInt32] = []
+        var ext_rep_sint32: [Int32] = []
+        var ext_rep_fixed32: [Int32] = []
+        var ext_rep_sfixed32: [Int32] = []
+        var ext_rep_int64: [Int64] = []
+        var ext_rep_uint64: [UInt64] = []
+        var ext_rep_sint64: [Int64] = []
+        var ext_rep_fixed64: [Int64] = []
+        var ext_rep_sfixed64: [Int64] = []
+        var ext_rep_bool: [Bool] = []
+        var ext_rep_float: [Float] = []
+        var ext_rep_double: [Double] = []
+        var ext_rep_string: [String] = []
+        var ext_rep_bytes: [Data] = []
+        var ext_rep_nested_enum: [NestedEnum] = []
+        var ext_rep_nested_message: [NestedMessage] = []
+        var ext_pack_int32: [Int32] = []
+        var ext_pack_uint32: [UInt32] = []
+        var ext_pack_sint32: [Int32] = []
+        var ext_pack_fixed32: [Int32] = []
+        var ext_pack_sfixed32: [Int32] = []
+        var ext_pack_int64: [Int64] = []
+        var ext_pack_uint64: [UInt64] = []
+        var ext_pack_sint64: [Int64] = []
+        var ext_pack_fixed64: [Int64] = []
+        var ext_pack_sfixed64: [Int64] = []
+        var ext_pack_bool: [Bool] = []
+        var ext_pack_float: [Float] = []
+        var ext_pack_double: [Double] = []
+        var ext_pack_nested_enum: [NestedEnum] = []
+        var ext_map_int32_int32: [Int32 : Int32] = [:]
+        var ext_map_string_string: [String : String] = [:]
+        var ext_map_string_message: [String : NestedMessage] = [:]
+        var ext_map_string_enum: [String : NestedEnum] = [:]
 
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
@@ -440,6 +648,58 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
                 case 502: try reader.decode(into: &map_string_string)
                 case 503: try reader.decode(into: &map_string_message)
                 case 504: try reader.decode(into: &map_string_enum)
+                case 1001: ext_opt_int32 = try reader.decode(Int32.self)
+                case 1002: ext_opt_uint32 = try reader.decode(UInt32.self)
+                case 1003: ext_opt_sint32 = try reader.decode(Int32.self)
+                case 1004: ext_opt_fixed32 = try reader.decode(Int32.self)
+                case 1005: ext_opt_sfixed32 = try reader.decode(Int32.self)
+                case 1006: ext_opt_int64 = try reader.decode(Int64.self)
+                case 1007: ext_opt_uint64 = try reader.decode(UInt64.self)
+                case 1008: ext_opt_sint64 = try reader.decode(Int64.self)
+                case 1009: ext_opt_fixed64 = try reader.decode(Int64.self)
+                case 1010: ext_opt_sfixed64 = try reader.decode(Int64.self)
+                case 1011: ext_opt_bool = try reader.decode(Bool.self)
+                case 1012: ext_opt_float = try reader.decode(Float.self)
+                case 1013: ext_opt_double = try reader.decode(Double.self)
+                case 1014: ext_opt_string = try reader.decode(String.self)
+                case 1015: ext_opt_bytes = try reader.decode(Data.self)
+                case 1016: ext_opt_nested_enum = try reader.decode(NestedEnum.self)
+                case 1017: ext_opt_nested_message = try reader.decode(NestedMessage.self)
+                case 1101: try reader.decode(into: &ext_rep_int32)
+                case 1102: try reader.decode(into: &ext_rep_uint32)
+                case 1103: try reader.decode(into: &ext_rep_sint32)
+                case 1104: try reader.decode(into: &ext_rep_fixed32)
+                case 1105: try reader.decode(into: &ext_rep_sfixed32)
+                case 1106: try reader.decode(into: &ext_rep_int64)
+                case 1107: try reader.decode(into: &ext_rep_uint64)
+                case 1108: try reader.decode(into: &ext_rep_sint64)
+                case 1109: try reader.decode(into: &ext_rep_fixed64)
+                case 1110: try reader.decode(into: &ext_rep_sfixed64)
+                case 1111: try reader.decode(into: &ext_rep_bool)
+                case 1112: try reader.decode(into: &ext_rep_float)
+                case 1113: try reader.decode(into: &ext_rep_double)
+                case 1114: try reader.decode(into: &ext_rep_string)
+                case 1115: try reader.decode(into: &ext_rep_bytes)
+                case 1116: try reader.decode(into: &ext_rep_nested_enum)
+                case 1117: try reader.decode(into: &ext_rep_nested_message)
+                case 1201: try reader.decode(into: &ext_pack_int32)
+                case 1202: try reader.decode(into: &ext_pack_uint32)
+                case 1203: try reader.decode(into: &ext_pack_sint32)
+                case 1204: try reader.decode(into: &ext_pack_fixed32)
+                case 1205: try reader.decode(into: &ext_pack_sfixed32)
+                case 1206: try reader.decode(into: &ext_pack_int64)
+                case 1207: try reader.decode(into: &ext_pack_uint64)
+                case 1208: try reader.decode(into: &ext_pack_sint64)
+                case 1209: try reader.decode(into: &ext_pack_fixed64)
+                case 1210: try reader.decode(into: &ext_pack_sfixed64)
+                case 1211: try reader.decode(into: &ext_pack_bool)
+                case 1212: try reader.decode(into: &ext_pack_float)
+                case 1213: try reader.decode(into: &ext_pack_double)
+                case 1216: try reader.decode(into: &ext_pack_nested_enum)
+                case 1301: try reader.decode(into: &ext_map_int32_int32)
+                case 1402: try reader.decode(into: &ext_map_string_string)
+                case 1503: try reader.decode(into: &ext_map_string_message)
+                case 1504: try reader.decode(into: &ext_map_string_enum)
                 default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -529,6 +789,58 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         self.map_string_string = try AllTypes.checkIfMissing(map_string_string, "map_string_string")
         self.map_string_message = try AllTypes.checkIfMissing(map_string_message, "map_string_message")
         self.map_string_enum = try AllTypes.checkIfMissing(map_string_enum, "map_string_enum")
+        self.ext_opt_int32 = ext_opt_int32
+        self.ext_opt_uint32 = ext_opt_uint32
+        self.ext_opt_sint32 = ext_opt_sint32
+        self.ext_opt_fixed32 = ext_opt_fixed32
+        self.ext_opt_sfixed32 = ext_opt_sfixed32
+        self.ext_opt_int64 = ext_opt_int64
+        self.ext_opt_uint64 = ext_opt_uint64
+        self.ext_opt_sint64 = ext_opt_sint64
+        self.ext_opt_fixed64 = ext_opt_fixed64
+        self.ext_opt_sfixed64 = ext_opt_sfixed64
+        self.ext_opt_bool = ext_opt_bool
+        self.ext_opt_float = ext_opt_float
+        self.ext_opt_double = ext_opt_double
+        self.ext_opt_string = ext_opt_string
+        self.ext_opt_bytes = ext_opt_bytes
+        self.ext_opt_nested_enum = ext_opt_nested_enum
+        self.ext_opt_nested_message = ext_opt_nested_message
+        self.ext_rep_int32 = try AllTypes.checkIfMissing(ext_rep_int32, "ext_rep_int32")
+        self.ext_rep_uint32 = try AllTypes.checkIfMissing(ext_rep_uint32, "ext_rep_uint32")
+        self.ext_rep_sint32 = try AllTypes.checkIfMissing(ext_rep_sint32, "ext_rep_sint32")
+        self.ext_rep_fixed32 = try AllTypes.checkIfMissing(ext_rep_fixed32, "ext_rep_fixed32")
+        self.ext_rep_sfixed32 = try AllTypes.checkIfMissing(ext_rep_sfixed32, "ext_rep_sfixed32")
+        self.ext_rep_int64 = try AllTypes.checkIfMissing(ext_rep_int64, "ext_rep_int64")
+        self.ext_rep_uint64 = try AllTypes.checkIfMissing(ext_rep_uint64, "ext_rep_uint64")
+        self.ext_rep_sint64 = try AllTypes.checkIfMissing(ext_rep_sint64, "ext_rep_sint64")
+        self.ext_rep_fixed64 = try AllTypes.checkIfMissing(ext_rep_fixed64, "ext_rep_fixed64")
+        self.ext_rep_sfixed64 = try AllTypes.checkIfMissing(ext_rep_sfixed64, "ext_rep_sfixed64")
+        self.ext_rep_bool = try AllTypes.checkIfMissing(ext_rep_bool, "ext_rep_bool")
+        self.ext_rep_float = try AllTypes.checkIfMissing(ext_rep_float, "ext_rep_float")
+        self.ext_rep_double = try AllTypes.checkIfMissing(ext_rep_double, "ext_rep_double")
+        self.ext_rep_string = try AllTypes.checkIfMissing(ext_rep_string, "ext_rep_string")
+        self.ext_rep_bytes = try AllTypes.checkIfMissing(ext_rep_bytes, "ext_rep_bytes")
+        self.ext_rep_nested_enum = try AllTypes.checkIfMissing(ext_rep_nested_enum, "ext_rep_nested_enum")
+        self.ext_rep_nested_message = try AllTypes.checkIfMissing(ext_rep_nested_message, "ext_rep_nested_message")
+        self.ext_pack_int32 = try AllTypes.checkIfMissing(ext_pack_int32, "ext_pack_int32")
+        self.ext_pack_uint32 = try AllTypes.checkIfMissing(ext_pack_uint32, "ext_pack_uint32")
+        self.ext_pack_sint32 = try AllTypes.checkIfMissing(ext_pack_sint32, "ext_pack_sint32")
+        self.ext_pack_fixed32 = try AllTypes.checkIfMissing(ext_pack_fixed32, "ext_pack_fixed32")
+        self.ext_pack_sfixed32 = try AllTypes.checkIfMissing(ext_pack_sfixed32, "ext_pack_sfixed32")
+        self.ext_pack_int64 = try AllTypes.checkIfMissing(ext_pack_int64, "ext_pack_int64")
+        self.ext_pack_uint64 = try AllTypes.checkIfMissing(ext_pack_uint64, "ext_pack_uint64")
+        self.ext_pack_sint64 = try AllTypes.checkIfMissing(ext_pack_sint64, "ext_pack_sint64")
+        self.ext_pack_fixed64 = try AllTypes.checkIfMissing(ext_pack_fixed64, "ext_pack_fixed64")
+        self.ext_pack_sfixed64 = try AllTypes.checkIfMissing(ext_pack_sfixed64, "ext_pack_sfixed64")
+        self.ext_pack_bool = try AllTypes.checkIfMissing(ext_pack_bool, "ext_pack_bool")
+        self.ext_pack_float = try AllTypes.checkIfMissing(ext_pack_float, "ext_pack_float")
+        self.ext_pack_double = try AllTypes.checkIfMissing(ext_pack_double, "ext_pack_double")
+        self.ext_pack_nested_enum = try AllTypes.checkIfMissing(ext_pack_nested_enum, "ext_pack_nested_enum")
+        self.ext_map_int32_int32 = try AllTypes.checkIfMissing(ext_map_int32_int32, "ext_map_int32_int32")
+        self.ext_map_string_string = try AllTypes.checkIfMissing(ext_map_string_string, "ext_map_string_string")
+        self.ext_map_string_message = try AllTypes.checkIfMissing(ext_map_string_message, "ext_map_string_message")
+        self.ext_map_string_enum = try AllTypes.checkIfMissing(ext_map_string_enum, "ext_map_string_enum")
         self.unknownFields = unknownFields
     }
 
@@ -618,6 +930,58 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 502, value: map_string_string)
         try writer.encode(tag: 503, value: map_string_message)
         try writer.encode(tag: 504, value: map_string_enum)
+        try writer.encode(tag: 1001, value: ext_opt_int32)
+        try writer.encode(tag: 1002, value: ext_opt_uint32)
+        try writer.encode(tag: 1003, value: ext_opt_sint32, encoding: .signed)
+        try writer.encode(tag: 1004, value: ext_opt_fixed32, encoding: .fixed)
+        try writer.encode(tag: 1005, value: ext_opt_sfixed32)
+        try writer.encode(tag: 1006, value: ext_opt_int64)
+        try writer.encode(tag: 1007, value: ext_opt_uint64)
+        try writer.encode(tag: 1008, value: ext_opt_sint64, encoding: .signed)
+        try writer.encode(tag: 1009, value: ext_opt_fixed64, encoding: .fixed)
+        try writer.encode(tag: 1010, value: ext_opt_sfixed64)
+        try writer.encode(tag: 1011, value: ext_opt_bool)
+        try writer.encode(tag: 1012, value: ext_opt_float)
+        try writer.encode(tag: 1013, value: ext_opt_double)
+        try writer.encode(tag: 1014, value: ext_opt_string)
+        try writer.encode(tag: 1015, value: ext_opt_bytes)
+        try writer.encode(tag: 1016, value: ext_opt_nested_enum)
+        try writer.encode(tag: 1017, value: ext_opt_nested_message)
+        try writer.encode(tag: 1101, value: ext_rep_int32)
+        try writer.encode(tag: 1102, value: ext_rep_uint32)
+        try writer.encode(tag: 1103, value: ext_rep_sint32, encoding: .signed)
+        try writer.encode(tag: 1104, value: ext_rep_fixed32, encoding: .fixed)
+        try writer.encode(tag: 1105, value: ext_rep_sfixed32)
+        try writer.encode(tag: 1106, value: ext_rep_int64)
+        try writer.encode(tag: 1107, value: ext_rep_uint64)
+        try writer.encode(tag: 1108, value: ext_rep_sint64, encoding: .signed)
+        try writer.encode(tag: 1109, value: ext_rep_fixed64, encoding: .fixed)
+        try writer.encode(tag: 1110, value: ext_rep_sfixed64)
+        try writer.encode(tag: 1111, value: ext_rep_bool)
+        try writer.encode(tag: 1112, value: ext_rep_float)
+        try writer.encode(tag: 1113, value: ext_rep_double)
+        try writer.encode(tag: 1114, value: ext_rep_string)
+        try writer.encode(tag: 1115, value: ext_rep_bytes)
+        try writer.encode(tag: 1116, value: ext_rep_nested_enum)
+        try writer.encode(tag: 1117, value: ext_rep_nested_message)
+        try writer.encode(tag: 1201, value: ext_pack_int32, packed: true)
+        try writer.encode(tag: 1202, value: ext_pack_uint32, packed: true)
+        try writer.encode(tag: 1203, value: ext_pack_sint32, encoding: .signed, packed: true)
+        try writer.encode(tag: 1204, value: ext_pack_fixed32, encoding: .fixed, packed: true)
+        try writer.encode(tag: 1205, value: ext_pack_sfixed32, packed: true)
+        try writer.encode(tag: 1206, value: ext_pack_int64, packed: true)
+        try writer.encode(tag: 1207, value: ext_pack_uint64, packed: true)
+        try writer.encode(tag: 1208, value: ext_pack_sint64, encoding: .signed, packed: true)
+        try writer.encode(tag: 1209, value: ext_pack_fixed64, encoding: .fixed, packed: true)
+        try writer.encode(tag: 1210, value: ext_pack_sfixed64, packed: true)
+        try writer.encode(tag: 1211, value: ext_pack_bool, packed: true)
+        try writer.encode(tag: 1212, value: ext_pack_float, packed: true)
+        try writer.encode(tag: 1213, value: ext_pack_double, packed: true)
+        try writer.encode(tag: 1216, value: ext_pack_nested_enum, packed: true)
+        try writer.encode(tag: 1301, value: ext_map_int32_int32)
+        try writer.encode(tag: 1402, value: ext_map_string_string)
+        try writer.encode(tag: 1503, value: ext_map_string_message)
+        try writer.encode(tag: 1504, value: ext_map_string_enum)
         try writer.writeUnknownFields(unknownFields)
     }
 
@@ -708,6 +1072,58 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         case map_string_string
         case map_string_message
         case map_string_enum
+        case ext_opt_int32
+        case ext_opt_uint32
+        case ext_opt_sint32
+        case ext_opt_fixed32
+        case ext_opt_sfixed32
+        case ext_opt_int64
+        case ext_opt_uint64
+        case ext_opt_sint64
+        case ext_opt_fixed64
+        case ext_opt_sfixed64
+        case ext_opt_bool
+        case ext_opt_float
+        case ext_opt_double
+        case ext_opt_string
+        case ext_opt_bytes
+        case ext_opt_nested_enum
+        case ext_opt_nested_message
+        case ext_rep_int32
+        case ext_rep_uint32
+        case ext_rep_sint32
+        case ext_rep_fixed32
+        case ext_rep_sfixed32
+        case ext_rep_int64
+        case ext_rep_uint64
+        case ext_rep_sint64
+        case ext_rep_fixed64
+        case ext_rep_sfixed64
+        case ext_rep_bool
+        case ext_rep_float
+        case ext_rep_double
+        case ext_rep_string
+        case ext_rep_bytes
+        case ext_rep_nested_enum
+        case ext_rep_nested_message
+        case ext_pack_int32
+        case ext_pack_uint32
+        case ext_pack_sint32
+        case ext_pack_fixed32
+        case ext_pack_sfixed32
+        case ext_pack_int64
+        case ext_pack_uint64
+        case ext_pack_sint64
+        case ext_pack_fixed64
+        case ext_pack_sfixed64
+        case ext_pack_bool
+        case ext_pack_float
+        case ext_pack_double
+        case ext_pack_nested_enum
+        case ext_map_int32_int32
+        case ext_map_string_string
+        case ext_map_string_message
+        case ext_map_string_enum
 
     }
 
