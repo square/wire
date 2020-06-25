@@ -64,7 +64,7 @@ internal class SchemaProtoAdapterFactory(
       val messageAdapter = MessageAdapter(type.type.typeUrl, includeUnknown)
       // Put the adapter in the map early to mitigate the recursive calls to get() made below.
       adapterMap[protoType] = messageAdapter
-      for (field in type.fields()) {
+      for (field in type.fields) {
         val fieldAdapter = Field(field.name, field.tag, field.isRepeated, get(field.type!!))
         messageAdapter.fieldsByName[field.name] = fieldAdapter
         messageAdapter.fieldsByTag[field.tag] = fieldAdapter

@@ -654,7 +654,7 @@ class KotlinGenerator private constructor(
       builder.addProperty(propertyBuilder.build())
     }
 
-    type.fields().forEach { field ->
+    type.fields.forEach { field ->
       builder.addFunction(builderSetter(field, nameAllocator, builderClass, oneOf = null))
     }
 
@@ -1001,7 +1001,7 @@ class KotlinGenerator private constructor(
         .addFunction(decodeFun(type))
         .addFunction(redactFun(type))
 
-    for (field in type.fields()) {
+    for (field in type.fields) {
       if (field.isMap) {
         adapterObject.addProperty(field.toProtoAdapterPropertySpec())
       }
@@ -1181,7 +1181,7 @@ class KotlinGenerator private constructor(
         .addParameter("value", className)
         .returns(className)
 
-    val redactedMessageFields = message.fields().filter { it.isRedacted }
+    val redactedMessageFields = message.fields.filter { it.isRedacted }
     val requiredRedactedMessageFields = redactedMessageFields.filter { it.isRequired }
     if (requiredRedactedMessageFields.isNotEmpty()) {
       result.addStatement(

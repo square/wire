@@ -200,7 +200,7 @@ class Field private constructor(
     when (type) {
       is MessageType -> {
         if (type.options.assignsMember(protoMember)) return true
-        if (type.fields().any { it.options.assignsMember(protoMember) }) return true
+        if (type.fields.any { it.options.assignsMember(protoMember) }) return true
       }
       is EnumType -> {
         if (type.options.assignsMember(protoMember)) return true
