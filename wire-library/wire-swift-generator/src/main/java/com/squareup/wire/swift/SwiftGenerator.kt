@@ -5,11 +5,11 @@ import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Field.EncodeMode
 import com.squareup.wire.schema.MessageType
-import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Type
 import io.outfoxx.swiftpoet.ARRAY
+import io.outfoxx.swiftpoet.AttributeSpec
 import io.outfoxx.swiftpoet.BOOL
 import io.outfoxx.swiftpoet.CASE_ITERABLE
 import io.outfoxx.swiftpoet.CodeBlock
@@ -101,7 +101,13 @@ class SwiftGenerator private constructor(
         .addSuperType(codable)
         .apply {
           type.fields.forEach { field ->
-            addMutableProperty(field.name, field.typeName, PUBLIC)
+            val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
+            if (field.isDeprecated) {
+              property.addAttribute(AttributeSpec.builder("available")
+                  .addArguments("*", "deprecated")
+                  .build())
+            }
+            addProperty(property.build())
           }
           type.oneOfs.forEach { oneOf ->
             val enumName = oneOfEnumNames.getValue(oneOf)
@@ -111,6 +117,7 @@ class SwiftGenerator private constructor(
                 .addSuperType(equatable)
                 .apply {
                   oneOf.fields.forEach { oneOfField ->
+                    // TODO SwiftPoet needs to support attributing an enum case.
                     addEnumCase(oneOfField.name, oneOfField.typeName.makeNonOptional())
                   }
                 }
@@ -374,6 +381,7 @@ class SwiftGenerator private constructor(
         .addSuperType(codable)
         .apply {
           type.constants.forEach { constant ->
+            // TODO SwiftPoet needs to support attributing an enum case.
             addEnumCase(constant.name, constant.tag.toString())
           }
           type.nestedTypes.forEach { nestedType ->

@@ -5,6 +5,7 @@ import Wire
 
 public struct DeprecatedProto : Equatable, Proto2Codable, Codable {
 
+    @available(*, deprecated)
     public var foo: String?
     public var unknownFields: Data = .init()
 
