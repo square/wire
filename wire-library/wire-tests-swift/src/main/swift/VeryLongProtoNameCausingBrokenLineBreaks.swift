@@ -3,6 +3,9 @@
 import Foundation
 import Wire
 
+/**
+ * https://github.com/square/wire/issues/1125
+ */
 public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codable, Codable {
 
     public var foo: String?

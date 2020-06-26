@@ -89,6 +89,15 @@ class SwiftGenerator private constructor(
     else -> error("Unknown type $type")
   }
 
+  private fun String.sanitizeDoc(): String {
+    return this
+        // Remove trailing whitespace on each line.
+        .replace("[^\\S\n]+\n".toRegex(), "\n")
+        .replace("\\s+$".toRegex(), "")
+        .replace("\\*/".toRegex(), "&#42;/")
+        .replace("/\\*".toRegex(), "/&#42;")
+  }
+
   @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
   private fun generateMessage(type: MessageType): TypeSpec {
     val structName = type.typeName
@@ -100,8 +109,14 @@ class SwiftGenerator private constructor(
         .addSuperType(protoCodable)
         .addSuperType(codable)
         .apply {
+          if (type.documentation.isNotBlank()) {
+            addKdoc("%L\n", type.documentation.sanitizeDoc())
+          }
           type.fields.forEach { field ->
             val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
+            if (field.documentation.isNotBlank()) {
+              property.addKdoc("%L\n", field.documentation.sanitizeDoc())
+            }
             if (field.isDeprecated) {
               property.addAttribute(AttributeSpec.builder("available")
                   .addArguments("*", "deprecated")
@@ -111,13 +126,22 @@ class SwiftGenerator private constructor(
           }
           type.oneOfs.forEach { oneOf ->
             val enumName = oneOfEnumNames.getValue(oneOf)
-            addMutableProperty(oneOf.name, enumName.makeOptional(), PUBLIC)
+
+            addProperty(PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+                .apply {
+                  if (oneOf.documentation.isNotBlank()) {
+                    addKdoc("%N\n", oneOf.documentation.sanitizeDoc())
+                  }
+                }
+                .build())
+
             addType(TypeSpec.enumBuilder(enumName)
                 .addModifiers(PUBLIC)
                 .addSuperType(equatable)
                 .apply {
                   oneOf.fields.forEach { oneOfField ->
                     // TODO SwiftPoet needs to support attributing an enum case.
+                    // TODO SwiftPoet needs to support documenting an enum case.
                     addEnumCase(oneOfField.name, oneOfField.typeName.makeNonOptional())
                   }
                 }
@@ -380,8 +404,12 @@ class SwiftGenerator private constructor(
         .addSuperType(CASE_ITERABLE)
         .addSuperType(codable)
         .apply {
+          if (type.documentation.isNotBlank()) {
+            addKdoc("%L\n", type.documentation.sanitizeDoc())
+          }
           type.constants.forEach { constant ->
             // TODO SwiftPoet needs to support attributing an enum case.
+            // TODO SwiftPoet needs to support documenting an enum case.
             addEnumCase(constant.name, constant.tag.toString())
           }
           type.nestedTypes.forEach { nestedType ->
@@ -394,6 +422,9 @@ class SwiftGenerator private constructor(
   private fun generateEnclosing(type: EnclosingType): TypeSpec {
     return TypeSpec.classBuilder(type.typeName)
         .addModifiers(PUBLIC, FINAL)
+        .addKdoc("%N\n",
+            "*Note:* This type only exists to maintain class structure for its nested types and " +
+                "is not an actual message.")
         .apply {
           type.nestedTypes.forEach { nestedType ->
             addType(generateType(nestedType))

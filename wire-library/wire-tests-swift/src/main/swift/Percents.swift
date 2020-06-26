@@ -5,6 +5,9 @@ import Wire
 
 public struct Percents : Equatable, Proto2Codable, Codable {
 
+    /**
+     * e.g. "No limits, free to send and just 2.75% to receive".
+     */
     public var text: String?
     public var unknownFields: Data = .init()
 

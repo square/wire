@@ -3,11 +3,26 @@
 import Foundation
 import Wire
 
+/**
+ * Message representing a person, includes their name, unique ID number, email and phone number.
+ */
 public struct Person : Equatable, Proto2Codable, Codable {
 
+    /**
+     * The customer's full name.
+     */
     public var name: String
+    /**
+     * The customer's ID number.
+     */
     public var id: Int32
+    /**
+     * Email address for the customer.
+     */
     public var email: String?
+    /**
+     * A list of the customer's phone numbers.
+     */
     public var phone: [PhoneNumber]
     public var aliases: [String]
     public var unknownFields: Data = .init()
@@ -71,6 +86,9 @@ public struct Person : Equatable, Proto2Codable, Codable {
 
     }
 
+    /**
+     * Represents the type of the phone number: mobile, home or work.
+     */
     public enum PhoneType : UInt32, CaseIterable, Codable {
 
         case MOBILE = 0
@@ -81,7 +99,13 @@ public struct Person : Equatable, Proto2Codable, Codable {
 
     public struct PhoneNumber : Equatable, Proto2Codable, Codable {
 
+        /**
+         * The customer's phone number.
+         */
         public var number: String
+        /**
+         * The type of phone stored here.
+         */
         public var type: PhoneType?
         public var unknownFields: Data = .init()
 

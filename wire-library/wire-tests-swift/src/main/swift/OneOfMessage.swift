@@ -3,8 +3,14 @@
 import Foundation
 import Wire
 
+/**
+ * It's a one of message.
+ */
 public struct OneOfMessage : Equatable, Proto2Codable, Codable {
 
+    /**
+     * Must have a foo or a bar or a baz.
+     */
     public var choice: Choice?
     public var unknownFields: Data = .init()
 
@@ -61,6 +67,9 @@ public struct OneOfMessage : Equatable, Proto2Codable, Codable {
         try writer.writeUnknownFields(unknownFields)
     }
 
+    /**
+     * Must have a foo or a bar or a baz.
+     */
     public enum Choice : Equatable {
 
         case foo(Int32)

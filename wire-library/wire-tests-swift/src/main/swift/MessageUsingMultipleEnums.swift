@@ -3,6 +3,9 @@
 import Foundation
 import Wire
 
+/**
+ * Enum names must be fully qualified in generated Kotlin
+ */
 public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
 
     public var a: MessageWithStatus.Status?
