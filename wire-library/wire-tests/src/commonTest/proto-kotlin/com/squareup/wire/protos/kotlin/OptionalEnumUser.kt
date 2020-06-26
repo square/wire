@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -69,7 +71,8 @@ class OptionalEnumUser(
     val ADAPTER: ProtoAdapter<OptionalEnumUser> = object : ProtoAdapter<OptionalEnumUser>(
       FieldEncoding.LENGTH_DELIMITED, 
       OptionalEnumUser::class, 
-      "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser"
+      "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser", 
+      PROTO_2
     ) {
       override fun encodedSize(value: OptionalEnumUser): Int {
         var size = value.unknownFields.size
@@ -116,7 +119,8 @@ class OptionalEnumUser(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
-        OptionalEnum::class
+        OptionalEnum::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): OptionalEnum? = OptionalEnum.fromValue(value)
       }

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import com.squareup.wire.protos.foreign.ForeignEnum;
@@ -93,7 +94,7 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
 
   private static final class ProtoAdapter_ChildPackage extends ProtoAdapter<ChildPackage> {
     public ProtoAdapter_ChildPackage() {
-      super(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class, "type.googleapis.com/squareup.protos.ChildPackage");
+      super(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class, "type.googleapis.com/squareup.protos.ChildPackage", Syntax.PROTO_2);
     }
 
     @Override

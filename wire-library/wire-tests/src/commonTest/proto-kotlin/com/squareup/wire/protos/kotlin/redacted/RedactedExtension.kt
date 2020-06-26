@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -79,7 +80,8 @@ class RedactedExtension(
     val ADAPTER: ProtoAdapter<RedactedExtension> = object : ProtoAdapter<RedactedExtension>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedExtension::class, 
-      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedExtension"
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedExtension", 
+      PROTO_2
     ) {
       override fun encodedSize(value: RedactedExtension): Int {
         var size = value.unknownFields.size

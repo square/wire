@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import com.squareup.wire.protos.custom_options.FooBar;
@@ -229,7 +230,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
 
   private static final class ProtoAdapter_EnumValueOptions extends ProtoAdapter<EnumValueOptions> {
     public ProtoAdapter_EnumValueOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumValueOptions.class, "type.googleapis.com/google.protobuf.EnumValueOptions");
+      super(FieldEncoding.LENGTH_DELIMITED, EnumValueOptions.class, "type.googleapis.com/google.protobuf.EnumValueOptions", Syntax.PROTO_2);
     }
 
     @Override

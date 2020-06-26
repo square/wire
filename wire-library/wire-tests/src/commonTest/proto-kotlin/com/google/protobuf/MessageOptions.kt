@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.protos.custom_options.FooBar
@@ -267,7 +268,8 @@ class MessageOptions(
     val ADAPTER: ProtoAdapter<MessageOptions> = object : ProtoAdapter<MessageOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageOptions::class, 
-      "type.googleapis.com/google.protobuf.MessageOptions"
+      "type.googleapis.com/google.protobuf.MessageOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: MessageOptions): Int {
         var size = value.unknownFields.size

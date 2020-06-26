@@ -5,6 +5,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -140,7 +141,8 @@ class ModelEvaluation(
     val ADAPTER: ProtoAdapter<ModelEvaluation> = object : ProtoAdapter<ModelEvaluation>(
       FieldEncoding.LENGTH_DELIMITED, 
       ModelEvaluation::class, 
-      "type.googleapis.com/ModelEvaluation"
+      "type.googleapis.com/ModelEvaluation", 
+      PROTO_2
     ) {
       private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }

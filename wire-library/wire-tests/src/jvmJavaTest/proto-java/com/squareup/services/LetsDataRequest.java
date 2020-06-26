@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -92,7 +93,7 @@ public final class LetsDataRequest extends Message<LetsDataRequest, LetsDataRequ
 
   private static final class ProtoAdapter_LetsDataRequest extends ProtoAdapter<LetsDataRequest> {
     public ProtoAdapter_LetsDataRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, LetsDataRequest.class, "type.googleapis.com/com.squareup.services.LetsDataRequest");
+      super(FieldEncoding.LENGTH_DELIMITED, LetsDataRequest.class, "type.googleapis.com/com.squareup.services.LetsDataRequest", Syntax.PROTO_2);
     }
 
     @Override

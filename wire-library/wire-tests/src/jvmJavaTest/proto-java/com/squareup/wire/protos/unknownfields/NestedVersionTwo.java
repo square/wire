@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -198,7 +199,7 @@ public final class NestedVersionTwo extends Message<NestedVersionTwo, NestedVers
 
   private static final class ProtoAdapter_NestedVersionTwo extends ProtoAdapter<NestedVersionTwo> {
     public ProtoAdapter_NestedVersionTwo() {
-      super(FieldEncoding.LENGTH_DELIMITED, NestedVersionTwo.class, "type.googleapis.com/squareup.protos.unknownfields.NestedVersionTwo");
+      super(FieldEncoding.LENGTH_DELIMITED, NestedVersionTwo.class, "type.googleapis.com/squareup.protos.unknownfields.NestedVersionTwo", Syntax.PROTO_2);
     }
 
     @Override

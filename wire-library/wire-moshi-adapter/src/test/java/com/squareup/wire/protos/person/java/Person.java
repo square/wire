@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -230,7 +231,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneType extends EnumAdapter<PhoneType> {
       ProtoAdapter_PhoneType() {
-        super(PhoneType.class);
+        super(PhoneType.class, Syntax.PROTO_2);
       }
 
       @Override
@@ -352,7 +353,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
       public ProtoAdapter_PhoneNumber() {
-        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.protos.kotlin.person.Person.PhoneNumber");
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.protos.kotlin.person.Person.PhoneNumber", Syntax.PROTO_2);
       }
 
       @Override
@@ -404,7 +405,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
     public ProtoAdapter_Person() {
-      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.protos.kotlin.person.Person");
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.protos.kotlin.person.Person", Syntax.PROTO_2);
     }
 
     @Override

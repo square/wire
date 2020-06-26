@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -92,7 +93,7 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
 
   private static final class ProtoAdapter_SendDataRequest extends ProtoAdapter<SendDataRequest> {
     public ProtoAdapter_SendDataRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, SendDataRequest.class, "type.googleapis.com/com.squareup.services.anotherpackage.SendDataRequest");
+      super(FieldEncoding.LENGTH_DELIMITED, SendDataRequest.class, "type.googleapis.com/com.squareup.services.anotherpackage.SendDataRequest", Syntax.PROTO_2);
     }
 
     @Override

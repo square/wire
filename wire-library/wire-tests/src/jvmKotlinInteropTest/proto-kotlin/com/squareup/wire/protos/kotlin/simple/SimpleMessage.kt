@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
@@ -402,7 +404,8 @@ class SimpleMessage(
     val ADAPTER: ProtoAdapter<SimpleMessage> = object : ProtoAdapter<SimpleMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       SimpleMessage::class, 
-      "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage"
+      "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage", 
+      PROTO_2
     ) {
       override fun encodedSize(value: SimpleMessage): Int {
         var size = value.unknownFields.size
@@ -574,7 +577,8 @@ class SimpleMessage(
       val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
-        "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage"
+        "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage", 
+        PROTO_2
       ) {
         override fun encodedSize(value: NestedMessage): Int {
           var size = value.unknownFields.size
@@ -624,7 +628,8 @@ class SimpleMessage(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
-        NestedEnum::class
+        NestedEnum::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }

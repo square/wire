@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -65,7 +66,7 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
 
   private static final class ProtoAdapter_MessageWithOptions extends ProtoAdapter<MessageWithOptions> {
     public ProtoAdapter_MessageWithOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class, "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions");
+      super(FieldEncoding.LENGTH_DELIMITED, MessageWithOptions.class, "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", Syntax.PROTO_2);
     }
 
     @Override

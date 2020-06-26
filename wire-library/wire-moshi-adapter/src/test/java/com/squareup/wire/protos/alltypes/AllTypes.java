@@ -4,6 +4,7 @@ package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -20,7 +21,7 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
-  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes");
+  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes", Syntax.PROTO_2);
 
   private static final long serialVersionUID = 0L;
 
@@ -3031,7 +3032,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage, NestedMessage.Builder> {
-    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes.NestedMessage");
+    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes.NestedMessage", Syntax.PROTO_2);
 
     private static final long serialVersionUID = 0L;
 

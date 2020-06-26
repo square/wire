@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
@@ -73,7 +74,8 @@ class OneofOptions(
     val ADAPTER: ProtoAdapter<OneofOptions> = object : ProtoAdapter<OneofOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       OneofOptions::class, 
-      "type.googleapis.com/google.protobuf.OneofOptions"
+      "type.googleapis.com/google.protobuf.OneofOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: OneofOptions): Int {
         var size = value.unknownFields.size

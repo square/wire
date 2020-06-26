@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -116,7 +117,7 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
 
   private static final class ProtoAdapter_EmbeddedMessage extends ProtoAdapter<EmbeddedMessage> {
     public ProtoAdapter_EmbeddedMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, EmbeddedMessage.class, "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage");
+      super(FieldEncoding.LENGTH_DELIMITED, EmbeddedMessage.class, "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage", Syntax.PROTO_2);
     }
 
     @Override

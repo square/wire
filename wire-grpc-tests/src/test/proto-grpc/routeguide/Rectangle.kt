@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
 import kotlin.AssertionError
@@ -87,7 +88,8 @@ class Rectangle(
     val ADAPTER: ProtoAdapter<Rectangle> = object : ProtoAdapter<Rectangle>(
       FieldEncoding.LENGTH_DELIMITED, 
       Rectangle::class, 
-      "type.googleapis.com/routeguide.Rectangle"
+      "type.googleapis.com/routeguide.Rectangle", 
+      PROTO_2
     ) {
       override fun encodedSize(value: Rectangle): Int {
         var size = value.unknownFields.size

@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -86,7 +87,8 @@ class Percents(
     val ADAPTER: ProtoAdapter<Percents> = object : ProtoAdapter<Percents>(
       FieldEncoding.LENGTH_DELIMITED, 
       Percents::class, 
-      "type.googleapis.com/squareup.protos.kotlin.Percents"
+      "type.googleapis.com/squareup.protos.kotlin.Percents", 
+      PROTO_2
     ) {
       override fun encodedSize(value: Percents): Int {
         var size = value.unknownFields.size

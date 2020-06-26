@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -142,7 +143,7 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
     private ProtoAdapter<Map<Integer, Integer>> map_int32_int32;
 
     public ProtoAdapter_RepeatedPackedAndMap() {
-      super(FieldEncoding.LENGTH_DELIMITED, RepeatedPackedAndMap.class, "type.googleapis.com/squareup.protos.alltypes.RepeatedPackedAndMap");
+      super(FieldEncoding.LENGTH_DELIMITED, RepeatedPackedAndMap.class, "type.googleapis.com/squareup.protos.alltypes.RepeatedPackedAndMap", Syntax.PROTO_2);
     }
 
     @Override

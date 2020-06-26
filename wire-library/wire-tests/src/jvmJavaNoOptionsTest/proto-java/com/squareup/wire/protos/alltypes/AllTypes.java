@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -3129,7 +3130,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final class ProtoAdapter_NestedEnum extends EnumAdapter<NestedEnum> {
       ProtoAdapter_NestedEnum() {
-        super(NestedEnum.class);
+        super(NestedEnum.class, Syntax.PROTO_2);
       }
 
       @Override
@@ -3215,7 +3216,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
       public ProtoAdapter_NestedMessage() {
-        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes.NestedMessage");
+        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes.NestedMessage", Syntax.PROTO_2);
       }
 
       @Override
@@ -3273,7 +3274,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     private ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enum;
 
     public ProtoAdapter_AllTypes() {
-      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes");
+      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes", Syntax.PROTO_2);
     }
 
     @Override

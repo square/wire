@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
@@ -82,7 +83,8 @@ class Mappy(
     val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(
       FieldEncoding.LENGTH_DELIMITED, 
       Mappy::class, 
-      "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy"
+      "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy", 
+      PROTO_2
     ) {
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }

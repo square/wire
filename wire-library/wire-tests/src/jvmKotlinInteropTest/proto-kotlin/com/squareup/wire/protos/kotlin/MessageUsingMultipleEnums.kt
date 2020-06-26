@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
 import kotlin.Boolean
@@ -106,7 +107,8 @@ class MessageUsingMultipleEnums(
         ProtoAdapter<MessageUsingMultipleEnums>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageUsingMultipleEnums::class, 
-      "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums"
+      "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums", 
+      PROTO_2
     ) {
       override fun encodedSize(value: MessageUsingMultipleEnums): Int {
         var size = value.unknownFields.size

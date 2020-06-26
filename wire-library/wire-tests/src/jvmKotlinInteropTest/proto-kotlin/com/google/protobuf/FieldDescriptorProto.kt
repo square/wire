@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
@@ -333,7 +335,8 @@ class FieldDescriptorProto(
     val ADAPTER: ProtoAdapter<FieldDescriptorProto> = object : ProtoAdapter<FieldDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       FieldDescriptorProto::class, 
-      "type.googleapis.com/google.protobuf.FieldDescriptorProto"
+      "type.googleapis.com/google.protobuf.FieldDescriptorProto", 
+      PROTO_2
     ) {
       override fun encodedSize(value: FieldDescriptorProto): Int {
         var size = value.unknownFields.size
@@ -492,7 +495,8 @@ class FieldDescriptorProto(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<Type> = object : EnumAdapter<Type>(
-        Type::class
+        Type::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): Type? = Type.fromValue(value)
       }
@@ -537,7 +541,8 @@ class FieldDescriptorProto(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<Label> = object : EnumAdapter<Label>(
-        Label::class
+        Label::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): Label? = Label.fromValue(value)
       }

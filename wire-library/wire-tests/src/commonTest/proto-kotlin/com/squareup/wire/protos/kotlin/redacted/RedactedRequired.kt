@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
 import kotlin.Any
@@ -69,7 +70,8 @@ class RedactedRequired(
     val ADAPTER: ProtoAdapter<RedactedRequired> = object : ProtoAdapter<RedactedRequired>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedRequired::class, 
-      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRequired"
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRequired", 
+      PROTO_2
     ) {
       override fun encodedSize(value: RedactedRequired): Int {
         var size = value.unknownFields.size

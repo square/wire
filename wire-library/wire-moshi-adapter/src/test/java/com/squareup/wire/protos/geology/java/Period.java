@@ -4,6 +4,7 @@ package com.squareup.wire.protos.geology.java;
 
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
@@ -50,7 +51,7 @@ public enum Period implements WireEnum {
 
   private static final class ProtoAdapter_Period extends EnumAdapter<Period> {
     ProtoAdapter_Period() {
-      super(Period.class);
+      super(Period.class, Syntax.PROTO_2);
     }
 
     @Override

@@ -4,6 +4,7 @@ package com.squareup.wire.protos.kotlin.foreign
 
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import kotlin.Int
 import kotlin.jvm.JvmField
@@ -19,7 +20,8 @@ enum class ForeignEnum(
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<ForeignEnum> = object : EnumAdapter<ForeignEnum>(
-      ForeignEnum::class
+      ForeignEnum::class, 
+      PROTO_2
     ) {
       override fun fromValue(value: Int): ForeignEnum? = ForeignEnum.fromValue(value)
     }

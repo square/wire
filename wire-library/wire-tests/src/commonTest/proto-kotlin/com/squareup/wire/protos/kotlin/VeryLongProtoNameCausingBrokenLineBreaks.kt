@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -73,7 +74,8 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
         ProtoAdapter<VeryLongProtoNameCausingBrokenLineBreaks>(
       FieldEncoding.LENGTH_DELIMITED, 
       VeryLongProtoNameCausingBrokenLineBreaks::class, 
-      "type.googleapis.com/squareup.protos.tostring.VeryLongProtoNameCausingBrokenLineBreaks"
+      "type.googleapis.com/squareup.protos.tostring.VeryLongProtoNameCausingBrokenLineBreaks", 
+      PROTO_2
     ) {
       override fun encodedSize(value: VeryLongProtoNameCausingBrokenLineBreaks): Int {
         var size = value.unknownFields.size

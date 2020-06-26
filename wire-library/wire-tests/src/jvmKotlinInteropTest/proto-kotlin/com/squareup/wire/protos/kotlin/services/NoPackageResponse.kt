@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -46,7 +47,8 @@ class NoPackageResponse(
     val ADAPTER: ProtoAdapter<NoPackageResponse> = object : ProtoAdapter<NoPackageResponse>(
       FieldEncoding.LENGTH_DELIMITED, 
       NoPackageResponse::class, 
-      "type.googleapis.com/NoPackageResponse"
+      "type.googleapis.com/NoPackageResponse", 
+      PROTO_2
     ) {
       override fun encodedSize(value: NoPackageResponse): Int {
         var size = value.unknownFields.size

@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
 import kotlin.AssertionError
@@ -77,7 +78,8 @@ class Recursive(
     val ADAPTER: ProtoAdapter<Recursive> = object : ProtoAdapter<Recursive>(
       FieldEncoding.LENGTH_DELIMITED, 
       Recursive::class, 
-      "type.googleapis.com/squareup.protos.kotlin.edgecases.Recursive"
+      "type.googleapis.com/squareup.protos.kotlin.edgecases.Recursive", 
+      PROTO_2
     ) {
       override fun encodedSize(value: Recursive): Int {
         var size = value.unknownFields.size

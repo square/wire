@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
 import kotlin.AssertionError
@@ -66,7 +67,8 @@ class RedactedCycleB(
     val ADAPTER: ProtoAdapter<RedactedCycleB> = object : ProtoAdapter<RedactedCycleB>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedCycleB::class, 
-      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedCycleB"
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedCycleB", 
+      PROTO_2
     ) {
       override fun encodedSize(value: RedactedCycleB): Int {
         var size = value.unknownFields.size

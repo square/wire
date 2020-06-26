@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import kotlin.Any
@@ -106,7 +107,8 @@ class EmbeddedMessage(
     val ADAPTER: ProtoAdapter<EmbeddedMessage> = object : ProtoAdapter<EmbeddedMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       EmbeddedMessage::class, 
-      "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage"
+      "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage", 
+      PROTO_2
     ) {
       override fun encodedSize(value: EmbeddedMessage): Int {
         var size = value.unknownFields.size

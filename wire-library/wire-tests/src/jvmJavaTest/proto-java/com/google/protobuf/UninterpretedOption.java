@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -345,7 +346,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
     private static final class ProtoAdapter_NamePart extends ProtoAdapter<NamePart> {
       public ProtoAdapter_NamePart() {
-        super(FieldEncoding.LENGTH_DELIMITED, NamePart.class, "type.googleapis.com/google.protobuf.UninterpretedOption.NamePart");
+        super(FieldEncoding.LENGTH_DELIMITED, NamePart.class, "type.googleapis.com/google.protobuf.UninterpretedOption.NamePart", Syntax.PROTO_2);
       }
 
       @Override
@@ -390,7 +391,7 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
   private static final class ProtoAdapter_UninterpretedOption extends ProtoAdapter<UninterpretedOption> {
     public ProtoAdapter_UninterpretedOption() {
-      super(FieldEncoding.LENGTH_DELIMITED, UninterpretedOption.class, "type.googleapis.com/google.protobuf.UninterpretedOption");
+      super(FieldEncoding.LENGTH_DELIMITED, UninterpretedOption.class, "type.googleapis.com/google.protobuf.UninterpretedOption", Syntax.PROTO_2);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
 import kotlin.AssertionError
@@ -83,7 +84,8 @@ class Point(
     val ADAPTER: ProtoAdapter<Point> = object : ProtoAdapter<Point>(
       FieldEncoding.LENGTH_DELIMITED, 
       Point::class, 
-      "type.googleapis.com/routeguide.Point"
+      "type.googleapis.com/routeguide.Point", 
+      PROTO_2
     ) {
       override fun encodedSize(value: Point): Int {
         var size = value.unknownFields.size

@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
 import kotlin.AssertionError
@@ -114,7 +115,8 @@ class RouteSummary(
     val ADAPTER: ProtoAdapter<RouteSummary> = object : ProtoAdapter<RouteSummary>(
       FieldEncoding.LENGTH_DELIMITED, 
       RouteSummary::class, 
-      "type.googleapis.com/routeguide.RouteSummary"
+      "type.googleapis.com/routeguide.RouteSummary", 
+      PROTO_2
     ) {
       override fun encodedSize(value: RouteSummary): Int {
         var size = value.unknownFields.size

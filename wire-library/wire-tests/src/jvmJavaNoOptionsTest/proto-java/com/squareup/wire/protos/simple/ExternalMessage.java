@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -212,7 +213,7 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
 
   private static final class ProtoAdapter_ExternalMessage extends ProtoAdapter<ExternalMessage> {
     public ProtoAdapter_ExternalMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, ExternalMessage.class, "type.googleapis.com/squareup.protos.simple.ExternalMessage");
+      super(FieldEncoding.LENGTH_DELIMITED, ExternalMessage.class, "type.googleapis.com/squareup.protos.simple.ExternalMessage", Syntax.PROTO_2);
     }
 
     @Override

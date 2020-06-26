@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -451,7 +452,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     private static final class ProtoAdapter_Type extends EnumAdapter<Type> {
       ProtoAdapter_Type() {
-        super(Type.class);
+        super(Type.class, Syntax.PROTO_2);
       }
 
       @Override
@@ -498,7 +499,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     private static final class ProtoAdapter_Label extends EnumAdapter<Label> {
       ProtoAdapter_Label() {
-        super(Label.class);
+        super(Label.class, Syntax.PROTO_2);
       }
 
       @Override
@@ -510,7 +511,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   private static final class ProtoAdapter_FieldDescriptorProto extends ProtoAdapter<FieldDescriptorProto> {
     public ProtoAdapter_FieldDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class, "type.googleapis.com/google.protobuf.FieldDescriptorProto");
+      super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class, "type.googleapis.com/google.protobuf.FieldDescriptorProto", Syntax.PROTO_2);
     }
 
     @Override

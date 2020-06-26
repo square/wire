@@ -7,6 +7,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
@@ -142,7 +144,8 @@ class UninterpretedOption(
     val ADAPTER: ProtoAdapter<UninterpretedOption> = object : ProtoAdapter<UninterpretedOption>(
       FieldEncoding.LENGTH_DELIMITED, 
       UninterpretedOption::class, 
-      "type.googleapis.com/google.protobuf.UninterpretedOption"
+      "type.googleapis.com/google.protobuf.UninterpretedOption", 
+      PROTO_2
     ) {
       override fun encodedSize(value: UninterpretedOption): Int {
         var size = value.unknownFields.size
@@ -272,7 +275,8 @@ class UninterpretedOption(
       val ADAPTER: ProtoAdapter<NamePart> = object : ProtoAdapter<NamePart>(
         FieldEncoding.LENGTH_DELIMITED, 
         NamePart::class, 
-        "type.googleapis.com/google.protobuf.UninterpretedOption.NamePart"
+        "type.googleapis.com/google.protobuf.UninterpretedOption.NamePart", 
+        PROTO_2
       ) {
         override fun encodedSize(value: NamePart): Int {
           var size = value.unknownFields.size

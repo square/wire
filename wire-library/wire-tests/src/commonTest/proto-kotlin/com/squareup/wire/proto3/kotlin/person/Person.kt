@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
@@ -155,7 +157,8 @@ class Person(
     val ADAPTER: ProtoAdapter<Person> = object : ProtoAdapter<Person>(
       FieldEncoding.LENGTH_DELIMITED, 
       Person::class, 
-      "type.googleapis.com/squareup.protos3.kotlin.person.Person"
+      "type.googleapis.com/squareup.protos3.kotlin.person.Person", 
+      PROTO_3
     ) {
       override fun encodedSize(value: Person): Int {
         var size = value.unknownFields.size
@@ -237,7 +240,8 @@ class Person(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<PhoneType> = object : EnumAdapter<PhoneType>(
-        PhoneType::class
+        PhoneType::class, 
+        PROTO_3
       ) {
         override fun fromValue(value: Int): PhoneType? = PhoneType.fromValue(value)
       }
@@ -317,7 +321,8 @@ class Person(
       val ADAPTER: ProtoAdapter<PhoneNumber> = object : ProtoAdapter<PhoneNumber>(
         FieldEncoding.LENGTH_DELIMITED, 
         PhoneNumber::class, 
-        "type.googleapis.com/squareup.protos3.kotlin.person.Person.PhoneNumber"
+        "type.googleapis.com/squareup.protos3.kotlin.person.Person.PhoneNumber", 
+        PROTO_3
       ) {
         override fun encodedSize(value: PhoneNumber): Int {
           var size = value.unknownFields.size

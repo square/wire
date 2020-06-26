@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -92,7 +93,7 @@ public final class Thing extends Message<Thing, Thing.Builder> {
 
   private static final class ProtoAdapter_Thing extends ProtoAdapter<Thing> {
     public ProtoAdapter_Thing() {
-      super(FieldEncoding.LENGTH_DELIMITED, Thing.class, "type.googleapis.com/com.squareup.wire.map.Thing");
+      super(FieldEncoding.LENGTH_DELIMITED, Thing.class, "type.googleapis.com/com.squareup.wire.map.Thing", Syntax.PROTO_2);
     }
 
     @Override

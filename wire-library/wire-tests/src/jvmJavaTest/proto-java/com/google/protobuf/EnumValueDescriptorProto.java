@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -135,7 +136,7 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
   private static final class ProtoAdapter_EnumValueDescriptorProto extends ProtoAdapter<EnumValueDescriptorProto> {
     public ProtoAdapter_EnumValueDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumValueDescriptorProto.class, "type.googleapis.com/google.protobuf.EnumValueDescriptorProto");
+      super(FieldEncoding.LENGTH_DELIMITED, EnumValueDescriptorProto.class, "type.googleapis.com/google.protobuf.EnumValueDescriptorProto", Syntax.PROTO_2);
     }
 
     @Override
