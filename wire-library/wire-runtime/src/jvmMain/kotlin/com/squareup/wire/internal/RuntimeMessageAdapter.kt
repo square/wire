@@ -21,6 +21,7 @@ import com.squareup.wire.Message.Builder
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 import java.io.IOException
 import java.util.Collections
@@ -30,8 +31,9 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
   private val messageType: Class<M>,
   private val builderType: Class<B>,
   val fieldBindings: Map<Int, FieldBinding<M, B>>,
-  typeUrl: String?
-) : ProtoAdapter<M>(FieldEncoding.LENGTH_DELIMITED, messageType.kotlin, typeUrl) {
+  typeUrl: String?,
+  syntax: Syntax
+) : ProtoAdapter<M>(FieldEncoding.LENGTH_DELIMITED, messageType.kotlin, typeUrl, syntax) {
 
   fun newBuilder(): B = builderType.newInstance()
 
@@ -146,7 +148,8 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
 
     @JvmStatic fun <M : Message<M, B>, B : Builder<M, B>> create(
       messageType: Class<M>,
-      typeUrl: String?
+      typeUrl: String?,
+      syntax: Syntax
     ): RuntimeMessageAdapter<M, B> {
       val builderType = getBuilderType(messageType)
       val fieldBindings = LinkedHashMap<Int, FieldBinding<M, B>>()
@@ -160,7 +163,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
       }
 
       return RuntimeMessageAdapter(messageType, builderType,
-          Collections.unmodifiableMap(fieldBindings), typeUrl)
+          Collections.unmodifiableMap(fieldBindings), typeUrl, syntax)
     }
 
     private fun <M : Message<M, B>, B : Builder<M, B>> getBuilderType(

@@ -20,6 +20,7 @@ import com.squareup.wire.FieldEncoding.VARINT
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
 import kotlin.jvm.JvmField
 
 /**
@@ -61,7 +62,7 @@ internal class SchemaProtoAdapterFactory(
       return enumAdapter
     }
     if (type is MessageType) {
-      val messageAdapter = MessageAdapter(type.type.typeUrl, includeUnknown)
+      val messageAdapter = MessageAdapter(type.type.typeUrl, type.syntax, includeUnknown)
       // Put the adapter in the map early to mitigate the recursive calls to get() made below.
       adapterMap[protoType] = messageAdapter
       for (field in type.fields) {
@@ -76,7 +77,7 @@ internal class SchemaProtoAdapterFactory(
 
   internal class EnumAdapter(
     private val enumType: EnumType
-  ) : ProtoAdapter<Any>(VARINT, Any::class, null) {
+  ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
     override fun encodedSize(value: Any): Int {
       throw UnsupportedOperationException()
     }
@@ -105,8 +106,9 @@ internal class SchemaProtoAdapterFactory(
 
   internal class MessageAdapter(
     typeUrl: String?,
+    syntax: Syntax,
     private val includeUnknown: Boolean
-  ) : ProtoAdapter<Map<String, Any>>(LENGTH_DELIMITED, MutableMap::class, typeUrl) {
+  ) : ProtoAdapter<Map<String, Any>>(LENGTH_DELIMITED, MutableMap::class, typeUrl, syntax) {
     @JvmField val fieldsByTag = mutableMapOf<Int, Field>()
     @JvmField val fieldsByName = mutableMapOf<String, Field>()
 

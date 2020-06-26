@@ -23,7 +23,8 @@ import kotlin.reflect.KClass
  * An abstract [ProtoAdapter] that converts values of an enum to and from integers.
  */
 expect abstract class EnumAdapter<E : WireEnum> protected constructor(
-  type: KClass<E>
+  type: KClass<E>,
+  syntax: Syntax
 ) : ProtoAdapter<E> {
   override fun encodedSize(value: E): Int
 

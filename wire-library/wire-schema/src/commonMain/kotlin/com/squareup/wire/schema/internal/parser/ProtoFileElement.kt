@@ -15,8 +15,8 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import com.squareup.wire.Syntax
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.SyntaxRules
 import kotlin.jvm.JvmStatic
 
@@ -24,7 +24,7 @@ import kotlin.jvm.JvmStatic
 data class ProtoFileElement(
   val location: Location,
   val packageName: String? = null,
-  val syntax: ProtoFile.Syntax? = null,
+  val syntax: Syntax? = null,
   val imports: List<String> = emptyList(),
   val publicImports: List<String> = emptyList(),
   val types: List<TypeElement> = emptyList(),

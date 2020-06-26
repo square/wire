@@ -23,7 +23,8 @@ import kotlin.reflect.KClass
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?,
-  actual val typeUrl: String?
+  actual val typeUrl: String?,
+  actual val syntax: Syntax
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
     this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null

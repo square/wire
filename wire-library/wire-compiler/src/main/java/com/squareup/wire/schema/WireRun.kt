@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.ConsoleWireLogger
+import com.squareup.wire.Syntax
 import com.squareup.wire.WireLogger
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -193,7 +194,7 @@ data class WireRun(
     val skippedForSyntax = mutableListOf<ProtoFile>()
     val claimedPaths = mutableMapOf<Path, String>()
     for (protoFile in schema.protoFiles) {
-      if (protoFile.syntax == ProtoFile.Syntax.PROTO_3 && !proto3Preview) {
+      if (protoFile.syntax == Syntax.PROTO_3 && !proto3Preview) {
         skippedForSyntax += protoFile
         continue
       }

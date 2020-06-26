@@ -15,11 +15,11 @@
  */
 package com.squareup.wire.schema.internal.parser
 
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.ProtoFile
-import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 
 /** Basic parser for `.proto` schema declarations. */
@@ -39,7 +39,7 @@ class ProtoParser internal constructor(
   private var declarationCount = 0
 
   /** The syntax of the file, or null if none is defined. */
-  private var syntax: ProtoFile.Syntax? = null
+  private var syntax: Syntax? = null
 
   /** Output package name, or null if none yet encountered. */
   private var packageName: String? = null
@@ -110,7 +110,7 @@ class ProtoParser internal constructor(
         }
         val syntaxString = reader.readQuotedString()
         try {
-          syntax = ProtoFile.Syntax[syntaxString]
+          syntax = Syntax[syntaxString]
         } catch (e: IllegalArgumentException) {
           throw reader.unexpected(e.message!!, location)
         }
