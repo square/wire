@@ -64,7 +64,7 @@ class MapTest {
     @JvmStatic
     fun parameters() = listOf(
         arrayOf("Generated", Mappy.ADAPTER),
-        arrayOf("Runtime", RuntimeMessageAdapter.create(Mappy::class.java, "square.github.io/wire/unknown"))
+        arrayOf("Runtime", RuntimeMessageAdapter.create(Mappy::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2))
     )
   }
 }

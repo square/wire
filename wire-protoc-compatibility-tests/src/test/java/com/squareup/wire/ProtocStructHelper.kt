@@ -55,7 +55,3 @@ internal fun Any?.toValue(): Value {
     else -> throw IllegalArgumentException("unexpected struct value: ${this}")
   }
 }
-
-internal fun nullValue(): NullValue {
-  return NullValue.NULL_VALUE
-}

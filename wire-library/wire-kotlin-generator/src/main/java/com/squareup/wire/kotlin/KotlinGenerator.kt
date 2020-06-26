@@ -60,6 +60,7 @@ import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
@@ -995,7 +996,8 @@ class KotlinGenerator private constructor(
         .addSuperclassConstructorParameter("\n⇥%T.LENGTH_DELIMITED",
             FieldEncoding::class.asClassName())
         .addSuperclassConstructorParameter("\n%T::class", parentClassName)
-        .addSuperclassConstructorParameter("\n%S\n⇤", type.type.typeUrl!!)
+        .addSuperclassConstructorParameter("\n%S", type.type.typeUrl!!)
+        .addSuperclassConstructorParameter("\n%M\n⇤", MemberName(Syntax::class.asClassName(), type.syntax.name))
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
@@ -1425,7 +1427,8 @@ class KotlinGenerator private constructor(
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
-        .addSuperclassConstructorParameter("\n⇥%T::class\n⇤", parentClassName)
+        .addSuperclassConstructorParameter("\n⇥%T::class", parentClassName)
+        .addSuperclassConstructorParameter("\n%M\n⇤", MemberName(Syntax::class.asClassName(), message.syntax.name))
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)

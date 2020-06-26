@@ -41,5 +41,5 @@ message All64 {
     sfixed64 oneof_sfixed64 = 402;
   }
 
-  map<int64, sfixed64> map_int64_sfixed64 = 501;
+  // map<int64, sfixed64> map_int64_sfixed64 = 501;
 }

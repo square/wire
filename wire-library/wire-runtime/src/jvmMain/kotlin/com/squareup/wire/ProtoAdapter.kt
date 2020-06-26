@@ -30,7 +30,8 @@ import kotlin.reflect.KClass
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?,
-  actual val typeUrl: String?
+  actual val typeUrl: String?,
+  actual val syntax: Syntax
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
     this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
@@ -46,10 +47,15 @@ actual abstract class ProtoAdapter<E> actual constructor(
   constructor(fieldEncoding: FieldEncoding, type: Class<*>) : this(fieldEncoding, type.kotlin)
 
   // Obsolete; for Kotlin classes generated before typeUrl was added.
-  constructor(fieldEncoding: FieldEncoding, type: KClass<*>?) : this(fieldEncoding, type, null)
+  constructor(fieldEncoding: FieldEncoding, type: KClass<*>?) :
+      this(fieldEncoding, type, null, Syntax.PROTO_2)
 
+  // Obsolete; for Kotlin classes generated before syntax was added.
   constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?) :
-      this(fieldEncoding, type.kotlin, typeUrl)
+      this(fieldEncoding, type.kotlin, typeUrl, Syntax.PROTO_2)
+
+  constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?, syntax: Syntax) :
+      this(fieldEncoding, type.kotlin, typeUrl, syntax)
 
   actual abstract fun redact(value: E): E
 
@@ -144,19 +150,28 @@ actual abstract class ProtoAdapter<E> actual constructor(
       return commonNewMapAdapter(keyAdapter, valueAdapter)
     }
 
-    /** Creates a new proto adapter for `type`. */
+    // Obsolete; for Java classes generated before typeUrl and syntax were added.
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>
     ): ProtoAdapter<M> {
-      return RuntimeMessageAdapter.create(type, null)
+      return RuntimeMessageAdapter.create(type, null, Syntax.PROTO_2)
+    }
+
+    // Obsolete; for Java classes generated before typeUrl and syntax were added.
+    @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
+      type: Class<M>,
+      typeUrl: String
+    ): ProtoAdapter<M> {
+      return RuntimeMessageAdapter.create(type, typeUrl, Syntax.PROTO_2)
     }
 
     /** Creates a new proto adapter for `type`. */
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>,
-      typeUrl: String
+      typeUrl: String,
+      syntax: Syntax
     ): ProtoAdapter<M> {
-      return RuntimeMessageAdapter.create(type, typeUrl)
+      return RuntimeMessageAdapter.create(type, typeUrl, syntax)
     }
 
     /** Creates a new proto adapter for `type`. */

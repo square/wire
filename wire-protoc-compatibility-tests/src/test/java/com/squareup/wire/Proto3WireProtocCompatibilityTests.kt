@@ -35,7 +35,6 @@ import com.squareup.wire.proto3.requiredextension.RequiredExtensionMessage
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 import squareup.proto3.alltypes.All64
 import squareup.proto3.alltypes.All64OuterClass
@@ -312,7 +311,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(AllTypes.ADAPTER.decode(protocBytes)).isEqualTo(wireMessage)
   }
 
-  @Ignore("TODO")
   @Test fun serializeDefaultAllTypesMoshi() {
     assertJsonEquals(DEFAULT_ALL_TYPES_JSON,
         moshi.adapter(AllTypes::class.java).toJson(defaultAllTypesWire))
@@ -331,7 +329,6 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(allTypes))
   }
 
-  @Ignore("TODO")
   @Test fun deserializeDefaultAllTypesMoshi() {
     val allTypesAdapter: JsonAdapter<AllTypes> = moshi.adapter(AllTypes::class.java)
 
@@ -349,10 +346,50 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(IDENTITY_ALL_TYPES_JSON, jsonPrinter.print(identityAllTypes))
   }
 
-  @Ignore("TODO")
   @Test fun serializeIdentityAllTypesMoshi() {
+    // TODO(benoit) Don't emit default values for enums.
+    // Moshi prints empty lists and empty arrays.
+    val moshiJson = """{
+      |  "mapInt32Int32": {},
+      |  "mapStringEnum": {},
+      |  "mapStringMessage": {},
+      |  "mapStringString": {},
+      |  "nestedEnum": "UNKNOWN",
+      |  "packBool": [],
+      |  "packDouble": [],
+      |  "packFixed32": [],
+      |  "packFixed64": [],
+      |  "packFloat": [],
+      |  "packInt32": [],
+      |  "packInt64": [],
+      |  "packNestedEnum": [],
+      |  "packSfixed32": [],
+      |  "packSfixed64": [],
+      |  "packSint32": [],
+      |  "packSint64": [],
+      |  "packUint32": [],
+      |  "packUint64": [],
+      |  "repBool": [],
+      |  "repBytes": [],
+      |  "repDouble": [],
+      |  "repFixed32": [],
+      |  "repFixed64": [],
+      |  "repFloat": [],
+      |  "repInt32": [],
+      |  "repInt64": [],
+      |  "repNestedEnum": [],
+      |  "repNestedMessage": [],
+      |  "repSfixed32": [],
+      |  "repSfixed64": [],
+      |  "repSint32": [],
+      |  "repSint64": [],
+      |  "repString": [],
+      |  "repUint32": [],
+      |  "repUint64": []
+      |${IDENTITY_ALL_TYPES_JSON.substring(1)}""".trimMargin()
+
     val allTypes = AllTypes()
-    assertJsonEquals(IDENTITY_ALL_TYPES_JSON, moshi.adapter(AllTypes::class.java).toJson(allTypes))
+    assertJsonEquals(moshiJson, moshi.adapter(AllTypes::class.java).toJson(allTypes))
   }
 
   @Test fun deserializeIdentityAllTypesProtoc() {
@@ -377,16 +414,26 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes))
   }
 
-  @Ignore("TODO")
   @Test fun `int64s are encoded with quotes and decoded with either`() {
-    val allTypesAdapter: JsonAdapter<AllTypes> = moshi.adapter(AllTypes::class.java)
+    val all64Adapter: JsonAdapter<All64> = moshi.adapter(All64::class.java)
 
-    val model = AllTypes(squareup_proto3_alltypes_sint64 = 123)
-    assertThat(allTypesAdapter.fromJson("""{"sint64":"123"}""")).isEqualTo(model)
-    assertThat(allTypesAdapter.fromJson("""{"sint64":123}""")).isEqualTo(model)
-    assertThat(allTypesAdapter.fromJson("""{"sint64":123.0}""")).isEqualTo(model)
+    val signed = All64(my_sint64 = 123, rep_sint64 = listOf(456))
+    assertThat(all64Adapter.fromJson("""{"mySint64":"123", "repSint64": ["456"]}""")).isEqualTo(signed)
+    assertThat(all64Adapter.fromJson("""{"mySint64":123, "repSint64": [456]}""")).isEqualTo(signed)
+    assertThat(all64Adapter.fromJson("""{"mySint64":123.0, "repSint64": [456.0]}""")).isEqualTo(signed)
 
-    assertThat(allTypesAdapter.toJson(model)).isEqualTo("""{"sint64":"123"}""")
+    val signedJson = all64Adapter.toJson(signed)
+    assertThat(signedJson).contains(""""mySint64":"123"""")
+    assertThat(signedJson).contains(""""repSint64":["456"]""")
+
+    val unsigned = All64(my_uint64 = 123, rep_uint64 = listOf(456))
+    assertThat(all64Adapter.fromJson("""{"myUint64":"123", "repUint64": ["456"]}""")).isEqualTo(unsigned)
+    assertThat(all64Adapter.fromJson("""{"myUint64":123, "repUint64": [456]}""")).isEqualTo(unsigned)
+    assertThat(all64Adapter.fromJson("""{"myUint64":123.0, "repUint64": [456.0]}""")).isEqualTo(unsigned)
+
+    val unsignedJson = all64Adapter.toJson(unsigned)
+    assertThat(unsignedJson).contains(""""myUint64":"123"""")
+    assertThat(unsignedJson).contains(""""repUint64":["456"]""")
   }
 
   @Test fun `field names are encoded with camel case and decoded with either`() {
@@ -454,7 +501,6 @@ class Proto3WireProtocCompatibilityTests {
         .addAllPackFixed64(list(Long.MIN_VALUE))
         .addAllPackSfixed64(list(Long.MIN_VALUE))
         .setOneofInt64(Long.MIN_VALUE)
-        .putMapInt64Sfixed64(Long.MIN_VALUE, Long.MIN_VALUE)
         .build()
 
     val jsonPrinter = JsonFormat.printer()
@@ -467,7 +513,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(all64)
   }
 
-  @Ignore("TODO")
   @Test fun all64JsonMoshi() {
     val all64 = All64(
         my_int64 = Long.MIN_VALUE,
@@ -485,8 +530,7 @@ class Proto3WireProtocCompatibilityTests {
         pack_sint64 = list(Long.MIN_VALUE),
         pack_fixed64 = list(Long.MIN_VALUE),
         pack_sfixed64 = list(Long.MIN_VALUE),
-        oneof_int64 = Long.MIN_VALUE,
-        map_int64_sfixed64 = mapOf(Long.MIN_VALUE to Long.MIN_VALUE)
+        oneof_int64 = Long.MIN_VALUE
     )
 
     val moshi = Moshi.Builder()
@@ -746,10 +790,7 @@ class Proto3WireProtocCompatibilityTests {
         |  "packSint64": ["-9223372036854775808", "-9223372036854775808"],
         |  "packFixed64": ["9223372036854775808", "9223372036854775808"],
         |  "packSfixed64": ["-9223372036854775808", "-9223372036854775808"],
-        |  "oneofInt64": "-9223372036854775808",
-        |  "mapInt64Sfixed64": {
-        |    "-9223372036854775808": "-9223372036854775808"
-        |  }
+        |  "oneofInt64": "-9223372036854775808"
         |}""".trimMargin()
 
     private const val IDENTITY_ALL_TYPES_JSON = "{}"

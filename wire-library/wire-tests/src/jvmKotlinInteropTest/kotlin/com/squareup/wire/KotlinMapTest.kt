@@ -25,7 +25,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class KotlinMapTest {
-  private val adapter = RuntimeMessageAdapter.create(Mappy::class.java, "square.github.io/wire/unknown")
+  private val adapter = RuntimeMessageAdapter.create(Mappy::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2)
 
   @Test fun serialize() {
     assertEquals(BYTES, ByteString.of(*adapter.encode(THREE)))

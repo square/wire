@@ -16,9 +16,9 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.internal.camelCase
-import com.squareup.wire.schema.ProtoFile.Syntax
-import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2
-import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.Syntax.PROTO_3
 
 /** A set of rules which defines schema requirements for a specific [Syntax]. */
 interface SyntaxRules {

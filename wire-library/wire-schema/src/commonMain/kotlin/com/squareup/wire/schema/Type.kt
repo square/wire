@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.Syntax
 import com.squareup.wire.schema.EnumType.Companion.fromElement
 import com.squareup.wire.schema.MessageType.Companion.fromElement
 import com.squareup.wire.schema.internal.parser.EnumElement
@@ -28,6 +29,7 @@ abstract class Type {
   abstract val documentation: String
   abstract val options: Options
   abstract val nestedTypes: List<Type>
+  abstract val syntax: Syntax
   abstract fun linkMembers(linker: Linker)
   abstract fun linkOptions(linker: Linker, syntaxRules: SyntaxRules)
   abstract fun validate(linker: Linker, syntaxRules: SyntaxRules)
@@ -56,10 +58,10 @@ abstract class Type {
   }
 
   companion object {
-    operator fun get(packageName: String?, protoType: ProtoType, type: TypeElement): Type {
+    fun get(packageName: String?, protoType: ProtoType, type: TypeElement, syntax: Syntax): Type {
       return when (type) {
-        is EnumElement -> fromElement(protoType, type)
-        is MessageElement -> fromElement(packageName, protoType, type)
+        is EnumElement -> fromElement(protoType, type, syntax)
+        is MessageElement -> fromElement(packageName, protoType, type, syntax)
         else -> throw IllegalArgumentException("unexpected type: $type")
       }
     }
@@ -67,10 +69,11 @@ abstract class Type {
     @JvmStatic
     fun fromElements(
       packageName: String?,
-      elements: List<TypeElement>
+      elements: List<TypeElement>,
+      syntax: Syntax
     ) = elements.map {
       val protoType = ProtoType.get(packageName, it.name)
-      return@map this[packageName, protoType, it]
+      return@map get(packageName, protoType, it, syntax)
     }
 
     private fun toElement(type: Type): TypeElement {

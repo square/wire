@@ -78,7 +78,8 @@ class AnyMessage(
     val ADAPTER: ProtoAdapter<AnyMessage> = object : ProtoAdapter<AnyMessage>(
         FieldEncoding.LENGTH_DELIMITED,
         AnyMessage::class,
-        "type.googleapis.com/google.protobuf.Any"
+        "type.googleapis.com/google.protobuf.Any",
+        Syntax.PROTO_3
     ) {
       override fun encodedSize(value: AnyMessage): Int =
           STRING.encodedSizeWithTag(1, value.typeUrl) +

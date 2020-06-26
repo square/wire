@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.Syntax
 import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
 import com.squareup.wire.schema.internal.parser.EnumElement
 import kotlin.jvm.JvmStatic
@@ -25,7 +26,8 @@ class EnumType private constructor(
   override val documentation: String,
   private val name: String,
   val constants: List<EnumConstant>,
-  override val options: Options
+  override val options: Options,
+  override val syntax: Syntax
 ) : Type() {
   private var allowAlias: Any? = null
 
@@ -102,7 +104,8 @@ class EnumType private constructor(
         documentation = documentation,
         name = name,
         constants = retainedConstants,
-        options = options.retainAll(schema, markSet)
+        options = options.retainAll(schema, markSet),
+        syntax = syntax
     )
     result.allowAlias = allowAlias
     return result
@@ -121,7 +124,8 @@ class EnumType private constructor(
         documentation = documentation,
         name = name,
         constants = retainedConstants,
-        options = options.retainLinked()
+        options = options.retainLinked(),
+        syntax = syntax
     )
   }
 
@@ -141,16 +145,17 @@ class EnumType private constructor(
     @JvmStatic
     fun fromElement(
       protoType: ProtoType,
-      enumElement: EnumElement
+      enumElement: EnumElement,
+      syntax: Syntax
     ): EnumType {
-
       return EnumType(
           type = protoType,
           location = enumElement.location,
           documentation = enumElement.documentation,
           name = enumElement.name,
           constants = EnumConstant.fromElements(enumElement.constants),
-          options = Options(ENUM_OPTIONS, enumElement.options)
+          options = Options(ENUM_OPTIONS, enumElement.options),
+          syntax = syntax
       )
     }
   }

@@ -17,8 +17,8 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_2
-import com.squareup.wire.schema.ProtoFile.Syntax.PROTO_3
+import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
