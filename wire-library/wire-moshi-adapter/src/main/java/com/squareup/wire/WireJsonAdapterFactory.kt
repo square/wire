@@ -22,7 +22,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
-import okio.ByteString.Companion.read
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -98,7 +97,13 @@ class WireJsonAdapterFactory private constructor(
         Long::class.javaObjectType,
         Long::class.javaPrimitiveType -> moshi.adapter<Long>(type, nextAnnotations).omitValue(0L)
         String::class.java -> moshi.adapter<String>(type, nextAnnotations).omitValue("")
-        else -> moshi.adapter<Any>(type, nextAnnotations)
+        else -> {
+          if (WireEnum::class.java.isAssignableFrom(rawType)) {
+            moshi.adapter<WireEnum>(type, nextAnnotations).omitWireEnumValue(0)
+          } else {
+            moshi.adapter<Any>(type, nextAnnotations)
+          }
+        }
       }.nullSafe()
     }
 
@@ -202,7 +207,7 @@ class WireJsonAdapterFactory private constructor(
     internal val UINT64_STRING_JSON_ADAPTER = object : JsonAdapter<Long>() {
       @Throws(IOException::class)
       override fun fromJson(reader: JsonReader): Long? {
-        return when(reader.peek()) {
+        return when (reader.peek()) {
           JsonReader.Token.STRING -> {
             UINT64_JSON_ADAPTER.fromJson(reader)
           }
