@@ -481,7 +481,65 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(camelAdapter.toJson(camel), JsonFormat.printer().print(protocCamel))
   }
 
-  @Test fun all64JsonProtoc(){
+  @Test fun all64JsonProtocMaxValue(){
+    val all64 = All64OuterClass.All64.newBuilder()
+        .setMyInt64(Long.MAX_VALUE)
+        .setMyUint64(Long.MAX_VALUE)
+        .setMySint64(Long.MAX_VALUE)
+        .setMyFixed64(Long.MAX_VALUE)
+        .setMySfixed64(Long.MAX_VALUE)
+        .addAllRepInt64(list(Long.MAX_VALUE))
+        .addAllRepUint64(list(Long.MAX_VALUE))
+        .addAllRepSint64(list(Long.MAX_VALUE))
+        .addAllRepFixed64(list(Long.MAX_VALUE))
+        .addAllRepSfixed64(list(Long.MAX_VALUE))
+        .addAllPackInt64(list(Long.MAX_VALUE))
+        .addAllPackUint64(list(Long.MAX_VALUE))
+        .addAllPackSint64(list(Long.MAX_VALUE))
+        .addAllPackFixed64(list(Long.MAX_VALUE))
+        .addAllPackSfixed64(list(Long.MAX_VALUE))
+        .setOneofInt64(Long.MAX_VALUE)
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(all64), ALL_64_JSON_MAX_VALUE)
+
+    val jsonParser = JsonFormat.parser()
+    val parsed = All64OuterClass.All64.newBuilder()
+        .apply { jsonParser.merge(ALL_64_JSON_MAX_VALUE, this) }
+        .build()
+    assertThat(parsed).isEqualTo(all64)
+  }
+
+  @Test fun all64JsonMoshiMaxValue() {
+    val all64 = All64(
+        my_int64 = Long.MAX_VALUE,
+        my_uint64 = Long.MAX_VALUE,
+        my_sint64 = Long.MAX_VALUE,
+        my_fixed64 = Long.MAX_VALUE,
+        my_sfixed64 = Long.MAX_VALUE,
+        rep_int64 = list(Long.MAX_VALUE),
+        rep_uint64 = list(Long.MAX_VALUE),
+        rep_sint64 = list(Long.MAX_VALUE),
+        rep_fixed64 = list(Long.MAX_VALUE),
+        rep_sfixed64 = list(Long.MAX_VALUE),
+        pack_int64 = list(Long.MAX_VALUE),
+        pack_uint64 = list(Long.MAX_VALUE),
+        pack_sint64 = list(Long.MAX_VALUE),
+        pack_fixed64 = list(Long.MAX_VALUE),
+        pack_sfixed64 = list(Long.MAX_VALUE),
+        oneof_int64 = Long.MAX_VALUE
+    )
+
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory())
+        .build()
+    val jsonAdapter = moshi.adapter(All64::class.java).indent("  ")
+    assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON_MAX_VALUE)
+    assertThat(jsonAdapter.fromJson(ALL_64_JSON_MAX_VALUE)).isEqualTo(all64)
+  }
+
+  @Test fun all64JsonProtocMinValue(){
     val all64 = All64OuterClass.All64.newBuilder()
         .setMyInt64(Long.MIN_VALUE)
         .setMyUint64(Long.MIN_VALUE)
@@ -502,16 +560,16 @@ class Proto3WireProtocCompatibilityTests {
         .build()
 
     val jsonPrinter = JsonFormat.printer()
-    assertJsonEquals(jsonPrinter.print(all64), ALL_64_JSON)
+    assertJsonEquals(jsonPrinter.print(all64), ALL_64_JSON_MIN_VALUE)
 
     val jsonParser = JsonFormat.parser()
     val parsed = All64OuterClass.All64.newBuilder()
-        .apply { jsonParser.merge(ALL_64_JSON, this) }
+        .apply { jsonParser.merge(ALL_64_JSON_MIN_VALUE, this) }
         .build()
     assertThat(parsed).isEqualTo(all64)
   }
 
-  @Test fun all64JsonMoshi() {
+  @Test fun all64JsonMoshiMinValue() {
     val all64 = All64(
         my_int64 = Long.MIN_VALUE,
         my_uint64 = Long.MIN_VALUE,
@@ -535,8 +593,8 @@ class Proto3WireProtocCompatibilityTests {
         .add(WireJsonAdapterFactory())
         .build()
     val jsonAdapter = moshi.adapter(All64::class.java).indent("  ")
-    assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON)
-    assertThat(jsonAdapter.fromJson(ALL_64_JSON)).isEqualTo(all64)
+    assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON_MIN_VALUE)
+    assertThat(jsonAdapter.fromJson(ALL_64_JSON_MIN_VALUE)).isEqualTo(all64)
   }
 
   @Test fun durationProto() {
@@ -771,7 +829,7 @@ class Proto3WireProtocCompatibilityTests {
         |"oneofInt32" : 0.0
         |}""".trimMargin()
 
-    private val ALL_64_JSON = """
+    private val ALL_64_JSON_MIN_VALUE = """
         |{
         |  "myInt64": "-9223372036854775808",
         |  "myUint64": "9223372036854775808",
@@ -790,6 +848,26 @@ class Proto3WireProtocCompatibilityTests {
         |  "packSfixed64": ["-9223372036854775808", "-9223372036854775808"],
         |  "oneofInt64": "-9223372036854775808"
         |}""".trimMargin()
+
+    private val ALL_64_JSON_MAX_VALUE = """
+      |{
+      |  "myInt64": "9223372036854775807",
+      |  "myUint64": "9223372036854775807",
+      |  "mySint64": "9223372036854775807",
+      |  "myFixed64": "9223372036854775807",
+      |  "mySfixed64": "9223372036854775807",
+      |  "repInt64": ["9223372036854775807", "9223372036854775807"],
+      |  "repUint64": ["9223372036854775807", "9223372036854775807"],
+      |  "repSint64": ["9223372036854775807", "9223372036854775807"],
+      |  "repFixed64": ["9223372036854775807", "9223372036854775807"],
+      |  "repSfixed64": ["9223372036854775807", "9223372036854775807"],
+      |  "packInt64": ["9223372036854775807", "9223372036854775807"],
+      |  "packUint64": ["9223372036854775807", "9223372036854775807"],
+      |  "packSint64": ["9223372036854775807", "9223372036854775807"],
+      |  "packFixed64": ["9223372036854775807", "9223372036854775807"],
+      |  "packSfixed64": ["9223372036854775807", "9223372036854775807"],
+      |  "oneofInt64": "9223372036854775807"
+      |}""".trimMargin()
 
     private const val IDENTITY_ALL_TYPES_JSON = "{}"
 
