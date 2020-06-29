@@ -27,6 +27,7 @@ import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.OPTIONAL
 import io.outfoxx.swiftpoet.ParameterSpec
+import io.outfoxx.swiftpoet.ParameterizedTypeName
 import io.outfoxx.swiftpoet.PropertySpec
 import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeName
@@ -122,6 +123,9 @@ class SwiftGenerator private constructor(
                   .addArguments("*", "deprecated")
                   .build())
             }
+            if (field.typeName.needsJsonString()) {
+              property.addAttribute(AttributeSpec.builder("JSONString").build())
+            }
             addProperty(property.build())
           }
           type.oneOfs.forEach { oneOf ->
@@ -185,8 +189,6 @@ class SwiftGenerator private constructor(
 
           // If there are any oneofs we cannot rely on the built-in Codable support since the
           // keys of the nested associated enum are flattened into the enclosing parent.
-          // TODO are there other examples where we need to intercept encoding/decoding?
-          //  Yes, 64-bit ints need to be strings!
           if (type.oneOfs.isNotEmpty()) {
             addFunction(FunctionSpec.constructorBuilder()
                 .addParameter("from", "decoder", decoder)
@@ -395,6 +397,19 @@ class SwiftGenerator private constructor(
       ProtoType.FIXED32, ProtoType.FIXED64 -> "fixed"
       else -> null
     }
+
+  private fun TypeName.needsJsonString(): Boolean {
+    if (this == INT64 || this == UINT64) {
+      return true
+    }
+    if (this is ParameterizedTypeName) {
+      when (rawType) {
+        ARRAY -> return typeArguments[0].needsJsonString()
+        DICTIONARY -> return typeArguments[0].needsJsonString() || typeArguments[1].needsJsonString()
+      }
+    }
+    return false
+  }
 
   private fun generateEnum(type: EnumType): TypeSpec {
     val enumName = type.typeName

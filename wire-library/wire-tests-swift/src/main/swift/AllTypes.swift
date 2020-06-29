@@ -27,10 +27,15 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     public var req_sint32: Int32
     public var req_fixed32: Int32
     public var req_sfixed32: Int32
+    @JSONString
     public var req_int64: Int64
+    @JSONString
     public var req_uint64: UInt64
+    @JSONString
     public var req_sint64: Int64
+    @JSONString
     public var req_fixed64: Int64
+    @JSONString
     public var req_sfixed64: Int64
     public var req_bool: Bool
     public var req_float: Float
@@ -44,10 +49,15 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     public var rep_sint32: [Int32]
     public var rep_fixed32: [Int32]
     public var rep_sfixed32: [Int32]
+    @JSONString
     public var rep_int64: [Int64]
+    @JSONString
     public var rep_uint64: [UInt64]
+    @JSONString
     public var rep_sint64: [Int64]
+    @JSONString
     public var rep_fixed64: [Int64]
+    @JSONString
     public var rep_sfixed64: [Int64]
     public var rep_bool: [Bool]
     public var rep_float: [Float]
@@ -61,10 +71,15 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     public var pack_sint32: [Int32]
     public var pack_fixed32: [Int32]
     public var pack_sfixed32: [Int32]
+    @JSONString
     public var pack_int64: [Int64]
+    @JSONString
     public var pack_uint64: [UInt64]
+    @JSONString
     public var pack_sint64: [Int64]
+    @JSONString
     public var pack_fixed64: [Int64]
+    @JSONString
     public var pack_sfixed64: [Int64]
     public var pack_bool: [Bool]
     public var pack_float: [Float]
@@ -112,10 +127,15 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     public var ext_rep_sint32: [Int32]
     public var ext_rep_fixed32: [Int32]
     public var ext_rep_sfixed32: [Int32]
+    @JSONString
     public var ext_rep_int64: [Int64]
+    @JSONString
     public var ext_rep_uint64: [UInt64]
+    @JSONString
     public var ext_rep_sint64: [Int64]
+    @JSONString
     public var ext_rep_fixed64: [Int64]
+    @JSONString
     public var ext_rep_sfixed64: [Int64]
     public var ext_rep_bool: [Bool]
     public var ext_rep_float: [Float]
@@ -129,10 +149,15 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
     public var ext_pack_sint32: [Int32]
     public var ext_pack_fixed32: [Int32]
     public var ext_pack_sfixed32: [Int32]
+    @JSONString
     public var ext_pack_int64: [Int64]
+    @JSONString
     public var ext_pack_uint64: [UInt64]
+    @JSONString
     public var ext_pack_sint64: [Int64]
+    @JSONString
     public var ext_pack_fixed64: [Int64]
+    @JSONString
     public var ext_pack_sfixed64: [Int64]
     public var ext_pack_bool: [Bool]
     public var ext_pack_float: [Float]

@@ -67,9 +67,6 @@ public struct OneOfMessage : Equatable, Proto2Codable, Codable {
         try writer.writeUnknownFields(unknownFields)
     }
 
-    /**
-     * Must have a foo or a bar or a baz.
-     */
     public enum Choice : Equatable {
 
         case foo(Int32)
