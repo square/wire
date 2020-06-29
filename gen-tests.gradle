@@ -323,7 +323,7 @@ task generateMoshiAdapterCompactJavaTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-          '--proto_path=wire-library/wire-moshi-adapter/src/test/proto',
+          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
           '--java_out=wire-library/wire-moshi-adapter/src/test/java',
           '--compact',
           'all_types.proto'
@@ -336,7 +336,7 @@ task generateMoshiAdapterJavaTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-          '--proto_path=wire-library/wire-moshi-adapter/src/test/proto',
+          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
           '--java_out=wire-library/wire-moshi-adapter/src/test/java',
           'collection_types.proto',
           'person_java.proto',
@@ -352,7 +352,7 @@ task generateMoshiAdapterInteropKotlinTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-          '--proto_path=wire-library/wire-moshi-adapter/src/test/proto',
+          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
           '--kotlin_out=wire-library/wire-moshi-adapter/src/test/java',
           '--java_interop',
           'person_java_interop_kotlin.proto',
@@ -368,7 +368,7 @@ task generateMoshiAdapterKotlinTests(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-          '--proto_path=wire-library/wire-moshi-adapter/src/test/proto',
+          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
           '--kotlin_out=wire-library/wire-moshi-adapter/src/test/java',
           'person_kotlin.proto',
           'dinosaur_kotlin.proto',
