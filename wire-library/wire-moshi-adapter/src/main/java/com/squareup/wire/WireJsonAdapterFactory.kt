@@ -99,7 +99,10 @@ class WireJsonAdapterFactory private constructor(
         String::class.java -> moshi.adapter<String>(type, nextAnnotations).omitValue("")
         else -> {
           if (WireEnum::class.java.isAssignableFrom(rawType)) {
-            moshi.adapter<WireEnum>(type, nextAnnotations).omitWireEnumValue(0)
+            // Proto3 guarantees such constant exists.
+            val defaultConstant = rawType.enumConstants
+                .first { constant -> (constant as WireEnum).value == 0 } as WireEnum
+            moshi.adapter<WireEnum>(type, nextAnnotations).omitValue(defaultConstant)
           } else {
             moshi.adapter<Any>(type, nextAnnotations)
           }
