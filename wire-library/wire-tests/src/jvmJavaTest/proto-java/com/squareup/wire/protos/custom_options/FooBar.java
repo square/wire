@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -346,7 +347,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     private static final class ProtoAdapter_Nested extends ProtoAdapter<Nested> {
       public ProtoAdapter_Nested() {
-        super(FieldEncoding.LENGTH_DELIMITED, Nested.class, "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested");
+        super(FieldEncoding.LENGTH_DELIMITED, Nested.class, "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested", Syntax.PROTO_2);
       }
 
       @Override
@@ -470,7 +471,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     private static final class ProtoAdapter_More extends ProtoAdapter<More> {
       public ProtoAdapter_More() {
-        super(FieldEncoding.LENGTH_DELIMITED, More.class, "type.googleapis.com/squareup.protos.custom_options.FooBar.More");
+        super(FieldEncoding.LENGTH_DELIMITED, More.class, "type.googleapis.com/squareup.protos.custom_options.FooBar.More", Syntax.PROTO_2);
       }
 
       @Override
@@ -558,7 +559,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     private static final class ProtoAdapter_FooBarBazEnum extends EnumAdapter<FooBarBazEnum> {
       ProtoAdapter_FooBarBazEnum() {
-        super(FooBarBazEnum.class);
+        super(FooBarBazEnum.class, Syntax.PROTO_2);
       }
 
       @Override
@@ -570,7 +571,7 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   private static final class ProtoAdapter_FooBar extends ProtoAdapter<FooBar> {
     public ProtoAdapter_FooBar() {
-      super(FieldEncoding.LENGTH_DELIMITED, FooBar.class, "type.googleapis.com/squareup.protos.custom_options.FooBar");
+      super(FieldEncoding.LENGTH_DELIMITED, FooBar.class, "type.googleapis.com/squareup.protos.custom_options.FooBar", Syntax.PROTO_2);
     }
 
     @Override

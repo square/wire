@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
@@ -84,7 +85,8 @@ class RedactedRepeated(
     val ADAPTER: ProtoAdapter<RedactedRepeated> = object : ProtoAdapter<RedactedRepeated>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedRepeated::class, 
-      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRepeated"
+      "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRepeated", 
+      PROTO_2
     ) {
       override fun encodedSize(value: RedactedRepeated): Int {
         var size = value.unknownFields.size

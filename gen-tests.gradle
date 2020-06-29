@@ -393,6 +393,7 @@ task cleanGeneratedTests(type: Delete) {
   description = 'Delete all generated tests'
   delete 'wire-grpc-tests/src/test/proto-grpc',
          'wire-library/wire-moshi-adapter/src/test/java/com/squareup/wire/protos',
+         'wire-library/wire-moshi-adapter/src/test/java/squareup/keywords/',
          'wire-library/wire-tests/src/commonTest/proto-kotlin',
          'wire-library/wire-tests/src/jvmJavaAndroidCompactTest/proto-java',
          'wire-library/wire-tests/src/jvmJavaAndroidTest/proto-java',

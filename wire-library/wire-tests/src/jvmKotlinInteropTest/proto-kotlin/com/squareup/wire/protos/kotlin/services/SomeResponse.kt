@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -46,7 +47,8 @@ class SomeResponse(
     val ADAPTER: ProtoAdapter<SomeResponse> = object : ProtoAdapter<SomeResponse>(
       FieldEncoding.LENGTH_DELIMITED, 
       SomeResponse::class, 
-      "type.googleapis.com/squareup.protos.kotlin.SomeResponse"
+      "type.googleapis.com/squareup.protos.kotlin.SomeResponse", 
+      PROTO_2
     ) {
       override fun encodedSize(value: SomeResponse): Int {
         var size = value.unknownFields.size

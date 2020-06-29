@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -87,7 +88,8 @@ class RouteNote(
     val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(
       FieldEncoding.LENGTH_DELIMITED, 
       RouteNote::class, 
-      "type.googleapis.com/routeguide.RouteNote"
+      "type.googleapis.com/routeguide.RouteNote", 
+      PROTO_2
     ) {
       override fun encodedSize(value: RouteNote): Int {
         var size = value.unknownFields.size

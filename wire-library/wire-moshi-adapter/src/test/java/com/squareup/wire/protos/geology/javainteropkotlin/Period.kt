@@ -4,6 +4,7 @@ package com.squareup.wire.protos.geology.javainteropkotlin
 
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import kotlin.Int
 import kotlin.jvm.JvmField
@@ -30,7 +31,8 @@ enum class Period(
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<Period> = object : EnumAdapter<Period>(
-      Period::class
+      Period::class, 
+      PROTO_2
     ) {
       override fun fromValue(value: Int): Period? = Period.fromValue(value)
     }

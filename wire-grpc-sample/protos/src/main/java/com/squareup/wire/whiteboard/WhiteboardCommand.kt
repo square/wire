@@ -7,6 +7,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
 import com.squareup.wire.internal.missingRequiredFields
@@ -85,7 +87,8 @@ class WhiteboardCommand(
     val ADAPTER: ProtoAdapter<WhiteboardCommand> = object : ProtoAdapter<WhiteboardCommand>(
       FieldEncoding.LENGTH_DELIMITED, 
       WhiteboardCommand::class, 
-      "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand"
+      "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand", 
+      PROTO_2
     ) {
       override fun encodedSize(value: WhiteboardCommand): Int {
         var size = value.unknownFields.size
@@ -172,7 +175,8 @@ class WhiteboardCommand(
       val ADAPTER: ProtoAdapter<AddPoint> = object : ProtoAdapter<AddPoint>(
         FieldEncoding.LENGTH_DELIMITED, 
         AddPoint::class, 
-        "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.AddPoint"
+        "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.AddPoint", 
+        PROTO_2
       ) {
         override fun encodedSize(value: AddPoint): Int {
           var size = value.unknownFields.size
@@ -234,7 +238,8 @@ class WhiteboardCommand(
       val ADAPTER: ProtoAdapter<ClearBoard> = object : ProtoAdapter<ClearBoard>(
         FieldEncoding.LENGTH_DELIMITED, 
         ClearBoard::class, 
-        "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.ClearBoard"
+        "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.ClearBoard", 
+        PROTO_2
       ) {
         override fun encodedSize(value: ClearBoard): Int {
           var size = value.unknownFields.size

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -313,7 +314,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
     private static final class ProtoAdapter_EnumReservedRange extends ProtoAdapter<EnumReservedRange> {
       public ProtoAdapter_EnumReservedRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, EnumReservedRange.class, "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange");
+        super(FieldEncoding.LENGTH_DELIMITED, EnumReservedRange.class, "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange", Syntax.PROTO_2);
       }
 
       @Override
@@ -358,7 +359,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
   private static final class ProtoAdapter_EnumDescriptorProto extends ProtoAdapter<EnumDescriptorProto> {
     public ProtoAdapter_EnumDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class, "type.googleapis.com/google.protobuf.EnumDescriptorProto");
+      super(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class, "type.googleapis.com/google.protobuf.EnumDescriptorProto", Syntax.PROTO_2);
     }
 
     @Override

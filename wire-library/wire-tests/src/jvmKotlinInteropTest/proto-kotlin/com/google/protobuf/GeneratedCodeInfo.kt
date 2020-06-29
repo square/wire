@@ -7,6 +7,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.redactElements
@@ -98,7 +100,8 @@ class GeneratedCodeInfo(
     val ADAPTER: ProtoAdapter<GeneratedCodeInfo> = object : ProtoAdapter<GeneratedCodeInfo>(
       FieldEncoding.LENGTH_DELIMITED, 
       GeneratedCodeInfo::class, 
-      "type.googleapis.com/google.protobuf.GeneratedCodeInfo"
+      "type.googleapis.com/google.protobuf.GeneratedCodeInfo", 
+      PROTO_2
     ) {
       override fun encodedSize(value: GeneratedCodeInfo): Int {
         var size = value.unknownFields.size
@@ -291,7 +294,8 @@ class GeneratedCodeInfo(
       val ADAPTER: ProtoAdapter<Annotation> = object : ProtoAdapter<Annotation>(
         FieldEncoding.LENGTH_DELIMITED, 
         Annotation::class, 
-        "type.googleapis.com/google.protobuf.GeneratedCodeInfo.Annotation"
+        "type.googleapis.com/google.protobuf.GeneratedCodeInfo.Annotation", 
+        PROTO_2
       ) {
         override fun encodedSize(value: Annotation): Int {
           var size = value.unknownFields.size

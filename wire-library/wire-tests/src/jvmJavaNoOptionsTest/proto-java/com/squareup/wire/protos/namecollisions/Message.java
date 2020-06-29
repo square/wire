@@ -6,6 +6,7 @@ import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -279,7 +280,7 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
   private static final class ProtoAdapter_Message extends ProtoAdapter<Message> {
     public ProtoAdapter_Message() {
-      super(FieldEncoding.LENGTH_DELIMITED, Message.class, "type.googleapis.com/squareup.protos.namecollisions.Message");
+      super(FieldEncoding.LENGTH_DELIMITED, Message.class, "type.googleapis.com/squareup.protos.namecollisions.Message", Syntax.PROTO_2);
     }
 
     @Override

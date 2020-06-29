@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -101,7 +102,7 @@ public final class ExtensionRangeOptions extends Message<ExtensionRangeOptions, 
 
   private static final class ProtoAdapter_ExtensionRangeOptions extends ProtoAdapter<ExtensionRangeOptions> {
     public ProtoAdapter_ExtensionRangeOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, ExtensionRangeOptions.class, "type.googleapis.com/google.protobuf.ExtensionRangeOptions");
+      super(FieldEncoding.LENGTH_DELIMITED, ExtensionRangeOptions.class, "type.googleapis.com/google.protobuf.ExtensionRangeOptions", Syntax.PROTO_2);
     }
 
     @Override

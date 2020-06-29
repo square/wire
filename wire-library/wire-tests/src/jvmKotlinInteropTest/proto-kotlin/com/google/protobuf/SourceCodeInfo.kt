@@ -7,6 +7,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.redactElements
@@ -181,7 +183,8 @@ class SourceCodeInfo(
     val ADAPTER: ProtoAdapter<SourceCodeInfo> = object : ProtoAdapter<SourceCodeInfo>(
       FieldEncoding.LENGTH_DELIMITED, 
       SourceCodeInfo::class, 
-      "type.googleapis.com/google.protobuf.SourceCodeInfo"
+      "type.googleapis.com/google.protobuf.SourceCodeInfo", 
+      PROTO_2
     ) {
       override fun encodedSize(value: SourceCodeInfo): Int {
         var size = value.unknownFields.size
@@ -531,7 +534,8 @@ class SourceCodeInfo(
       val ADAPTER: ProtoAdapter<Location> = object : ProtoAdapter<Location>(
         FieldEncoding.LENGTH_DELIMITED, 
         Location::class, 
-        "type.googleapis.com/google.protobuf.SourceCodeInfo.Location"
+        "type.googleapis.com/google.protobuf.SourceCodeInfo.Location", 
+        PROTO_2
       ) {
         override fun encodedSize(value: Location): Int {
           var size = value.unknownFields.size

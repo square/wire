@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.missingRequiredFields
@@ -155,7 +156,8 @@ class KeywordKotlin(
     val ADAPTER: ProtoAdapter<KeywordKotlin> = object : ProtoAdapter<KeywordKotlin>(
       FieldEncoding.LENGTH_DELIMITED, 
       KeywordKotlin::class, 
-      "type.googleapis.com/squareup.keywords.KeywordKotlin"
+      "type.googleapis.com/squareup.keywords.KeywordKotlin", 
+      PROTO_2
     ) {
       private val funAdapter: ProtoAdapter<Map<String, String>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }

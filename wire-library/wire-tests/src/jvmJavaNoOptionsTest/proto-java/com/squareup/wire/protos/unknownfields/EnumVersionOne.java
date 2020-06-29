@@ -4,6 +4,7 @@ package com.squareup.wire.protos.unknownfields;
 
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
@@ -41,7 +42,7 @@ public enum EnumVersionOne implements WireEnum {
 
   private static final class ProtoAdapter_EnumVersionOne extends EnumAdapter<EnumVersionOne> {
     ProtoAdapter_EnumVersionOne() {
-      super(EnumVersionOne.class);
+      super(EnumVersionOne.class, Syntax.PROTO_2);
     }
 
     @Override

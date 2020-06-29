@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -46,7 +47,8 @@ class MessageWithOptions(
     val ADAPTER: ProtoAdapter<MessageWithOptions> = object : ProtoAdapter<MessageWithOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithOptions::class, 
-      "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions"
+      "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: MessageWithOptions): Int {
         var size = value.unknownFields.size

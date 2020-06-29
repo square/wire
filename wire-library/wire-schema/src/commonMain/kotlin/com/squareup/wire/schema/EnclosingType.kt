@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.Syntax
 import com.squareup.wire.schema.internal.parser.MessageElement
 
 /** An empty type which only holds nested types.  */
@@ -22,7 +23,8 @@ class EnclosingType internal constructor(
   override val location: Location,
   override val type: ProtoType,
   override val documentation: String,
-  override val nestedTypes: List<Type>
+  override val nestedTypes: List<Type>,
+  override val syntax: Syntax
 ) : Type() {
   override val options
     get() = Options(Options.MESSAGE_OPTIONS, listOf())
@@ -39,13 +41,13 @@ class EnclosingType internal constructor(
   override fun retainAll(schema: Schema, markSet: MarkSet): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainAll(schema, markSet) }
     if (retainedNestedTypes.isEmpty()) return null
-    return EnclosingType(location, type, documentation, retainedNestedTypes)
+    return EnclosingType(location, type, documentation, retainedNestedTypes, syntax)
   }
 
   override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
     val retainedNestedTypes = nestedTypes.mapNotNull { it.retainLinked(linkedTypes) }
     if (retainedNestedTypes.isEmpty()) return null
-    return EnclosingType(location, type, documentation, retainedNestedTypes)
+    return EnclosingType(location, type, documentation, retainedNestedTypes, syntax)
   }
 
   fun toElement() = MessageElement(

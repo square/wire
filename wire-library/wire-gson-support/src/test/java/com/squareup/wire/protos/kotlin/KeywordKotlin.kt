@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -104,7 +105,8 @@ class KeywordKotlin(
     val ADAPTER: ProtoAdapter<KeywordKotlin> = object : ProtoAdapter<KeywordKotlin>(
       FieldEncoding.LENGTH_DELIMITED, 
       KeywordKotlin::class, 
-      "type.googleapis.com/com.squareup.wire.protos.kotlin.KeywordKotlin"
+      "type.googleapis.com/com.squareup.wire.protos.kotlin.KeywordKotlin", 
+      PROTO_2
     ) {
       override fun encodedSize(value: KeywordKotlin): Int {
         var size = value.unknownFields.size

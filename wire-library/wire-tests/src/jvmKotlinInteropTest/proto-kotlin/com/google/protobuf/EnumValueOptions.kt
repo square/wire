@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.redactElements
@@ -152,7 +153,8 @@ class EnumValueOptions(
     val ADAPTER: ProtoAdapter<EnumValueOptions> = object : ProtoAdapter<EnumValueOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       EnumValueOptions::class, 
-      "type.googleapis.com/google.protobuf.EnumValueOptions"
+      "type.googleapis.com/google.protobuf.EnumValueOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: EnumValueOptions): Int {
         var size = value.unknownFields.size

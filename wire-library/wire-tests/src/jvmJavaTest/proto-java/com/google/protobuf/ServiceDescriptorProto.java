@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -137,7 +138,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   private static final class ProtoAdapter_ServiceDescriptorProto extends ProtoAdapter<ServiceDescriptorProto> {
     public ProtoAdapter_ServiceDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class, "type.googleapis.com/google.protobuf.ServiceDescriptorProto");
+      super(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class, "type.googleapis.com/google.protobuf.ServiceDescriptorProto", Syntax.PROTO_2);
     }
 
     @Override

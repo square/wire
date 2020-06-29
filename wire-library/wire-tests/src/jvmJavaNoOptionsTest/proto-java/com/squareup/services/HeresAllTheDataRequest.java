@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -92,7 +93,7 @@ public final class HeresAllTheDataRequest extends Message<HeresAllTheDataRequest
 
   private static final class ProtoAdapter_HeresAllTheDataRequest extends ProtoAdapter<HeresAllTheDataRequest> {
     public ProtoAdapter_HeresAllTheDataRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataRequest.class, "type.googleapis.com/com.squareup.services.HeresAllTheDataRequest");
+      super(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataRequest.class, "type.googleapis.com/com.squareup.services.HeresAllTheDataRequest", Syntax.PROTO_2);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -424,7 +425,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     private static final class ProtoAdapter_ExtensionRange extends ProtoAdapter<ExtensionRange> {
       public ProtoAdapter_ExtensionRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class, "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange");
+        super(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class, "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange", Syntax.PROTO_2);
       }
 
       @Override
@@ -584,7 +585,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     private static final class ProtoAdapter_ReservedRange extends ProtoAdapter<ReservedRange> {
       public ProtoAdapter_ReservedRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, ReservedRange.class, "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange");
+        super(FieldEncoding.LENGTH_DELIMITED, ReservedRange.class, "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange", Syntax.PROTO_2);
       }
 
       @Override
@@ -629,7 +630,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
   private static final class ProtoAdapter_DescriptorProto extends ProtoAdapter<DescriptorProto> {
     public ProtoAdapter_DescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class, "type.googleapis.com/google.protobuf.DescriptorProto");
+      super(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class, "type.googleapis.com/google.protobuf.DescriptorProto", Syntax.PROTO_2);
     }
 
     @Override

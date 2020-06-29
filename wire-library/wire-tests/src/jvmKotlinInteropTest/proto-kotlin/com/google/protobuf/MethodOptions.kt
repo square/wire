@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
@@ -162,7 +164,8 @@ class MethodOptions(
     val ADAPTER: ProtoAdapter<MethodOptions> = object : ProtoAdapter<MethodOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       MethodOptions::class, 
-      "type.googleapis.com/google.protobuf.MethodOptions"
+      "type.googleapis.com/google.protobuf.MethodOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: MethodOptions): Int {
         var size = value.unknownFields.size
@@ -236,7 +239,8 @@ class MethodOptions(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<IdempotencyLevel> = object : EnumAdapter<IdempotencyLevel>(
-        IdempotencyLevel::class
+        IdempotencyLevel::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): IdempotencyLevel? = IdempotencyLevel.fromValue(value)
       }

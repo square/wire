@@ -4,6 +4,7 @@ package com.squareup.wire.protos.foreign;
 
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import java.lang.Override;
 
@@ -38,7 +39,7 @@ public enum ForeignEnum implements WireEnum {
 
   private static final class ProtoAdapter_ForeignEnum extends EnumAdapter<ForeignEnum> {
     ProtoAdapter_ForeignEnum() {
-      super(ForeignEnum.class);
+      super(ForeignEnum.class, Syntax.PROTO_2);
     }
 
     @Override

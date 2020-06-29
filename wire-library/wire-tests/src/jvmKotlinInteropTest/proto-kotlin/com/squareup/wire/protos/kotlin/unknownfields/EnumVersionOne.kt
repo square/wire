@@ -4,6 +4,7 @@ package com.squareup.wire.protos.kotlin.unknownfields
 
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import kotlin.Int
 import kotlin.jvm.JvmField
@@ -21,7 +22,8 @@ enum class EnumVersionOne(
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<EnumVersionOne> = object : EnumAdapter<EnumVersionOne>(
-      EnumVersionOne::class
+      EnumVersionOne::class, 
+      PROTO_2
     ) {
       override fun fromValue(value: Int): EnumVersionOne? = EnumVersionOne.fromValue(value)
     }

@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.Syntax
 import com.squareup.wire.schema.Extend.Companion.fromElements
 import com.squareup.wire.schema.Service.Companion.fromElements
 import com.squareup.wire.schema.Type.Companion.fromElements
@@ -171,31 +172,14 @@ class ProtoFile private constructor(
     linker.validateEnumConstantNameUniqueness(types)
   }
 
-  /** Syntax version. */
-  enum class Syntax(private val string: String) {
-    PROTO_2("proto2"),
-    PROTO_3("proto3");
-
-    override fun toString(): String = string
-
-    companion object {
-      operator fun get(string: String): Syntax {
-        for (syntax in values()) {
-          if (syntax.string == string) return syntax
-        }
-        throw IllegalArgumentException("unexpected syntax: $string")
-      }
-    }
-
-  }
-
   companion object {
     val JAVA_PACKAGE = ProtoMember.get(Options.FILE_OPTIONS, "java_package")
 
     fun get(protoFileElement: ProtoFileElement): ProtoFile {
       val packageName = protoFileElement.packageName
 
-      val types = fromElements(packageName, protoFileElement.types)
+      val syntax = protoFileElement.syntax ?: Syntax.PROTO_2
+      val types = fromElements(packageName, protoFileElement.types, syntax)
 
       val services = fromElements(packageName, protoFileElement.services)
 

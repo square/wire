@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -210,7 +211,8 @@ class MethodDescriptorProto(
     val ADAPTER: ProtoAdapter<MethodDescriptorProto> = object : ProtoAdapter<MethodDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       MethodDescriptorProto::class, 
-      "type.googleapis.com/google.protobuf.MethodDescriptorProto"
+      "type.googleapis.com/google.protobuf.MethodDescriptorProto", 
+      PROTO_2
     ) {
       override fun encodedSize(value: MethodDescriptorProto): Int {
         var size = value.unknownFields.size

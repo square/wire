@@ -11,6 +11,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
@@ -1034,7 +1036,8 @@ class AllTypes(
     val ADAPTER: ProtoAdapter<AllTypes> = object : ProtoAdapter<AllTypes>(
       FieldEncoding.LENGTH_DELIMITED, 
       AllTypes::class, 
-      "type.googleapis.com/proto3.kotlin.AllTypes"
+      "type.googleapis.com/proto3.kotlin.AllTypes", 
+      PROTO_3
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
@@ -1635,7 +1638,8 @@ class AllTypes(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
-        NestedEnum::class
+        NestedEnum::class, 
+        PROTO_3
       ) {
         override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
@@ -1696,7 +1700,8 @@ class AllTypes(
       val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
-        "type.googleapis.com/proto3.kotlin.AllTypes.NestedMessage"
+        "type.googleapis.com/proto3.kotlin.AllTypes.NestedMessage", 
+        PROTO_3
       ) {
         override fun encodedSize(value: NestedMessage): Int {
           var size = value.unknownFields.size

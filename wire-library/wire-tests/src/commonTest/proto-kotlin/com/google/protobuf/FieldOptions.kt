@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
@@ -274,7 +276,8 @@ class FieldOptions(
     val ADAPTER: ProtoAdapter<FieldOptions> = object : ProtoAdapter<FieldOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       FieldOptions::class, 
-      "type.googleapis.com/google.protobuf.FieldOptions"
+      "type.googleapis.com/google.protobuf.FieldOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: FieldOptions): Int {
         var size = value.unknownFields.size
@@ -394,7 +397,8 @@ class FieldOptions(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<CType> = object : EnumAdapter<CType>(
-        CType::class
+        CType::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): CType? = CType.fromValue(value)
       }
@@ -430,7 +434,8 @@ class FieldOptions(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<JSType> = object : EnumAdapter<JSType>(
-        JSType::class
+        JSType::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): JSType? = JSType.fromValue(value)
       }

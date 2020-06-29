@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.sanitize
@@ -187,7 +188,8 @@ class NestedVersionTwo(
     val ADAPTER: ProtoAdapter<NestedVersionTwo> = object : ProtoAdapter<NestedVersionTwo>(
       FieldEncoding.LENGTH_DELIMITED, 
       NestedVersionTwo::class, 
-      "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionTwo"
+      "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionTwo", 
+      PROTO_2
     ) {
       override fun encodedSize(value: NestedVersionTwo): Int {
         var size = value.unknownFields.size

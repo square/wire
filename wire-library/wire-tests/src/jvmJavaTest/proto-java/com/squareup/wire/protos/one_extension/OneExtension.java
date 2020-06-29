@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -113,7 +114,7 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
 
   private static final class ProtoAdapter_OneExtension extends ProtoAdapter<OneExtension> {
     public ProtoAdapter_OneExtension() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneExtension.class, "type.googleapis.com/squareup.protos.one_extension.OneExtension");
+      super(FieldEncoding.LENGTH_DELIMITED, OneExtension.class, "type.googleapis.com/squareup.protos.one_extension.OneExtension", Syntax.PROTO_2);
     }
 
     @Override

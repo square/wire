@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
@@ -158,7 +160,8 @@ class FooBar(
     val ADAPTER: ProtoAdapter<FooBar> = object : ProtoAdapter<FooBar>(
       FieldEncoding.LENGTH_DELIMITED, 
       FooBar::class, 
-      "type.googleapis.com/squareup.protos.custom_options.FooBar"
+      "type.googleapis.com/squareup.protos.custom_options.FooBar", 
+      PROTO_2
     ) {
       override fun encodedSize(value: FooBar): Int {
         var size = value.unknownFields.size
@@ -287,7 +290,8 @@ class FooBar(
       val ADAPTER: ProtoAdapter<Nested> = object : ProtoAdapter<Nested>(
         FieldEncoding.LENGTH_DELIMITED, 
         Nested::class, 
-        "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested"
+        "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested", 
+        PROTO_2
       ) {
         override fun encodedSize(value: Nested): Int {
           var size = value.unknownFields.size
@@ -372,7 +376,8 @@ class FooBar(
       val ADAPTER: ProtoAdapter<More> = object : ProtoAdapter<More>(
         FieldEncoding.LENGTH_DELIMITED, 
         More::class, 
-        "type.googleapis.com/squareup.protos.custom_options.FooBar.More"
+        "type.googleapis.com/squareup.protos.custom_options.FooBar.More", 
+        PROTO_2
       ) {
         override fun encodedSize(value: More): Int {
           var size = value.unknownFields.size
@@ -425,7 +430,8 @@ class FooBar(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<FooBarBazEnum> = object : EnumAdapter<FooBarBazEnum>(
-        FooBarBazEnum::class
+        FooBarBazEnum::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
       }

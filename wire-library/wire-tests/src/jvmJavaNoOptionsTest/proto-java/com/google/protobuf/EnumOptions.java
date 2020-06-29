@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -133,7 +134,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
 
   private static final class ProtoAdapter_EnumOptions extends ProtoAdapter<EnumOptions> {
     public ProtoAdapter_EnumOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class, "type.googleapis.com/google.protobuf.EnumOptions");
+      super(FieldEncoding.LENGTH_DELIMITED, EnumOptions.class, "type.googleapis.com/google.protobuf.EnumOptions", Syntax.PROTO_2);
     }
 
     @Override

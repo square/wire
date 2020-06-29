@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -68,7 +69,8 @@ class DeprecatedProto(
     val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       DeprecatedProto::class, 
-      "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto"
+      "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto", 
+      PROTO_2
     ) {
       override fun encodedSize(value: DeprecatedProto): Int {
         var size = value.unknownFields.size

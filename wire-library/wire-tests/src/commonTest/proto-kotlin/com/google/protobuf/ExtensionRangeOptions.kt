@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
@@ -73,7 +74,8 @@ class ExtensionRangeOptions(
     val ADAPTER: ProtoAdapter<ExtensionRangeOptions> = object : ProtoAdapter<ExtensionRangeOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       ExtensionRangeOptions::class, 
-      "type.googleapis.com/google.protobuf.ExtensionRangeOptions"
+      "type.googleapis.com/google.protobuf.ExtensionRangeOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: ExtensionRangeOptions): Int {
         var size = value.unknownFields.size

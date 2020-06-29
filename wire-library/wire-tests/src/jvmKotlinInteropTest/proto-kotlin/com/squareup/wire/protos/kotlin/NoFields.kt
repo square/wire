@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
@@ -47,7 +48,8 @@ class NoFields(
     val ADAPTER: ProtoAdapter<NoFields> = object : ProtoAdapter<NoFields>(
       FieldEncoding.LENGTH_DELIMITED, 
       NoFields::class, 
-      "type.googleapis.com/squareup.protos.kotlin.NoFields"
+      "type.googleapis.com/squareup.protos.kotlin.NoFields", 
+      PROTO_2
     ) {
       override fun encodedSize(value: NoFields): Int {
         var size = value.unknownFields.size

@@ -28,8 +28,12 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   moshi: Moshi,
   type: Type
 ) : JsonAdapter<M>() {
-  private val messageAdapter =
-      RuntimeMessageAdapter.create(type as Class<M>, "square.github.io/wire/unknown")
+  private val defaultAdapter = ProtoAdapter.get(type as Class<M>)
+  private val messageAdapter = RuntimeMessageAdapter.create(
+      messageType = type as Class<M>,
+      typeUrl = defaultAdapter.typeUrl,
+      syntax = defaultAdapter.syntax
+  )
   private val fieldBindings = messageAdapter.fieldBindings.values.toTypedArray()
   private val encodeNames: List<String>
   private val options: JsonReader.Options
@@ -65,14 +69,30 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       fieldType = Types.newParameterizedType(List::class.java, fieldType)
     }
 
-    val syntheticQualifier: Class<out Annotation>? = when {
-      fieldBinding.singleAdapter() === ProtoAdapter.UINT64 -> Uint64::class.java
-      fieldBinding.label == WireField.Label.OMIT_IDENTITY -> OmitIdentity::class.java
-      else -> null
+    // Explicitly using a `var Set` for performance.
+    var syntheticQualifiers = setOf<Class<out Annotation>>()
+    if (defaultAdapter.syntax == Syntax.PROTO_2) {
+      if (fieldBinding.singleAdapter() === ProtoAdapter.UINT64) {
+        syntheticQualifiers += Uint64::class.java
+      }
+    } else {
+      when (fieldBinding.singleAdapter()) {
+        ProtoAdapter.INT64,
+        ProtoAdapter.SFIXED64,
+        ProtoAdapter.SINT64 -> syntheticQualifiers += Sint64String::class.java
+        ProtoAdapter.FIXED64,
+        ProtoAdapter.UINT64 -> syntheticQualifiers += Uint64String::class.java
+      }
+    }
+
+    if (fieldBinding.label == WireField.Label.OMIT_IDENTITY) {
+      syntheticQualifiers += OmitIdentity::class.java
     }
 
     return@map when {
-      syntheticQualifier != null -> moshi.adapter<Any>(fieldType, syntheticQualifier)
+      syntheticQualifiers.isNotEmpty() -> {
+        moshi.adapter<Any>(fieldType, *syntheticQualifiers.toTypedArray())
+      }
       else -> moshi.adapter(fieldType)
     }
   }

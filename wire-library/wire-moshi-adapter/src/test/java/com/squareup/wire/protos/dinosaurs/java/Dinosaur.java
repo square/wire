@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import com.squareup.wire.protos.geology.java.Period;
@@ -190,7 +191,7 @@ public final class Dinosaur extends Message<Dinosaur, Dinosaur.Builder> {
 
   private static final class ProtoAdapter_Dinosaur extends ProtoAdapter<Dinosaur> {
     public ProtoAdapter_Dinosaur() {
-      super(FieldEncoding.LENGTH_DELIMITED, Dinosaur.class, "type.googleapis.com/squareup.dinosaurs.Dinosaur");
+      super(FieldEncoding.LENGTH_DELIMITED, Dinosaur.class, "type.googleapis.com/squareup.dinosaurs.Dinosaur", Syntax.PROTO_2);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -98,7 +99,7 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
 
   private static final class ProtoAdapter_RedactedRequired extends ProtoAdapter<RedactedRequired> {
     public ProtoAdapter_RedactedRequired() {
-      super(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedRequired");
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedRequired.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedRequired", Syntax.PROTO_2);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -115,7 +116,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
 
   private static final class ProtoAdapter_KeywordJava extends ProtoAdapter<KeywordJava> {
     public ProtoAdapter_KeywordJava() {
-      super(FieldEncoding.LENGTH_DELIMITED, KeywordJava.class, "type.googleapis.com/com.squareup.wire.protos.java.KeywordJava");
+      super(FieldEncoding.LENGTH_DELIMITED, KeywordJava.class, "type.googleapis.com/com.squareup.wire.protos.java.KeywordJava", Syntax.PROTO_2);
     }
 
     @Override

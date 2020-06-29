@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
@@ -748,7 +750,8 @@ class FileOptions(
     val ADAPTER: ProtoAdapter<FileOptions> = object : ProtoAdapter<FileOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       FileOptions::class, 
-      "type.googleapis.com/google.protobuf.FileOptions"
+      "type.googleapis.com/google.protobuf.FileOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: FileOptions): Int {
         var size = value.unknownFields.size
@@ -914,7 +917,8 @@ class FileOptions(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<OptimizeMode> = object : EnumAdapter<OptimizeMode>(
-        OptimizeMode::class
+        OptimizeMode::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): OptimizeMode? = OptimizeMode.fromValue(value)
       }

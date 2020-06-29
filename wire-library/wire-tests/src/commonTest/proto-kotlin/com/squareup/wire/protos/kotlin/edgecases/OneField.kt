@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
 import kotlin.AssertionError
@@ -66,7 +67,8 @@ class OneField(
     val ADAPTER: ProtoAdapter<OneField> = object : ProtoAdapter<OneField>(
       FieldEncoding.LENGTH_DELIMITED, 
       OneField::class, 
-      "type.googleapis.com/squareup.protos.kotlin.edgecases.OneField"
+      "type.googleapis.com/squareup.protos.kotlin.edgecases.OneField", 
+      PROTO_2
     ) {
       override fun encodedSize(value: OneField): Int {
         var size = value.unknownFields.size

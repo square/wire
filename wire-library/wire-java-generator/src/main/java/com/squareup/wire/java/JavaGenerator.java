@@ -41,6 +41,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoAdapter.EnumConstantNotFoundException;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -504,7 +505,7 @@ public final class JavaGenerator {
 
     if (!emitCompact) {
       // Adds the ProtoAdapter implementation at the bottom.
-      builder.addType(enumAdapter(javaType, adapterJavaType));
+      builder.addType(enumAdapter(javaType, adapterJavaType, type.getSyntax()));
     }
 
     return builder.build();
@@ -538,7 +539,8 @@ public final class JavaGenerator {
     String protoAdapterName = "ProtoAdapter_" + javaType.simpleName();
     String protoAdapterClassName = nameAllocator.newName(protoAdapterName);
     ClassName adapterJavaType = javaType.nestedClass(protoAdapterClassName);
-    builder.addField(messageAdapterField(adapterName, javaType, adapterJavaType, type.getType()));
+    builder.addField(messageAdapterField(adapterName, javaType, adapterJavaType, type.getType(),
+        type.getSyntax()));
     // Note: The non-compact implementation is added at the very bottom of the surrounding type.
 
     if (emitAndroid) {
@@ -687,12 +689,12 @@ public final class JavaGenerator {
   }
 
   private FieldSpec messageAdapterField(String adapterName, ClassName javaType,
-      ClassName adapterJavaType, ProtoType protoType) {
+      ClassName adapterJavaType, ProtoType protoType, Syntax syntax) {
     FieldSpec.Builder result = FieldSpec.builder(adapterOf(javaType), adapterName)
         .addModifiers(PUBLIC, STATIC, FINAL);
     if (emitCompact) {
-      result.initializer("$T.newMessageAdapter($T.class, $S)",
-          ProtoAdapter.class, javaType, protoType.getTypeUrl());
+      result.initializer("$T.newMessageAdapter($T.class, $S, $T.$L)",
+          ProtoAdapter.class, javaType, protoType.getTypeUrl(), Syntax.class, syntax.name());
     } else {
       result.initializer("new $T()", adapterJavaType);
     }
@@ -808,12 +810,12 @@ public final class JavaGenerator {
     return builder.build();
   }
 
-  private TypeSpec enumAdapter(ClassName javaType,  ClassName adapterJavaType) {
+  private TypeSpec enumAdapter(ClassName javaType, ClassName adapterJavaType, Syntax syntax) {
     return TypeSpec.classBuilder(adapterJavaType.simpleName())
         .superclass(enumAdapterOf(javaType))
         .addModifiers(PRIVATE, STATIC, FINAL)
         .addMethod(MethodSpec.constructorBuilder()
-            .addStatement("super($T.class)", javaType)
+            .addStatement("super($T.class, $T.$L)", javaType, Syntax.class, syntax.name())
             .build())
         .addMethod(MethodSpec.methodBuilder("fromValue")
             .addAnnotation(Override.class)
@@ -839,8 +841,9 @@ public final class JavaGenerator {
 
     adapter.addMethod(MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S)",
-            FieldEncoding.class, javaType, type.getType().getTypeUrl())
+        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L)",
+            FieldEncoding.class, javaType, type.getType().getTypeUrl(), Syntax.class,
+            type.getSyntax().name())
         .build());
 
     if (!useBuilder) {

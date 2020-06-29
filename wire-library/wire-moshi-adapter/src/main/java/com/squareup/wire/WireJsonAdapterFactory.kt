@@ -82,18 +82,31 @@ class WireJsonAdapterFactory private constructor(
     if (nextAnnotations != null) {
       return when (type) {
         Boolean::class.javaObjectType,
-        Boolean::class.javaPrimitiveType -> moshi.adapter<Boolean>(type).omitValue(false)
+        Boolean::class.javaPrimitiveType -> {
+          moshi.adapter<Boolean>(type, nextAnnotations).omitValue(false)
+        }
         ByteString::class.javaObjectType -> BYTE_STRING_JSON_ADAPTER.omitValue(ByteString.EMPTY)
         Double::class.javaObjectType,
-        Double::class.javaPrimitiveType -> moshi.adapter<Double>(type).omitValue(0.0)
+        Double::class.javaPrimitiveType -> {
+          moshi.adapter<Double>(type, nextAnnotations).omitValue(0.0)
+        }
         Float::class.javaObjectType,
-        Float::class.javaPrimitiveType -> moshi.adapter<Float>(type).omitValue(0f)
+        Float::class.javaPrimitiveType -> moshi.adapter<Float>(type, nextAnnotations).omitValue(0f)
         Int::class.javaObjectType,
-        Int::class.javaPrimitiveType -> moshi.adapter<Int>(type).omitValue(0)
+        Int::class.javaPrimitiveType -> moshi.adapter<Int>(type, nextAnnotations).omitValue(0)
         Long::class.javaObjectType,
-        Long::class.javaPrimitiveType -> moshi.adapter<Long>(type).omitValue(0L)
-        String::class.java -> moshi.adapter<String>(type).omitValue("")
-        else -> moshi.adapter<Any>(type, nextAnnotations)
+        Long::class.javaPrimitiveType -> moshi.adapter<Long>(type, nextAnnotations).omitValue(0L)
+        String::class.java -> moshi.adapter<String>(type, nextAnnotations).omitValue("")
+        else -> {
+          if (WireEnum::class.java.isAssignableFrom(rawType)) {
+            // Proto3 guarantees such constant exists.
+            val defaultConstant = rawType.enumConstants
+                .first { constant -> (constant as WireEnum).value == 0 } as WireEnum
+            moshi.adapter<WireEnum>(type, nextAnnotations).omitValue(defaultConstant)
+          } else {
+            moshi.adapter<Any>(type, nextAnnotations)
+          }
+        }
       }.nullSafe()
     }
 
@@ -106,6 +119,32 @@ class WireJsonAdapterFactory private constructor(
             return LIST_OF_UINT64_JSON_ADAPTER
           }
         }
+      }
+    }
+
+    if (Types.nextAnnotations(annotations, Uint64String::class.java) != null) {
+      when (rawType) {
+        Long::class.javaObjectType -> return UINT64_STRING_JSON_ADAPTER
+        Long::class.javaPrimitiveType -> return UINT64_STRING_JSON_ADAPTER
+        List::class.java -> {
+          if ((type as ParameterizedType).actualTypeArguments[0] == Long::class.javaObjectType) {
+            return LIST_OF_UINT64_STRING_JSON_ADAPTER
+          }
+        }
+        Map::class.java -> TODO()
+      }
+    }
+
+    if (Types.nextAnnotations(annotations, Sint64String::class.java) != null) {
+      when (rawType) {
+        Long::class.javaObjectType -> return SINT64_STRING_JSON_ADAPTER
+        Long::class.javaPrimitiveType -> return SINT64_STRING_JSON_ADAPTER
+        List::class.java -> {
+          if ((type as ParameterizedType).actualTypeArguments[0] == Long::class.javaObjectType) {
+            return LIST_OF_SINT64_STRING_JSON_ADAPTER
+          }
+        }
+        Map::class.java -> TODO()
       }
     }
 
@@ -151,7 +190,7 @@ class WireJsonAdapterFactory private constructor(
       @Throws(IOException::class)
       override fun fromJson(reader: JsonReader): Long? {
         val bigInteger = BigInteger(reader.nextString())
-        return if (bigInteger.compareTo(maxLong) > 0)
+        return if (bigInteger > maxLong)
           bigInteger.subtract(power64).toLong()
         else
           bigInteger.toLong()
@@ -168,9 +207,40 @@ class WireJsonAdapterFactory private constructor(
       }
     }.nullSafe()
 
+    internal val UINT64_STRING_JSON_ADAPTER = object : JsonAdapter<Long>() {
+      @Throws(IOException::class)
+      override fun fromJson(reader: JsonReader): Long? {
+        return when (reader.peek()) {
+          JsonReader.Token.STRING -> {
+            UINT64_JSON_ADAPTER.fromJson(reader)
+          }
+          else -> {
+            reader.nextLong()
+          }
+        }
+      }
+
+      @Throws(IOException::class)
+      override fun toJson(writer: JsonWriter, value: Long?) {
+        writer.value(UINT64_JSON_ADAPTER.toJsonValue(value).toString())
+      }
+    }.nullSafe()
+
+    internal val SINT64_STRING_JSON_ADAPTER = object : JsonAdapter<Long>() {
+      @Throws(IOException::class)
+      override fun fromJson(reader: JsonReader): Long? {
+        return UINT64_STRING_JSON_ADAPTER.fromJson(reader)
+      }
+
+      @Throws(IOException::class)
+      override fun toJson(writer: JsonWriter, value: Long?) {
+        writer.value(value.toString())
+      }
+    }.nullSafe()
+
     /**
-     * Tragically Moshi doesn't know enough to follow a `@Uint64 List<Long>` really wants to be
-     * treated as a `List<@Uint64 Long>` and so we have to do it manually.
+     * Tragically Moshi doesn't know enough to follow a `@Uint64String List<Long>` really wants to be
+     * treated as a `List<@Uint64String Long>` and so we have to do it manually.
      *
      * TODO delete when Moshi can handle that; see
      * [moshi/issues/666](https://github.com/square/moshi/issues/666)
@@ -192,6 +262,64 @@ class WireJsonAdapterFactory private constructor(
         writer.beginArray()
         for (v in value!!) {
           UINT64_JSON_ADAPTER.toJson(writer, v)
+        }
+        writer.endArray()
+      }
+    }.nullSafe()
+
+    /**
+     * Moshi doesn't know enough to follow a `@Uint64String List<Long>` wants to be treated as a
+     * `List<@Uint64String Long>` and so we have to do it manually.
+     *
+     * TODO delete when Moshi can handle that; see
+     * [moshi/issues/666](https://github.com/square/moshi/issues/666)
+     */
+    internal val LIST_OF_UINT64_STRING_JSON_ADAPTER = object : JsonAdapter<List<Long>>() {
+      @Throws(IOException::class)
+      override fun fromJson(reader: JsonReader): List<Long>? {
+        val result = ArrayList<Long>()
+        reader.beginArray()
+        while (reader.hasNext()) {
+          result.add(UINT64_STRING_JSON_ADAPTER.fromJson(reader)!!)
+        }
+        reader.endArray()
+        return result
+      }
+
+      @Throws(IOException::class)
+      override fun toJson(writer: JsonWriter, value: List<Long>?) {
+        writer.beginArray()
+        for (v in value!!) {
+          UINT64_STRING_JSON_ADAPTER.toJson(writer, v)
+        }
+        writer.endArray()
+      }
+    }.nullSafe()
+
+    /**
+     * Moshi doesn't know enough to follow a `@Sint64String List<Long>` wants to be treated as a
+     * `List<@Sint64String Long>` and so we have to do it manually.
+     *
+     * TODO delete when Moshi can handle that; see
+     * [moshi/issues/666](https://github.com/square/moshi/issues/666)
+     */
+    internal val LIST_OF_SINT64_STRING_JSON_ADAPTER = object : JsonAdapter<List<Long>>() {
+      @Throws(IOException::class)
+      override fun fromJson(reader: JsonReader): List<Long>? {
+        val result = ArrayList<Long>()
+        reader.beginArray()
+        while (reader.hasNext()) {
+          result.add(SINT64_STRING_JSON_ADAPTER.fromJson(reader)!!)
+        }
+        reader.endArray()
+        return result
+      }
+
+      @Throws(IOException::class)
+      override fun toJson(writer: JsonWriter, value: List<Long>?) {
+        writer.beginArray()
+        for (v in value!!) {
+          SINT64_STRING_JSON_ADAPTER.toJson(writer, v)
         }
         writer.endArray()
       }

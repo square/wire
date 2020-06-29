@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -65,7 +66,7 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
 
   private static final class ProtoAdapter_TheRequest extends ProtoAdapter<TheRequest> {
     public ProtoAdapter_TheRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, TheRequest.class, "type.googleapis.com/squareup.wire.protos.roots.TheRequest");
+      super(FieldEncoding.LENGTH_DELIMITED, TheRequest.class, "type.googleapis.com/squareup.wire.protos.roots.TheRequest", Syntax.PROTO_2);
     }
 
     @Override

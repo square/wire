@@ -8,6 +8,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import kotlin.Any
 import kotlin.Boolean
@@ -51,7 +53,8 @@ class MessageWithStatus(
     val ADAPTER: ProtoAdapter<MessageWithStatus> = object : ProtoAdapter<MessageWithStatus>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithStatus::class, 
-      "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus"
+      "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus", 
+      PROTO_2
     ) {
       override fun encodedSize(value: MessageWithStatus): Int {
         var size = value.unknownFields.size
@@ -83,7 +86,8 @@ class MessageWithStatus(
     companion object {
       @JvmField
       val ADAPTER: ProtoAdapter<Status> = object : EnumAdapter<Status>(
-        Status::class
+        Status::class, 
+        PROTO_2
       ) {
         override fun fromValue(value: Int): Status? = Status.fromValue(value)
       }

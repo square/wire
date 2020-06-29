@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -65,7 +66,7 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
 
   private static final class ProtoAdapter_UnnecessaryResponse extends ProtoAdapter<UnnecessaryResponse> {
     public ProtoAdapter_UnnecessaryResponse() {
-      super(FieldEncoding.LENGTH_DELIMITED, UnnecessaryResponse.class, "type.googleapis.com/squareup.wire.protos.roots.UnnecessaryResponse");
+      super(FieldEncoding.LENGTH_DELIMITED, UnnecessaryResponse.class, "type.googleapis.com/squareup.wire.protos.roots.UnnecessaryResponse", Syntax.PROTO_2);
     }
 
     @Override

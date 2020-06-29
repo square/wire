@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -482,7 +483,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
       public ProtoAdapter_NestedMessage() {
-        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/squareup.protos.simple.SimpleMessage.NestedMessage");
+        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/squareup.protos.simple.SimpleMessage.NestedMessage", Syntax.PROTO_2);
       }
 
       @Override
@@ -562,7 +563,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     private static final class ProtoAdapter_NestedEnum extends EnumAdapter<NestedEnum> {
       ProtoAdapter_NestedEnum() {
-        super(NestedEnum.class);
+        super(NestedEnum.class, Syntax.PROTO_2);
       }
 
       @Override
@@ -574,7 +575,7 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
   private static final class ProtoAdapter_SimpleMessage extends ProtoAdapter<SimpleMessage> {
     public ProtoAdapter_SimpleMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, SimpleMessage.class, "type.googleapis.com/squareup.protos.simple.SimpleMessage");
+      super(FieldEncoding.LENGTH_DELIMITED, SimpleMessage.class, "type.googleapis.com/squareup.protos.simple.SimpleMessage", Syntax.PROTO_2);
     }
 
     @Override

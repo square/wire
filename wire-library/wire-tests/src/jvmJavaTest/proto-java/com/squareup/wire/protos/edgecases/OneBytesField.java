@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -92,7 +93,7 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
 
   private static final class ProtoAdapter_OneBytesField extends ProtoAdapter<OneBytesField> {
     public ProtoAdapter_OneBytesField() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class, "type.googleapis.com/squareup.protos.edgecases.OneBytesField");
+      super(FieldEncoding.LENGTH_DELIMITED, OneBytesField.class, "type.googleapis.com/squareup.protos.edgecases.OneBytesField", Syntax.PROTO_2);
     }
 
     @Override

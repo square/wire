@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.redactElements
@@ -135,7 +136,8 @@ class ServiceOptions(
     val ADAPTER: ProtoAdapter<ServiceOptions> = object : ProtoAdapter<ServiceOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       ServiceOptions::class, 
-      "type.googleapis.com/google.protobuf.ServiceOptions"
+      "type.googleapis.com/google.protobuf.ServiceOptions", 
+      PROTO_2
     ) {
       override fun encodedSize(value: ServiceOptions): Int {
         var size = value.unknownFields.size

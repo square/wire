@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -94,7 +95,8 @@ class ServiceDescriptorProto(
         ProtoAdapter<ServiceDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       ServiceDescriptorProto::class, 
-      "type.googleapis.com/google.protobuf.ServiceDescriptorProto"
+      "type.googleapis.com/google.protobuf.ServiceDescriptorProto", 
+      PROTO_2
     ) {
       override fun encodedSize(value: ServiceDescriptorProto): Int {
         var size = value.unknownFields.size

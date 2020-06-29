@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -646,7 +647,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     private static final class ProtoAdapter_CType extends EnumAdapter<CType> {
       ProtoAdapter_CType() {
-        super(CType.class);
+        super(CType.class, Syntax.PROTO_2);
       }
 
       @Override
@@ -699,7 +700,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     private static final class ProtoAdapter_JSType extends EnumAdapter<JSType> {
       ProtoAdapter_JSType() {
-        super(JSType.class);
+        super(JSType.class, Syntax.PROTO_2);
       }
 
       @Override
@@ -711,7 +712,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   private static final class ProtoAdapter_FieldOptions extends ProtoAdapter<FieldOptions> {
     public ProtoAdapter_FieldOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class, "type.googleapis.com/google.protobuf.FieldOptions");
+      super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class, "type.googleapis.com/google.protobuf.FieldOptions", Syntax.PROTO_2);
     }
 
     @Override

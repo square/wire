@@ -4,6 +4,7 @@ package com.squareup.wire.protos.kotlin
 
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import kotlin.Boolean
 import kotlin.Deprecated
@@ -28,7 +29,8 @@ enum class DeprecatedEnum(
   companion object {
     @JvmField
     val ADAPTER: ProtoAdapter<DeprecatedEnum> = object : EnumAdapter<DeprecatedEnum>(
-      DeprecatedEnum::class
+      DeprecatedEnum::class, 
+      PROTO_2
     ) {
       override fun fromValue(value: Int): DeprecatedEnum? = DeprecatedEnum.fromValue(value)
     }

@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -127,7 +128,8 @@ class EnumValueDescriptorProto(
         ProtoAdapter<EnumValueDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       EnumValueDescriptorProto::class, 
-      "type.googleapis.com/google.protobuf.EnumValueDescriptorProto"
+      "type.googleapis.com/google.protobuf.EnumValueDescriptorProto", 
+      PROTO_2
     ) {
       override fun encodedSize(value: EnumValueDescriptorProto): Int {
         var size = value.unknownFields.size

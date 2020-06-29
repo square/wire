@@ -7,6 +7,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -168,7 +170,8 @@ class DescriptorProto(
     val ADAPTER: ProtoAdapter<DescriptorProto> = object : ProtoAdapter<DescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       DescriptorProto::class, 
-      "type.googleapis.com/google.protobuf.DescriptorProto"
+      "type.googleapis.com/google.protobuf.DescriptorProto", 
+      PROTO_2
     ) {
       override fun encodedSize(value: DescriptorProto): Int {
         var size = value.unknownFields.size
@@ -326,7 +329,8 @@ class DescriptorProto(
       val ADAPTER: ProtoAdapter<ExtensionRange> = object : ProtoAdapter<ExtensionRange>(
         FieldEncoding.LENGTH_DELIMITED, 
         ExtensionRange::class, 
-        "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange"
+        "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange", 
+        PROTO_2
       ) {
         override fun encodedSize(value: ExtensionRange): Int {
           var size = value.unknownFields.size
@@ -439,7 +443,8 @@ class DescriptorProto(
       val ADAPTER: ProtoAdapter<ReservedRange> = object : ProtoAdapter<ReservedRange>(
         FieldEncoding.LENGTH_DELIMITED, 
         ReservedRange::class, 
-        "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange"
+        "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange", 
+        PROTO_2
       ) {
         override fun encodedSize(value: ReservedRange): Int {
           var size = value.unknownFields.size

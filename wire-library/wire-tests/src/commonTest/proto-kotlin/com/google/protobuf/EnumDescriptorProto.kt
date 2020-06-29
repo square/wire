@@ -7,6 +7,8 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -123,7 +125,8 @@ class EnumDescriptorProto(
     val ADAPTER: ProtoAdapter<EnumDescriptorProto> = object : ProtoAdapter<EnumDescriptorProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       EnumDescriptorProto::class, 
-      "type.googleapis.com/google.protobuf.EnumDescriptorProto"
+      "type.googleapis.com/google.protobuf.EnumDescriptorProto", 
+      PROTO_2
     ) {
       override fun encodedSize(value: EnumDescriptorProto): Int {
         var size = value.unknownFields.size
@@ -250,7 +253,8 @@ class EnumDescriptorProto(
       val ADAPTER: ProtoAdapter<EnumReservedRange> = object : ProtoAdapter<EnumReservedRange>(
         FieldEncoding.LENGTH_DELIMITED, 
         EnumReservedRange::class, 
-        "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange"
+        "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange", 
+        PROTO_2
       ) {
         override fun encodedSize(value: EnumReservedRange): Int {
           var size = value.unknownFields.size

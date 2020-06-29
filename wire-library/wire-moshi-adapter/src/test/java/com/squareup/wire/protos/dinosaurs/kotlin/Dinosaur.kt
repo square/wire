@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.sanitize
 import com.squareup.wire.protos.geology.kotlin.Period
@@ -115,7 +116,8 @@ class Dinosaur(
     val ADAPTER: ProtoAdapter<Dinosaur> = object : ProtoAdapter<Dinosaur>(
       FieldEncoding.LENGTH_DELIMITED, 
       Dinosaur::class, 
-      "type.googleapis.com/squareup.dinosaurs.Dinosaur"
+      "type.googleapis.com/squareup.dinosaurs.Dinosaur", 
+      PROTO_2
     ) {
       override fun encodedSize(value: Dinosaur): Int {
         var size = value.unknownFields.size

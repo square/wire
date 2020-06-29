@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
@@ -71,7 +72,8 @@ class FeatureDatabase(
     val ADAPTER: ProtoAdapter<FeatureDatabase> = object : ProtoAdapter<FeatureDatabase>(
       FieldEncoding.LENGTH_DELIMITED, 
       FeatureDatabase::class, 
-      "type.googleapis.com/routeguide.FeatureDatabase"
+      "type.googleapis.com/routeguide.FeatureDatabase", 
+      PROTO_2
     ) {
       override fun encodedSize(value: FeatureDatabase): Int {
         var size = value.unknownFields.size
