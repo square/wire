@@ -69,24 +69,24 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       fieldType = Types.newParameterizedType(List::class.java, fieldType)
     }
 
-    val isProto2 = defaultAdapter.syntax == Syntax.PROTO_2
-    val isProto3 = defaultAdapter.syntax == Syntax.PROTO_3
-    val syntheticQualifiers = mutableSetOf<Class<out Annotation>>()
-
-    if (isProto2 && fieldBinding.singleAdapter() === ProtoAdapter.UINT64) {
-      syntheticQualifiers.add(Uint64::class.java)
-    } else if (isProto3) {
-      when(fieldBinding.singleAdapter()) {
+    // Explicitly using a `var Set` for performance.
+    var syntheticQualifiers = setOf<Class<out Annotation>>()
+    if (defaultAdapter.syntax == Syntax.PROTO_2) {
+      if (fieldBinding.singleAdapter() === ProtoAdapter.UINT64) {
+        syntheticQualifiers += Uint64::class.java
+      }
+    } else {
+      when (fieldBinding.singleAdapter()) {
         ProtoAdapter.INT64,
         ProtoAdapter.SFIXED64,
-        ProtoAdapter.SINT64 -> syntheticQualifiers.add(Sint64String::class.java)
+        ProtoAdapter.SINT64 -> syntheticQualifiers += Sint64String::class.java
         ProtoAdapter.FIXED64,
-        ProtoAdapter.UINT64 -> syntheticQualifiers.add(Uint64String::class.java)
+        ProtoAdapter.UINT64 -> syntheticQualifiers += Uint64String::class.java
       }
     }
 
     if (fieldBinding.label == WireField.Label.OMIT_IDENTITY) {
-      syntheticQualifiers.add(OmitIdentity::class.java)
+      syntheticQualifiers += OmitIdentity::class.java
     }
 
     return@map when {
