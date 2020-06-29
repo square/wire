@@ -390,6 +390,37 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(moshiJson, moshi.adapter(AllTypes::class.java).toJson(allTypes))
   }
 
+  @Test fun serializeExplicitIdentityAllTypesProtoc() {
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(EXPLICIT_IDENTITY_ALL_TYPES_JSON,
+        jsonPrinter.print(explicitIdentityAllTypesProtoc))
+  }
+
+  @Test fun serializeExplicitIdentityAllTypesMoshi() {
+    // Moshi prints empty lists and empty arrays.
+    val moshiJson = """{
+      |  "mapStringString": {},
+      |  "repBool": [],
+      |  "repUint64": [],
+      |  "repDouble": [],
+      |  "repFixed64": [],
+      |  "repSint64": [],
+      |  "repNestedMessage": [],
+      |  "repSfixed64": [],
+      |  "repFloat": [],
+      |  "repInt64": [],
+      |  "packFixed32": [],
+      |  "packInt32": [],
+      |  "packSint32": [],
+      |  "packUint32": [],
+      |  "repNestedEnum": [],
+      |  "repSfixed32": [],
+      |${EXPLICIT_IDENTITY_ALL_TYPES_JSON.substring(1)}""".trimMargin()
+
+    assertJsonEquals(moshiJson,
+        moshi.adapter(AllTypes::class.java).toJson(explicitIdentityAllTypesWire))
+  }
+
   @Test fun deserializeIdentityAllTypesProtoc() {
     val identityAllTypes = AllTypesOuterClass.AllTypes.newBuilder().build()
     val jsonParser = JsonFormat.parser()
@@ -410,6 +441,27 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(allTypes)
     assertThat(parsed.toString()).isEqualTo(allTypes.toString())
     assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes))
+  }
+
+  @Test fun deserializeExplicitIdentityAllTypesProtoc() {
+    val jsonParser = JsonFormat.parser()
+    val parsed = AllTypesOuterClass.AllTypes.newBuilder()
+        .apply { jsonParser.merge(EXPLICIT_IDENTITY_ALL_TYPES_JSON, this) }
+        .build()
+
+    assertThat(parsed).isEqualTo(explicitIdentityAllTypesProtoc)
+    assertThat(parsed.toString()).isEqualTo(explicitIdentityAllTypesProtoc.toString())
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(explicitIdentityAllTypesProtoc))}
+
+  @Test fun deserializeExplicitIdentityAllTypesMoshi() {
+    val allTypesAdapter: JsonAdapter<AllTypes> = moshi.adapter(AllTypes::class.java)
+
+    val parsed = allTypesAdapter.fromJson(EXPLICIT_IDENTITY_ALL_TYPES_JSON)
+    assertThat(parsed).isEqualTo(explicitIdentityAllTypesWire)
+    assertThat(parsed.toString()).isEqualTo(explicitIdentityAllTypesWire.toString())
+    assertJsonEquals(allTypesAdapter.toJson(parsed),
+        allTypesAdapter.toJson(explicitIdentityAllTypesWire))
   }
 
   @Test fun `int64s are encoded with quotes and decoded with either`() {
@@ -870,6 +922,32 @@ class Proto3WireProtocCompatibilityTests {
       |}""".trimMargin()
 
     private const val IDENTITY_ALL_TYPES_JSON = "{}"
+
+    /** This is used to confirmed identity values are emitted in lists and maps. */
+    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON = """
+      |{
+      |  "mapInt32Int32": {"0": 0.0},
+      |  "mapStringEnum": {"": "UNKNOWN"},
+      |  "mapStringMessage": {"": {}},
+      |  "nestedMessage": {},
+      |  "oneofInt32": 0.0,
+      |  "packBool": [false, false],
+      |  "packDouble": [0.0, 0.0],
+      |  "packFixed64": ["0", "0"],
+      |  "packFloat": [0.0, 0.0],
+      |  "packInt64": ["0", "0"],
+      |  "packNestedEnum": ["UNKNOWN", "UNKNOWN"],
+      |  "packSfixed32": [0.0, 0.0],
+      |  "packSfixed64": ["0", "0"],
+      |  "packSint64": ["0", "0"],
+      |  "packUint64": ["0", "0"],
+      |  "repBytes": ["", ""],
+      |  "repFixed32": [0.0, 0.0],
+      |  "repInt32": [0.0, 0.0],
+      |  "repSint32": [0.0, 0.0],
+      |  "repString": ["", ""],
+      |  "repUint32": [0.0, 0.0]
+      |}""".trimMargin()
 
     private val explicitIdentityAllTypesWire = AllTypes(
         squareup_proto3_alltypes_int32 = 0,
