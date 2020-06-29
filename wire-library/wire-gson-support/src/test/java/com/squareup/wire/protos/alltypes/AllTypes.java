@@ -4,6 +4,7 @@ package com.squareup.wire.protos.alltypes;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
+import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -20,7 +21,7 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
-  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(AllTypes.class);
+  public static final ProtoAdapter<AllTypes> ADAPTER = ProtoAdapter.newMessageAdapter(AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes", Syntax.PROTO_2);
 
   private static final long serialVersionUID = 0L;
 
@@ -152,6 +153,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public static final ByteString DEFAULT_EXT_OPT_BYTES = ByteString.EMPTY;
 
   public static final NestedEnum DEFAULT_EXT_OPT_NESTED_ENUM = NestedEnum.A;
+
+  public static final String DEFAULT_ONEOF_STRING = "";
+
+  public static final Integer DEFAULT_ONEOF_INT32 = 0;
 
   @WireField(
       tag = 1,
@@ -1218,8 +1223,29 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   )
   public final Map<String, NestedEnum> ext_map_string_enum;
 
+  @WireField(
+      tag = 601,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  public final String oneof_string;
+
+  @WireField(
+      tag = 602,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer oneof_int32;
+
+  @WireField(
+      tag = 603,
+      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER"
+  )
+  public final NestedMessage oneof_nested_message;
+
   public AllTypes(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
+    if (Internal.countNonNull(builder.oneof_string, builder.oneof_int32, builder.oneof_nested_message) > 1) {
+      throw new IllegalArgumentException("at most one of builder.oneof_string, builder.oneof_int32, builder.oneof_nested_message may be non-null");
+    }
     this.opt_int32 = builder.opt_int32;
     this.opt_uint32 = builder.opt_uint32;
     this.opt_sint32 = builder.opt_sint32;
@@ -1357,6 +1383,9 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.ext_map_string_string = Internal.immutableCopyOf("ext_map_string_string", builder.ext_map_string_string);
     this.ext_map_string_message = Internal.immutableCopyOf("ext_map_string_message", builder.ext_map_string_message);
     this.ext_map_string_enum = Internal.immutableCopyOf("ext_map_string_enum", builder.ext_map_string_enum);
+    this.oneof_string = builder.oneof_string;
+    this.oneof_int32 = builder.oneof_int32;
+    this.oneof_nested_message = builder.oneof_nested_message;
   }
 
   @Override
@@ -1499,6 +1528,9 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.ext_map_string_string = Internal.copyOf(ext_map_string_string);
     builder.ext_map_string_message = Internal.copyOf(ext_map_string_message);
     builder.ext_map_string_enum = Internal.copyOf(ext_map_string_enum);
+    builder.oneof_string = oneof_string;
+    builder.oneof_int32 = oneof_int32;
+    builder.oneof_nested_message = oneof_nested_message;
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -1645,7 +1677,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         && ext_map_int32_int32.equals(o.ext_map_int32_int32)
         && ext_map_string_string.equals(o.ext_map_string_string)
         && ext_map_string_message.equals(o.ext_map_string_message)
-        && ext_map_string_enum.equals(o.ext_map_string_enum);
+        && ext_map_string_enum.equals(o.ext_map_string_enum)
+        && Internal.equals(oneof_string, o.oneof_string)
+        && Internal.equals(oneof_int32, o.oneof_int32)
+        && Internal.equals(oneof_nested_message, o.oneof_nested_message);
   }
 
   @Override
@@ -1790,6 +1825,9 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + ext_map_string_string.hashCode();
       result = result * 37 + ext_map_string_message.hashCode();
       result = result * 37 + ext_map_string_enum.hashCode();
+      result = result * 37 + (oneof_string != null ? oneof_string.hashCode() : 0);
+      result = result * 37 + (oneof_int32 != null ? oneof_int32.hashCode() : 0);
+      result = result * 37 + (oneof_nested_message != null ? oneof_nested_message.hashCode() : 0);
       super.hashCode = result;
     }
     return result;
@@ -2069,6 +2107,12 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     public Map<String, NestedMessage> ext_map_string_message;
 
     public Map<String, NestedEnum> ext_map_string_enum;
+
+    public String oneof_string;
+
+    public Integer oneof_int32;
+
+    public NestedMessage oneof_nested_message;
 
     public Builder() {
       rep_int32 = Internal.newMutableList();
@@ -2898,6 +2942,27 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
+    public Builder oneof_string(String oneof_string) {
+      this.oneof_string = oneof_string;
+      this.oneof_int32 = null;
+      this.oneof_nested_message = null;
+      return this;
+    }
+
+    public Builder oneof_int32(Integer oneof_int32) {
+      this.oneof_int32 = oneof_int32;
+      this.oneof_string = null;
+      this.oneof_nested_message = null;
+      return this;
+    }
+
+    public Builder oneof_nested_message(NestedMessage oneof_nested_message) {
+      this.oneof_nested_message = oneof_nested_message;
+      this.oneof_string = null;
+      this.oneof_int32 = null;
+      return this;
+    }
+
     @Override
     public AllTypes build() {
       if (req_int32 == null
@@ -2967,7 +3032,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   public static final class NestedMessage extends Message<NestedMessage, NestedMessage.Builder> {
-    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class);
+    public static final ProtoAdapter<NestedMessage> ADAPTER = ProtoAdapter.newMessageAdapter(NestedMessage.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes.NestedMessage", Syntax.PROTO_2);
 
     private static final long serialVersionUID = 0L;
 

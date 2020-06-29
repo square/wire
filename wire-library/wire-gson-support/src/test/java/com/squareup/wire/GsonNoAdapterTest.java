@@ -17,8 +17,8 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.dinosaurs.Dinosaur;
-import com.squareup.geology.Period;
+import com.squareup.wire.protos.dinosaurs.java.Dinosaur;
+import com.squareup.wire.protos.geology.java.Period;
 import java.util.Arrays;
 import org.junit.Ignore;
 import org.junit.Test;
