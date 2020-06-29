@@ -347,14 +347,12 @@ class Proto3WireProtocCompatibilityTests {
   }
 
   @Test fun serializeIdentityAllTypesMoshi() {
-    // TODO(benoit) Don't emit default values for enums.
     // Moshi prints empty lists and empty arrays.
     val moshiJson = """{
       |  "mapInt32Int32": {},
       |  "mapStringEnum": {},
       |  "mapStringMessage": {},
       |  "mapStringString": {},
-      |  "nestedEnum": "UNKNOWN",
       |  "packBool": [],
       |  "packDouble": [],
       |  "packFixed32": [],
