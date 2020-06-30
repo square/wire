@@ -72,7 +72,7 @@ public class GsonNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString());
   }
 
-  @Ignore("Aabsent lists are initialized to null in Java.")
+  @Ignore("Absent lists are initialized to null in Java.")
   @Test public void javaEmptyObject() {
     Dinosaur value = new Dinosaur.Builder()
         .build();
