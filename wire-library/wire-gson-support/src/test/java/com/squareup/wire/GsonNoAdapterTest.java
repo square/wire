@@ -20,6 +20,8 @@ import com.google.gson.GsonBuilder;
 import com.squareup.wire.protos.dinosaurs.java.Dinosaur;
 import com.squareup.wire.protos.geology.java.Period;
 import java.util.Arrays;
+import java.util.Collections;
+import okio.ByteString;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,8 +37,7 @@ public class GsonNoAdapterTest {
       .disableHtmlEscaping()
       .create();
 
-  /** This test passes with Wire 2.2. */
-  @Test public void fullObject() {
+  @Test public void javaFullObject() {
     Dinosaur value = new Dinosaur.Builder()
         .name("Stegosaurus")
         .period(Period.JURASSIC)
@@ -58,8 +59,7 @@ public class GsonNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString());
   }
 
-  /** This test passes with Wire 2.2. */
-  @Test public void listsOnly() {
+  @Test public void javaListsOnly() {
     Dinosaur value = new Dinosaur.Builder()
         .build();
     String json = "{"
@@ -72,14 +72,113 @@ public class GsonNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString());
   }
 
-  /** This test fails with Wire 2.2 because absent lists are initialized to null. */
-  @Ignore
-  @Test public void emptyObject() {
+  @Ignore("Aabsent lists are initialized to null in Java.")
+  @Test public void javaEmptyObject() {
     Dinosaur value = new Dinosaur.Builder()
         .build();
     String json = "{}";
     assertThat(gson.toJson(value)).isEqualTo("{\"picture_urls\":[]}");
     Dinosaur decoded = gson.fromJson(json, Dinosaur.class);
+    assertThat(decoded).isEqualTo(value);
+    assertThat(decoded.hashCode()).isEqualTo(value.hashCode());
+    assertThat(decoded.toString()).isEqualTo(value.toString());
+  }
+
+  @Test public void interopFullObject() {
+    com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur value =
+        new com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur.Builder()
+        .name("Stegosaurus")
+        .period(com.squareup.wire.protos.geology.javainteropkotlin.Period.JURASSIC)
+        .length_meters(9.0)
+        .mass_kilograms(5_000.0)
+        .picture_urls(Arrays.asList("http://goo.gl/LD5KY5", "http://goo.gl/VYRM67"))
+        .build();
+    String json = "{"
+        + "\"name\":\"Stegosaurus\","
+        + "\"picture_urls\":[\"http://goo.gl/LD5KY5\",\"http://goo.gl/VYRM67\"],"
+        + "\"length_meters\":9.0,"
+        + "\"mass_kilograms\":5000.0,"
+        + "\"period\":\"JURASSIC\""
+        + "}";
+    assertThat(gson.toJson(value)).isEqualTo(json);
+    com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur decoded = gson.fromJson(json, com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur.class);
+    assertThat(decoded).isEqualTo(value);
+    assertThat(decoded.hashCode()).isEqualTo(value.hashCode());
+    assertThat(decoded.toString()).isEqualTo(value.toString());
+  }
+
+  @Test public void interopListsOnly() {
+    com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur value =
+        new com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur.Builder().build();
+    String json = "{"
+        + "\"picture_urls\":[]"
+        + "}";
+    assertThat(gson.toJson(value)).isEqualTo(json);
+    com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur decoded = gson.fromJson(json, com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur.class);
+    assertThat(decoded).isEqualTo(value);
+    assertThat(decoded.hashCode()).isEqualTo(value.hashCode());
+    assertThat(decoded.toString()).isEqualTo(value.toString());
+  }
+
+  @Test public void interopEmptyObject() {
+    com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur value =
+        new com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur.Builder().build();
+    String json = "{}";
+    assertThat(gson.toJson(value)).isEqualTo("{\"picture_urls\":[]}");
+    com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur decoded = gson.fromJson(json, com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur.class);
+    assertThat(decoded).isEqualTo(value);
+    assertThat(decoded.hashCode()).isEqualTo(value.hashCode());
+    assertThat(decoded.toString()).isEqualTo(value.toString());
+  }
+
+  @Test public void kotlinFullObject() {
+    com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur value =
+        new com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur(
+            "Stegosaurus",
+            Arrays.asList("http://goo.gl/LD5KY5", "http://goo.gl/VYRM67"),
+            9.0,
+            5_000.0,
+            com.squareup.wire.protos.geology.kotlin.Period.JURASSIC,
+            ByteString.EMPTY
+        );
+    String json = "{"
+        + "\"name\":\"Stegosaurus\","
+        + "\"picture_urls\":[\"http://goo.gl/LD5KY5\",\"http://goo.gl/VYRM67\"],"
+        + "\"length_meters\":9.0,"
+        + "\"mass_kilograms\":5000.0,"
+        + "\"period\":\"JURASSIC\""
+        + "}";
+    assertThat(gson.toJson(value)).isEqualTo(json);
+    com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur decoded =
+        gson.fromJson(json, com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur.class);
+    assertThat(decoded).isEqualTo(value);
+    assertThat(decoded.hashCode()).isEqualTo(value.hashCode());
+    assertThat(decoded.toString()).isEqualTo(value.toString());
+  }
+
+  @Test public void kotlinListsOnly() {
+    com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur value =
+        new com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur(null, Collections.emptyList(), null,
+            null, null, ByteString.EMPTY);
+    String json = "{"
+        + "\"picture_urls\":[]"
+        + "}";
+    assertThat(gson.toJson(value)).isEqualTo(json);
+    com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur decoded =
+        gson.fromJson(json, com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur.class);
+    assertThat(decoded).isEqualTo(value);
+    assertThat(decoded.hashCode()).isEqualTo(value.hashCode());
+    assertThat(decoded.toString()).isEqualTo(value.toString());
+  }
+
+  @Test public void kotlinEmptyObject() {
+    com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur value =
+        new com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur(null, Collections.emptyList(), null,
+            null, null, ByteString.EMPTY);
+    String json = "{}";
+    assertThat(gson.toJson(value)).isEqualTo("{\"picture_urls\":[]}");
+    com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur decoded =
+        gson.fromJson(json, com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur.class);
     assertThat(decoded).isEqualTo(value);
     assertThat(decoded.hashCode()).isEqualTo(value.hashCode());
     assertThat(decoded.toString()).isEqualTo(value.toString());
