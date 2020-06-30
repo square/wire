@@ -16,7 +16,6 @@ import com.squareup.wire.protos.geology.kotlin.Period as PeriodKotlin
 class MoshiNoAdapterTest {
   private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-  /** This test passes with Wire 2.2. */
   @Test fun kotlinFullObject() {
     val value = DinosaurKotlin(
         name = "Stegosaurus",
@@ -39,7 +38,6 @@ class MoshiNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString())
   }
 
-  /** This test passes with Wire 2.2. */
   @Test fun kotlinListsOnly() {
     val value = DinosaurKotlin()
     val json = """{"picture_urls":[]}"""
@@ -50,7 +48,6 @@ class MoshiNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString())
   }
 
-  /** This test passes with Wire 2.2. */
   @Test fun kotlinEmptyObject() {
     val value = DinosaurKotlin()
     val json = "{}"
@@ -62,7 +59,6 @@ class MoshiNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString())
   }
 
-  /** This test passes with Wire 2.2. */
   @Test fun javaFullObject() {
     val value = DinosaurJava.Builder()
         .name("Stegosaurus")
@@ -85,7 +81,6 @@ class MoshiNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString())
   }
 
-  /** This test passes with Wire 2.2. */
   @Test fun javaListsOnly() {
     val value = DinosaurJava.Builder().build()
     val json = """{"picture_urls":[]}"""
@@ -96,8 +91,7 @@ class MoshiNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString())
   }
 
-  /** This test fails with Wire 2.2 because absent lists are initialized to null. */
-  @Ignore
+  @Ignore("Absent lists are initialized to null in Java.")
   @Test fun javaEmptyObject() {
     val value = DinosaurJava.Builder().build()
     val json = "{}"
@@ -109,7 +103,6 @@ class MoshiNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString())
   }
 
-  /** This test passes with Wire 2.2. */
   @Test fun interopFullObject() {
     val value = DinosaurInterop.Builder()
         .name("Stegosaurus")
@@ -132,7 +125,6 @@ class MoshiNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString())
   }
 
-  /** This test passes with Wire 2.2. */
   @Test fun interopListsOnly() {
     val value = DinosaurInterop.Builder().build()
     val json = """{"picture_urls":[]}"""
@@ -143,7 +135,6 @@ class MoshiNoAdapterTest {
     assertThat(decoded.toString()).isEqualTo(value.toString())
   }
 
-  /** This test passes with Wire 2.2. */
   @Test fun interopEmptyObject() {
     val value = DinosaurInterop.Builder().build()
     val json = "{}"

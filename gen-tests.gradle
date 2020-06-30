@@ -117,7 +117,6 @@ task generateGsonAdapterJavaTests(type: JavaExec) {
   ]
 }
 
-// TODO(benoit) Use those in new gson tests.
 task generateGsonAdapterInteropKotlinTests(type: JavaExec) {
   group = 'Generate GsonAdapter Java interop Kotlin Tests'
   description = 'Generates Java interop Kotlin classes from the GsonAdapter test protos'
@@ -127,29 +126,28 @@ task generateGsonAdapterInteropKotlinTests(type: JavaExec) {
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
           '--kotlin_out=wire-library/wire-gson-support/src/test/java',
           '--java_interop',
-//          'person_java_interop_kotlin.proto',
-//          'dinosaur_java_interop_kotlin.proto',
-//          'period_java_interop_kotlin.proto',
+          'dinosaur_java_interop_kotlin.proto',
+          'period_java_interop_kotlin.proto',
           'keyword_kotlin.proto',
   ]
 }
 
-//task generateGsonAdapterKotlinTests(type: JavaExec) {
-//  group = 'Generate GsonAdapter Kotlin Tests'
-//  description = 'Generates Kotlin classes from the GsonAdapter test protos'
-//  classpath = configurations.wire
-//  main = 'com.squareup.wire.WireCompiler'
-//  args = [
-//          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
-//          '--kotlin_out=wire-library/wire-gson-support/src/test/java',
-//          'person_kotlin.proto',
-//          'dinosaur_kotlin.proto',
-//          'period_kotlin.proto',
-//  ]
-//}
+task generateGsonAdapterKotlinTests(type: JavaExec) {
+  group = 'Generate GsonAdapter Kotlin Tests'
+  description = 'Generates Kotlin classes from the GsonAdapter test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
+          '--kotlin_out=wire-library/wire-gson-support/src/test/java',
+          'dinosaur_kotlin.proto',
+          'period_kotlin.proto',
+  ]
+}
 
 task generateGsonTests(dependsOn: [generateGsonAdapterCompactJavaTests,
-    generateGsonAdapterJavaTests, generateGsonAdapterInteropKotlinTests]) {
+    generateGsonAdapterJavaTests, generateGsonAdapterInteropKotlinTests,
+    generateGsonAdapterKotlinTests]) {
   group = 'Generate Tests'
   description = 'Generates Java and Kotlin classes that use Gson from the test protos'
 }
