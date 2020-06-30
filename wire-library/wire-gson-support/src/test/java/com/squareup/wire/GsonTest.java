@@ -20,13 +20,12 @@ import com.google.gson.GsonBuilder;
 import com.squareup.wire.json.JsonUtils;
 import com.squareup.wire.protos.RepeatedPackedAndMap;
 import com.squareup.wire.protos.alltypes.AllTypes;
-import com.squareup.wire.protos.java.KeywordJava;
-import com.squareup.wire.protos.kotlin.KeywordKotlin;
 import java.util.Arrays;
 import java.util.List;
 import okio.ByteString;
-import org.junit.Ignore;
 import org.junit.Test;
+import squareup.keywords.KeywordJava;
+import squareup.keywords.KeywordKotlin;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -306,7 +305,7 @@ public class GsonTest {
   @Test public void usedKeywordsInKotlin() {
     KeywordKotlin keyword = new KeywordKotlin.Builder().object_("object").when_(1).build();
     String json = gson.toJson(keyword);
-    JsonUtils.assertJsonEquals(json, "{\"object\":\"object\",\"when\":1}");
+    JsonUtils.assertJsonEquals(json, "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[]}");
     KeywordKotlin parseKeyword = gson.fromJson(json, KeywordKotlin.class);
     assertThat(parseKeyword).isEqualTo(keyword);
   }
@@ -314,7 +313,7 @@ public class GsonTest {
   @Test public void usedKeywordsInJava() {
     KeywordJava keyword = new KeywordJava.Builder().final_("final").public_(true).build();
     String json = gson.toJson(keyword);
-    JsonUtils.assertJsonEquals(json, "{\"final\":\"final\", \"public\":true}");
+    JsonUtils.assertJsonEquals(json, "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[]}");
     KeywordJava parseKeyword = gson.fromJson(json, KeywordJava.class);
     assertThat(parseKeyword).isEqualTo(keyword);
   }
