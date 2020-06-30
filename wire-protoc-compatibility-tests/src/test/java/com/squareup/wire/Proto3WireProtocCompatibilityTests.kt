@@ -649,6 +649,24 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(jsonAdapter.fromJson(ALL_64_JSON_MIN_VALUE)).isEqualTo(all64)
   }
 
+  @Test fun crashOnBigNumbersWhenIntIsSigned() {
+    val json = """{"mySint64": "9223372036854775808"}"""
+
+    val all64 = All64()
+
+    val moshi = Moshi.Builder()
+        .add(WireJsonAdapterFactory())
+        .build()
+    val jsonAdapter = moshi.adapter(All64::class.java)
+    try {
+      assertThat(jsonAdapter.fromJson(json)).isEqualTo(all64)
+      fail()
+    } catch (e: JsonDataException) {
+      assertThat(e)
+          .hasMessageContaining("Expected a long but was 9223372036854775808 at path \$.mySint64")
+    }
+  }
+
   @Test fun durationProto() {
     val googleMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
         .setDeliveredWithinOrFree(Duration.newBuilder()

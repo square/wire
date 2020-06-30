@@ -190,10 +190,11 @@ class WireJsonAdapterFactory private constructor(
       @Throws(IOException::class)
       override fun fromJson(reader: JsonReader): Long? {
         val bigInteger = BigInteger(reader.nextString())
-        return if (bigInteger > maxLong)
+        return if (bigInteger > maxLong) {
           bigInteger.subtract(power64).toLong()
-        else
+        } else {
           bigInteger.toLong()
+        }
       }
 
       @Throws(IOException::class)
@@ -229,7 +230,7 @@ class WireJsonAdapterFactory private constructor(
     internal val SINT64_STRING_JSON_ADAPTER = object : JsonAdapter<Long>() {
       @Throws(IOException::class)
       override fun fromJson(reader: JsonReader): Long? {
-        return UINT64_STRING_JSON_ADAPTER.fromJson(reader)
+        return reader.nextLong()
       }
 
       @Throws(IOException::class)
