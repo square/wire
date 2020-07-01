@@ -16,6 +16,7 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.ProtoType.Companion.get
+import com.squareup.wire.schema.internal.DagChecker
 import com.squareup.wire.schema.internal.MutableQueue
 import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.mutableQueueOf
@@ -109,6 +110,8 @@ class Linker {
       fileLinker.validate(syntaxRules)
     }
 
+    checkForImportCycles()
+
     if (errors.isNotEmpty()) {
       throw SchemaException(errors)
     }
@@ -131,6 +134,17 @@ class Linker {
     }
 
     return Schema(result)
+  }
+
+  private fun checkForImportCycles() {
+    val dagChecker = DagChecker(fileLinkers.keys) {
+      val fileLinker = fileLinkers[it] ?: return@DagChecker listOf<String>()
+      fileLinker.protoFile.imports + fileLinker.protoFile.publicImports
+    }
+    val cycles = dagChecker.check()
+    for (cycle in cycles) {
+      addError(importCycleMessageError(cycle))
+    }
   }
 
   /** Returns the type name for the scalar, relative or fully-qualified name [name]. */
@@ -433,6 +447,29 @@ class Linker {
     val fileLinker = getFileLinker(path)
     if (path != requiredImport && !fileLinker.effectiveImports().contains(requiredImport)) {
       addError("$path needs to import $requiredImport")
+    }
+  }
+
+  /** Returns an error message that describes cyclic imports in [files]. */
+  private fun importCycleMessageError(files: List<String>): String {
+    return buildString {
+      append("imports form a cycle:")
+
+      for (file in files) {
+        val fileLinker = fileLinkers[file] ?: continue
+
+        append("\n  $file:")
+        for (import in fileLinker.protoFile.imports) {
+          if (import in files) {
+            append("\n    import \"$import\";")
+          }
+        }
+        for (import in fileLinker.protoFile.publicImports) {
+          if (import in files) {
+            append("\n    import public \"$import\";")
+          }
+        }
+      }
     }
   }
 
