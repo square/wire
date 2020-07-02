@@ -337,7 +337,7 @@ data class SwiftTarget(
       }
 
       override fun handle(service: Service): List<Path> {
-        TODO("Not implemented")
+        return emptyList() // TODO not supported
       }
     }
   }
