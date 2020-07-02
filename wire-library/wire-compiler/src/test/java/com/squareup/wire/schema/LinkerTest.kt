@@ -22,6 +22,7 @@ import com.google.common.jimfs.Jimfs
 import com.squareup.wire.testing.add
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.test.assertFailsWith
 
 class LinkerTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
@@ -187,6 +188,106 @@ class LinkerTest {
 
     val enumValueDeprecated = schema.getField(Options.ENUM_VALUE_OPTIONS, "deprecated")
     assertThat(enumValueDeprecated!!.encodeMode).isNotNull()
+  }
+
+  @Test
+  fun singleFileImportCycle() {
+    fs.add("source-path/ouroboros.proto", """
+        |syntax = "proto2";
+        |import "ouroboros.proto";
+        |message Snake {
+        |}
+        """.trimMargin())
+    fs.add("proto-path/unused.proto", "")
+
+    val exception = assertFailsWith<SchemaException> {
+      loadAndLinkSchema()
+    }
+    assertThat(exception).hasMessage("""
+        |imports form a cycle:
+        |  ouroboros.proto:
+        |    import "ouroboros.proto";
+        """.trimMargin())
+  }
+
+  @Test
+  fun threeFileImportCycle() {
+    fs.add("source-path/paper.proto", """
+        |syntax = "proto2";
+        |import "rock.proto";
+        |message Paper {
+        |}
+        """.trimMargin())
+    fs.add("source-path/rock.proto", """
+        |syntax = "proto2";
+        |import "scissors.proto";
+        |message Rock {
+        |}
+        """.trimMargin())
+    fs.add("source-path/scissors.proto", """
+        |syntax = "proto2";
+        |import "paper.proto";
+        |message Scissors {
+        |}
+        """.trimMargin())
+    fs.add("proto-path/unused.proto", "")
+
+    val exception = assertFailsWith<SchemaException> {
+      loadAndLinkSchema()
+    }
+    assertThat(exception).hasMessage("""
+        |imports form a cycle:
+        |  paper.proto:
+        |    import "rock.proto";
+        |  rock.proto:
+        |    import "scissors.proto";
+        |  scissors.proto:
+        |    import "paper.proto";
+        """.trimMargin())
+  }
+
+  @Test
+  fun multipleCycleImportProblem() {
+    fs.add("source-path/a.proto", """
+        |syntax = "proto2";
+        |import "b.proto";
+        |import "d.proto";
+        |message A {
+        |}
+        """.trimMargin())
+    fs.add("source-path/b.proto", """
+        |syntax = "proto2";
+        |import "c.proto";
+        |message B {
+        |}
+        """.trimMargin())
+    fs.add("source-path/c.proto", """
+        |syntax = "proto2";
+        |import "a.proto";
+        |import "b.proto";
+        |message C {
+        |}
+        """.trimMargin())
+    fs.add("source-path/d.proto", """
+        |syntax = "proto2";
+        |message D {
+        |}
+        """.trimMargin())
+    fs.add("proto-path/unused.proto", "")
+
+    val exception = assertFailsWith<SchemaException> {
+      loadAndLinkSchema()
+    }
+    assertThat(exception).hasMessage("""
+        |imports form a cycle:
+        |  a.proto:
+        |    import "b.proto";
+        |  b.proto:
+        |    import "c.proto";
+        |  c.proto:
+        |    import "a.proto";
+        |    import "b.proto";
+        """.trimMargin())
   }
 
   private fun loadAndLinkSchema(): Schema {
