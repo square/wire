@@ -13,7 +13,6 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import java.io.File
-import java.io.IOException
 import java.util.Collections
 
 /** Tests meant for Java generated code to be executed among different JSON libraries. */
@@ -22,38 +21,46 @@ class WireJsonJavaTest {
   @Parameterized.Parameter(0)
   internal lateinit var jsonLibrary: JsonLibrary
 
-  @Parameterized.Parameter(1)
-  internal lateinit var valueType: Class<Any>
-
-  @Parameterized.Parameter(2)
-  internal lateinit var value: Message<*, *>
-
-  @Parameterized.Parameter(3)
-  internal lateinit var json: String
-
-  @Test fun serializeTest() {
-    assertJsonEquals(json, jsonLibrary.toJson(value, valueType))
+  @Test fun allTypesSerializeTest() {
+    val value = allTypesBuilder().build()
+    assertJsonEquals(ALL_TYPES_JSON, jsonLibrary.toJson(value, AllTypes::class.java))
   }
 
-  @Test fun deserializeTest() {
-    val parsed = jsonLibrary.fromJson(json, valueType)
+  @Test fun allTypesDeserializeTest() {
+    val value = allTypesBuilder().build()
+    val parsed = jsonLibrary.fromJson(ALL_TYPES_JSON, AllTypes::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
-        jsonLibrary.toJson(parsed, valueType),
-        jsonLibrary.toJson(value, valueType))
+        jsonLibrary.toJson(parsed, AllTypes::class.java),
+        jsonLibrary.toJson(value, AllTypes::class.java))
+  }
+
+  @Test fun allTypesIdentitySerializeTest() {
+    val value = allTypesIdentityBuilder().build()
+    assertJsonEquals(ALL_TYPES_IDENTITY_JSON, jsonLibrary.toJson(value, AllTypes::class.java))
+  }
+
+  @Test fun allTypesIdentityDeserializeTest() {
+    val value = allTypesIdentityBuilder().build()
+    val parsed = jsonLibrary.fromJson(ALL_TYPES_IDENTITY_JSON, AllTypes::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, AllTypes::class.java),
+        jsonLibrary.toJson(value, AllTypes::class.java))
   }
 
   @Test fun omitsUnknownFields() {
-    val builder = value.newBuilder()
+    val builder = allTypesBuilder()
     builder.addUnknownField(9000, FieldEncoding.FIXED32, 9000)
     builder.addUnknownField(9001, FieldEncoding.FIXED64, 9001L)
     builder.addUnknownField(9002, FieldEncoding.LENGTH_DELIMITED,
         ByteString.of('9'.toByte(), '0'.toByte(), '0'.toByte(), '2'.toByte()))
     builder.addUnknownField(9003, FieldEncoding.VARINT, 9003L)
 
-    val newValue = builder.build()
-    assertJsonEquals(json, jsonLibrary.toJson(newValue, valueType))
+    val value = builder.build()
+    assertJsonEquals(ALL_TYPES_JSON, jsonLibrary.toJson(value, AllTypes::class.java))
   }
 
   companion object {
@@ -215,11 +222,11 @@ class WireJsonJavaTest {
 
       override fun toString() = "Moshi"
 
-      override fun fromJson(json: String, type: Class<Any>): Any {
+      override fun <T> fromJson(json: String, type: Class<T>): T {
         return moshi.adapter(type).fromJson(json)!!
       }
 
-      override fun toJson(value: Any, type: Class<Any>): String {
+      override fun <T> toJson(value: T, type: Class<T>): String {
         return moshi.adapter(type).toJson(value)
       }
     }
@@ -231,27 +238,22 @@ class WireJsonJavaTest {
 
       override fun toString() = "Gson"
 
-      override fun fromJson(json: String, type: Class<Any>): Any {
+      override fun <T> fromJson(json: String, type: Class<T>): T {
         return gson.fromJson(json, type)
       }
 
-      override fun toJson(value: Any, type: Class<Any>): String {
+      override fun <T> toJson(value: T, type: Class<T>): String {
         return gson.toJson(value, type)
       }
     }
 
-    @Parameters(name = "{index}:{0}/{1}")
+    @Parameters(name = "{0}")
     @JvmStatic
-    internal fun parameters() = listOf(
-        arrayOf(gson, AllTypes::class.java, allTypesBuilder().build(), ALL_TYPES_JSON),
-        arrayOf(moshi, AllTypes::class.java, allTypesBuilder().build(), ALL_TYPES_JSON),
-        arrayOf(gson, AllTypes::class.java, allTypesIdentityBuilder().build(), ALL_TYPES_IDENTITY_JSON),
-        arrayOf(moshi, AllTypes::class.java, allTypesIdentityBuilder().build(), ALL_TYPES_IDENTITY_JSON)
-    )
+    internal fun parameters() = listOf(arrayOf(gson), arrayOf(moshi))
   }
 }
 
 internal interface JsonLibrary {
-  fun fromJson(json: String, type: Class<Any>): Any
-  fun toJson(value: Any, type: Class<Any>): String
+  fun <T> fromJson(json: String, type: Class<T>): T
+  fun <T> toJson(value: T, type: Class<T>): String
 }
