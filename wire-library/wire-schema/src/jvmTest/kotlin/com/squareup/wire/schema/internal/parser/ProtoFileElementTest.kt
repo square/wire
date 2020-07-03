@@ -267,17 +267,17 @@ class ProtoFileElementTest {
   @Test
   fun multipleEverythingToSchema() {
     val element1 = MessageElement(location = location.at(10, 1), name = "Message1")
-    val element2 = MessageElement(location = location.at(11, 1), name = "Message2")
-    val extend1 = ExtendElement(location = location.at(13, 1), name = "Extend1")
-    val extend2 = ExtendElement(location = location.at(14, 1), name = "Extend2")
+    val element2 = MessageElement(location = location.at(12, 1), name = "Message2")
+    val extend1 = ExtendElement(location = location.at(14, 1), name = "Extend1")
+    val extend2 = ExtendElement(location = location.at(16, 1), name = "Extend2")
     val option1 = OptionElement.create("kit", Kind.STRING, "kat")
     val option2 = OptionElement.create("foo", Kind.STRING, "bar")
     val service1 = ServiceElement(
-        location = location.at(16, 1),
+        location = location.at(18, 1),
         name = "Service1"
     )
     val service2 = ServiceElement(
-        location = location.at(17, 1),
+        location = location.at(20, 1),
         name = "Service2"
     )
     val file = ProtoFileElement(
@@ -301,12 +301,15 @@ class ProtoFileElementTest {
         |option foo = "bar";
         |
         |message Message1 {}
+        |
         |message Message2 {}
         |
         |extend Extend1 {}
+        |
         |extend Extend2 {}
         |
         |service Service1 {}
+        |
         |service Service2 {}
         |""".trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
@@ -382,7 +385,7 @@ class ProtoFileElementTest {
         tag = 1
     )
     val fieldNumericPackedTrue = FieldElement(
-        location = location.at(7, 3),
+        location = location.at(8, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_packed_true",
@@ -390,7 +393,7 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT)
     )
     val fieldNumericPackedFalse = FieldElement(
-        location = location.at(8, 3),
+        location = location.at(10, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_packed_false",
@@ -398,14 +401,14 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
     )
     val fieldString = FieldElement(
-        location = location.at(9, 3),
+        location = location.at(12, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_without_packed_option",
         tag = 4
     )
     val fieldStringPackedTrue = FieldElement(
-        location = location.at(10, 3),
+        location = location.at(14, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_packed_true",
@@ -413,7 +416,7 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT)
     )
     val fieldStringPackedFalse = FieldElement(
-        location = location.at(11, 3),
+        location = location.at(16, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_packed_false",
@@ -441,10 +444,15 @@ class ProtoFileElementTest {
         |
         |message Message {
         |  repeated int32 numeric_without_packed_option = 1;
+        |
         |  repeated int32 numeric_packed_true = 2 [packed = true];
+        |
         |  repeated int32 numeric_packed_false = 3 [packed = false];
+        |
         |  repeated string string_without_packed_option = 4;
+        |
         |  repeated string string_packed_true = 5 [packed = true];
+        |
         |  repeated string string_packed_false = 6 [packed = false];
         |}
         |""".trimMargin()
@@ -465,7 +473,7 @@ class ProtoFileElementTest {
         tag = 1
     )
     val fieldNumericPackedTrue = FieldElement(
-        location = location.at(7, 3),
+        location = location.at(8, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_packed_true",
@@ -473,7 +481,7 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT)
     )
     val fieldNumericPackedFalse = FieldElement(
-        location = location.at(8, 3),
+        location = location.at(10, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_packed_false",
@@ -481,14 +489,14 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
     )
     val fieldString = FieldElement(
-        location = location.at(9, 3),
+        location = location.at(12, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_without_packed_option",
         tag = 4
     )
     val fieldStringPackedTrue = FieldElement(
-        location = location.at(10, 3),
+        location = location.at(14, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_packed_true",
@@ -496,7 +504,7 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT)
     )
     val fieldStringPackedFalse = FieldElement(
-        location = location.at(11, 3),
+        location = location.at(16, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_packed_false",
@@ -525,10 +533,15 @@ class ProtoFileElementTest {
         |
         |message Message {
         |  repeated int32 numeric_without_packed_option = 1;
+        |
         |  repeated int32 numeric_packed_true = 2 [packed = true];
+        |
         |  repeated int32 numeric_packed_false = 3 [packed = false];
+        |
         |  repeated string string_without_packed_option = 4;
+        |
         |  repeated string string_packed_true = 5 [packed = true];
+        |
         |  repeated string string_packed_false = 6 [packed = false];
         |}
         |""".trimMargin()

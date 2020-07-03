@@ -101,11 +101,13 @@ class ProtoFileTest {
         |
         |// Some comments about Message1
         |message Message1 {}
+        |
         |message Message2 {
         |  string field = 1;
         |}
         |
         |extend Extend1 {}
+        |
         |extend Extend2 {}
         |
         |service Service1 {
@@ -113,6 +115,7 @@ class ProtoFileTest {
         |    option methodoption = 1;
         |  };
         |}
+        |
         |service Service2 {}
         |""".trimMargin()
 
