@@ -70,12 +70,12 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       javaTestImplementation deps.kotlin.test.junit
       javaTestImplementation deps.assertj
       javaTestImplementation deps.jimfs
-      jsonTestJavaImplementation project(':wire-moshi-adapter')
-      jsonTestJavaImplementation project(':wire-gson-support')
-      jsonTestJavaImplementation project(':wire-test-utils')
-      jsonTestJavaImplementation deps.kotlin.test.junit
-      jsonTestJavaImplementation deps.assertj
-      jsonTestJavaImplementation deps.jimfs
+      jsonJavaTestImplementation project(':wire-moshi-adapter')
+      jsonJavaTestImplementation project(':wire-gson-support')
+      jsonJavaTestImplementation project(':wire-test-utils')
+      jsonJavaTestImplementation deps.kotlin.test.junit
+      jsonJavaTestImplementation deps.assertj
+      jsonJavaTestImplementation deps.jimfs
     }
   }
 
