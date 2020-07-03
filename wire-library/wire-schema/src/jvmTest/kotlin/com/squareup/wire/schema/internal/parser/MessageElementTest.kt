@@ -515,11 +515,13 @@ class MessageElementTest {
         |  option kit = "kat";
         |
         |  required string name = 1;
+        |
         |  required bool other_name = 2;
         |
         |  oneof thingy {
         |    string namey = 3;
         |  }
+        |
         |  oneof thinger {
         |    string namer = 4;
         |  }

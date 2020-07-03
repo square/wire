@@ -49,20 +49,20 @@ data class MessageElement(
       }
     }
     if (fields.isNotEmpty()) {
-      append('\n')
       for (field in fields) {
+        append('\n')
         appendIndented(field.toSchema(syntaxRules))
       }
     }
     if (oneOfs.isNotEmpty()) {
-      append('\n')
       for (oneOf in oneOfs) {
+        append('\n')
         appendIndented(oneOf.toSchema(syntaxRules))
       }
     }
     if (groups.isNotEmpty()) {
-      append('\n')
       for (group in groups) {
+        append('\n')
         appendIndented(group.toSchema(syntaxRules))
       }
     }
@@ -73,8 +73,8 @@ data class MessageElement(
       }
     }
     if (nestedTypes.isNotEmpty()) {
-      append('\n')
       for (type in nestedTypes) {
+        append('\n')
         appendIndented(type.toSchema(syntaxRules))
       }
     }

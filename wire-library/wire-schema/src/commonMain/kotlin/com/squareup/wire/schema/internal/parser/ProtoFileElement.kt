@@ -61,20 +61,20 @@ data class ProtoFileElement(
       }
     }
     if (types.isNotEmpty()) {
-      append('\n')
       for (typeElement in types) {
+        append('\n')
         append(typeElement.toSchema(syntaxRules))
       }
     }
     if (extendDeclarations.isNotEmpty()) {
-      append('\n')
       for (extendDeclaration in extendDeclarations) {
+        append('\n')
         append(extendDeclaration.toSchema(syntaxRules))
       }
     }
     if (services.isNotEmpty()) {
-      append('\n')
       for (service in services) {
+        append('\n')
         append(service.toSchema())
       }
     }
