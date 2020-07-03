@@ -45,6 +45,14 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
     }
     jvmTest.dependsOn jvmJavaAndroidCompactTest
 
+    jsonTest.java.srcDirs += 'src/jvmJsonTest/proto-java'
+    jsonTest.java.srcDirs += 'src/jvmJsonTest/proto-kotlin'
+    tasks.create('jvmJsonTest', Test) {
+      classpath = sourceSets.jsonTest.runtimeClasspath
+      testClassesDirs = sourceSets.jsonTest.output.classesDirs
+    }
+    jvmTest.dependsOn jvmJsonTest
+
     dependencies {
       javaTestImplementation project(':wire-runtime')
       javaNoOptionsTestImplementation project(':wire-runtime')
@@ -52,6 +60,7 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       javaPrunedTestImplementation project(':wire-runtime')
       javaAndroidTestImplementation project(':wire-runtime')
       javaAndroidCompactTestImplementation project(':wire-runtime')
+      jsonTestImplementation project(':wire-runtime')
 
       javaAndroidTestCompileOnly deps.android
       javaAndroidCompactTestCompileOnly deps.android
@@ -61,6 +70,12 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       javaTestImplementation deps.kotlin.test.junit
       javaTestImplementation deps.assertj
       javaTestImplementation deps.jimfs
+      jsonTestImplementation project(':wire-moshi-adapter')
+      jsonTestImplementation project(':wire-gson-support')
+      jsonTestImplementation project(':wire-test-utils')
+      jsonTestImplementation deps.kotlin.test.junit
+      jsonTestImplementation deps.assertj
+      jsonTestImplementation deps.jimfs
     }
   }
 
