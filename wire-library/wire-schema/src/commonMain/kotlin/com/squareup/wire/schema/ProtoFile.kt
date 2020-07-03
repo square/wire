@@ -34,6 +34,30 @@ class ProtoFile private constructor(
 ) {
   private var javaPackage: Any? = null
 
+  internal fun copy(
+    location: Location = this.location,
+    imports: List<String> = this.imports,
+    publicImports: List<String> = this.publicImports,
+    packageName: String? = this.packageName,
+    types: List<Type> = this.types,
+    services: List<Service> = this.services,
+    extendList: List<Extend> = this.extendList,
+    options: Options = this.options,
+    syntax: Syntax? = this.syntax
+  ): ProtoFile {
+    return ProtoFile(
+        location = location,
+        imports = imports,
+        publicImports = publicImports,
+        packageName = packageName,
+        types = types,
+        services = services,
+        extendList = extendList,
+        options = options,
+        syntax = syntax
+    )
+  }
+
   fun toElement(): ProtoFileElement {
     return ProtoFileElement(
         location,
@@ -126,21 +150,13 @@ class ProtoFile private constructor(
     for (path in imports) {
       val importedProtoFile = findProtoFile(retained, path) ?: continue
 
-      if (importedProtoFile.types.isEmpty() &&
-          importedProtoFile.services.isEmpty() &&
-          importedProtoFile.extendList.isEmpty()) {
-
+      if (path == "google/protobuf/descriptor.proto" &&
+          extendList.any { it.name.startsWith("google.protobuf.")}) {
         // If we extend a google protobuf type, we should keep the import.
-        if (path == "google/protobuf/descriptor.proto") {
-          for (extend in extendList) {
-            if (extend.name.startsWith("google.protobuf.")) {
-              retainedImports.add(path)
-              break
-            }
-          }
-        }
-
-      } else {
+        retainedImports.add(path)
+      } else if (importedProtoFile.types.isNotEmpty() ||
+          importedProtoFile.services.isNotEmpty() ||
+          importedProtoFile.extendList.isNotEmpty()) {
         retainedImports.add(path)
       }
     }
