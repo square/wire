@@ -39,7 +39,7 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
   }
 
   /** Returns the proto file at [path], or null if this schema has no such file.  */
-  fun protoFile(path: String): ProtoFile? = protoFiles.first { it.location.path == path }
+  fun protoFile(path: String): ProtoFile? = protoFiles.firstOrNull { it.location.path == path }
 
   /** Returns the proto file containing this [protoType], or null if there isn't such file.  */
   fun protoFile(protoType: ProtoType): ProtoFile? = protoFilesIndex[protoType]
