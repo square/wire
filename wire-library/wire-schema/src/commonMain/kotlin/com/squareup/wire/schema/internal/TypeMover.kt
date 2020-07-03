@@ -19,7 +19,9 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
+import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
 
 /**
@@ -28,7 +30,7 @@ import com.squareup.wire.schema.Type
  * This class attempts to avoid making unnecessary changes to the target schema. For example, it
  * won't remove unused imports if they are unrelated to the types being moved.
  */
-internal class TypeMover(
+class TypeMover(
   private val oldSchema: Schema,
   private val moves: List<Move>
 ) {
@@ -46,33 +48,51 @@ internal class TypeMover(
   private val errors = mutableListOf<String>()
 
   fun move(): Schema {
-    // Move the types.
-    for (move in moves) {
-      val targetPath = move.targetPath
+    // Short circuit on zero moves.
+    if (moves.isEmpty()) return oldSchema
 
-      val oldSourceProtoFile: ProtoFile? = oldSchema.protoFile(move.type)
-      if (oldSourceProtoFile == null) {
+    for (move in moves) {
+      if (oldSchema.protoFile(move.type) == null) {
         errors += "cannot move ${move.type}, it isn't in this schema"
-        continue
       }
+    }
+    checkForErrors()
+
+    // Move the types.
+    rebuildIndexes()
+    for (move in moves) {
+      val sourcePath = typeToPath.remove(move.type)!!
+      val targetPath = move.targetPath
+      val oldSourceProtoFile = pathToFile[sourcePath]!!
 
       val sourceTypes = oldSourceProtoFile.types.toMutableList()
       val typeIndex = sourceTypes.indexOfFirst { it.type == move.type }
       val movedType = sourceTypes.removeAt(typeIndex)
 
-      val newSourceProtoFile = oldSourceProtoFile.copy(types = sourceTypes)
-      pathToFile[newSourceProtoFile.location.path] = newSourceProtoFile
+      pathToFile[sourcePath] = oldSourceProtoFile.copy(types = sourceTypes)
 
-      val targetProtoFile = oldSchema.protoFile(targetPath)
+      val targetProtoFile = pathToFile[targetPath]
           ?: oldSourceProtoFile.emptyCopy(targetPath)
-      val newTargetProtoFile = targetProtoFile.copy(types = targetProtoFile.types + movedType)
-      pathToFile[newTargetProtoFile.location.path] = newTargetProtoFile
+      pathToFile[targetPath] = targetProtoFile.copy(types = targetProtoFile.types + movedType)
 
-      sourceAndTargetPaths += newSourceProtoFile.location.path
-      sourceAndTargetPaths += newTargetProtoFile.location.path
+      sourceAndTargetPaths += sourcePath
+      sourceAndTargetPaths += targetPath
     }
 
-    // Build an index of types and paths so we know what's where when fixing imports.
+    // Fix imports.
+    rebuildIndexes()
+    val updatedProtoFiles = pathToFile.values.map { it.fixImports() }
+
+    checkForErrors()
+
+    return Schema(updatedProtoFiles)
+  }
+
+  /** Build an index of types and paths so we know what's where. */
+  private fun rebuildIndexes() {
+    pathToTypes.clear()
+    typeToPath.clear()
+
     for ((path, protoFile) in pathToFile) {
       val declaredTypes = mutableSetOf<ProtoType>()
       protoFile.collectDeclaredTypes(declaredTypes)
@@ -81,13 +101,6 @@ internal class TypeMover(
         typeToPath[protoType] = path
       }
     }
-
-    // Fix imports.
-    val updatedProtoFiles = pathToFile.values.map { it.fixImports() }
-
-    checkForErrors()
-
-    return Schema(updatedProtoFiles)
   }
 
   private fun ProtoFile.fixImports(): ProtoFile {
@@ -110,7 +123,8 @@ internal class TypeMover(
       }
 
       // If this file is where the type moved from, we might not need imports for the type's use.
-      if (oldSchema.protoFile(move.type)!!.location.path == location.path) {
+      val oldSchemaFile = oldSchema.protoFile(move.type) ?: error("no source file for ${move.type}")
+      if (oldSchemaFile.location.path == location.path) {
         getType(move).collectReferencedTypes(possiblyDrop)
       }
 
@@ -156,6 +170,9 @@ internal class TypeMover(
     for (type in types) {
       type.collectReferencedTypes(sink)
     }
+    for (service in services) {
+      service.collectReferencedTypes(sink)
+    }
   }
 
   private fun Type.collectReferencedTypes(sink: MutableSet<ProtoType>) {
@@ -169,8 +186,19 @@ internal class TypeMover(
     }
   }
 
+  private fun Service.collectReferencedTypes(sink: MutableSet<ProtoType>) {
+    for (rpc in rpcs()) {
+      rpc.collectReferencedTypes(sink)
+    }
+  }
+
+  private fun Rpc.collectReferencedTypes(sink: MutableSet<ProtoType>) {
+    sink += requestType!!
+    sink += responseType!!
+  }
+
   private fun Field.collectReferencedTypes(sink: MutableSet<ProtoType>) {
-    sink.add(type!!)
+    sink += type!!
   }
 
   private fun ProtoFile.collectDeclaredTypes(sink: MutableSet<ProtoType>) {
@@ -200,9 +228,9 @@ internal class TypeMover(
   private fun checkForErrors() {
     require(errors.isEmpty()) { errors.joinToString(separator = "\n") }
   }
-}
 
-internal class Move(
-  val type: ProtoType,
-  val targetPath: String
-)
+  data class Move(
+    val type: ProtoType,
+    val targetPath: String
+  )
+}

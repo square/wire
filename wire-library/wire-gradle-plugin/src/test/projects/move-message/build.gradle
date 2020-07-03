@@ -1,0 +1,14 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+wire {
+  move {
+    type = "squareup.geology.Period"
+    targetPath = "squareup/geology/geology.proto"
+  }
+
+  proto {}
+}

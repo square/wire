@@ -33,6 +33,7 @@ open class WireExtension(project: Project) {
   internal val protoJars = mutableSetOf<ProtoRootSet>()
   internal val roots = mutableSetOf<String>()
   internal val prunes = mutableSetOf<String>()
+  internal val moves = mutableListOf<Move>()
   internal var onlyVersion: String? = null
   internal var sinceVersion: String? = null
   internal var untilVersion: String? = null
@@ -220,6 +221,12 @@ open class WireExtension(project: Project) {
     val customOutput = objectFactory.newInstance(CustomOutput::class.java)
     action.execute(customOutput)
     outputs += customOutput
+  }
+
+  fun move(action: Action<Move>) {
+    val move = objectFactory.newInstance(Move::class.java)
+    action.execute(move)
+    moves += move
   }
 
   open class ProtoRootSet {

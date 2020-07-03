@@ -132,6 +132,7 @@ class WirePlugin : Plugin<Project> {
       it.protoInput.set(protoInput.toLocations())
       it.roots = extension.roots.toList()
       it.prunes = extension.prunes.toList()
+      it.moves = extension.moves.toList()
       it.sinceVersion = extension.sinceVersion
       it.untilVersion = extension.untilVersion
       it.onlyVersion = extension.onlyVersion
