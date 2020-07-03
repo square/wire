@@ -424,7 +424,21 @@ task generateSharedJsonCompactJavaTests(type: JavaExec) {
   ]
 }
 
-task generateSharedJson(dependsOn: [generateSharedJsonCompactJavaTests]) {
+task generateSharedJsonKotlinTests(type: JavaExec) {
+  group = 'Generate Shared JSON Tests'
+  description = 'Generates Kotlin classes for shared JSON tests'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
+          '--kotlin_out=wire-library/wire-tests/src/jvmJsonKotlinTest/proto-kotlin',
+          '--java_interop',
+          'all_types.proto'
+  ]
+}
+
+task generateSharedJson(dependsOn: [generateSharedJsonCompactJavaTests,
+    generateSharedJsonKotlinTests]) {
   group = 'Generate Tests'
   description = 'Generates Java and Kotlin classes for shared JSON tests'
 }
@@ -443,6 +457,7 @@ task cleanGeneratedTests(type: Delete) {
   description = 'Delete all generated tests'
   delete 'wire-grpc-tests/src/test/proto-grpc',
          'wire-library/wire-gson-support/src/test/java/com/squareup/wire/protos',
+         'wire-library/wire-gson-support/src/test/java/squareup/keywords/',
          'wire-library/wire-moshi-adapter/src/test/java/com/squareup/wire/protos',
          'wire-library/wire-moshi-adapter/src/test/java/squareup/keywords/',
          'wire-library/wire-tests/src/commonTest/proto-kotlin',
@@ -454,6 +469,6 @@ task cleanGeneratedTests(type: Delete) {
          'wire-library/wire-tests/src/jvmJavaTest/proto-java',
          'wire-library/wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
          'wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
-         'wire-library/wire-tests/src/jvmJsonJavaTest/proto-java'
+         'wire-library/wire-tests/src/jvmJsonJavaTest/proto-java',
          'wire-library/wire-tests/src/jvmJsonKotlinTest/proto-kotlin'
 }
