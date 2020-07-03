@@ -37,7 +37,13 @@ class WirePlugin : Plugin<Project> {
     )
 
     project.configurations.create("protoSource")
+        .also {
+          it.isCanBeConsumed = false
+        }
     project.configurations.create("protoPath")
+        .also {
+          it.isCanBeConsumed = false
+        }
 
     project.tasks.register("generateProtos", WireTask::class.java) { task ->
       task.group = "wire"

@@ -125,8 +125,7 @@ internal class WireInput(var configuration: Provider<Configuration>) {
 
   fun toLocations(): Provider<List<Location>> = configuration.map {
     it.dependencies.flatMap { dep ->
-      configuration.get()
-          .files(dep)
+      it.files(dep)
           .flatMap { file ->
             file.toLocations(dep)
           }
