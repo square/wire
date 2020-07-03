@@ -17,6 +17,7 @@
 
 package com.squareup.wire
 
+import com.google.gson.GsonBuilder
 import com.google.protobuf.Any
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.Duration
@@ -486,7 +487,7 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(unsignedJson).contains(""""repUint64":["456"]""")
   }
 
-  @Test fun `field names are encoded with camel case and decoded with either`() {
+  @Test fun `field names are encoded with camel case and decoded with either via Moshi`() {
     val nestedAdapter: JsonAdapter<NestedCamelCase> = moshi.adapter(NestedCamelCase::class.java)
     val camelAdapter: JsonAdapter<CamelCase> = moshi.adapter(CamelCase::class.java)
 
@@ -531,6 +532,63 @@ class Proto3WireProtocCompatibilityTests {
         .setIDitItMyWAy("frank")
         .putMapInt32Int32(1, 2)
     assertJsonEquals(camelAdapter.toJson(camel), JsonFormat.printer().print(protocCamel))
+  }
+
+  @Test fun `field names are encoded with camel case and decoded with either via Gson`() {
+    val nested = NestedCamelCase(1)
+    assertThat(gson.fromJson("""{"oneInt32":1}""", NestedCamelCase::class.java)).isEqualTo(nested)
+    assertThat(gson.fromJson("""{"one_int32":1}""", NestedCamelCase::class.java)).isEqualTo(nested)
+
+    // Unknown fields.
+    assertThat(gson.fromJson("""{"one__int32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase())
+    assertThat(gson.fromJson("""{"oneint32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase())
+    assertThat(gson.fromJson("""{"one_int_32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase())
+    assertThat(gson.fromJson("""{"OneInt32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase())
+    assertThat(gson.fromJson("""{"One_Int32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase())
+
+    // Encoding.
+    assertThat(gson.toJson(nested)).isEqualTo("""{"oneInt32":1}""")
+
+    // More fields
+    assertThat(gson.fromJson("""{"nestedMessage":{"oneInt32":1}}""", CamelCase::class.java))
+        .isEqualTo(CamelCase(nested__message = NestedCamelCase(one_int32 = 1)))
+    assertThat(gson.fromJson("""{"nested__message":{"one_int32":1}}""", CamelCase::class.java))
+        .isEqualTo(CamelCase(nested__message = NestedCamelCase(one_int32 = 1)))
+    assertThat(gson.fromJson("""{"RepInt32":[1, 2]}""", CamelCase::class.java))
+        .isEqualTo(CamelCase(_Rep_int32 = listOf(1, 2)))
+    assertThat(gson.fromJson("""{"_Rep_int32":[1, 2]}""", CamelCase::class.java))
+        .isEqualTo(CamelCase(_Rep_int32 = listOf(1, 2)))
+    assertThat(gson.fromJson("""{"iDitItMyWAy":"frank"}""", CamelCase::class.java))
+        .isEqualTo(CamelCase(IDitIt_my_wAy = "frank"))
+    assertThat(gson.fromJson("""{"IDitIt_my_wAy":"frank"}""", CamelCase::class.java))
+        .isEqualTo(CamelCase(IDitIt_my_wAy = "frank"))
+    assertThat(gson.fromJson("""{"mapInt32Int32":{"1":2}}""", CamelCase::class.java))
+        .isEqualTo(CamelCase(map_int32_Int32 = mapOf(1 to 2)))
+    assertThat(gson.fromJson("""{"map_int32_Int32":{"1":2}}""", CamelCase::class.java))
+        .isEqualTo(CamelCase(map_int32_Int32 = mapOf(1 to 2)))
+
+    // Encoding.
+    val camel = CamelCase(
+        nested__message = NestedCamelCase(1),
+        _Rep_int32 = listOf(1, 2),
+        IDitIt_my_wAy = "frank",
+        map_int32_Int32 = mapOf(1 to 2)
+    )
+    assertThat(gson.toJson(camel)).isEqualTo(
+        """{"nestedMessage":{"oneInt32":1},"RepInt32":[1,2],"iDitItMyWAy":"frank","mapInt32Int32":{"1":2}}""")
+
+    // Confirm protoc prints the same.
+    val protocCamel = CamelCaseOuterClass.CamelCase.newBuilder()
+        .setNestedMessage(CamelCaseOuterClass.CamelCase.NestedCamelCase.newBuilder().setOneInt32(1))
+        .addAllRepInt32(listOf(1, 2))
+        .setIDitItMyWAy("frank")
+        .putMapInt32Int32(1, 2)
+    assertJsonEquals(gson.toJson(camel), JsonFormat.printer().print(protocCamel))
   }
 
   @Test fun all64JsonProtocMaxValue(){
@@ -727,6 +785,10 @@ class Proto3WireProtocCompatibilityTests {
     private val moshi = Moshi.Builder()
         .add(WireJsonAdapterFactory())
         .build()
+
+    private val gson = GsonBuilder().registerTypeAdapterFactory(WireTypeAdapterFactory())
+        .disableHtmlEscaping()
+        .create()
 
     private val defaultAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
         .setInt32(111)
