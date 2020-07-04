@@ -47,6 +47,9 @@ open class WireTask : SourceTask() {
   lateinit var prunes: List<String>
 
   @Input
+  lateinit var moves: List<Move>
+
+  @Input
   @Optional
   var sinceVersion: String? = null
 
@@ -105,6 +108,7 @@ open class WireTask : SourceTask() {
         protoPath = protoInput.get(),
         treeShakingRoots = if (roots.isEmpty()) includes else roots,
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
+        moves = moves.map { it.toTypeMoverMove() },
         sinceVersion = sinceVersion,
         untilVersion = untilVersion,
         onlyVersion = onlyVersion,

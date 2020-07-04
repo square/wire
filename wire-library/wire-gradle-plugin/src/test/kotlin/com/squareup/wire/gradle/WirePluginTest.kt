@@ -812,6 +812,27 @@ class WirePluginTest {
         .contains("Task :generateProtos UP-TO-DATE")
   }
 
+  @Test
+  fun moveMessage() {
+    val fixtureRoot = File("src/test/projects/move-message")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output)
+        .contains("Writing squareup/dinosaurs/dinosaur.proto")
+        .contains("Writing squareup/geology/geology.proto")
+
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
+
+    val dinosaurProto = File(outputRoot, "squareup/dinosaurs/dinosaur.proto").readText()
+    assertThat(dinosaurProto).contains("import \"squareup/geology/geology.proto\";")
+
+    val geologyProto = File(outputRoot, "squareup/geology/geology.proto").readText()
+    assertThat(geologyProto).contains("enum Period {")
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult

@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.ConsoleWireLogger
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireLogger
+import com.squareup.wire.schema.internal.TypeMover
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -31,9 +32,10 @@ import java.nio.file.Path
  *
  *  2. Validate the schema and resolve references between types.
  *
- *  3. Optionally prune the schema. This builds a new schema that is a subset of the original. The
- *     new schema contains only types that are both transitively reachable from [treeShakingRoots]
- *     and not in [treeShakingRubbish].
+ *  3. Optionally refactor the schema. This builds a new schema that is a subset of the original.
+ *     The new schema contains only types that are both transitively reachable from
+ *     [treeShakingRoots] and not in [treeShakingRubbish]. Types are moved to different files as
+ *     specified by [moves].
  *
  *  4. Call each target. It will generate sources for protos in the [sourcePath] that are in its
  *     [Target.includes], that are not in its [Target.excludes], and that haven't already been
@@ -139,6 +141,12 @@ data class WireRun(
   val treeShakingRubbish: List<String> = listOf(),
 
   /**
+   * Types to move before generating code or producing other output. Use this with [ProtoTarget] to
+   * refactor proto schemas safely.
+   */
+  val moves: List<TypeMover.Move> = listOf(),
+
+  /**
    * The exclusive lower bound of the version range. Fields with `until` values greater than this
    * are retained.
    */
@@ -178,9 +186,10 @@ data class WireRun(
     // Validate the schema and resolve references
     val fullSchema = schemaLoader.loadSchema()
     val sourceLocationPaths = schemaLoader.sourcePathFiles.map { it.location.path }
+    val moveTargetPaths = moves.map { it.targetPath }
 
-    // Optionally prune the schema.
-    val schema = treeShake(fullSchema, logger)
+    // Refactor the schema.
+    val schema = refactorSchema(fullSchema, logger)
 
     val targetToEmittingRules = targets.associateWith {
       EmittingRules.Builder()
@@ -198,7 +207,8 @@ data class WireRun(
         skippedForSyntax += protoFile
         continue
       }
-      if (!sourceLocationPaths.contains(protoFile.location.path)) {
+      if (protoFile.location.path !in sourceLocationPaths &&
+          protoFile.location.path !in moveTargetPaths) {
         continue
       }
 
@@ -238,12 +248,13 @@ data class WireRun(
     }
   }
 
-  /** Returns a subset of schema with unreachable and unwanted elements removed. */
-  private fun treeShake(schema: Schema, logger: WireLogger): Schema {
+  /** Returns a transformed schema with unwanted elements removed and moves applied. */
+  private fun refactorSchema(schema: Schema, logger: WireLogger): Schema {
     if (treeShakingRoots == listOf("*") &&
         treeShakingRubbish.isEmpty() &&
         sinceVersion == null &&
-        untilVersion == null) {
+        untilVersion == null &&
+        moves.isEmpty()) {
       return schema
     }
 
@@ -255,7 +266,7 @@ data class WireRun(
         .only(onlyVersion)
         .build()
 
-    val result = schema.prune(pruningRules)
+    val prunedSchema = schema.prune(pruningRules)
 
     for (rule in pruningRules.unusedRoots()) {
       logger.info("Unused element in treeShakingRoots: $rule")
@@ -265,6 +276,6 @@ data class WireRun(
       logger.info("Unused element in treeShakingRubbish: $rule")
     }
 
-    return result
+    return TypeMover(prunedSchema, moves).move()
   }
 }
