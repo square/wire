@@ -45,13 +45,21 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
     }
     jvmTest.dependsOn jvmJavaAndroidCompactTest
 
+    jsonJavaTest.java.srcDirs += 'src/jvmJsonTest/kotlin'
     jsonJavaTest.java.srcDirs += 'src/jvmJsonJavaTest/proto-java'
-    jsonJavaTest.java.srcDirs += 'src/jvmJsonJavaTest/proto-kotlin'
     tasks.create('jvmJsonJavaTest', Test) {
       classpath = sourceSets.jsonJavaTest.runtimeClasspath
       testClassesDirs = sourceSets.jsonJavaTest.output.classesDirs
     }
     jvmTest.dependsOn jvmJsonJavaTest
+
+    jsonKotlinTest.java.srcDirs += 'src/jvmJsonTest/kotlin'
+    jsonKotlinTest.java.srcDirs += 'src/jvmJsonKotlinTest/proto-kotlin'
+    tasks.create('jvmJsonKotlinTest', Test) {
+      classpath = sourceSets.jsonKotlinTest.runtimeClasspath
+      testClassesDirs = sourceSets.jsonKotlinTest.output.classesDirs
+    }
+    jvmTest.dependsOn jvmJsonKotlinTest
 
     dependencies {
       javaTestImplementation project(':wire-runtime')
@@ -61,6 +69,7 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       javaAndroidTestImplementation project(':wire-runtime')
       javaAndroidCompactTestImplementation project(':wire-runtime')
       jsonJavaTestImplementation project(':wire-runtime')
+      jsonKotlinTestImplementation project(':wire-runtime')
 
       javaAndroidTestCompileOnly deps.android
       javaAndroidCompactTestCompileOnly deps.android
@@ -76,6 +85,12 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       jsonJavaTestImplementation deps.kotlin.test.junit
       jsonJavaTestImplementation deps.assertj
       jsonJavaTestImplementation deps.jimfs
+      jsonKotlinTestImplementation project(':wire-moshi-adapter')
+      jsonKotlinTestImplementation project(':wire-gson-support')
+      jsonKotlinTestImplementation project(':wire-test-utils')
+      jsonKotlinTestImplementation deps.kotlin.test.junit
+      jsonKotlinTestImplementation deps.assertj
+      jsonKotlinTestImplementation deps.jimfs
     }
   }
 
