@@ -9,6 +9,7 @@ buildscript {
     'javaGenerator': "com.squareup.wire:wire-java-generator",
     'kotlinGenerator': "com.squareup.wire:wire-kotlin-generator",
     'moshiAdapter': "com.squareup.wire:wire-moshi-adapter",
+    'gsonSupport': "com.squareup.wire:wire-gson-support",
     'runtime': "com.squareup.wire:wire-runtime",
     'schema': "com.squareup.wire:wire-schema",
     'testUtils': "com.squareup.wire:wire-test-utils",
