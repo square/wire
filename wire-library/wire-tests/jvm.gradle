@@ -45,13 +45,13 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
     }
     jvmTest.dependsOn jvmJavaAndroidCompactTest
 
-    jsonTest.java.srcDirs += 'src/jvmJsonTest/proto-java'
-    jsonTest.java.srcDirs += 'src/jvmJsonTest/proto-kotlin'
-    tasks.create('jvmJsonTest', Test) {
-      classpath = sourceSets.jsonTest.runtimeClasspath
-      testClassesDirs = sourceSets.jsonTest.output.classesDirs
+    jsonJavaTest.java.srcDirs += 'src/jvmJsonJavaTest/proto-java'
+    jsonJavaTest.java.srcDirs += 'src/jvmJsonJavaTest/proto-kotlin'
+    tasks.create('jvmJsonJavaTest', Test) {
+      classpath = sourceSets.jsonJavaTest.runtimeClasspath
+      testClassesDirs = sourceSets.jsonJavaTest.output.classesDirs
     }
-    jvmTest.dependsOn jvmJsonTest
+    jvmTest.dependsOn jvmJsonJavaTest
 
     dependencies {
       javaTestImplementation project(':wire-runtime')
@@ -60,7 +60,7 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       javaPrunedTestImplementation project(':wire-runtime')
       javaAndroidTestImplementation project(':wire-runtime')
       javaAndroidCompactTestImplementation project(':wire-runtime')
-      jsonTestImplementation project(':wire-runtime')
+      jsonJavaTestImplementation project(':wire-runtime')
 
       javaAndroidTestCompileOnly deps.android
       javaAndroidCompactTestCompileOnly deps.android
@@ -70,12 +70,12 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       javaTestImplementation deps.kotlin.test.junit
       javaTestImplementation deps.assertj
       javaTestImplementation deps.jimfs
-      jsonTestImplementation project(':wire-moshi-adapter')
-      jsonTestImplementation project(':wire-gson-support')
-      jsonTestImplementation project(':wire-test-utils')
-      jsonTestImplementation deps.kotlin.test.junit
-      jsonTestImplementation deps.assertj
-      jsonTestImplementation deps.jimfs
+      jsonJavaTestImplementation project(':wire-moshi-adapter')
+      jsonJavaTestImplementation project(':wire-gson-support')
+      jsonJavaTestImplementation project(':wire-test-utils')
+      jsonJavaTestImplementation deps.kotlin.test.junit
+      jsonJavaTestImplementation deps.assertj
+      jsonJavaTestImplementation deps.jimfs
     }
   }
 

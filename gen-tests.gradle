@@ -418,7 +418,7 @@ task generateSharedJsonCompactJavaTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto',
-          '--java_out=wire-library/wire-tests/src/jvmJsonTest/proto-java',
+          '--java_out=wire-library/wire-tests/src/jvmJsonJavaTest/proto-java',
           '--compact',
           'all_types.proto'
   ]
@@ -454,6 +454,6 @@ task cleanGeneratedTests(type: Delete) {
          'wire-library/wire-tests/src/jvmJavaTest/proto-java',
          'wire-library/wire-tests/src/jvmKotlinAndroidTest/proto-kotlin',
          'wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin',
-         'wire-library/wire-tests/src/jvmJsonTest/proto-java',
-         'wire-library/wire-tests/src/jvmJsonTest/proto-kotlin'
+         'wire-library/wire-tests/src/jvmJsonJavaTest/proto-java'
+         'wire-library/wire-tests/src/jvmJsonKotlinTest/proto-kotlin'
 }
