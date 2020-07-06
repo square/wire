@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package squareup.proto2.kotlin.person;
+package squareup.proto2.person.kotlin;
 
 option java_package = "com.squareup.wire.proto2.person.kotlin";
 

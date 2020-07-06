@@ -1,10 +1,10 @@
 syntax = "proto2";
 
-package squareup.dinosaurs;
+package squareup.dinosaurs.javainteropkotlin;
 
 option java_package = "com.squareup.wire.proto2.dinosaurs.javainteropkotlin";
 
-import "period_java_interop_kotlin.proto";
+import "proto2/period_java_interop_kotlin.proto";
 
 message Dinosaur {
   /** Common name of this dinosaur, like "Stegosaurus". */
@@ -15,5 +15,5 @@ message Dinosaur {
 
   optional double length_meters = 3;
   optional double mass_kilograms = 4;
-  optional squareup.geology.Period period = 5;
+  optional squareup.geology.javainteropkotlin.Period period = 5;
 }

@@ -181,7 +181,7 @@ class Dinosaur(
     val ADAPTER: ProtoAdapter<Dinosaur> = object : ProtoAdapter<Dinosaur>(
       FieldEncoding.LENGTH_DELIMITED, 
       Dinosaur::class, 
-      "type.googleapis.com/squareup.dinosaurs.Dinosaur", 
+      "type.googleapis.com/squareup.dinosaurs.javainteropkotlin.Dinosaur", 
       PROTO_2
     ) {
       override fun encodedSize(value: Dinosaur): Int {

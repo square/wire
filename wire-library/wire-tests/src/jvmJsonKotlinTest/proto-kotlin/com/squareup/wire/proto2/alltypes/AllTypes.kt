@@ -3261,7 +3261,7 @@ class AllTypes(
     val ADAPTER: ProtoAdapter<AllTypes> = object : ProtoAdapter<AllTypes>(
       FieldEncoding.LENGTH_DELIMITED, 
       AllTypes::class, 
-      "type.googleapis.com/squareup.proto2.alltypes.AllTypes", 
+      "type.googleapis.com/squareup.proto2.AllTypes", 
       PROTO_2
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
@@ -4142,7 +4142,7 @@ class AllTypes(
       val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
-        "type.googleapis.com/squareup.proto2.alltypes.AllTypes.NestedMessage", 
+        "type.googleapis.com/squareup.proto2.AllTypes.NestedMessage", 
         PROTO_2
       ) {
         override fun encodedSize(value: NestedMessage): Int {
