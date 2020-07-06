@@ -17,14 +17,14 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.wire.protos.RepeatedPackedAndMap;
-import com.squareup.wire.protos.alltypes.AllTypes;
+import com.squareup.wire.proto2.RepeatedPackedAndMap;
+import com.squareup.wire.proto2.alltypes.AllTypes;
 import java.io.File;
 import java.io.IOException;
 import okio.Okio;
 import org.junit.Test;
-import squareup.keywords.KeywordJava;
-import squareup.keywords.KeywordKotlin;
+import squareup.proto2.keywords.KeywordJava;
+import squareup.proto2.keywords.KeywordKotlin;
 
 import static com.squareup.wire.json.JsonUtils.assertJsonEquals;
 import static org.assertj.core.api.Assertions.assertThat;

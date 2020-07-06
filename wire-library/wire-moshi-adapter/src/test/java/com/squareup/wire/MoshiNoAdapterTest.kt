@@ -6,12 +6,12 @@ import com.squareup.wire.json.assertJsonEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
 import org.junit.Test
-import com.squareup.wire.protos.dinosaurs.java.Dinosaur as DinosaurJava
-import com.squareup.wire.protos.dinosaurs.javainteropkotlin.Dinosaur as DinosaurInterop
-import com.squareup.wire.protos.dinosaurs.kotlin.Dinosaur as DinosaurKotlin
-import com.squareup.wire.protos.geology.java.Period as PeriodJava
-import com.squareup.wire.protos.geology.javainteropkotlin.Period as PeriodInterop
-import com.squareup.wire.protos.geology.kotlin.Period as PeriodKotlin
+import com.squareup.wire.proto2.dinosaurs.java.Dinosaur as DinosaurJava
+import com.squareup.wire.proto2.dinosaurs.javainteropkotlin.Dinosaur as DinosaurInterop
+import com.squareup.wire.proto2.dinosaurs.kotlin.Dinosaur as DinosaurKotlin
+import com.squareup.wire.proto2.geology.java.Period as PeriodJava
+import com.squareup.wire.proto2.geology.javainteropkotlin.Period as PeriodInterop
+import com.squareup.wire.proto2.geology.kotlin.Period as PeriodKotlin
 
 class MoshiNoAdapterTest {
   private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()

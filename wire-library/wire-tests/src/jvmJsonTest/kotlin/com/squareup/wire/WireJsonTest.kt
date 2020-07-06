@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire;
+package com.squareup.wire
 
 import com.google.gson.GsonBuilder
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
-import com.squareup.wire.protos.alltypes.AllTypes
+import com.squareup.wire.proto2.alltypes.AllTypes
 import okio.ByteString
 import okio.buffer
 import okio.source
