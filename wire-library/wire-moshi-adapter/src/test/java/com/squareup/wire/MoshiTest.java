@@ -18,15 +18,15 @@ package com.squareup.wire;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.wire.json.JsonUtils;
-import com.squareup.wire.protos.RepeatedPackedAndMap;
-import com.squareup.wire.protos.alltypes.AllTypes;
+import com.squareup.wire.proto2.RepeatedPackedAndMap;
+import com.squareup.wire.proto2.alltypes.AllTypes;
 import java.io.File;
 import java.io.IOException;
 import okio.ByteString;
 import okio.Okio;
 import org.junit.Test;
-import squareup.keywords.KeywordJava;
-import squareup.keywords.KeywordKotlin;
+import squareup.proto2.keywords.KeywordJava;
+import squareup.proto2.keywords.KeywordKotlin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

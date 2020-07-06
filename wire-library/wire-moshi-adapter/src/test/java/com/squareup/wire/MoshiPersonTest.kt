@@ -4,9 +4,9 @@ import com.squareup.moshi.Moshi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
 import org.junit.Test
-import com.squareup.wire.protos.person.java.Person as JavaPerson
-import com.squareup.wire.protos.person.javainteropkotlin.Person as JavaInteropKotlinPerson
-import com.squareup.wire.protos.person.kotlin.Person as KotlinPerson
+import com.squareup.wire.proto2.person.java.Person as JavaPerson
+import com.squareup.wire.proto2.person.javainteropkotlin.Person as JavaInteropKotlinPerson
+import com.squareup.wire.proto2.person.kotlin.Person as KotlinPerson
 
 class MoshiPersonTest {
   /**
