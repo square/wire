@@ -424,9 +424,12 @@ task generateSharedJsonCompactJavaTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2',
+          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3',
           '--java_out=wire-library/wire-tests/src/jvmJsonJavaTest/proto-java',
+          '--proto3-preview=UNSUPPORTED',
           '--compact',
           'all_types.proto',
+          'camel_case.proto',
   ]
 }
 
@@ -437,9 +440,12 @@ task generateSharedJsonKotlinTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2',
+          '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3',
           '--kotlin_out=wire-library/wire-tests/src/jvmJsonKotlinTest/proto-kotlin',
+          '--proto3-preview=UNSUPPORTED',
           '--java_interop',
           'all_types.proto',
+          'camel_case.proto',
   ]
 }
 
