@@ -46,6 +46,7 @@ class WireTypeAdapterFactory : TypeAdapterFactory {
       type.rawType == ByteString::class.java -> ByteStringTypeAdapter() as TypeAdapter<T>
       Message::class.java.isAssignableFrom(type.rawType) ->
         MessageTypeAdapter<Nothing, Nothing>(gson, type as TypeToken<Nothing>) as TypeAdapter<T>
+      type.rawType == Duration::class.java -> DurationTypeAdapter as TypeAdapter<T>
       else -> null
     }
   }

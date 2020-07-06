@@ -158,6 +158,36 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(jsonAdapter.fromJson(json)).isEqualTo(pizzaDelivery)
   }
 
+  @Test fun gsonJson() {
+    val pizzaDelivery = PizzaDelivery(
+        address = "507 Cross Street",
+        pizzas = listOf(Pizza(toppings = listOf("pineapple", "onion"))),
+        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L)
+    )
+    val json = """
+        |{
+        |  "address": "507 Cross Street",
+        |  "deliveredWithinOrFree": "1799.500s",
+        |  "phoneNumber": "",
+        |  "pizzas": [
+        |    {
+        |      "toppings": [
+        |        "pineapple",
+        |        "onion"
+        |      ]
+        |    }
+        |  ]
+        |}
+        """.trimMargin()
+
+    val gson = GsonBuilder().registerTypeAdapterFactory(WireTypeAdapterFactory())
+        .disableHtmlEscaping()
+        .create()
+
+    assertJsonEquals(gson.toJson(pizzaDelivery), json)
+    assertThat(gson.fromJson(json, PizzaDelivery::class.java)).isEqualTo(pizzaDelivery)
+  }
+
   @Test fun wireProtocJsonRoundTrip() {
     val protocMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
         .setAddress("507 Cross Street")

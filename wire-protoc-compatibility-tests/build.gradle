@@ -45,8 +45,8 @@ dependencies {
   testImplementation deps.junit
   testImplementation deps.moshi
   testImplementation deps.protobuf.javaUtil
-  testImplementation deps.wire.moshiAdapter
   testImplementation deps.wire.gsonSupport
+  testImplementation deps.wire.moshiAdapter
   testImplementation deps.wire.testUtils
 }
 
