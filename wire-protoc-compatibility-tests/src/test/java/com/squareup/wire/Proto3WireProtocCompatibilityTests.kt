@@ -34,6 +34,8 @@ import com.squareup.wire.json.assertJsonEquals
 import com.squareup.wire.proto3.requiredextension.RequiredExtension
 import com.squareup.wire.proto3.requiredextension.RequiredExtensionMessage
 import okio.ByteString
+import okio.buffer
+import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
@@ -41,14 +43,13 @@ import squareup.proto3.alltypes.All64
 import squareup.proto3.alltypes.All64OuterClass
 import squareup.proto3.alltypes.AllTypes
 import squareup.proto3.alltypes.AllTypesOuterClass
-import squareup.proto3.alltypes.CamelCase
-import squareup.proto3.alltypes.CamelCase.NestedCamelCase
 import squareup.proto3.alltypes.CamelCaseOuterClass
 import squareup.proto3.pizza.BuyOneGetOnePromotion
 import squareup.proto3.pizza.FreeGarlicBreadPromotion
 import squareup.proto3.pizza.Pizza
 import squareup.proto3.pizza.PizzaDelivery
 import squareup.proto3.pizza.PizzaOuterClass
+import java.io.File
 
 class Proto3WireProtocCompatibilityTests {
   // Note: this test mostly make sure we compile required extension without failing.
@@ -462,7 +463,8 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(identityAllTypes)
     assertThat(parsed.toString()).isEqualTo(identityAllTypes.toString())
     val jsonPrinter = JsonFormat.printer()
-    assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(identityAllTypes))}
+    assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(identityAllTypes))
+  }
 
   @Test fun deserializeIdentityAllTypesMoshi() {
     val allTypesAdapter: JsonAdapter<AllTypes> = moshi.adapter(AllTypes::class.java)
@@ -483,7 +485,8 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(explicitIdentityAllTypesProtoc)
     assertThat(parsed.toString()).isEqualTo(explicitIdentityAllTypesProtoc.toString())
     val jsonPrinter = JsonFormat.printer()
-    assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(explicitIdentityAllTypesProtoc))}
+    assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(explicitIdentityAllTypesProtoc))
+  }
 
   @Test fun deserializeExplicitIdentityAllTypesMoshi() {
     val allTypesAdapter: JsonAdapter<AllTypes> = moshi.adapter(AllTypes::class.java)
@@ -499,129 +502,39 @@ class Proto3WireProtocCompatibilityTests {
     val all64Adapter: JsonAdapter<All64> = moshi.adapter(All64::class.java)
 
     val signed = All64(my_sint64 = 123, rep_sint64 = listOf(456))
-    assertThat(all64Adapter.fromJson("""{"mySint64":"123", "repSint64": ["456"]}""")).isEqualTo(signed)
+    assertThat(all64Adapter.fromJson("""{"mySint64":"123", "repSint64": ["456"]}""")).isEqualTo(
+        signed)
     assertThat(all64Adapter.fromJson("""{"mySint64":123, "repSint64": [456]}""")).isEqualTo(signed)
-    assertThat(all64Adapter.fromJson("""{"mySint64":123.0, "repSint64": [456.0]}""")).isEqualTo(signed)
+    assertThat(all64Adapter.fromJson("""{"mySint64":123.0, "repSint64": [456.0]}""")).isEqualTo(
+        signed)
 
     val signedJson = all64Adapter.toJson(signed)
     assertThat(signedJson).contains(""""mySint64":"123"""")
     assertThat(signedJson).contains(""""repSint64":["456"]""")
 
     val unsigned = All64(my_uint64 = 123, rep_uint64 = listOf(456))
-    assertThat(all64Adapter.fromJson("""{"myUint64":"123", "repUint64": ["456"]}""")).isEqualTo(unsigned)
-    assertThat(all64Adapter.fromJson("""{"myUint64":123, "repUint64": [456]}""")).isEqualTo(unsigned)
-    assertThat(all64Adapter.fromJson("""{"myUint64":123.0, "repUint64": [456.0]}""")).isEqualTo(unsigned)
+    assertThat(all64Adapter.fromJson("""{"myUint64":"123", "repUint64": ["456"]}""")).isEqualTo(
+        unsigned)
+    assertThat(all64Adapter.fromJson("""{"myUint64":123, "repUint64": [456]}""")).isEqualTo(
+        unsigned)
+    assertThat(all64Adapter.fromJson("""{"myUint64":123.0, "repUint64": [456.0]}""")).isEqualTo(
+        unsigned)
 
     val unsignedJson = all64Adapter.toJson(unsigned)
     assertThat(unsignedJson).contains(""""myUint64":"123"""")
     assertThat(unsignedJson).contains(""""repUint64":["456"]""")
   }
 
-  @Test fun `field names are encoded with camel case and decoded with either via Moshi`() {
-    val nestedAdapter: JsonAdapter<NestedCamelCase> = moshi.adapter(NestedCamelCase::class.java)
-    val camelAdapter: JsonAdapter<CamelCase> = moshi.adapter(CamelCase::class.java)
-
-    val nested = NestedCamelCase(1)
-    assertThat(nestedAdapter.fromJson("""{"oneInt32":1}""")).isEqualTo(nested)
-    assertThat(nestedAdapter.fromJson("""{"one_int32":1}""")).isEqualTo(nested)
-
-    // Unknown fields.
-    assertThat(nestedAdapter.fromJson("""{"one__int32":1}""")).isEqualTo(NestedCamelCase())
-    assertThat(nestedAdapter.fromJson("""{"oneint32":1}""")).isEqualTo(NestedCamelCase())
-    assertThat(nestedAdapter.fromJson("""{"one_int_32":1}""")).isEqualTo(NestedCamelCase())
-    assertThat(nestedAdapter.fromJson("""{"OneInt32":1}""")).isEqualTo(NestedCamelCase())
-    assertThat(nestedAdapter.fromJson("""{"One_Int32":1}""")).isEqualTo(NestedCamelCase())
-
-    // Encoding.
-    assertThat(nestedAdapter.toJson(nested)).isEqualTo("""{"oneInt32":1}""")
-
-    // More fields
-    assertThat(camelAdapter.fromJson("""{"nestedMessage":{"oneInt32":1}}""")).isEqualTo(CamelCase(nested__message = NestedCamelCase(one_int32 = 1)))
-    assertThat(camelAdapter.fromJson("""{"nested__message":{"one_int32":1}}""")).isEqualTo(CamelCase(nested__message = NestedCamelCase(one_int32 = 1)))
-    assertThat(camelAdapter.fromJson("""{"RepInt32":[1, 2]}""")).isEqualTo(CamelCase(_Rep_int32 = listOf(1, 2)))
-    assertThat(camelAdapter.fromJson("""{"_Rep_int32":[1, 2]}""")).isEqualTo(CamelCase(_Rep_int32 = listOf(1, 2)))
-    assertThat(camelAdapter.fromJson("""{"iDitItMyWAy":"frank"}""")).isEqualTo(CamelCase(IDitIt_my_wAy = "frank"))
-    assertThat(camelAdapter.fromJson("""{"IDitIt_my_wAy":"frank"}""")).isEqualTo(CamelCase(IDitIt_my_wAy = "frank"))
-    assertThat(camelAdapter.fromJson("""{"mapInt32Int32":{"1":2}}""")).isEqualTo(CamelCase(map_int32_Int32 = mapOf(1 to 2)))
-    assertThat(camelAdapter.fromJson("""{"map_int32_Int32":{"1":2}}""")).isEqualTo(CamelCase(map_int32_Int32 = mapOf(1 to 2)))
-
-    // Encoding.
-    val camel = CamelCase(
-        nested__message = NestedCamelCase(1),
-        _Rep_int32 = listOf(1, 2),
-        IDitIt_my_wAy = "frank",
-        map_int32_Int32 = mapOf(1 to 2)
-    )
-    assertThat(camelAdapter.toJson(camel)).isEqualTo(
-        """{"nestedMessage":{"oneInt32":1},"RepInt32":[1,2],"iDitItMyWAy":"frank","mapInt32Int32":{"1":2}}""")
-
-    // Confirm protoc prints the same.
+  @Test fun `protoc validation camel case json`() {
     val protocCamel = CamelCaseOuterClass.CamelCase.newBuilder()
         .setNestedMessage(CamelCaseOuterClass.CamelCase.NestedCamelCase.newBuilder().setOneInt32(1))
         .addAllRepInt32(listOf(1, 2))
         .setIDitItMyWAy("frank")
         .putMapInt32Int32(1, 2)
-    assertJsonEquals(camelAdapter.toJson(camel), JsonFormat.printer().print(protocCamel))
+    assertJsonEquals(CAMEL_CASE_JSON, JsonFormat.printer().print(protocCamel))
   }
 
-  @Test fun `field names are encoded with camel case and decoded with either via Gson`() {
-    val nested = NestedCamelCase(1)
-    assertThat(gson.fromJson("""{"oneInt32":1}""", NestedCamelCase::class.java)).isEqualTo(nested)
-    assertThat(gson.fromJson("""{"one_int32":1}""", NestedCamelCase::class.java)).isEqualTo(nested)
-
-    // Unknown fields.
-    assertThat(gson.fromJson("""{"one__int32":1}""", NestedCamelCase::class.java))
-        .isEqualTo(NestedCamelCase())
-    assertThat(gson.fromJson("""{"oneint32":1}""", NestedCamelCase::class.java))
-        .isEqualTo(NestedCamelCase())
-    assertThat(gson.fromJson("""{"one_int_32":1}""", NestedCamelCase::class.java))
-        .isEqualTo(NestedCamelCase())
-    assertThat(gson.fromJson("""{"OneInt32":1}""", NestedCamelCase::class.java))
-        .isEqualTo(NestedCamelCase())
-    assertThat(gson.fromJson("""{"One_Int32":1}""", NestedCamelCase::class.java))
-        .isEqualTo(NestedCamelCase())
-
-    // Encoding.
-    assertThat(gson.toJson(nested)).isEqualTo("""{"oneInt32":1}""")
-
-    // More fields
-    assertThat(gson.fromJson("""{"nestedMessage":{"oneInt32":1}}""", CamelCase::class.java))
-        .isEqualTo(CamelCase(nested__message = NestedCamelCase(one_int32 = 1)))
-    assertThat(gson.fromJson("""{"nested__message":{"one_int32":1}}""", CamelCase::class.java))
-        .isEqualTo(CamelCase(nested__message = NestedCamelCase(one_int32 = 1)))
-    assertThat(gson.fromJson("""{"RepInt32":[1, 2]}""", CamelCase::class.java))
-        .isEqualTo(CamelCase(_Rep_int32 = listOf(1, 2)))
-    assertThat(gson.fromJson("""{"_Rep_int32":[1, 2]}""", CamelCase::class.java))
-        .isEqualTo(CamelCase(_Rep_int32 = listOf(1, 2)))
-    assertThat(gson.fromJson("""{"iDitItMyWAy":"frank"}""", CamelCase::class.java))
-        .isEqualTo(CamelCase(IDitIt_my_wAy = "frank"))
-    assertThat(gson.fromJson("""{"IDitIt_my_wAy":"frank"}""", CamelCase::class.java))
-        .isEqualTo(CamelCase(IDitIt_my_wAy = "frank"))
-    assertThat(gson.fromJson("""{"mapInt32Int32":{"1":2}}""", CamelCase::class.java))
-        .isEqualTo(CamelCase(map_int32_Int32 = mapOf(1 to 2)))
-    assertThat(gson.fromJson("""{"map_int32_Int32":{"1":2}}""", CamelCase::class.java))
-        .isEqualTo(CamelCase(map_int32_Int32 = mapOf(1 to 2)))
-
-    // Encoding.
-    val camel = CamelCase(
-        nested__message = NestedCamelCase(1),
-        _Rep_int32 = listOf(1, 2),
-        IDitIt_my_wAy = "frank",
-        map_int32_Int32 = mapOf(1 to 2)
-    )
-    assertThat(gson.toJson(camel)).isEqualTo(
-        """{"nestedMessage":{"oneInt32":1},"RepInt32":[1,2],"iDitItMyWAy":"frank","mapInt32Int32":{"1":2}}""")
-
-    // Confirm protoc prints the same.
-    val protocCamel = CamelCaseOuterClass.CamelCase.newBuilder()
-        .setNestedMessage(CamelCaseOuterClass.CamelCase.NestedCamelCase.newBuilder().setOneInt32(1))
-        .addAllRepInt32(listOf(1, 2))
-        .setIDitItMyWAy("frank")
-        .putMapInt32Int32(1, 2)
-    assertJsonEquals(gson.toJson(camel), JsonFormat.printer().print(protocCamel))
-  }
-
-  @Test fun all64JsonProtocMaxValue(){
+  @Test fun all64JsonProtocMaxValue() {
     val all64 = All64OuterClass.All64.newBuilder()
         .setMyInt64(Long.MAX_VALUE)
         .setMyUint64(Long.MAX_VALUE)
@@ -679,7 +592,7 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(jsonAdapter.fromJson(ALL_64_JSON_MAX_VALUE)).isEqualTo(all64)
   }
 
-  @Test fun all64JsonProtocMinValue(){
+  @Test fun all64JsonProtocMinValue() {
     val all64 = All64OuterClass.All64.newBuilder()
         .setMyInt64(Long.MIN_VALUE)
         .setMyUint64(Long.MIN_VALUE)
@@ -935,6 +848,10 @@ class Proto3WireProtocCompatibilityTests {
         oneof_int32 = 0
     )
 
+    private val CAMEL_CASE_JSON =
+        File("../wire-library/wire-tests/src/commonTest/shared/json", "camel_case_proto3.json")
+            .source().use { it.buffer().readUtf8() }
+
     private val DEFAULT_ALL_TYPES_JSON = """{
         |"int32":111,
         |"uint32":112,
@@ -1146,7 +1063,8 @@ class Proto3WireProtocCompatibilityTests {
         .addAllRepFloat(emptyList())
         .addAllRepDouble(emptyList())
         .addAllRepString(list(""))
-        .addAllRepBytes(list(com.google.protobuf.ByteString.copyFrom(ByteString.EMPTY.toByteArray())))
+        .addAllRepBytes(
+            list(com.google.protobuf.ByteString.copyFrom(ByteString.EMPTY.toByteArray())))
         .addAllRepNestedEnum(emptyList())
         .addAllRepNestedMessage(emptyList())
         .addAllPackInt32(emptyList())
