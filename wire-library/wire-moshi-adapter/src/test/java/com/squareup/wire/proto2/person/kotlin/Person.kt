@@ -122,7 +122,7 @@ class Person(
     val ADAPTER: ProtoAdapter<Person> = object : ProtoAdapter<Person>(
       FieldEncoding.LENGTH_DELIMITED, 
       Person::class, 
-      "type.googleapis.com/squareup.proto2.kotlin.person.Person", 
+      "type.googleapis.com/squareup.proto2.person.kotlin.Person", 
       PROTO_2
     ) {
       override fun encodedSize(value: Person): Int {
@@ -273,7 +273,7 @@ class Person(
       val ADAPTER: ProtoAdapter<PhoneNumber> = object : ProtoAdapter<PhoneNumber>(
         FieldEncoding.LENGTH_DELIMITED, 
         PhoneNumber::class, 
-        "type.googleapis.com/squareup.proto2.kotlin.person.Person.PhoneNumber", 
+        "type.googleapis.com/squareup.proto2.person.kotlin.Person.PhoneNumber", 
         PROTO_2
       ) {
         override fun encodedSize(value: PhoneNumber): Int {

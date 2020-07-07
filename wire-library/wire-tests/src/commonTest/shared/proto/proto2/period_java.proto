@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package squareup.geology;
+package squareup.geology.java;
 
 option java_package = "com.squareup.wire.proto2.geology.java";
 
