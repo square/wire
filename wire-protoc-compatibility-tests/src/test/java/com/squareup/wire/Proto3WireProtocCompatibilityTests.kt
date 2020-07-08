@@ -852,129 +852,26 @@ class Proto3WireProtocCompatibilityTests {
         File("../wire-library/wire-tests/src/commonTest/shared/json", "camel_case_proto3.json")
             .source().use { it.buffer().readUtf8() }
 
-    private val DEFAULT_ALL_TYPES_JSON = """{
-        |"int32":111,
-        |"uint32":112,
-        |"sint32":113,
-        |"fixed32":114,
-        |"sfixed32":115,
-        |"int64":"116",
-        |"uint64":"117",
-        |"sint64":"118",
-        |"fixed64":"119",
-        |"sfixed64":"120",
-        |"bool":true,
-        |"float":122.0,
-        |"double":123.0,
-        |"string":"124",
-        |"bytes":"e30=",
-        |"nestedEnum":"A",
-        |"nestedMessage":{"a":999},
-        |"repInt32":[111,111],
-        |"repUint32":[112,112],
-        |"repSint32":[113,113],
-        |"repFixed32":[114,114],
-        |"repSfixed32":[115,115],
-        |"repInt64":["116","116"],
-        |"repUint64":["117","117"],
-        |"repSint64":["118","118"],
-        |"repFixed64":["119","119"],
-        |"repSfixed64":["120","120"],
-        |"repBool":[true,true],
-        |"repFloat":[122.0,122.0],
-        |"repDouble":[123.0,123.0],
-        |"repString":["124", "124"],
-        |"repBytes":["e30=", "e30="],
-        |"repNestedEnum":["A", "A"],
-        |"repNestedMessage":[{"a":999},{"a":999}],
-        |"packInt32":[111,111],
-        |"packUint32":[112,112],
-        |"packSint32":[113,113],
-        |"packFixed32":[114,114],
-        |"packSfixed32":[115,115],
-        |"packInt64":["116","116"],
-        |"packUint64":["117","117"],
-        |"packSint64":["118","118"],
-        |"packFixed64":["119","119"],
-        |"packSfixed64":["120","120"],
-        |"packBool":[true,true],
-        |"packFloat":[122.0,122.0],
-        |"packDouble":[123.0,123.0],
-        |"packNestedEnum":["A", "A"],
-        |"mapInt32Int32":{"1":2},
-        |"mapStringString":{"key":"value"},
-        |"mapStringMessage":{"message":{"a":1}},
-        |"mapStringEnum":{"enum":"A"},
-        |"oneofInt32" : 0.0
-        |}""".trimMargin()
+    private val DEFAULT_ALL_TYPES_JSON =
+        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_types_proto3.json")
+            .source().use { it.buffer().readUtf8() }
 
-    private val ALL_64_JSON_MIN_VALUE = """
-        |{
-        |  "myInt64": "-9223372036854775808",
-        |  "myUint64": "9223372036854775808",
-        |  "mySint64": "-9223372036854775808",
-        |  "myFixed64": "9223372036854775808",
-        |  "mySfixed64": "-9223372036854775808",
-        |  "repInt64": ["-9223372036854775808", "-9223372036854775808"],
-        |  "repUint64": ["9223372036854775808", "9223372036854775808"],
-        |  "repSint64": ["-9223372036854775808", "-9223372036854775808"],
-        |  "repFixed64": ["9223372036854775808", "9223372036854775808"],
-        |  "repSfixed64": ["-9223372036854775808", "-9223372036854775808"],
-        |  "packInt64": ["-9223372036854775808", "-9223372036854775808"],
-        |  "packUint64": ["9223372036854775808", "9223372036854775808"],
-        |  "packSint64": ["-9223372036854775808", "-9223372036854775808"],
-        |  "packFixed64": ["9223372036854775808", "9223372036854775808"],
-        |  "packSfixed64": ["-9223372036854775808", "-9223372036854775808"],
-        |  "oneofInt64": "-9223372036854775808"
-        |}""".trimMargin()
+    private val ALL_64_JSON_MIN_VALUE =
+        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_64_min_proto3.json")
+            .source().use { it.buffer().readUtf8() }
 
-    private val ALL_64_JSON_MAX_VALUE = """
-      |{
-      |  "myInt64": "9223372036854775807",
-      |  "myUint64": "9223372036854775807",
-      |  "mySint64": "9223372036854775807",
-      |  "myFixed64": "9223372036854775807",
-      |  "mySfixed64": "9223372036854775807",
-      |  "repInt64": ["9223372036854775807", "9223372036854775807"],
-      |  "repUint64": ["9223372036854775807", "9223372036854775807"],
-      |  "repSint64": ["9223372036854775807", "9223372036854775807"],
-      |  "repFixed64": ["9223372036854775807", "9223372036854775807"],
-      |  "repSfixed64": ["9223372036854775807", "9223372036854775807"],
-      |  "packInt64": ["9223372036854775807", "9223372036854775807"],
-      |  "packUint64": ["9223372036854775807", "9223372036854775807"],
-      |  "packSint64": ["9223372036854775807", "9223372036854775807"],
-      |  "packFixed64": ["9223372036854775807", "9223372036854775807"],
-      |  "packSfixed64": ["9223372036854775807", "9223372036854775807"],
-      |  "oneofInt64": "9223372036854775807"
-      |}""".trimMargin()
+    private val ALL_64_JSON_MAX_VALUE =
+        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_64_max_proto3.json")
+            .source().use { it.buffer().readUtf8() }
 
-    private const val IDENTITY_ALL_TYPES_JSON = "{}"
+    private val IDENTITY_ALL_TYPES_JSON =
+        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_types_identity_proto3.json")
+            .source().use { it.buffer().readUtf8() }
 
     /** This is used to confirmed identity values are emitted in lists and maps. */
-    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON = """
-      |{
-      |  "mapInt32Int32": {"0": 0.0},
-      |  "mapStringEnum": {"": "UNKNOWN"},
-      |  "mapStringMessage": {"": {}},
-      |  "nestedMessage": {},
-      |  "oneofInt32": 0.0,
-      |  "packBool": [false, false],
-      |  "packDouble": [0.0, 0.0],
-      |  "packFixed64": ["0", "0"],
-      |  "packFloat": [0.0, 0.0],
-      |  "packInt64": ["0", "0"],
-      |  "packNestedEnum": ["UNKNOWN", "UNKNOWN"],
-      |  "packSfixed32": [0.0, 0.0],
-      |  "packSfixed64": ["0", "0"],
-      |  "packSint64": ["0", "0"],
-      |  "packUint64": ["0", "0"],
-      |  "repBytes": ["", ""],
-      |  "repFixed32": [0.0, 0.0],
-      |  "repInt32": [0.0, 0.0],
-      |  "repSint32": [0.0, 0.0],
-      |  "repString": ["", ""],
-      |  "repUint32": [0.0, 0.0]
-      |}""".trimMargin()
+    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON =
+        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_types_explicit_identity_proto3.json")
+            .source().use { it.buffer().readUtf8() }
 
     private val explicitIdentityAllTypesWire = AllTypes(
         squareup_proto3_alltypes_int32 = 0,
