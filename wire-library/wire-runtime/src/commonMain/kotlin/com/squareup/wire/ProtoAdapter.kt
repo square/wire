@@ -854,7 +854,7 @@ internal fun commonStructMap(): ProtoAdapter<Map<String, *>?> = object : ProtoAd
 
 internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<List<*>?>(
     LENGTH_DELIMITED,
-    Map::class,
+    List::class,
     "type.googleapis.com/google.protobuf.ListValue",
     Syntax.PROTO_3
 ) {

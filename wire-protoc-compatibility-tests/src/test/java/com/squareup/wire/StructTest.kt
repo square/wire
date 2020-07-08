@@ -15,8 +15,8 @@
  */
 package com.squareup.wire
 
+import com.google.gson.GsonBuilder
 import com.google.protobuf.ListValue
-import com.google.protobuf.Struct
 import com.google.protobuf.util.JsonFormat
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
@@ -295,7 +295,7 @@ class StructTest {
     assertThat(AllStructs.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStruct)
   }
 
-  @Test fun structJsonRoundTrip() {
+  @Test fun structJsonRoundTripMoshi() {
     val json = """{
       |  "struct": {"a": 1.0},
       |  "list": ["a", 3.0],
@@ -336,7 +336,113 @@ class StructTest {
     assertThat(allStructAdapter.fromJson(json)).isEqualTo(wireAllStruct)
   }
 
-  @Test fun structJsonRoundTripWithEmptyOrNestedMapAndList() {
+  @Test fun structJsonRoundTripGson() {
+    val json = """{
+      |  "struct": {"a": 1.0},
+      |  "list": ["a", 3.0],
+      |  "nullValue": null,
+      |  "valueA": "a",
+      |  "valueB": 33.0,
+      |  "valueC": true,
+      |  "valueD": null,
+      |  "valueE": {"a": 1.0},
+      |  "valueF": ["a", 3.0],
+      |  "repStruct": [],
+      |  "repList": [],
+      |  "repValueA": [],
+      |  "repNullValue": [],
+      |  "mapInt32Struct": {},
+      |  "mapInt32List": {},
+      |  "mapInt32ValueA": {},
+      |  "mapInt32NullValue": {},
+      |  "oneofStruct": null,
+      |  "oneofList": null
+      |}""".trimMargin()
+
+    val wireAllStruct = AllStructs(
+        struct = mapOf("a" to 1.0),
+        list = listOf("a", 3.0),
+        null_value = null,
+        value_a = "a",
+        value_b = 33.0,
+        value_c = true,
+        value_d = null,
+        value_e = mapOf("a" to 1.0),
+        value_f = listOf("a", 3.0)
+    )
+
+    val gson = GsonBuilder()
+        .registerTypeAdapterFactory(WireTypeAdapterFactory())
+        .disableHtmlEscaping()
+        .create()
+    assertJsonEquals(gson.toJson(wireAllStruct), json)
+    assertThat(gson.fromJson(json, AllStructs::class.java)).isEqualTo(wireAllStruct)
+  }
+
+  @Test fun structJsonRoundTripWithEmptyOrNestedMapAndListGson() {
+    val protocJson = """{
+      |  "struct": {"a": null},
+      |  "list": [],
+      |  "valueA": {"a": ["b", 2.0, {"c": false}]},
+      |  "valueB": [{"d": null, "e": "trois"}],
+      |  "valueC": [],
+      |  "valueD": {},
+      |  "valueE": null,
+      |  "valueF": null
+      |}""".trimMargin()
+    // Protoc doesn't print those unless explicitly set.
+    val gsonJson = """{
+      |  "nullValue": null,
+      |  "repStruct": [],
+      |  "repList": [],
+      |  "repValueA": [],
+      |  "repNullValue": [],
+      |  "mapInt32Struct": {},
+      |  "mapInt32List": {},
+      |  "mapInt32ValueA": {},
+      |  "mapInt32NullValue": {},
+      |  "oneofStruct": null,
+      |  "oneofList": null,
+      |${protocJson.substring(1)}""".trimMargin()
+
+    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
+        .setStruct(mapOf("a" to null).toStruct())
+        .setList(emptyListValue())
+        .setValueA(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))).toValue())
+        .setValueB(listOf(mapOf("d" to null, "e" to "trois")).toValue())
+        .setValueC(emptyList<Any>().toValue())
+        .setValueD(emptyMap<String, Any>().toValue())
+        .setValueE(null.toValue())
+        .setValueF(null.toValue())
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(protocAllStruct), protocJson)
+    val jsonParser = JsonFormat.parser()
+    val protocParsed = AllStructsOuterClass.AllStructs.newBuilder()
+        .apply { jsonParser.merge(protocJson, this) }
+        .build()
+    assertThat(protocParsed).isEqualTo(protocAllStruct)
+
+    val wireAllStruct = AllStructs(
+        struct = mapOf("a" to null),
+        list = emptyList<Any>(),
+        value_a = mapOf("a" to listOf("b", 2.0, mapOf("c" to false))),
+        value_b = listOf(mapOf("d" to null, "e" to "trois")),
+        value_c = emptyList<Any>(),
+        value_d = emptyMap<String, Any>()
+    )
+
+     val gson = GsonBuilder()
+         .registerTypeAdapterFactory(WireTypeAdapterFactory())
+        .disableHtmlEscaping()
+        .create()
+    assertJsonEquals(gson.toJson(wireAllStruct), gsonJson)
+    assertThat(gson.fromJson(protocJson, AllStructs::class.java)).isEqualTo(wireAllStruct)
+    assertThat(gson.fromJson(gsonJson, AllStructs::class.java)).isEqualTo(wireAllStruct)
+  }
+
+  @Test fun structJsonRoundTripWithEmptyOrNestedMapAndListMoshi() {
     val protocJson = """{
       |  "struct": {"a": null},
       |  "list": [],

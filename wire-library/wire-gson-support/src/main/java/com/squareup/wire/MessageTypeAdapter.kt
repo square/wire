@@ -54,14 +54,29 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
     out.beginObject()
     for (tagBinding in messageAdapter.fieldBindings.values) {
-      val value = tagBinding[message] ?: continue
+      val value = tagBinding[message]
+      if (value == null && !tagBinding.isStruct) continue
+
       out.name(tagBinding.jsonName)
-      emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label)
+      emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label, tagBinding.isStruct)
     }
     out.endObject()
   }
 
-  private fun emitJson(out: JsonWriter, value: Any, adapter: ProtoAdapter<*>, label: Label) {
+  private fun emitJson(
+    out: JsonWriter,
+    value: Any?,
+    adapter: ProtoAdapter<*>,
+    label: Label,
+    isStruct: Boolean
+  ) {
+    if (isStruct) {
+      StructTypeAdapter.write(out, value)
+      return
+    }
+    // We allow null values for structs only.
+    val value = value!!
+
     if (adapter === ProtoAdapter.UINT64) {
       if (label.isRepeated) {
         val longs = value as List<Long>

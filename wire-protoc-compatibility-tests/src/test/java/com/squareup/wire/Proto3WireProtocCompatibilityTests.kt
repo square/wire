@@ -170,6 +170,7 @@ class Proto3WireProtocCompatibilityTests {
         |  "address": "507 Cross Street",
         |  "deliveredWithinOrFree": "1799.500s",
         |  "phoneNumber": "",
+        |  "loyalty": null,
         |  "pizzas": [
         |    {
         |      "toppings": [

@@ -20,6 +20,9 @@ import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import okio.ByteString
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import java.lang.reflect.WildcardType
 
 /**
  * A [TypeAdapterFactory] that allows Wire messages to be serialized and deserialized
@@ -42,12 +45,48 @@ import okio.ByteString
  */
 class WireTypeAdapterFactory : TypeAdapterFactory {
   override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
+    val rawType = type.rawType
     return when {
-      type.rawType == ByteString::class.java -> ByteStringTypeAdapter() as TypeAdapter<T>
-      Message::class.java.isAssignableFrom(type.rawType) ->
+      rawType == ByteString::class.java -> ByteStringTypeAdapter() as TypeAdapter<T>
+      Message::class.java.isAssignableFrom(rawType) ->
         MessageTypeAdapter<Nothing, Nothing>(gson, type as TypeToken<Nothing>) as TypeAdapter<T>
-      type.rawType == Duration::class.java -> DurationTypeAdapter as TypeAdapter<T>
+      rawType == Duration::class.java -> DurationTypeAdapter as TypeAdapter<T>
+      rawType == Any::class.java -> StructTypeAdapter as TypeAdapter<T>
+      rawType == Unit::class.java -> StructTypeAdapter as TypeAdapter<T>
+      type.type.isMapStringStar() -> StructTypeAdapter as TypeAdapter<T>
+      type.type.isListStar() -> StructTypeAdapter as TypeAdapter<T>
       else -> null
+    }
+  }
+
+  companion object {
+    /** Returns true if [this] is a `Map<String, *>`. */
+    private fun Type.isMapStringStar(): Boolean {
+      if (this !is ParameterizedType) return false
+      if (rawType != Map::class.java) return false
+
+      val keyType = actualTypeArguments[0]
+      val valueType = actualTypeArguments[1]
+      if (keyType != String::class.java) return false
+
+      if (valueType !is WildcardType) return false
+      if (valueType.lowerBounds.isNotEmpty()) return false
+      if (valueType.upperBounds != Object::class.java) return false
+
+      return true
+    }
+
+    /** Returns true if [this] is a `List<*>`. */
+    private fun Type.isListStar(): Boolean {
+      if (this !is ParameterizedType) return false
+      if (rawType != List::class.java) return false
+
+      val valueType = actualTypeArguments[0]
+      if (valueType !is WildcardType) return false
+      if (valueType.lowerBounds.isNotEmpty()) return false
+      if (valueType.upperBounds != Object::class.java) return false
+
+      return true
     }
   }
 }
