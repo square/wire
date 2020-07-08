@@ -27,6 +27,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import squareup.proto3.CamelCase
+import squareup.proto3.CamelCase.NestedCamelCase
 import java.io.File
 import java.util.Collections
 
@@ -79,6 +81,60 @@ class WireJsonTest {
 
     val value = builder.build()
     assertJsonEquals(ALL_TYPES_JSON, jsonLibrary.toJson(value, AllTypes::class.java))
+  }
+
+  @Test fun fieldNamesAreEncodedWithCamelCaseAndDecodedWithEither() {
+    val nested = NestedCamelCase.Builder().one_int32(1).build()
+    assertThat(jsonLibrary.fromJson("""{"oneInt32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(nested)
+    assertThat(jsonLibrary.fromJson("""{"one_int32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(nested)
+
+    // Unknown fields.
+    assertThat(jsonLibrary.fromJson("""{"one__int32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase.Builder().build())
+    assertThat(jsonLibrary.fromJson("""{"oneint32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase.Builder().build())
+    assertThat(jsonLibrary.fromJson("""{"one_int_32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase.Builder().build())
+    assertThat(jsonLibrary.fromJson("""{"OneInt32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase.Builder().build())
+    assertThat(jsonLibrary.fromJson("""{"One_Int32":1}""", NestedCamelCase::class.java))
+        .isEqualTo(NestedCamelCase.Builder().build())
+
+    // Encoding.
+    assertThat(jsonLibrary.toJson(nested, NestedCamelCase::class.java)).isEqualTo("""{"oneInt32":1}""")
+
+    // More fields
+    assertThat(jsonLibrary.fromJson("""{"nestedMessage":{"oneInt32":1}}""", CamelCase::class.java))
+        .isEqualTo(CamelCase.Builder().nested__message(NestedCamelCase.Builder().one_int32(1).build()).build())
+    assertThat(jsonLibrary.fromJson("""{"nested__message":{"one_int32":1}}""", CamelCase::class.java))
+        .isEqualTo(CamelCase.Builder().nested__message(NestedCamelCase.Builder().one_int32(1).build()).build())
+    assertThat(jsonLibrary.fromJson("""{"RepInt32":[1, 2]}""", CamelCase::class.java))
+        .isEqualTo(CamelCase.Builder()._Rep_int32(listOf(1, 2)).build())
+    assertThat(jsonLibrary.fromJson("""{"_Rep_int32":[1, 2]}""", CamelCase::class.java))
+        .isEqualTo(CamelCase.Builder()._Rep_int32(listOf(1, 2)).build())
+    assertThat(jsonLibrary.fromJson("""{"iDitItMyWAy":"frank"}""", CamelCase::class.java))
+        .isEqualTo(CamelCase.Builder().IDitIt_my_wAy("frank").build())
+    assertThat(jsonLibrary.fromJson("""{"IDitIt_my_wAy":"frank"}""", CamelCase::class.java))
+        .isEqualTo(CamelCase.Builder().IDitIt_my_wAy("frank").build())
+    assertThat(jsonLibrary.fromJson("""{"mapInt32Int32":{"1":2}}""", CamelCase::class.java))
+        .isEqualTo(CamelCase.Builder().map_int32_Int32(mapOf(1 to 2)).build())
+    assertThat(jsonLibrary.fromJson("""{"map_int32_Int32":{"1":2}}""", CamelCase::class.java))
+        .isEqualTo(CamelCase.Builder().map_int32_Int32(mapOf(1 to 2)).build())
+
+    // Encoding.
+    val camel = CamelCase.Builder()
+        .nested__message(NestedCamelCase.Builder().one_int32(1).build())
+        ._Rep_int32(listOf(1, 2))
+        .IDitIt_my_wAy("frank")
+        .map_int32_Int32(mapOf(1 to 2))
+        .build()
+    assertThat(jsonLibrary.toJson(camel, CamelCase::class.java)).isEqualTo(
+        """{"nestedMessage":{"oneInt32":1},"RepInt32":[1,2],"iDitItMyWAy":"frank","mapInt32Int32":{"1":2}}""")
+
+    // Confirm protoc prints the same.
+    assertJsonEquals(CAMEL_CASE_JSON, jsonLibrary.toJson(camel, CamelCase::class.java))
   }
 
   companion object {
@@ -233,6 +289,10 @@ class WireJsonTest {
 
     private val ALL_TYPES_IDENTITY_JSON =
         File("src/commonTest/shared/json", "all_types_identity_proto2.json")
+            .source().use { it.buffer().readUtf8() }
+
+    private val CAMEL_CASE_JSON =
+        File("src/commonTest/shared/json", "camel_case_proto3.json")
             .source().use { it.buffer().readUtf8() }
 
     private val moshi = object : JsonLibrary {
