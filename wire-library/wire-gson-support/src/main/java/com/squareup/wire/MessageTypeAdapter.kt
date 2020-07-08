@@ -109,7 +109,6 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       return null
     }
 
-    val elementAdapter = gson.getAdapter(JsonElement::class.java)
     val builder = messageAdapter.newBuilder()
 
     input.beginObject()
@@ -120,9 +119,7 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       if (fieldBinding == null) {
         input.skipValue()
       } else {
-        val element = elementAdapter.read(input)
-        val value = parseValue(fieldBinding, element)
-        fieldBinding[builder] = value
+        fieldBinding[builder] = parseValue(fieldBinding, input)
       }
     }
 
@@ -130,33 +127,46 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     return builder.build()
   }
 
-  private fun parseValue(fieldBinding: FieldBinding<*, *>, element: JsonElement): Any? {
+  private fun parseValue(fieldBinding: FieldBinding<*, *>, reader: JsonReader): Any? {
     if (fieldBinding.label.isRepeated) {
-      if (element.isJsonNull) {
+      if (reader.peek() == JsonToken.NULL) {
+        reader.nextNull()
         return emptyList<Any>()
       }
       val itemType = fieldBinding.singleAdapter().type!!.javaObjectType
       val adapter = gson.getAdapter(itemType)
-      return element.asJsonArray.map(adapter::fromJsonTree)
+      val result = mutableListOf<Any?>()
+      reader.beginArray()
+      while (reader.hasNext()) {
+        result.add(adapter.read(reader))
+      }
+      reader.endArray()
+      return result
     }
 
     if (fieldBinding.isMap) {
-      if (element.isJsonNull) {
+      if (reader.peek() == JsonToken.NULL) {
+        reader.nextNull()
         return emptyMap<Any, Any>()
       }
 
       val keyType = fieldBinding.keyAdapter().type!!.javaObjectType
       val valueType = fieldBinding.singleAdapter().type!!.javaObjectType
       val valueAdapter = gson.getAdapter(valueType)
+      val result = mutableMapOf<Any, Any?>()
 
-      val jsonObject = element.asJsonObject
-      return jsonObject.entrySet().associateBy(
-          { gson.fromJson(it.key, keyType) },
-          { valueAdapter.fromJsonTree(it.value) }
-      )
+      reader.beginObject()
+      while (reader.hasNext()) {
+        val keyString = reader.nextName()
+        val key = gson.fromJson(keyString, keyType)
+        result[key] = valueAdapter.read(reader)
+      }
+      reader.endObject()
+
+      return result
     }
 
     val elementType = fieldBinding.singleAdapter().type!!.javaObjectType
-    return gson.fromJson(element, elementType)
+    return gson.fromJson(reader, elementType)
   }
 }
