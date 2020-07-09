@@ -477,8 +477,13 @@ class SwiftGenerator private constructor(
 
       fun putAll(moduleName: String, enclosingClassName: DeclaredTypeName?, types: List<Type>) {
         for (type in types) {
-          val className = enclosingClassName?.nestedType(type.type.simpleName)
-              ?: DeclaredTypeName(moduleName, type.type.simpleName)
+          val name = type.type.simpleName
+          val className = if (enclosingClassName != null) {
+            // Temporary work around for https://bugs.swift.org/browse/SR-13160.
+            enclosingClassName.nestedType(if (name == "Type") "Type_" else name)
+          } else {
+            DeclaredTypeName(moduleName, name)
+          }
           map[type.type] = className
           putAll(moduleName, className, type.nestedTypes)
         }
