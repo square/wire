@@ -166,9 +166,8 @@ data class JavaTarget(
         val javaTypeName = javaGenerator.generatedTypeName(type)
         val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
             .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
-            .apply {
-              addFileComment("\nSource file: \$L", type.location.withPathOnly())
-            }.build()
+            .addFileComment("\nSource: \$L in \$L", type.type, type.location.withPathOnly())
+            .build()
         val generatedFilePath =
             fs.getPath(outDirectory, javaFile.packageName, "${javaFile.typeSpec.name}.java")
 
@@ -235,9 +234,7 @@ data class KotlinTarget(
         val className = kotlinGenerator.generatedTypeName(type)
         val kotlinFile = FileSpec.builder(className.packageName, typeSpec.name!!)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-            .apply {
-              addComment("\nSource file: %L", type.location.withPathOnly())
-            }
+            .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
             .addType(typeSpec)
             .build()
         val generatedFilePath =
@@ -278,7 +275,7 @@ data class KotlinTarget(
       private fun write(service: Service, name: ClassName, typeSpec: TypeSpec): Path {
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-            .addComment("\nSource file: %L", service.location().withPathOnly())
+            .addComment("\nSource: %L in %L", service.type(), service.location().withPathOnly())
             .addType(typeSpec)
             .build()
         val generatedFilePath =
