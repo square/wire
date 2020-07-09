@@ -255,6 +255,22 @@ task generateProto3KotlinTests(type: JavaExec) {
   ]
 }
 
+// Java PROTO3
+
+task generateProto3JavaTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes from the test proto3s'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-library/wire-tests/src/commonTest/proto3/java',
+          '--java_out=wire-library/wire-tests/src/commonTest/proto-java',
+          '--proto3-preview=UNSUPPORTED',
+          'all_types.proto',
+          'person.proto',
+  ]
+}
+
 // KOTLIN SERVICES
 
 task generateKotlinServicesTests(type: JavaExec) {
@@ -459,7 +475,7 @@ task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generate
     generateGsonTests, generateIncludesExcludesTests, generateAndroidTests,
     generateAndroidCompactTests, generateKotlinTests, generateKotlinServicesTests,
     generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateGrpcTests,
-    generateMoshiTests, generateProto3KotlinTests, generateSharedJson]) {
+    generateMoshiTests, generateProto3KotlinTests, generateProto3JavaTests, generateSharedJson]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
 }
@@ -472,6 +488,7 @@ task cleanGeneratedTests(type: Delete) {
          'wire-library/wire-gson-support/src/test/java/squareup/keywords/',
          'wire-library/wire-moshi-adapter/src/test/java/com/squareup/wire/protos',
          'wire-library/wire-moshi-adapter/src/test/java/squareup/keywords/',
+         'wire-library/wire-tests/src/commonTest/proto-java',
          'wire-library/wire-tests/src/commonTest/proto-kotlin',
          'wire-library/wire-tests/src/jvmJavaAndroidCompactTest/proto-java',
          'wire-library/wire-tests/src/jvmJavaAndroidTest/proto-java',

@@ -227,7 +227,7 @@ public final class JavaGenerator {
   }
 
   public static JavaGenerator get(Schema schema) {
-    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>(BUILT_IN_TYPES_MAP);
+    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>();
 
     for (ProtoFile protoFile : schema.getProtoFiles()) {
       String javaPackage = javaPackage(protoFile);
@@ -238,6 +238,8 @@ public final class JavaGenerator {
         nameToJavaName.put(service.type(), className);
       }
     }
+
+    nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
 
     return new JavaGenerator(schema, nameToJavaName, new Profile(), false, false, false);
   }
