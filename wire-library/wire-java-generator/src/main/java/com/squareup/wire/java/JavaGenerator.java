@@ -594,7 +594,7 @@ public final class JavaGenerator {
       TypeName fieldJavaType = fieldType(field);
 
       if ((field.getType().isScalar() || isEnum(field.getType()))
-          && !isStructNull(field.getType())
+          && !field.getType().equals(ProtoType.STRUCT_NULL)
           && !field.isRepeated()
           && !field.isPacked()) {
         builder.addField(defaultField(nameAllocator, field, fieldJavaType));
@@ -1811,9 +1811,5 @@ public final class JavaGenerator {
     } else {
       return new BigInteger(string).longValue(); // Decimal.
     }
-  }
-
-  private static boolean isStructNull(ProtoType type) {
-    return type.equals(ProtoType.STRUCT_NULL);
   }
 }
