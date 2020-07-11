@@ -283,9 +283,15 @@ public final class JavaGenerator {
 
     TypeName typeName = nameToJavaName.get(protoType);
     Type type = schema.getType(protoType);
-    if (!(typeName instanceof ClassName)) return null;
 
-    ClassName javaName = (ClassName) typeName;
+    ClassName javaName;
+    if (typeName instanceof ClassName) {
+      javaName = (ClassName) typeName;
+    } else if (typeName instanceof ParameterizedTypeName) {
+      javaName = ((ParameterizedTypeName) typeName).rawType;
+    } else {
+      throw new IllegalArgumentException("Unexpected typeName :" + typeName);
+    }
     return type instanceof EnumType
         ? javaName.peerClass(javaName.simpleName() + "Adapter")
         : javaName.peerClass("Abstract" + javaName.simpleName() + "Adapter");
