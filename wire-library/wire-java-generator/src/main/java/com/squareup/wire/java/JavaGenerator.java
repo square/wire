@@ -34,6 +34,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.WildcardTypeName;
 import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
@@ -135,6 +136,14 @@ public final class JavaGenerator {
           .put(ProtoType.DURATION, ClassName.get("com.squareup.wire", "Duration"))
           .put(ProtoType.TIMESTAMP, ClassName.get("com.squareup.wire", "Instant"))
           .put(ProtoType.EMPTY, ClassName.get("kotlin", "Unit"))
+          .put(ProtoType.STRUCT_MAP, ParameterizedTypeName.get(
+              ClassName.get("java.util", "Map"),
+              ClassName.get("java.lang", "String"), WildcardTypeName.subtypeOf(Object.class)))
+          .put(ProtoType.STRUCT_VALUE, ClassName.get("java.lang", "Object"))
+          .put(ProtoType.STRUCT_NULL, ClassName.get("java.lang", "Void"))
+          .put(ProtoType.STRUCT_LIST, ParameterizedTypeName.get(
+              ClassName.get("java.util", "List"),
+              WildcardTypeName.subtypeOf(Object.class)))
           .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
           .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
           .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
@@ -307,6 +316,20 @@ public final class JavaGenerator {
     CodeBlock.Builder result = CodeBlock.builder();
     if (type.isScalar()) {
       result.add("$T.$L", ADAPTER, type.getSimpleName().toUpperCase(Locale.US));
+    } else if (type.equals(ProtoType.DURATION)) {
+      result.add("$T.$L", ADAPTER, "DURATION");
+    } else if (type.equals(ProtoType.TIMESTAMP)) {
+      result.add("$T.$L", ADAPTER, "TIMESTAMP");
+    } else if (type.equals(ProtoType.EMPTY)) {
+      result.add("$T.$L", ADAPTER, "EMPTY");
+    } else if (type.equals(ProtoType.STRUCT_MAP)) {
+      result.add("$T.$L", ADAPTER, "STRUCT_MAP");
+    } else if (type.equals(ProtoType.STRUCT_VALUE)) {
+      result.add("$T.$L", ADAPTER, "STRUCT_VALUE");
+    } else if (type.equals(ProtoType.STRUCT_NULL)) {
+      result.add("$T.$L", ADAPTER, "STRUCT_NULL");
+    } else if (type.equals(ProtoType.STRUCT_LIST)) {
+      result.add("$T.$L", ADAPTER, "STRUCT_LIST");
     } else if (type.isMap()) {
       throw new IllegalArgumentException("Cannot create single adapter for map type " + type);
     } else {
@@ -571,6 +594,7 @@ public final class JavaGenerator {
       TypeName fieldJavaType = fieldType(field);
 
       if ((field.getType().isScalar() || isEnum(field.getType()))
+          && !isStructNull(field.getType())
           && !field.isRepeated()
           && !field.isPacked()) {
         builder.addField(defaultField(nameAllocator, field, fieldJavaType));
@@ -1211,16 +1235,29 @@ public final class JavaGenerator {
     if (type.isScalar()) {
       return ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US);
     }
+    if (type.equals(ProtoType.DURATION)) return ProtoAdapter.class.getName() + "#DURATION";
+    if (type.equals(ProtoType.TIMESTAMP)) return ProtoAdapter.class.getName() + "#INSTANT";
+    if (type.equals(ProtoType.EMPTY)) return ProtoAdapter.class.getName() + "#EMPTY";
+    if (type.equals(ProtoType.STRUCT_MAP)) return ProtoAdapter.class.getName() + "#STRUCT_MAP";
+    if (type.equals(ProtoType.STRUCT_VALUE)) return ProtoAdapter.class.getName() + "#STRUCT_VALUE";
+    if (type.equals(ProtoType.STRUCT_NULL)) return ProtoAdapter.class.getName() + "#STRUCT_NULL";
+    if (type.equals(ProtoType.STRUCT_LIST)) return ProtoAdapter.class.getName() + "#STRUCT_LIST";
 
     AdapterConstant adapterConstant = profile.getAdapter(type);
     if (adapterConstant != null) {
       return reflectionName(adapterConstant.className) + "#" + adapterConstant.memberName;
     }
 
-    return reflectionName((ClassName) typeName(type)) + "#ADAPTER";
+    return reflectionName(typeName(type)) + "#ADAPTER";
   }
 
-  private String reflectionName(ClassName className) {
+  private String reflectionName(TypeName typeName) {
+    ClassName className;
+    if (typeName instanceof ParameterizedTypeName) {
+      className = ((ParameterizedTypeName) typeName).rawType;
+    } else {
+      className = (ClassName) typeName;
+    }
     return className.packageName().isEmpty()
         ? Joiner.on('$').join(className.simpleNames())
         : className.packageName() + '.' + Joiner.on('$').join(className.simpleNames());
@@ -1774,5 +1811,9 @@ public final class JavaGenerator {
     } else {
       return new BigInteger(string).longValue(); // Decimal.
     }
+  }
+
+  private static boolean isStructNull(ProtoType type) {
+    return type.equals(ProtoType.STRUCT_NULL);
   }
 }

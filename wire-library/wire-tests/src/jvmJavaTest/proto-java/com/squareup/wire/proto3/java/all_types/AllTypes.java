@@ -2,10 +2,6 @@
 // Source: proto3.java.AllTypes in all_types.proto
 package com.squareup.wire.proto3.java.all_types;
 
-import com.google.protobuf.ListValue;
-import com.google.protobuf.NullValue;
-import com.google.protobuf.Struct;
-import com.google.protobuf.Value;
 import com.squareup.wire.AnyMessage;
 import com.squareup.wire.Duration;
 import com.squareup.wire.EnumAdapter;
@@ -29,6 +25,7 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
+import java.lang.Void;
 import java.util.List;
 import java.util.Map;
 import kotlin.Unit;
@@ -70,8 +67,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   public static final ByteString DEFAULT_BYTES = ByteString.EMPTY;
 
   public static final NestedEnum DEFAULT_NESTED_ENUM = NestedEnum.UNKNOWN;
-
-  public static final NullValue DEFAULT_NULL_VALUE = NullValue.NULL_VALUE;
 
   public static final String DEFAULT_ONEOF_STRING = "";
 
@@ -209,51 +204,51 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   @WireField(
       tag = 19,
-      adapter = "com.squareup.wire.Duration#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#DURATION",
       label = WireField.Label.OMIT_IDENTITY
   )
   public final Duration duration;
 
   @WireField(
       tag = 20,
-      adapter = "com.google.protobuf.Struct#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Struct struct;
+  public final Map<String, ?> struct;
 
   @WireField(
       tag = 21,
-      adapter = "com.google.protobuf.ListValue#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "listValue"
   )
-  public final ListValue list_value;
+  public final List<?> list_value;
 
   @WireField(
       tag = 22,
-      adapter = "com.google.protobuf.Value#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Value value;
+  public final Object value;
 
   @WireField(
       tag = 23,
-      adapter = "com.google.protobuf.NullValue#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "nullValue"
   )
-  public final NullValue null_value;
+  public final Void null_value;
 
   @WireField(
       tag = 24,
-      adapter = "kotlin.Unit#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
       label = WireField.Label.OMIT_IDENTITY
   )
   public final Unit empty;
 
   @WireField(
       tag = 25,
-      adapter = "com.squareup.wire.Instant#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
       label = WireField.Label.OMIT_IDENTITY
   )
   public final Instant timestamp;
@@ -404,7 +399,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   @WireField(
       tag = 219,
-      adapter = "com.squareup.wire.Duration#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#DURATION",
       label = WireField.Label.REPEATED,
       jsonName = "repDuration"
   )
@@ -412,39 +407,39 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   @WireField(
       tag = 220,
-      adapter = "com.google.protobuf.Struct#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
       label = WireField.Label.REPEATED,
       jsonName = "repStruct"
   )
-  public final List<Struct> rep_struct;
+  public final List<Map<String, ?>> rep_struct;
 
   @WireField(
       tag = 221,
-      adapter = "com.google.protobuf.ListValue#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
       label = WireField.Label.REPEATED,
       jsonName = "repListValue"
   )
-  public final List<ListValue> rep_list_value;
+  public final List<List<?>> rep_list_value;
 
   @WireField(
       tag = 222,
-      adapter = "com.google.protobuf.Value#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       label = WireField.Label.REPEATED,
       jsonName = "repValue"
   )
-  public final List<Value> rep_value;
+  public final List<Object> rep_value;
 
   @WireField(
       tag = 223,
-      adapter = "com.google.protobuf.NullValue#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
       label = WireField.Label.REPEATED,
       jsonName = "repNullValue"
   )
-  public final List<NullValue> rep_null_value;
+  public final List<Void> rep_null_value;
 
   @WireField(
       tag = 224,
-      adapter = "kotlin.Unit#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
       label = WireField.Label.REPEATED,
       jsonName = "repEmpty"
   )
@@ -452,7 +447,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   @WireField(
       tag = 225,
-      adapter = "com.squareup.wire.Instant#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
       label = WireField.Label.REPEATED,
       jsonName = "repTimestamp"
   )
@@ -572,11 +567,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   @WireField(
       tag = 323,
-      adapter = "com.google.protobuf.NullValue#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
       label = WireField.Label.PACKED,
       jsonName = "packNullValue"
   )
-  public final List<NullValue> pack_null_value;
+  public final List<Void> pack_null_value;
 
   @WireField(
       tag = 501,
@@ -621,7 +616,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 519,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.squareup.wire.Duration#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#DURATION",
       jsonName = "mapInt32Duration"
   )
   public final Map<Integer, Duration> map_int32_duration;
@@ -629,39 +624,39 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 520,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.google.protobuf.Struct#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
       jsonName = "mapInt32Struct"
   )
-  public final Map<Integer, Struct> map_int32_struct;
+  public final Map<Integer, Map<String, ?>> map_int32_struct;
 
   @WireField(
       tag = 521,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.google.protobuf.ListValue#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
       jsonName = "mapInt32ListValue"
   )
-  public final Map<Integer, ListValue> map_int32_list_value;
+  public final Map<Integer, List<?>> map_int32_list_value;
 
   @WireField(
       tag = 522,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.google.protobuf.Value#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
       jsonName = "mapInt32Value"
   )
-  public final Map<Integer, Value> map_int32_value;
+  public final Map<Integer, Object> map_int32_value;
 
   @WireField(
       tag = 523,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.google.protobuf.NullValue#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
       jsonName = "mapInt32NullValue"
   )
-  public final Map<Integer, NullValue> map_int32_null_value;
+  public final Map<Integer, Void> map_int32_null_value;
 
   @WireField(
       tag = 524,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "kotlin.Unit#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
       jsonName = "mapInt32Empty"
   )
   public final Map<Integer, Unit> map_int32_empty;
@@ -669,7 +664,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 525,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.squareup.wire.Instant#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
       jsonName = "mapInt32Timestamp"
   )
   public final Map<Integer, Instant> map_int32_timestamp;
@@ -704,24 +699,24 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   @WireField(
       tag = 619,
-      adapter = "com.squareup.wire.Duration#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#DURATION",
       jsonName = "oneofDuration"
   )
   public final Duration oneof_duration;
 
   @WireField(
       tag = 620,
-      adapter = "com.google.protobuf.Struct#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
       jsonName = "oneofStruct"
   )
-  public final Struct oneof_struct;
+  public final Map<String, ?> oneof_struct;
 
   @WireField(
       tag = 621,
-      adapter = "com.google.protobuf.ListValue#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
       jsonName = "oneofListValue"
   )
-  public final ListValue oneof_list_value;
+  public final List<?> oneof_list_value;
 
   /**
    * google.protobuf.Value oneof_value = 622;
@@ -729,14 +724,14 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
    */
   @WireField(
       tag = 624,
-      adapter = "kotlin.Unit#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
       jsonName = "oneofEmpty"
   )
   public final Unit oneof_empty;
 
   @WireField(
       tag = 625,
-      adapter = "com.squareup.wire.Instant#ADAPTER",
+      adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
       jsonName = "oneofTimestamp"
   )
   public final Instant oneof_timestamp;
@@ -1248,13 +1243,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public Duration duration;
 
-    public Struct struct;
+    public Map<String, ?> struct;
 
-    public ListValue list_value;
+    public List<?> list_value;
 
-    public Value value;
+    public Object value;
 
-    public NullValue null_value;
+    public Void null_value;
 
     public Unit empty;
 
@@ -1298,13 +1293,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public List<Duration> rep_duration;
 
-    public List<Struct> rep_struct;
+    public List<Map<String, ?>> rep_struct;
 
-    public List<ListValue> rep_list_value;
+    public List<List<?>> rep_list_value;
 
-    public List<Value> rep_value;
+    public List<Object> rep_value;
 
-    public List<NullValue> rep_null_value;
+    public List<Void> rep_null_value;
 
     public List<Unit> rep_empty;
 
@@ -1338,7 +1333,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public List<NestedEnum> pack_nested_enum;
 
-    public List<NullValue> pack_null_value;
+    public List<Void> pack_null_value;
 
     public Map<Integer, Integer> map_int32_int32;
 
@@ -1352,13 +1347,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public Map<Integer, Duration> map_int32_duration;
 
-    public Map<Integer, Struct> map_int32_struct;
+    public Map<Integer, Map<String, ?>> map_int32_struct;
 
-    public Map<Integer, ListValue> map_int32_list_value;
+    public Map<Integer, List<?>> map_int32_list_value;
 
-    public Map<Integer, Value> map_int32_value;
+    public Map<Integer, Object> map_int32_value;
 
-    public Map<Integer, NullValue> map_int32_null_value;
+    public Map<Integer, Void> map_int32_null_value;
 
     public Map<Integer, Unit> map_int32_empty;
 
@@ -1374,9 +1369,9 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public Duration oneof_duration;
 
-    public Struct oneof_struct;
+    public Map<String, ?> oneof_struct;
 
-    public ListValue oneof_list_value;
+    public List<?> oneof_list_value;
 
     public Unit oneof_empty;
 
@@ -1532,22 +1527,22 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
-    public Builder struct(Struct struct) {
+    public Builder struct(Map<String, ?> struct) {
       this.struct = struct;
       return this;
     }
 
-    public Builder list_value(ListValue list_value) {
+    public Builder list_value(List<?> list_value) {
       this.list_value = list_value;
       return this;
     }
 
-    public Builder value(Value value) {
+    public Builder value(Object value) {
       this.value = value;
       return this;
     }
 
-    public Builder null_value(NullValue null_value) {
+    public Builder null_value(Void null_value) {
       this.null_value = null_value;
       return this;
     }
@@ -1676,25 +1671,25 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
-    public Builder rep_struct(List<Struct> rep_struct) {
+    public Builder rep_struct(List<Map<String, ?>> rep_struct) {
       Internal.checkElementsNotNull(rep_struct);
       this.rep_struct = rep_struct;
       return this;
     }
 
-    public Builder rep_list_value(List<ListValue> rep_list_value) {
+    public Builder rep_list_value(List<List<?>> rep_list_value) {
       Internal.checkElementsNotNull(rep_list_value);
       this.rep_list_value = rep_list_value;
       return this;
     }
 
-    public Builder rep_value(List<Value> rep_value) {
+    public Builder rep_value(List<Object> rep_value) {
       Internal.checkElementsNotNull(rep_value);
       this.rep_value = rep_value;
       return this;
     }
 
-    public Builder rep_null_value(List<NullValue> rep_null_value) {
+    public Builder rep_null_value(List<Void> rep_null_value) {
       Internal.checkElementsNotNull(rep_null_value);
       this.rep_null_value = rep_null_value;
       return this;
@@ -1796,7 +1791,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
-    public Builder pack_null_value(List<NullValue> pack_null_value) {
+    public Builder pack_null_value(List<Void> pack_null_value) {
       Internal.checkElementsNotNull(pack_null_value);
       this.pack_null_value = pack_null_value;
       return this;
@@ -1838,25 +1833,25 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
-    public Builder map_int32_struct(Map<Integer, Struct> map_int32_struct) {
+    public Builder map_int32_struct(Map<Integer, Map<String, ?>> map_int32_struct) {
       Internal.checkElementsNotNull(map_int32_struct);
       this.map_int32_struct = map_int32_struct;
       return this;
     }
 
-    public Builder map_int32_list_value(Map<Integer, ListValue> map_int32_list_value) {
+    public Builder map_int32_list_value(Map<Integer, List<?>> map_int32_list_value) {
       Internal.checkElementsNotNull(map_int32_list_value);
       this.map_int32_list_value = map_int32_list_value;
       return this;
     }
 
-    public Builder map_int32_value(Map<Integer, Value> map_int32_value) {
+    public Builder map_int32_value(Map<Integer, Object> map_int32_value) {
       Internal.checkElementsNotNull(map_int32_value);
       this.map_int32_value = map_int32_value;
       return this;
     }
 
-    public Builder map_int32_null_value(Map<Integer, NullValue> map_int32_null_value) {
+    public Builder map_int32_null_value(Map<Integer, Void> map_int32_null_value) {
       Internal.checkElementsNotNull(map_int32_null_value);
       this.map_int32_null_value = map_int32_null_value;
       return this;
@@ -1939,7 +1934,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
-    public Builder oneof_struct(Struct oneof_struct) {
+    public Builder oneof_struct(Map<String, ?> oneof_struct) {
       this.oneof_struct = oneof_struct;
       this.oneof_string = null;
       this.oneof_int32 = null;
@@ -1952,7 +1947,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
-    public Builder oneof_list_value(ListValue oneof_list_value) {
+    public Builder oneof_list_value(List<?> oneof_list_value) {
       this.oneof_list_value = oneof_list_value;
       this.oneof_string = null;
       this.oneof_int32 = null;
@@ -2172,13 +2167,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private ProtoAdapter<Map<Integer, Duration>> map_int32_duration;
 
-    private ProtoAdapter<Map<Integer, Struct>> map_int32_struct;
+    private ProtoAdapter<Map<Integer, Map<String, ?>>> map_int32_struct;
 
-    private ProtoAdapter<Map<Integer, ListValue>> map_int32_list_value;
+    private ProtoAdapter<Map<Integer, List<?>>> map_int32_list_value;
 
-    private ProtoAdapter<Map<Integer, Value>> map_int32_value;
+    private ProtoAdapter<Map<Integer, Object>> map_int32_value;
 
-    private ProtoAdapter<Map<Integer, NullValue>> map_int32_null_value;
+    private ProtoAdapter<Map<Integer, Void>> map_int32_null_value;
 
     private ProtoAdapter<Map<Integer, Unit>> map_int32_empty;
 
@@ -2208,13 +2203,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum)
           + NestedMessage.ADAPTER.encodedSizeWithTag(17, value.nested_message)
           + AnyMessage.ADAPTER.encodedSizeWithTag(18, value.any)
-          + Duration.ADAPTER.encodedSizeWithTag(19, value.duration)
-          + Struct.ADAPTER.encodedSizeWithTag(20, value.struct)
-          + ListValue.ADAPTER.encodedSizeWithTag(21, value.list_value)
-          + Value.ADAPTER.encodedSizeWithTag(22, value.value)
-          + NullValue.ADAPTER.encodedSizeWithTag(23, value.null_value)
-          + Unit.ADAPTER.encodedSizeWithTag(24, value.empty)
-          + Instant.ADAPTER.encodedSizeWithTag(25, value.timestamp)
+          + ProtoAdapter.DURATION.encodedSizeWithTag(19, value.duration)
+          + ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(20, value.struct)
+          + ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21, value.list_value)
+          + ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22, value.value)
+          + ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23, value.null_value)
+          + ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty)
+          + ProtoAdapter.TIMESTAMP.encodedSizeWithTag(25, value.timestamp)
           + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
           + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
           + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
@@ -2233,13 +2228,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum)
           + NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message)
           + AnyMessage.ADAPTER.asRepeated().encodedSizeWithTag(218, value.rep_any)
-          + Duration.ADAPTER.asRepeated().encodedSizeWithTag(219, value.rep_duration)
-          + Struct.ADAPTER.asRepeated().encodedSizeWithTag(220, value.rep_struct)
-          + ListValue.ADAPTER.asRepeated().encodedSizeWithTag(221, value.rep_list_value)
-          + Value.ADAPTER.asRepeated().encodedSizeWithTag(222, value.rep_value)
-          + NullValue.ADAPTER.asRepeated().encodedSizeWithTag(223, value.rep_null_value)
-          + Unit.ADAPTER.asRepeated().encodedSizeWithTag(224, value.rep_empty)
-          + Instant.ADAPTER.asRepeated().encodedSizeWithTag(225, value.rep_timestamp)
+          + ProtoAdapter.DURATION.asRepeated().encodedSizeWithTag(219, value.rep_duration)
+          + ProtoAdapter.STRUCT_MAP.asRepeated().encodedSizeWithTag(220, value.rep_struct)
+          + ProtoAdapter.STRUCT_LIST.asRepeated().encodedSizeWithTag(221, value.rep_list_value)
+          + ProtoAdapter.STRUCT_VALUE.asRepeated().encodedSizeWithTag(222, value.rep_value)
+          + ProtoAdapter.STRUCT_NULL.asRepeated().encodedSizeWithTag(223, value.rep_null_value)
+          + ProtoAdapter.EMPTY.asRepeated().encodedSizeWithTag(224, value.rep_empty)
+          + ProtoAdapter.TIMESTAMP.asRepeated().encodedSizeWithTag(225, value.rep_timestamp)
           + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
           + ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32)
           + ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32)
@@ -2254,7 +2249,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float)
           + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double)
           + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum)
-          + NullValue.ADAPTER.asPacked().encodedSizeWithTag(323, value.pack_null_value)
+          + ProtoAdapter.STRUCT_NULL.asPacked().encodedSizeWithTag(323, value.pack_null_value)
           + map_int32_int32Adapter().encodedSizeWithTag(501, value.map_int32_int32)
           + map_string_stringAdapter().encodedSizeWithTag(502, value.map_string_string)
           + map_string_messageAdapter().encodedSizeWithTag(503, value.map_string_message)
@@ -2271,11 +2266,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           + ProtoAdapter.INT32.encodedSizeWithTag(602, value.oneof_int32)
           + NestedMessage.ADAPTER.encodedSizeWithTag(603, value.oneof_nested_message)
           + AnyMessage.ADAPTER.encodedSizeWithTag(618, value.oneof_any)
-          + Duration.ADAPTER.encodedSizeWithTag(619, value.oneof_duration)
-          + Struct.ADAPTER.encodedSizeWithTag(620, value.oneof_struct)
-          + ListValue.ADAPTER.encodedSizeWithTag(621, value.oneof_list_value)
-          + Unit.ADAPTER.encodedSizeWithTag(624, value.oneof_empty)
-          + Instant.ADAPTER.encodedSizeWithTag(625, value.oneof_timestamp)
+          + ProtoAdapter.DURATION.encodedSizeWithTag(619, value.oneof_duration)
+          + ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(620, value.oneof_struct)
+          + ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(621, value.oneof_list_value)
+          + ProtoAdapter.EMPTY.encodedSizeWithTag(624, value.oneof_empty)
+          + ProtoAdapter.TIMESTAMP.encodedSizeWithTag(625, value.oneof_timestamp)
           + value.unknownFields().size();
     }
 
@@ -2299,13 +2294,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.nested_enum);
       NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.nested_message);
       AnyMessage.ADAPTER.encodeWithTag(writer, 18, value.any);
-      Duration.ADAPTER.encodeWithTag(writer, 19, value.duration);
-      Struct.ADAPTER.encodeWithTag(writer, 20, value.struct);
-      ListValue.ADAPTER.encodeWithTag(writer, 21, value.list_value);
-      Value.ADAPTER.encodeWithTag(writer, 22, value.value);
-      NullValue.ADAPTER.encodeWithTag(writer, 23, value.null_value);
-      Unit.ADAPTER.encodeWithTag(writer, 24, value.empty);
-      Instant.ADAPTER.encodeWithTag(writer, 25, value.timestamp);
+      ProtoAdapter.DURATION.encodeWithTag(writer, 19, value.duration);
+      ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct);
+      ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21, value.list_value);
+      ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value);
+      ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23, value.null_value);
+      ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty);
+      ProtoAdapter.TIMESTAMP.encodeWithTag(writer, 25, value.timestamp);
       ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
       ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32);
       ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32);
@@ -2324,13 +2319,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 216, value.rep_nested_enum);
       NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 217, value.rep_nested_message);
       AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 218, value.rep_any);
-      Duration.ADAPTER.asRepeated().encodeWithTag(writer, 219, value.rep_duration);
-      Struct.ADAPTER.asRepeated().encodeWithTag(writer, 220, value.rep_struct);
-      ListValue.ADAPTER.asRepeated().encodeWithTag(writer, 221, value.rep_list_value);
-      Value.ADAPTER.asRepeated().encodeWithTag(writer, 222, value.rep_value);
-      NullValue.ADAPTER.asRepeated().encodeWithTag(writer, 223, value.rep_null_value);
-      Unit.ADAPTER.asRepeated().encodeWithTag(writer, 224, value.rep_empty);
-      Instant.ADAPTER.asRepeated().encodeWithTag(writer, 225, value.rep_timestamp);
+      ProtoAdapter.DURATION.asRepeated().encodeWithTag(writer, 219, value.rep_duration);
+      ProtoAdapter.STRUCT_MAP.asRepeated().encodeWithTag(writer, 220, value.rep_struct);
+      ProtoAdapter.STRUCT_LIST.asRepeated().encodeWithTag(writer, 221, value.rep_list_value);
+      ProtoAdapter.STRUCT_VALUE.asRepeated().encodeWithTag(writer, 222, value.rep_value);
+      ProtoAdapter.STRUCT_NULL.asRepeated().encodeWithTag(writer, 223, value.rep_null_value);
+      ProtoAdapter.EMPTY.asRepeated().encodeWithTag(writer, 224, value.rep_empty);
+      ProtoAdapter.TIMESTAMP.asRepeated().encodeWithTag(writer, 225, value.rep_timestamp);
       ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
       ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32);
       ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32);
@@ -2345,7 +2340,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 312, value.pack_float);
       ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 313, value.pack_double);
       NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 316, value.pack_nested_enum);
-      NullValue.ADAPTER.asPacked().encodeWithTag(writer, 323, value.pack_null_value);
+      ProtoAdapter.STRUCT_NULL.asPacked().encodeWithTag(writer, 323, value.pack_null_value);
       map_int32_int32Adapter().encodeWithTag(writer, 501, value.map_int32_int32);
       map_string_stringAdapter().encodeWithTag(writer, 502, value.map_string_string);
       map_string_messageAdapter().encodeWithTag(writer, 503, value.map_string_message);
@@ -2362,11 +2357,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32);
       NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message);
       AnyMessage.ADAPTER.encodeWithTag(writer, 618, value.oneof_any);
-      Duration.ADAPTER.encodeWithTag(writer, 619, value.oneof_duration);
-      Struct.ADAPTER.encodeWithTag(writer, 620, value.oneof_struct);
-      ListValue.ADAPTER.encodeWithTag(writer, 621, value.oneof_list_value);
-      Unit.ADAPTER.encodeWithTag(writer, 624, value.oneof_empty);
-      Instant.ADAPTER.encodeWithTag(writer, 625, value.oneof_timestamp);
+      ProtoAdapter.DURATION.encodeWithTag(writer, 619, value.oneof_duration);
+      ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 620, value.oneof_struct);
+      ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 621, value.oneof_list_value);
+      ProtoAdapter.EMPTY.encodeWithTag(writer, 624, value.oneof_empty);
+      ProtoAdapter.TIMESTAMP.encodeWithTag(writer, 625, value.oneof_timestamp);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -2401,20 +2396,20 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           }
           case 17: builder.nested_message(NestedMessage.ADAPTER.decode(reader)); break;
           case 18: builder.any(AnyMessage.ADAPTER.decode(reader)); break;
-          case 19: builder.duration(Duration.ADAPTER.decode(reader)); break;
-          case 20: builder.struct(Struct.ADAPTER.decode(reader)); break;
-          case 21: builder.list_value(ListValue.ADAPTER.decode(reader)); break;
-          case 22: builder.value(Value.ADAPTER.decode(reader)); break;
+          case 19: builder.duration(ProtoAdapter.DURATION.decode(reader)); break;
+          case 20: builder.struct(ProtoAdapter.STRUCT_MAP.decode(reader)); break;
+          case 21: builder.list_value(ProtoAdapter.STRUCT_LIST.decode(reader)); break;
+          case 22: builder.value(ProtoAdapter.STRUCT_VALUE.decode(reader)); break;
           case 23: {
             try {
-              builder.null_value(NullValue.ADAPTER.decode(reader));
+              builder.null_value(ProtoAdapter.STRUCT_NULL.decode(reader));
             } catch (ProtoAdapter.EnumConstantNotFoundException e) {
               builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
             }
             break;
           }
-          case 24: builder.empty(Unit.ADAPTER.decode(reader)); break;
-          case 25: builder.timestamp(Instant.ADAPTER.decode(reader)); break;
+          case 24: builder.empty(ProtoAdapter.EMPTY.decode(reader)); break;
+          case 25: builder.timestamp(ProtoAdapter.TIMESTAMP.decode(reader)); break;
           case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
           case 202: builder.rep_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
           case 203: builder.rep_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
@@ -2440,20 +2435,20 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           }
           case 217: builder.rep_nested_message.add(NestedMessage.ADAPTER.decode(reader)); break;
           case 218: builder.rep_any.add(AnyMessage.ADAPTER.decode(reader)); break;
-          case 219: builder.rep_duration.add(Duration.ADAPTER.decode(reader)); break;
-          case 220: builder.rep_struct.add(Struct.ADAPTER.decode(reader)); break;
-          case 221: builder.rep_list_value.add(ListValue.ADAPTER.decode(reader)); break;
-          case 222: builder.rep_value.add(Value.ADAPTER.decode(reader)); break;
+          case 219: builder.rep_duration.add(ProtoAdapter.DURATION.decode(reader)); break;
+          case 220: builder.rep_struct.add(ProtoAdapter.STRUCT_MAP.decode(reader)); break;
+          case 221: builder.rep_list_value.add(ProtoAdapter.STRUCT_LIST.decode(reader)); break;
+          case 222: builder.rep_value.add(ProtoAdapter.STRUCT_VALUE.decode(reader)); break;
           case 223: {
             try {
-              builder.rep_null_value.add(NullValue.ADAPTER.decode(reader));
+              builder.rep_null_value.add(ProtoAdapter.STRUCT_NULL.decode(reader));
             } catch (ProtoAdapter.EnumConstantNotFoundException e) {
               builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
             }
             break;
           }
-          case 224: builder.rep_empty.add(Unit.ADAPTER.decode(reader)); break;
-          case 225: builder.rep_timestamp.add(Instant.ADAPTER.decode(reader)); break;
+          case 224: builder.rep_empty.add(ProtoAdapter.EMPTY.decode(reader)); break;
+          case 225: builder.rep_timestamp.add(ProtoAdapter.TIMESTAMP.decode(reader)); break;
           case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
           case 302: builder.pack_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
           case 303: builder.pack_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
@@ -2477,7 +2472,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           }
           case 323: {
             try {
-              builder.pack_null_value.add(NullValue.ADAPTER.decode(reader));
+              builder.pack_null_value.add(ProtoAdapter.STRUCT_NULL.decode(reader));
             } catch (ProtoAdapter.EnumConstantNotFoundException e) {
               builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
             }
@@ -2499,11 +2494,11 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 602: builder.oneof_int32(ProtoAdapter.INT32.decode(reader)); break;
           case 603: builder.oneof_nested_message(NestedMessage.ADAPTER.decode(reader)); break;
           case 618: builder.oneof_any(AnyMessage.ADAPTER.decode(reader)); break;
-          case 619: builder.oneof_duration(Duration.ADAPTER.decode(reader)); break;
-          case 620: builder.oneof_struct(Struct.ADAPTER.decode(reader)); break;
-          case 621: builder.oneof_list_value(ListValue.ADAPTER.decode(reader)); break;
-          case 624: builder.oneof_empty(Unit.ADAPTER.decode(reader)); break;
-          case 625: builder.oneof_timestamp(Instant.ADAPTER.decode(reader)); break;
+          case 619: builder.oneof_duration(ProtoAdapter.DURATION.decode(reader)); break;
+          case 620: builder.oneof_struct(ProtoAdapter.STRUCT_MAP.decode(reader)); break;
+          case 621: builder.oneof_list_value(ProtoAdapter.STRUCT_LIST.decode(reader)); break;
+          case 624: builder.oneof_empty(ProtoAdapter.EMPTY.decode(reader)); break;
+          case 625: builder.oneof_timestamp(ProtoAdapter.TIMESTAMP.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -2518,35 +2513,35 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       Builder builder = value.newBuilder();
       if (builder.nested_message != null) builder.nested_message = NestedMessage.ADAPTER.redact(builder.nested_message);
       if (builder.any != null) builder.any = AnyMessage.ADAPTER.redact(builder.any);
-      if (builder.duration != null) builder.duration = Duration.ADAPTER.redact(builder.duration);
-      if (builder.struct != null) builder.struct = Struct.ADAPTER.redact(builder.struct);
-      if (builder.list_value != null) builder.list_value = ListValue.ADAPTER.redact(builder.list_value);
-      if (builder.value != null) builder.value = Value.ADAPTER.redact(builder.value);
-      if (builder.empty != null) builder.empty = Unit.ADAPTER.redact(builder.empty);
-      if (builder.timestamp != null) builder.timestamp = Instant.ADAPTER.redact(builder.timestamp);
+      if (builder.duration != null) builder.duration = ProtoAdapter.DURATION.redact(builder.duration);
+      if (builder.struct != null) builder.struct = ProtoAdapter.STRUCT_MAP.redact(builder.struct);
+      if (builder.list_value != null) builder.list_value = ProtoAdapter.STRUCT_LIST.redact(builder.list_value);
+      if (builder.value != null) builder.value = ProtoAdapter.STRUCT_VALUE.redact(builder.value);
+      if (builder.empty != null) builder.empty = ProtoAdapter.EMPTY.redact(builder.empty);
+      if (builder.timestamp != null) builder.timestamp = ProtoAdapter.TIMESTAMP.redact(builder.timestamp);
       Internal.redactElements(builder.rep_nested_message, NestedMessage.ADAPTER);
       Internal.redactElements(builder.rep_any, AnyMessage.ADAPTER);
-      Internal.redactElements(builder.rep_duration, Duration.ADAPTER);
-      Internal.redactElements(builder.rep_struct, Struct.ADAPTER);
-      Internal.redactElements(builder.rep_list_value, ListValue.ADAPTER);
-      Internal.redactElements(builder.rep_value, Value.ADAPTER);
-      Internal.redactElements(builder.rep_empty, Unit.ADAPTER);
-      Internal.redactElements(builder.rep_timestamp, Instant.ADAPTER);
+      Internal.redactElements(builder.rep_duration, ProtoAdapter.DURATION);
+      Internal.redactElements(builder.rep_struct, ProtoAdapter.STRUCT_MAP);
+      Internal.redactElements(builder.rep_list_value, ProtoAdapter.STRUCT_LIST);
+      Internal.redactElements(builder.rep_value, ProtoAdapter.STRUCT_VALUE);
+      Internal.redactElements(builder.rep_empty, ProtoAdapter.EMPTY);
+      Internal.redactElements(builder.rep_timestamp, ProtoAdapter.TIMESTAMP);
       Internal.redactElements(builder.map_string_message, NestedMessage.ADAPTER);
       Internal.redactElements(builder.map_int32_any, AnyMessage.ADAPTER);
-      Internal.redactElements(builder.map_int32_duration, Duration.ADAPTER);
-      Internal.redactElements(builder.map_int32_struct, Struct.ADAPTER);
-      Internal.redactElements(builder.map_int32_list_value, ListValue.ADAPTER);
-      Internal.redactElements(builder.map_int32_value, Value.ADAPTER);
-      Internal.redactElements(builder.map_int32_empty, Unit.ADAPTER);
-      Internal.redactElements(builder.map_int32_timestamp, Instant.ADAPTER);
+      Internal.redactElements(builder.map_int32_duration, ProtoAdapter.DURATION);
+      Internal.redactElements(builder.map_int32_struct, ProtoAdapter.STRUCT_MAP);
+      Internal.redactElements(builder.map_int32_list_value, ProtoAdapter.STRUCT_LIST);
+      Internal.redactElements(builder.map_int32_value, ProtoAdapter.STRUCT_VALUE);
+      Internal.redactElements(builder.map_int32_empty, ProtoAdapter.EMPTY);
+      Internal.redactElements(builder.map_int32_timestamp, ProtoAdapter.TIMESTAMP);
       if (builder.oneof_nested_message != null) builder.oneof_nested_message = NestedMessage.ADAPTER.redact(builder.oneof_nested_message);
       if (builder.oneof_any != null) builder.oneof_any = AnyMessage.ADAPTER.redact(builder.oneof_any);
-      if (builder.oneof_duration != null) builder.oneof_duration = Duration.ADAPTER.redact(builder.oneof_duration);
-      if (builder.oneof_struct != null) builder.oneof_struct = Struct.ADAPTER.redact(builder.oneof_struct);
-      if (builder.oneof_list_value != null) builder.oneof_list_value = ListValue.ADAPTER.redact(builder.oneof_list_value);
-      if (builder.oneof_empty != null) builder.oneof_empty = Unit.ADAPTER.redact(builder.oneof_empty);
-      if (builder.oneof_timestamp != null) builder.oneof_timestamp = Instant.ADAPTER.redact(builder.oneof_timestamp);
+      if (builder.oneof_duration != null) builder.oneof_duration = ProtoAdapter.DURATION.redact(builder.oneof_duration);
+      if (builder.oneof_struct != null) builder.oneof_struct = ProtoAdapter.STRUCT_MAP.redact(builder.oneof_struct);
+      if (builder.oneof_list_value != null) builder.oneof_list_value = ProtoAdapter.STRUCT_LIST.redact(builder.oneof_list_value);
+      if (builder.oneof_empty != null) builder.oneof_empty = ProtoAdapter.EMPTY.redact(builder.oneof_empty);
+      if (builder.oneof_timestamp != null) builder.oneof_timestamp = ProtoAdapter.TIMESTAMP.redact(builder.oneof_timestamp);
       builder.clearUnknownFields();
       return builder.build();
     }
@@ -2599,43 +2594,43 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     private ProtoAdapter<Map<Integer, Duration>> map_int32_durationAdapter() {
       ProtoAdapter<Map<Integer, Duration>> result = map_int32_duration;
       if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, Duration.ADAPTER);
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.DURATION);
         map_int32_duration = result;
       }
       return result;
     }
 
-    private ProtoAdapter<Map<Integer, Struct>> map_int32_structAdapter() {
-      ProtoAdapter<Map<Integer, Struct>> result = map_int32_struct;
+    private ProtoAdapter<Map<Integer, Map<String, ?>>> map_int32_structAdapter() {
+      ProtoAdapter<Map<Integer, Map<String, ?>>> result = map_int32_struct;
       if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, Struct.ADAPTER);
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_MAP);
         map_int32_struct = result;
       }
       return result;
     }
 
-    private ProtoAdapter<Map<Integer, ListValue>> map_int32_list_valueAdapter() {
-      ProtoAdapter<Map<Integer, ListValue>> result = map_int32_list_value;
+    private ProtoAdapter<Map<Integer, List<?>>> map_int32_list_valueAdapter() {
+      ProtoAdapter<Map<Integer, List<?>>> result = map_int32_list_value;
       if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ListValue.ADAPTER);
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_LIST);
         map_int32_list_value = result;
       }
       return result;
     }
 
-    private ProtoAdapter<Map<Integer, Value>> map_int32_valueAdapter() {
-      ProtoAdapter<Map<Integer, Value>> result = map_int32_value;
+    private ProtoAdapter<Map<Integer, Object>> map_int32_valueAdapter() {
+      ProtoAdapter<Map<Integer, Object>> result = map_int32_value;
       if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, Value.ADAPTER);
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_VALUE);
         map_int32_value = result;
       }
       return result;
     }
 
-    private ProtoAdapter<Map<Integer, NullValue>> map_int32_null_valueAdapter() {
-      ProtoAdapter<Map<Integer, NullValue>> result = map_int32_null_value;
+    private ProtoAdapter<Map<Integer, Void>> map_int32_null_valueAdapter() {
+      ProtoAdapter<Map<Integer, Void>> result = map_int32_null_value;
       if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, NullValue.ADAPTER);
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_NULL);
         map_int32_null_value = result;
       }
       return result;
@@ -2644,7 +2639,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     private ProtoAdapter<Map<Integer, Unit>> map_int32_emptyAdapter() {
       ProtoAdapter<Map<Integer, Unit>> result = map_int32_empty;
       if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, Unit.ADAPTER);
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.EMPTY);
         map_int32_empty = result;
       }
       return result;
@@ -2653,7 +2648,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     private ProtoAdapter<Map<Integer, Instant>> map_int32_timestampAdapter() {
       ProtoAdapter<Map<Integer, Instant>> result = map_int32_timestamp;
       if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, Instant.ADAPTER);
+        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.TIMESTAMP);
         map_int32_timestamp = result;
       }
       return result;
