@@ -114,23 +114,23 @@ public final class JavaGenerator {
     }
   });
 
-  private static final Map<ProtoType, ClassName> BUILT_IN_TYPES_MAP =
-      ImmutableMap.<ProtoType, ClassName>builder()
-          .put(ProtoType.BOOL, (ClassName) TypeName.BOOLEAN.box())
+  private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
+      ImmutableMap.<ProtoType, TypeName>builder()
+          .put(ProtoType.BOOL, TypeName.BOOLEAN.box())
           .put(ProtoType.BYTES, ClassName.get(ByteString.class))
-          .put(ProtoType.DOUBLE, (ClassName) TypeName.DOUBLE.box())
-          .put(ProtoType.FLOAT, (ClassName) TypeName.FLOAT.box())
-          .put(ProtoType.FIXED32, (ClassName) TypeName.INT.box())
-          .put(ProtoType.FIXED64, (ClassName) TypeName.LONG.box())
-          .put(ProtoType.INT32, (ClassName) TypeName.INT.box())
-          .put(ProtoType.INT64, (ClassName) TypeName.LONG.box())
-          .put(ProtoType.SFIXED32, (ClassName) TypeName.INT.box())
-          .put(ProtoType.SFIXED64, (ClassName) TypeName.LONG.box())
-          .put(ProtoType.SINT32, (ClassName) TypeName.INT.box())
-          .put(ProtoType.SINT64, (ClassName) TypeName.LONG.box())
+          .put(ProtoType.DOUBLE, TypeName.DOUBLE.box())
+          .put(ProtoType.FLOAT, TypeName.FLOAT.box())
+          .put(ProtoType.FIXED32, TypeName.INT.box())
+          .put(ProtoType.FIXED64, TypeName.LONG.box())
+          .put(ProtoType.INT32, TypeName.INT.box())
+          .put(ProtoType.INT64, TypeName.LONG.box())
+          .put(ProtoType.SFIXED32, TypeName.INT.box())
+          .put(ProtoType.SFIXED64, TypeName.LONG.box())
+          .put(ProtoType.SINT32, TypeName.INT.box())
+          .put(ProtoType.SINT64, TypeName.LONG.box())
           .put(ProtoType.STRING, ClassName.get(String.class))
-          .put(ProtoType.UINT32, (ClassName) TypeName.INT.box())
-          .put(ProtoType.UINT64, (ClassName) TypeName.LONG.box())
+          .put(ProtoType.UINT32, TypeName.INT.box())
+          .put(ProtoType.UINT64, TypeName.LONG.box())
           .put(ProtoType.ANY, ClassName.get("com.squareup.wire", "AnyMessage"))
           .put(ProtoType.DURATION, ClassName.get("com.squareup.wire", "Duration"))
           .put(ProtoType.TIMESTAMP, ClassName.get("com.squareup.wire", "Instant"))
@@ -190,13 +190,13 @@ public final class JavaGenerator {
   });
 
   private final Schema schema;
-  private final ImmutableMap<ProtoType, ClassName> nameToJavaName;
+  private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
   private final Profile profile;
   private final boolean emitAndroid;
   private final boolean emitAndroidAnnotations;
   private final boolean emitCompact;
 
-  private JavaGenerator(Schema schema, Map<ProtoType, ClassName> nameToJavaName, Profile profile,
+  private JavaGenerator(Schema schema, Map<ProtoType, TypeName> nameToJavaName, Profile profile,
       boolean emitAndroid, boolean emitAndroidAnnotations, boolean emitCompact) {
     this.schema = schema;
     this.nameToJavaName = ImmutableMap.copyOf(nameToJavaName);
@@ -227,7 +227,7 @@ public final class JavaGenerator {
   }
 
   public static JavaGenerator get(Schema schema) {
-    Map<ProtoType, ClassName> nameToJavaName = new LinkedHashMap<>();
+    Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>();
 
     for (ProtoFile protoFile : schema.getProtoFiles()) {
       String javaPackage = javaPackage(protoFile);
@@ -244,7 +244,7 @@ public final class JavaGenerator {
     return new JavaGenerator(schema, nameToJavaName, new Profile(), false, false, false);
   }
 
-  private static void putAll(Map<ProtoType, ClassName> wireToJava, String javaPackage,
+  private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
       ClassName enclosingClassName, List<Type> types) {
     for (Type type : types) {
       ClassName className = enclosingClassName != null
@@ -281,8 +281,17 @@ public final class JavaGenerator {
     TypeName profileJavaName = profile.getTarget(protoType);
     if (profileJavaName == null) return null;
 
-    ClassName javaName = nameToJavaName.get(protoType);
+    TypeName typeName = nameToJavaName.get(protoType);
     Type type = schema.getType(protoType);
+
+    ClassName javaName;
+    if (typeName instanceof ClassName) {
+      javaName = (ClassName) typeName;
+    } else if (typeName instanceof ParameterizedTypeName) {
+      javaName = ((ParameterizedTypeName) typeName).rawType;
+    } else {
+      throw new IllegalArgumentException("Unexpected typeName :" + typeName);
+    }
     return type instanceof EnumType
         ? javaName.peerClass(javaName.simpleName() + "Adapter")
         : javaName.peerClass("Abstract" + javaName.simpleName() + "Adapter");
