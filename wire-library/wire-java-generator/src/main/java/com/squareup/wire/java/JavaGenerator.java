@@ -997,7 +997,7 @@ public final class JavaGenerator {
     for (Field field : fields) {
       int fieldTag = field.getTag();
 
-      if (isEnum(field.getType())) {
+      if (isEnum(field.getType()) && !field.getType().equals(ProtoType.STRUCT_NULL)) {
         result.beginControlFlow("case $L:", fieldTag);
         result.beginControlFlow("try");
         result.addCode(decodeAndAssign(field, nameAllocator, useBuilder));
@@ -1056,7 +1056,9 @@ public final class JavaGenerator {
     CodeBlock decode = CodeBlock.of("$L.decode(reader)", singleAdapterFor(field, nameAllocator));
     if (field.isRepeated()) {
       return useBuilder
-          ? CodeBlock.of("builder.$L.add($L)", fieldName, decode)
+          ? field.getType().equals(ProtoType.STRUCT_NULL)
+            ? CodeBlock.of("builder.$L.add(($T) $L)", fieldName, Void.class, decode)
+            : CodeBlock.of("builder.$L.add($L)", fieldName, decode)
           : CodeBlock.of("$L.add($L)", fieldName, decode);
     } else if (field.getType().isMap()) {
       return useBuilder
@@ -1064,7 +1066,9 @@ public final class JavaGenerator {
           : CodeBlock.of("$L.putAll($L)", fieldName, decode);
     } else {
       return useBuilder
-          ? CodeBlock.of("builder.$L($L)", fieldName, decode)
+          ? field.getType().equals(ProtoType.STRUCT_NULL)
+            ? CodeBlock.of("builder.$L(($T) $L)", fieldName, Void.class, decode)
+            : CodeBlock.of("builder.$L($L)", fieldName, decode)
           : CodeBlock.of("$L = $L", fieldName, decode);
     }
   }

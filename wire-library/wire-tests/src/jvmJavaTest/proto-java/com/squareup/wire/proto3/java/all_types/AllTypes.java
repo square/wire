@@ -2400,14 +2400,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 20: builder.struct(ProtoAdapter.STRUCT_MAP.decode(reader)); break;
           case 21: builder.list_value(ProtoAdapter.STRUCT_LIST.decode(reader)); break;
           case 22: builder.value(ProtoAdapter.STRUCT_VALUE.decode(reader)); break;
-          case 23: {
-            try {
-              builder.null_value(ProtoAdapter.STRUCT_NULL.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
+          case 23: builder.null_value((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
           case 24: builder.empty(ProtoAdapter.EMPTY.decode(reader)); break;
           case 25: builder.timestamp(ProtoAdapter.INSTANT.decode(reader)); break;
           case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
@@ -2439,14 +2432,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 220: builder.rep_struct.add(ProtoAdapter.STRUCT_MAP.decode(reader)); break;
           case 221: builder.rep_list_value.add(ProtoAdapter.STRUCT_LIST.decode(reader)); break;
           case 222: builder.rep_value.add(ProtoAdapter.STRUCT_VALUE.decode(reader)); break;
-          case 223: {
-            try {
-              builder.rep_null_value.add(ProtoAdapter.STRUCT_NULL.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
+          case 223: builder.rep_null_value.add((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
           case 224: builder.rep_empty.add(ProtoAdapter.EMPTY.decode(reader)); break;
           case 225: builder.rep_timestamp.add(ProtoAdapter.INSTANT.decode(reader)); break;
           case 301: builder.pack_int32.add(ProtoAdapter.INT32.decode(reader)); break;
@@ -2470,14 +2456,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             }
             break;
           }
-          case 323: {
-            try {
-              builder.pack_null_value.add(ProtoAdapter.STRUCT_NULL.decode(reader));
-            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
-              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
-            }
-            break;
-          }
+          case 323: builder.pack_null_value.add((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
           case 501: builder.map_int32_int32.putAll(map_int32_int32Adapter().decode(reader)); break;
           case 502: builder.map_string_string.putAll(map_string_stringAdapter().decode(reader)); break;
           case 503: builder.map_string_message.putAll(map_string_messageAdapter().decode(reader)); break;
