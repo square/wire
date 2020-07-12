@@ -133,8 +133,8 @@ public final class JavaGenerator {
           .put(ProtoType.UINT32, TypeName.INT.box())
           .put(ProtoType.UINT64, TypeName.LONG.box())
           .put(ProtoType.ANY, ClassName.get("com.squareup.wire", "AnyMessage"))
-          .put(ProtoType.DURATION, ClassName.get("com.squareup.wire", "Duration"))
-          .put(ProtoType.TIMESTAMP, ClassName.get("com.squareup.wire", "Instant"))
+          .put(ProtoType.DURATION, ClassName.get("java.time", "Duration"))
+          .put(ProtoType.TIMESTAMP, ClassName.get("java.time", "Instant"))
           .put(ProtoType.EMPTY, ClassName.get("kotlin", "Unit"))
           .put(ProtoType.STRUCT_MAP, ParameterizedTypeName.get(
               ClassName.get("java.util", "Map"),
@@ -319,7 +319,7 @@ public final class JavaGenerator {
     } else if (type.equals(ProtoType.DURATION)) {
       result.add("$T.$L", ADAPTER, "DURATION");
     } else if (type.equals(ProtoType.TIMESTAMP)) {
-      result.add("$T.$L", ADAPTER, "TIMESTAMP");
+      result.add("$T.$L", ADAPTER, "INSTANT");
     } else if (type.equals(ProtoType.EMPTY)) {
       result.add("$T.$L", ADAPTER, "EMPTY");
     } else if (type.equals(ProtoType.STRUCT_MAP)) {
