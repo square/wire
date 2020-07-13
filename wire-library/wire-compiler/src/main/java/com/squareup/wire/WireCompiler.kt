@@ -120,7 +120,7 @@ class WireCompiler internal constructor(
       )
     }
 
-    val wireRun = Closer.create().use { closer ->
+    Closer.create().use { closer ->
       val sources = protoPaths.map { fs.getPath(it) }
       val directories = directoryPaths(closer, sources)
 
@@ -136,7 +136,7 @@ class WireCompiler internal constructor(
         protoPath = listOf()
       }
 
-      return@use WireRun(
+      val wireRun = WireRun(
           sourcePath = sourcePath,
           protoPath = protoPath,
           treeShakingRoots = treeShakingRoots,
@@ -144,9 +144,9 @@ class WireCompiler internal constructor(
           targets = targets,
           proto3Preview = proto3Preview == "UNSUPPORTED"
       )
-    }
 
-    wireRun.execute(fs, log)
+      wireRun.execute(fs, log)
+    }
   }
 
   /**
@@ -160,7 +160,7 @@ class WireCompiler internal constructor(
       directories[source] = when {
         Files.isRegularFile(source) -> {
           val sourceFs = FileSystems.newFileSystem(source, javaClass.classLoader)
-              .also { closer.register(it) }
+          closer.register(sourceFs)
           sourceFs.rootDirectories.single()
         }
         else -> source
