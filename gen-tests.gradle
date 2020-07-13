@@ -264,7 +264,7 @@ task generateProto3JavaTests(type: JavaExec) {
   main = 'com.squareup.wire.WireCompiler'
   args = [
           '--proto_path=wire-library/wire-tests/src/commonTest/proto3/java',
-          '--java_out=wire-library/wire-tests/src/commonTest/proto-java',
+          '--java_out=wire-library/wire-tests/src/jvmJavaTest/proto-java',
           '--proto3-preview=UNSUPPORTED',
           'all_types.proto',
           'person.proto',
