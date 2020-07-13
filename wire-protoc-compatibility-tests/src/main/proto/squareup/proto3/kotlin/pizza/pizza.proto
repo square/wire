@@ -15,12 +15,12 @@
  */
 syntax = "proto3";
 
-package squareup.proto3.pizza;
+package squareup.proto3.kotlin.pizza;
 
-import 'google/protobuf/any.proto';
-import 'google/protobuf/duration.proto';
-import 'google/protobuf/struct.proto';
-import 'google/protobuf/timestamp.proto';
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 
 message PizzaDelivery {
   string phone_number = 1;

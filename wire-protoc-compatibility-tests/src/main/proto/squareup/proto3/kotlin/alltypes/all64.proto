@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 syntax = "proto3";
-package squareup.proto3.alltypes;
+package squareup.proto3.kotlin.alltypes;
 
 message All64 {
   // Prefixing so the generated code doesn't rename it weirdly.

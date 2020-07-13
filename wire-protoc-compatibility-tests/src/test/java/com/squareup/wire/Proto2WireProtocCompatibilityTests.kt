@@ -16,22 +16,22 @@
 package com.squareup.wire
 
 import com.google.protobuf.ExtensionRegistry
-import com.squareup.wire.proto2.simple.SimpleMessage
-import com.squareup.wire.proto2.simple.SimpleMessageOuterClass
+import com.squareup.wire.proto2.kotlin.simple.SimpleMessageOuterClass
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import squareup.proto2.alltypes.AllTypes
-import squareup.proto2.alltypes.AllTypesOuterClass
-import squareup.proto2.alltypes.AllTypesOuterClass.extOptBool
-import squareup.proto2.alltypes.AllTypesOuterClass.extPackBool
-import squareup.proto2.alltypes.AllTypesOuterClass.extRepBool
+import squareup.proto2.kotlin.alltypes.AllTypesOuterClass
+import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extOptBool
+import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extPackBool
+import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extRepBool
+import com.squareup.wire.proto2.kotlin.simple.SimpleMessage as SimpleMessageK
+import squareup.proto2.kotlin.alltypes.AllTypes as AllTypesK
 
 class Proto2WireProtocCompatibilityTests {
   @Test fun simpleMessage() {
-    val wireMessage = SimpleMessage(
-        optional_nested_msg = SimpleMessage.NestedMessage(806),
-        no_default_nested_enum = SimpleMessage.NestedEnum.BAR,
+    val wireMessage = SimpleMessageK(
+        optional_nested_msg = SimpleMessageK.NestedMessage(806),
+        no_default_nested_enum = SimpleMessageK.NestedEnum.BAR,
         repeated_double = listOf(1.0, 33.0),
         required_int32 = 46,
         other = "hello"
@@ -53,7 +53,7 @@ class Proto2WireProtocCompatibilityTests {
     assertThat(encodedWireMessage).isEqualTo(encodedGoogleMessage)
 
     val wireMessageDecodedFromGoogleMessage =
-        SimpleMessage.ADAPTER.decode(encodedGoogleMessage)
+        SimpleMessageK.ADAPTER.decode(encodedGoogleMessage)
     val googleMessageDecodedFromWireMessage =
         SimpleMessageOuterClass.SimpleMessage.parseFrom(encodedWireMessage)
 
@@ -62,19 +62,19 @@ class Proto2WireProtocCompatibilityTests {
   }
 
   @Test fun allTypesSerialization() {
-    val byteArrayWire = AllTypes.ADAPTER.encode(defaultAllTypesWire)
+    val byteArrayWire = AllTypesK.ADAPTER.encode(defaultAllTypesWire)
     val byteArrayProtoc = defaultAllTypesProtoc.toByteArray()
 
-    assertThat(AllTypes.ADAPTER.decode(byteArrayProtoc)).isEqualTo(defaultAllTypesWire)
+    assertThat(AllTypesK.ADAPTER.decode(byteArrayProtoc)).isEqualTo(defaultAllTypesWire)
     assertThat(AllTypesOuterClass.AllTypes.parseFrom(byteArrayWire, allTypesRegistry))
         .isEqualTo(defaultAllTypesProtoc)
   }
 
   @Test fun allTypesSerializationWithEmptyOrIdentityValues() {
-    val byteArrayWire = AllTypes.ADAPTER.encode(identityAllTypesWire)
+    val byteArrayWire = AllTypesK.ADAPTER.encode(identityAllTypesWire)
     val byteArrayProtoc = identityAllTypesProtoc.toByteArray()
 
-    assertThat(AllTypes.ADAPTER.decode(byteArrayProtoc)).isEqualTo(identityAllTypesWire)
+    assertThat(AllTypesK.ADAPTER.decode(byteArrayProtoc)).isEqualTo(identityAllTypesWire)
 
     assertThat(AllTypesOuterClass.AllTypes.parseFrom(byteArrayWire, allTypesRegistry))
         .isEqualTo(identityAllTypesProtoc)
@@ -87,7 +87,7 @@ class Proto2WireProtocCompatibilityTests {
       add(extPackBool)
     }
 
-    private val defaultAllTypesWire = AllTypes(
+    private val defaultAllTypesWire = AllTypesK(
         opt_int32 = 111,
         opt_uint32 = 112,
         opt_sint32 = 113,
@@ -103,8 +103,8 @@ class Proto2WireProtocCompatibilityTests {
         opt_double = 123.0,
         opt_string = "124",
         opt_bytes = ByteString.of(123, 125),
-        opt_nested_enum = AllTypes.NestedEnum.A,
-        opt_nested_message = AllTypes.NestedMessage(a = 999),
+        opt_nested_enum = AllTypesK.NestedEnum.A,
+        opt_nested_message = AllTypesK.NestedMessage(a = 999),
         req_int32 = 111,
         req_uint32 = 112,
         req_sint32 = 113,
@@ -120,8 +120,8 @@ class Proto2WireProtocCompatibilityTests {
         req_double = 123.0,
         req_string = "124",
         req_bytes = ByteString.of(123, 125),
-        req_nested_enum = AllTypes.NestedEnum.A,
-        req_nested_message = AllTypes.NestedMessage(a = 999),
+        req_nested_enum = AllTypesK.NestedEnum.A,
+        req_nested_message = AllTypesK.NestedMessage(a = 999),
         rep_int32 = list(111),
         rep_uint32 = list(112),
         rep_sint32 = list(113),
@@ -137,8 +137,8 @@ class Proto2WireProtocCompatibilityTests {
         rep_double = list(123.0),
         rep_string = list("124"),
         rep_bytes = list(ByteString.of(123, 125)),
-        rep_nested_enum = list(AllTypes.NestedEnum.A),
-        rep_nested_message = list(AllTypes.NestedMessage(a = 999)),
+        rep_nested_enum = list(AllTypesK.NestedEnum.A),
+        rep_nested_message = list(AllTypesK.NestedMessage(a = 999)),
         pack_int32 = list(111),
         pack_uint32 = list(112),
         pack_sint32 = list(113),
@@ -152,11 +152,11 @@ class Proto2WireProtocCompatibilityTests {
         pack_bool = list(true),
         pack_float = list(122.0F),
         pack_double = list(123.0),
-        pack_nested_enum = list(AllTypes.NestedEnum.A),
+        pack_nested_enum = list(AllTypesK.NestedEnum.A),
         map_int32_int32 = mapOf(1 to 2),
         map_string_string = mapOf("key" to "value"),
-        map_string_message = mapOf("message" to AllTypes.NestedMessage(a = 1)),
-        map_string_enum = mapOf("enum" to AllTypes.NestedEnum.A),
+        map_string_message = mapOf("message" to AllTypesK.NestedMessage(a = 1)),
+        map_string_enum = mapOf("enum" to AllTypesK.NestedEnum.A),
         oneof_int32 = 0,
         ext_opt_bool = true,
         ext_rep_bool = list(true),
@@ -244,7 +244,7 @@ class Proto2WireProtocCompatibilityTests {
         .setExtension(extPackBool, list(true))
         .build()
 
-    private val identityAllTypesWire = AllTypes(
+    private val identityAllTypesWire = AllTypesK(
         req_int32 = 0,
         req_uint32 = 0,
         req_sint32 = 0,
@@ -260,8 +260,8 @@ class Proto2WireProtocCompatibilityTests {
         req_double = 0.0,
         req_string = "",
         req_bytes = ByteString.EMPTY,
-        req_nested_enum = AllTypes.NestedEnum.UNKNOWN,
-        req_nested_message = AllTypes.NestedMessage(a = 0),
+        req_nested_enum = AllTypesK.NestedEnum.UNKNOWN,
+        req_nested_message = AllTypesK.NestedMessage(a = 0),
         rep_int32 = emptyList(),
         rep_uint32 = emptyList(),
         rep_sint32 = emptyList(),
@@ -292,10 +292,10 @@ class Proto2WireProtocCompatibilityTests {
         pack_bool = list(false),
         pack_float = list(0F),
         pack_double = list(0.0),
-        pack_nested_enum = list(AllTypes.NestedEnum.UNKNOWN),
+        pack_nested_enum = list(AllTypesK.NestedEnum.UNKNOWN),
         map_int32_int32 = mapOf(0 to 0),
-        map_string_message = mapOf("" to AllTypes.NestedMessage()),
-        map_string_enum = mapOf("" to AllTypes.NestedEnum.UNKNOWN),
+        map_string_message = mapOf("" to AllTypesK.NestedMessage()),
+        map_string_enum = mapOf("" to AllTypesK.NestedEnum.UNKNOWN),
         ext_opt_bool = false,
         ext_rep_bool = list(false),
         ext_pack_bool = list(false)
@@ -358,7 +358,7 @@ class Proto2WireProtocCompatibilityTests {
         .setExtension(extPackBool, list(false))
         .build()
 
-    private fun <T : kotlin.Any> list(t: T): List<T> {
+    private fun <T : Any> list(t: T): List<T> {
       return listOf(t, t)
     }
   }
