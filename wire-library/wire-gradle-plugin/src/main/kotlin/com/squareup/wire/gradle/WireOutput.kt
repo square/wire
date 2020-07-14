@@ -82,7 +82,7 @@ open class JavaOutput @Inject constructor() : WireOutput() {
       it.dependsOn(wireTask)
     }
     if (kotlin) {
-      val sourceSetContainer = project.property("sourceSets") as SourceSetContainer
+      val sourceSetContainer = project.extensions.getByName("sourceSets") as SourceSetContainer
       val mainSourceSet = sourceSetContainer.getByName("main") as SourceSet
       mainSourceSet.java.srcDirs(out)
 

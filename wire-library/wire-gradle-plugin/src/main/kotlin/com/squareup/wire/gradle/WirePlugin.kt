@@ -64,7 +64,7 @@ class WirePlugin : Plugin<Project> {
 
     project.afterEvaluate {
       if (logger.isDebugEnabled) {
-        sourceSetContainer = project.property("sourceSets") as SourceSetContainer
+        sourceSetContainer = project.extensions.getByName("sourceSets") as SourceSetContainer
         sourceSetContainer.forEach {
           logger.debug("source set: ${it.name}")
         }
