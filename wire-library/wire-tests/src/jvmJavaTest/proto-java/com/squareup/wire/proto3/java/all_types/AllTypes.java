@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import kotlin.Unit;
 import okio.ByteString;
 
@@ -2119,13 +2120,14 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
       @Override
       public int encodedSize(NestedMessage value) {
-        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
+        return (Objects.equals(value.a, 0) ? 0
+              : ProtoAdapter.INT32.encodedSizeWithTag(1, value.a))
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, NestedMessage value) throws IOException {
-        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a);
+        if (!Objects.equals(value.a, 0)) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -2185,31 +2187,56 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     @Override
     public int encodedSize(AllTypes value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.int32)
-          + ProtoAdapter.UINT32.encodedSizeWithTag(2, value.uint32)
-          + ProtoAdapter.SINT32.encodedSizeWithTag(3, value.sint32)
-          + ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.fixed32)
-          + ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.sfixed32)
-          + ProtoAdapter.INT64.encodedSizeWithTag(6, value.int64)
-          + ProtoAdapter.UINT64.encodedSizeWithTag(7, value.uint64)
-          + ProtoAdapter.SINT64.encodedSizeWithTag(8, value.sint64)
-          + ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.fixed64)
-          + ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.sfixed64)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(11, value.bool)
-          + ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.float_)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.double_)
-          + ProtoAdapter.STRING.encodedSizeWithTag(14, value.string)
-          + ProtoAdapter.BYTES.encodedSizeWithTag(15, value.bytes)
-          + NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum)
-          + NestedMessage.ADAPTER.encodedSizeWithTag(17, value.nested_message)
-          + AnyMessage.ADAPTER.encodedSizeWithTag(18, value.any)
-          + ProtoAdapter.DURATION.encodedSizeWithTag(19, value.duration)
-          + ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(20, value.struct)
-          + ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21, value.list_value)
-          + ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22, value.value)
-          + ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23, value.null_value)
-          + ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty)
-          + ProtoAdapter.INSTANT.encodedSizeWithTag(25, value.timestamp)
+      return (Objects.equals(value.int32, 0) ? 0
+            : ProtoAdapter.INT32.encodedSizeWithTag(1, value.int32))
+          + (Objects.equals(value.uint32, 0) ? 0
+            : ProtoAdapter.UINT32.encodedSizeWithTag(2, value.uint32))
+          + (Objects.equals(value.sint32, 0) ? 0
+            : ProtoAdapter.SINT32.encodedSizeWithTag(3, value.sint32))
+          + (Objects.equals(value.fixed32, 0) ? 0
+            : ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.fixed32))
+          + (Objects.equals(value.sfixed32, 0) ? 0
+            : ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.sfixed32))
+          + (Objects.equals(value.int64, 0L) ? 0
+            : ProtoAdapter.INT64.encodedSizeWithTag(6, value.int64))
+          + (Objects.equals(value.uint64, 0L) ? 0
+            : ProtoAdapter.UINT64.encodedSizeWithTag(7, value.uint64))
+          + (Objects.equals(value.sint64, 0L) ? 0
+            : ProtoAdapter.SINT64.encodedSizeWithTag(8, value.sint64))
+          + (Objects.equals(value.fixed64, 0L) ? 0
+            : ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.fixed64))
+          + (Objects.equals(value.sfixed64, 0L) ? 0
+            : ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.sfixed64))
+          + (Objects.equals(value.bool, false) ? 0
+            : ProtoAdapter.BOOL.encodedSizeWithTag(11, value.bool))
+          + (Objects.equals(value.float_, 0f) ? 0
+            : ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.float_))
+          + (Objects.equals(value.double_, 0.0) ? 0
+            : ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.double_))
+          + (Objects.equals(value.string, "") ? 0
+            : ProtoAdapter.STRING.encodedSizeWithTag(14, value.string))
+          + (Objects.equals(value.bytes, ByteString.EMPTY) ? 0
+            : ProtoAdapter.BYTES.encodedSizeWithTag(15, value.bytes))
+          + (Objects.equals(value.nested_enum, NestedEnum.UNKNOWN) ? 0
+            : NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum))
+          + (Objects.equals(value.nested_message, null) ? 0
+            : NestedMessage.ADAPTER.encodedSizeWithTag(17, value.nested_message))
+          + (Objects.equals(value.any, null) ? 0
+            : AnyMessage.ADAPTER.encodedSizeWithTag(18, value.any))
+          + (Objects.equals(value.duration, null) ? 0
+            : ProtoAdapter.DURATION.encodedSizeWithTag(19, value.duration))
+          + (Objects.equals(value.struct, null) ? 0
+            : ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(20, value.struct))
+          + (Objects.equals(value.list_value, null) ? 0
+            : ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21, value.list_value))
+          + (Objects.equals(value.value, null) ? 0
+            : ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22, value.value))
+          + (Objects.equals(value.null_value, null) ? 0
+            : ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23, value.null_value))
+          + (Objects.equals(value.empty, null) ? 0
+            : ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty))
+          + (Objects.equals(value.timestamp, null) ? 0
+            : ProtoAdapter.INSTANT.encodedSizeWithTag(25, value.timestamp))
           + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
           + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
           + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
@@ -2276,31 +2303,31 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, AllTypes value) throws IOException {
-      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.int32);
-      ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.uint32);
-      ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.sint32);
-      ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.fixed32);
-      ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.sfixed32);
-      ProtoAdapter.INT64.encodeWithTag(writer, 6, value.int64);
-      ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.uint64);
-      ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.sint64);
-      ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.fixed64);
-      ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.sfixed64);
-      ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.bool);
-      ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.float_);
-      ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.double_);
-      ProtoAdapter.STRING.encodeWithTag(writer, 14, value.string);
-      ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.bytes);
-      NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.nested_enum);
-      NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.nested_message);
-      AnyMessage.ADAPTER.encodeWithTag(writer, 18, value.any);
-      ProtoAdapter.DURATION.encodeWithTag(writer, 19, value.duration);
-      ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct);
-      ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21, value.list_value);
-      ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value);
-      ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23, value.null_value);
-      ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty);
-      ProtoAdapter.INSTANT.encodeWithTag(writer, 25, value.timestamp);
+      if (!Objects.equals(value.int32, 0)) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.int32);
+      if (!Objects.equals(value.uint32, 0)) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.uint32);
+      if (!Objects.equals(value.sint32, 0)) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.sint32);
+      if (!Objects.equals(value.fixed32, 0)) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.fixed32);
+      if (!Objects.equals(value.sfixed32, 0)) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5, value.sfixed32);
+      if (!Objects.equals(value.int64, 0L)) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.int64);
+      if (!Objects.equals(value.uint64, 0L)) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.uint64);
+      if (!Objects.equals(value.sint64, 0L)) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.sint64);
+      if (!Objects.equals(value.fixed64, 0L)) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.fixed64);
+      if (!Objects.equals(value.sfixed64, 0L)) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10, value.sfixed64);
+      if (!Objects.equals(value.bool, false)) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.bool);
+      if (!Objects.equals(value.float_, 0f)) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.float_);
+      if (!Objects.equals(value.double_, 0.0)) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.double_);
+      if (!Objects.equals(value.string, "")) ProtoAdapter.STRING.encodeWithTag(writer, 14, value.string);
+      if (!Objects.equals(value.bytes, ByteString.EMPTY)) ProtoAdapter.BYTES.encodeWithTag(writer, 15, value.bytes);
+      if (!Objects.equals(value.nested_enum, NestedEnum.UNKNOWN)) NestedEnum.ADAPTER.encodeWithTag(writer, 16, value.nested_enum);
+      if (!Objects.equals(value.nested_message, null)) NestedMessage.ADAPTER.encodeWithTag(writer, 17, value.nested_message);
+      if (!Objects.equals(value.any, null)) AnyMessage.ADAPTER.encodeWithTag(writer, 18, value.any);
+      if (!Objects.equals(value.duration, null)) ProtoAdapter.DURATION.encodeWithTag(writer, 19, value.duration);
+      if (!Objects.equals(value.struct, null)) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct);
+      if (!Objects.equals(value.list_value, null)) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21, value.list_value);
+      if (!Objects.equals(value.value, null)) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value);
+      if (!Objects.equals(value.null_value, null)) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23, value.null_value);
+      if (!Objects.equals(value.empty, null)) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty);
+      if (!Objects.equals(value.timestamp, null)) ProtoAdapter.INSTANT.encodeWithTag(writer, 25, value.timestamp);
       ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
       ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32);
       ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32);

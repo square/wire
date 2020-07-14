@@ -19,6 +19,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
 import java.util.List;
+import java.util.Objects;
 import okio.ByteString;
 
 /**
@@ -419,15 +420,17 @@ public final class Person extends Message<Person, Person.Builder> {
 
       @Override
       public int encodedSize(PhoneNumber value) {
-        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
-            + PhoneType.ADAPTER.encodedSizeWithTag(2, value.type)
+        return (Objects.equals(value.number, "") ? 0
+              : ProtoAdapter.STRING.encodedSizeWithTag(1, value.number))
+            + (Objects.equals(value.type, PhoneType.MOBILE) ? 0
+              : PhoneType.ADAPTER.encodedSizeWithTag(2, value.type))
             + value.unknownFields().size();
       }
 
       @Override
       public void encode(ProtoWriter writer, PhoneNumber value) throws IOException {
-        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
-        PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
+        if (!Objects.equals(value.number, "")) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
+        if (!Objects.equals(value.type, PhoneType.MOBILE)) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
         writer.writeBytes(value.unknownFields());
       }
 
@@ -471,9 +474,12 @@ public final class Person extends Message<Person, Person.Builder> {
 
     @Override
     public int encodedSize(Person value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
-          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
+      return (Objects.equals(value.name, "") ? 0
+            : ProtoAdapter.STRING.encodedSizeWithTag(1, value.name))
+          + (Objects.equals(value.id, 0) ? 0
+            : ProtoAdapter.INT32.encodedSizeWithTag(2, value.id))
+          + (Objects.equals(value.email, "") ? 0
+            : ProtoAdapter.STRING.encodedSizeWithTag(3, value.email))
           + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phones)
           + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases)
           + ProtoAdapter.INT32.encodedSizeWithTag(6, value.foo)
@@ -483,9 +489,9 @@ public final class Person extends Message<Person, Person.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, Person value) throws IOException {
-      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
-      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
-      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
+      if (!Objects.equals(value.name, "")) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      if (!Objects.equals(value.id, 0)) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
+      if (!Objects.equals(value.email, "")) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phones);
       ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
       ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo);

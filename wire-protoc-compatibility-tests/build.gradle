@@ -28,6 +28,18 @@ wire {
 
   kotlin {
     javaInterop = true
+    includes = [
+            'squareup.proto2.kotlin.*',
+            'squareup.proto3.kotlin.*',
+            'google.protobuf.*',
+    ]
+  }
+
+  java {
+    includes = [
+            'squareup.proto2.java.*',
+            'squareup.proto3.java.*',
+    ]
   }
 }
 
