@@ -1855,9 +1855,9 @@ public final class JavaGenerator {
               ((EnumType) type).constant(0).getName());
         }
       case REQUIRED:
+      default:
         return CodeBlock.of("null");
     }
-    throw new IllegalArgumentException("Unexpected call");
   }
 
   static int valueToInt(@Nullable Object value) {
