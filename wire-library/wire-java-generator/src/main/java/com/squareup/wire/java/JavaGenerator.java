@@ -70,6 +70,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import okio.ByteString;
@@ -937,7 +938,7 @@ public final class JavaGenerator {
       result.addCode("$L ", leading);
       boolean omitIdentity = field.getEncodeMode().equals(Field.EncodeMode.OMIT_IDENTITY);
       if (omitIdentity) {
-        result.addCode("($T.equals(value.$L, $L) ? 0\n  : ", ClassName.get(java.util.Objects.class),
+        result.addCode("($T.equals(value.$L, $L) ? 0\n  : ", ClassName.get(Objects.class),
             fieldName, identityValue(field));
       }
       result.addCode("$L.encodedSizeWithTag($L, ", adapter, fieldTag)
@@ -970,7 +971,7 @@ public final class JavaGenerator {
       CodeBlock adapter = adapterFor(field, nameAllocator);
       String fieldName = nameAllocator.get(field);
       if (field.getEncodeMode().equals(Field.EncodeMode.OMIT_IDENTITY)) {
-        result.addCode("if (!$T.equals(value.$L, $L)) ", ClassName.get(java.util.Objects.class),
+        result.addCode("if (!$T.equals(value.$L, $L)) ", ClassName.get(Objects.class),
             fieldName, identityValue(field));
       }
       result.addCode("$L.encodeWithTag(writer, $L, ", adapter, fieldTag)
@@ -1856,7 +1857,8 @@ public final class JavaGenerator {
         }
       case REQUIRED:
       default:
-        return CodeBlock.of("null");
+        throw new IllegalArgumentException(
+            "No identity value for field: " + field + "(" + field.getEncodeMode() + ")");
     }
   }
 
