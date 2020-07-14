@@ -70,6 +70,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import okio.ByteString;
@@ -927,15 +928,25 @@ public final class JavaGenerator {
         .returns(int.class)
         .addParameter(javaType, "value");
 
+    // TODO(benoit) Let's use an aggregator instead of chaining everything.
     result.addCode("$[");
     String leading = "return";
     for (Field field : type.getFieldsAndOneOfFields()) {
       int fieldTag = field.getTag();
       String fieldName = nameAllocator.get(field);
       CodeBlock adapter = adapterFor(field, nameAllocator);
-      result.addCode("$L $L.encodedSizeWithTag($L, ", leading, adapter, fieldTag)
+      result.addCode("$L ", leading);
+      boolean omitIdentity = field.getEncodeMode().equals(Field.EncodeMode.OMIT_IDENTITY);
+      if (omitIdentity) {
+        result.addCode("($T.equals(value.$L, $L) ? 0\n  : ", ClassName.get(Objects.class),
+            fieldName, identityValue(field));
+      }
+      result.addCode("$L.encodedSizeWithTag($L, ", adapter, fieldTag)
           .addCode((useBuilder ? "value.$L" : "$L(value)"), fieldName)
           .addCode(")");
+      if (omitIdentity) {
+        result.addCode(")");
+      }
       leading = "\n+";
     }
     if (useBuilder) {
@@ -958,8 +969,13 @@ public final class JavaGenerator {
     for (Field field : type.getFieldsAndOneOfFields()) {
       int fieldTag = field.getTag();
       CodeBlock adapter = adapterFor(field, nameAllocator);
+      String fieldName = nameAllocator.get(field);
+      if (field.getEncodeMode().equals(Field.EncodeMode.OMIT_IDENTITY)) {
+        result.addCode("if (!$T.equals(value.$L, $L)) ", ClassName.get(Objects.class),
+            fieldName, identityValue(field));
+      }
       result.addCode("$L.encodeWithTag(writer, $L, ", adapter, fieldTag)
-          .addCode((useBuilder ? "value.$L" : "$L(value)"), nameAllocator.get(field))
+          .addCode((useBuilder ? "value.$L" : "$L(value)"), fieldName)
           .addCode(");\n");
     }
 
@@ -1788,6 +1804,61 @@ public final class JavaGenerator {
 
     } else {
       throw new IllegalStateException(type + " is not an allowed scalar type");
+    }
+  }
+
+  private CodeBlock identityValue(Field field) {
+    switch (field.getEncodeMode()) {
+      case MAP:
+        return CodeBlock.of("$T.emptyMap()", Collections.class);
+      case REPEATED:
+      case PACKED:
+        return CodeBlock.of("$T.emptyList()", Collections.class);
+      case NULL_IF_ABSENT:
+        return CodeBlock.of("null");
+      case OMIT_IDENTITY:
+        ProtoType protoType = field.getType();
+        Type type = schema.getType(protoType);
+        if (protoType.equals(ProtoType.STRUCT_NULL)) {
+          return CodeBlock.of("null");
+        } else if (field.isOneOf()) {
+          return CodeBlock.of("null");
+        } else if (protoType.isScalar()) {
+          if (protoType.equals(ProtoType.BOOL)) {
+            return CodeBlock.of("false");
+          } else if (protoType.equals(ProtoType.STRING)) {
+            return CodeBlock.of("\"\"");
+          } else if (protoType.equals(ProtoType.BYTES)) {
+            return CodeBlock.of("$T.$L", ByteString.class, "EMPTY");
+          } else if (protoType.equals(ProtoType.DOUBLE)) {
+            return CodeBlock.of("0.0");
+          } else if (protoType.equals(ProtoType.FLOAT)) {
+            return CodeBlock.of("0f");
+          } else if (protoType.equals(ProtoType.FIXED64)
+              || protoType.equals(ProtoType.INT64)
+              || protoType.equals(ProtoType.SFIXED64)
+              || protoType.equals(ProtoType.SINT64)
+              || protoType.equals(ProtoType.UINT64)) {
+            return CodeBlock.of("0L");
+          } else if (protoType.equals(ProtoType.FIXED32)
+              || protoType.equals(ProtoType.INT32)
+              || protoType.equals(ProtoType.SFIXED32)
+              || protoType.equals(ProtoType.SINT32)
+              || protoType.equals(ProtoType.UINT32)) {
+            return CodeBlock.of("0");
+          } else {
+            throw new IllegalArgumentException("Unexpected scalar proto type: " + protoType);
+          }
+        } else if (type instanceof MessageType) {
+          return CodeBlock.of("null");
+        } else if (type instanceof EnumType) {
+          return CodeBlock.of("$T.$L", typeName(protoType),
+              ((EnumType) type).constant(0).getName());
+        }
+      case REQUIRED:
+      default:
+        throw new IllegalArgumentException(
+            "No identity value for field: " + field + "(" + field.getEncodeMode() + ")");
     }
   }
 
