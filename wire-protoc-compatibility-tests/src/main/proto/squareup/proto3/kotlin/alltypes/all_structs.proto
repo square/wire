@@ -15,7 +15,7 @@
  */
 syntax = "proto3";
 
-package squareup.proto3.alltypes;
+package squareup.proto3.kotlin.alltypes;
 
 import "google/protobuf/struct.proto";
 

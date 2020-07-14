@@ -15,9 +15,9 @@
  */
 syntax = "proto2";
 
-package squareup.proto2.simple;
+package squareup.proto2.kotlin.simple;
 
-option java_package = "com.squareup.wire.proto2.simple";
+option java_package = "com.squareup.wire.proto2.kotlin.simple";
 
 /** A message for testing. */
 message SimpleMessage {

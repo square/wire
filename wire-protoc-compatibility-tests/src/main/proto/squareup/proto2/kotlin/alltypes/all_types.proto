@@ -15,7 +15,7 @@
  */
 syntax = "proto2";
 
-package squareup.proto2.alltypes;
+package squareup.proto2.kotlin.alltypes;
 
 message AllTypes {
 

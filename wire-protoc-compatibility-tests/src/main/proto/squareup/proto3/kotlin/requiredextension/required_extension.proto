@@ -15,11 +15,11 @@
  */
 syntax = "proto3";
 
-package squareup.proto3.requiredextension;
+package squareup.proto3.kotlin.requiredextension;
 
-import 'google/protobuf/descriptor.proto';
+import "google/protobuf/descriptor.proto";
 
-option java_package = "com.squareup.wire.proto3.requiredextension";
+option java_package = "com.squareup.wire.proto3.kotlin.requiredextension";
 
 extend google.protobuf.FieldOptions {
   // Syntax is proto3 so cannot write optional nor required.
@@ -27,5 +27,5 @@ extend google.protobuf.FieldOptions {
 }
 
 message RequiredExtensionMessage {
-  string string_field = 1 [(squareup.proto3.requiredextension.magnitude) = 3];
+  string string_field = 1 [(squareup.proto3.kotlin.requiredextension.magnitude) = 3];
 }

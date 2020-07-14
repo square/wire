@@ -16,15 +16,14 @@
 package com.squareup.wire
 
 import com.google.protobuf.ListValue
-import com.google.protobuf.Struct
 import com.google.protobuf.util.JsonFormat
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import squareup.proto3.alltypes.AllStructs
-import squareup.proto3.alltypes.AllStructsOuterClass
+import squareup.proto3.kotlin.alltypes.AllStructsOuterClass
+import squareup.proto3.kotlin.alltypes.AllStructs as AllStructsK
 
 class StructTest {
   @Test fun nullValue() {
@@ -276,11 +275,11 @@ class StructTest {
 
   @Test fun nullMapAndListAsFields() {
     val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder().build()
-    val wireAllStruct = AllStructs()
+    val wireAllStruct = AllStructsK()
 
     val protocAllStructBytes = protocAllStruct.toByteArray()
-    assertThat(AllStructs.ADAPTER.encode(wireAllStruct)).isEqualTo(protocAllStructBytes)
-    assertThat(AllStructs.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStruct)
+    assertThat(AllStructsK.ADAPTER.encode(wireAllStruct)).isEqualTo(protocAllStructBytes)
+    assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStruct)
   }
 
   @Test fun emptyMapAndListAsFields() {
@@ -288,11 +287,11 @@ class StructTest {
         .setStruct(emptyStruct())
         .setList(emptyListValue())
         .build()
-    val wireAllStruct = AllStructs(struct = emptyMap<String, Any?>(), list = emptyList<Any?>())
+    val wireAllStruct = AllStructsK(struct = emptyMap<String, Any?>(), list = emptyList<Any?>())
 
     val protocAllStructBytes = protocAllStruct.toByteArray()
-    assertThat(AllStructs.ADAPTER.encode(wireAllStruct)).isEqualTo(protocAllStructBytes)
-    assertThat(AllStructs.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStruct)
+    assertThat(AllStructsK.ADAPTER.encode(wireAllStruct)).isEqualTo(protocAllStructBytes)
+    assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStruct)
   }
 
   @Test fun structJsonRoundTrip() {
@@ -318,7 +317,7 @@ class StructTest {
       |  "oneofList": null
       |}""".trimMargin()
 
-    val wireAllStruct = AllStructs(
+    val wireAllStruct = AllStructsK(
         struct = mapOf("a" to 1.0),
         list = listOf("a", 3.0),
         null_value = null,
@@ -331,7 +330,7 @@ class StructTest {
     )
 
     val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
-    val allStructAdapter = moshi.adapter(AllStructs::class.java)
+    val allStructAdapter = moshi.adapter(AllStructsK::class.java)
     assertJsonEquals(allStructAdapter.toJson(wireAllStruct), json)
     assertThat(allStructAdapter.fromJson(json)).isEqualTo(wireAllStruct)
   }
@@ -381,7 +380,7 @@ class StructTest {
         .build()
     assertThat(protocParsed).isEqualTo(protocAllStruct)
 
-    val wireAllStruct = AllStructs(
+    val wireAllStruct = AllStructsK(
         struct = mapOf("a" to null),
         list = emptyList<Any>(),
         value_a = mapOf("a" to listOf("b", 2.0, mapOf("c" to false))),
@@ -391,7 +390,7 @@ class StructTest {
     )
 
     val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
-    val allStructAdapter = moshi.adapter(AllStructs::class.java)
+    val allStructAdapter = moshi.adapter(AllStructsK::class.java)
     assertJsonEquals(allStructAdapter.toJson(wireAllStruct), moshiJson)
     assertThat(allStructAdapter.fromJson(protocJson)).isEqualTo(wireAllStruct)
     assertThat(allStructAdapter.fromJson(moshiJson)).isEqualTo(wireAllStruct)

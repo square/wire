@@ -18,8 +18,8 @@ package com.squareup.wire
 import com.google.protobuf.Empty
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import squareup.proto3.alltypes.AllEmpty
-import squareup.proto3.alltypes.AllEmptyOuterClass
+import squareup.proto3.kotlin.alltypes.AllEmptyOuterClass
+import squareup.proto3.kotlin.alltypes.AllEmpty as AllEmptyK
 
 class EmptyRoundTripTest {
   @Test fun empty() {
@@ -42,7 +42,7 @@ class EmptyRoundTripTest {
         .setOneofEmpty(Empty.newBuilder().build())
         .build()
 
-    val wireMessage = AllEmpty(
+    val wireMessage = AllEmptyK(
         empty = Unit,
         rep_empty = listOf(Unit, Unit),
         map_int32_empty = mapOf(1 to Unit),
@@ -50,10 +50,10 @@ class EmptyRoundTripTest {
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
-    val wireMessageBytes = AllEmpty.ADAPTER.encode(wireMessage)
+    val wireMessageBytes = AllEmptyK.ADAPTER.encode(wireMessage)
     assertThat(AllEmptyOuterClass.AllEmpty.parseFrom(wireMessageBytes)).isEqualTo(googleMessage)
-    assertThat(AllEmpty.ADAPTER.decode(wireMessageBytes)).isEqualTo(wireMessage)
-    assertThat(AllEmpty.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessage)
-    assertThat(AllEmpty.ADAPTER.encodedSize(wireMessage)).isEqualTo(googleMessageBytes.size)
+    assertThat(AllEmptyK.ADAPTER.decode(wireMessageBytes)).isEqualTo(wireMessage)
+    assertThat(AllEmptyK.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessage)
+    assertThat(AllEmptyK.ADAPTER.encodedSize(wireMessage)).isEqualTo(googleMessageBytes.size)
   }
 }

@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 syntax = "proto3";
+package squareup.proto3.kotlin.alltypes;
 
-package squareup.proto3.alltypes;
+import "google/protobuf/empty.proto";
 
-message CamelCase {
-  message NestedCamelCase {
-    int32 one_int32 = 1;
+message AllEmpty {
+  google.protobuf.Empty empty = 1;
+
+  repeated google.protobuf.Empty rep_empty = 201;
+
+  oneof choice {
+    google.protobuf.Empty oneof_empty = 402;
   }
 
-  NestedCamelCase nested__message = 1;
-
-  repeated int32 _Rep_int32 = 2;
-
-  string IDitIt_my_wAy = 3;
-
-  map<int32, int32> map_int32_Int32 = 4;
+  map<int32, google.protobuf.Empty> map_int32_empty = 501;
 }
