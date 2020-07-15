@@ -197,6 +197,9 @@ data class WireRun(
           .exclude(it.excludes)
           .build()
     }
+    val targetToSchemaHandler = targets.associateWith {
+      it.newHandler(schema, fs, logger, schemaLoader)
+    }
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
 
     // Call each target.
@@ -216,10 +219,10 @@ data class WireRun(
       claimedDefinitions.claim(ProtoType.ANY)
 
       for (target in targetsExclusiveLast) {
-        val schemaHandler = target.newHandler(schema, fs, logger, schemaLoader)
+        val schemaHandler = targetToSchemaHandler.getValue(target)
         schemaHandler.handle(
             protoFile,
-            targetToEmittingRules[target]!!,
+            targetToEmittingRules.getValue(target),
             claimedDefinitions,
             claimedPaths,
             isExclusive = target.exclusive)
