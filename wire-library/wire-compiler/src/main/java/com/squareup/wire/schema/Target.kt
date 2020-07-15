@@ -15,10 +15,15 @@
  */
 package com.squareup.wire.schema
 
+import com.google.common.graph.GraphBuilder
+import com.google.common.graph.ImmutableGraph
+import com.google.common.graph.Traverser
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.wire.Manifest
+import com.squareup.wire.Module
 import com.squareup.wire.WireCompiler
 import com.squareup.wire.WireLogger
 import com.squareup.wire.java.JavaGenerator
@@ -26,6 +31,7 @@ import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.schema.Target.SchemaHandler
 import com.squareup.wire.swift.SwiftGenerator
 import okio.buffer
 import okio.sink
@@ -302,7 +308,9 @@ data class SwiftTarget(
   override val includes: List<String> = listOf("*"),
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
-  val outDirectory: String
+  val outDirectory: String,
+  val manifest: Manifest? = null,
+  val debug: Boolean = false
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -310,36 +318,135 @@ data class SwiftTarget(
     logger: WireLogger,
     newProfileLoader: NewProfileLoader
   ): SchemaHandler {
-    val swiftGenerator = SwiftGenerator(
-        schema = schema
+    val outputRoot = fs.getPath(outDirectory)
+    Files.createDirectories(outputRoot)
+
+    // Synthesize an empty manifest that includes everything if none present.
+    val manifest = manifest ?: Manifest(
+        compilationUnits = mapOf("./" to Module()),
+        // TODO https://github.com/google/guava/issues/3966
+        dependencyGraph = GraphBuilder.directed().immutable<String>().build()
     )
 
-    return object : SchemaHandler {
-      override fun handle(type: Type): Path {
-        val typeName = swiftGenerator.generatedTypeName(type)
-        val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
-            .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-            .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
-            .indent("    ")
-            .addType(swiftGenerator.generateType(type))
-            .build()
-
-        val path = fs.getPath(outDirectory)
-        logger.artifact(path, type.type, swiftFile)
-
-        try {
-          swiftFile.writeTo(path)
-        } catch (e: IOException) {
-          throw IOException("Error emitting " +
-              "${swiftFile.moduleName}.${typeName.canonicalName} to $outDirectory", e)
-        }
-        return path.resolve("${swiftFile.name}.swift")
+    // Find modules with no dependencies and walk the graph along their incoming edges to create
+    // the module generation order. This allows us to view each module as a superset of its
+    // dependencies and then simply omit types which were already generated in those dependencies.
+    val orderedModules = manifest.dependencyGraph.let { graph ->
+      val roots = graph.nodes().filter { graph.predecessors(it).isEmpty() }
+      val ordered = Traverser.forGraph(graph).breadthFirst(roots).toList()
+      if (debug) {
+        println("Modules: ${manifest.compilationUnits.keys}")
+        println("Roots: $roots")
+        println("Order: $ordered")
       }
+      ordered
+    }
 
-      override fun handle(service: Service): List<Path> {
-        return emptyList() // TODO not supported
+    val typeHandlers = mutableMapOf<ProtoType, ModuleSchemaHandler>()
+    val typeModuleNames = mutableMapOf<ProtoType, String>()
+    val pruningRules = PruningRules.Builder()
+    for (moduleName in orderedModules) {
+      val compilationUnit = manifest.compilationUnits.getValue(moduleName)
+
+      val destination = outputRoot.resolve(moduleName)
+      Files.createDirectories(destination) // TODO upstream to SwiftPoet's writeTo.
+
+      // Add our roots and prunes which creates a superset of all previously-generated modules.
+      pruningRules.addRoot(compilationUnit.includes)
+      // TODO(jw): what do we do about excludes that apply to types in an upstream module? fail?
+      pruningRules.prune(compilationUnit.excludes)
+
+      val moduleSchema = schema.prune(pruningRules.build())
+      val generator = SwiftGenerator(moduleSchema, typeModuleNames.toMap())
+      val moduleGenerator = ModuleSchemaHandler(generator, destination, logger)
+
+      if (debug) {
+        fun Schema.stats() = buildString {
+          append(protoFiles.size)
+          append(" files, ")
+          append(protoFiles.sumBy { it.typesAndNestedTypes().size })
+          append(" types, ")
+          append(protoFiles.sumBy { it.services.size })
+          append(" services")
+        }
+        println()
+        println(moduleName)
+        println("  Destination: $destination")
+        println("  Dependencies: ${compilationUnit.dependencies}")
+        println("  Rules:")
+        println("   - roots: ${compilationUnit.includes}")
+        println("   - prunes: ${compilationUnit.excludes}")
+        println("  Schema:")
+        println("   - original: ${schema.stats()}")
+        println("   - pruned: ${moduleSchema.stats()}")
+        println("  Existing: ${typeModuleNames.toMap().size} proto types")
+        println("  Content:")
+      }
+      for (protoFile in moduleSchema.protoFiles) {
+        for (type in protoFile.typesAndNestedTypes()) {
+          val protoType = type.type
+          if (protoType !in typeModuleNames) {
+            if (debug) {
+              println("   - type: $protoType")
+            }
+            typeModuleNames[protoType] = moduleName
+            typeHandlers[protoType] = moduleGenerator
+          }
+        }
+        for (service in protoFile.services) {
+          val protoType = service.type()
+          if (protoType !in typeModuleNames) {
+            if (debug) {
+              println("   - service: $protoType")
+            }
+            typeModuleNames[protoType] = moduleName
+            typeHandlers[protoType] = moduleGenerator
+          }
+        }
       }
     }
+
+    return object : SchemaHandler {
+      override fun handle(type: Type): Path? {
+        return typeHandlers[type.type]?.handle(type)
+      }
+      override fun handle(service: Service): List<Path> {
+        return typeHandlers[service.type()]?.handle(service) ?: emptyList()
+      }
+    }
+  }
+
+  private class ModuleSchemaHandler(
+    private val generator: SwiftGenerator,
+    private val destination: Path,
+    private val logger: WireLogger
+  ) : SchemaHandler {
+    override fun handle(unprunedType: Type): Path {
+      // The schema used to invoke this function is the global one which has not been pruned so we
+      // swap its type for the corresponding pruned one.
+      // TODO(jw): Split WireRun into two phases so we can insert our pruned schema before step 4.
+      val type = generator.schema.getType(unprunedType.type)!!
+
+      val typeName = generator.generatedTypeName(type)
+      val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
+          .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
+          .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
+          .indent("    ")
+          .addType(generator.generateType(type))
+          .build()
+
+      try {
+        swiftFile.writeTo(destination)
+      } catch (e: IOException) {
+        throw IOException(
+            "Error emitting ${swiftFile.moduleName}.${typeName.canonicalName} to $destination", e)
+      }
+
+      logger.artifact(destination, type.type, swiftFile)
+      return destination.resolve("${swiftFile.name}.swift")
+    }
+
+    override fun handle(service: Service) = emptyList<Path>() // TODO not supported
   }
 }
 
@@ -476,7 +583,7 @@ interface CustomHandlerBeta {
     outDirectory: String,
     logger: WireLogger,
     newProfileLoader: NewProfileLoader
-  ): Target.SchemaHandler
+  ): SchemaHandler
 }
 
 // TODO: merge this interface with Loader.

@@ -9,6 +9,7 @@ buildscript {
 
   dependencies {
     classpath deps.plugins.kotlin
+    classpath deps.plugins.kotlinSerialization
     classpath deps.plugins.shadow
     classpath deps.plugins.japicmp
     classpath deps.plugins.mavenPublish

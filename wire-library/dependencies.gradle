@@ -4,7 +4,7 @@ ext.versions = [
   'errorprone': '2.0.21',
   'grpc': '1.27.1',
   'gson': '2.8.1',
-  'guava': '20.0',
+  'guava': '29.0-jre',
   'javapoet': '1.11.1',
   'kotlinpoet': '1.6.0',
   'jsr305': '3.0.2',
@@ -26,6 +26,7 @@ ext.versions = [
 ext.deps = [
   plugins: [
     kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+    kotlinSerialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
     shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
     japicmp: 'me.champeau.gradle:japicmp-gradle-plugin:0.2.8',
     mavenPublish: "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}"
@@ -75,7 +76,9 @@ ext.deps = [
       ],
       'android': "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
     ],
+    'serialization': 'org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0',
   ],
+  'kaml': 'com.charleskorn.kaml:kaml:0.17.0',
   'misk': "com.squareup.misk:misk:0.11.0",
   'moshi': "com.squareup.moshi:moshi:${versions.moshi}",
   'moshiKotlin': "com.squareup.moshi:moshi-kotlin:${versions.moshi}",

@@ -472,30 +472,36 @@ class SwiftGenerator private constructor(
     )
 
     @JvmStatic @JvmName("get")
-    operator fun invoke(schema: Schema): SwiftGenerator {
+    operator fun invoke(
+      schema: Schema,
+      existingTypeModuleName: Map<ProtoType, String> = emptyMap()
+    ): SwiftGenerator {
       val map = mutableMapOf<ProtoType, DeclaredTypeName>()
 
-      fun putAll(moduleName: String, enclosingClassName: DeclaredTypeName?, types: List<Type>) {
+      fun putAll(enclosingClassName: DeclaredTypeName?, types: List<Type>) {
         for (type in types) {
-          val name = type.type.simpleName
+          val protoType = type.type
+          val name = protoType.simpleName
           val className = if (enclosingClassName != null) {
             // Temporary work around for https://bugs.swift.org/browse/SR-13160.
             enclosingClassName.nestedType(if (name == "Type") "Type_" else name)
           } else {
+            val moduleName = existingTypeModuleName[protoType] ?: ""
             DeclaredTypeName(moduleName, name)
           }
-          map[type.type] = className
-          putAll(moduleName, className, type.nestedTypes)
+          map[protoType] = className
+          putAll(className, type.nestedTypes)
         }
       }
 
       for (protoFile in schema.protoFiles) {
-        val moduleName = "" // TODO support batching into modules
-        putAll(moduleName, null, protoFile.types)
+        putAll(null, protoFile.types)
 
         for (service in protoFile.services) {
-          val className = DeclaredTypeName(moduleName, service.type().simpleName)
-          map[service.type()] = className
+          val protoType = service.type()
+          val moduleName = existingTypeModuleName[protoType] ?: ""
+          val className = DeclaredTypeName(moduleName, protoType.simpleName)
+          map[protoType] = className
         }
       }
 
