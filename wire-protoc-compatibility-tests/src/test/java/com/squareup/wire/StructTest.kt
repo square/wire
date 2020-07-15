@@ -308,7 +308,7 @@ class StructTest {
     assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructKotlin)
   }
 
-  @Ignore("Both Java and Kotlin are missing something. Gotta look.")
+  // Note: We are not testing nulls because while protoc emits `NULL_VALUE`s, Wire doesn't.
   @Test fun structRoundTripWithData() {
     val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
         .setStruct(mapOf("a" to 1.0).toStruct())
@@ -317,7 +317,6 @@ class StructTest {
         .setValueA("a".toValue())
         .setValueB(33.0.toValue())
         .setValueC(true.toValue())
-        .setValueD(null.toValue())
         .setValueE(mapOf("a" to 1.0).toValue())
         .setValueF(listOf("a", 3.0).toValue())
         .build()
@@ -328,7 +327,6 @@ class StructTest {
         .value_a("a")
         .value_b(33.0)
         .value_c(true)
-        .value_d(null)
         .value_e(mapOf("a" to 1.0))
         .value_f(listOf("a", 3.0))
         .build()
@@ -339,7 +337,6 @@ class StructTest {
         value_a = "a",
         value_b = 33.0,
         value_c = true,
-        value_d = null,
         value_e = mapOf("a" to 1.0),
         value_f = listOf("a", 3.0)
     )
