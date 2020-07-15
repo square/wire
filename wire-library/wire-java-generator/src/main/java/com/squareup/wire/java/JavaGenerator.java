@@ -150,6 +150,25 @@ public final class JavaGenerator {
           .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
           .build();
 
+  private static final Map<ProtoType, CodeBlock> PROTOTYPE_TO_IDENTITY_VALUES =
+      ImmutableMap.<ProtoType, CodeBlock>builder()
+          .put(ProtoType.BOOL, CodeBlock.of("false"))
+          .put(ProtoType.STRING, CodeBlock.of("\"\""))
+          .put(ProtoType.BYTES, CodeBlock.of("$T.$L", ByteString.class, "EMPTY"))
+          .put(ProtoType.DOUBLE, CodeBlock.of("0.0"))
+          .put(ProtoType.FLOAT, CodeBlock.of("0f"))
+          .put(ProtoType.FIXED64, CodeBlock.of("0L"))
+          .put(ProtoType.INT64, CodeBlock.of("0L"))
+          .put(ProtoType.SFIXED64, CodeBlock.of("0L"))
+          .put(ProtoType.SINT64, CodeBlock.of("0L"))
+          .put(ProtoType.UINT64, CodeBlock.of("0L"))
+          .put(ProtoType.FIXED32, CodeBlock.of("0"))
+          .put(ProtoType.INT32, CodeBlock.of("0"))
+          .put(ProtoType.SFIXED32, CodeBlock.of("0"))
+          .put(ProtoType.SINT32, CodeBlock.of("0"))
+          .put(ProtoType.UINT32, CodeBlock.of("0"))
+          .build();
+
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
   private static final int MAX_PARAMS_IN_CONSTRUCTOR = 16;
 
@@ -1824,31 +1843,11 @@ public final class JavaGenerator {
         } else if (field.isOneOf()) {
           return CodeBlock.of("null");
         } else if (protoType.isScalar()) {
-          if (protoType.equals(ProtoType.BOOL)) {
-            return CodeBlock.of("false");
-          } else if (protoType.equals(ProtoType.STRING)) {
-            return CodeBlock.of("\"\"");
-          } else if (protoType.equals(ProtoType.BYTES)) {
-            return CodeBlock.of("$T.$L", ByteString.class, "EMPTY");
-          } else if (protoType.equals(ProtoType.DOUBLE)) {
-            return CodeBlock.of("0.0");
-          } else if (protoType.equals(ProtoType.FLOAT)) {
-            return CodeBlock.of("0f");
-          } else if (protoType.equals(ProtoType.FIXED64)
-              || protoType.equals(ProtoType.INT64)
-              || protoType.equals(ProtoType.SFIXED64)
-              || protoType.equals(ProtoType.SINT64)
-              || protoType.equals(ProtoType.UINT64)) {
-            return CodeBlock.of("0L");
-          } else if (protoType.equals(ProtoType.FIXED32)
-              || protoType.equals(ProtoType.INT32)
-              || protoType.equals(ProtoType.SFIXED32)
-              || protoType.equals(ProtoType.SINT32)
-              || protoType.equals(ProtoType.UINT32)) {
-            return CodeBlock.of("0");
-          } else {
+          CodeBlock value = PROTOTYPE_TO_IDENTITY_VALUES.get(protoType);
+          if (value == null) {
             throw new IllegalArgumentException("Unexpected scalar proto type: " + protoType);
           }
+          return value;
         } else if (type instanceof MessageType) {
           return CodeBlock.of("null");
         } else if (type instanceof EnumType) {
