@@ -997,7 +997,8 @@ class KotlinGenerator private constructor(
             FieldEncoding::class.asClassName())
         .addSuperclassConstructorParameter("\n%T::class", parentClassName)
         .addSuperclassConstructorParameter("\n%S", type.type.typeUrl!!)
-        .addSuperclassConstructorParameter("\n%M\n⇤", MemberName(Syntax::class.asClassName(), type.syntax.name))
+        .addSuperclassConstructorParameter("\n%M\n⇤",
+            MemberName(Syntax::class.asClassName(), type.syntax.name))
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
@@ -1428,7 +1429,8 @@ class KotlinGenerator private constructor(
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
         .addSuperclassConstructorParameter("\n⇥%T::class", parentClassName)
-        .addSuperclassConstructorParameter("\n%M\n⇤", MemberName(Syntax::class.asClassName(), message.syntax.name))
+        .addSuperclassConstructorParameter("\n%M\n⇤",
+            MemberName(Syntax::class.asClassName(), message.syntax.name))
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
@@ -1543,26 +1545,8 @@ class KotlinGenerator private constructor(
           if (protoType.isStructNull) return CodeBlock.of("null")
           if (isOneOf) return CodeBlock.of("null")
           when {
-            protoType.isScalar -> {
-              when (protoType) {
-                ProtoType.BOOL -> CodeBlock.of("false")
-                ProtoType.STRING -> CodeBlock.of("\"\"")
-                ProtoType.BYTES -> CodeBlock.of("%T.%L", ByteString::class, "EMPTY")
-                ProtoType.DOUBLE -> CodeBlock.of("0.0")
-                ProtoType.FLOAT -> CodeBlock.of("0f")
-                ProtoType.FIXED64,
-                ProtoType.INT64,
-                ProtoType.SFIXED64,
-                ProtoType.SINT64,
-                ProtoType.UINT64 -> CodeBlock.of("0L")
-                ProtoType.FIXED32,
-                ProtoType.INT32,
-                ProtoType.SFIXED32,
-                ProtoType.SINT32,
-                ProtoType.UINT32 -> CodeBlock.of("0")
-                else -> throw IllegalArgumentException("Unexpected scalar proto type: $protoType")
-              }
-            }
+            protoType.isScalar -> PROTOTYPE_TO_IDENTITY_VALUES[protoType]
+                ?: throw IllegalArgumentException("Unexpected scalar proto type: $protoType")
             type is MessageType -> CodeBlock.of("null")
             type is EnumType -> CodeBlock.of("%T.%L", protoType.typeName, type.constant(0)!!.name)
             else -> throw IllegalArgumentException(
@@ -1624,6 +1608,23 @@ class KotlinGenerator private constructor(
         FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
         MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
         ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
+    )
+    private val PROTOTYPE_TO_IDENTITY_VALUES = mapOf(
+        ProtoType.BOOL to CodeBlock.of("false"),
+        ProtoType.STRING to CodeBlock.of("\"\""),
+        ProtoType.BYTES to CodeBlock.of("%T.%L", ByteString::class, "EMPTY"),
+        ProtoType.DOUBLE to CodeBlock.of("0.0"),
+        ProtoType.FLOAT to CodeBlock.of("0f"),
+        ProtoType.FIXED64 to CodeBlock.of("0L"),
+        ProtoType.INT64 to CodeBlock.of("0L"),
+        ProtoType.SFIXED64 to CodeBlock.of("0L"),
+        ProtoType.SINT64 to CodeBlock.of("0L"),
+        ProtoType.UINT64 to CodeBlock.of("0L"),
+        ProtoType.FIXED32 to CodeBlock.of("0"),
+        ProtoType.INT32 to CodeBlock.of("0"),
+        ProtoType.SFIXED32 to CodeBlock.of("0"),
+        ProtoType.SINT32 to CodeBlock.of("0"),
+        ProtoType.UINT32 to CodeBlock.of("0")
     )
     private val MESSAGE = Message::class.asClassName()
     private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
