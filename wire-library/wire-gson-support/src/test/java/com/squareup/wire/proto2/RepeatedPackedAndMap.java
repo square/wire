@@ -148,10 +148,12 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
 
     @Override
     public int encodedSize(RepeatedPackedAndMap value) {
-      return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
-          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
-          + map_int32_int32Adapter().encodedSizeWithTag(401, value.map_int32_int32)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32);
+      result += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32);
+      result += map_int32_int32Adapter().encodedSizeWithTag(401, value.map_int32_int32);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

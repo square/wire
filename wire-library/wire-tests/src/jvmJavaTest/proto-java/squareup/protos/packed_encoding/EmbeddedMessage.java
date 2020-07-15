@@ -122,9 +122,11 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
 
     @Override
     public int encodedSize(EmbeddedMessage value) {
-      return ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number)
-          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.inner_repeated_number);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.inner_number_after);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

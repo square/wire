@@ -118,9 +118,11 @@ public final class OuterMessage extends Message<OuterMessage, OuterMessage.Build
 
     @Override
     public int encodedSize(OuterMessage value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before)
-          + EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before);
+      result += EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -223,13 +223,15 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
 
     @Override
     public int encodedSize(MethodDescriptorProto value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type)
-          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type)
-          + MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(5, value.client_streaming)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(6, value.server_streaming)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(2, value.input_type);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.output_type);
+      result += MethodOptions.ADAPTER.encodedSizeWithTag(4, value.options);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(5, value.client_streaming);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(6, value.server_streaming);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -137,10 +137,12 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
 
     @Override
     public int encodedSize(ModelEvaluation value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(2, value.score)
-          + modelsAdapter().encodedSizeWithTag(3, value.models)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(2, value.score);
+      result += modelsAdapter().encodedSizeWithTag(3, value.models);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

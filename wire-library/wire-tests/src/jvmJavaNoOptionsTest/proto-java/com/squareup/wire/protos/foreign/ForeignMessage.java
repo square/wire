@@ -122,9 +122,11 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
 
     @Override
     public int encodedSize(ForeignMessage value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
-          + ProtoAdapter.INT32.encodedSizeWithTag(100, value.j)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(100, value.j);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

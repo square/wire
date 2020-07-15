@@ -269,11 +269,13 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
 
     @Override
     public int encodedSize(MessageOptions value) {
-      return ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

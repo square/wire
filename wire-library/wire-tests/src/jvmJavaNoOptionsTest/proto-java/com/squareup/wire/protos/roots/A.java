@@ -129,9 +129,11 @@ public final class A extends Message<A, A.Builder> {
 
     @Override
     public int encodedSize(A value) {
-      return B.ADAPTER.encodedSizeWithTag(1, value.c)
-          + D.ADAPTER.encodedSizeWithTag(2, value.d)
-          + value.unknownFields().size();
+      int result = 0;
+      result += B.ADAPTER.encodedSizeWithTag(1, value.c);
+      result += D.ADAPTER.encodedSizeWithTag(2, value.d);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

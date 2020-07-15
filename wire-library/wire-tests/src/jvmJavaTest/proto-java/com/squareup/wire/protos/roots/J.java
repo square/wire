@@ -96,8 +96,10 @@ public final class J extends Message<J, J.Builder> {
 
     @Override
     public int encodedSize(J value) {
-      return K.ADAPTER.encodedSizeWithTag(1, value.k)
-          + value.unknownFields().size();
+      int result = 0;
+      result += K.ADAPTER.encodedSizeWithTag(1, value.k);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

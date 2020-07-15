@@ -350,8 +350,10 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public int encodedSize(Nested value) {
-        return FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value)
-            + value.unknownFields().size();
+        int result = 0;
+        result += FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -474,8 +476,10 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
       @Override
       public int encodedSize(More value) {
-        return ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -560,16 +564,18 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
     @Override
     public int encodedSize(FooBar value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
-          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar)
-          + Nested.ADAPTER.encodedSizeWithTag(3, value.baz)
-          + ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux)
-          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy)
-          + FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested)
-          + FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext)
-          + FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar);
+      result += Nested.ADAPTER.encodedSizeWithTag(3, value.baz);
+      result += ProtoAdapter.UINT64.encodedSizeWithTag(4, value.qux);
+      result += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(5, value.fred);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.daisy);
+      result += FooBar.ADAPTER.asRepeated().encodedSizeWithTag(7, value.nested);
+      result += FooBarBazEnum.ADAPTER.encodedSizeWithTag(101, value.ext);
+      result += FooBarBazEnum.ADAPTER.asRepeated().encodedSizeWithTag(102, value.rep);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

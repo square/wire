@@ -282,11 +282,13 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
       @Override
       public int encodedSize(Annotation value) {
-        return ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path)
-            + ProtoAdapter.STRING.encodedSizeWithTag(2, value.source_file)
-            + ProtoAdapter.INT32.encodedSizeWithTag(3, value.begin)
-            + ProtoAdapter.INT32.encodedSizeWithTag(4, value.end)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path);
+        result += ProtoAdapter.STRING.encodedSizeWithTag(2, value.source_file);
+        result += ProtoAdapter.INT32.encodedSizeWithTag(3, value.begin);
+        result += ProtoAdapter.INT32.encodedSizeWithTag(4, value.end);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -333,8 +335,10 @@ public final class GeneratedCodeInfo extends Message<GeneratedCodeInfo, Generate
 
     @Override
     public int encodedSize(GeneratedCodeInfo value) {
-      return Annotation.ADAPTER.asRepeated().encodedSizeWithTag(1, value.annotation)
-          + value.unknownFields().size();
+      int result = 0;
+      result += Annotation.ADAPTER.asRepeated().encodedSizeWithTag(1, value.annotation);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

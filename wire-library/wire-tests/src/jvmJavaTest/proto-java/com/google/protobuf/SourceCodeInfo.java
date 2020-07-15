@@ -519,12 +519,14 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
       @Override
       public int encodedSize(Location value) {
-        return ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path)
-            + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value.span)
-            + ProtoAdapter.STRING.encodedSizeWithTag(3, value.leading_comments)
-            + ProtoAdapter.STRING.encodedSizeWithTag(4, value.trailing_comments)
-            + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.leading_detached_comments)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1, value.path);
+        result += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(2, value.span);
+        result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.leading_comments);
+        result += ProtoAdapter.STRING.encodedSizeWithTag(4, value.trailing_comments);
+        result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.leading_detached_comments);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -573,8 +575,10 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     @Override
     public int encodedSize(SourceCodeInfo value) {
-      return Location.ADAPTER.asRepeated().encodedSizeWithTag(1, value.location)
-          + value.unknownFields().size();
+      int result = 0;
+      result += Location.ADAPTER.asRepeated().encodedSizeWithTag(1, value.location);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

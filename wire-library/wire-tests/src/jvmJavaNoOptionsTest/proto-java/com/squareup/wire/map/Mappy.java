@@ -102,8 +102,10 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
 
     @Override
     public int encodedSize(Mappy value) {
-      return thingsAdapter().encodedSizeWithTag(1, value.things)
-          + value.unknownFields().size();
+      int result = 0;
+      result += thingsAdapter().encodedSizeWithTag(1, value.things);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

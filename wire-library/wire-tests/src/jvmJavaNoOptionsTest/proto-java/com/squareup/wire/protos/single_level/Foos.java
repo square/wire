@@ -100,8 +100,10 @@ public final class Foos extends Message<Foos, Foos.Builder> {
 
     @Override
     public int encodedSize(Foos value) {
-      return Foo.ADAPTER.asRepeated().encodedSizeWithTag(1, value.foos)
-          + value.unknownFields().size();
+      int result = 0;
+      result += Foo.ADAPTER.asRepeated().encodedSizeWithTag(1, value.foos);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

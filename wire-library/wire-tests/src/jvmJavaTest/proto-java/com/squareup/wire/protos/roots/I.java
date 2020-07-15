@@ -120,9 +120,11 @@ public final class I extends Message<I, I.Builder> {
 
     @Override
     public int encodedSize(I value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
-          + J.ADAPTER.encodedSizeWithTag(1000, value.j)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i);
+      result += J.ADAPTER.encodedSizeWithTag(1000, value.j);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

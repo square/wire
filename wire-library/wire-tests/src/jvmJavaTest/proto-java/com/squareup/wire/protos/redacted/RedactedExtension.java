@@ -119,9 +119,11 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
 
     @Override
     public int encodedSize(RedactedExtension value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.d)
-          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.e)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.d);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(2, value.e);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

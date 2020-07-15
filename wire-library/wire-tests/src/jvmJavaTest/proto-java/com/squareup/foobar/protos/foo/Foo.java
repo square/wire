@@ -97,8 +97,10 @@ public final class Foo extends Message<Foo, Foo.Builder> {
 
     @Override
     public int encodedSize(Foo value) {
-      return Bar.Baz.Moo.ADAPTER.encodedSizeWithTag(1, value.moo)
-          + value.unknownFields().size();
+      int result = 0;
+      result += Bar.Baz.Moo.ADAPTER.encodedSizeWithTag(1, value.moo);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

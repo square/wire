@@ -285,17 +285,19 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
 
     @Override
     public int encodedSize(Message value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.unknownFields)
-          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.other)
-          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.o)
-          + ProtoAdapter.STRING.encodedSizeWithTag(4, value.result)
-          + ProtoAdapter.STRING.encodedSizeWithTag(5, value.hashCode)
-          + ProtoAdapter.STRING.encodedSizeWithTag(6, value.serialVersionUID_)
-          + ProtoAdapter.STRING.encodedSizeWithTag(7, value.ADAPTER_)
-          + ProtoAdapter.STRING.encodedSizeWithTag(8, value.MESSAGE_OPTIONS_)
-          + ProtoAdapter.STRING.encodedSizeWithTag(9, value.this_)
-          + ProtoAdapter.STRING.encodedSizeWithTag(10, value.message)
-          + value.unknownFields().size();
+      int result_ = 0;
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(1, value.unknownFields);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(2, value.other);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(3, value.o);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(4, value.result);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(5, value.hashCode);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(6, value.serialVersionUID_);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(7, value.ADAPTER_);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(8, value.MESSAGE_OPTIONS_);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(9, value.this_);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(10, value.message);
+      result_ += value.unknownFields().size();
+      return result_;
     }
 
     @Override

@@ -119,8 +119,10 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
     @Override
     public int encodedSize(MethodOptions value) {
-      return ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

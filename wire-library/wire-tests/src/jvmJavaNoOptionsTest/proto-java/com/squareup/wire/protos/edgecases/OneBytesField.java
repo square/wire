@@ -98,8 +98,10 @@ public final class OneBytesField extends Message<OneBytesField, OneBytesField.Bu
 
     @Override
     public int encodedSize(OneBytesField value) {
-      return ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

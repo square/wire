@@ -947,31 +947,29 @@ public final class JavaGenerator {
         .returns(int.class)
         .addParameter(javaType, "value");
 
-    // TODO(benoit) Let's use an aggregator instead of chaining everything.
-    result.addCode("$[");
-    String leading = "return";
+    String resultName = nameAllocator.clone().newName("result");
+    result.addStatement("int $L = 0", resultName);
     for (Field field : type.getFieldsAndOneOfFields()) {
       int fieldTag = field.getTag();
       String fieldName = nameAllocator.get(field);
       CodeBlock adapter = adapterFor(field, nameAllocator);
-      result.addCode("$L ", leading);
       boolean omitIdentity = field.getEncodeMode().equals(Field.EncodeMode.OMIT_IDENTITY);
       if (omitIdentity) {
-        result.addCode("($T.equals(value.$L, $L) ? 0\n  : ", ClassName.get(Objects.class),
+        result.beginControlFlow("if (!$T.equals(value.$L, $L))", ClassName.get(Objects.class),
             fieldName, identityValue(field));
       }
-      result.addCode("$L.encodedSizeWithTag($L, ", adapter, fieldTag)
+      result.addCode("$L += ", resultName)
+          .addCode("$L.encodedSizeWithTag($L, ", adapter, fieldTag)
           .addCode((useBuilder ? "value.$L" : "$L(value)"), fieldName)
-          .addCode(")");
+          .addCode(");\n");
       if (omitIdentity) {
-        result.addCode(")");
+        result.endControlFlow();
       }
-      leading = "\n+";
     }
     if (useBuilder) {
-      result.addCode("$L value.unknownFields().size()", leading);
+      result.addStatement("$L += value.unknownFields().size()", resultName);
     }
-    result.addCode(";$]\n", leading);
+    result.addStatement("return $L", resultName);
 
     return result.build();
   }

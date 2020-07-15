@@ -119,9 +119,11 @@ public final class OneofDescriptorProto extends Message<OneofDescriptorProto, On
 
     @Override
     public int encodedSize(OneofDescriptorProto value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + OneofOptions.ADAPTER.encodedSizeWithTag(2, value.options)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += OneofOptions.ADAPTER.encodedSizeWithTag(2, value.options);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

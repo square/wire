@@ -420,11 +420,15 @@ public final class Person extends Message<Person, Person.Builder> {
 
       @Override
       public int encodedSize(PhoneNumber value) {
-        return (Objects.equals(value.number, "") ? 0
-              : ProtoAdapter.STRING.encodedSizeWithTag(1, value.number))
-            + (Objects.equals(value.type, PhoneType.MOBILE) ? 0
-              : PhoneType.ADAPTER.encodedSizeWithTag(2, value.type))
-            + value.unknownFields().size();
+        int result = 0;
+        if (!Objects.equals(value.number, "")) {
+          result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number);
+        }
+        if (!Objects.equals(value.type, PhoneType.MOBILE)) {
+          result += PhoneType.ADAPTER.encodedSizeWithTag(2, value.type);
+        }
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -474,17 +478,22 @@ public final class Person extends Message<Person, Person.Builder> {
 
     @Override
     public int encodedSize(Person value) {
-      return (Objects.equals(value.name, "") ? 0
-            : ProtoAdapter.STRING.encodedSizeWithTag(1, value.name))
-          + (Objects.equals(value.id, 0) ? 0
-            : ProtoAdapter.INT32.encodedSizeWithTag(2, value.id))
-          + (Objects.equals(value.email, "") ? 0
-            : ProtoAdapter.STRING.encodedSizeWithTag(3, value.email))
-          + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phones)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases)
-          + ProtoAdapter.INT32.encodedSizeWithTag(6, value.foo)
-          + ProtoAdapter.STRING.encodedSizeWithTag(7, value.bar)
-          + value.unknownFields().size();
+      int result = 0;
+      if (!Objects.equals(value.name, "")) {
+        result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      }
+      if (!Objects.equals(value.id, 0)) {
+        result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id);
+      }
+      if (!Objects.equals(value.email, "")) {
+        result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email);
+      }
+      result += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phones);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(6, value.foo);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(7, value.bar);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

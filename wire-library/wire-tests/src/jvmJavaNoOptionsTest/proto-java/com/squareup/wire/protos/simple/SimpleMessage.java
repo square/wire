@@ -488,8 +488,10 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
       @Override
       public int encodedSize(NestedMessage value) {
-        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -580,19 +582,21 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
 
     @Override
     public int encodedSize(SimpleMessage value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32)
-          + NestedMessage.ADAPTER.encodedSizeWithTag(2, value.optional_nested_msg)
-          + ExternalMessage.ADAPTER.encodedSizeWithTag(3, value.optional_external_msg)
-          + NestedEnum.ADAPTER.encodedSizeWithTag(4, value.default_nested_enum)
-          + ProtoAdapter.INT32.encodedSizeWithTag(5, value.required_int32)
-          + ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(6, value.repeated_double)
-          + ForeignEnum.ADAPTER.encodedSizeWithTag(7, value.default_foreign_enum)
-          + ForeignEnum.ADAPTER.encodedSizeWithTag(8, value.no_default_foreign_enum)
-          + ProtoAdapter.STRING.encodedSizeWithTag(9, value.package_)
-          + ProtoAdapter.STRING.encodedSizeWithTag(10, value.result)
-          + ProtoAdapter.STRING.encodedSizeWithTag(11, value.other)
-          + ProtoAdapter.STRING.encodedSizeWithTag(12, value.o)
-          + value.unknownFields().size();
+      int result_ = 0;
+      result_ += ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32);
+      result_ += NestedMessage.ADAPTER.encodedSizeWithTag(2, value.optional_nested_msg);
+      result_ += ExternalMessage.ADAPTER.encodedSizeWithTag(3, value.optional_external_msg);
+      result_ += NestedEnum.ADAPTER.encodedSizeWithTag(4, value.default_nested_enum);
+      result_ += ProtoAdapter.INT32.encodedSizeWithTag(5, value.required_int32);
+      result_ += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(6, value.repeated_double);
+      result_ += ForeignEnum.ADAPTER.encodedSizeWithTag(7, value.default_foreign_enum);
+      result_ += ForeignEnum.ADAPTER.encodedSizeWithTag(8, value.no_default_foreign_enum);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(9, value.package_);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(10, value.result);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(11, value.other);
+      result_ += ProtoAdapter.STRING.encodedSizeWithTag(12, value.o);
+      result_ += value.unknownFields().size();
+      return result_;
     }
 
     @Override

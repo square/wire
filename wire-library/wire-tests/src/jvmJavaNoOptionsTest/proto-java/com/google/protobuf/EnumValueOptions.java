@@ -111,8 +111,10 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
 
     @Override
     public int encodedSize(EnumValueOptions value) {
-      return ProtoAdapter.BOOL.encodedSizeWithTag(1, value.deprecated)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.deprecated);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

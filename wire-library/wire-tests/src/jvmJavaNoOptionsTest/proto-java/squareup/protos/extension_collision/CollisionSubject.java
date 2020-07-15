@@ -98,8 +98,10 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
 
     @Override
     public int encodedSize(CollisionSubject value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.f)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.f);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

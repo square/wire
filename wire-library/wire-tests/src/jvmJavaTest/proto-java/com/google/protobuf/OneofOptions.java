@@ -106,8 +106,10 @@ public final class OneofOptions extends Message<OneofOptions, OneofOptions.Build
 
     @Override
     public int encodedSize(OneofOptions value) {
-      return UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + value.unknownFields().size();
+      int result = 0;
+      result += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

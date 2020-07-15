@@ -96,8 +96,10 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
 
     @Override
     public int encodedSize(RedactedCycleA value) {
-      return RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b)
-          + value.unknownFields().size();
+      int result = 0;
+      result += RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

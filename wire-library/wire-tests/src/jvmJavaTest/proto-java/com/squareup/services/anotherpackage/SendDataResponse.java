@@ -98,8 +98,10 @@ public final class SendDataResponse extends Message<SendDataResponse, SendDataRe
 
     @Override
     public int encodedSize(SendDataResponse value) {
-      return ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

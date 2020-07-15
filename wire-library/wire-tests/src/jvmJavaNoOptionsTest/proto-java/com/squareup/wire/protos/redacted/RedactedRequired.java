@@ -104,8 +104,10 @@ public final class RedactedRequired extends Message<RedactedRequired, RedactedRe
 
     @Override
     public int encodedSize(RedactedRequired value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

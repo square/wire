@@ -71,7 +71,9 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
 
     @Override
     public int encodedSize(TheRequest value) {
-      return value.unknownFields().size();
+      int result = 0;
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

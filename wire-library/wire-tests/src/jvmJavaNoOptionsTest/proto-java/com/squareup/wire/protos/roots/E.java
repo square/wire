@@ -191,8 +191,10 @@ public final class E extends Message<E, E.Builder> {
 
       @Override
       public int encodedSize(F value) {
-        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -233,9 +235,11 @@ public final class E extends Message<E, E.Builder> {
 
     @Override
     public int encodedSize(E value) {
-      return F.ADAPTER.encodedSizeWithTag(1, value.f)
-          + G.ADAPTER.encodedSizeWithTag(2, value.g)
-          + value.unknownFields().size();
+      int result = 0;
+      result += F.ADAPTER.encodedSizeWithTag(1, value.f);
+      result += G.ADAPTER.encodedSizeWithTag(2, value.g);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -119,9 +119,11 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
 
     @Override
     public int encodedSize(OneExtension value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.id)
-          + Foo.ADAPTER.encodedSizeWithTag(1000, value.foo)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.id);
+      result += Foo.ADAPTER.encodedSizeWithTag(1000, value.foo);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -98,8 +98,10 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
 
     @Override
     public int encodedSize(HeresAllTheDataResponse value) {
-      return ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override
