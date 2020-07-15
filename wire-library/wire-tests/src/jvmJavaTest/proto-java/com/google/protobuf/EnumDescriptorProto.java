@@ -319,9 +319,11 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
       @Override
       public int encodedSize(EnumReservedRange value) {
-        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
-            + ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.start);
+        result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.end);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -364,12 +366,14 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
     @Override
     public int encodedSize(EnumDescriptorProto value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.value)
-          + EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options)
-          + EnumReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(4, value.reserved_range)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.reserved_name)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += EnumValueDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.value);
+      result += EnumOptions.ADAPTER.encodedSizeWithTag(3, value.options);
+      result += EnumReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(4, value.reserved_range);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.reserved_name);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

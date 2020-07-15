@@ -107,8 +107,10 @@ public final class ExtensionRangeOptions extends Message<ExtensionRangeOptions, 
 
     @Override
     public int encodedSize(ExtensionRangeOptions value) {
-      return UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + value.unknownFields().size();
+      int result = 0;
+      result += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

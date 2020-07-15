@@ -374,9 +374,11 @@ public final class Person extends Message<Person, Person.Builder> {
 
       @Override
       public int encodedSize(PhoneNumber value) {
-        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
-            + PhoneType.ADAPTER.encodedSizeWithTag(2, value.type)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number);
+        result += PhoneType.ADAPTER.encodedSizeWithTag(2, value.type);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -426,12 +428,14 @@ public final class Person extends Message<Person, Person.Builder> {
 
     @Override
     public int encodedSize(Person value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
-          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
-          + PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email);
+      result += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(5, value.aliases);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

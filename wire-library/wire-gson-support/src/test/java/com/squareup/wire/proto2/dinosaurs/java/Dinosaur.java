@@ -196,12 +196,14 @@ public final class Dinosaur extends Message<Dinosaur, Dinosaur.Builder> {
 
     @Override
     public int encodedSize(Dinosaur value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(3, value.length_meters)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(4, value.mass_kilograms)
-          + Period.ADAPTER.encodedSizeWithTag(5, value.period)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(3, value.length_meters);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(4, value.mass_kilograms);
+      result += Period.ADAPTER.encodedSizeWithTag(5, value.period);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

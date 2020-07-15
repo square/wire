@@ -193,11 +193,13 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
 
     @Override
     public int encodedSize(EnumOptions value) {
-      return ProtoAdapter.BOOL.encodedSizeWithTag(2, value.allow_alias)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(71000, value.enum_option)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.allow_alias);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated);
+      result += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(71000, value.enum_option);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

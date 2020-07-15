@@ -71,7 +71,9 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
 
     @Override
     public int encodedSize(NoFields value) {
-      return value.unknownFields().size();
+      int result = 0;
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

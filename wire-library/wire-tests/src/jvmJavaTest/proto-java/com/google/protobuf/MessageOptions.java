@@ -482,20 +482,22 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
 
     @Override
     public int encodedSize(MessageOptions value) {
-      return ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + FooBar.ADAPTER.encodedSizeWithTag(50001, value.my_message_option_one)
-          + ProtoAdapter.FLOAT.encodedSizeWithTag(50002, value.my_message_option_two)
-          + FooBar.ADAPTER.encodedSizeWithTag(50003, value.my_message_option_three)
-          + FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(50004, value.my_message_option_four)
-          + FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five)
-          + FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six)
-          + ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(22213, value.message_export_enabled)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.message_set_wire_format);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.no_standard_descriptor_accessor);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(7, value.map_entry);
+      result += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option);
+      result += FooBar.ADAPTER.encodedSizeWithTag(50001, value.my_message_option_one);
+      result += ProtoAdapter.FLOAT.encodedSizeWithTag(50002, value.my_message_option_two);
+      result += FooBar.ADAPTER.encodedSizeWithTag(50003, value.my_message_option_three);
+      result += FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(50004, value.my_message_option_four);
+      result += FooBar.ADAPTER.encodedSizeWithTag(50005, value.my_message_option_five);
+      result += FooBar.ADAPTER.encodedSizeWithTag(50006, value.my_message_option_six);
+      result += ForeignMessage.ADAPTER.encodedSizeWithTag(50007, value.foreign_message_option);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(22213, value.message_export_enabled);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

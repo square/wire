@@ -430,10 +430,12 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
       @Override
       public int encodedSize(ExtensionRange value) {
-        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
-            + ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
-            + ExtensionRangeOptions.ADAPTER.encodedSizeWithTag(3, value.options)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.start);
+        result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.end);
+        result += ExtensionRangeOptions.ADAPTER.encodedSizeWithTag(3, value.options);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -590,9 +592,11 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
       @Override
       public int encodedSize(ReservedRange value) {
-        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.start)
-            + ProtoAdapter.INT32.encodedSizeWithTag(2, value.end)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.start);
+        result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.end);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -635,17 +639,19 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     @Override
     public int encodedSize(DescriptorProto value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.field)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.extension)
-          + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(3, value.nested_type)
-          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.enum_type)
-          + ExtensionRange.ADAPTER.asRepeated().encodedSizeWithTag(5, value.extension_range)
-          + OneofDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(8, value.oneof_decl)
-          + MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options)
-          + ReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(9, value.reserved_range)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(10, value.reserved_name)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(2, value.field);
+      result += FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.extension);
+      result += DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(3, value.nested_type);
+      result += EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.enum_type);
+      result += ExtensionRange.ADAPTER.asRepeated().encodedSizeWithTag(5, value.extension_range);
+      result += OneofDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(8, value.oneof_decl);
+      result += MessageOptions.ADAPTER.encodedSizeWithTag(7, value.options);
+      result += ReservedRange.ADAPTER.asRepeated().encodedSizeWithTag(9, value.reserved_range);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(10, value.reserved_name);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

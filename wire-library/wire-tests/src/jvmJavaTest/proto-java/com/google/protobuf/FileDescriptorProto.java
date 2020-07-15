@@ -394,19 +394,21 @@ public final class FileDescriptorProto extends Message<FileDescriptorProto, File
 
     @Override
     public int encodedSize(FileDescriptorProto value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.package_)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(3, value.dependency)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(10, value.public_dependency)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(11, value.weak_dependency)
-          + DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.message_type)
-          + EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enum_type)
-          + ServiceDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.service)
-          + FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(7, value.extension)
-          + FileOptions.ADAPTER.encodedSizeWithTag(8, value.options)
-          + SourceCodeInfo.ADAPTER.encodedSizeWithTag(9, value.source_code_info)
-          + ProtoAdapter.STRING.encodedSizeWithTag(12, value.syntax)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(2, value.package_);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(3, value.dependency);
+      result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(10, value.public_dependency);
+      result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(11, value.weak_dependency);
+      result += DescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(4, value.message_type);
+      result += EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enum_type);
+      result += ServiceDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.service);
+      result += FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(7, value.extension);
+      result += FileOptions.ADAPTER.encodedSizeWithTag(8, value.options);
+      result += SourceCodeInfo.ADAPTER.encodedSizeWithTag(9, value.source_code_info);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(12, value.syntax);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

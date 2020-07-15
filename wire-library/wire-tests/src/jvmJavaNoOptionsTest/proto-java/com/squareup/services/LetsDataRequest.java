@@ -98,8 +98,10 @@ public final class LetsDataRequest extends Message<LetsDataRequest, LetsDataRequ
 
     @Override
     public int encodedSize(LetsDataRequest value) {
-      return ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.data);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

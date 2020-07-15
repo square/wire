@@ -100,8 +100,10 @@ public final class B extends Message<B, B.Builder> {
 
     @Override
     public int encodedSize(B value) {
-      return C.ADAPTER.encodedSizeWithTag(1, value.c)
-          + value.unknownFields().size();
+      int result = 0;
+      result += C.ADAPTER.encodedSizeWithTag(1, value.c);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

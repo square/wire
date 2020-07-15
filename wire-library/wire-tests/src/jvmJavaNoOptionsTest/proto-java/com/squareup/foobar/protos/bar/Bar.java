@@ -196,8 +196,10 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
         @Override
         public int encodedSize(Moo value) {
-          return ProtoAdapter.STRING.encodedSizeWithTag(1, value.boo)
-              + value.unknownFields().size();
+          int result = 0;
+          result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.boo);
+          result += value.unknownFields().size();
+          return result;
         }
 
         @Override
@@ -238,7 +240,9 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       @Override
       public int encodedSize(Baz value) {
-        return value.unknownFields().size();
+        int result = 0;
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -277,7 +281,9 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     @Override
     public int encodedSize(Bar value) {
-      return value.unknownFields().size();
+      int result = 0;
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

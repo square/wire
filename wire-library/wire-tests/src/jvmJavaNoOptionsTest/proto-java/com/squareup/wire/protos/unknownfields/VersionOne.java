@@ -137,10 +137,12 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
 
     @Override
     public int encodedSize(VersionOne value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
-          + NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj)
-          + EnumVersionOne.ADAPTER.encodedSizeWithTag(8, value.en)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i);
+      result += NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj);
+      result += EnumVersionOne.ADAPTER.encodedSizeWithTag(8, value.en);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

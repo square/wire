@@ -161,11 +161,13 @@ public final class Redacted extends Message<Redacted, Redacted.Builder> {
 
     @Override
     public int encodedSize(Redacted value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
-          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
-          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.c)
-          + RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(2, value.b);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.c);
+      result += RedactedExtension.ADAPTER.encodedSizeWithTag(10, value.extension);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

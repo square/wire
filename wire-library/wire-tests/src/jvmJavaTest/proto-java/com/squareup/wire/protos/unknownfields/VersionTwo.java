@@ -242,15 +242,17 @@ public final class VersionTwo extends Message<VersionTwo, VersionTwo.Builder> {
 
     @Override
     public int encodedSize(VersionTwo value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
-          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i)
-          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.v2_s)
-          + ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.v2_f32)
-          + ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs)
-          + NestedVersionTwo.ADAPTER.encodedSizeWithTag(7, value.obj)
-          + EnumVersionTwo.ADAPTER.encodedSizeWithTag(8, value.en)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.v2_s);
+      result += ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.v2_f32);
+      result += ProtoAdapter.FIXED64.encodedSizeWithTag(5, value.v2_f64);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(6, value.v2_rs);
+      result += NestedVersionTwo.ADAPTER.encodedSizeWithTag(7, value.obj);
+      result += EnumVersionTwo.ADAPTER.encodedSizeWithTag(8, value.en);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

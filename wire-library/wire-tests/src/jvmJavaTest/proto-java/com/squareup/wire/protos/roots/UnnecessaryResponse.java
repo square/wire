@@ -71,7 +71,9 @@ public final class UnnecessaryResponse extends Message<UnnecessaryResponse, Unne
 
     @Override
     public int encodedSize(UnnecessaryResponse value) {
-      return value.unknownFields().size();
+      int result = 0;
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

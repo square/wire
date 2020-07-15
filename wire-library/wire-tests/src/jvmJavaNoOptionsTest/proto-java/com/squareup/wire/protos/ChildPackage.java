@@ -99,8 +99,10 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
 
     @Override
     public int encodedSize(ChildPackage value) {
-      return ForeignEnum.ADAPTER.encodedSizeWithTag(1, value.inner_foreign_enum)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ForeignEnum.ADAPTER.encodedSizeWithTag(1, value.inner_foreign_enum);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -3221,8 +3221,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
       @Override
       public int encodedSize(NestedMessage value) {
-        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -3279,144 +3281,146 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     @Override
     public int encodedSize(AllTypes value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
-          + ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32)
-          + ProtoAdapter.SINT32.encodedSizeWithTag(3, value.opt_sint32)
-          + ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.opt_fixed32)
-          + ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.opt_sfixed32)
-          + ProtoAdapter.INT64.encodedSizeWithTag(6, value.opt_int64)
-          + ProtoAdapter.UINT64.encodedSizeWithTag(7, value.opt_uint64)
-          + ProtoAdapter.SINT64.encodedSizeWithTag(8, value.opt_sint64)
-          + ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.opt_fixed64)
-          + ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.opt_sfixed64)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(11, value.opt_bool)
-          + ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.opt_float)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.opt_double)
-          + ProtoAdapter.STRING.encodedSizeWithTag(14, value.opt_string)
-          + ProtoAdapter.BYTES.encodedSizeWithTag(15, value.opt_bytes)
-          + NestedEnum.ADAPTER.encodedSizeWithTag(16, value.opt_nested_enum)
-          + NestedMessage.ADAPTER.encodedSizeWithTag(17, value.opt_nested_message)
-          + ProtoAdapter.INT32.encodedSizeWithTag(101, value.req_int32)
-          + ProtoAdapter.UINT32.encodedSizeWithTag(102, value.req_uint32)
-          + ProtoAdapter.SINT32.encodedSizeWithTag(103, value.req_sint32)
-          + ProtoAdapter.FIXED32.encodedSizeWithTag(104, value.req_fixed32)
-          + ProtoAdapter.SFIXED32.encodedSizeWithTag(105, value.req_sfixed32)
-          + ProtoAdapter.INT64.encodedSizeWithTag(106, value.req_int64)
-          + ProtoAdapter.UINT64.encodedSizeWithTag(107, value.req_uint64)
-          + ProtoAdapter.SINT64.encodedSizeWithTag(108, value.req_sint64)
-          + ProtoAdapter.FIXED64.encodedSizeWithTag(109, value.req_fixed64)
-          + ProtoAdapter.SFIXED64.encodedSizeWithTag(110, value.req_sfixed64)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(111, value.req_bool)
-          + ProtoAdapter.FLOAT.encodedSizeWithTag(112, value.req_float)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(113, value.req_double)
-          + ProtoAdapter.STRING.encodedSizeWithTag(114, value.req_string)
-          + ProtoAdapter.BYTES.encodedSizeWithTag(115, value.req_bytes)
-          + NestedEnum.ADAPTER.encodedSizeWithTag(116, value.req_nested_enum)
-          + NestedMessage.ADAPTER.encodedSizeWithTag(117, value.req_nested_message)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
-          + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
-          + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
-          + ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(204, value.rep_fixed32)
-          + ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(205, value.rep_sfixed32)
-          + ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(206, value.rep_int64)
-          + ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(207, value.rep_uint64)
-          + ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(208, value.rep_sint64)
-          + ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(209, value.rep_fixed64)
-          + ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(210, value.rep_sfixed64)
-          + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(211, value.rep_bool)
-          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(212, value.rep_float)
-          + ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(213, value.rep_double)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(214, value.rep_string)
-          + ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(215, value.rep_bytes)
-          + NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum)
-          + NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message)
-          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
-          + ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32)
-          + ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32)
-          + ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32)
-          + ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32)
-          + ProtoAdapter.INT64.asPacked().encodedSizeWithTag(306, value.pack_int64)
-          + ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(307, value.pack_uint64)
-          + ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(308, value.pack_sint64)
-          + ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(309, value.pack_fixed64)
-          + ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(310, value.pack_sfixed64)
-          + ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(311, value.pack_bool)
-          + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float)
-          + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double)
-          + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum)
-          + ProtoAdapter.INT32.encodedSizeWithTag(401, value.default_int32)
-          + ProtoAdapter.UINT32.encodedSizeWithTag(402, value.default_uint32)
-          + ProtoAdapter.SINT32.encodedSizeWithTag(403, value.default_sint32)
-          + ProtoAdapter.FIXED32.encodedSizeWithTag(404, value.default_fixed32)
-          + ProtoAdapter.SFIXED32.encodedSizeWithTag(405, value.default_sfixed32)
-          + ProtoAdapter.INT64.encodedSizeWithTag(406, value.default_int64)
-          + ProtoAdapter.UINT64.encodedSizeWithTag(407, value.default_uint64)
-          + ProtoAdapter.SINT64.encodedSizeWithTag(408, value.default_sint64)
-          + ProtoAdapter.FIXED64.encodedSizeWithTag(409, value.default_fixed64)
-          + ProtoAdapter.SFIXED64.encodedSizeWithTag(410, value.default_sfixed64)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(411, value.default_bool)
-          + ProtoAdapter.FLOAT.encodedSizeWithTag(412, value.default_float)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(413, value.default_double)
-          + ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string)
-          + ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes)
-          + NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum)
-          + map_int32_int32Adapter().encodedSizeWithTag(501, value.map_int32_int32)
-          + map_string_stringAdapter().encodedSizeWithTag(502, value.map_string_string)
-          + map_string_messageAdapter().encodedSizeWithTag(503, value.map_string_message)
-          + map_string_enumAdapter().encodedSizeWithTag(504, value.map_string_enum)
-          + ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
-          + ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
-          + ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
-          + ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32)
-          + ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32)
-          + ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64)
-          + ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64)
-          + ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64)
-          + ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64)
-          + ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool)
-          + ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double)
-          + ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string)
-          + ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes)
-          + NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum)
-          + NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1101, value.ext_rep_int32)
-          + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1102, value.ext_rep_uint32)
-          + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1103, value.ext_rep_sint32)
-          + ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(1104, value.ext_rep_fixed32)
-          + ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(1105, value.ext_rep_sfixed32)
-          + ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(1106, value.ext_rep_int64)
-          + ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(1107, value.ext_rep_uint64)
-          + ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(1108, value.ext_rep_sint64)
-          + ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(1109, value.ext_rep_fixed64)
-          + ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(1110, value.ext_rep_sfixed64)
-          + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(1111, value.ext_rep_bool)
-          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(1112, value.ext_rep_float)
-          + ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(1113, value.ext_rep_double)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1114, value.ext_rep_string)
-          + ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1115, value.ext_rep_bytes)
-          + NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1116, value.ext_rep_nested_enum)
-          + NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1117, value.ext_rep_nested_message)
-          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1201, value.ext_pack_int32)
-          + ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1202, value.ext_pack_uint32)
-          + ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1203, value.ext_pack_sint32)
-          + ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(1204, value.ext_pack_fixed32)
-          + ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(1205, value.ext_pack_sfixed32)
-          + ProtoAdapter.INT64.asPacked().encodedSizeWithTag(1206, value.ext_pack_int64)
-          + ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(1207, value.ext_pack_uint64)
-          + ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(1208, value.ext_pack_sint64)
-          + ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(1209, value.ext_pack_fixed64)
-          + ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(1210, value.ext_pack_sfixed64)
-          + ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(1211, value.ext_pack_bool)
-          + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
-          + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
-          + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
-          + ext_map_int32_int32Adapter().encodedSizeWithTag(1301, value.ext_map_int32_int32)
-          + ext_map_string_stringAdapter().encodedSizeWithTag(1402, value.ext_map_string_string)
-          + ext_map_string_messageAdapter().encodedSizeWithTag(1503, value.ext_map_string_message)
-          + ext_map_string_enumAdapter().encodedSizeWithTag(1504, value.ext_map_string_enum)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32);
+      result += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32);
+      result += ProtoAdapter.SINT32.encodedSizeWithTag(3, value.opt_sint32);
+      result += ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.opt_fixed32);
+      result += ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.opt_sfixed32);
+      result += ProtoAdapter.INT64.encodedSizeWithTag(6, value.opt_int64);
+      result += ProtoAdapter.UINT64.encodedSizeWithTag(7, value.opt_uint64);
+      result += ProtoAdapter.SINT64.encodedSizeWithTag(8, value.opt_sint64);
+      result += ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.opt_fixed64);
+      result += ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.opt_sfixed64);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(11, value.opt_bool);
+      result += ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.opt_float);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.opt_double);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(14, value.opt_string);
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(15, value.opt_bytes);
+      result += NestedEnum.ADAPTER.encodedSizeWithTag(16, value.opt_nested_enum);
+      result += NestedMessage.ADAPTER.encodedSizeWithTag(17, value.opt_nested_message);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(101, value.req_int32);
+      result += ProtoAdapter.UINT32.encodedSizeWithTag(102, value.req_uint32);
+      result += ProtoAdapter.SINT32.encodedSizeWithTag(103, value.req_sint32);
+      result += ProtoAdapter.FIXED32.encodedSizeWithTag(104, value.req_fixed32);
+      result += ProtoAdapter.SFIXED32.encodedSizeWithTag(105, value.req_sfixed32);
+      result += ProtoAdapter.INT64.encodedSizeWithTag(106, value.req_int64);
+      result += ProtoAdapter.UINT64.encodedSizeWithTag(107, value.req_uint64);
+      result += ProtoAdapter.SINT64.encodedSizeWithTag(108, value.req_sint64);
+      result += ProtoAdapter.FIXED64.encodedSizeWithTag(109, value.req_fixed64);
+      result += ProtoAdapter.SFIXED64.encodedSizeWithTag(110, value.req_sfixed64);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(111, value.req_bool);
+      result += ProtoAdapter.FLOAT.encodedSizeWithTag(112, value.req_float);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(113, value.req_double);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(114, value.req_string);
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(115, value.req_bytes);
+      result += NestedEnum.ADAPTER.encodedSizeWithTag(116, value.req_nested_enum);
+      result += NestedMessage.ADAPTER.encodedSizeWithTag(117, value.req_nested_message);
+      result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32);
+      result += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32);
+      result += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32);
+      result += ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(204, value.rep_fixed32);
+      result += ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(205, value.rep_sfixed32);
+      result += ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(206, value.rep_int64);
+      result += ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(207, value.rep_uint64);
+      result += ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(208, value.rep_sint64);
+      result += ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(209, value.rep_fixed64);
+      result += ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(210, value.rep_sfixed64);
+      result += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(211, value.rep_bool);
+      result += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(212, value.rep_float);
+      result += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(213, value.rep_double);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(214, value.rep_string);
+      result += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(215, value.rep_bytes);
+      result += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum);
+      result += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message);
+      result += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32);
+      result += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32);
+      result += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32);
+      result += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32);
+      result += ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32);
+      result += ProtoAdapter.INT64.asPacked().encodedSizeWithTag(306, value.pack_int64);
+      result += ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(307, value.pack_uint64);
+      result += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(308, value.pack_sint64);
+      result += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(309, value.pack_fixed64);
+      result += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(310, value.pack_sfixed64);
+      result += ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(311, value.pack_bool);
+      result += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float);
+      result += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double);
+      result += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(401, value.default_int32);
+      result += ProtoAdapter.UINT32.encodedSizeWithTag(402, value.default_uint32);
+      result += ProtoAdapter.SINT32.encodedSizeWithTag(403, value.default_sint32);
+      result += ProtoAdapter.FIXED32.encodedSizeWithTag(404, value.default_fixed32);
+      result += ProtoAdapter.SFIXED32.encodedSizeWithTag(405, value.default_sfixed32);
+      result += ProtoAdapter.INT64.encodedSizeWithTag(406, value.default_int64);
+      result += ProtoAdapter.UINT64.encodedSizeWithTag(407, value.default_uint64);
+      result += ProtoAdapter.SINT64.encodedSizeWithTag(408, value.default_sint64);
+      result += ProtoAdapter.FIXED64.encodedSizeWithTag(409, value.default_fixed64);
+      result += ProtoAdapter.SFIXED64.encodedSizeWithTag(410, value.default_sfixed64);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(411, value.default_bool);
+      result += ProtoAdapter.FLOAT.encodedSizeWithTag(412, value.default_float);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(413, value.default_double);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(414, value.default_string);
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(415, value.default_bytes);
+      result += NestedEnum.ADAPTER.encodedSizeWithTag(416, value.default_nested_enum);
+      result += map_int32_int32Adapter().encodedSizeWithTag(501, value.map_int32_int32);
+      result += map_string_stringAdapter().encodedSizeWithTag(502, value.map_string_string);
+      result += map_string_messageAdapter().encodedSizeWithTag(503, value.map_string_message);
+      result += map_string_enumAdapter().encodedSizeWithTag(504, value.map_string_enum);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32);
+      result += ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32);
+      result += ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32);
+      result += ProtoAdapter.FIXED32.encodedSizeWithTag(1004, value.ext_opt_fixed32);
+      result += ProtoAdapter.SFIXED32.encodedSizeWithTag(1005, value.ext_opt_sfixed32);
+      result += ProtoAdapter.INT64.encodedSizeWithTag(1006, value.ext_opt_int64);
+      result += ProtoAdapter.UINT64.encodedSizeWithTag(1007, value.ext_opt_uint64);
+      result += ProtoAdapter.SINT64.encodedSizeWithTag(1008, value.ext_opt_sint64);
+      result += ProtoAdapter.FIXED64.encodedSizeWithTag(1009, value.ext_opt_fixed64);
+      result += ProtoAdapter.SFIXED64.encodedSizeWithTag(1010, value.ext_opt_sfixed64);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(1011, value.ext_opt_bool);
+      result += ProtoAdapter.FLOAT.encodedSizeWithTag(1012, value.ext_opt_float);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(1013, value.ext_opt_double);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1014, value.ext_opt_string);
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(1015, value.ext_opt_bytes);
+      result += NestedEnum.ADAPTER.encodedSizeWithTag(1016, value.ext_opt_nested_enum);
+      result += NestedMessage.ADAPTER.encodedSizeWithTag(1017, value.ext_opt_nested_message);
+      result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1101, value.ext_rep_int32);
+      result += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(1102, value.ext_rep_uint32);
+      result += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(1103, value.ext_rep_sint32);
+      result += ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(1104, value.ext_rep_fixed32);
+      result += ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(1105, value.ext_rep_sfixed32);
+      result += ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(1106, value.ext_rep_int64);
+      result += ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(1107, value.ext_rep_uint64);
+      result += ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(1108, value.ext_rep_sint64);
+      result += ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(1109, value.ext_rep_fixed64);
+      result += ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(1110, value.ext_rep_sfixed64);
+      result += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(1111, value.ext_rep_bool);
+      result += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(1112, value.ext_rep_float);
+      result += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(1113, value.ext_rep_double);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1114, value.ext_rep_string);
+      result += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(1115, value.ext_rep_bytes);
+      result += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(1116, value.ext_rep_nested_enum);
+      result += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(1117, value.ext_rep_nested_message);
+      result += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(1201, value.ext_pack_int32);
+      result += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(1202, value.ext_pack_uint32);
+      result += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(1203, value.ext_pack_sint32);
+      result += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(1204, value.ext_pack_fixed32);
+      result += ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(1205, value.ext_pack_sfixed32);
+      result += ProtoAdapter.INT64.asPacked().encodedSizeWithTag(1206, value.ext_pack_int64);
+      result += ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(1207, value.ext_pack_uint64);
+      result += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(1208, value.ext_pack_sint64);
+      result += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(1209, value.ext_pack_fixed64);
+      result += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(1210, value.ext_pack_sfixed64);
+      result += ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(1211, value.ext_pack_bool);
+      result += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float);
+      result += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double);
+      result += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum);
+      result += ext_map_int32_int32Adapter().encodedSizeWithTag(1301, value.ext_map_int32_int32);
+      result += ext_map_string_stringAdapter().encodedSizeWithTag(1402, value.ext_map_string_string);
+      result += ext_map_string_messageAdapter().encodedSizeWithTag(1503, value.ext_map_string_message);
+      result += ext_map_string_enumAdapter().encodedSizeWithTag(1504, value.ext_map_string_enum);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -676,26 +676,28 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
     @Override
     public int encodedSize(FileOptions value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.java_package)
-          + ProtoAdapter.STRING.encodedSizeWithTag(8, value.java_outer_classname)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(10, value.java_multiple_files)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(20, value.java_generate_equals_and_hash)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(27, value.java_string_check_utf8)
-          + ProtoAdapter.STRING.encodedSizeWithTag(11, value.go_package)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(16, value.cc_generic_services)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(17, value.java_generic_services)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(18, value.py_generic_services)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(42, value.php_generic_services)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(23, value.deprecated)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(31, value.cc_enable_arenas)
-          + ProtoAdapter.STRING.encodedSizeWithTag(36, value.objc_class_prefix)
-          + ProtoAdapter.STRING.encodedSizeWithTag(37, value.csharp_namespace)
-          + ProtoAdapter.STRING.encodedSizeWithTag(39, value.swift_prefix)
-          + ProtoAdapter.STRING.encodedSizeWithTag(40, value.php_class_prefix)
-          + ProtoAdapter.STRING.encodedSizeWithTag(41, value.php_namespace)
-          + ProtoAdapter.STRING.encodedSizeWithTag(44, value.php_metadata_namespace)
-          + ProtoAdapter.STRING.encodedSizeWithTag(45, value.ruby_package)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.java_package);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(8, value.java_outer_classname);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(10, value.java_multiple_files);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(20, value.java_generate_equals_and_hash);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(27, value.java_string_check_utf8);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(11, value.go_package);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(16, value.cc_generic_services);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(17, value.java_generic_services);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(18, value.py_generic_services);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(42, value.php_generic_services);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(23, value.deprecated);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(31, value.cc_enable_arenas);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(36, value.objc_class_prefix);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(37, value.csharp_namespace);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(39, value.swift_prefix);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(40, value.php_class_prefix);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(41, value.php_namespace);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(44, value.php_metadata_namespace);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(45, value.ruby_package);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

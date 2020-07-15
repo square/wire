@@ -351,9 +351,11 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
       @Override
       public int encodedSize(NamePart value) {
-        return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name_part)
-            + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.is_extension)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name_part);
+        result += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.is_extension);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -396,14 +398,16 @@ public final class UninterpretedOption extends Message<UninterpretedOption, Unin
 
     @Override
     public int encodedSize(UninterpretedOption value) {
-      return NamePart.ADAPTER.asRepeated().encodedSizeWithTag(2, value.name)
-          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.identifier_value)
-          + ProtoAdapter.UINT64.encodedSizeWithTag(4, value.positive_int_value)
-          + ProtoAdapter.INT64.encodedSizeWithTag(5, value.negative_int_value)
-          + ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.double_value)
-          + ProtoAdapter.BYTES.encodedSizeWithTag(7, value.string_value)
-          + ProtoAdapter.STRING.encodedSizeWithTag(8, value.aggregate_value)
-          + value.unknownFields().size();
+      int result = 0;
+      result += NamePart.ADAPTER.asRepeated().encodedSizeWithTag(2, value.name);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.identifier_value);
+      result += ProtoAdapter.UINT64.encodedSizeWithTag(4, value.positive_int_value);
+      result += ProtoAdapter.INT64.encodedSizeWithTag(5, value.negative_int_value);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(6, value.double_value);
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(7, value.string_value);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(8, value.aggregate_value);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

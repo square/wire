@@ -252,11 +252,13 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     @Override
     public int encodedSize(FieldOptions value) {
-      return ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

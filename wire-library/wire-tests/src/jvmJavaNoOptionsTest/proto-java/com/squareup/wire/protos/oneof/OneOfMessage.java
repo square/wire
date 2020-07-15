@@ -166,10 +166,12 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
 
     @Override
     public int encodedSize(OneOfMessage value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
-          + ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar)
-          + ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(4, value.baz);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

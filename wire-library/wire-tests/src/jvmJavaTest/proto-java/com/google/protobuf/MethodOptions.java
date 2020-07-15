@@ -249,11 +249,13 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
     @Override
     public int encodedSize(MethodOptions value) {
-      return ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
-          + IdempotencyLevel.ADAPTER.encodedSizeWithTag(34, value.idempotency_level)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(56001, value.hide)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated);
+      result += IdempotencyLevel.ADAPTER.encodedSizeWithTag(34, value.idempotency_level);
+      result += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(56001, value.hide);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

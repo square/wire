@@ -172,10 +172,12 @@ public final class ServiceOptions extends Message<ServiceOptions, ServiceOptions
 
     @Override
     public int encodedSize(ServiceOptions value) {
-      return ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(56000, value.httpOneOnly)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated);
+      result += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(56000, value.httpOneOnly);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

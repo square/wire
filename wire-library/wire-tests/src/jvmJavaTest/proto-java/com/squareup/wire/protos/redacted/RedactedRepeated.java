@@ -129,9 +129,11 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
 
     @Override
     public int encodedSize(RedactedRepeated value) {
-      return ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
-          + Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a);
+      result += Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -99,8 +99,10 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     @Override
     public int encodedSize(Bar value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.baz)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.baz);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

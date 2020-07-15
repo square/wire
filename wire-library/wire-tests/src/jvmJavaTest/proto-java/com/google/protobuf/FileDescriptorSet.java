@@ -104,8 +104,10 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
 
     @Override
     public int encodedSize(FileDescriptorSet value) {
-      return FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file)
-          + value.unknownFields().size();
+      int result = 0;
+      result += FileDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(1, value.file);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

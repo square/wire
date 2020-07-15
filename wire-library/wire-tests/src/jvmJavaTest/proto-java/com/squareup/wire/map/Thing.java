@@ -98,8 +98,10 @@ public final class Thing extends Message<Thing, Thing.Builder> {
 
     @Override
     public int encodedSize(Thing value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

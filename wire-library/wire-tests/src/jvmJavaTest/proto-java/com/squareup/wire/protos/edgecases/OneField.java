@@ -99,8 +99,10 @@ public final class OneField extends Message<OneField, OneField.Builder> {
 
     @Override
     public int encodedSize(OneField value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

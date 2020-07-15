@@ -516,17 +516,19 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     @Override
     public int encodedSize(FieldDescriptorProto value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.INT32.encodedSizeWithTag(3, value.number)
-          + Label.ADAPTER.encodedSizeWithTag(4, value.label)
-          + Type.ADAPTER.encodedSizeWithTag(5, value.type)
-          + ProtoAdapter.STRING.encodedSizeWithTag(6, value.type_name)
-          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee)
-          + ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value)
-          + ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index)
-          + ProtoAdapter.STRING.encodedSizeWithTag(10, value.json_name)
-          + FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(3, value.number);
+      result += Label.ADAPTER.encodedSizeWithTag(4, value.label);
+      result += Type.ADAPTER.encodedSizeWithTag(5, value.type);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(6, value.type_name);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(2, value.extendee);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(7, value.default_value);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(9, value.oneof_index);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(10, value.json_name);
+      result += FieldOptions.ADAPTER.encodedSizeWithTag(8, value.options);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

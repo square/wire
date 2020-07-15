@@ -71,7 +71,9 @@ public final class TheResponse extends Message<TheResponse, TheResponse.Builder>
 
     @Override
     public int encodedSize(TheResponse value) {
-      return value.unknownFields().size();
+      int result = 0;
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

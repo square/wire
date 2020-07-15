@@ -218,13 +218,15 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
 
     @Override
     public int encodedSize(ExternalMessage value) {
-      return ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f)
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext)
-          + ProtoAdapter.INT32.encodedSizeWithTag(126, value.barext)
-          + ProtoAdapter.INT32.encodedSizeWithTag(127, value.bazext)
-          + SimpleMessage.NestedMessage.ADAPTER.encodedSizeWithTag(128, value.nested_message_ext)
-          + SimpleMessage.NestedEnum.ADAPTER.encodedSizeWithTag(129, value.nested_enum_ext)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f);
+      result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(126, value.barext);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(127, value.bazext);
+      result += SimpleMessage.NestedMessage.ADAPTER.encodedSizeWithTag(128, value.nested_message_ext);
+      result += SimpleMessage.NestedEnum.ADAPTER.encodedSizeWithTag(129, value.nested_enum_ext);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

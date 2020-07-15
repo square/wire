@@ -99,8 +99,10 @@ public final class NestedVersionOne extends Message<NestedVersionOne, NestedVers
 
     @Override
     public int encodedSize(NestedVersionOne value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

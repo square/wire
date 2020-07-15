@@ -717,25 +717,27 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     @Override
     public int encodedSize(FieldOptions value) {
-      return CType.ADAPTER.encodedSizeWithTag(1, value.ctype)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed)
-          + JSType.ADAPTER.encodedSizeWithTag(6, value.jstype)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak)
-          + UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option)
-          + ProtoAdapter.INT32.encodedSizeWithTag(60001, value.my_field_option_one)
-          + ProtoAdapter.FLOAT.encodedSizeWithTag(60002, value.my_field_option_two)
-          + FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(60003, value.my_field_option_three)
-          + FooBar.ADAPTER.encodedSizeWithTag(60004, value.my_field_option_four)
-          + ProtoAdapter.STRING.encodedSizeWithTag(22101, value.squareup_protos_extension_collision_1_a)
-          + ProtoAdapter.STRING.encodedSizeWithTag(22102, value.b)
-          + ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a)
-          + ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(22301, value.relevant)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(22302, value.unused)
-          + value.unknownFields().size();
+      int result = 0;
+      result += CType.ADAPTER.encodedSizeWithTag(1, value.ctype);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.packed);
+      result += JSType.ADAPTER.encodedSizeWithTag(6, value.jstype);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(5, value.lazy);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(3, value.deprecated);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(10, value.weak);
+      result += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(60001, value.my_field_option_one);
+      result += ProtoAdapter.FLOAT.encodedSizeWithTag(60002, value.my_field_option_two);
+      result += FooBar.FooBarBazEnum.ADAPTER.encodedSizeWithTag(60003, value.my_field_option_three);
+      result += FooBar.ADAPTER.encodedSizeWithTag(60004, value.my_field_option_four);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(22101, value.squareup_protos_extension_collision_1_a);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(22102, value.b);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(22103, value.squareup_protos_extension_collision_2_a);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(22104, value.c);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(22200, value.redacted);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(22301, value.relevant);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(22302, value.unused);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

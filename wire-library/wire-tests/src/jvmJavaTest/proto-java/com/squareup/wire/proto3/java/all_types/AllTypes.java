@@ -2120,9 +2120,12 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
       @Override
       public int encodedSize(NestedMessage value) {
-        return (Objects.equals(value.a, 0) ? 0
-              : ProtoAdapter.INT32.encodedSizeWithTag(1, value.a))
-            + value.unknownFields().size();
+        int result = 0;
+        if (!Objects.equals(value.a, 0)) {
+          result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a);
+        }
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override
@@ -2187,118 +2190,145 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     @Override
     public int encodedSize(AllTypes value) {
-      return (Objects.equals(value.int32, 0) ? 0
-            : ProtoAdapter.INT32.encodedSizeWithTag(1, value.int32))
-          + (Objects.equals(value.uint32, 0) ? 0
-            : ProtoAdapter.UINT32.encodedSizeWithTag(2, value.uint32))
-          + (Objects.equals(value.sint32, 0) ? 0
-            : ProtoAdapter.SINT32.encodedSizeWithTag(3, value.sint32))
-          + (Objects.equals(value.fixed32, 0) ? 0
-            : ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.fixed32))
-          + (Objects.equals(value.sfixed32, 0) ? 0
-            : ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.sfixed32))
-          + (Objects.equals(value.int64, 0L) ? 0
-            : ProtoAdapter.INT64.encodedSizeWithTag(6, value.int64))
-          + (Objects.equals(value.uint64, 0L) ? 0
-            : ProtoAdapter.UINT64.encodedSizeWithTag(7, value.uint64))
-          + (Objects.equals(value.sint64, 0L) ? 0
-            : ProtoAdapter.SINT64.encodedSizeWithTag(8, value.sint64))
-          + (Objects.equals(value.fixed64, 0L) ? 0
-            : ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.fixed64))
-          + (Objects.equals(value.sfixed64, 0L) ? 0
-            : ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.sfixed64))
-          + (Objects.equals(value.bool, false) ? 0
-            : ProtoAdapter.BOOL.encodedSizeWithTag(11, value.bool))
-          + (Objects.equals(value.float_, 0f) ? 0
-            : ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.float_))
-          + (Objects.equals(value.double_, 0.0) ? 0
-            : ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.double_))
-          + (Objects.equals(value.string, "") ? 0
-            : ProtoAdapter.STRING.encodedSizeWithTag(14, value.string))
-          + (Objects.equals(value.bytes, ByteString.EMPTY) ? 0
-            : ProtoAdapter.BYTES.encodedSizeWithTag(15, value.bytes))
-          + (Objects.equals(value.nested_enum, NestedEnum.UNKNOWN) ? 0
-            : NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum))
-          + (Objects.equals(value.nested_message, null) ? 0
-            : NestedMessage.ADAPTER.encodedSizeWithTag(17, value.nested_message))
-          + (Objects.equals(value.any, null) ? 0
-            : AnyMessage.ADAPTER.encodedSizeWithTag(18, value.any))
-          + (Objects.equals(value.duration, null) ? 0
-            : ProtoAdapter.DURATION.encodedSizeWithTag(19, value.duration))
-          + (Objects.equals(value.struct, null) ? 0
-            : ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(20, value.struct))
-          + (Objects.equals(value.list_value, null) ? 0
-            : ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21, value.list_value))
-          + (Objects.equals(value.value, null) ? 0
-            : ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22, value.value))
-          + (Objects.equals(value.null_value, null) ? 0
-            : ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23, value.null_value))
-          + (Objects.equals(value.empty, null) ? 0
-            : ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty))
-          + (Objects.equals(value.timestamp, null) ? 0
-            : ProtoAdapter.INSTANT.encodedSizeWithTag(25, value.timestamp))
-          + ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
-          + ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
-          + ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
-          + ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(204, value.rep_fixed32)
-          + ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(205, value.rep_sfixed32)
-          + ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(206, value.rep_int64)
-          + ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(207, value.rep_uint64)
-          + ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(208, value.rep_sint64)
-          + ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(209, value.rep_fixed64)
-          + ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(210, value.rep_sfixed64)
-          + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(211, value.rep_bool)
-          + ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(212, value.rep_float)
-          + ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(213, value.rep_double)
-          + ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(214, value.rep_string)
-          + ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(215, value.rep_bytes)
-          + NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum)
-          + NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message)
-          + AnyMessage.ADAPTER.asRepeated().encodedSizeWithTag(218, value.rep_any)
-          + ProtoAdapter.DURATION.asRepeated().encodedSizeWithTag(219, value.rep_duration)
-          + ProtoAdapter.STRUCT_MAP.asRepeated().encodedSizeWithTag(220, value.rep_struct)
-          + ProtoAdapter.STRUCT_LIST.asRepeated().encodedSizeWithTag(221, value.rep_list_value)
-          + ProtoAdapter.STRUCT_VALUE.asRepeated().encodedSizeWithTag(222, value.rep_value)
-          + ProtoAdapter.STRUCT_NULL.asRepeated().encodedSizeWithTag(223, value.rep_null_value)
-          + ProtoAdapter.EMPTY.asRepeated().encodedSizeWithTag(224, value.rep_empty)
-          + ProtoAdapter.INSTANT.asRepeated().encodedSizeWithTag(225, value.rep_timestamp)
-          + ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32)
-          + ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32)
-          + ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32)
-          + ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32)
-          + ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32)
-          + ProtoAdapter.INT64.asPacked().encodedSizeWithTag(306, value.pack_int64)
-          + ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(307, value.pack_uint64)
-          + ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(308, value.pack_sint64)
-          + ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(309, value.pack_fixed64)
-          + ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(310, value.pack_sfixed64)
-          + ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(311, value.pack_bool)
-          + ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float)
-          + ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double)
-          + NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum)
-          + ProtoAdapter.STRUCT_NULL.asPacked().encodedSizeWithTag(323, value.pack_null_value)
-          + map_int32_int32Adapter().encodedSizeWithTag(501, value.map_int32_int32)
-          + map_string_stringAdapter().encodedSizeWithTag(502, value.map_string_string)
-          + map_string_messageAdapter().encodedSizeWithTag(503, value.map_string_message)
-          + map_string_enumAdapter().encodedSizeWithTag(504, value.map_string_enum)
-          + map_int32_anyAdapter().encodedSizeWithTag(518, value.map_int32_any)
-          + map_int32_durationAdapter().encodedSizeWithTag(519, value.map_int32_duration)
-          + map_int32_structAdapter().encodedSizeWithTag(520, value.map_int32_struct)
-          + map_int32_list_valueAdapter().encodedSizeWithTag(521, value.map_int32_list_value)
-          + map_int32_valueAdapter().encodedSizeWithTag(522, value.map_int32_value)
-          + map_int32_null_valueAdapter().encodedSizeWithTag(523, value.map_int32_null_value)
-          + map_int32_emptyAdapter().encodedSizeWithTag(524, value.map_int32_empty)
-          + map_int32_timestampAdapter().encodedSizeWithTag(525, value.map_int32_timestamp)
-          + ProtoAdapter.STRING.encodedSizeWithTag(601, value.oneof_string)
-          + ProtoAdapter.INT32.encodedSizeWithTag(602, value.oneof_int32)
-          + NestedMessage.ADAPTER.encodedSizeWithTag(603, value.oneof_nested_message)
-          + AnyMessage.ADAPTER.encodedSizeWithTag(618, value.oneof_any)
-          + ProtoAdapter.DURATION.encodedSizeWithTag(619, value.oneof_duration)
-          + ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(620, value.oneof_struct)
-          + ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(621, value.oneof_list_value)
-          + ProtoAdapter.EMPTY.encodedSizeWithTag(624, value.oneof_empty)
-          + ProtoAdapter.INSTANT.encodedSizeWithTag(625, value.oneof_timestamp)
-          + value.unknownFields().size();
+      int result = 0;
+      if (!Objects.equals(value.int32, 0)) {
+        result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.int32);
+      }
+      if (!Objects.equals(value.uint32, 0)) {
+        result += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.uint32);
+      }
+      if (!Objects.equals(value.sint32, 0)) {
+        result += ProtoAdapter.SINT32.encodedSizeWithTag(3, value.sint32);
+      }
+      if (!Objects.equals(value.fixed32, 0)) {
+        result += ProtoAdapter.FIXED32.encodedSizeWithTag(4, value.fixed32);
+      }
+      if (!Objects.equals(value.sfixed32, 0)) {
+        result += ProtoAdapter.SFIXED32.encodedSizeWithTag(5, value.sfixed32);
+      }
+      if (!Objects.equals(value.int64, 0L)) {
+        result += ProtoAdapter.INT64.encodedSizeWithTag(6, value.int64);
+      }
+      if (!Objects.equals(value.uint64, 0L)) {
+        result += ProtoAdapter.UINT64.encodedSizeWithTag(7, value.uint64);
+      }
+      if (!Objects.equals(value.sint64, 0L)) {
+        result += ProtoAdapter.SINT64.encodedSizeWithTag(8, value.sint64);
+      }
+      if (!Objects.equals(value.fixed64, 0L)) {
+        result += ProtoAdapter.FIXED64.encodedSizeWithTag(9, value.fixed64);
+      }
+      if (!Objects.equals(value.sfixed64, 0L)) {
+        result += ProtoAdapter.SFIXED64.encodedSizeWithTag(10, value.sfixed64);
+      }
+      if (!Objects.equals(value.bool, false)) {
+        result += ProtoAdapter.BOOL.encodedSizeWithTag(11, value.bool);
+      }
+      if (!Objects.equals(value.float_, 0f)) {
+        result += ProtoAdapter.FLOAT.encodedSizeWithTag(12, value.float_);
+      }
+      if (!Objects.equals(value.double_, 0.0)) {
+        result += ProtoAdapter.DOUBLE.encodedSizeWithTag(13, value.double_);
+      }
+      if (!Objects.equals(value.string, "")) {
+        result += ProtoAdapter.STRING.encodedSizeWithTag(14, value.string);
+      }
+      if (!Objects.equals(value.bytes, ByteString.EMPTY)) {
+        result += ProtoAdapter.BYTES.encodedSizeWithTag(15, value.bytes);
+      }
+      if (!Objects.equals(value.nested_enum, NestedEnum.UNKNOWN)) {
+        result += NestedEnum.ADAPTER.encodedSizeWithTag(16, value.nested_enum);
+      }
+      if (!Objects.equals(value.nested_message, null)) {
+        result += NestedMessage.ADAPTER.encodedSizeWithTag(17, value.nested_message);
+      }
+      if (!Objects.equals(value.any, null)) {
+        result += AnyMessage.ADAPTER.encodedSizeWithTag(18, value.any);
+      }
+      if (!Objects.equals(value.duration, null)) {
+        result += ProtoAdapter.DURATION.encodedSizeWithTag(19, value.duration);
+      }
+      if (!Objects.equals(value.struct, null)) {
+        result += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(20, value.struct);
+      }
+      if (!Objects.equals(value.list_value, null)) {
+        result += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21, value.list_value);
+      }
+      if (!Objects.equals(value.value, null)) {
+        result += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22, value.value);
+      }
+      if (!Objects.equals(value.null_value, null)) {
+        result += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23, value.null_value);
+      }
+      if (!Objects.equals(value.empty, null)) {
+        result += ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty);
+      }
+      if (!Objects.equals(value.timestamp, null)) {
+        result += ProtoAdapter.INSTANT.encodedSizeWithTag(25, value.timestamp);
+      }
+      result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32);
+      result += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32);
+      result += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32);
+      result += ProtoAdapter.FIXED32.asRepeated().encodedSizeWithTag(204, value.rep_fixed32);
+      result += ProtoAdapter.SFIXED32.asRepeated().encodedSizeWithTag(205, value.rep_sfixed32);
+      result += ProtoAdapter.INT64.asRepeated().encodedSizeWithTag(206, value.rep_int64);
+      result += ProtoAdapter.UINT64.asRepeated().encodedSizeWithTag(207, value.rep_uint64);
+      result += ProtoAdapter.SINT64.asRepeated().encodedSizeWithTag(208, value.rep_sint64);
+      result += ProtoAdapter.FIXED64.asRepeated().encodedSizeWithTag(209, value.rep_fixed64);
+      result += ProtoAdapter.SFIXED64.asRepeated().encodedSizeWithTag(210, value.rep_sfixed64);
+      result += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(211, value.rep_bool);
+      result += ProtoAdapter.FLOAT.asRepeated().encodedSizeWithTag(212, value.rep_float);
+      result += ProtoAdapter.DOUBLE.asRepeated().encodedSizeWithTag(213, value.rep_double);
+      result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(214, value.rep_string);
+      result += ProtoAdapter.BYTES.asRepeated().encodedSizeWithTag(215, value.rep_bytes);
+      result += NestedEnum.ADAPTER.asRepeated().encodedSizeWithTag(216, value.rep_nested_enum);
+      result += NestedMessage.ADAPTER.asRepeated().encodedSizeWithTag(217, value.rep_nested_message);
+      result += AnyMessage.ADAPTER.asRepeated().encodedSizeWithTag(218, value.rep_any);
+      result += ProtoAdapter.DURATION.asRepeated().encodedSizeWithTag(219, value.rep_duration);
+      result += ProtoAdapter.STRUCT_MAP.asRepeated().encodedSizeWithTag(220, value.rep_struct);
+      result += ProtoAdapter.STRUCT_LIST.asRepeated().encodedSizeWithTag(221, value.rep_list_value);
+      result += ProtoAdapter.STRUCT_VALUE.asRepeated().encodedSizeWithTag(222, value.rep_value);
+      result += ProtoAdapter.STRUCT_NULL.asRepeated().encodedSizeWithTag(223, value.rep_null_value);
+      result += ProtoAdapter.EMPTY.asRepeated().encodedSizeWithTag(224, value.rep_empty);
+      result += ProtoAdapter.INSTANT.asRepeated().encodedSizeWithTag(225, value.rep_timestamp);
+      result += ProtoAdapter.INT32.asPacked().encodedSizeWithTag(301, value.pack_int32);
+      result += ProtoAdapter.UINT32.asPacked().encodedSizeWithTag(302, value.pack_uint32);
+      result += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32);
+      result += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32);
+      result += ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32);
+      result += ProtoAdapter.INT64.asPacked().encodedSizeWithTag(306, value.pack_int64);
+      result += ProtoAdapter.UINT64.asPacked().encodedSizeWithTag(307, value.pack_uint64);
+      result += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(308, value.pack_sint64);
+      result += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(309, value.pack_fixed64);
+      result += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(310, value.pack_sfixed64);
+      result += ProtoAdapter.BOOL.asPacked().encodedSizeWithTag(311, value.pack_bool);
+      result += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(312, value.pack_float);
+      result += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(313, value.pack_double);
+      result += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(316, value.pack_nested_enum);
+      result += ProtoAdapter.STRUCT_NULL.asPacked().encodedSizeWithTag(323, value.pack_null_value);
+      result += map_int32_int32Adapter().encodedSizeWithTag(501, value.map_int32_int32);
+      result += map_string_stringAdapter().encodedSizeWithTag(502, value.map_string_string);
+      result += map_string_messageAdapter().encodedSizeWithTag(503, value.map_string_message);
+      result += map_string_enumAdapter().encodedSizeWithTag(504, value.map_string_enum);
+      result += map_int32_anyAdapter().encodedSizeWithTag(518, value.map_int32_any);
+      result += map_int32_durationAdapter().encodedSizeWithTag(519, value.map_int32_duration);
+      result += map_int32_structAdapter().encodedSizeWithTag(520, value.map_int32_struct);
+      result += map_int32_list_valueAdapter().encodedSizeWithTag(521, value.map_int32_list_value);
+      result += map_int32_valueAdapter().encodedSizeWithTag(522, value.map_int32_value);
+      result += map_int32_null_valueAdapter().encodedSizeWithTag(523, value.map_int32_null_value);
+      result += map_int32_emptyAdapter().encodedSizeWithTag(524, value.map_int32_empty);
+      result += map_int32_timestampAdapter().encodedSizeWithTag(525, value.map_int32_timestamp);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(601, value.oneof_string);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(602, value.oneof_int32);
+      result += NestedMessage.ADAPTER.encodedSizeWithTag(603, value.oneof_nested_message);
+      result += AnyMessage.ADAPTER.encodedSizeWithTag(618, value.oneof_any);
+      result += ProtoAdapter.DURATION.encodedSizeWithTag(619, value.oneof_duration);
+      result += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(620, value.oneof_struct);
+      result += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(621, value.oneof_list_value);
+      result += ProtoAdapter.EMPTY.encodedSizeWithTag(624, value.oneof_empty);
+      result += ProtoAdapter.INSTANT.encodedSizeWithTag(625, value.oneof_timestamp);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -118,9 +118,11 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
 
     @Override
     public int encodedSize(NotRedacted value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
-          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(2, value.b);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

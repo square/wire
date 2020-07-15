@@ -141,10 +141,12 @@ public final class EnumValueDescriptorProto extends Message<EnumValueDescriptorP
 
     @Override
     public int encodedSize(EnumValueDescriptorProto value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
-          + ProtoAdapter.INT32.encodedSizeWithTag(2, value.number)
-          + EnumValueOptions.ADAPTER.encodedSizeWithTag(3, value.options)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(2, value.number);
+      result += EnumValueOptions.ADAPTER.encodedSizeWithTag(3, value.options);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

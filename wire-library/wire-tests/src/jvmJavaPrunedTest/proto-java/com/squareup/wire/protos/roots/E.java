@@ -108,8 +108,10 @@ public final class E {
 
       @Override
       public int encodedSize(F value) {
-        return ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
-            + value.unknownFields().size();
+        int result = 0;
+        result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i);
+        result += value.unknownFields().size();
+        return result;
       }
 
       @Override

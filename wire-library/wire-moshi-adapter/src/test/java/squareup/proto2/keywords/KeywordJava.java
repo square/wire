@@ -175,11 +175,13 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
 
     @Override
     public int encodedSize(KeywordJava value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.final_)
-          + ProtoAdapter.BOOL.encodedSizeWithTag(2, value.public_)
-          + package_Adapter().encodedSizeWithTag(3, value.package_)
-          + ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.return_)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.final_);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.public_);
+      result += package_Adapter().encodedSizeWithTag(3, value.package_);
+      result += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.return_);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

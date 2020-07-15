@@ -71,7 +71,9 @@ public final class MessageWithOptions extends Message<MessageWithOptions, Messag
 
     @Override
     public int encodedSize(MessageWithOptions value) {
-      return value.unknownFields().size();
+      int result = 0;
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

@@ -100,8 +100,10 @@ public final class Bars extends Message<Bars, Bars.Builder> {
 
     @Override
     public int encodedSize(Bars value) {
-      return Bar.ADAPTER.asRepeated().encodedSizeWithTag(1, value.bars)
-          + value.unknownFields().size();
+      int result = 0;
+      result += Bar.ADAPTER.asRepeated().encodedSizeWithTag(1, value.bars);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override

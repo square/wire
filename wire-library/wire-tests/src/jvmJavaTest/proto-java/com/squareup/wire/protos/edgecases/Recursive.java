@@ -117,9 +117,11 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
 
     @Override
     public int encodedSize(Recursive value) {
-      return ProtoAdapter.INT32.encodedSizeWithTag(1, value.value)
-          + Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive)
-          + value.unknownFields().size();
+      int result = 0;
+      result += ProtoAdapter.INT32.encodedSizeWithTag(1, value.value);
+      result += Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive);
+      result += value.unknownFields().size();
+      return result;
     }
 
     @Override
