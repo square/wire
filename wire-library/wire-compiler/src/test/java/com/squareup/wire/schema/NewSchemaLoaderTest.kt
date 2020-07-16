@@ -20,9 +20,15 @@ import com.google.common.jimfs.Jimfs
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import com.squareup.wire.testing.symlink
+import okio.ByteString.Companion.decodeHex
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import kotlin.test.assertFailsWith
+import kotlin.text.Charsets.UTF_16BE
+import kotlin.text.Charsets.UTF_16LE
+import kotlin.text.Charsets.UTF_32BE
+import kotlin.text.Charsets.UTF_32LE
+import kotlin.text.Charsets.UTF_8
 
 class NewSchemaLoaderTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
@@ -187,6 +193,52 @@ class NewSchemaLoaderTest {
       assertThat(loader.load("squareup/curves/circle.proto").location)
           .isEqualTo(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
     }
+  }
+
+  @Test
+  fun bomAwareLoading() {
+    fs.add("colors/squareup/colors/red.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Red {
+        |}
+        """.trimMargin(), charset = UTF_8, bom = "efbbbf".decodeHex())
+    fs.add("colors/squareup/colors/orange.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Orange {
+        |}
+        """.trimMargin(), charset = UTF_16BE, bom = "feff".decodeHex())
+    fs.add("colors/squareup/colors/yellow.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Yellow {
+        |}
+        """.trimMargin(), charset = UTF_16LE, bom = "fffe".decodeHex())
+    fs.add("colors/squareup/colors/green.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Green {
+        |}
+        """.trimMargin(), charset = UTF_32BE, bom = "0000ffff".decodeHex())
+    fs.add("colors/squareup/colors/blue.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |message Blue {
+        |}
+        """.trimMargin(), charset = UTF_32LE, bom = "ffff0000".decodeHex())
+
+    val sourcePathFiles = NewSchemaLoader(fs).use { loader ->
+      loader.initRoots(sourcePath = listOf(Location.get("colors")))
+      loader.loadSourcePathFiles()
+    }
+    assertThat(sourcePathFiles.map { it.location.path }).containsExactlyInAnyOrder(
+        "squareup/colors/red.proto",
+        "squareup/colors/orange.proto",
+        "squareup/colors/yellow.proto",
+        "squareup/colors/green.proto",
+        "squareup/colors/blue.proto"
+    )
   }
 
   @Test

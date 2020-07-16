@@ -15,8 +15,10 @@
  */
 package com.squareup.wire.testing
 
+import okio.ByteString
 import okio.buffer
 import okio.sink
+import java.nio.charset.Charset
 import java.nio.file.FileSystem
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -25,13 +27,19 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlin.text.Charsets.UTF_8
 
-fun FileSystem.add(pathString: String, contents: String) {
+fun FileSystem.add(
+  pathString: String,
+  contents: String,
+  charset: Charset = UTF_8,
+  bom: ByteString = ByteString.EMPTY
+) {
   val path = getPath(pathString)
   if (path.parent != null) {
     Files.createDirectories(path.parent)
   }
-  Files.write(path, contents.toByteArray(Charsets.UTF_8))
+  Files.write(path, bom.toByteArray() + contents.toByteArray(charset))
 }
 
 fun FileSystem.symlink(linkPathString: String, targetPathString: String) {
@@ -45,7 +53,7 @@ fun FileSystem.symlink(linkPathString: String, targetPathString: String) {
 
 fun FileSystem.get(pathString: String): String {
   val path = getPath(pathString)
-  return String(Files.readAllBytes(path), Charsets.UTF_8)
+  return String(Files.readAllBytes(path), UTF_8)
 }
 
 fun FileSystem.exists(pathString: String): Boolean {

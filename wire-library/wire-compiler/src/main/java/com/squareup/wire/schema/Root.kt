@@ -20,9 +20,13 @@ import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.java.internal.ProfileParser
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoParser
+import okio.BufferedSource
+import okio.ByteString.Companion.decodeHex
+import okio.Options
 import okio.buffer
 import okio.source
 import java.io.IOException
+import java.nio.charset.Charset
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.FileVisitOption
@@ -127,7 +131,8 @@ internal class ProtoFilePath(
   fun parse(): ProtoFile {
     try {
       path.source().buffer().use { source ->
-        val data = source.readUtf8()
+        val charset = source.readBomAsCharset()
+        val data = source.readString(charset)
         val element = ProtoParser.parse(location, data)
         return ProtoFile.get(element)
       }
@@ -183,3 +188,23 @@ internal class DirectoryRoot(
 }
 
 private fun Path.endsWithDotProto() = fileName.toString().endsWith(".proto")
+
+private val UNICODE_BOMS = Options.of(
+    "efbbbf".decodeHex(), // UTF-8
+    "feff".decodeHex(), // UTF-16BE
+    "fffe".decodeHex(), // UTF-16LE
+    "0000ffff".decodeHex(), // UTF-32BE
+    "ffff0000".decodeHex() // UTF-32LE
+)
+
+private fun BufferedSource.readBomAsCharset(default: Charset = Charsets.UTF_8): Charset {
+  return when (select(UNICODE_BOMS)) {
+    0 -> Charsets.UTF_8
+    1 -> Charsets.UTF_16BE
+    2 -> Charsets.UTF_16LE
+    3 -> Charsets.UTF_32BE
+    4 -> Charsets.UTF_32LE
+    -1 -> default
+    else -> throw AssertionError()
+  }
+}
