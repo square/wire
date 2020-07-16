@@ -737,6 +737,7 @@ class Proto3WireProtocCompatibilityTests {
     val protocJson = JsonFormat.printer().print(protoc)
     val wireKotlinJson = moshi.adapter(AllTypesK::class.java).toJson(wireKotlin)
     assertJsonEquals("{\"double\": -0.0}", protocJson)
+    // We parse-check because Wire prints empty lists and empty maps while protoc doesn't.
     assertThat(wireKotlinJson).contains("\"double\":-0.0")
 
     val parsedWireKotlin = moshi.adapter(AllTypesK::class.java).fromJson(protocJson)
