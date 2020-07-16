@@ -724,6 +724,25 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(PizzaDeliveryK.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessage)
   }
 
+  @Test fun minusDoubleZero() {
+    val protoc = AllTypesOuterClass.AllTypes.newBuilder()
+        .setDouble(-0.0)
+        .build()
+    val wireKotlin = AllTypesK(squareup_proto3_kotlin_alltypes_double = -0.0)
+
+    val protocByteArray = protoc.toByteArray()
+    assertThat(AllTypesK.ADAPTER.encode(wireKotlin)).isEqualTo(protocByteArray)
+    assertThat(AllTypesK.ADAPTER.decode(protocByteArray)).isEqualTo(wireKotlin)
+
+    val protocJson = JsonFormat.printer().print(protoc)
+    val wireKotlinJson = moshi.adapter(AllTypesK::class.java).toJson(wireKotlin)
+    assertJsonEquals("{\"double\": -0.0}", protocJson)
+    assertThat(wireKotlinJson).contains("\"double\":-0.0")
+
+    val parsedWireKotlin = moshi.adapter(AllTypesK::class.java).fromJson(protocJson)
+    assertThat(parsedWireKotlin).isEqualTo(wireKotlin)
+  }
+
   companion object {
     private val moshi = Moshi.Builder()
         .add(WireJsonAdapterFactory())
