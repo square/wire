@@ -46,6 +46,7 @@ import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as Re
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
 import squareup.proto3.kotlin.alltypes.All64 as All64K
 import squareup.proto3.kotlin.alltypes.AllTypes as AllTypesK
+import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
 import squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion as BuyOneGetOnePromotionK
 import squareup.proto3.kotlin.pizza.FreeGarlicBreadPromotion as FreeGarlicBreadPromotionK
 import squareup.proto3.kotlin.pizza.Pizza as PizzaK
@@ -324,28 +325,36 @@ class Proto3WireProtocCompatibilityTests {
 
   @Test fun defaultAllTypes() {
     val protocBytes = defaultAllTypesProtoc.toByteArray()
-    assertThat(AllTypesK.ADAPTER.encode(defaultAllTypesWire)).isEqualTo(protocBytes)
-    assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(defaultAllTypesWire)
+    assertThat(AllTypesJ.ADAPTER.encode(defaultAllTypesWireJava)).isEqualTo(protocBytes)
+    assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(defaultAllTypesWireJava)
+    assertThat(AllTypesK.ADAPTER.encode(defaultAllTypesWireKotlin)).isEqualTo(protocBytes)
+    assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(defaultAllTypesWireKotlin)
   }
 
   @Test fun explicitIdentityAllTypes() {
     val protocBytes = explicitIdentityAllTypesProtoc.toByteArray()
-    assertThat(AllTypesK.ADAPTER.encode(explicitIdentityAllTypesWire)).isEqualTo(protocBytes)
-    assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWire)
+    assertThat(AllTypesJ.ADAPTER.encode(explicitIdentityAllTypesWireJava)).isEqualTo(protocBytes)
+    // TODO(benoit)
+    // assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireJava)
+    assertThat(AllTypesK.ADAPTER.encode(explicitIdentityAllTypesWireKotlin)).isEqualTo(protocBytes)
+    assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireKotlin)
   }
 
   @Test fun implicitIdentityAllTypes() {
     val protocMessage = AllTypesOuterClass.AllTypes.newBuilder().build()
-    val wireMessage = AllTypesK()
+    val wireMessageJava = AllTypesJ.Builder().build()
+    val wireMessageKotlin = AllTypesK()
 
     val protocBytes = protocMessage.toByteArray()
-    assertThat(AllTypesK.ADAPTER.encode(wireMessage)).isEqualTo(protocBytes)
-    assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(wireMessage)
+    assertThat(AllTypesJ.ADAPTER.encode(wireMessageJava)).isEqualTo(protocBytes)
+    assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(wireMessageJava)
+    assertThat(AllTypesK.ADAPTER.encode(wireMessageKotlin)).isEqualTo(protocBytes)
+    assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(wireMessageKotlin)
   }
 
   @Test fun serializeDefaultAllTypesMoshi() {
     assertJsonEquals(DEFAULT_ALL_TYPES_JSON,
-        moshi.adapter(AllTypesK::class.java).toJson(defaultAllTypesWire))
+        moshi.adapter(AllTypesK::class.java).toJson(defaultAllTypesWireKotlin))
   }
 
   @Test fun deserializeDefaultAllTypesProtoc() {
@@ -364,7 +373,7 @@ class Proto3WireProtocCompatibilityTests {
   @Test fun deserializeDefaultAllTypesMoshi() {
     val allTypesAdapter: JsonAdapter<AllTypesK> = moshi.adapter(AllTypesK::class.java)
 
-    val allTypes = defaultAllTypesWire
+    val allTypes = defaultAllTypesWireKotlin
     val parsed = allTypesAdapter.fromJson(DEFAULT_ALL_TYPES_JSON)
     assertThat(parsed).isEqualTo(allTypes)
     assertThat(parsed.toString()).isEqualTo(allTypes.toString())
@@ -450,7 +459,7 @@ class Proto3WireProtocCompatibilityTests {
       |${EXPLICIT_IDENTITY_ALL_TYPES_JSON.substring(1)}""".trimMargin()
 
     assertJsonEquals(moshiJson,
-        moshi.adapter(AllTypesK::class.java).toJson(explicitIdentityAllTypesWire))
+        moshi.adapter(AllTypesK::class.java).toJson(explicitIdentityAllTypesWireKotlin))
   }
 
   @Test fun deserializeIdentityAllTypesProtoc() {
@@ -492,10 +501,10 @@ class Proto3WireProtocCompatibilityTests {
     val allTypesAdapter: JsonAdapter<AllTypesK> = moshi.adapter(AllTypesK::class.java)
 
     val parsed = allTypesAdapter.fromJson(EXPLICIT_IDENTITY_ALL_TYPES_JSON)
-    assertThat(parsed).isEqualTo(explicitIdentityAllTypesWire)
-    assertThat(parsed.toString()).isEqualTo(explicitIdentityAllTypesWire.toString())
+    assertThat(parsed).isEqualTo(explicitIdentityAllTypesWireKotlin)
+    assertThat(parsed.toString()).isEqualTo(explicitIdentityAllTypesWireKotlin.toString())
     assertJsonEquals(allTypesAdapter.toJson(parsed),
-        allTypesAdapter.toJson(explicitIdentityAllTypesWire))
+        allTypesAdapter.toJson(explicitIdentityAllTypesWireKotlin))
   }
 
   @Test fun `int64s are encoded with quotes and decoded with either`() {
@@ -812,7 +821,7 @@ class Proto3WireProtocCompatibilityTests {
         .setOneofInt32(0)
         .build()
 
-    private val defaultAllTypesWire = AllTypesK(
+    private val defaultAllTypesWireKotlin = AllTypesK(
         squareup_proto3_kotlin_alltypes_int32 = 111,
         squareup_proto3_kotlin_alltypes_uint32 = 112,
         squareup_proto3_kotlin_alltypes_sint32 = 113,
@@ -868,6 +877,62 @@ class Proto3WireProtocCompatibilityTests {
         oneof_int32 = 0
     )
 
+    private val defaultAllTypesWireJava = AllTypesJ.Builder()
+        .int32(111)
+        .uint32(112)
+        .sint32(113)
+        .fixed32(114)
+        .sfixed32(115)
+        .int64(116L)
+        .uint64(117L)
+        .sint64(118L)
+        .fixed64(119L)
+        .sfixed64(120L)
+        .bool(true)
+        .float_(122.0F)
+        .double_(123.0)
+        .string("124")
+        .bytes(ByteString.of(123, 125))
+        .nested_enum(AllTypesJ.NestedEnum.A)
+        .nested_message(AllTypesJ.NestedMessage(999))
+        .rep_int32(list(111))
+        .rep_uint32(list(112))
+        .rep_sint32(list(113))
+        .rep_fixed32(list(114))
+        .rep_sfixed32(list(115))
+        .rep_int64(list(116L))
+        .rep_uint64(list(117L))
+        .rep_sint64(list(118L))
+        .rep_fixed64(list(119L))
+        .rep_sfixed64(list(120L))
+        .rep_bool(list(true))
+        .rep_float(list(122.0F))
+        .rep_double(list(123.0))
+        .rep_string(list("124"))
+        .rep_bytes(list(ByteString.of(123, 125)))
+        .rep_nested_enum(list(AllTypesJ.NestedEnum.A))
+        .rep_nested_message(list(AllTypesJ.NestedMessage(999)))
+        .pack_int32(list(111))
+        .pack_uint32(list(112))
+        .pack_sint32(list(113))
+        .pack_fixed32(list(114))
+        .pack_sfixed32(list(115))
+        .pack_int64(list(116L))
+        .pack_uint64(list(117L))
+        .pack_sint64(list(118L))
+        .pack_fixed64(list(119L))
+        .pack_sfixed64(list(120L))
+        .pack_bool(list(true))
+        .pack_float(list(122.0F))
+        .pack_double(list(123.0))
+        .pack_nested_enum(list(AllTypesJ.NestedEnum.A))
+        .map_int32_int32(mapOf(1 to 2))
+        .map_string_string(mapOf("key" to "value"))
+        .map_string_message(mapOf("message" to AllTypesJ.NestedMessage(1)))
+        .map_string_enum(mapOf("enum" to AllTypesJ.NestedEnum.A))
+        .oneof_int32(0)
+        .build()
+
     private val CAMEL_CASE_JSON =
         File("../wire-library/wire-tests/src/commonTest/shared/json", "camel_case_proto3.json")
             .source().use { it.buffer().readUtf8() }
@@ -893,7 +958,7 @@ class Proto3WireProtocCompatibilityTests {
         File("../wire-library/wire-tests/src/commonTest/shared/json", "all_types_explicit_identity_proto3.json")
             .source().use { it.buffer().readUtf8() }
 
-    private val explicitIdentityAllTypesWire = AllTypesK(
+    private val explicitIdentityAllTypesWireKotlin = AllTypesK(
         squareup_proto3_kotlin_alltypes_int32 = 0,
         squareup_proto3_kotlin_alltypes_uint32 = 0,
         squareup_proto3_kotlin_alltypes_sint32 = 0,
@@ -947,6 +1012,61 @@ class Proto3WireProtocCompatibilityTests {
         map_string_enum = mapOf("" to AllTypesK.NestedEnum.UNKNOWN),
         oneof_int32 = 0
     )
+
+    private val explicitIdentityAllTypesWireJava = AllTypesJ.Builder()
+        .int32(0)
+        .uint32(0)
+        .sint32(0)
+        .fixed32(0)
+        .sfixed32(0)
+        .int64(0L)
+        .uint64(0L)
+        .sint64(0L)
+        .fixed64(0L)
+        .sfixed64(0L)
+        .bool(false)
+        .float_(0F)
+        .double_(0.0)
+        .string("")
+        .bytes(ByteString.EMPTY)
+        .nested_enum(AllTypesJ.NestedEnum.UNKNOWN)
+        .nested_message(AllTypesJ.NestedMessage(0))
+        .rep_int32(list(0))
+        .rep_uint32(list(0))
+        .rep_sint32(list(0))
+        .rep_fixed32(list(0))
+        .rep_sfixed32(emptyList())
+        .rep_int64(emptyList())
+        .rep_uint64(emptyList())
+        .rep_sint64(emptyList())
+        .rep_fixed64(emptyList())
+        .rep_sfixed64(emptyList())
+        .rep_bool(emptyList())
+        .rep_float(emptyList())
+        .rep_double(emptyList())
+        .rep_string(list(""))
+        .rep_bytes(list(ByteString.EMPTY))
+        .rep_nested_enum(emptyList())
+        .rep_nested_message(emptyList())
+        .pack_int32(emptyList())
+        .pack_uint32(emptyList())
+        .pack_sint32(emptyList())
+        .pack_fixed32(emptyList())
+        .pack_sfixed32(list(0))
+        .pack_int64(list(0L))
+        .pack_uint64(list(0L))
+        .pack_sint64(list(0L))
+        .pack_fixed64(list(0L))
+        .pack_sfixed64(list(0L))
+        .pack_bool(list(false))
+        .pack_float(list(0F))
+        .pack_double(list(0.0))
+        .pack_nested_enum(list(AllTypesJ.NestedEnum.UNKNOWN))
+        .map_int32_int32(mapOf(0 to 0))
+        .map_string_message(mapOf("" to AllTypesJ.NestedMessage(null)))
+        .map_string_enum(mapOf("" to AllTypesJ.NestedEnum.UNKNOWN))
+        .oneof_int32(0)
+        .build()
 
     private val explicitIdentityAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
         .setInt32(0)
