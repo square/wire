@@ -55,7 +55,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
 
-  public static final NestedEnum DEFAULT_OPT_NESTED_ENUM = NestedEnum.A;
+  public static final NestedEnum DEFAULT_OPT_NESTED_ENUM = NestedEnum.UNKNOWN;
 
   public static final Integer DEFAULT_REQ_INT32 = 0;
 
@@ -87,7 +87,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   public static final ByteString DEFAULT_REQ_BYTES = ByteString.EMPTY;
 
-  public static final NestedEnum DEFAULT_REQ_NESTED_ENUM = NestedEnum.A;
+  public static final NestedEnum DEFAULT_REQ_NESTED_ENUM = NestedEnum.UNKNOWN;
 
   public static final Integer DEFAULT_DEFAULT_INT32 = 2147483647;
 
@@ -152,7 +152,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   public static final ByteString DEFAULT_EXT_OPT_BYTES = ByteString.EMPTY;
 
-  public static final NestedEnum DEFAULT_EXT_OPT_NESTED_ENUM = NestedEnum.A;
+  public static final NestedEnum DEFAULT_EXT_OPT_NESTED_ENUM = NestedEnum.UNKNOWN;
 
   public static final String DEFAULT_ONEOF_STRING = "";
 
@@ -2913,6 +2913,8 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   public enum NestedEnum implements WireEnum {
+    UNKNOWN(0),
+
     A(1);
 
     public static final ProtoAdapter<NestedEnum> ADAPTER = ProtoAdapter.newEnumAdapter(NestedEnum.class);
@@ -2928,6 +2930,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
      */
     public static NestedEnum fromValue(int value) {
       switch (value) {
+        case 0: return UNKNOWN;
         case 1: return A;
         default: return null;
       }
