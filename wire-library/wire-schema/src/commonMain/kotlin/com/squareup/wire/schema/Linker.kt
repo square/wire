@@ -449,6 +449,10 @@ class Linker {
     val error = StringBuilder()
     error.append(message)
 
+    val contextStack = this.contextStack.toMutableList()
+    if (contextStack.any { it !is ProtoFile }) {
+      contextStack.removeAll { it is ProtoFile }
+    }
     for (i in contextStack.indices.reversed()) {
       val context = contextStack[i]
       val prefix = if (i == contextStack.size - 1) "\n  for" else "\n  in"
@@ -487,6 +491,10 @@ class Linker {
 
         is Extensions -> {
           error.append("$prefix extensions (${context.location})")
+        }
+
+        is ProtoFile -> {
+          error.append("$prefix file ${context.location}")
         }
       }
     }

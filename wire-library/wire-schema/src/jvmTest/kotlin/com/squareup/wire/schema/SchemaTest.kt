@@ -1966,4 +1966,25 @@ class SchemaTest {
       )
     }
   }
+
+  @Test
+  fun unresolvedFileOption() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+               |
+               |option (unicorn) = true;
+               |message Message {}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve option unicorn
+            |  for file /source/message.proto
+            """.trimMargin()
+      )
+    }
+  }
 }
