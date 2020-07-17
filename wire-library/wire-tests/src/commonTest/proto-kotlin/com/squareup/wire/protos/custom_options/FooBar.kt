@@ -12,7 +12,6 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
@@ -66,7 +65,8 @@ class FooBar(
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
-    label = WireField.Label.REPEATED
+    label = WireField.Label.REPEATED,
+    redacted = true
   )
   val nested: List<FooBar> = emptyList(),
   /**
@@ -136,7 +136,7 @@ class FooBar(
     if (qux != null) result += """qux=$qux"""
     if (fred.isNotEmpty()) result += """fred=$fred"""
     if (daisy != null) result += """daisy=$daisy"""
-    if (nested.isNotEmpty()) result += """nested=$nested"""
+    if (nested.isNotEmpty()) result += """nested=██"""
     if (ext != null) result += """ext=$ext"""
     if (rep.isNotEmpty()) result += """rep=$rep"""
     return result.joinToString(prefix = "FooBar{", separator = ", ", postfix = "}")
@@ -238,7 +238,7 @@ class FooBar(
 
       override fun redact(value: FooBar): FooBar = value.copy(
         baz = value.baz?.let(Nested.ADAPTER::redact),
-        nested = value.nested.redactElements(FooBar.ADAPTER),
+        nested = emptyList(),
         unknownFields = ByteString.EMPTY
       )
     }
@@ -414,18 +414,19 @@ class FooBar(
   enum class FooBarBazEnum(
     override val value: Int,
     val enum_value_option: Int?,
-    val complex_enum_value_option: More?
+    val complex_enum_value_option: More?,
+    val foreign_enum_value_option: Boolean?
   ) : WireEnum {
     FOO(1, 17, More(
       serial = listOf(
         99,
         199
       )
-    )),
+    ), null),
 
-    BAR(2, null, null),
+    BAR(2, null, null, true),
 
-    BAZ(3, 18, null);
+    BAZ(3, 18, null, false);
 
     companion object {
       @JvmField

@@ -96,6 +96,7 @@ class Options(
         path = resolveFieldPath(packageName + "." + option.name, extensionsForType.keys)
       }
       if (path == null) {
+        linker.addError("unable to resolve option ${option.name}")
         return null // Unable to find the root of this field path.
       }
       field = extensionsForType[path[0]]

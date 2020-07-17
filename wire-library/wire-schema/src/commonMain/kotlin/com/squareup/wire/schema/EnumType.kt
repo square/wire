@@ -45,6 +45,7 @@ class EnumType private constructor(
   override fun linkMembers(linker: Linker) {}
 
   override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
+    val linker = linker.withContext(this)
     options.link(linker)
     for (constant in constants) {
       constant.linkOptions(linker)

@@ -27,7 +27,10 @@ class EnumConstant private constructor(
   internal fun toElement() =
     EnumConstantElement(location, name, tag, documentation, options.elements)
 
-  internal fun linkOptions(linker: Linker) = options.link(linker)
+  internal fun linkOptions(linker: Linker) {
+    val linker = linker.withContext(this)
+    options.link(linker)
+  }
 
   internal fun retainAll(
     schema: Schema,

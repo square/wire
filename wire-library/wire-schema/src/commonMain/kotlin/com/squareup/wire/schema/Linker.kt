@@ -473,6 +473,10 @@ class Linker {
           error.append("$prefix message ${context.type} (${context.location})")
         }
 
+        is EnumConstant -> {
+          error.append("$prefix constant ${context.name} (${context.location})")
+        }
+
         is EnumType -> {
           error.append("$prefix enum ${context.type} (${context.location})")
         }
