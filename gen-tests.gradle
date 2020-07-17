@@ -361,7 +361,7 @@ task generateSwiftTests(type: JavaExec) {
       'form.proto',
 //      'google/protobuf/any.proto',
 //      'google/protobuf/descriptor.proto',
-      'keyword.proto',
+//      'keyword.proto',
       'map.proto',
       'no_fields.proto',
       'one_of.proto',
