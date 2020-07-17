@@ -324,8 +324,10 @@ data class SwiftTarget(
     // Synthesize an empty manifest that includes everything if none present.
     val manifest = manifest ?: Manifest(
         compilationUnits = mapOf("./" to Module()),
-        // TODO https://github.com/google/guava/issues/3966
-        dependencyGraph = GraphBuilder.directed().immutable<String>().build()
+        dependencyGraph = GraphBuilder.directed()
+            .immutable<String>()
+            .addNode("./")
+            .build()
     )
 
     // Find modules with no dependencies and walk the graph along their incoming edges to create
