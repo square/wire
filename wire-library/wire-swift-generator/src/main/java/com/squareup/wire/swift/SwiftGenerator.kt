@@ -301,27 +301,29 @@ class SwiftGenerator private constructor(
                   .beginControlFlow("switch tag")
                   .apply {
                     type.fields.forEach { field ->
+                      add("case %L: ", field.tag)
                       if (field.isMap) {
-                        add("case %L: try reader.decode(into: &%N", field.tag, field.name)
+                        add("try reader.decode(into: &%N", field.name)
                         field.keyType.encoding?.let { keyEncoding ->
                           add(", keyEncoding: .%N", keyEncoding)
                         }
                         field.valueType.encoding?.let { valueEncoding ->
                           add(", valueEncoding: .%N", valueEncoding)
                         }
-                        add(")\n")
-                      } else if (field.isRepeated) {
-                        add("case %L: try reader.decode(into: &%N)\n", field.tag, field.name)
                       } else {
-                        add(
-                            "case %L: %N = try reader.decode(%T.self", field.tag, field.name,
-                            field.typeName.makeNonOptional()
-                        )
+                        if (field.isRepeated) {
+                          add("try reader.decode(into: &%N", field.name)
+                        } else {
+                          add(
+                              "%N = try reader.decode(%T.self", field.name,
+                              field.typeName.makeNonOptional()
+                          )
+                        }
                         field.type!!.encoding?.let { encoding ->
                           add(", encoding: .%N", encoding)
                         }
-                        add(")\n")
                       }
+                      add(")\n")
                     }
                     type.oneOfs.forEach { oneOf ->
                       oneOf.fields.forEach { field ->
