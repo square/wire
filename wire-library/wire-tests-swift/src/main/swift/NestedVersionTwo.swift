@@ -42,8 +42,8 @@ public struct NestedVersionTwo : Equatable, Proto2Codable, Codable {
                 case 1: i = try reader.decode(Int32.self)
                 case 2: v2_i = try reader.decode(Int32.self)
                 case 3: v2_s = try reader.decode(String.self)
-                case 4: v2_f32 = try reader.decode(Int32.self)
-                case 5: v2_f64 = try reader.decode(Int64.self)
+                case 4: v2_f32 = try reader.decode(Int32.self, encoding: .fixed)
+                case 5: v2_f64 = try reader.decode(Int64.self, encoding: .fixed)
                 case 6: try reader.decode(into: &v2_rs)
                 default: try reader.readUnknownField(tag: tag)
             }

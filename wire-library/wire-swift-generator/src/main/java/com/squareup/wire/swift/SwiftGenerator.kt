@@ -314,9 +314,13 @@ class SwiftGenerator private constructor(
                         add("case %L: try reader.decode(into: &%N)\n", field.tag, field.name)
                       } else {
                         add(
-                            "case %L: %N = try reader.decode(%T.self)\n", field.tag, field.name,
+                            "case %L: %N = try reader.decode(%T.self", field.tag, field.name,
                             field.typeName.makeNonOptional()
                         )
+                        field.type!!.encoding?.let { encoding ->
+                          add(", encoding: .%N", encoding)
+                        }
+                        add(")\n")
                       }
                     }
                     type.oneOfs.forEach { oneOf ->
