@@ -270,19 +270,5 @@
   "ext_pack_nested_enum": [
     "A",
     "A"
-  ],
-  "ext_map_int32_int32": {
-    "1": 2
-  },
-  "ext_map_string_string": {
-    "key": "value"
-  },
-  "ext_map_string_message": {
-    "message": {
-      "a": 1
-    }
-  },
-  "ext_map_string_enum": {
-    "enum": "A"
-  }
+  ]
 }

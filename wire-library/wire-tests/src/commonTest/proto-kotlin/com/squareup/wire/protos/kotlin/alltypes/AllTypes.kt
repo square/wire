@@ -928,42 +928,6 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   val ext_pack_nested_enum: List<NestedEnum> = emptyList(),
-  /**
-   * Extension source: all_types.proto
-   */
-  @field:WireField(
-    tag = 1301,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
-  val ext_map_int32_int32: Map<Int, Int> = emptyMap(),
-  /**
-   * Extension source: all_types.proto
-   */
-  @field:WireField(
-    tag = 1402,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
-  val ext_map_string_string: Map<String, String> = emptyMap(),
-  /**
-   * Extension source: all_types.proto
-   */
-  @field:WireField(
-    tag = 1503,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
-  )
-  val ext_map_string_message: Map<String, NestedMessage> = emptyMap(),
-  /**
-   * Extension source: all_types.proto
-   */
-  @field:WireField(
-    tag = 1504,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
-  )
-  val ext_map_string_enum: Map<String, NestedEnum> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<AllTypes, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
@@ -1109,10 +1073,6 @@ class AllTypes(
     if (ext_pack_float != other.ext_pack_float) return false
     if (ext_pack_double != other.ext_pack_double) return false
     if (ext_pack_nested_enum != other.ext_pack_nested_enum) return false
-    if (ext_map_int32_int32 != other.ext_map_int32_int32) return false
-    if (ext_map_string_string != other.ext_map_string_string) return false
-    if (ext_map_string_message != other.ext_map_string_message) return false
-    if (ext_map_string_enum != other.ext_map_string_enum) return false
     return true
   }
 
@@ -1253,10 +1213,6 @@ class AllTypes(
       result = result * 37 + ext_pack_float.hashCode()
       result = result * 37 + ext_pack_double.hashCode()
       result = result * 37 + ext_pack_nested_enum.hashCode()
-      result = result * 37 + ext_map_int32_int32.hashCode()
-      result = result * 37 + ext_map_string_string.hashCode()
-      result = result * 37 + ext_map_string_message.hashCode()
-      result = result * 37 + ext_map_string_enum.hashCode()
       super.hashCode = result
     }
     return result
@@ -1400,12 +1356,6 @@ class AllTypes(
     if (ext_pack_double.isNotEmpty()) result += """ext_pack_double=$ext_pack_double"""
     if (ext_pack_nested_enum.isNotEmpty()) result +=
         """ext_pack_nested_enum=$ext_pack_nested_enum"""
-    if (ext_map_int32_int32.isNotEmpty()) result += """ext_map_int32_int32=$ext_map_int32_int32"""
-    if (ext_map_string_string.isNotEmpty()) result +=
-        """ext_map_string_string=$ext_map_string_string"""
-    if (ext_map_string_message.isNotEmpty()) result +=
-        """ext_map_string_message=$ext_map_string_message"""
-    if (ext_map_string_enum.isNotEmpty()) result += """ext_map_string_enum=$ext_map_string_enum"""
     return result.joinToString(prefix = "AllTypes{", separator = ", ", postfix = "}")
   }
 
@@ -1543,10 +1493,6 @@ class AllTypes(
     ext_pack_float: List<Float> = this.ext_pack_float,
     ext_pack_double: List<Double> = this.ext_pack_double,
     ext_pack_nested_enum: List<NestedEnum> = this.ext_pack_nested_enum,
-    ext_map_int32_int32: Map<Int, Int> = this.ext_map_int32_int32,
-    ext_map_string_string: Map<String, String> = this.ext_map_string_string,
-    ext_map_string_message: Map<String, NestedMessage> = this.ext_map_string_message,
-    ext_map_string_enum: Map<String, NestedEnum> = this.ext_map_string_enum,
     unknownFields: ByteString = this.unknownFields
   ): AllTypes = AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
       opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
@@ -1571,7 +1517,6 @@ class AllTypes(
       ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32,
       ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64,
       ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum,
-      ext_map_int32_int32, ext_map_string_string, ext_map_string_message, ext_map_string_enum,
       unknownFields)
 
   companion object {
@@ -1627,18 +1572,6 @@ class AllTypes(
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
 
       private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
-
-      private val ext_map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
-
-      private val ext_map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }
-
-      private val ext_map_string_messageAdapter: ProtoAdapter<Map<String, NestedMessage>> by lazy {
-          ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER) }
-
-      private val ext_map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
       override fun encodedSize(value: AllTypes): Int {
@@ -1777,10 +1710,6 @@ class AllTypes(
         size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
         size += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
         size += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
-        size += ext_map_int32_int32Adapter.encodedSizeWithTag(1301, value.ext_map_int32_int32)
-        size += ext_map_string_stringAdapter.encodedSizeWithTag(1402, value.ext_map_string_string)
-        size += ext_map_string_messageAdapter.encodedSizeWithTag(1503, value.ext_map_string_message)
-        size += ext_map_string_enumAdapter.encodedSizeWithTag(1504, value.ext_map_string_enum)
         return size
       }
 
@@ -1918,10 +1847,6 @@ class AllTypes(
         ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float)
         ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double)
         NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum)
-        ext_map_int32_int32Adapter.encodeWithTag(writer, 1301, value.ext_map_int32_int32)
-        ext_map_string_stringAdapter.encodeWithTag(writer, 1402, value.ext_map_string_string)
-        ext_map_string_messageAdapter.encodeWithTag(writer, 1503, value.ext_map_string_message)
-        ext_map_string_enumAdapter.encodeWithTag(writer, 1504, value.ext_map_string_enum)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -2059,10 +1984,6 @@ class AllTypes(
         val ext_pack_float = mutableListOf<Float>()
         val ext_pack_double = mutableListOf<Double>()
         val ext_pack_nested_enum = mutableListOf<NestedEnum>()
-        val ext_map_int32_int32 = mutableMapOf<Int, Int>()
-        val ext_map_string_string = mutableMapOf<String, String>()
-        val ext_map_string_message = mutableMapOf<String, NestedMessage>()
-        val ext_map_string_enum = mutableMapOf<String, NestedEnum>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> opt_int32 = ProtoAdapter.INT32.decode(reader)
@@ -2230,10 +2151,6 @@ class AllTypes(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            1301 -> ext_map_int32_int32.putAll(ext_map_int32_int32Adapter.decode(reader))
-            1402 -> ext_map_string_string.putAll(ext_map_string_stringAdapter.decode(reader))
-            1503 -> ext_map_string_message.putAll(ext_map_string_messageAdapter.decode(reader))
-            1504 -> ext_map_string_enum.putAll(ext_map_string_enumAdapter.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
@@ -2373,10 +2290,6 @@ class AllTypes(
           ext_pack_float = ext_pack_float,
           ext_pack_double = ext_pack_double,
           ext_pack_nested_enum = ext_pack_nested_enum,
-          ext_map_int32_int32 = ext_map_int32_int32,
-          ext_map_string_string = ext_map_string_string,
-          ext_map_string_message = ext_map_string_message,
-          ext_map_string_enum = ext_map_string_enum,
           unknownFields = unknownFields
         )
       }
@@ -2388,7 +2301,6 @@ class AllTypes(
         map_string_message = value.map_string_message.redactElements(NestedMessage.ADAPTER),
         ext_opt_nested_message = value.ext_opt_nested_message?.let(NestedMessage.ADAPTER::redact),
         ext_rep_nested_message = value.ext_rep_nested_message.redactElements(NestedMessage.ADAPTER),
-        ext_map_string_message = value.ext_map_string_message.redactElements(NestedMessage.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }

@@ -277,10 +277,6 @@ class WireJsonTest {
           .ext_pack_float(list(1.2345e6f))
           .ext_pack_double(list(1.2345e67))
           .ext_pack_nested_enum(list(AllTypes.NestedEnum.A))
-          .ext_map_int32_int32(Collections.singletonMap(1, 2))
-          .ext_map_string_string(Collections.singletonMap("key", "value"))
-          .ext_map_string_message(Collections.singletonMap("message", AllTypes.NestedMessage(1)))
-          .ext_map_string_enum(Collections.singletonMap("enum", AllTypes.NestedEnum.A))
     }
 
     private val ALL_TYPES_JSON =

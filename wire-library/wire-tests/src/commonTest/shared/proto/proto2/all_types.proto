@@ -179,9 +179,4 @@ extend AllTypes {
   repeated float ext_pack_float = 1212 [packed = true];
   repeated double ext_pack_double = 1213 [packed = true];
   repeated AllTypes.NestedEnum ext_pack_nested_enum = 1216 [packed = true];
-
-  map<int32, int32> ext_map_int32_int32 = 1301;
-  map<string, string> ext_map_string_string = 1402;
-  map<string, AllTypes.NestedMessage> ext_map_string_message = 1503;
-  map<string, AllTypes.NestedEnum> ext_map_string_enum = 1504;
 }

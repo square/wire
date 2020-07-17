@@ -1183,46 +1183,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   )
   public final List<NestedEnum> ext_pack_nested_enum;
 
-  /**
-   * Extension source: all_types.proto
-   */
-  @WireField(
-      tag = 1301,
-      keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
-  public final Map<Integer, Integer> ext_map_int32_int32;
-
-  /**
-   * Extension source: all_types.proto
-   */
-  @WireField(
-      tag = 1402,
-      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
-  public final Map<String, String> ext_map_string_string;
-
-  /**
-   * Extension source: all_types.proto
-   */
-  @WireField(
-      tag = 1503,
-      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedMessage#ADAPTER"
-  )
-  public final Map<String, NestedMessage> ext_map_string_message;
-
-  /**
-   * Extension source: all_types.proto
-   */
-  @WireField(
-      tag = 1504,
-      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.proto2.alltypes.AllTypes$NestedEnum#ADAPTER"
-  )
-  public final Map<String, NestedEnum> ext_map_string_enum;
-
   @WireField(
       tag = 601,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
@@ -1379,10 +1339,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.ext_pack_float = Internal.immutableCopyOf("ext_pack_float", builder.ext_pack_float);
     this.ext_pack_double = Internal.immutableCopyOf("ext_pack_double", builder.ext_pack_double);
     this.ext_pack_nested_enum = Internal.immutableCopyOf("ext_pack_nested_enum", builder.ext_pack_nested_enum);
-    this.ext_map_int32_int32 = Internal.immutableCopyOf("ext_map_int32_int32", builder.ext_map_int32_int32);
-    this.ext_map_string_string = Internal.immutableCopyOf("ext_map_string_string", builder.ext_map_string_string);
-    this.ext_map_string_message = Internal.immutableCopyOf("ext_map_string_message", builder.ext_map_string_message);
-    this.ext_map_string_enum = Internal.immutableCopyOf("ext_map_string_enum", builder.ext_map_string_enum);
     this.oneof_string = builder.oneof_string;
     this.oneof_int32 = builder.oneof_int32;
     this.oneof_nested_message = builder.oneof_nested_message;
@@ -1524,10 +1480,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.ext_pack_float = Internal.copyOf(ext_pack_float);
     builder.ext_pack_double = Internal.copyOf(ext_pack_double);
     builder.ext_pack_nested_enum = Internal.copyOf(ext_pack_nested_enum);
-    builder.ext_map_int32_int32 = Internal.copyOf(ext_map_int32_int32);
-    builder.ext_map_string_string = Internal.copyOf(ext_map_string_string);
-    builder.ext_map_string_message = Internal.copyOf(ext_map_string_message);
-    builder.ext_map_string_enum = Internal.copyOf(ext_map_string_enum);
     builder.oneof_string = oneof_string;
     builder.oneof_int32 = oneof_int32;
     builder.oneof_nested_message = oneof_nested_message;
@@ -1674,10 +1626,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         && ext_pack_float.equals(o.ext_pack_float)
         && ext_pack_double.equals(o.ext_pack_double)
         && ext_pack_nested_enum.equals(o.ext_pack_nested_enum)
-        && ext_map_int32_int32.equals(o.ext_map_int32_int32)
-        && ext_map_string_string.equals(o.ext_map_string_string)
-        && ext_map_string_message.equals(o.ext_map_string_message)
-        && ext_map_string_enum.equals(o.ext_map_string_enum)
         && Internal.equals(oneof_string, o.oneof_string)
         && Internal.equals(oneof_int32, o.oneof_int32)
         && Internal.equals(oneof_nested_message, o.oneof_nested_message);
@@ -1821,10 +1769,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + ext_pack_float.hashCode();
       result = result * 37 + ext_pack_double.hashCode();
       result = result * 37 + ext_pack_nested_enum.hashCode();
-      result = result * 37 + ext_map_int32_int32.hashCode();
-      result = result * 37 + ext_map_string_string.hashCode();
-      result = result * 37 + ext_map_string_message.hashCode();
-      result = result * 37 + ext_map_string_enum.hashCode();
       result = result * 37 + (oneof_string != null ? oneof_string.hashCode() : 0);
       result = result * 37 + (oneof_int32 != null ? oneof_int32.hashCode() : 0);
       result = result * 37 + (oneof_nested_message != null ? oneof_nested_message.hashCode() : 0);
@@ -2100,14 +2044,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public List<NestedEnum> ext_pack_nested_enum;
 
-    public Map<Integer, Integer> ext_map_int32_int32;
-
-    public Map<String, String> ext_map_string_string;
-
-    public Map<String, NestedMessage> ext_map_string_message;
-
-    public Map<String, NestedEnum> ext_map_string_enum;
-
     public String oneof_string;
 
     public Integer oneof_int32;
@@ -2181,10 +2117,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ext_pack_float = Internal.newMutableList();
       ext_pack_double = Internal.newMutableList();
       ext_pack_nested_enum = Internal.newMutableList();
-      ext_map_int32_int32 = Internal.newMutableMap();
-      ext_map_string_string = Internal.newMutableMap();
-      ext_map_string_message = Internal.newMutableMap();
-      ext_map_string_enum = Internal.newMutableMap();
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -2915,30 +2847,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     public Builder ext_pack_nested_enum(List<NestedEnum> ext_pack_nested_enum) {
       Internal.checkElementsNotNull(ext_pack_nested_enum);
       this.ext_pack_nested_enum = ext_pack_nested_enum;
-      return this;
-    }
-
-    public Builder ext_map_int32_int32(Map<Integer, Integer> ext_map_int32_int32) {
-      Internal.checkElementsNotNull(ext_map_int32_int32);
-      this.ext_map_int32_int32 = ext_map_int32_int32;
-      return this;
-    }
-
-    public Builder ext_map_string_string(Map<String, String> ext_map_string_string) {
-      Internal.checkElementsNotNull(ext_map_string_string);
-      this.ext_map_string_string = ext_map_string_string;
-      return this;
-    }
-
-    public Builder ext_map_string_message(Map<String, NestedMessage> ext_map_string_message) {
-      Internal.checkElementsNotNull(ext_map_string_message);
-      this.ext_map_string_message = ext_map_string_message;
-      return this;
-    }
-
-    public Builder ext_map_string_enum(Map<String, NestedEnum> ext_map_string_enum) {
-      Internal.checkElementsNotNull(ext_map_string_enum);
-      this.ext_map_string_enum = ext_map_string_enum;
       return this;
     }
 
