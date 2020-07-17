@@ -20,6 +20,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import squareup.proto3.kotlin.alltypes.AllEmptyOuterClass
 import squareup.proto3.kotlin.alltypes.AllEmpty as AllEmptyK
+import squareup.proto3.java.alltypes.AllEmpty as AllEmptyJ
 
 class EmptyRoundTripTest {
   @Test fun empty() {
@@ -42,7 +43,14 @@ class EmptyRoundTripTest {
         .setOneofEmpty(Empty.newBuilder().build())
         .build()
 
-    val wireMessage = AllEmptyK(
+    val wireMessageJava = AllEmptyJ.Builder()
+        .empty(Unit)
+        .rep_empty(listOf(Unit, Unit))
+        .map_int32_empty(mapOf(1 to Unit))
+        .oneof_empty(Unit)
+        .build()
+
+    val wireMessageKotlin = AllEmptyK(
         empty = Unit,
         rep_empty = listOf(Unit, Unit),
         map_int32_empty = mapOf(1 to Unit),
@@ -50,10 +58,15 @@ class EmptyRoundTripTest {
     )
 
     val googleMessageBytes = googleMessage.toByteArray()
-    val wireMessageBytes = AllEmptyK.ADAPTER.encode(wireMessage)
-    assertThat(AllEmptyOuterClass.AllEmpty.parseFrom(wireMessageBytes)).isEqualTo(googleMessage)
-    assertThat(AllEmptyK.ADAPTER.decode(wireMessageBytes)).isEqualTo(wireMessage)
-    assertThat(AllEmptyK.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessage)
-    assertThat(AllEmptyK.ADAPTER.encodedSize(wireMessage)).isEqualTo(googleMessageBytes.size)
+    val wireMessageJavaBytes = AllEmptyJ.ADAPTER.encode(wireMessageJava)
+    assertThat(AllEmptyOuterClass.AllEmpty.parseFrom(wireMessageJavaBytes)).isEqualTo(googleMessage)
+    assertThat(AllEmptyJ.ADAPTER.decode(wireMessageJavaBytes)).isEqualTo(wireMessageJava)
+    assertThat(AllEmptyJ.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessageJava)
+    assertThat(AllEmptyJ.ADAPTER.encodedSize(wireMessageJava)).isEqualTo(googleMessageBytes.size)
+    val wireMessageKotlinBytes = AllEmptyK.ADAPTER.encode(wireMessageKotlin)
+    assertThat(AllEmptyOuterClass.AllEmpty.parseFrom(wireMessageKotlinBytes)).isEqualTo(googleMessage)
+    assertThat(AllEmptyK.ADAPTER.decode(wireMessageKotlinBytes)).isEqualTo(wireMessageKotlin)
+    assertThat(AllEmptyK.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessageKotlin)
+    assertThat(AllEmptyK.ADAPTER.encodedSize(wireMessageKotlin)).isEqualTo(googleMessageBytes.size)
   }
 }
