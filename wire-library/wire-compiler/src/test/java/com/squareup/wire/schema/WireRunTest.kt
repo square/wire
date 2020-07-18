@@ -492,6 +492,28 @@ class WireRunTest {
   }
 
   @Test
+  fun optionsOnlyValidatedForPathFiles() {
+    writeBlueProto()
+    fs.add("polygons/src/main/proto/squareup/polygons/triangle.proto", """
+          |syntax = "proto2";
+          |package squareup.polygons;
+          |option (unicorn) = true; // No such option!
+          |message Triangle {
+          |}
+          """.trimMargin())
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(JavaTarget(outDirectory = "generated/java"))
+    )
+    wireRun.execute(fs, logger)
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/java/squareup/colors/Blue.java")
+    assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
+        .contains("public final class Blue extends Message")
+  }
+
+  @Test
   fun customOnly() {
     writeBlueProto()
     writeRedProto()

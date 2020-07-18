@@ -1901,4 +1901,90 @@ class SchemaTest {
         .schema()
     assertThat(schema.getType("wire.Foo")).isNotNull()
   }
+
+  @Test
+  fun unresolvedFieldOption() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  optional string name = 1 [(unicorn) = true];
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve option unicorn
+            |  for field name (/source/message.proto:2:3)
+            |  in message Message (/source/message.proto:1:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun unresolvedEnumValueOption() {
+    try {
+      RepoBuilder()
+          .add("enum.proto", """
+               |enum Enum {
+               |  A = 1 [(unicorn) = true];
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve option unicorn
+            |  for constant A (/source/enum.proto:2:3)
+            |  in enum Enum (/source/enum.proto:1:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun unresolvedMessageOption() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  option (unicorn) = true;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve option unicorn
+            |  for message Message (/source/message.proto:1:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun unresolvedFileOption() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+               |
+               |option (unicorn) = true;
+               |message Message {}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |unable to resolve option unicorn
+            |  for file /source/message.proto
+            """.trimMargin()
+      )
+    }
+  }
 }

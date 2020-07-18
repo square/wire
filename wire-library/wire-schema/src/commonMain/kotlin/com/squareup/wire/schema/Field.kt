@@ -98,9 +98,9 @@ class Field private constructor(
     type = linker.withContext(this).resolveType(elementType)
   }
 
-  fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
+  fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
     val linker = linker.withContext(this)
-    options.link(linker)
+    options.link(linker, validate)
     deprecated = options.get(DEPRECATED)
     val packed = options.get(PACKED)
         ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null

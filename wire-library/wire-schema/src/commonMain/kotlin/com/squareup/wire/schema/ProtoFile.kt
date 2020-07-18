@@ -171,8 +171,8 @@ class ProtoFile private constructor(
     }
   }
 
-  fun linkOptions(linker: Linker) {
-    options.link(linker)
+  fun linkOptions(linker: Linker, validate: Boolean) {
+    options.link(linker, validate)
     javaPackage = options.get(JAVA_PACKAGE)
   }
 

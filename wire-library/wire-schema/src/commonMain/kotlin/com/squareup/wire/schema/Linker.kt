@@ -94,14 +94,14 @@ class Linker {
     for (fileLinker in sourceFiles) {
       // TODO(benoit) Create a map to cache those.
       val syntaxRules = SyntaxRules.get(fileLinker.protoFile.syntax)
-      fileLinker.linkOptions(syntaxRules)
+      fileLinker.linkOptions(syntaxRules, validate = true)
     }
 
     // For compactness we'd prefer to link the options of source files only. But we link file
     // options on referenced files to make sure that java_package is populated.
     while (fileOptionsQueue.isNotEmpty()) {
       val fileLinker = fileOptionsQueue.poll()!!
-      fileLinker.requireFileOptionsLinked()
+      fileLinker.requireFileOptionsLinked(validate = false)
     }
 
     for (fileLinker in sourceFiles) {
@@ -449,6 +449,10 @@ class Linker {
     val error = StringBuilder()
     error.append(message)
 
+    val contextStack = this.contextStack.toMutableList()
+    if (contextStack.any { it !is ProtoFile }) {
+      contextStack.removeAll { it is ProtoFile }
+    }
     for (i in contextStack.indices.reversed()) {
       val context = contextStack[i]
       val prefix = if (i == contextStack.size - 1) "\n  for" else "\n  in"
@@ -473,6 +477,10 @@ class Linker {
           error.append("$prefix message ${context.type} (${context.location})")
         }
 
+        is EnumConstant -> {
+          error.append("$prefix constant ${context.name} (${context.location})")
+        }
+
         is EnumType -> {
           error.append("$prefix enum ${context.type} (${context.location})")
         }
@@ -483,6 +491,10 @@ class Linker {
 
         is Extensions -> {
           error.append("$prefix extensions (${context.location})")
+        }
+
+        is ProtoFile -> {
+          error.append("$prefix file ${context.location}")
         }
       }
     }

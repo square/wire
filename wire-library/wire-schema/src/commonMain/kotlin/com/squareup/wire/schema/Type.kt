@@ -31,7 +31,7 @@ abstract class Type {
   abstract val nestedTypes: List<Type>
   abstract val syntax: Syntax
   abstract fun linkMembers(linker: Linker)
-  abstract fun linkOptions(linker: Linker, syntaxRules: SyntaxRules)
+  abstract fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean)
   abstract fun validate(linker: Linker, syntaxRules: SyntaxRules)
   abstract fun retainAll(schema: Schema, markSet: MarkSet): Type?
 

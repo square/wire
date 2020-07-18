@@ -118,21 +118,21 @@ class MessageType private constructor(
     }
   }
 
-  override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
+  override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
     val linker = linker.withContext(this)
     for (nestedType in nestedTypes) {
-      nestedType.linkOptions(linker, syntaxRules)
+      nestedType.linkOptions(linker, syntaxRules, validate)
     }
     for (field in declaredFields) {
-      field.linkOptions(linker, syntaxRules)
+      field.linkOptions(linker, syntaxRules, validate)
     }
     for (field in extensionFields) {
-      field.linkOptions(linker, syntaxRules)
+      field.linkOptions(linker, syntaxRules, validate)
     }
     for (oneOf in oneOfs) {
-      oneOf.linkOptions(linker, syntaxRules)
+      oneOf.linkOptions(linker, syntaxRules, validate)
     }
-    options.link(linker)
+    options.link(linker, validate)
   }
 
   override fun validate(linker: Linker, syntaxRules: SyntaxRules) {

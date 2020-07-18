@@ -140,6 +140,7 @@ class WireCompilerErrorTest {
           |multiple enums share constant QUIX:
           |  1. com.squareup.protos.test.Bar.QUIX (/source/test.proto:4:3)
           |  2. com.squareup.protos.test.Bar2.QUIX (/source/test.proto:10:3)
+          |  for file /source/test.proto
           """.trimMargin())
   }
 

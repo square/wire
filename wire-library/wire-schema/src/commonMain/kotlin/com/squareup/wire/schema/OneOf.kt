@@ -29,9 +29,9 @@ class OneOf private constructor(
     }
   }
 
-  fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
+  fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
     for (field in fields) {
-      field.linkOptions(linker, syntaxRules)
+      field.linkOptions(linker, syntaxRules, validate)
     }
   }
 
