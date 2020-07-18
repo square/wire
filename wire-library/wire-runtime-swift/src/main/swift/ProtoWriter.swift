@@ -258,13 +258,15 @@ public final class ProtoWriter {
             let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
             writeVarint(key)
             try encodeLengthDelimited {
-                try value.forEach { try encode($0) }
+                for item in value {
+                    try encode(item)
+                }
             }
         } else {
             let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
-            try value.forEach {
+            for item in value {
                 writeVarint(key)
-                try encode($0)
+                try encode(item)
             }
         }
     }
@@ -276,14 +278,14 @@ public final class ProtoWriter {
             // Sort the keys to get a deterministic binary output
             // This is mostly useful for testing purposes.
             let sortedKeys = value.keys.sorted()
-            try sortedKeys.forEach { key in
+            for key in sortedKeys {
                 writeVarint(fieldKey)
                 try encodeLengthDelimited {
                     try encode(key, value[key]!)
                 }
             }
         } else {
-            try value.forEach { entry in
+            for entry in value {
                 writeVarint(fieldKey)
                 try encodeLengthDelimited {
                     try encode(entry.key, entry.value)
