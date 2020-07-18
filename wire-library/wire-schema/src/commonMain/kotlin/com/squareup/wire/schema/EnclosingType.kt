@@ -30,8 +30,8 @@ class EnclosingType internal constructor(
     get() = Options(Options.MESSAGE_OPTIONS, listOf())
 
   override fun linkMembers(linker: Linker) {}
-  override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
-    nestedTypes.forEach { it.linkOptions(linker, syntaxRules) }
+  override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
+    nestedTypes.forEach { it.linkOptions(linker, syntaxRules, validate) }
   }
 
   override fun validate(linker: Linker, syntaxRules: SyntaxRules) {

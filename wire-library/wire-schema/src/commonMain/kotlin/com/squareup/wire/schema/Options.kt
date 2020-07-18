@@ -60,12 +60,13 @@ class Options(
     }
   }
 
-  fun link(linker: Linker) {
+  fun link(linker: Linker, validate: Boolean) {
     var entries: List<LinkedOptionEntry> = emptyList()
 
     for (option in optionElements) {
-      val canonicalOption: List<LinkedOptionEntry> = canonicalizeOption(linker, optionType, option)
-          ?: continue
+      val canonicalOption: List<LinkedOptionEntry> =
+          canonicalizeOption(linker, optionType, option, validate)
+              ?: continue
 
       entries = union(linker, entries, canonicalOption)
     }
@@ -75,7 +76,8 @@ class Options(
   private fun canonicalizeOption(
     linker: Linker,
     extensionType: ProtoType,
-    option: OptionElement
+    option: OptionElement,
+    validate: Boolean
   ): List<LinkedOptionEntry>? {
     val type = linker.getForOptions(extensionType) as? MessageType
         ?: return null // No known extensions for the given extension type.
@@ -96,7 +98,9 @@ class Options(
         path = resolveFieldPath(packageName + "." + option.name, extensionsForType.keys)
       }
       if (path == null) {
-        linker.addError("unable to resolve option ${option.name}")
+        if (validate) {
+          linker.addError("unable to resolve option ${option.name}")
+        }
         return null // Unable to find the root of this field path.
       }
       field = extensionsForType[path[0]]

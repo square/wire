@@ -69,13 +69,12 @@ class Service private constructor(
     }
   }
 
-  fun linkOptions(linker: Linker) {
-    var linker = linker
-    linker = linker.withContext(this)
+  fun linkOptions(linker: Linker, validate: Boolean) {
+    var linker = linker.withContext(this)
     for (rpc in rpcs) {
-      rpc.linkOptions(linker)
+      rpc.linkOptions(linker, validate)
     }
-    options.link(linker)
+    options.link(linker, validate)
   }
 
   fun validate(linker: Linker) {

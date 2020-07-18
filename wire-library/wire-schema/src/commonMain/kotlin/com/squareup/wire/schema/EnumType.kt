@@ -44,11 +44,11 @@ class EnumType private constructor(
 
   override fun linkMembers(linker: Linker) {}
 
-  override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules) {
+  override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
     val linker = linker.withContext(this)
-    options.link(linker)
+    options.link(linker, validate = validate)
     for (constant in constants) {
-      constant.linkOptions(linker)
+      constant.linkOptions(linker, validate)
     }
     allowAlias = options.get(ALLOW_ALIAS)
   }

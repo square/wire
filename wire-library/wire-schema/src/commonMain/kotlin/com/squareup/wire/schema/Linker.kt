@@ -94,14 +94,14 @@ class Linker {
     for (fileLinker in sourceFiles) {
       // TODO(benoit) Create a map to cache those.
       val syntaxRules = SyntaxRules.get(fileLinker.protoFile.syntax)
-      fileLinker.linkOptions(syntaxRules)
+      fileLinker.linkOptions(syntaxRules, validate = true)
     }
 
     // For compactness we'd prefer to link the options of source files only. But we link file
     // options on referenced files to make sure that java_package is populated.
     while (fileOptionsQueue.isNotEmpty()) {
       val fileLinker = fileOptionsQueue.poll()!!
-      fileLinker.requireFileOptionsLinked()
+      fileLinker.requireFileOptionsLinked(validate = false)
     }
 
     for (fileLinker in sourceFiles) {

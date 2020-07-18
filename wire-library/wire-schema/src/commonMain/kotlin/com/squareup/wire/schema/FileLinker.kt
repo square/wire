@@ -120,21 +120,21 @@ internal class FileLinker(
    * This requires traversal of members of imported types! This may potentially include non-direct
    * dependencies!
    */
-  fun linkOptions(syntaxRules: SyntaxRules) {
-    requireFileOptionsLinked()
+  fun linkOptions(syntaxRules: SyntaxRules, validate: Boolean) {
+    requireFileOptionsLinked(validate)
     for (type in protoFile.types) {
-      type.linkOptions(linker, syntaxRules)
+      type.linkOptions(linker, syntaxRules, validate)
     }
     for (service in protoFile.services) {
-      service.linkOptions(linker)
+      service.linkOptions(linker, validate)
     }
   }
 
-  fun requireFileOptionsLinked() {
+  fun requireFileOptionsLinked(validate: Boolean) {
     if (fileOptionsLinked) return
     fileOptionsLinked = true
 
-    protoFile.linkOptions(linker)
+    protoFile.linkOptions(linker, validate)
   }
 
   fun validate(syntaxRules: SyntaxRules) {

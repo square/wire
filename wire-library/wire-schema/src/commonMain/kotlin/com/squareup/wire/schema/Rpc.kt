@@ -42,9 +42,9 @@ class Rpc private constructor(
     responseType = linker.resolveMessageType(responseTypeElement)
   }
 
-  fun linkOptions(linker: Linker) {
+  fun linkOptions(linker: Linker, validate: Boolean) {
     val linker = linker.withContext(this)
-    options.link(linker)
+    options.link(linker, validate)
   }
 
   fun validate(linker: Linker) {
