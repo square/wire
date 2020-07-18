@@ -11,17 +11,17 @@ public final class ProtoWriter {
 
     // MARK: - Properties
 
-    private(set) var data: Data
+    private(set) var buffer: Buffer
 
     var outputFormatting: ProtoEncoder.OutputFormatting
 
     // MARK: - Life Cycle
 
     init(
-        data: Data = .init(),
+        data: Buffer = .init(),
         outputFormatting: ProtoEncoder.OutputFormatting = []
     ) {
-        self.data = data
+        self.buffer = data
         self.outputFormatting = outputFormatting
     }
 
@@ -195,42 +195,42 @@ public final class ProtoWriter {
 
     /** Append unknown fields data to the output */
     public func writeUnknownFields(_ data: Data) throws {
-        self.data.append(data)
+        self.buffer.append(data)
     }
 
     // MARK: - Internal Methods - Writing Primitives
 
     /** Write arbitrary data */
     func write(_ data: Data) {
-        self.data.append(data)
+        self.buffer.append(data)
     }
 
     /** Write a single byte */
     func write(_ value: UInt8) {
-        data.append(value)
+        buffer.append(value)
     }
 
     /** Write a buffer of bytes */
     func write(_ buffer: UnsafeRawBufferPointer) {
-        data.append(contentsOf: buffer)
+        self.buffer.append(buffer)
     }
 
     /** Write a little-endian 32-bit integer.  */
     func writeFixed32(_ value: UInt32) {
-        withUnsafeBytes(of: value.littleEndian) { data.append(contentsOf: $0) }
+        withUnsafeBytes(of: value.littleEndian) { buffer.append($0) }
     }
 
     /** Write a little-endian 64-bit integer.  */
     func writeFixed64(_ value: UInt64) {
-        withUnsafeBytes(of: value.littleEndian) { data.append(contentsOf: $0) }
+        withUnsafeBytes(of: value.littleEndian) { buffer.append($0) }
     }
 
     func writeVarint(_ value: UInt32) {
-        data.writeVarint(value, at: data.count)
+        buffer.writeVarint(value, at: buffer.count)
     }
 
     func writeVarint(_ value: UInt64) {
-        data.writeVarint(value, at: data.count)
+        buffer.writeVarint(value, at: buffer.count)
     }
 
     // MARK: - Internal Methods - Field Keys
@@ -293,25 +293,24 @@ public final class ProtoWriter {
     }
 
     private func encodeLengthDelimited(_ encode: () throws -> Void) rethrows {
-        let startOffset = data.count
+        let startOffset = buffer.count
         let reservedSize = 2
         for _ in 0 ..< reservedSize {
-            data.append(0)
+            buffer.append(0)
         }
 
         try encode()
 
-        let writtenCount = UInt32(data.count - startOffset - reservedSize)
+        let writtenCount = UInt32(buffer.count - startOffset - reservedSize)
 
         let sizeSize = Int(writtenCount.varintSize)
         if sizeSize < reservedSize {
-            data.removeSubrange(startOffset + sizeSize ..< startOffset + reservedSize)
-        } else if sizeSize != reservedSize {
-            let zeros = [UInt8](repeating: 0, count: sizeSize - reservedSize)
-            data.insert(contentsOf: zeros, at: startOffset + reservedSize)
+            buffer.remove(count: reservedSize - sizeSize, at: startOffset)
+        } else if sizeSize > reservedSize {
+            buffer.insert(count: sizeSize - reservedSize, at: startOffset + reservedSize)
         }
 
-        data.writeVarint(writtenCount, at: startOffset)
+        buffer.writeVarint(writtenCount, at: startOffset)
     }
 
     private static func wireType<T: ProtoIntEncodable>(for valueType: T.Type, encoding: ProtoIntEncoding) -> FieldWireType {
