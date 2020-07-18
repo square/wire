@@ -99,9 +99,5 @@
   "ext_pack_bool": [],
   "ext_pack_float": [],
   "ext_pack_double": [],
-  "ext_pack_nested_enum": [],
-  "ext_map_int32_int32": {},
-  "ext_map_string_string": {},
-  "ext_map_string_message": {},
-  "ext_map_string_enum": {}
+  "ext_pack_nested_enum": []
 }

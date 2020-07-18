@@ -1188,47 +1188,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   )
   public final List<NestedEnum> ext_pack_nested_enum;
 
-  /**
-   * Note: protoc doesn't allow maps in extensions.
-   * Extension source: all_types.proto
-   */
-  @WireField(
-      tag = 1301,
-      keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
-  public final Map<Integer, Integer> ext_map_int32_int32;
-
-  /**
-   * Extension source: all_types.proto
-   */
-  @WireField(
-      tag = 1402,
-      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
-  public final Map<String, String> ext_map_string_string;
-
-  /**
-   * Extension source: all_types.proto
-   */
-  @WireField(
-      tag = 1503,
-      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedMessage#ADAPTER"
-  )
-  public final Map<String, NestedMessage> ext_map_string_message;
-
-  /**
-   * Extension source: all_types.proto
-   */
-  @WireField(
-      tag = 1504,
-      keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.protos.alltypes.AllTypes$NestedEnum#ADAPTER"
-  )
-  public final Map<String, NestedEnum> ext_map_string_enum;
-
   public AllTypes(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.opt_int32 = builder.opt_int32;
@@ -1364,10 +1323,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.ext_pack_float = Internal.immutableCopyOf("ext_pack_float", builder.ext_pack_float);
     this.ext_pack_double = Internal.immutableCopyOf("ext_pack_double", builder.ext_pack_double);
     this.ext_pack_nested_enum = Internal.immutableCopyOf("ext_pack_nested_enum", builder.ext_pack_nested_enum);
-    this.ext_map_int32_int32 = Internal.immutableCopyOf("ext_map_int32_int32", builder.ext_map_int32_int32);
-    this.ext_map_string_string = Internal.immutableCopyOf("ext_map_string_string", builder.ext_map_string_string);
-    this.ext_map_string_message = Internal.immutableCopyOf("ext_map_string_message", builder.ext_map_string_message);
-    this.ext_map_string_enum = Internal.immutableCopyOf("ext_map_string_enum", builder.ext_map_string_enum);
   }
 
   @Override
@@ -1506,10 +1461,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.ext_pack_float = Internal.copyOf(ext_pack_float);
     builder.ext_pack_double = Internal.copyOf(ext_pack_double);
     builder.ext_pack_nested_enum = Internal.copyOf(ext_pack_nested_enum);
-    builder.ext_map_int32_int32 = Internal.copyOf(ext_map_int32_int32);
-    builder.ext_map_string_string = Internal.copyOf(ext_map_string_string);
-    builder.ext_map_string_message = Internal.copyOf(ext_map_string_message);
-    builder.ext_map_string_enum = Internal.copyOf(ext_map_string_enum);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -1652,11 +1603,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         && ext_pack_bool.equals(o.ext_pack_bool)
         && ext_pack_float.equals(o.ext_pack_float)
         && ext_pack_double.equals(o.ext_pack_double)
-        && ext_pack_nested_enum.equals(o.ext_pack_nested_enum)
-        && ext_map_int32_int32.equals(o.ext_map_int32_int32)
-        && ext_map_string_string.equals(o.ext_map_string_string)
-        && ext_map_string_message.equals(o.ext_map_string_message)
-        && ext_map_string_enum.equals(o.ext_map_string_enum);
+        && ext_pack_nested_enum.equals(o.ext_pack_nested_enum);
   }
 
   @Override
@@ -1797,10 +1744,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + ext_pack_float.hashCode();
       result = result * 37 + ext_pack_double.hashCode();
       result = result * 37 + ext_pack_nested_enum.hashCode();
-      result = result * 37 + ext_map_int32_int32.hashCode();
-      result = result * 37 + ext_map_string_string.hashCode();
-      result = result * 37 + ext_map_string_message.hashCode();
-      result = result * 37 + ext_map_string_enum.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -1942,10 +1885,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (!ext_pack_float.isEmpty()) builder.append(", ext_pack_float=").append(ext_pack_float);
     if (!ext_pack_double.isEmpty()) builder.append(", ext_pack_double=").append(ext_pack_double);
     if (!ext_pack_nested_enum.isEmpty()) builder.append(", ext_pack_nested_enum=").append(ext_pack_nested_enum);
-    if (!ext_map_int32_int32.isEmpty()) builder.append(", ext_map_int32_int32=").append(ext_map_int32_int32);
-    if (!ext_map_string_string.isEmpty()) builder.append(", ext_map_string_string=").append(ext_map_string_string);
-    if (!ext_map_string_message.isEmpty()) builder.append(", ext_map_string_message=").append(ext_map_string_message);
-    if (!ext_map_string_enum.isEmpty()) builder.append(", ext_map_string_enum=").append(ext_map_string_enum);
     return builder.replace(0, 2, "AllTypes{").append('}').toString();
   }
 
@@ -2216,14 +2155,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public List<NestedEnum> ext_pack_nested_enum;
 
-    public Map<Integer, Integer> ext_map_int32_int32;
-
-    public Map<String, String> ext_map_string_string;
-
-    public Map<String, NestedMessage> ext_map_string_message;
-
-    public Map<String, NestedEnum> ext_map_string_enum;
-
     public Builder() {
       rep_int32 = Internal.newMutableList();
       rep_uint32 = Internal.newMutableList();
@@ -2291,10 +2222,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ext_pack_float = Internal.newMutableList();
       ext_pack_double = Internal.newMutableList();
       ext_pack_nested_enum = Internal.newMutableList();
-      ext_map_int32_int32 = Internal.newMutableMap();
-      ext_map_string_string = Internal.newMutableMap();
-      ext_map_string_message = Internal.newMutableMap();
-      ext_map_string_enum = Internal.newMutableMap();
     }
 
     public Builder opt_int32(Integer opt_int32) {
@@ -3031,33 +2958,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       return this;
     }
 
-    /**
-     * Note: protoc doesn't allow maps in extensions.
-     */
-    public Builder ext_map_int32_int32(Map<Integer, Integer> ext_map_int32_int32) {
-      Internal.checkElementsNotNull(ext_map_int32_int32);
-      this.ext_map_int32_int32 = ext_map_int32_int32;
-      return this;
-    }
-
-    public Builder ext_map_string_string(Map<String, String> ext_map_string_string) {
-      Internal.checkElementsNotNull(ext_map_string_string);
-      this.ext_map_string_string = ext_map_string_string;
-      return this;
-    }
-
-    public Builder ext_map_string_message(Map<String, NestedMessage> ext_map_string_message) {
-      Internal.checkElementsNotNull(ext_map_string_message);
-      this.ext_map_string_message = ext_map_string_message;
-      return this;
-    }
-
-    public Builder ext_map_string_enum(Map<String, NestedEnum> ext_map_string_enum) {
-      Internal.checkElementsNotNull(ext_map_string_enum);
-      this.ext_map_string_enum = ext_map_string_enum;
-      return this;
-    }
-
     @Override
     public AllTypes build() {
       if (req_int32 == null
@@ -3267,14 +3167,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private ProtoAdapter<Map<String, NestedEnum>> map_string_enum;
 
-    private ProtoAdapter<Map<Integer, Integer>> ext_map_int32_int32;
-
-    private ProtoAdapter<Map<String, String>> ext_map_string_string;
-
-    private ProtoAdapter<Map<String, NestedMessage>> ext_map_string_message;
-
-    private ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enum;
-
     public ProtoAdapter_AllTypes() {
       super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/squareup.protos.alltypes.AllTypes", Syntax.PROTO_2);
     }
@@ -3415,10 +3307,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float);
       result += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double);
       result += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum);
-      result += ext_map_int32_int32Adapter().encodedSizeWithTag(1301, value.ext_map_int32_int32);
-      result += ext_map_string_stringAdapter().encodedSizeWithTag(1402, value.ext_map_string_string);
-      result += ext_map_string_messageAdapter().encodedSizeWithTag(1503, value.ext_map_string_message);
-      result += ext_map_string_enumAdapter().encodedSizeWithTag(1504, value.ext_map_string_enum);
       result += value.unknownFields().size();
       return result;
     }
@@ -3558,10 +3446,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float);
       ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double);
       NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum);
-      ext_map_int32_int32Adapter().encodeWithTag(writer, 1301, value.ext_map_int32_int32);
-      ext_map_string_stringAdapter().encodeWithTag(writer, 1402, value.ext_map_string_string);
-      ext_map_string_messageAdapter().encodeWithTag(writer, 1503, value.ext_map_string_message);
-      ext_map_string_enumAdapter().encodeWithTag(writer, 1504, value.ext_map_string_enum);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -3760,10 +3644,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
             }
             break;
           }
-          case 1301: builder.ext_map_int32_int32.putAll(ext_map_int32_int32Adapter().decode(reader)); break;
-          case 1402: builder.ext_map_string_string.putAll(ext_map_string_stringAdapter().decode(reader)); break;
-          case 1503: builder.ext_map_string_message.putAll(ext_map_string_messageAdapter().decode(reader)); break;
-          case 1504: builder.ext_map_string_enum.putAll(ext_map_string_enumAdapter().decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -3782,7 +3662,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       Internal.redactElements(builder.map_string_message, NestedMessage.ADAPTER);
       if (builder.ext_opt_nested_message != null) builder.ext_opt_nested_message = NestedMessage.ADAPTER.redact(builder.ext_opt_nested_message);
       Internal.redactElements(builder.ext_rep_nested_message, NestedMessage.ADAPTER);
-      Internal.redactElements(builder.ext_map_string_message, NestedMessage.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }
@@ -3819,42 +3698,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       if (result == null) {
         result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
         map_string_enum = result;
-      }
-      return result;
-    }
-
-    private ProtoAdapter<Map<Integer, Integer>> ext_map_int32_int32Adapter() {
-      ProtoAdapter<Map<Integer, Integer>> result = ext_map_int32_int32;
-      if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32);
-        ext_map_int32_int32 = result;
-      }
-      return result;
-    }
-
-    private ProtoAdapter<Map<String, String>> ext_map_string_stringAdapter() {
-      ProtoAdapter<Map<String, String>> result = ext_map_string_string;
-      if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING);
-        ext_map_string_string = result;
-      }
-      return result;
-    }
-
-    private ProtoAdapter<Map<String, NestedMessage>> ext_map_string_messageAdapter() {
-      ProtoAdapter<Map<String, NestedMessage>> result = ext_map_string_message;
-      if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedMessage.ADAPTER);
-        ext_map_string_message = result;
-      }
-      return result;
-    }
-
-    private ProtoAdapter<Map<String, NestedEnum>> ext_map_string_enumAdapter() {
-      ProtoAdapter<Map<String, NestedEnum>> result = ext_map_string_enum;
-      if (result == null) {
-        result = ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER);
-        ext_map_string_enum = result;
       }
       return result;
     }
