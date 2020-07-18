@@ -9,10 +9,10 @@ public struct JSONString<T : Equatable> : Equatable, Codable {
     public init(from decoder: Decoder) throws {
         switch (T.self) {
             case is Int64.Type:
-                var container = try decoder.singleValueContainer()
+                let container = try decoder.singleValueContainer()
                 self.wrappedValue = Int64(try container.decode(String.self))! as! T
             case is UInt64.Type:
-                var container = try decoder.singleValueContainer()
+                let container = try decoder.singleValueContainer()
                 self.wrappedValue = UInt64(try container.decode(String.self))! as! T
             case is [Int64].Type:
                 var container = try decoder.unkeyedContainer()
