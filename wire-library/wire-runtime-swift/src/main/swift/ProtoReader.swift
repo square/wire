@@ -464,6 +464,16 @@ public final class ProtoReader {
     private func decode<T>(into array: inout [T], decode: () throws -> T) throws {
         switch state {
         case let .lengthDelimited(endOffset):
+            // Preallocate space for the unpacked data.
+            // It's allowable to have a packed field spread across multiple places
+            // in the buffer, so add to the existing capacity.
+            //
+            // This is a rough estimate. For fixed-size values like `bool`s, `double`s,
+            // `float`s, and fixed-size integers this will be accurate.
+            // For variable-sized ints it will likely underestimate.
+            let packedDataSize = endOffset - pos
+            array.reserveCapacity(array.count + packedDataSize / MemoryLayout<T>.size)
+
             // This is a packed field, so keep decoding until we're out of bytes.
             while pos < endOffset {
                 // Reading a scalar will set the state to `.tag` because we assume
