@@ -85,12 +85,52 @@ public final class ProtoReader {
         return enumValue
     }
 
-    /** Decode an integer field */
-    public func decode<T: ProtoIntDecodable>(_ type: T.Type, encoding: ProtoIntEncoding = .variable) throws -> T {
-        return try T(from: self, encoding: encoding)
+    /** Decode a `bool` field */
+    public func decode(_ type: Bool.Type) throws -> Bool {
+        return try Bool(from: self)
     }
 
-    /** Decode a field which has a single encoding mechanism, like messages, strings, and bytes. */
+    /** Decode a `bytes` field */
+    public func decode(_ type: Data.Type) throws -> Data {
+        return try Data(from: self)
+    }
+
+    /** Decode a `double` field */
+    public func decode(_ type: Double.Type) throws -> Double {
+        return try Double(from: self)
+    }
+
+    /** Decode a `float` field */
+    public func decode(_ type: Float.Type) throws -> Float {
+        return try Float(from: self)
+    }
+
+    /** Decode an `int32` field */
+    public func decode(_ type: Int32.Type, encoding: ProtoIntEncoding = .variable) throws -> Int32 {
+        return try Int32(from: self, encoding: encoding)
+    }
+
+    /** Decode an `int64` field */
+    public func decode(_ type: Int64.Type, encoding: ProtoIntEncoding = .variable) throws -> Int64 {
+        return try Int64(from: self, encoding: encoding)
+    }
+
+    /** Decode a `string` field */
+    public func decode(_ type: String.Type) throws -> String {
+        return try String(from: self)
+    }
+
+    /** Decode an `uint32` field */
+    public func decode(_ type: UInt32.Type, encoding: ProtoIntEncoding = .variable) throws -> UInt32 {
+        return try UInt32(from: self, encoding: encoding)
+    }
+
+    /** Decode an `uint64` field */
+    public func decode(_ type: UInt64.Type, encoding: ProtoIntEncoding = .variable) throws -> UInt64 {
+        return try UInt64(from: self, encoding: encoding)
+    }
+
+    /** Decode a message field */
     public func decode<T: ProtoDecodable>(_ type: T.Type) throws -> T {
         return try T(from: self)
     }
@@ -105,6 +145,12 @@ public final class ProtoReader {
         try decode(into: &array) {
             return try Bool(from: self)
         }
+    }
+
+    /** Decode a repeated `bytes` field */
+    public func decode(into array: inout [Data]) throws {
+        // Data fields do not support packing, so no need to test for it.
+        try array.append(Data(from: self))
     }
 
     /**
@@ -138,14 +184,41 @@ public final class ProtoReader {
         }
     }
 
-    /** Decode a repeated integer field */
-    public func decode<T: ProtoIntDecodable>(into array: inout [T], encoding: ProtoIntEncoding = .variable) throws {
+    /** Decode a repeated `int32` field */
+    public func decode(into array: inout [Int32], encoding: ProtoIntEncoding = .variable) throws {
         try decode(into: &array) {
-            return try T(from: self, encoding: encoding)
+            return try Int32(from: self, encoding: encoding)
         }
     }
 
-    /** Decode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
+    /** Decode a repeated `int64` field */
+    public func decode(into array: inout [Int64], encoding: ProtoIntEncoding = .variable) throws {
+        try decode(into: &array) {
+            return try Int64(from: self, encoding: encoding)
+        }
+    }
+
+    /** Decode a repeated `string` field */
+    public func decode(into array: inout [String]) throws {
+        // String fields do not support packing, so no need to test for it.
+        try array.append(String(from: self))
+    }
+
+    /** Decode a repeated `uint32` field */
+    public func decode(into array: inout [UInt32], encoding: ProtoIntEncoding = .variable) throws {
+        try decode(into: &array) {
+            return try UInt32(from: self, encoding: encoding)
+        }
+    }
+
+    /** Decode a repeated `uint64` field */
+    public func decode(into array: inout [UInt64], encoding: ProtoIntEncoding = .variable) throws {
+        try decode(into: &array) {
+            return try UInt64(from: self, encoding: encoding)
+        }
+    }
+
+    /** Decode a repeated message field. */
     public func decode<T: ProtoDecodable>(into array: inout [T]) throws {
         // These types do not support packing, so no need to test for it.
         try array.append(T(from: self))
@@ -364,6 +437,15 @@ public final class ProtoReader {
     }
 
     // MARK: - Private Methods - Message Decoding
+
+    /**
+     Decode an integer field.
+     This method is used in map decoding. For single and repeated integer field decoding
+     there are distinct implementations to avoid the performance cost of virtual function resolution.
+     */
+    private func decode<T: ProtoIntDecodable>(_ type: T.Type, encoding: ProtoIntEncoding = .variable) throws -> T {
+        return try T(from: self, encoding: encoding)
+    }
 
     /**
      * Begin a nested message. A call to this method will restrict the reader so that [nextTag]
