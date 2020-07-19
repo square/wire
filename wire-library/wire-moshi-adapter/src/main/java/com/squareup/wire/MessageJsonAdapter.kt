@@ -16,10 +16,12 @@
 package com.squareup.wire
 
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.squareup.wire.internal.FieldBinding.JsonFormatter
 import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.io.IOException
 import java.lang.reflect.Type
@@ -57,7 +59,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     this.encodeNames = encodeNames
   }
 
-  private val jsonAdapters = fieldBindings.map { fieldBinding ->
+  private val jsonAdapters: List<JsonAdapter<Any?>> = fieldBindings.map { fieldBinding ->
     var fieldType: Type = fieldBinding.singleAdapter().type?.javaObjectType as Type
     if (fieldBinding.isStruct) {
       return@map StructJsonAdapter.serializeNulls()
@@ -69,32 +71,16 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       fieldType = Types.newParameterizedType(List::class.java, fieldType)
     }
 
-    // Explicitly using a `var Set` for performance.
-    var syntheticQualifiers = setOf<Class<out Annotation>>()
-    if (defaultAdapter.syntax == Syntax.PROTO_2) {
-      if (fieldBinding.singleAdapter() === ProtoAdapter.UINT64) {
-        syntheticQualifiers += Uint64::class.java
-      }
-    } else {
-      when (fieldBinding.singleAdapter()) {
-        ProtoAdapter.INT64,
-        ProtoAdapter.SFIXED64,
-        ProtoAdapter.SINT64 -> syntheticQualifiers += Sint64String::class.java
-        ProtoAdapter.FIXED64,
-        ProtoAdapter.UINT64 -> syntheticQualifiers += Uint64String::class.java
+    val jsonStringAdapter = fieldBinding.jsonStringAdapter(defaultAdapter.syntax)
+    if (jsonStringAdapter != null) {
+      val single = FormatterJsonAdapter(jsonStringAdapter)
+      return@map when {
+        fieldBinding.label.isRepeated -> ListJsonAdapter(single).nullSafe() as JsonAdapter<Any?>
+        else -> single.nullSafe() as JsonAdapter<Any?>
       }
     }
 
-    if (fieldBinding.label == WireField.Label.OMIT_IDENTITY) {
-      syntheticQualifiers += OmitIdentity::class.java
-    }
-
-    return@map when {
-      syntheticQualifiers.isNotEmpty() -> {
-        moshi.adapter<Any>(fieldType, *syntheticQualifiers.toTypedArray())
-      }
-      else -> moshi.adapter(fieldType)
-    }
+    return@map moshi.adapter<Any?>(fieldType)
   }
 
   @Throws(IOException::class)
@@ -104,10 +90,14 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       return
     }
     out.beginObject()
-    fieldBindings.forEachIndexed { index, fieldBinding ->
-      out.name(encodeNames[index])
+    for (index in fieldBindings.indices) {
+      val fieldBinding = fieldBindings[index]
       val value = fieldBinding[message]
-      jsonAdapters[index]?.toJson(out, value)
+      if (fieldBinding.label == WireField.Label.OMIT_IDENTITY && value == fieldBinding.identity) {
+        continue
+      }
+      out.name(encodeNames[index])
+      jsonAdapters[index].toJson(out, value)
     }
     out.endObject()
   }
@@ -138,5 +128,50 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
     }
     input.endObject()
     return builder.build()
+  }
+
+  private class FormatterJsonAdapter<T : Any>(
+    private val formatter: JsonFormatter<T>
+  ) : JsonAdapter<T>() {
+    override fun toJson(writer: JsonWriter, value: T?) {
+      val stringOrNumber = formatter.toStringOrNumber(value!!)
+      if (stringOrNumber is Number) {
+        writer.value(stringOrNumber)
+      } else {
+        writer.value(stringOrNumber as String)
+      }
+    }
+
+    override fun fromJson(reader: JsonReader): T? {
+      val string = reader.nextString()
+      try {
+        return formatter.fromString(string)
+      } catch (_: RuntimeException) {
+        throw JsonDataException("decode failed: $string at path ${reader.path}")
+      }
+    }
+  }
+
+  /** Adapt a list of values by delegating to an adapter for a single value. */
+  private class ListJsonAdapter<T>(
+    private val single: JsonAdapter<T>
+  ) : JsonAdapter<List<T?>>() {
+    override fun fromJson(reader: JsonReader): List<T?> {
+      val result = mutableListOf<T?>()
+      reader.beginArray()
+      while (reader.hasNext()) {
+        result.add(single.fromJson(reader))
+      }
+      reader.endArray()
+      return result
+    }
+
+    override fun toJson(writer: JsonWriter, value: List<T?>?) {
+      writer.beginArray()
+      for (v in value!!) {
+        single.toJson(writer, v)
+      }
+      writer.endArray()
+    }
   }
 }

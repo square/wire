@@ -673,7 +673,7 @@ class Proto3WireProtocCompatibilityTests {
       fail()
     } catch (e: JsonDataException) {
       assertThat(e)
-          .hasMessageContaining("Expected a long but was 9223372036854775808 at path \$.mySint64")
+          .hasMessageContaining("decode failed: 9223372036854775808 at path \$.mySint64")
     }
   }
 
