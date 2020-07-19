@@ -33,8 +33,14 @@ public final class ProtoReader {
 
     private let buffer: ReadBuffer
 
-    /** Buffers for unknown fields as a stack corresponding to message nesting.. */
-    private var unknownFieldsStack: [WriteBuffer?] = []
+    /**
+     Buffers for unknown fields, keyed by message nesting depth.
+     This dictionary is only allocated when an unknown field is first encountered.
+     */
+    private var unknownFieldsByMessageDepth: [Int: WriteBuffer]? = nil
+
+    /** The depth of the message nesting. */
+    private var messageStackDepth: Int = 0
 
     /** The encoding of the next value to be read. */
     private var nextFieldWireType: FieldWireType? = nil
@@ -52,7 +58,7 @@ public final class ProtoReader {
     init(buffer: ReadBuffer) {
         self.buffer = buffer
         self.state = .lengthDelimited(length: buffer.count)
-        self.unknownFieldsStack.append(nil)
+        self.messageStackDepth = 1
     }
 
     // MARK: - Public Methods - Iterating Tags
@@ -426,7 +432,7 @@ public final class ProtoReader {
             fatalError("Unexpected call to decodeMessage()")
         }
 
-        if unknownFieldsStack.count > ProtoReader.recursionLimit {
+        if messageStackDepth > ProtoReader.recursionLimit {
             throw ProtoDecoder.Error.recursionLimitExceeded
         }
 
@@ -434,9 +440,11 @@ public final class ProtoReader {
 
         let expectedEndPointer = buffer.pointer.advanced(by: length)
 
-        unknownFieldsStack.append(nil)
+        messageStackDepth += 1
         try decode(length)
-        let unknownFieldsData = unknownFieldsStack.popLast()!
+
+        let unknownFieldsData = unknownFieldsByMessageDepth?.removeValue(forKey: messageStackDepth)
+        messageStackDepth -= 1
 
         if buffer.pointer != expectedEndPointer {
             throw ProtoDecoder.Error.invalidStructure(
@@ -571,9 +579,16 @@ public final class ProtoReader {
     }
 
     private func addUnknownField(_ block: (ProtoWriter) throws -> Void) rethrows {
-        let unknownFieldsWriter = ProtoWriter(data: unknownFieldsStack.last! ?? WriteBuffer())
+        // The unknown fields map isn't allocated until it's needed.
+        // We need it now, so create it if necessary.
+        if unknownFieldsByMessageDepth == nil {
+            unknownFieldsByMessageDepth = [:]
+        }
+
+        let buffer = unknownFieldsByMessageDepth![messageStackDepth] ?? WriteBuffer()
+        let unknownFieldsWriter = ProtoWriter(data: buffer)
         try block(unknownFieldsWriter)
-        unknownFieldsStack[unknownFieldsStack.count - 1] = unknownFieldsWriter.buffer
+        unknownFieldsByMessageDepth![messageStackDepth] = buffer
     }
 
 }
