@@ -17,7 +17,7 @@ public final class ProtoReader {
         case fixed64
 
         /// Currently reading a length-delimited field which ends at the given offset
-        case lengthDelimited(endOffset: Int)
+        case lengthDelimited(length: Int)
 
         /// Currently reading a fixed32 field
         case fixed32
@@ -31,10 +31,7 @@ public final class ProtoReader {
 
     // MARK: - Private Properties
 
-    private let data: Data
-
-    /** The current position in the input source, starting at 0 and increasing monotonically. */
-    private var pos: Int = 0
+    private let buffer: ReadBuffer
 
     /** Buffers for unknown fields as a stack corresponding to message nesting.. */
     private var unknownFieldsStack: [WriteBuffer?] = []
@@ -52,9 +49,9 @@ public final class ProtoReader {
 
     // MARK: - Initialization
 
-    init(data: Data) {
-        self.data = data
-        self.state = .lengthDelimited(endOffset: data.count)
+    init(buffer: ReadBuffer) {
+        self.buffer = buffer
+        self.state = .lengthDelimited(length: buffer.count)
         self.unknownFieldsStack.append(nil)
     }
 
@@ -62,9 +59,10 @@ public final class ProtoReader {
 
     /** Reads each tag within a message, handles it, and returns a byte string with the unknown fields. */
     public func forEachTag(_ block: (UInt32) throws -> Void) throws -> Data {
-        return try decodeMessage { endOffset in
+        return try decodeMessage { length in
+            let messageEnd = buffer.pointer.advanced(by: length)
             while true {
-                guard let tag = try nextTag(messageEndOffset: endOffset) else { break }
+                guard let tag = try nextTag(messageEnd: messageEnd) else { break }
                 try block(tag)
             }
         }
@@ -317,63 +315,42 @@ public final class ProtoReader {
 
     /** Reads a `bytes` field value from the stream. The length is read from the stream prior to the actual data. */
     func readData() throws -> Data {
-        guard case let .lengthDelimited(endOffset) = state else {
+        guard case let .lengthDelimited(length) = state else {
             fatalError("Decoding field as length delimited when key was not LENGTH_DELIMITED")
         }
-
-        guard endOffset <= data.count else {
-            throw ProtoDecoder.Error.unexpectedEndOfData
-        }
-
-        let data = self.data.subdata(in: pos ..< endOffset)
-        pos = endOffset
         state = .tag
 
-        return data
+        return try buffer.readData(count: length)
     }
 
     /** Reads a 32-bit little-endian integer from the stream.  */
     func readFixed32() throws -> UInt32 {
         precondition(state == .fixed32 || state == .packedValue)
-
-        let result = try data.readFixed32(at: pos)
-        pos += 4
         state = .tag
-
-        return result
+        return try buffer.readFixed32()
     }
 
     /** Reads a 64-bit little-endian integer from the stream.  */
     func readFixed64() throws -> UInt64 {
         precondition(state == .fixed64 || state == .packedValue)
-
-        let result = try data.readFixed64(at: pos)
-        pos += 8
         state = .tag
-
-        return result
+        return try buffer.readFixed64()
     }
 
     /** Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits. */
     func readVarint32() throws -> UInt32 {
         precondition(state == .varint || state == .packedValue)
-
-        let (result, size) = try data.readVarint32(at: pos)
-        pos += size
         state = .tag
 
-        return result
+        return try buffer.readVarint32()
     }
 
     /** Reads a raw varint up to 64 bits in length from the stream.  */
     func readVarint64() throws -> UInt64 {
         precondition(state == .varint || state == .packedValue)
-
-        let (result, size) = try data.readVarint64(at: pos)
-        pos += size
         state = .tag
 
-        return result
+        return try buffer.readVarint64()
     }
 
     // MARK: - Private Methods - Groups
@@ -386,7 +363,7 @@ public final class ProtoReader {
         unknownFieldsWriter.writeVarint(groupStartKey)
 
         // Read fields until we find the group's corresponding end tag.
-        while pos < data.count {
+        while buffer.isDataRemaining {
             let (tag, wireType) = try readFieldKey()
             switch wireType {
             case .startGroup:
@@ -404,9 +381,8 @@ public final class ProtoReader {
                 return
 
             case .lengthDelimited:
-                let (length, size) = try data.readVarint32(at: pos)
-                pos += size
-                state = .lengthDelimited(endOffset: pos + Int(length))
+                let length = try buffer.readVarint32()
+                state = .lengthDelimited(length: Int(length))
                 let data = try readData()
                 try unknownFieldsWriter.encode(tag: tag, value: data)
 
@@ -445,8 +421,8 @@ public final class ProtoReader {
                          to the block is the end offset of the message.
      - returns: Returns all unknown fields in the message, encoded sequentially.
      */
-    private func decodeMessage(_ decode: (_ endOffset: Int) throws -> Void) throws -> Data {
-        guard case let .lengthDelimited(endOffset) = state else {
+    private func decodeMessage(_ decode: (_ length: Int) throws -> Void) throws -> Data {
+        guard case let .lengthDelimited(length) = state else {
             fatalError("Unexpected call to decodeMessage()")
         }
 
@@ -456,13 +432,15 @@ public final class ProtoReader {
 
         state = .tag
 
+        let expectedEndPointer = buffer.pointer.advanced(by: length)
+
         unknownFieldsStack.append(nil)
-        try decode(endOffset)
+        try decode(length)
         let unknownFieldsData = unknownFieldsStack.popLast()!
 
-        if pos != endOffset {
+        if buffer.pointer != expectedEndPointer {
             throw ProtoDecoder.Error.invalidStructure(
-                message: "Expected to end message at \(endOffset), but was at \(pos)"
+                message: "Expected to end message at at \(expectedEndPointer - buffer.start), but was at \(buffer.position)"
             )
         }
 
@@ -473,13 +451,13 @@ public final class ProtoReader {
      Reads and returns the next tag of the message, or nil if there are no further tags. Use
      `nextFieldWireType` after calling this method to query its wire type. This silently skips groups.
      */
-    private func nextTag(messageEndOffset: Int) throws -> UInt32? {
+    private func nextTag(messageEnd: UnsafePointer<UInt8>) throws -> UInt32? {
         if state != .tag {
             // After reading the previous value the state should have been set to `.tag`
             fatalError("Unexpected call to nextTag. State is \(state).")
         }
 
-        while pos < messageEndOffset && pos < data.count {
+        while buffer.pointer < messageEnd && buffer.isDataRemaining {
             let (tag, wireType) = try readFieldKey()
             nextFieldWireType = wireType
 
@@ -493,9 +471,8 @@ public final class ProtoReader {
                 throw ProtoDecoder.Error.unexpectedEndGroupFieldNumber(expected: nil, found: tag)
 
             case .lengthDelimited:
-                let (length, size) = try data.readVarint32(at: pos)
-                pos += size
-                state = .lengthDelimited(endOffset: pos + Int(length))
+                let length = try buffer.readVarint32()
+                state = .lengthDelimited(length: Int(length))
                 return tag
 
             case .fixed32:
@@ -516,8 +493,7 @@ public final class ProtoReader {
     }
 
     private func readFieldKey() throws -> (UInt32, FieldWireType) {
-        let (tagAndWireType, size) = try data.readVarint32(at: pos)
-        pos += size
+        let tagAndWireType = try buffer.readVarint32()
         if tagAndWireType == 0 {
             throw ProtoDecoder.Error.fieldKeyValueZero
         }
@@ -534,7 +510,7 @@ public final class ProtoReader {
 
     private func decode<T>(into array: inout [T], decode: () throws -> T) throws {
         switch state {
-        case let .lengthDelimited(endOffset):
+        case let .lengthDelimited(length):
             // Preallocate space for the unpacked data.
             // It's allowable to have a packed field spread across multiple places
             // in the buffer, so add to the existing capacity.
@@ -542,11 +518,11 @@ public final class ProtoReader {
             // This is a rough estimate. For fixed-size values like `bool`s, `double`s,
             // `float`s, and fixed-size integers this will be accurate.
             // For variable-sized ints it will likely underestimate.
-            let packedDataSize = endOffset - pos
-            array.reserveCapacity(array.count + packedDataSize / MemoryLayout<T>.size)
+            array.reserveCapacity(array.count + (length / MemoryLayout<T>.size))
 
             // This is a packed field, so keep decoding until we're out of bytes.
-            while pos < endOffset {
+            let messageEnd = buffer.pointer.advanced(by: length)
+            while buffer.pointer < messageEnd {
                 // Reading a scalar will set the state to `.tag` because we assume
                 // we're reading a single value most of the time and are then done.
                 // Since we're in a repeated field we'll keep reading values though.

@@ -84,16 +84,22 @@ public final class ProtoDecoder {
     // MARK: - Public Methods
 
     public func decode<T: ProtoDecodable>(_ type: T.Type, from data: Data) throws -> T {
-        guard data.count > 0 else {
-            throw Error.emptyData
-        }
-
-        let reader = ProtoReader(data: data)
         var value: T?
-        _ = try reader.forEachTag { tag in
-            switch tag {
-            case 1: value = try reader.decode(type)
-            default: throw Error.invalidStructure(message: "The data root has more than one field. Found field number \(tag).")
+        try data.withUnsafeBytes { buffer in
+            guard let baseAddress = buffer.baseAddress, buffer.count > 0 else {
+                throw Error.emptyData
+            }
+
+            let readBuffer = ReadBuffer(
+                storage: baseAddress.bindMemory(to: UInt8.self, capacity: buffer.count),
+                count: buffer.count
+            )
+            let reader = ProtoReader(buffer: readBuffer)
+            _ = try reader.forEachTag { tag in
+                switch tag {
+                case 1: value = try reader.decode(type)
+                default: throw Error.invalidStructure(message: "The data root has more than one field. Found field number \(tag).")
+                }
             }
         }
 
