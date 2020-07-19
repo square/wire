@@ -276,9 +276,7 @@ public final class ProtoReader {
         dictionary[key] = value
     }
 
-    /**
-     Decode a single key-value pair from a map of two integer types and add it to the given dictionary
-     */
+    /** Decode a single key-value pair from a map of two integer types and add it to the given dictionary */
     public func decode<K: ProtoIntDecodable, V: ProtoIntDecodable>(
         into dictionary: inout [K: V], keyEncoding: ProtoIntEncoding = .variable, valueEncoding: ProtoIntEncoding = .variable
     ) throws {
@@ -291,10 +289,7 @@ public final class ProtoReader {
 
     // MARK: - Public Methods - Unknown Fields
 
-    /**
-     * Read an unknown field and store temporarily. The stored unknown fields
-     * will be returned from `decodeMessage`
-     */
+    /** Read an unknown field and store temporarily. The stored unknown fields will be returned from `decodeMessage` */
     public func readUnknownField(tag: UInt32) throws {
         guard let wireType = nextFieldWireType else {
             fatalError("Calling readUnknownField outside of parsing a message.")
@@ -320,10 +315,7 @@ public final class ProtoReader {
 
     // MARK: - Internal Methods - Reading Primitives
 
-    /**
-     * Reads a `bytes` field value from the stream. The length is read from the stream prior to the
-     * actual data.
-     */
+    /** Reads a `bytes` field value from the stream. The length is read from the stream prior to the actual data. */
     func readData() throws -> Data {
         guard case let .lengthDelimited(endOffset) = state else {
             fatalError("Decoding field as length delimited when key was not LENGTH_DELIMITED")
@@ -362,9 +354,7 @@ public final class ProtoReader {
         return result
     }
 
-    /**
-     * Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits.
-     */
+    /** Reads a raw varint from the stream. If larger than 32 bits, discard the upper bits. */
     func readVarint32() throws -> UInt32 {
         precondition(state == .varint || state == .packedValue)
 
@@ -436,7 +426,7 @@ public final class ProtoReader {
         throw ProtoDecoder.Error.unterminatedGroup(fieldNumber: expectedEndTag)
     }
 
-    // MARK: - Private Methods - Message Decoding
+    // MARK: - Private Methods - Decoding - Single Fields
 
     /**
      Decode an integer field.
@@ -448,12 +438,12 @@ public final class ProtoReader {
     }
 
     /**
-     * Begin a nested message. A call to this method will restrict the reader so that [nextTag]
-     * returns nil when the message is complete.
-     *
-     * - parameter decode: A block which is called to actually decode the message. The parameter
-     *                     to the block is the end offset of the message.
-     * - returns: Returns all unknown fields in the message, encoded sequentially.
+     Begin a nested message. A call to this method will restrict the reader so that [nextTag]
+     returns nil when the message is complete.
+
+     - parameter decode: A block which is called to actually decode the message. The parameter
+                         to the block is the end offset of the message.
+     - returns: Returns all unknown fields in the message, encoded sequentially.
      */
     private func decodeMessage(_ decode: (_ endOffset: Int) throws -> Void) throws -> Data {
         guard case let .lengthDelimited(endOffset) = state else {
@@ -480,9 +470,8 @@ public final class ProtoReader {
     }
 
     /**
-     * Reads and returns the next tag of the message, or nil if there are no further tags. Use
-     * `nextFieldWireType` after calling this method to query its wire type. This silently skips
-     * groups.
+     Reads and returns the next tag of the message, or nil if there are no further tags. Use
+     `nextFieldWireType` after calling this method to query its wire type. This silently skips groups.
      */
     private func nextTag(messageEndOffset: Int) throws -> UInt32? {
         if state != .tag {
@@ -541,7 +530,7 @@ public final class ProtoReader {
         return (tag, wireType)
     }
 
-    // MARK: - Private Methods - Repeated Field Decoding
+    // MARK: - Private Methods - Decoding - Repeated Field
 
     private func decode<T>(into array: inout [T], decode: () throws -> T) throws {
         switch state {
