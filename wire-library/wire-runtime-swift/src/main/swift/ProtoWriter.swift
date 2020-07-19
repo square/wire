@@ -11,14 +11,14 @@ public final class ProtoWriter {
 
     // MARK: - Properties
 
-    private(set) var buffer: Buffer
+    private(set) var buffer: WriteBuffer
 
     var outputFormatting: ProtoEncoder.OutputFormatting
 
     // MARK: - Life Cycle
 
     init(
-        data: Buffer = .init(),
+        data: WriteBuffer = .init(),
         outputFormatting: ProtoEncoder.OutputFormatting = []
     ) {
         self.buffer = data

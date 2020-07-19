@@ -37,7 +37,7 @@ public final class ProtoReader {
     private var pos: Int = 0
 
     /** Buffers for unknown fields as a stack corresponding to message nesting.. */
-    private var unknownFieldsStack: [Buffer?] = []
+    private var unknownFieldsStack: [WriteBuffer?] = []
 
     /** The encoding of the next value to be read. */
     private var nextFieldWireType: FieldWireType? = nil
@@ -595,7 +595,7 @@ public final class ProtoReader {
     }
 
     private func addUnknownField(_ block: (ProtoWriter) throws -> Void) rethrows {
-        let unknownFieldsWriter = ProtoWriter(data: unknownFieldsStack.last! ?? Buffer())
+        let unknownFieldsWriter = ProtoWriter(data: unknownFieldsStack.last! ?? WriteBuffer())
         try block(unknownFieldsWriter)
         unknownFieldsStack[unknownFieldsStack.count - 1] = unknownFieldsWriter.buffer
     }

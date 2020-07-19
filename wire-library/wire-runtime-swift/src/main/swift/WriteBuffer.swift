@@ -8,7 +8,7 @@ import Foundation
  A data buffer class similar to `Data`, but without some of the overhead
  or unexpected allocation characteristics of that class.
  */
-final class Buffer {
+final class WriteBuffer {
 
     // MARK: - Properties
 
@@ -56,7 +56,7 @@ final class Buffer {
         }
     }
 
-    func append(_ value: Buffer) {
+    func append(_ value: WriteBuffer) {
         precondition(value !== self)
         expandIfNeeded(adding: value.count)
 
@@ -129,7 +129,7 @@ final class Buffer {
 
 extension Data {
 
-    init(_ buffer: Buffer) {
+    init(_ buffer: WriteBuffer) {
         if buffer.count == 0 {
             self = Data()
         } else {

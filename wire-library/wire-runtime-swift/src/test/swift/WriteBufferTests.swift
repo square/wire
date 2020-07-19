@@ -5,10 +5,10 @@
 import XCTest
 @testable import Wire
 
-final class BufferTests: XCTestCase {
+final class WriteBufferTests: XCTestCase {
 
     func testInsertAtBeginning() {
-        let buffer = Buffer()
+        let buffer = WriteBuffer()
         buffer.append(Data(hexEncoded: "2233")!)
 
         buffer.insert(count: 2, at: 0)
@@ -22,7 +22,7 @@ final class BufferTests: XCTestCase {
     }
 
     func testRemoveAtBeginning() {
-        let buffer = Buffer()
+        let buffer = WriteBuffer()
         buffer.append(Data(hexEncoded: "0011")!)
 
         buffer.remove(count: 2, at: 0)

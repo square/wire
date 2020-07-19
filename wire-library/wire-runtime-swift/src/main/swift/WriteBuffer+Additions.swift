@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension Buffer {
+extension WriteBuffer {
 
     // MARK: - Writing
 
