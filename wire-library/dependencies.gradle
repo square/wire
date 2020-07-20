@@ -78,7 +78,7 @@ ext.deps = [
     ],
     'serialization': 'org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0',
   ],
-  'kaml': 'com.charleskorn.kaml:kaml:0.17.0',
+  'kaml': 'com.charleskorn.kaml:kaml:0.18.1',
   'misk': "com.squareup.misk:misk:0.11.0",
   'moshi': "com.squareup.moshi:moshi:${versions.moshi}",
   'moshiKotlin': "com.squareup.moshi:moshi-kotlin:${versions.moshi}",
