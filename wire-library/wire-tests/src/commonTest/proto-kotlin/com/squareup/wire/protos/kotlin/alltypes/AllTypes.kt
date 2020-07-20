@@ -2309,6 +2309,8 @@ class AllTypes(
   enum class NestedEnum(
     override val value: Int
   ) : WireEnum {
+    UNKNOWN(0),
+
     A(1);
 
     companion object {
@@ -2322,6 +2324,7 @@ class AllTypes(
 
       @JvmStatic
       fun fromValue(value: Int): NestedEnum? = when (value) {
+        0 -> UNKNOWN
         1 -> A
         else -> null
       }

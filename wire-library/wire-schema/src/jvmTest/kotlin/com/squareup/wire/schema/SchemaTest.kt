@@ -2010,4 +2010,55 @@ class SchemaTest {
       )
     }
   }
+
+  @Test
+  fun missingZeroTagAtFirstPositionInMapValue() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  map<int32, Enum> map = 1;
+               |}
+               |enum Enum {
+               |  ONE = 1;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |enum value in map must define 0 as the first value
+            |  for field map (/source/message.proto:2:3)
+            |  in message Message (/source/message.proto:1:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun zeroNotFirstConstantInMapValue() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+               |message Message {
+               |  map<int32, Enum> map = 1;
+               |}
+               |enum Enum {
+               |  ONE = 1;
+               |  ZERO = 0;
+               |}
+               """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |enum value in map must define 0 as the first value
+            |  for field map (/source/message.proto:2:3)
+            |  in message Message (/source/message.proto:1:1)
+            """.trimMargin()
+      )
+    }
+  }
 }

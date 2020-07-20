@@ -23,6 +23,7 @@ message AllTypes {
   extensions 1001 to 1217;
 
   enum NestedEnum {
+    UNKNOWN = 0;
     A = 1;
   }
 

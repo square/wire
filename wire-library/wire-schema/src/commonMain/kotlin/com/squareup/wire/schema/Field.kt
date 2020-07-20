@@ -128,6 +128,12 @@ class Field private constructor(
     if (default != null && !syntaxRules.allowUserDefinedDefaultValue()) {
       linker.addError("user-defined default values are not permitted [proto3]")
     }
+    if (type!!.isMap) {
+      val valueType = linker.get(type!!.valueType!!)
+      if (valueType is EnumType && valueType.constants[0].tag != 0) {
+        linker.addError("enum value in map must define 0 as the first value")
+      }
+    }
     linker.validateImport(location, type!!)
   }
 
