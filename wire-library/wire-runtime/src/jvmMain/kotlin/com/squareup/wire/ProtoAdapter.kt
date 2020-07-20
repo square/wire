@@ -50,9 +50,13 @@ actual abstract class ProtoAdapter<E> actual constructor(
   constructor(fieldEncoding: FieldEncoding, type: KClass<*>?) :
       this(fieldEncoding, type, null, Syntax.PROTO_2)
 
-  // Obsolete; for Kotlin classes generated before syntax was added.
+  // Obsolete; for Java classes generated before syntax was added.
   constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?) :
       this(fieldEncoding, type.kotlin, typeUrl, Syntax.PROTO_2)
+
+  // Obsolete; for Kotlin classes generated before syntax was added.
+  constructor(fieldEncoding: FieldEncoding, type: KClass<*>?, typeUrl: String?) :
+      this(fieldEncoding, type, typeUrl, Syntax.PROTO_2)
 
   constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?, syntax: Syntax) :
       this(fieldEncoding, type.kotlin, typeUrl, syntax)
