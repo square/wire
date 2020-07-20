@@ -27,7 +27,23 @@ data class Manifest(
   val compilationUnits: Map<String, Module>,
   val dependencyGraph: ImmutableGraph<String>
 ) {
+  @Serializable
+  data class Module(
+    val dependencies: Set<String> = emptySet(),
+    val includes: Set<String> = setOf("*"),
+    val excludes: Set<String> = emptySet()
+  )
+
   companion object {
+    @JvmStatic
+    val NONE = Manifest(
+        compilationUnits = mapOf("./" to Module()),
+        dependencyGraph = GraphBuilder.directed()
+            .immutable<String>()
+            .addNode("./")
+            .build()
+    )
+
     private val serializer = MapSerializer(String.serializer(), Module.serializer())
 
     fun fromYaml(string: String): Manifest {
@@ -50,10 +66,3 @@ data class Manifest(
     }
   }
 }
-
-@Serializable
-data class Module(
-  val dependencies: Set<String> = emptySet(),
-  val includes: Set<String> = setOf("*"),
-  val excludes: Set<String> = emptySet()
-)

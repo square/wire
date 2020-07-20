@@ -15,15 +15,12 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.graph.GraphBuilder
-import com.google.common.graph.ImmutableGraph
 import com.google.common.graph.Traverser
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.Manifest
-import com.squareup.wire.Module
 import com.squareup.wire.WireCompiler
 import com.squareup.wire.WireLogger
 import com.squareup.wire.java.JavaGenerator
@@ -309,7 +306,7 @@ data class SwiftTarget(
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
   val outDirectory: String,
-  val manifest: Manifest? = null,
+  val manifest: Manifest,
   val debug: Boolean = false
 ) : Target() {
   override fun newHandler(
@@ -319,36 +316,24 @@ data class SwiftTarget(
     newProfileLoader: NewProfileLoader
   ): SchemaHandler {
     val outputRoot = fs.getPath(outDirectory)
-    Files.createDirectories(outputRoot)
-
-    // Synthesize an empty manifest that includes everything if none present.
-    val manifest = manifest ?: Manifest(
-        compilationUnits = mapOf("./" to Module()),
-        dependencyGraph = GraphBuilder.directed()
-            .immutable<String>()
-            .addNode("./")
-            .build()
-    )
+    val (compilationUnits, dependencyGraph) = manifest
 
     // Find modules with no dependencies and walk the graph along their incoming edges to create
     // the module generation order. This allows us to view each module as a superset of its
     // dependencies and then simply omit types which were already generated in those dependencies.
-    val orderedModules = manifest.dependencyGraph.let { graph ->
-      val roots = graph.nodes().filter { graph.predecessors(it).isEmpty() }
-      val ordered = Traverser.forGraph(graph).breadthFirst(roots).toList()
-      if (debug) {
-        println("Modules: ${manifest.compilationUnits.keys}")
-        println("Roots: $roots")
-        println("Order: $ordered")
-      }
-      ordered
+    val roots = dependencyGraph.nodes().filter { dependencyGraph.predecessors(it).isEmpty() }
+    val orderedModules = Traverser.forGraph(dependencyGraph).breadthFirst(roots).toList()
+    if (debug) {
+      println("Modules: ${compilationUnits.keys}")
+      println("Roots: $roots")
+      println("Order: $orderedModules")
     }
 
     val typeHandlers = mutableMapOf<ProtoType, ModuleSchemaHandler>()
     val typeModuleNames = mutableMapOf<ProtoType, String>()
     val pruningRules = PruningRules.Builder()
     for (moduleName in orderedModules) {
-      val compilationUnit = manifest.compilationUnits.getValue(moduleName)
+      val compilationUnit = compilationUnits.getValue(moduleName)
 
       val destination = outputRoot.resolve(moduleName)
       Files.createDirectories(destination) // TODO upstream to SwiftPoet's writeTo.

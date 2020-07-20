@@ -97,7 +97,7 @@ class WireCompiler internal constructor(
   val sourceFileNames: List<String>,
   val treeShakingRoots: List<String>,
   val treeShakingRubbish: List<String>,
-  val manifest: Manifest?,
+  val manifest: Manifest,
   val dryRun: Boolean,
   val namedFilesOnly: Boolean,
   val emitAndroid: Boolean,
@@ -238,7 +238,7 @@ class WireCompiler internal constructor(
       val treeShakingRoots = mutableListOf<String>()
       val treeShakingRubbish = mutableListOf<String>()
       val protoPaths = mutableListOf<String>()
-      var manifest: Manifest? = null
+      var manifest = Manifest.NONE
       var javaOut: String? = null
       var kotlinOut: String? = null
       var swiftOut: String? = null
