@@ -53,6 +53,14 @@ extension ReadBuffer {
 
     // MARK: - Reading
 
+    func readBuffer(count: Int) throws -> UnsafeRawBufferPointer {
+        try verifyAdditional(count: count)
+        let buffer = UnsafeRawBufferPointer(start: pointer, count: count)
+        pointer = pointer.advanced(by: count)
+
+        return buffer
+    }
+
     func readData(count: Int) throws -> Data {
         try verifyAdditional(count: count)
         let data = Data(bytes: pointer, count: count)

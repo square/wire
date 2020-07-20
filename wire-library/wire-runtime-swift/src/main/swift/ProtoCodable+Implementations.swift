@@ -94,21 +94,36 @@ extension String : ProtoCodable {
 
     /** Reads a `string` field value from the stream. */
     public init(from reader: ProtoReader) throws {
-        let data = try reader.readData()
-        guard let string = String(data: data, encoding: .utf8) else {
-            throw ProtoDecoder.Error.invalidUTF8StringData(data)
+        // Credit to the SwiftProtobuf project for this implementation.
+        let buffer = try reader.readBuffer()
+        var parser = Unicode.UTF8.ForwardParser()
+
+        // Verify that the UTF-8 is valid.
+        var iterator = buffer.makeIterator()
+        loop: while true {
+            switch parser.parseScalar(from: &iterator) {
+            case .valid:
+                break
+            case .error:
+                throw ProtoDecoder.Error.invalidUTF8StringData(Data(buffer))
+            case .emptyInput:
+                break loop
+            }
         }
-        self = string
+
+        // This initializer is fast but does not reject broken
+        // UTF-8 (which is why we validate the UTF-8 above).
+        self = String(decoding: buffer, as: Unicode.UTF8.self)
     }
 
     // MARK: - ProtoEncodable
 
     /** Encode a `string` field */
     public func encode(to writer: ProtoWriter) throws {
-        guard let stringData = data(using: .utf8) else {
-            throw ProtoEncoder.Error.stringNotConvertibleToUTF8(self)
+        var copy = self
+        copy.withUTF8 {
+            writer.write(UnsafeRawBufferPointer($0))
         }
-        writer.write(stringData)
     }
 
 }

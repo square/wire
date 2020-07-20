@@ -319,6 +319,15 @@ public final class ProtoReader {
 
     // MARK: - Internal Methods - Reading Primitives
 
+    func readBuffer() throws -> UnsafeRawBufferPointer {
+        guard case let .lengthDelimited(length) = state else {
+            fatalError("Decoding field as length delimited when key was not LENGTH_DELIMITED")
+        }
+        state = .tag
+
+        return try buffer.readBuffer(count: length)
+    }
+
     /** Reads a `bytes` field value from the stream. The length is read from the stream prior to the actual data. */
     func readData() throws -> Data {
         guard case let .lengthDelimited(length) = state else {
