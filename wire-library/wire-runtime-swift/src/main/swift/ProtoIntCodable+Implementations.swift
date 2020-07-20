@@ -31,7 +31,7 @@ extension Int32: ProtoIntCodable {
         switch encoding {
         case .fixed:
             // sfixed32 fields
-            writer.writeFixed32(UInt32(bitPattern: self))
+            writer.writeFixed32(self)
         case .signed:
             // sint32 fields
             writer.writeVarint(zigZagEncoded())
@@ -107,7 +107,7 @@ extension Int64: ProtoIntCodable {
         switch encoding {
         case .fixed:
             // sfixed64 fields
-            writer.writeFixed64(UInt64(bitPattern: self))
+            writer.writeFixed64(self)
         case .signed:
             // sint64 fields
             writer.writeVarint(zigZagEncoded())

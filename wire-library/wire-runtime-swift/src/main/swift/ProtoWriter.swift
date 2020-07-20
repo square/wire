@@ -215,6 +215,14 @@ public final class ProtoWriter {
         self.buffer.append(buffer)
     }
 
+    func writeFixed32(_ value: Int32) {
+        withUnsafeBytes(of: value.littleEndian) { buffer.append($0) }
+    }
+
+    func writeFixed64(_ value: Int64) {
+        withUnsafeBytes(of: value.littleEndian) { buffer.append($0) }
+    }
+
     /** Write a little-endian 32-bit integer.  */
     func writeFixed32(_ value: UInt32) {
         withUnsafeBytes(of: value.littleEndian) { buffer.append($0) }

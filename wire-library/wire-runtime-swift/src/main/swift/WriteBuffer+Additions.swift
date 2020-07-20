@@ -22,22 +22,13 @@ extension WriteBuffer {
         var index = index
         var value = value
 
-        while (value & ~0x7f) != 0 {
+        while value > 0x7f {
             let byte = UInt8((value & 0x7f) | 0x80)
-            if index < count {
-                set(byte, at: index)
-            } else {
-                append(byte)
-            }
+            set(byte, at: index)
             index += 1
             value = value >> 7
         }
-        let byte = UInt8(bitPattern: Int8(value))
-        if index < count {
-            set(byte, at: index)
-        } else {
-            append(byte)
-        }
+        set(UInt8(value), at: index)
     }
 
 }

@@ -474,7 +474,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testWriteFixed32() {
         let writer = ProtoWriter()
-        writer.writeFixed32(5)
+        writer.writeFixed32(UInt32(5))
         XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "05000000"))
 
         writer.writeFixed32(UInt32.max)
@@ -483,7 +483,7 @@ final class ProtoWriterTests: XCTestCase {
 
     func testWriteFixed64() {
         let writer = ProtoWriter()
-        writer.writeFixed64(5)
+        writer.writeFixed64(UInt64(5))
         XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "0500000000000000"))
 
         writer.writeFixed64(UInt64.max)
