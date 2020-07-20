@@ -366,7 +366,7 @@ data class SwiftTarget(
         println("  Schema:")
         println("   - original: ${schema.stats()}")
         println("   - pruned: ${moduleSchema.stats()}")
-        println("  Existing: ${typeModuleNames.toMap().size} proto types")
+        println("  Existing: ${typeModuleNames.size} proto types")
         println("  Content:")
       }
       for (protoFile in moduleSchema.protoFiles) {
