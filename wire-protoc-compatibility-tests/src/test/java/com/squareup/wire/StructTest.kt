@@ -352,11 +352,9 @@ class StructTest {
     val json = """{
       |  "struct": {"a": 1.0},
       |  "list": ["a", 3.0],
-      |  "nullValue": null,
       |  "valueA": "a",
       |  "valueB": 33.0,
       |  "valueC": true,
-      |  "valueD": null,
       |  "valueE": {"a": 1.0},
       |  "valueF": ["a", 3.0],
       |  "repStruct": [],
@@ -416,7 +414,6 @@ class StructTest {
       |}""".trimMargin()
     // Protoc doesn't print those unless explicitly set.
     val moshiJson = """{
-      |  "nullValue": null,
       |  "repStruct": [],
       |  "repList": [],
       |  "repValueA": [],
@@ -427,7 +424,13 @@ class StructTest {
       |  "mapInt32NullValue": {},
       |  "oneofStruct": null,
       |  "oneofList": null,
-      |${protocJson.substring(1)}""".trimMargin()
+      |  "struct": {"a": null},
+      |  "list": [],
+      |  "valueA": {"a": ["b", 2.0, {"c": false}]},
+      |  "valueB": [{"d": null, "e": "trois"}],
+      |  "valueC": [],
+      |  "valueD": {}
+      |}""".trimMargin()
 
     val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
         .setStruct(mapOf("a" to null).toStruct())
