@@ -71,16 +71,23 @@ import com.squareup.wire.schema.SemVer.Companion.toLowerCaseSemVer
  * clients. Such code will have both the `age` and `birth_date` fields.
  */
 class PruningRules private constructor(builder: Builder) {
-  private val roots = builder.roots.toSet()
-  private val prunes = builder.prunes.toSet()
-  private val since = builder.since
-  private val until = builder.until
-  private val only = builder.only
+  val roots = builder.roots.toSet()
+  val prunes = builder.prunes.toSet()
+
+  private val _since = builder.since
+  val since get() = _since?.version
+
+  private val _until = builder.until
+  val until get() = _until?.version
+
+  private val _only = builder.only
+  val only get() = _only?.version
+
   private val usedRoots = mutableSetOf<String>()
   private val usedPrunes = mutableSetOf<String>()
 
   val isEmpty: Boolean
-    get() = roots.isEmpty() && prunes.isEmpty() && since == null && until == null && only == null
+    get() = roots.isEmpty() && prunes.isEmpty() && _since == null && _until == null && _only == null
 
   /** Returns true unless [options] specifies a version that is outside of the configured range. */
   fun isFieldRetainedVersion(options: Options) =
@@ -95,17 +102,17 @@ class PruningRules private constructor(builder: Builder) {
     sinceMember: ProtoMember,
     untilMember: ProtoMember
   ): Boolean {
-    if (until != null || only != null) {
+    if (_until != null || _only != null) {
       val sinceOption = options.get(sinceMember)
       val since = (sinceOption as? String)?.toLowerCaseSemVer()
-      if (until != null && since != null && since >= until ||
-          only != null && since != null && since > only) {
+      if (_until != null && since != null && since >= _until ||
+          _only != null && since != null && since > _only) {
         return false
       }
     }
 
-    if (since != null || only != null) {
-      val lowerBound = since ?: only!!
+    if (_since != null || _only != null) {
+      val lowerBound = _since ?: _only!!
       val untilOption = options.get(untilMember)
       val until = (untilOption as? String)?.toLowerCaseSemVer()
       if (until != null && until <= lowerBound) return false
