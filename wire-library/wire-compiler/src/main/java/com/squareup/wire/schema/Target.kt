@@ -329,22 +329,43 @@ data class SwiftTarget(
       println("Order: $orderedModules")
     }
 
-    val typeHandlers = mutableMapOf<ProtoType, ModuleSchemaHandler>()
-    val typeModuleNames = mutableMapOf<ProtoType, String>()
-    val pruningRules = PruningRules.Builder()
+    // TODO this means you cannot generate the same type in two unrelated modules! fix!
+    val typeHandlers = mutableMapOf<ProtoType, SchemaHandler>()
+
+    /** Module name to combined pruning rules in the module and its transitive dependencies. */
+    val modulePruningRules = mutableMapOf<String, PruningRules>()
+
+    /** Module name to combined map of types in the module and its transitive dependencies. */
+    val moduleExistingTypes = mutableMapOf<String, Map<ProtoType, String>>()
+
     for (moduleName in orderedModules) {
       val compilationUnit = compilationUnits.getValue(moduleName)
 
       val destination = outputRoot.resolve(moduleName)
       Files.createDirectories(destination) // TODO upstream to SwiftPoet's writeTo.
 
-      // Add our roots and prunes which creates a superset of all previously-generated modules.
-      pruningRules.addRoot(compilationUnit.includes)
-      // TODO(jw): what do we do about excludes that apply to types in an upstream module? fail?
-      pruningRules.prune(compilationUnit.excludes)
+      val pruningRules = PruningRules.Builder()
+          .apply {
+            for (dependency in dependencyGraph.successors(moduleName)) {
+              val dependencyRules = modulePruningRules.getValue(dependency)
+              addRoot(dependencyRules.roots)
+              prune(dependencyRules.prunes)
+            }
+            addRoot(compilationUnit.includes)
+            // TODO(jw): what do we do about excludes that apply to types in an upstream module? fail?
+            prune(compilationUnit.excludes)
+          }
+          .build()
+      modulePruningRules[moduleName] = pruningRules
 
-      val moduleSchema = schema.prune(pruningRules.build())
-      val generator = SwiftGenerator(moduleSchema, typeModuleNames.toMap())
+      val existingTypesToModuleName = mutableMapOf<ProtoType, String>().apply {
+        for (dependency in dependencyGraph.successors(moduleName)) {
+          putAll(moduleExistingTypes.getValue(dependency))
+        }
+      }
+
+      val moduleSchema = schema.prune(pruningRules)
+      val generator = SwiftGenerator(moduleSchema, existingTypesToModuleName)
       val moduleGenerator = ModuleSchemaHandler(generator, destination, logger)
 
       if (debug) {
@@ -366,30 +387,32 @@ data class SwiftTarget(
         println("  Schema:")
         println("   - original: ${schema.stats()}")
         println("   - pruned: ${moduleSchema.stats()}")
-        println("  Existing: ${typeModuleNames.size} proto types")
+        println("  Existing: ${existingTypesToModuleName.size} proto types")
         println("  Content:")
       }
       for (protoFile in moduleSchema.protoFiles) {
         for (type in protoFile.typesAndNestedTypes()) {
           val protoType = type.type
-          if (protoType !in typeModuleNames) {
+          if (protoType !in existingTypesToModuleName) {
             if (debug) {
               println("   - type: $protoType")
             }
-            typeModuleNames[protoType] = moduleName
+            existingTypesToModuleName[protoType] = moduleName
             typeHandlers[protoType] = moduleGenerator
           }
         }
         for (service in protoFile.services) {
           val protoType = service.type()
-          if (protoType !in typeModuleNames) {
+          if (protoType !in existingTypesToModuleName) {
             if (debug) {
               println("   - service: $protoType")
             }
-            typeModuleNames[protoType] = moduleName
+            existingTypesToModuleName[protoType] = moduleName
             typeHandlers[protoType] = moduleGenerator
           }
         }
+
+        moduleExistingTypes[moduleName] = existingTypesToModuleName.toMap()
       }
     }
 
