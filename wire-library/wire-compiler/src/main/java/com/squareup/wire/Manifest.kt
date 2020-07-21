@@ -18,14 +18,14 @@ package com.squareup.wire
 import com.charleskorn.kaml.Yaml
 import com.google.common.graph.GraphBuilder
 import com.google.common.graph.Graphs
-import com.google.common.graph.ImmutableGraph
+import com.google.common.graph.Traverser
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 
 data class Manifest(
   val compilationUnits: Map<String, Module>,
-  val dependencyGraph: ImmutableGraph<String>
+  val order: List<String>
 ) {
   @Serializable
   data class Module(
@@ -38,10 +38,7 @@ data class Manifest(
     @JvmStatic
     val NONE = Manifest(
         compilationUnits = mapOf("./" to Module()),
-        dependencyGraph = GraphBuilder.directed()
-            .immutable<String>()
-            .addNode("./")
-            .build()
+        order = listOf("./")
     )
 
     private val serializer = MapSerializer(String.serializer(), Module.serializer())
@@ -62,7 +59,10 @@ data class Manifest(
         }
       }
 
-      return Manifest(map, ImmutableGraph.copyOf(dependencyGraph))
+      val roots = dependencyGraph.nodes().filter { dependencyGraph.predecessors(it).isEmpty() }
+      val order = Traverser.forGraph(dependencyGraph).breadthFirst(roots).toList()
+
+      return Manifest(map, order)
     }
   }
 }

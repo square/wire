@@ -316,16 +316,10 @@ data class SwiftTarget(
     newProfileLoader: NewProfileLoader
   ): SchemaHandler {
     val outputRoot = fs.getPath(outDirectory)
-    val (compilationUnits, dependencyGraph) = manifest
+    val (compilationUnits, orderedModules) = manifest
 
-    // Find modules with no dependencies and walk the graph along their incoming edges to create
-    // the module generation order. This allows us to view each module as a superset of its
-    // dependencies and then simply omit types which were already generated in those dependencies.
-    val roots = dependencyGraph.nodes().filter { dependencyGraph.predecessors(it).isEmpty() }
-    val orderedModules = Traverser.forGraph(dependencyGraph).breadthFirst(roots).toList()
     if (debug) {
       println("Modules: ${compilationUnits.keys}")
-      println("Roots: $roots")
       println("Order: $orderedModules")
     }
 
@@ -346,7 +340,7 @@ data class SwiftTarget(
 
       val pruningRules = PruningRules.Builder()
           .apply {
-            for (dependency in dependencyGraph.successors(moduleName)) {
+            for (dependency in compilationUnit.dependencies) {
               val dependencyRules = modulePruningRules.getValue(dependency)
               addRoot(dependencyRules.roots)
               prune(dependencyRules.prunes)
@@ -359,7 +353,7 @@ data class SwiftTarget(
       modulePruningRules[moduleName] = pruningRules
 
       val existingTypesToModuleName = mutableMapOf<ProtoType, String>().apply {
-        for (dependency in dependencyGraph.successors(moduleName)) {
+        for (dependency in compilationUnit.dependencies) {
           putAll(moduleExistingTypes.getValue(dependency))
         }
       }
