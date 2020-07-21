@@ -20,6 +20,7 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
+import io.grpc.Status
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -753,7 +754,7 @@ class GrpcClientTest {
         grpcCall.execute(Point(latitude = 5, longitude = 6))
         fail()
       } catch (expected: IOException) {
-        assertThat(expected).hasMessage("unexpected or absent grpc-status: null")
+        assertThat(expected).hasMessage("grpc failed status=200, grpc-status=null, grpc-message=null")
       }
     }
   }
@@ -772,7 +773,7 @@ class GrpcClientTest {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
     } catch (expected: IOException) {
-      assertThat(expected).hasMessage("unexpected or absent grpc-status: null")
+      assertThat(expected).hasMessage("grpc failed status=200, grpc-status=null, grpc-message=null")
     }
   }
 
@@ -790,7 +791,7 @@ class GrpcClientTest {
     grpcCall.enqueue(Point(latitude = 5, longitude = 6),
         object : GrpcCall.Callback<Point, Feature> {
           override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
-            assertThat(exception).hasMessage("unexpected or absent grpc-status: null")
+            assertThat(exception).hasMessage("grpc failed status=200, grpc-status=null, grpc-message=null")
             latch.countDown()
           }
 
@@ -904,7 +905,24 @@ class GrpcClientTest {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
     } catch (expected: IOException) {
-      assertThat(expected).hasMessage("grpc failed: status=200, grpc-status=2")
+      assertThat(expected).hasMessage("grpc failed status=200, grpc-status=2, grpc-message=null")
+    }
+  }
+
+  @Test
+  fun requestEarlyFailureWithDescription() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendError(Status.INTERNAL.withDescription("boom").asRuntimeException())
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage("grpc failed status=200, grpc-status=13, grpc-message=boom")
     }
   }
 
