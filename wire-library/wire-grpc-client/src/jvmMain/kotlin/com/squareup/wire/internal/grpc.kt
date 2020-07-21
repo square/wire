@@ -95,7 +95,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
               send(message)
             }
 
-            close(response.grpcStatusToException())
+            close(response.grpcResponseToException())
           }
         }
       }
@@ -140,12 +140,8 @@ internal fun <R : Any> GrpcResponse.messageSource(
   return GrpcMessageSource(responseSource, protoAdapter, grpcEncoding)
 }
 
+/** Returns an exception if the response does not follow the protocol. */
 private fun GrpcResponse.checkGrpcResponse() {
-  val grpcStatus = headers["grpc-status"]
-  if (grpcStatus != null && grpcStatus != "0") {
-    throw IOException("grpc failed: status=${code}, grpc-status=$grpcStatus")
-  }
-
   val contentType = body!!.contentType()
   if (code != 200 ||
       contentType == null ||
@@ -155,14 +151,17 @@ private fun GrpcResponse.checkGrpcResponse() {
   }
 }
 
-/** Maps the response trailer to either success (null) or an exception. */
-internal fun GrpcResponse.grpcStatusToException(): IOException? {
+/** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
+internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = null): IOException? {
   val grpcStatus = trailers().get("grpc-status") ?: header("grpc-status")
   return when (grpcStatus) {
-    "0" -> null
+    "0" -> {
+      suppressed
+    }
     else -> {
       // also see https://github.com/grpc/grpc-go/blob/master/codes/codes.go#L31
-      IOException("unexpected or absent grpc-status: $grpcStatus")
+      val grpcMessage = trailers().get("grpc-message") ?: header("grpc-message")
+      IOException("grpc failed status=${code}, grpc-status=$grpcStatus, grpc-message=$grpcMessage", suppressed)
     }
   }
 }

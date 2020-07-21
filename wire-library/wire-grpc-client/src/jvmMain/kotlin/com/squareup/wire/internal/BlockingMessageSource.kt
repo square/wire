@@ -73,7 +73,7 @@ internal class BlockingMessageSource<R : Any>(
                 queue.put(message)
               }
 
-              val exception = response.grpcStatusToException()
+              val exception = response.grpcResponseToException()
               if (exception != null) throw exception
             }
           }
