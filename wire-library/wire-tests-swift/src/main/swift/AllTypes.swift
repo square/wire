@@ -8,12 +8,12 @@ public struct AllTypes : Equatable {
     public var opt_int32: Int32?
     public var opt_uint32: UInt32?
     public var opt_sint32: Int32?
-    public var opt_fixed32: Int32?
+    public var opt_fixed32: UInt32?
     public var opt_sfixed32: Int32?
     public var opt_int64: Int64?
     public var opt_uint64: UInt64?
     public var opt_sint64: Int64?
-    public var opt_fixed64: Int64?
+    public var opt_fixed64: UInt64?
     public var opt_sfixed64: Int64?
     public var opt_bool: Bool?
     public var opt_float: Float?
@@ -25,7 +25,7 @@ public struct AllTypes : Equatable {
     public var req_int32: Int32
     public var req_uint32: UInt32
     public var req_sint32: Int32
-    public var req_fixed32: Int32
+    public var req_fixed32: UInt32
     public var req_sfixed32: Int32
     @JSONString
     public var req_int64: Int64
@@ -34,7 +34,7 @@ public struct AllTypes : Equatable {
     @JSONString
     public var req_sint64: Int64
     @JSONString
-    public var req_fixed64: Int64
+    public var req_fixed64: UInt64
     @JSONString
     public var req_sfixed64: Int64
     public var req_bool: Bool
@@ -47,7 +47,7 @@ public struct AllTypes : Equatable {
     public var rep_int32: [Int32]
     public var rep_uint32: [UInt32]
     public var rep_sint32: [Int32]
-    public var rep_fixed32: [Int32]
+    public var rep_fixed32: [UInt32]
     public var rep_sfixed32: [Int32]
     @JSONString
     public var rep_int64: [Int64]
@@ -56,7 +56,7 @@ public struct AllTypes : Equatable {
     @JSONString
     public var rep_sint64: [Int64]
     @JSONString
-    public var rep_fixed64: [Int64]
+    public var rep_fixed64: [UInt64]
     @JSONString
     public var rep_sfixed64: [Int64]
     public var rep_bool: [Bool]
@@ -69,7 +69,7 @@ public struct AllTypes : Equatable {
     public var pack_int32: [Int32]
     public var pack_uint32: [UInt32]
     public var pack_sint32: [Int32]
-    public var pack_fixed32: [Int32]
+    public var pack_fixed32: [UInt32]
     public var pack_sfixed32: [Int32]
     @JSONString
     public var pack_int64: [Int64]
@@ -78,7 +78,7 @@ public struct AllTypes : Equatable {
     @JSONString
     public var pack_sint64: [Int64]
     @JSONString
-    public var pack_fixed64: [Int64]
+    public var pack_fixed64: [UInt64]
     @JSONString
     public var pack_sfixed64: [Int64]
     public var pack_bool: [Bool]
@@ -88,12 +88,12 @@ public struct AllTypes : Equatable {
     public var default_int32: Int32?
     public var default_uint32: UInt32?
     public var default_sint32: Int32?
-    public var default_fixed32: Int32?
+    public var default_fixed32: UInt32?
     public var default_sfixed32: Int32?
     public var default_int64: Int64?
     public var default_uint64: UInt64?
     public var default_sint64: Int64?
-    public var default_fixed64: Int64?
+    public var default_fixed64: UInt64?
     public var default_sfixed64: Int64?
     public var default_bool: Bool?
     public var default_float: Float?
@@ -108,12 +108,12 @@ public struct AllTypes : Equatable {
     public var ext_opt_int32: Int32?
     public var ext_opt_uint32: UInt32?
     public var ext_opt_sint32: Int32?
-    public var ext_opt_fixed32: Int32?
+    public var ext_opt_fixed32: UInt32?
     public var ext_opt_sfixed32: Int32?
     public var ext_opt_int64: Int64?
     public var ext_opt_uint64: UInt64?
     public var ext_opt_sint64: Int64?
-    public var ext_opt_fixed64: Int64?
+    public var ext_opt_fixed64: UInt64?
     public var ext_opt_sfixed64: Int64?
     public var ext_opt_bool: Bool?
     public var ext_opt_float: Float?
@@ -125,7 +125,7 @@ public struct AllTypes : Equatable {
     public var ext_rep_int32: [Int32]
     public var ext_rep_uint32: [UInt32]
     public var ext_rep_sint32: [Int32]
-    public var ext_rep_fixed32: [Int32]
+    public var ext_rep_fixed32: [UInt32]
     public var ext_rep_sfixed32: [Int32]
     @JSONString
     public var ext_rep_int64: [Int64]
@@ -134,7 +134,7 @@ public struct AllTypes : Equatable {
     @JSONString
     public var ext_rep_sint64: [Int64]
     @JSONString
-    public var ext_rep_fixed64: [Int64]
+    public var ext_rep_fixed64: [UInt64]
     @JSONString
     public var ext_rep_sfixed64: [Int64]
     public var ext_rep_bool: [Bool]
@@ -147,7 +147,7 @@ public struct AllTypes : Equatable {
     public var ext_pack_int32: [Int32]
     public var ext_pack_uint32: [UInt32]
     public var ext_pack_sint32: [Int32]
-    public var ext_pack_fixed32: [Int32]
+    public var ext_pack_fixed32: [UInt32]
     public var ext_pack_sfixed32: [Int32]
     @JSONString
     public var ext_pack_int64: [Int64]
@@ -156,7 +156,7 @@ public struct AllTypes : Equatable {
     @JSONString
     public var ext_pack_sint64: [Int64]
     @JSONString
-    public var ext_pack_fixed64: [Int64]
+    public var ext_pack_fixed64: [UInt64]
     @JSONString
     public var ext_pack_sfixed64: [Int64]
     public var ext_pack_bool: [Bool]
@@ -173,12 +173,12 @@ public struct AllTypes : Equatable {
         opt_int32: Int32? = nil,
         opt_uint32: UInt32? = nil,
         opt_sint32: Int32? = nil,
-        opt_fixed32: Int32? = nil,
+        opt_fixed32: UInt32? = nil,
         opt_sfixed32: Int32? = nil,
         opt_int64: Int64? = nil,
         opt_uint64: UInt64? = nil,
         opt_sint64: Int64? = nil,
-        opt_fixed64: Int64? = nil,
+        opt_fixed64: UInt64? = nil,
         opt_sfixed64: Int64? = nil,
         opt_bool: Bool? = nil,
         opt_float: Float? = nil,
@@ -190,12 +190,12 @@ public struct AllTypes : Equatable {
         req_int32: Int32,
         req_uint32: UInt32,
         req_sint32: Int32,
-        req_fixed32: Int32,
+        req_fixed32: UInt32,
         req_sfixed32: Int32,
         req_int64: Int64,
         req_uint64: UInt64,
         req_sint64: Int64,
-        req_fixed64: Int64,
+        req_fixed64: UInt64,
         req_sfixed64: Int64,
         req_bool: Bool,
         req_float: Float,
@@ -207,12 +207,12 @@ public struct AllTypes : Equatable {
         rep_int32: [Int32] = [],
         rep_uint32: [UInt32] = [],
         rep_sint32: [Int32] = [],
-        rep_fixed32: [Int32] = [],
+        rep_fixed32: [UInt32] = [],
         rep_sfixed32: [Int32] = [],
         rep_int64: [Int64] = [],
         rep_uint64: [UInt64] = [],
         rep_sint64: [Int64] = [],
-        rep_fixed64: [Int64] = [],
+        rep_fixed64: [UInt64] = [],
         rep_sfixed64: [Int64] = [],
         rep_bool: [Bool] = [],
         rep_float: [Float] = [],
@@ -224,12 +224,12 @@ public struct AllTypes : Equatable {
         pack_int32: [Int32] = [],
         pack_uint32: [UInt32] = [],
         pack_sint32: [Int32] = [],
-        pack_fixed32: [Int32] = [],
+        pack_fixed32: [UInt32] = [],
         pack_sfixed32: [Int32] = [],
         pack_int64: [Int64] = [],
         pack_uint64: [UInt64] = [],
         pack_sint64: [Int64] = [],
-        pack_fixed64: [Int64] = [],
+        pack_fixed64: [UInt64] = [],
         pack_sfixed64: [Int64] = [],
         pack_bool: [Bool] = [],
         pack_float: [Float] = [],
@@ -238,12 +238,12 @@ public struct AllTypes : Equatable {
         default_int32: Int32? = nil,
         default_uint32: UInt32? = nil,
         default_sint32: Int32? = nil,
-        default_fixed32: Int32? = nil,
+        default_fixed32: UInt32? = nil,
         default_sfixed32: Int32? = nil,
         default_int64: Int64? = nil,
         default_uint64: UInt64? = nil,
         default_sint64: Int64? = nil,
-        default_fixed64: Int64? = nil,
+        default_fixed64: UInt64? = nil,
         default_sfixed64: Int64? = nil,
         default_bool: Bool? = nil,
         default_float: Float? = nil,
@@ -258,12 +258,12 @@ public struct AllTypes : Equatable {
         ext_opt_int32: Int32? = nil,
         ext_opt_uint32: UInt32? = nil,
         ext_opt_sint32: Int32? = nil,
-        ext_opt_fixed32: Int32? = nil,
+        ext_opt_fixed32: UInt32? = nil,
         ext_opt_sfixed32: Int32? = nil,
         ext_opt_int64: Int64? = nil,
         ext_opt_uint64: UInt64? = nil,
         ext_opt_sint64: Int64? = nil,
-        ext_opt_fixed64: Int64? = nil,
+        ext_opt_fixed64: UInt64? = nil,
         ext_opt_sfixed64: Int64? = nil,
         ext_opt_bool: Bool? = nil,
         ext_opt_float: Float? = nil,
@@ -275,12 +275,12 @@ public struct AllTypes : Equatable {
         ext_rep_int32: [Int32] = [],
         ext_rep_uint32: [UInt32] = [],
         ext_rep_sint32: [Int32] = [],
-        ext_rep_fixed32: [Int32] = [],
+        ext_rep_fixed32: [UInt32] = [],
         ext_rep_sfixed32: [Int32] = [],
         ext_rep_int64: [Int64] = [],
         ext_rep_uint64: [UInt64] = [],
         ext_rep_sint64: [Int64] = [],
-        ext_rep_fixed64: [Int64] = [],
+        ext_rep_fixed64: [UInt64] = [],
         ext_rep_sfixed64: [Int64] = [],
         ext_rep_bool: [Bool] = [],
         ext_rep_float: [Float] = [],
@@ -292,12 +292,12 @@ public struct AllTypes : Equatable {
         ext_pack_int32: [Int32] = [],
         ext_pack_uint32: [UInt32] = [],
         ext_pack_sint32: [Int32] = [],
-        ext_pack_fixed32: [Int32] = [],
+        ext_pack_fixed32: [UInt32] = [],
         ext_pack_sfixed32: [Int32] = [],
         ext_pack_int64: [Int64] = [],
         ext_pack_uint64: [UInt64] = [],
         ext_pack_sint64: [Int64] = [],
-        ext_pack_fixed64: [Int64] = [],
+        ext_pack_fixed64: [UInt64] = [],
         ext_pack_sfixed64: [Int64] = [],
         ext_pack_bool: [Bool] = [],
         ext_pack_float: [Float] = [],
@@ -500,12 +500,12 @@ extension AllTypes : Proto2Codable {
         var opt_int32: Int32? = nil
         var opt_uint32: UInt32? = nil
         var opt_sint32: Int32? = nil
-        var opt_fixed32: Int32? = nil
+        var opt_fixed32: UInt32? = nil
         var opt_sfixed32: Int32? = nil
         var opt_int64: Int64? = nil
         var opt_uint64: UInt64? = nil
         var opt_sint64: Int64? = nil
-        var opt_fixed64: Int64? = nil
+        var opt_fixed64: UInt64? = nil
         var opt_sfixed64: Int64? = nil
         var opt_bool: Bool? = nil
         var opt_float: Float? = nil
@@ -517,12 +517,12 @@ extension AllTypes : Proto2Codable {
         var req_int32: Int32? = nil
         var req_uint32: UInt32? = nil
         var req_sint32: Int32? = nil
-        var req_fixed32: Int32? = nil
+        var req_fixed32: UInt32? = nil
         var req_sfixed32: Int32? = nil
         var req_int64: Int64? = nil
         var req_uint64: UInt64? = nil
         var req_sint64: Int64? = nil
-        var req_fixed64: Int64? = nil
+        var req_fixed64: UInt64? = nil
         var req_sfixed64: Int64? = nil
         var req_bool: Bool? = nil
         var req_float: Float? = nil
@@ -534,12 +534,12 @@ extension AllTypes : Proto2Codable {
         var rep_int32: [Int32] = []
         var rep_uint32: [UInt32] = []
         var rep_sint32: [Int32] = []
-        var rep_fixed32: [Int32] = []
+        var rep_fixed32: [UInt32] = []
         var rep_sfixed32: [Int32] = []
         var rep_int64: [Int64] = []
         var rep_uint64: [UInt64] = []
         var rep_sint64: [Int64] = []
-        var rep_fixed64: [Int64] = []
+        var rep_fixed64: [UInt64] = []
         var rep_sfixed64: [Int64] = []
         var rep_bool: [Bool] = []
         var rep_float: [Float] = []
@@ -551,12 +551,12 @@ extension AllTypes : Proto2Codable {
         var pack_int32: [Int32] = []
         var pack_uint32: [UInt32] = []
         var pack_sint32: [Int32] = []
-        var pack_fixed32: [Int32] = []
+        var pack_fixed32: [UInt32] = []
         var pack_sfixed32: [Int32] = []
         var pack_int64: [Int64] = []
         var pack_uint64: [UInt64] = []
         var pack_sint64: [Int64] = []
-        var pack_fixed64: [Int64] = []
+        var pack_fixed64: [UInt64] = []
         var pack_sfixed64: [Int64] = []
         var pack_bool: [Bool] = []
         var pack_float: [Float] = []
@@ -565,12 +565,12 @@ extension AllTypes : Proto2Codable {
         var default_int32: Int32? = nil
         var default_uint32: UInt32? = nil
         var default_sint32: Int32? = nil
-        var default_fixed32: Int32? = nil
+        var default_fixed32: UInt32? = nil
         var default_sfixed32: Int32? = nil
         var default_int64: Int64? = nil
         var default_uint64: UInt64? = nil
         var default_sint64: Int64? = nil
-        var default_fixed64: Int64? = nil
+        var default_fixed64: UInt64? = nil
         var default_sfixed64: Int64? = nil
         var default_bool: Bool? = nil
         var default_float: Float? = nil
@@ -585,12 +585,12 @@ extension AllTypes : Proto2Codable {
         var ext_opt_int32: Int32? = nil
         var ext_opt_uint32: UInt32? = nil
         var ext_opt_sint32: Int32? = nil
-        var ext_opt_fixed32: Int32? = nil
+        var ext_opt_fixed32: UInt32? = nil
         var ext_opt_sfixed32: Int32? = nil
         var ext_opt_int64: Int64? = nil
         var ext_opt_uint64: UInt64? = nil
         var ext_opt_sint64: Int64? = nil
-        var ext_opt_fixed64: Int64? = nil
+        var ext_opt_fixed64: UInt64? = nil
         var ext_opt_sfixed64: Int64? = nil
         var ext_opt_bool: Bool? = nil
         var ext_opt_float: Float? = nil
@@ -602,12 +602,12 @@ extension AllTypes : Proto2Codable {
         var ext_rep_int32: [Int32] = []
         var ext_rep_uint32: [UInt32] = []
         var ext_rep_sint32: [Int32] = []
-        var ext_rep_fixed32: [Int32] = []
+        var ext_rep_fixed32: [UInt32] = []
         var ext_rep_sfixed32: [Int32] = []
         var ext_rep_int64: [Int64] = []
         var ext_rep_uint64: [UInt64] = []
         var ext_rep_sint64: [Int64] = []
-        var ext_rep_fixed64: [Int64] = []
+        var ext_rep_fixed64: [UInt64] = []
         var ext_rep_sfixed64: [Int64] = []
         var ext_rep_bool: [Bool] = []
         var ext_rep_float: [Float] = []
@@ -619,12 +619,12 @@ extension AllTypes : Proto2Codable {
         var ext_pack_int32: [Int32] = []
         var ext_pack_uint32: [UInt32] = []
         var ext_pack_sint32: [Int32] = []
-        var ext_pack_fixed32: [Int32] = []
+        var ext_pack_fixed32: [UInt32] = []
         var ext_pack_sfixed32: [Int32] = []
         var ext_pack_int64: [Int64] = []
         var ext_pack_uint64: [UInt64] = []
         var ext_pack_sint64: [Int64] = []
-        var ext_pack_fixed64: [Int64] = []
+        var ext_pack_fixed64: [UInt64] = []
         var ext_pack_sfixed64: [Int64] = []
         var ext_pack_bool: [Bool] = []
         var ext_pack_float: [Float] = []
@@ -640,12 +640,12 @@ extension AllTypes : Proto2Codable {
                 case 1: opt_int32 = try reader.decode(Int32.self)
                 case 2: opt_uint32 = try reader.decode(UInt32.self)
                 case 3: opt_sint32 = try reader.decode(Int32.self, encoding: .signed)
-                case 4: opt_fixed32 = try reader.decode(Int32.self, encoding: .fixed)
+                case 4: opt_fixed32 = try reader.decode(UInt32.self, encoding: .fixed)
                 case 5: opt_sfixed32 = try reader.decode(Int32.self)
                 case 6: opt_int64 = try reader.decode(Int64.self)
                 case 7: opt_uint64 = try reader.decode(UInt64.self)
                 case 8: opt_sint64 = try reader.decode(Int64.self, encoding: .signed)
-                case 9: opt_fixed64 = try reader.decode(Int64.self, encoding: .fixed)
+                case 9: opt_fixed64 = try reader.decode(UInt64.self, encoding: .fixed)
                 case 10: opt_sfixed64 = try reader.decode(Int64.self)
                 case 11: opt_bool = try reader.decode(Bool.self)
                 case 12: opt_float = try reader.decode(Float.self)
@@ -657,12 +657,12 @@ extension AllTypes : Proto2Codable {
                 case 101: req_int32 = try reader.decode(Int32.self)
                 case 102: req_uint32 = try reader.decode(UInt32.self)
                 case 103: req_sint32 = try reader.decode(Int32.self, encoding: .signed)
-                case 104: req_fixed32 = try reader.decode(Int32.self, encoding: .fixed)
+                case 104: req_fixed32 = try reader.decode(UInt32.self, encoding: .fixed)
                 case 105: req_sfixed32 = try reader.decode(Int32.self)
                 case 106: req_int64 = try reader.decode(Int64.self)
                 case 107: req_uint64 = try reader.decode(UInt64.self)
                 case 108: req_sint64 = try reader.decode(Int64.self, encoding: .signed)
-                case 109: req_fixed64 = try reader.decode(Int64.self, encoding: .fixed)
+                case 109: req_fixed64 = try reader.decode(UInt64.self, encoding: .fixed)
                 case 110: req_sfixed64 = try reader.decode(Int64.self)
                 case 111: req_bool = try reader.decode(Bool.self)
                 case 112: req_float = try reader.decode(Float.self)
@@ -705,12 +705,12 @@ extension AllTypes : Proto2Codable {
                 case 401: default_int32 = try reader.decode(Int32.self)
                 case 402: default_uint32 = try reader.decode(UInt32.self)
                 case 403: default_sint32 = try reader.decode(Int32.self, encoding: .signed)
-                case 404: default_fixed32 = try reader.decode(Int32.self, encoding: .fixed)
+                case 404: default_fixed32 = try reader.decode(UInt32.self, encoding: .fixed)
                 case 405: default_sfixed32 = try reader.decode(Int32.self)
                 case 406: default_int64 = try reader.decode(Int64.self)
                 case 407: default_uint64 = try reader.decode(UInt64.self)
                 case 408: default_sint64 = try reader.decode(Int64.self, encoding: .signed)
-                case 409: default_fixed64 = try reader.decode(Int64.self, encoding: .fixed)
+                case 409: default_fixed64 = try reader.decode(UInt64.self, encoding: .fixed)
                 case 410: default_sfixed64 = try reader.decode(Int64.self)
                 case 411: default_bool = try reader.decode(Bool.self)
                 case 412: default_float = try reader.decode(Float.self)
@@ -725,12 +725,12 @@ extension AllTypes : Proto2Codable {
                 case 1001: ext_opt_int32 = try reader.decode(Int32.self)
                 case 1002: ext_opt_uint32 = try reader.decode(UInt32.self)
                 case 1003: ext_opt_sint32 = try reader.decode(Int32.self, encoding: .signed)
-                case 1004: ext_opt_fixed32 = try reader.decode(Int32.self, encoding: .fixed)
+                case 1004: ext_opt_fixed32 = try reader.decode(UInt32.self, encoding: .fixed)
                 case 1005: ext_opt_sfixed32 = try reader.decode(Int32.self)
                 case 1006: ext_opt_int64 = try reader.decode(Int64.self)
                 case 1007: ext_opt_uint64 = try reader.decode(UInt64.self)
                 case 1008: ext_opt_sint64 = try reader.decode(Int64.self, encoding: .signed)
-                case 1009: ext_opt_fixed64 = try reader.decode(Int64.self, encoding: .fixed)
+                case 1009: ext_opt_fixed64 = try reader.decode(UInt64.self, encoding: .fixed)
                 case 1010: ext_opt_sfixed64 = try reader.decode(Int64.self)
                 case 1011: ext_opt_bool = try reader.decode(Bool.self)
                 case 1012: ext_opt_float = try reader.decode(Float.self)

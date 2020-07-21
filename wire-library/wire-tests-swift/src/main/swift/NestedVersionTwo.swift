@@ -8,8 +8,8 @@ public struct NestedVersionTwo : Equatable {
     public var i: Int32?
     public var v2_i: Int32?
     public var v2_s: String?
-    public var v2_f32: Int32?
-    public var v2_f64: Int64?
+    public var v2_f32: UInt32?
+    public var v2_f64: UInt64?
     public var v2_rs: [String]
     public var unknownFields: Data = .init()
 
@@ -17,8 +17,8 @@ public struct NestedVersionTwo : Equatable {
         i: Int32? = nil,
         v2_i: Int32? = nil,
         v2_s: String? = nil,
-        v2_f32: Int32? = nil,
-        v2_f64: Int64? = nil,
+        v2_f32: UInt32? = nil,
+        v2_f64: UInt64? = nil,
         v2_rs: [String] = []
     ) {
         self.i = i
@@ -36,8 +36,8 @@ extension NestedVersionTwo : Proto2Codable {
         var i: Int32? = nil
         var v2_i: Int32? = nil
         var v2_s: String? = nil
-        var v2_f32: Int32? = nil
-        var v2_f64: Int64? = nil
+        var v2_f32: UInt32? = nil
+        var v2_f64: UInt64? = nil
         var v2_rs: [String] = []
 
         let unknownFields = try reader.forEachTag { tag in
@@ -45,8 +45,8 @@ extension NestedVersionTwo : Proto2Codable {
                 case 1: i = try reader.decode(Int32.self)
                 case 2: v2_i = try reader.decode(Int32.self)
                 case 3: v2_s = try reader.decode(String.self)
-                case 4: v2_f32 = try reader.decode(Int32.self, encoding: .fixed)
-                case 5: v2_f64 = try reader.decode(Int64.self, encoding: .fixed)
+                case 4: v2_f32 = try reader.decode(UInt32.self, encoding: .fixed)
+                case 5: v2_f64 = try reader.decode(UInt64.self, encoding: .fixed)
                 case 6: try reader.decode(into: &v2_rs)
                 default: try reader.readUnknownField(tag: tag)
             }
