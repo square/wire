@@ -163,10 +163,6 @@ public struct AllTypes : Equatable {
     public var ext_pack_float: [Float]
     public var ext_pack_double: [Double]
     public var ext_pack_nested_enum: [NestedEnum]
-    public var ext_map_int32_int32: [Int32 : Int32]
-    public var ext_map_string_string: [String : String]
-    public var ext_map_string_message: [String : NestedMessage]
-    public var ext_map_string_enum: [String : NestedEnum]
     public var unknownFields: Data = .init()
 
     public init(
@@ -302,11 +298,7 @@ public struct AllTypes : Equatable {
         ext_pack_bool: [Bool] = [],
         ext_pack_float: [Float] = [],
         ext_pack_double: [Double] = [],
-        ext_pack_nested_enum: [NestedEnum] = [],
-        ext_map_int32_int32: [Int32 : Int32] = [:],
-        ext_map_string_string: [String : String] = [:],
-        ext_map_string_message: [String : NestedMessage] = [:],
-        ext_map_string_enum: [String : NestedEnum] = [:]
+        ext_pack_nested_enum: [NestedEnum] = []
     ) {
         self.opt_int32 = opt_int32
         self.opt_uint32 = opt_uint32
@@ -441,14 +433,11 @@ public struct AllTypes : Equatable {
         self.ext_pack_float = ext_pack_float
         self.ext_pack_double = ext_pack_double
         self.ext_pack_nested_enum = ext_pack_nested_enum
-        self.ext_map_int32_int32 = ext_map_int32_int32
-        self.ext_map_string_string = ext_map_string_string
-        self.ext_map_string_message = ext_map_string_message
-        self.ext_map_string_enum = ext_map_string_enum
     }
 
     public enum NestedEnum : UInt32, CaseIterable, Codable {
 
+        case UNKNOWN = 0
         case A = 1
 
     }
@@ -630,10 +619,6 @@ extension AllTypes : Proto2Codable {
         var ext_pack_float: [Float] = []
         var ext_pack_double: [Double] = []
         var ext_pack_nested_enum: [AllTypes.NestedEnum] = []
-        var ext_map_int32_int32: [Int32 : Int32] = [:]
-        var ext_map_string_string: [String : String] = [:]
-        var ext_map_string_message: [String : AllTypes.NestedMessage] = [:]
-        var ext_map_string_enum: [String : AllTypes.NestedEnum] = [:]
 
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
@@ -770,10 +755,6 @@ extension AllTypes : Proto2Codable {
                 case 1212: try reader.decode(into: &ext_pack_float)
                 case 1213: try reader.decode(into: &ext_pack_double)
                 case 1216: try reader.decode(into: &ext_pack_nested_enum)
-                case 1301: try reader.decode(into: &ext_map_int32_int32)
-                case 1402: try reader.decode(into: &ext_map_string_string)
-                case 1503: try reader.decode(into: &ext_map_string_message)
-                case 1504: try reader.decode(into: &ext_map_string_enum)
                 default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -911,10 +892,6 @@ extension AllTypes : Proto2Codable {
         self.ext_pack_float = try AllTypes.checkIfMissing(ext_pack_float, "ext_pack_float")
         self.ext_pack_double = try AllTypes.checkIfMissing(ext_pack_double, "ext_pack_double")
         self.ext_pack_nested_enum = try AllTypes.checkIfMissing(ext_pack_nested_enum, "ext_pack_nested_enum")
-        self.ext_map_int32_int32 = try AllTypes.checkIfMissing(ext_map_int32_int32, "ext_map_int32_int32")
-        self.ext_map_string_string = try AllTypes.checkIfMissing(ext_map_string_string, "ext_map_string_string")
-        self.ext_map_string_message = try AllTypes.checkIfMissing(ext_map_string_message, "ext_map_string_message")
-        self.ext_map_string_enum = try AllTypes.checkIfMissing(ext_map_string_enum, "ext_map_string_enum")
         self.unknownFields = unknownFields
     }
 
@@ -1052,10 +1029,6 @@ extension AllTypes : Proto2Codable {
         try writer.encode(tag: 1212, value: ext_pack_float, packed: true)
         try writer.encode(tag: 1213, value: ext_pack_double, packed: true)
         try writer.encode(tag: 1216, value: ext_pack_nested_enum, packed: true)
-        try writer.encode(tag: 1301, value: ext_map_int32_int32)
-        try writer.encode(tag: 1402, value: ext_map_string_string)
-        try writer.encode(tag: 1503, value: ext_map_string_message)
-        try writer.encode(tag: 1504, value: ext_map_string_enum)
         try writer.writeUnknownFields(unknownFields)
     }
 }
@@ -1196,10 +1169,6 @@ extension AllTypes : Codable {
         case ext_pack_float
         case ext_pack_double
         case ext_pack_nested_enum
-        case ext_map_int32_int32
-        case ext_map_string_string
-        case ext_map_string_message
-        case ext_map_string_enum
 
     }
 }
