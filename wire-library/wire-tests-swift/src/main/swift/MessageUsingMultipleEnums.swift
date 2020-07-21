@@ -6,7 +6,7 @@ import Wire
 /**
  * Enum names must be fully qualified in generated Kotlin
  */
-public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
+public struct MessageUsingMultipleEnums : Equatable {
 
     public var a: MessageWithStatus.Status?
     public var b: OtherMessageWithStatus.Status?
@@ -17,6 +17,9 @@ public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
         self.b = b
     }
 
+}
+
+extension MessageUsingMultipleEnums : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var a: MessageWithStatus.Status? = nil
         var b: OtherMessageWithStatus.Status? = nil
@@ -39,12 +42,13 @@ public struct MessageUsingMultipleEnums : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 2, value: b)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension MessageUsingMultipleEnums : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case a
         case b
 
     }
-
 }

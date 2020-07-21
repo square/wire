@@ -3,13 +3,22 @@
 import Foundation
 import Wire
 
-public struct MessageWithStatus : Equatable, Proto2Codable, Codable {
+public struct MessageWithStatus : Equatable {
 
     public var unknownFields: Data = .init()
 
     public init() {
     }
 
+    public enum Status : UInt32, CaseIterable, Codable {
+
+        case A = 1
+
+    }
+
+}
+
+extension MessageWithStatus : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
@@ -23,11 +32,7 @@ public struct MessageWithStatus : Equatable, Proto2Codable, Codable {
     public func encode(to writer: ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
-    public enum Status : UInt32, CaseIterable, Codable {
-
-        case A = 1
-
-    }
-
+extension MessageWithStatus : Codable {
 }

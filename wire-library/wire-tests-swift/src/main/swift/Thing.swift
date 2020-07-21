@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Thing : Equatable, Proto2Codable, Codable {
+public struct Thing : Equatable {
 
     public var name: String?
     public var unknownFields: Data = .init()
@@ -12,6 +12,9 @@ public struct Thing : Equatable, Proto2Codable, Codable {
         self.name = name
     }
 
+}
+
+extension Thing : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var name: String? = nil
 
@@ -30,11 +33,12 @@ public struct Thing : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: name)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension Thing : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case name
 
     }
-
 }

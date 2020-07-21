@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
+public struct EmbeddedMessage : Equatable {
 
     public var inner_repeated_number: [Int32]
     public var inner_number_after: Int32?
@@ -14,6 +14,9 @@ public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
         self.inner_number_after = inner_number_after
     }
 
+}
+
+extension EmbeddedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var inner_repeated_number: [Int32] = []
         var inner_number_after: Int32? = nil
@@ -36,12 +39,13 @@ public struct EmbeddedMessage : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 2, value: inner_number_after)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension EmbeddedMessage : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case inner_repeated_number
         case inner_number_after
 
     }
-
 }

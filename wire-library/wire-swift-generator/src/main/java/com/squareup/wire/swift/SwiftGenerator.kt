@@ -17,7 +17,9 @@ import io.outfoxx.swiftpoet.DATA
 import io.outfoxx.swiftpoet.DICTIONARY
 import io.outfoxx.swiftpoet.DOUBLE
 import io.outfoxx.swiftpoet.DeclaredTypeName
+import io.outfoxx.swiftpoet.ExtensionSpec
 import io.outfoxx.swiftpoet.FLOAT
+import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
@@ -83,10 +85,19 @@ class SwiftGenerator private constructor(
       }
     }
 
-  fun generateType(type: Type) = when (type) {
-    is MessageType -> generateMessage(type)
-    is EnumType -> generateEnum(type)
-    is EnclosingType -> generateEnclosing(type)
+  fun generateTypeTo(type: Type, builder: FileSpec.Builder) {
+    val extensions = mutableListOf<ExtensionSpec>()
+    builder.addType(generateType(type, extensions))
+
+    for (extension in extensions) {
+      builder.addExtension(extension)
+    }
+  }
+
+  private fun generateType(type: Type, extensions: MutableList<ExtensionSpec>) = when (type) {
+    is MessageType -> generateMessage(type, extensions)
+    is EnumType -> generateEnum(type, extensions)
+    is EnclosingType -> generateEnclosing(type, extensions)
     else -> error("Unknown type $type")
   }
 
@@ -100,15 +111,13 @@ class SwiftGenerator private constructor(
   }
 
   @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
-  private fun generateMessage(type: MessageType): TypeSpec {
+  private fun generateMessage(type: MessageType, extensions: MutableList<ExtensionSpec>): TypeSpec {
     val structName = type.typeName
     val oneOfEnumNames = type.oneOfs.associateWith { structName.nestedType(it.name.capitalize(US)) }
 
-    return TypeSpec.structBuilder(structName)
+    val typeSpec =  TypeSpec.structBuilder(structName)
         .addModifiers(PUBLIC)
         .addSuperType(equatable)
-        .addSuperType(protoCodable)
-        .addSuperType(codable)
         .apply {
           if (type.documentation.isNotBlank()) {
             addKdoc("%L\n", type.documentation.sanitizeDoc())
@@ -119,12 +128,17 @@ class SwiftGenerator private constructor(
               property.addKdoc("%L\n", field.documentation.sanitizeDoc())
             }
             if (field.isDeprecated) {
-              property.addAttribute(AttributeSpec.builder("available")
-                  .addArguments("*", "deprecated")
-                  .build())
+              property.addAttribute(
+                  AttributeSpec.builder("available")
+                      .addArguments("*", "deprecated")
+                      .build()
+              )
             }
             if (field.typeName.needsJsonString()) {
-              property.addAttribute(AttributeSpec.builder("JSONString").build())
+              property.addAttribute(
+                  AttributeSpec.builder("JSONString")
+                      .build()
+              )
             }
             addProperty(property.build())
           }
@@ -166,84 +180,10 @@ class SwiftGenerator private constructor(
                     .build())
                 .build())
           }
-
-          addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
+        }
+        .addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
               .initializer(".init()")
               .build())
-
-          val codingKeys = structName.nestedType("CodingKeys")
-          if (type.fieldsAndOneOfFields.isNotEmpty()) {
-            // Define the keys which are the set of all direct properties and the properties within
-            // each oneof.
-            addType(TypeSpec.enumBuilder(codingKeys)
-                .addModifiers(PRIVATE)
-                .addSuperType(STRING)
-                .addSuperType(codingKey)
-                .apply {
-                  type.fieldsAndOneOfFields.forEach { field ->
-                    addEnumCase(field.name)
-                  }
-                }
-                .build())
-          }
-
-          // If there are any oneofs we cannot rely on the built-in Codable support since the
-          // keys of the nested associated enum are flattened into the enclosing parent.
-          if (type.oneOfs.isNotEmpty()) {
-            addFunction(FunctionSpec.constructorBuilder()
-                .addParameter("from", "decoder", decoder)
-                .addModifiers(PUBLIC)
-                .throws(true)
-                .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
-                .apply {
-                  type.fields.forEach { field ->
-                    addStatement(
-                        "%1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
-                        field.typeName
-                    )
-                  }
-                  type.oneOfs.forEach { oneOf ->
-                    oneOf.fields.forEachIndexed { index, field ->
-                      if (index == 0) {
-                        beginControlFlow("if (container.contains(.%N))", field.name)
-                      } else {
-                        nextControlFlow("else if (container.contains(.%N))", field.name)
-                      }
-                      addStatement(
-                          "let %1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
-                          field.typeName.makeNonOptional()
-                      )
-                      addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
-                    }
-                    nextControlFlow("else")
-                    addStatement("self.%N = nil", oneOf.name)
-                    endControlFlow()
-                  }
-                }
-                .build())
-            addFunction(FunctionSpec.builder("encode")
-                .addParameter("to", "encoder", encoder)
-                .addModifiers(PUBLIC)
-                .throws(true)
-                .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
-                .apply {
-                  type.fields.forEach { field ->
-                    addStatement("try container.encode(%1N, forKey: .%1N)", field.name)
-                  }
-                  type.oneOfs.forEach { oneOf ->
-                    beginControlFlow("switch self.%N", oneOf.name)
-                    oneOf.fields.forEach { field ->
-                      addStatement(
-                          "case .%1N(let %1N): try container.encode(%1N, forKey: .%1N)", field.name
-                      )
-                    }
-                    addStatement("case %T.none: break", OPTIONAL)
-                    endControlFlow()
-                  }
-                }
-                .build())
-          }
-        }
         .addFunction(FunctionSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .apply {
@@ -269,6 +209,15 @@ class SwiftGenerator private constructor(
               }
             }
             .build())
+        .apply {
+          type.nestedTypes.forEach { nestedType ->
+            addType(generateType(nestedType, extensions))
+          }
+        }
+        .build()
+
+    extensions += ExtensionSpec.builder(structName)
+        .addSuperType(protoCodable)
         .addFunction(FunctionSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .addParameter("from", "reader", protoReader)
@@ -389,12 +338,88 @@ class SwiftGenerator private constructor(
             }
             .addStatement("try writer.writeUnknownFields(unknownFields)")
             .build())
+        .build()
+
+    extensions += ExtensionSpec.builder(structName)
+        .addSuperType(codable)
         .apply {
-          type.nestedTypes.forEach { nestedType ->
-            addType(generateType(nestedType))
+          val codingKeys = structName.nestedType("CodingKeys")
+
+          if (type.fieldsAndOneOfFields.isNotEmpty()) {
+            // Define the keys which are the set of all direct properties and the properties within
+            // each oneof.
+            addType(TypeSpec.enumBuilder(codingKeys)
+                .addModifiers(PRIVATE)
+                .addSuperType(STRING)
+                .addSuperType(codingKey)
+                .apply {
+                  type.fieldsAndOneOfFields.forEach { field ->
+                    addEnumCase(field.name)
+                  }
+                }
+                .build())
+          }
+
+          // If there are any oneofs we cannot rely on the built-in Codable support since the
+          // keys of the nested associated enum are flattened into the enclosing parent.
+          if (type.oneOfs.isNotEmpty()) {
+            addFunction(FunctionSpec.constructorBuilder()
+                .addParameter("from", "decoder", decoder)
+                .addModifiers(PUBLIC)
+                .throws(true)
+                .addStatement("let container = try decoder.container(keyedBy: %T.self)", codingKeys)
+                .apply {
+                  type.fields.forEach { field ->
+                    addStatement(
+                        "%1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
+                        field.typeName
+                    )
+                  }
+                  type.oneOfs.forEach { oneOf ->
+                    oneOf.fields.forEachIndexed { index, field ->
+                      if (index == 0) {
+                        beginControlFlow("if (container.contains(.%N))", field.name)
+                      } else {
+                        nextControlFlow("else if (container.contains(.%N))", field.name)
+                      }
+                      addStatement(
+                          "let %1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
+                          field.typeName.makeNonOptional()
+                      )
+                      addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
+                    }
+                    nextControlFlow("else")
+                    addStatement("self.%N = nil", oneOf.name)
+                    endControlFlow()
+                  }
+                }
+                .build())
+            addFunction(FunctionSpec.builder("encode")
+                .addParameter("to", "encoder", encoder)
+                .addModifiers(PUBLIC)
+                .throws(true)
+                .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
+                .apply {
+                  type.fields.forEach { field ->
+                    addStatement("try container.encode(%1N, forKey: .%1N)", field.name)
+                  }
+                  type.oneOfs.forEach { oneOf ->
+                    beginControlFlow("switch self.%N", oneOf.name)
+                    oneOf.fields.forEach { field ->
+                      addStatement(
+                          "case .%1N(let %1N): try container.encode(%1N, forKey: .%1N)", field.name
+                      )
+                    }
+                    addStatement("case %T.none: break", OPTIONAL)
+                    endControlFlow()
+                  }
+                }
+                .build())
           }
         }
         .build()
+
+    return typeSpec
   }
 
   private val ProtoType.encoding: String?
@@ -417,7 +442,7 @@ class SwiftGenerator private constructor(
     return false
   }
 
-  private fun generateEnum(type: EnumType): TypeSpec {
+  private fun generateEnum(type: EnumType, extensions: MutableList<ExtensionSpec>): TypeSpec {
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
         .addModifiers(PUBLIC)
@@ -434,13 +459,13 @@ class SwiftGenerator private constructor(
             addEnumCase(constant.name, constant.tag.toString())
           }
           type.nestedTypes.forEach { nestedType ->
-            addType(generateType(nestedType))
+            addType(generateType(nestedType, extensions))
           }
         }
         .build()
   }
 
-  private fun generateEnclosing(type: EnclosingType): TypeSpec {
+  private fun generateEnclosing(type: EnclosingType, extensions: MutableList<ExtensionSpec>): TypeSpec {
     return TypeSpec.classBuilder(type.typeName)
         .addModifiers(PUBLIC, FINAL)
         .addKdoc("%N\n",
@@ -448,7 +473,7 @@ class SwiftGenerator private constructor(
                 "is not an actual message.")
         .apply {
           type.nestedTypes.forEach { nestedType ->
-            addType(generateType(nestedType))
+            addType(generateType(nestedType, extensions))
           }
         }
         .build()

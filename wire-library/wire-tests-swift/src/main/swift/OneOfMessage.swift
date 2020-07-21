@@ -6,7 +6,7 @@ import Wire
 /**
  * It's a one of message.
  */
-public struct OneOfMessage : Equatable, Proto2Codable, Codable {
+public struct OneOfMessage : Equatable {
 
     /**
      * Must have a foo or a bar or a baz.
@@ -14,57 +14,8 @@ public struct OneOfMessage : Equatable, Proto2Codable, Codable {
     public var choice: Choice?
     public var unknownFields: Data = .init()
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        if (container.contains(.foo)) {
-            let foo = try container.decode(Int32.self, forKey: .foo)
-            self.choice = .foo(foo)
-        } else if (container.contains(.bar)) {
-            let bar = try container.decode(String.self, forKey: .bar)
-            self.choice = .bar(bar)
-        } else if (container.contains(.baz)) {
-            let baz = try container.decode(String.self, forKey: .baz)
-            self.choice = .baz(baz)
-        } else {
-            self.choice = nil
-        }
-    }
-
     public init(choice: Choice? = nil) {
         self.choice = choice
-    }
-
-    public init(from reader: ProtoReader) throws {
-        var choice: Choice? = nil
-
-        let unknownFields = try reader.forEachTag { tag in
-            switch tag {
-                case 1: choice = .foo(try reader.decode(Int32.self))
-                case 3: choice = .bar(try reader.decode(String.self))
-                case 4: choice = .baz(try reader.decode(String.self))
-                default: try reader.readUnknownField(tag: tag)
-            }
-        }
-
-        self.choice = choice
-        self.unknownFields = unknownFields
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        switch self.choice {
-            case .foo(let foo): try container.encode(foo, forKey: .foo)
-            case .bar(let bar): try container.encode(bar, forKey: .bar)
-            case .baz(let baz): try container.encode(baz, forKey: .baz)
-            case Optional.none: break
-        }
-    }
-
-    public func encode(to writer: ProtoWriter) throws {
-        if let choice = choice {
-            try choice.encode(to: writer)
-        }
-        try writer.writeUnknownFields(unknownFields)
     }
 
     public enum Choice : Equatable {
@@ -83,6 +34,60 @@ public struct OneOfMessage : Equatable, Proto2Codable, Codable {
 
     }
 
+}
+
+extension OneOfMessage : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        var choice: OneOfMessage.Choice? = nil
+
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: choice = .foo(try reader.decode(Int32.self))
+                case 3: choice = .bar(try reader.decode(String.self))
+                case 4: choice = .baz(try reader.decode(String.self))
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.choice = choice
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        if let choice = choice {
+            try choice.encode(to: writer)
+        }
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension OneOfMessage : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: OneOfMessage.CodingKeys.self)
+        if (container.contains(.foo)) {
+            let foo = try container.decode(Int32.self, forKey: .foo)
+            self.choice = .foo(foo)
+        } else if (container.contains(.bar)) {
+            let bar = try container.decode(String.self, forKey: .bar)
+            self.choice = .bar(bar)
+        } else if (container.contains(.baz)) {
+            let baz = try container.decode(String.self, forKey: .baz)
+            self.choice = .baz(baz)
+        } else {
+            self.choice = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: OneOfMessage.CodingKeys.self)
+        switch self.choice {
+            case .foo(let foo): try container.encode(foo, forKey: .foo)
+            case .bar(let bar): try container.encode(bar, forKey: .bar)
+            case .baz(let baz): try container.encode(baz, forKey: .baz)
+            case Optional.none: break
+        }
+    }
+
     private enum CodingKeys : String, CodingKey {
 
         case foo
@@ -90,5 +95,4 @@ public struct OneOfMessage : Equatable, Proto2Codable, Codable {
         case baz
 
     }
-
 }

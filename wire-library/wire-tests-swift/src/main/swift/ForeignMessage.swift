@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct ForeignMessage : Equatable, Proto2Codable, Codable {
+public struct ForeignMessage : Equatable {
 
     public var i: Int32?
     public var unknownFields: Data = .init()
@@ -12,6 +12,9 @@ public struct ForeignMessage : Equatable, Proto2Codable, Codable {
         self.i = i
     }
 
+}
+
+extension ForeignMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var i: Int32? = nil
 
@@ -30,11 +33,12 @@ public struct ForeignMessage : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: i)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension ForeignMessage : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case i
 
     }
-
 }

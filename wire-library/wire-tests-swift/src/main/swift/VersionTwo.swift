@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct VersionTwo : Equatable, Proto2Codable, Codable {
+public struct VersionTwo : Equatable {
 
     public var i: Int32?
     public var v2_i: Int32?
@@ -35,6 +35,9 @@ public struct VersionTwo : Equatable, Proto2Codable, Codable {
         self.en = en
     }
 
+}
+
+extension VersionTwo : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var i: Int32? = nil
         var v2_i: Int32? = nil
@@ -81,7 +84,9 @@ public struct VersionTwo : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 8, value: en)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension VersionTwo : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case i
@@ -94,5 +99,4 @@ public struct VersionTwo : Equatable, Proto2Codable, Codable {
         case en
 
     }
-
 }

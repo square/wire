@@ -3,107 +3,13 @@
 import Foundation
 import Wire
 
-public struct Form : Equatable, Proto2Codable, Codable {
+public struct Form : Equatable {
 
     public var choice: Choice?
     public var unknownFields: Data = .init()
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        if (container.contains(.button_element)) {
-            let button_element = try container.decode(ButtonElement.self, forKey: .button_element)
-            self.choice = .button_element(button_element)
-        } else if (container.contains(.local_image_element)) {
-            let local_image_element = try container.decode(LocalImageElement.self, forKey: .local_image_element)
-            self.choice = .local_image_element(local_image_element)
-        } else if (container.contains(.remote_image_element)) {
-            let remote_image_element = try container.decode(RemoteImageElement.self, forKey: .remote_image_element)
-            self.choice = .remote_image_element(remote_image_element)
-        } else if (container.contains(.money_element)) {
-            let money_element = try container.decode(MoneyElement.self, forKey: .money_element)
-            self.choice = .money_element(money_element)
-        } else if (container.contains(.spacer_element)) {
-            let spacer_element = try container.decode(SpacerElement.self, forKey: .spacer_element)
-            self.choice = .spacer_element(spacer_element)
-        } else if (container.contains(.text_element)) {
-            let text_element = try container.decode(TextElement.self, forKey: .text_element)
-            self.choice = .text_element(text_element)
-        } else if (container.contains(.customized_card_element)) {
-            let customized_card_element = try container.decode(CustomizedCardElement.self, forKey: .customized_card_element)
-            self.choice = .customized_card_element(customized_card_element)
-        } else if (container.contains(.address_element)) {
-            let address_element = try container.decode(AddressElement.self, forKey: .address_element)
-            self.choice = .address_element(address_element)
-        } else if (container.contains(.text_input_element)) {
-            let text_input_element = try container.decode(TextInputElement.self, forKey: .text_input_element)
-            self.choice = .text_input_element(text_input_element)
-        } else if (container.contains(.option_picker_element)) {
-            let option_picker_element = try container.decode(OptionPickerElement.self, forKey: .option_picker_element)
-            self.choice = .option_picker_element(option_picker_element)
-        } else if (container.contains(.detail_row_element)) {
-            let detail_row_element = try container.decode(DetailRowElement.self, forKey: .detail_row_element)
-            self.choice = .detail_row_element(detail_row_element)
-        } else if (container.contains(.currency_conversion_flags_element)) {
-            let currency_conversion_flags_element = try container.decode(CurrencyConversionFlagsElement.self, forKey: .currency_conversion_flags_element)
-            self.choice = .currency_conversion_flags_element(currency_conversion_flags_element)
-        } else {
-            self.choice = nil
-        }
-    }
-
     public init(choice: Choice? = nil) {
         self.choice = choice
-    }
-
-    public init(from reader: ProtoReader) throws {
-        var choice: Choice? = nil
-
-        let unknownFields = try reader.forEachTag { tag in
-            switch tag {
-                case 1: choice = .button_element(try reader.decode(ButtonElement.self))
-                case 2: choice = .local_image_element(try reader.decode(LocalImageElement.self))
-                case 3: choice = .remote_image_element(try reader.decode(RemoteImageElement.self))
-                case 4: choice = .money_element(try reader.decode(MoneyElement.self))
-                case 5: choice = .spacer_element(try reader.decode(SpacerElement.self))
-                case 6: choice = .text_element(try reader.decode(TextElement.self))
-                case 7: choice = .customized_card_element(try reader.decode(CustomizedCardElement.self))
-                case 8: choice = .address_element(try reader.decode(AddressElement.self))
-                case 9: choice = .text_input_element(try reader.decode(TextInputElement.self))
-                case 10: choice = .option_picker_element(try reader.decode(OptionPickerElement.self))
-                case 11: choice = .detail_row_element(try reader.decode(DetailRowElement.self))
-                case 12: choice = .currency_conversion_flags_element(try reader.decode(CurrencyConversionFlagsElement.self))
-                default: try reader.readUnknownField(tag: tag)
-            }
-        }
-
-        self.choice = choice
-        self.unknownFields = unknownFields
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        switch self.choice {
-            case .button_element(let button_element): try container.encode(button_element, forKey: .button_element)
-            case .local_image_element(let local_image_element): try container.encode(local_image_element, forKey: .local_image_element)
-            case .remote_image_element(let remote_image_element): try container.encode(remote_image_element, forKey: .remote_image_element)
-            case .money_element(let money_element): try container.encode(money_element, forKey: .money_element)
-            case .spacer_element(let spacer_element): try container.encode(spacer_element, forKey: .spacer_element)
-            case .text_element(let text_element): try container.encode(text_element, forKey: .text_element)
-            case .customized_card_element(let customized_card_element): try container.encode(customized_card_element, forKey: .customized_card_element)
-            case .address_element(let address_element): try container.encode(address_element, forKey: .address_element)
-            case .text_input_element(let text_input_element): try container.encode(text_input_element, forKey: .text_input_element)
-            case .option_picker_element(let option_picker_element): try container.encode(option_picker_element, forKey: .option_picker_element)
-            case .detail_row_element(let detail_row_element): try container.encode(detail_row_element, forKey: .detail_row_element)
-            case .currency_conversion_flags_element(let currency_conversion_flags_element): try container.encode(currency_conversion_flags_element, forKey: .currency_conversion_flags_element)
-            case Optional.none: break
-        }
-    }
-
-    public func encode(to writer: ProtoWriter) throws {
-        if let choice = choice {
-            try choice.encode(to: writer)
-        }
-        try writer.writeUnknownFields(unknownFields)
     }
 
     public enum Choice : Equatable {
@@ -140,6 +46,441 @@ public struct Form : Equatable, Proto2Codable, Codable {
 
     }
 
+    public struct ButtonElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct LocalImageElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct RemoteImageElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct MoneyElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct SpacerElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct TextElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct CustomizedCardElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct AddressElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct TextInputElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct OptionPickerElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct DetailRowElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct CurrencyConversionFlagsElement : Equatable {
+
+        public var unknownFields: Data = .init()
+
+        public init() {
+        }
+
+    }
+
+}
+
+extension Form.ButtonElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.ButtonElement : Codable {
+}
+
+extension Form.LocalImageElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.LocalImageElement : Codable {
+}
+
+extension Form.RemoteImageElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.RemoteImageElement : Codable {
+}
+
+extension Form.MoneyElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.MoneyElement : Codable {
+}
+
+extension Form.SpacerElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.SpacerElement : Codable {
+}
+
+extension Form.TextElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.TextElement : Codable {
+}
+
+extension Form.CustomizedCardElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.CustomizedCardElement : Codable {
+}
+
+extension Form.AddressElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.AddressElement : Codable {
+}
+
+extension Form.TextInputElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.TextInputElement : Codable {
+}
+
+extension Form.OptionPickerElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.OptionPickerElement : Codable {
+}
+
+extension Form.DetailRowElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.DetailRowElement : Codable {
+}
+
+extension Form.CurrencyConversionFlagsElement : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form.CurrencyConversionFlagsElement : Codable {
+}
+
+extension Form : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        var choice: Form.Choice? = nil
+
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: choice = .button_element(try reader.decode(Form.ButtonElement.self))
+                case 2: choice = .local_image_element(try reader.decode(Form.LocalImageElement.self))
+                case 3: choice = .remote_image_element(try reader.decode(Form.RemoteImageElement.self))
+                case 4: choice = .money_element(try reader.decode(Form.MoneyElement.self))
+                case 5: choice = .spacer_element(try reader.decode(Form.SpacerElement.self))
+                case 6: choice = .text_element(try reader.decode(Form.TextElement.self))
+                case 7: choice = .customized_card_element(try reader.decode(Form.CustomizedCardElement.self))
+                case 8: choice = .address_element(try reader.decode(Form.AddressElement.self))
+                case 9: choice = .text_input_element(try reader.decode(Form.TextInputElement.self))
+                case 10: choice = .option_picker_element(try reader.decode(Form.OptionPickerElement.self))
+                case 11: choice = .detail_row_element(try reader.decode(Form.DetailRowElement.self))
+                case 12: choice = .currency_conversion_flags_element(try reader.decode(Form.CurrencyConversionFlagsElement.self))
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.choice = choice
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        if let choice = choice {
+            try choice.encode(to: writer)
+        }
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Form : Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Form.CodingKeys.self)
+        if (container.contains(.button_element)) {
+            let button_element = try container.decode(Form.ButtonElement.self, forKey: .button_element)
+            self.choice = .button_element(button_element)
+        } else if (container.contains(.local_image_element)) {
+            let local_image_element = try container.decode(Form.LocalImageElement.self, forKey: .local_image_element)
+            self.choice = .local_image_element(local_image_element)
+        } else if (container.contains(.remote_image_element)) {
+            let remote_image_element = try container.decode(Form.RemoteImageElement.self, forKey: .remote_image_element)
+            self.choice = .remote_image_element(remote_image_element)
+        } else if (container.contains(.money_element)) {
+            let money_element = try container.decode(Form.MoneyElement.self, forKey: .money_element)
+            self.choice = .money_element(money_element)
+        } else if (container.contains(.spacer_element)) {
+            let spacer_element = try container.decode(Form.SpacerElement.self, forKey: .spacer_element)
+            self.choice = .spacer_element(spacer_element)
+        } else if (container.contains(.text_element)) {
+            let text_element = try container.decode(Form.TextElement.self, forKey: .text_element)
+            self.choice = .text_element(text_element)
+        } else if (container.contains(.customized_card_element)) {
+            let customized_card_element = try container.decode(Form.CustomizedCardElement.self, forKey: .customized_card_element)
+            self.choice = .customized_card_element(customized_card_element)
+        } else if (container.contains(.address_element)) {
+            let address_element = try container.decode(Form.AddressElement.self, forKey: .address_element)
+            self.choice = .address_element(address_element)
+        } else if (container.contains(.text_input_element)) {
+            let text_input_element = try container.decode(Form.TextInputElement.self, forKey: .text_input_element)
+            self.choice = .text_input_element(text_input_element)
+        } else if (container.contains(.option_picker_element)) {
+            let option_picker_element = try container.decode(Form.OptionPickerElement.self, forKey: .option_picker_element)
+            self.choice = .option_picker_element(option_picker_element)
+        } else if (container.contains(.detail_row_element)) {
+            let detail_row_element = try container.decode(Form.DetailRowElement.self, forKey: .detail_row_element)
+            self.choice = .detail_row_element(detail_row_element)
+        } else if (container.contains(.currency_conversion_flags_element)) {
+            let currency_conversion_flags_element = try container.decode(Form.CurrencyConversionFlagsElement.self, forKey: .currency_conversion_flags_element)
+            self.choice = .currency_conversion_flags_element(currency_conversion_flags_element)
+        } else {
+            self.choice = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Form.CodingKeys.self)
+        switch self.choice {
+            case .button_element(let button_element): try container.encode(button_element, forKey: .button_element)
+            case .local_image_element(let local_image_element): try container.encode(local_image_element, forKey: .local_image_element)
+            case .remote_image_element(let remote_image_element): try container.encode(remote_image_element, forKey: .remote_image_element)
+            case .money_element(let money_element): try container.encode(money_element, forKey: .money_element)
+            case .spacer_element(let spacer_element): try container.encode(spacer_element, forKey: .spacer_element)
+            case .text_element(let text_element): try container.encode(text_element, forKey: .text_element)
+            case .customized_card_element(let customized_card_element): try container.encode(customized_card_element, forKey: .customized_card_element)
+            case .address_element(let address_element): try container.encode(address_element, forKey: .address_element)
+            case .text_input_element(let text_input_element): try container.encode(text_input_element, forKey: .text_input_element)
+            case .option_picker_element(let option_picker_element): try container.encode(option_picker_element, forKey: .option_picker_element)
+            case .detail_row_element(let detail_row_element): try container.encode(detail_row_element, forKey: .detail_row_element)
+            case .currency_conversion_flags_element(let currency_conversion_flags_element): try container.encode(currency_conversion_flags_element, forKey: .currency_conversion_flags_element)
+            case Optional.none: break
+        }
+    }
+
     private enum CodingKeys : String, CodingKey {
 
         case button_element
@@ -156,281 +497,4 @@ public struct Form : Equatable, Proto2Codable, Codable {
         case currency_conversion_flags_element
 
     }
-
-    public struct ButtonElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct LocalImageElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct RemoteImageElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct MoneyElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct SpacerElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct TextElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct CustomizedCardElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct AddressElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct TextInputElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct OptionPickerElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct DetailRowElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
-    public struct CurrencyConversionFlagsElement : Equatable, Proto2Codable, Codable {
-
-        public var unknownFields: Data = .init()
-
-        public init() {
-        }
-
-        public init(from reader: ProtoReader) throws {
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-    }
-
 }

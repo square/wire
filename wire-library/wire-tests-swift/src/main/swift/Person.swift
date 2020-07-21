@@ -6,7 +6,7 @@ import Wire
 /**
  * Message representing a person, includes their name, unique ID number, email and phone number.
  */
-public struct Person : Equatable, Proto2Codable, Codable {
+public struct Person : Equatable {
 
     /**
      * The customer's full name.
@@ -41,11 +41,78 @@ public struct Person : Equatable, Proto2Codable, Codable {
         self.aliases = aliases
     }
 
+    /**
+     * Represents the type of the phone number: mobile, home or work.
+     */
+    public enum PhoneType : UInt32, CaseIterable, Codable {
+
+        case MOBILE = 0
+        case HOME = 1
+        case WORK = 2
+
+    }
+
+    public struct PhoneNumber : Equatable {
+
+        /**
+         * The customer's phone number.
+         */
+        public var number: String
+        /**
+         * The type of phone stored here.
+         */
+        public var type: PhoneType?
+        public var unknownFields: Data = .init()
+
+        public init(number: String, type: PhoneType? = nil) {
+            self.number = number
+            self.type = type
+        }
+
+    }
+
+}
+
+extension Person.PhoneNumber : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        var number: String? = nil
+        var type: Person.PhoneType? = nil
+
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: number = try reader.decode(String.self)
+                case 2: type = try reader.decode(Person.PhoneType.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.number = try Person.PhoneNumber.checkIfMissing(number, "number")
+        self.type = type
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: number)
+        try writer.encode(tag: 2, value: type)
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension Person.PhoneNumber : Codable {
+    private enum CodingKeys : String, CodingKey {
+
+        case number
+        case type
+
+    }
+}
+
+extension Person : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var name: String? = nil
         var id: Int32? = nil
         var email: String? = nil
-        var phone: [PhoneNumber] = []
+        var phone: [Person.PhoneNumber] = []
         var aliases: [String] = []
 
         let unknownFields = try reader.forEachTag { tag in
@@ -75,7 +142,9 @@ public struct Person : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 5, value: aliases)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension Person : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case name
@@ -85,65 +154,4 @@ public struct Person : Equatable, Proto2Codable, Codable {
         case aliases
 
     }
-
-    /**
-     * Represents the type of the phone number: mobile, home or work.
-     */
-    public enum PhoneType : UInt32, CaseIterable, Codable {
-
-        case MOBILE = 0
-        case HOME = 1
-        case WORK = 2
-
-    }
-
-    public struct PhoneNumber : Equatable, Proto2Codable, Codable {
-
-        /**
-         * The customer's phone number.
-         */
-        public var number: String
-        /**
-         * The type of phone stored here.
-         */
-        public var type: PhoneType?
-        public var unknownFields: Data = .init()
-
-        public init(number: String, type: PhoneType? = nil) {
-            self.number = number
-            self.type = type
-        }
-
-        public init(from reader: ProtoReader) throws {
-            var number: String? = nil
-            var type: PhoneType? = nil
-
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    case 1: number = try reader.decode(String.self)
-                    case 2: type = try reader.decode(PhoneType.self)
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.number = try PhoneNumber.checkIfMissing(number, "number")
-            self.type = type
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.encode(tag: 1, value: number)
-            try writer.encode(tag: 2, value: type)
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-        private enum CodingKeys : String, CodingKey {
-
-            case number
-            case type
-
-        }
-
-    }
-
 }

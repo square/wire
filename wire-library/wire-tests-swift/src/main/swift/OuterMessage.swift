@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct OuterMessage : Equatable, Proto2Codable, Codable {
+public struct OuterMessage : Equatable {
 
     public var outer_number_before: Int32?
     public var embedded_message: EmbeddedMessage?
@@ -14,6 +14,9 @@ public struct OuterMessage : Equatable, Proto2Codable, Codable {
         self.embedded_message = embedded_message
     }
 
+}
+
+extension OuterMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var outer_number_before: Int32? = nil
         var embedded_message: EmbeddedMessage? = nil
@@ -36,12 +39,13 @@ public struct OuterMessage : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 2, value: embedded_message)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension OuterMessage : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case outer_number_before
         case embedded_message
 
     }
-
 }

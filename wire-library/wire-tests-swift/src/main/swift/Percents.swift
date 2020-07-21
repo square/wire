@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Percents : Equatable, Proto2Codable, Codable {
+public struct Percents : Equatable {
 
     /**
      * e.g. "No limits, free to send and just 2.75% to receive".
@@ -15,6 +15,9 @@ public struct Percents : Equatable, Proto2Codable, Codable {
         self.text = text
     }
 
+}
+
+extension Percents : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var text: String? = nil
 
@@ -33,11 +36,12 @@ public struct Percents : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: text)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension Percents : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case text
 
     }
-
 }

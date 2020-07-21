@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct FooBar : Equatable, Proto2Codable, Codable {
+public struct FooBar : Equatable {
 
     public var foo: Int32?
     public var bar: String?
@@ -38,27 +38,118 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         self.rep = rep
     }
 
+    public struct Nested : Equatable {
+
+        public var value: FooBarBazEnum?
+        public var unknownFields: Data = .init()
+
+        public init(value: FooBarBazEnum? = nil) {
+            self.value = value
+        }
+
+    }
+
+    public struct More : Equatable {
+
+        public var serial: [Int32]
+        public var unknownFields: Data = .init()
+
+        public init(serial: [Int32] = []) {
+            self.serial = serial
+        }
+
+    }
+
+    public enum FooBarBazEnum : UInt32, CaseIterable, Codable {
+
+        case FOO = 1
+        case BAR = 2
+        case BAZ = 3
+
+    }
+
+}
+
+extension FooBar.Nested : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        var value: FooBar.FooBarBazEnum? = nil
+
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: value = try reader.decode(FooBar.FooBarBazEnum.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.value = value
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: value)
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension FooBar.Nested : Codable {
+    private enum CodingKeys : String, CodingKey {
+
+        case value
+
+    }
+}
+
+extension FooBar.More : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        var serial: [Int32] = []
+
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: try reader.decode(into: &serial)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.serial = try FooBar.More.checkIfMissing(serial, "serial")
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: serial)
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension FooBar.More : Codable {
+    private enum CodingKeys : String, CodingKey {
+
+        case serial
+
+    }
+}
+
+extension FooBar : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var foo: Int32? = nil
         var bar: String? = nil
-        var baz: Nested? = nil
+        var baz: FooBar.Nested? = nil
         var qux: UInt64? = nil
         var fred: [Float] = []
         var daisy: Double? = nil
         var nested: [FooBar] = []
-        var ext: FooBarBazEnum? = nil
-        var rep: [FooBarBazEnum] = []
+        var ext: FooBar.FooBarBazEnum? = nil
+        var rep: [FooBar.FooBarBazEnum] = []
 
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
                 case 1: foo = try reader.decode(Int32.self)
                 case 2: bar = try reader.decode(String.self)
-                case 3: baz = try reader.decode(Nested.self)
+                case 3: baz = try reader.decode(FooBar.Nested.self)
                 case 4: qux = try reader.decode(UInt64.self)
                 case 5: try reader.decode(into: &fred)
                 case 6: daisy = try reader.decode(Double.self)
                 case 7: try reader.decode(into: &nested)
-                case 101: ext = try reader.decode(FooBarBazEnum.self)
+                case 101: ext = try reader.decode(FooBar.FooBarBazEnum.self)
                 case 102: try reader.decode(into: &rep)
                 default: try reader.readUnknownField(tag: tag)
             }
@@ -88,7 +179,9 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 102, value: rep)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension FooBar : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case foo
@@ -102,85 +195,4 @@ public struct FooBar : Equatable, Proto2Codable, Codable {
         case rep
 
     }
-
-    public struct Nested : Equatable, Proto2Codable, Codable {
-
-        public var value: FooBarBazEnum?
-        public var unknownFields: Data = .init()
-
-        public init(value: FooBarBazEnum? = nil) {
-            self.value = value
-        }
-
-        public init(from reader: ProtoReader) throws {
-            var value: FooBarBazEnum? = nil
-
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    case 1: value = try reader.decode(FooBarBazEnum.self)
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.value = value
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.encode(tag: 1, value: value)
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-        private enum CodingKeys : String, CodingKey {
-
-            case value
-
-        }
-
-    }
-
-    public struct More : Equatable, Proto2Codable, Codable {
-
-        public var serial: [Int32]
-        public var unknownFields: Data = .init()
-
-        public init(serial: [Int32] = []) {
-            self.serial = serial
-        }
-
-        public init(from reader: ProtoReader) throws {
-            var serial: [Int32] = []
-
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    case 1: try reader.decode(into: &serial)
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.serial = try More.checkIfMissing(serial, "serial")
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.encode(tag: 1, value: serial)
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-        private enum CodingKeys : String, CodingKey {
-
-            case serial
-
-        }
-
-    }
-
-    public enum FooBarBazEnum : UInt32, CaseIterable, Codable {
-
-        case FOO = 1
-        case BAR = 2
-        case BAZ = 3
-
-    }
-
 }

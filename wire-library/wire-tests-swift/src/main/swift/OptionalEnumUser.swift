@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct OptionalEnumUser : Equatable, Proto2Codable, Codable {
+public struct OptionalEnumUser : Equatable {
 
     public var optional_enum: OptionalEnum?
     public var unknownFields: Data = .init()
@@ -12,12 +12,22 @@ public struct OptionalEnumUser : Equatable, Proto2Codable, Codable {
         self.optional_enum = optional_enum
     }
 
+    public enum OptionalEnum : UInt32, CaseIterable, Codable {
+
+        case FOO = 1
+        case BAR = 2
+
+    }
+
+}
+
+extension OptionalEnumUser : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        var optional_enum: OptionalEnum? = nil
+        var optional_enum: OptionalEnumUser.OptionalEnum? = nil
 
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
-                case 1: optional_enum = try reader.decode(OptionalEnum.self)
+                case 1: optional_enum = try reader.decode(OptionalEnumUser.OptionalEnum.self)
                 default: try reader.readUnknownField(tag: tag)
             }
         }
@@ -30,18 +40,12 @@ public struct OptionalEnumUser : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: optional_enum)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension OptionalEnumUser : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case optional_enum
 
     }
-
-    public enum OptionalEnum : UInt32, CaseIterable, Codable {
-
-        case FOO = 1
-        case BAR = 2
-
-    }
-
 }

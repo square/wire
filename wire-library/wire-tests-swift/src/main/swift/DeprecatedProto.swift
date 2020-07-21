@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct DeprecatedProto : Equatable, Proto2Codable, Codable {
+public struct DeprecatedProto : Equatable {
 
     @available(*, deprecated)
     public var foo: String?
@@ -13,6 +13,9 @@ public struct DeprecatedProto : Equatable, Proto2Codable, Codable {
         self.foo = foo
     }
 
+}
+
+extension DeprecatedProto : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var foo: String? = nil
 
@@ -31,11 +34,12 @@ public struct DeprecatedProto : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: foo)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension DeprecatedProto : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case foo
 
     }
-
 }

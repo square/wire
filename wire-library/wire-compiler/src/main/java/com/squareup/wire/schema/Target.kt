@@ -419,7 +419,9 @@ data class SwiftTarget(
           .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
           .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
           .indent("    ")
-          .addType(generator.generateType(type))
+          .apply {
+            generator.generateTypeTo(type, this)
+          }
           .build()
 
       try {

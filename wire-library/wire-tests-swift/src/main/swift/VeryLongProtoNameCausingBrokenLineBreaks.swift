@@ -6,7 +6,7 @@ import Wire
 /**
  * https://github.com/square/wire/issues/1125
  */
-public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codable, Codable {
+public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable {
 
     public var foo: String?
     public var unknownFields: Data = .init()
@@ -15,6 +15,9 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codabl
         self.foo = foo
     }
 
+}
+
+extension VeryLongProtoNameCausingBrokenLineBreaks : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var foo: String? = nil
 
@@ -33,11 +36,12 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable, Proto2Codabl
         try writer.encode(tag: 1, value: foo)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension VeryLongProtoNameCausingBrokenLineBreaks : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case foo
 
     }
-
 }

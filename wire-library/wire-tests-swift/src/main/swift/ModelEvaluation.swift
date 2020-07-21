@@ -18,7 +18,7 @@ import Wire
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
+public struct ModelEvaluation : Equatable {
 
     public var name: String?
     public var score: Double?
@@ -35,6 +35,9 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
         self.models = models
     }
 
+}
+
+extension ModelEvaluation : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var name: String? = nil
         var score: Double? = nil
@@ -61,7 +64,9 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 3, value: models)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension ModelEvaluation : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case name
@@ -69,5 +74,4 @@ public struct ModelEvaluation : Equatable, Proto2Codable, Codable {
         case models
 
     }
-
 }

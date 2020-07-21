@@ -3,13 +3,16 @@
 import Foundation
 import Wire
 
-public struct MessageWithOptions : Equatable, Proto2Codable, Codable {
+public struct MessageWithOptions : Equatable {
 
     public var unknownFields: Data = .init()
 
     public init() {
     }
 
+}
+
+extension MessageWithOptions : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
@@ -23,5 +26,7 @@ public struct MessageWithOptions : Equatable, Proto2Codable, Codable {
     public func encode(to writer: ProtoWriter) throws {
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension MessageWithOptions : Codable {
 }

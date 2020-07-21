@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct AllTypes : Equatable, Proto2Codable, Codable {
+public struct AllTypes : Equatable {
 
     public var opt_int32: Int32?
     public var opt_uint32: UInt32?
@@ -447,6 +447,55 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         self.ext_map_string_enum = ext_map_string_enum
     }
 
+    public enum NestedEnum : UInt32, CaseIterable, Codable {
+
+        case A = 1
+
+    }
+
+    public struct NestedMessage : Equatable {
+
+        public var a: Int32?
+        public var unknownFields: Data = .init()
+
+        public init(a: Int32? = nil) {
+            self.a = a
+        }
+
+    }
+
+}
+
+extension AllTypes.NestedMessage : Proto2Codable {
+    public init(from reader: ProtoReader) throws {
+        var a: Int32? = nil
+
+        let unknownFields = try reader.forEachTag { tag in
+            switch tag {
+                case 1: a = try reader.decode(Int32.self)
+                default: try reader.readUnknownField(tag: tag)
+            }
+        }
+
+        self.a = a
+        self.unknownFields = unknownFields
+    }
+
+    public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: a)
+        try writer.writeUnknownFields(unknownFields)
+    }
+}
+
+extension AllTypes.NestedMessage : Codable {
+    private enum CodingKeys : String, CodingKey {
+
+        case a
+
+    }
+}
+
+extension AllTypes : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var opt_int32: Int32? = nil
         var opt_uint32: UInt32? = nil
@@ -463,8 +512,8 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var opt_double: Double? = nil
         var opt_string: String? = nil
         var opt_bytes: Data? = nil
-        var opt_nested_enum: NestedEnum? = nil
-        var opt_nested_message: NestedMessage? = nil
+        var opt_nested_enum: AllTypes.NestedEnum? = nil
+        var opt_nested_message: AllTypes.NestedMessage? = nil
         var req_int32: Int32? = nil
         var req_uint32: UInt32? = nil
         var req_sint32: Int32? = nil
@@ -480,8 +529,8 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var req_double: Double? = nil
         var req_string: String? = nil
         var req_bytes: Data? = nil
-        var req_nested_enum: NestedEnum? = nil
-        var req_nested_message: NestedMessage? = nil
+        var req_nested_enum: AllTypes.NestedEnum? = nil
+        var req_nested_message: AllTypes.NestedMessage? = nil
         var rep_int32: [Int32] = []
         var rep_uint32: [UInt32] = []
         var rep_sint32: [Int32] = []
@@ -497,8 +546,8 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var rep_double: [Double] = []
         var rep_string: [String] = []
         var rep_bytes: [Data] = []
-        var rep_nested_enum: [NestedEnum] = []
-        var rep_nested_message: [NestedMessage] = []
+        var rep_nested_enum: [AllTypes.NestedEnum] = []
+        var rep_nested_message: [AllTypes.NestedMessage] = []
         var pack_int32: [Int32] = []
         var pack_uint32: [UInt32] = []
         var pack_sint32: [Int32] = []
@@ -512,7 +561,7 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var pack_bool: [Bool] = []
         var pack_float: [Float] = []
         var pack_double: [Double] = []
-        var pack_nested_enum: [NestedEnum] = []
+        var pack_nested_enum: [AllTypes.NestedEnum] = []
         var default_int32: Int32? = nil
         var default_uint32: UInt32? = nil
         var default_sint32: Int32? = nil
@@ -528,11 +577,11 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var default_double: Double? = nil
         var default_string: String? = nil
         var default_bytes: Data? = nil
-        var default_nested_enum: NestedEnum? = nil
+        var default_nested_enum: AllTypes.NestedEnum? = nil
         var map_int32_int32: [Int32 : Int32] = [:]
         var map_string_string: [String : String] = [:]
-        var map_string_message: [String : NestedMessage] = [:]
-        var map_string_enum: [String : NestedEnum] = [:]
+        var map_string_message: [String : AllTypes.NestedMessage] = [:]
+        var map_string_enum: [String : AllTypes.NestedEnum] = [:]
         var ext_opt_int32: Int32? = nil
         var ext_opt_uint32: UInt32? = nil
         var ext_opt_sint32: Int32? = nil
@@ -548,8 +597,8 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var ext_opt_double: Double? = nil
         var ext_opt_string: String? = nil
         var ext_opt_bytes: Data? = nil
-        var ext_opt_nested_enum: NestedEnum? = nil
-        var ext_opt_nested_message: NestedMessage? = nil
+        var ext_opt_nested_enum: AllTypes.NestedEnum? = nil
+        var ext_opt_nested_message: AllTypes.NestedMessage? = nil
         var ext_rep_int32: [Int32] = []
         var ext_rep_uint32: [UInt32] = []
         var ext_rep_sint32: [Int32] = []
@@ -565,8 +614,8 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var ext_rep_double: [Double] = []
         var ext_rep_string: [String] = []
         var ext_rep_bytes: [Data] = []
-        var ext_rep_nested_enum: [NestedEnum] = []
-        var ext_rep_nested_message: [NestedMessage] = []
+        var ext_rep_nested_enum: [AllTypes.NestedEnum] = []
+        var ext_rep_nested_message: [AllTypes.NestedMessage] = []
         var ext_pack_int32: [Int32] = []
         var ext_pack_uint32: [UInt32] = []
         var ext_pack_sint32: [Int32] = []
@@ -580,11 +629,11 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         var ext_pack_bool: [Bool] = []
         var ext_pack_float: [Float] = []
         var ext_pack_double: [Double] = []
-        var ext_pack_nested_enum: [NestedEnum] = []
+        var ext_pack_nested_enum: [AllTypes.NestedEnum] = []
         var ext_map_int32_int32: [Int32 : Int32] = [:]
         var ext_map_string_string: [String : String] = [:]
-        var ext_map_string_message: [String : NestedMessage] = [:]
-        var ext_map_string_enum: [String : NestedEnum] = [:]
+        var ext_map_string_message: [String : AllTypes.NestedMessage] = [:]
+        var ext_map_string_enum: [String : AllTypes.NestedEnum] = [:]
 
         let unknownFields = try reader.forEachTag { tag in
             switch tag {
@@ -603,8 +652,8 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
                 case 13: opt_double = try reader.decode(Double.self)
                 case 14: opt_string = try reader.decode(String.self)
                 case 15: opt_bytes = try reader.decode(Data.self)
-                case 16: opt_nested_enum = try reader.decode(NestedEnum.self)
-                case 17: opt_nested_message = try reader.decode(NestedMessage.self)
+                case 16: opt_nested_enum = try reader.decode(AllTypes.NestedEnum.self)
+                case 17: opt_nested_message = try reader.decode(AllTypes.NestedMessage.self)
                 case 101: req_int32 = try reader.decode(Int32.self)
                 case 102: req_uint32 = try reader.decode(UInt32.self)
                 case 103: req_sint32 = try reader.decode(Int32.self, encoding: .signed)
@@ -620,8 +669,8 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
                 case 113: req_double = try reader.decode(Double.self)
                 case 114: req_string = try reader.decode(String.self)
                 case 115: req_bytes = try reader.decode(Data.self)
-                case 116: req_nested_enum = try reader.decode(NestedEnum.self)
-                case 117: req_nested_message = try reader.decode(NestedMessage.self)
+                case 116: req_nested_enum = try reader.decode(AllTypes.NestedEnum.self)
+                case 117: req_nested_message = try reader.decode(AllTypes.NestedMessage.self)
                 case 201: try reader.decode(into: &rep_int32)
                 case 202: try reader.decode(into: &rep_uint32)
                 case 203: try reader.decode(into: &rep_sint32, encoding: .signed)
@@ -668,7 +717,7 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
                 case 413: default_double = try reader.decode(Double.self)
                 case 414: default_string = try reader.decode(String.self)
                 case 415: default_bytes = try reader.decode(Data.self)
-                case 416: default_nested_enum = try reader.decode(NestedEnum.self)
+                case 416: default_nested_enum = try reader.decode(AllTypes.NestedEnum.self)
                 case 501: try reader.decode(into: &map_int32_int32)
                 case 502: try reader.decode(into: &map_string_string)
                 case 503: try reader.decode(into: &map_string_message)
@@ -688,8 +737,8 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
                 case 1013: ext_opt_double = try reader.decode(Double.self)
                 case 1014: ext_opt_string = try reader.decode(String.self)
                 case 1015: ext_opt_bytes = try reader.decode(Data.self)
-                case 1016: ext_opt_nested_enum = try reader.decode(NestedEnum.self)
-                case 1017: ext_opt_nested_message = try reader.decode(NestedMessage.self)
+                case 1016: ext_opt_nested_enum = try reader.decode(AllTypes.NestedEnum.self)
+                case 1017: ext_opt_nested_message = try reader.decode(AllTypes.NestedMessage.self)
                 case 1101: try reader.decode(into: &ext_rep_int32)
                 case 1102: try reader.decode(into: &ext_rep_uint32)
                 case 1103: try reader.decode(into: &ext_rep_sint32, encoding: .signed)
@@ -1009,7 +1058,9 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1504, value: ext_map_string_enum)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension AllTypes : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case opt_int32
@@ -1151,47 +1202,4 @@ public struct AllTypes : Equatable, Proto2Codable, Codable {
         case ext_map_string_enum
 
     }
-
-    public enum NestedEnum : UInt32, CaseIterable, Codable {
-
-        case A = 1
-
-    }
-
-    public struct NestedMessage : Equatable, Proto2Codable, Codable {
-
-        public var a: Int32?
-        public var unknownFields: Data = .init()
-
-        public init(a: Int32? = nil) {
-            self.a = a
-        }
-
-        public init(from reader: ProtoReader) throws {
-            var a: Int32? = nil
-
-            let unknownFields = try reader.forEachTag { tag in
-                switch tag {
-                    case 1: a = try reader.decode(Int32.self)
-                    default: try reader.readUnknownField(tag: tag)
-                }
-            }
-
-            self.a = a
-            self.unknownFields = unknownFields
-        }
-
-        public func encode(to writer: ProtoWriter) throws {
-            try writer.encode(tag: 1, value: a)
-            try writer.writeUnknownFields(unknownFields)
-        }
-
-        private enum CodingKeys : String, CodingKey {
-
-            case a
-
-        }
-
-    }
-
 }

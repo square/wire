@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Mappy : Equatable, Proto2Codable, Codable {
+public struct Mappy : Equatable {
 
     public var things: [String : Thing]
     public var unknownFields: Data = .init()
@@ -12,6 +12,9 @@ public struct Mappy : Equatable, Proto2Codable, Codable {
         self.things = things
     }
 
+}
+
+extension Mappy : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var things: [String : Thing] = [:]
 
@@ -30,11 +33,12 @@ public struct Mappy : Equatable, Proto2Codable, Codable {
         try writer.encode(tag: 1, value: things)
         try writer.writeUnknownFields(unknownFields)
     }
+}
 
+extension Mappy : Codable {
     private enum CodingKeys : String, CodingKey {
 
         case things
 
     }
-
 }
