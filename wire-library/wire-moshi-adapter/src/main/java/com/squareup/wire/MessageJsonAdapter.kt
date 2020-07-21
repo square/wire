@@ -85,14 +85,10 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
   @Throws(IOException::class)
   override fun toJson(out: JsonWriter, message: M?) {
-    if (message == null) {
-      out.nullValue()
-      return
-    }
     out.beginObject()
     for (index in fieldBindings.indices) {
       val fieldBinding = fieldBindings[index]
-      val value = fieldBinding[message]
+      val value = fieldBinding[message!!]
       if (fieldBinding.label == WireField.Label.OMIT_IDENTITY && value == fieldBinding.identity) {
         continue
       }
@@ -103,11 +99,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   }
 
   @Throws(IOException::class)
-  override fun fromJson(input: JsonReader): M? {
-    if (input.peek() == JsonReader.Token.NULL) {
-      input.nextNull<Any>()
-      return null
-    }
+  override fun fromJson(input: JsonReader): M {
     val builder = messageAdapter.newBuilder()
     input.beginObject()
     while (input.hasNext()) {
@@ -119,7 +111,7 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
       }
       val index = option / 2
       val fieldBinding = fieldBindings[index]
-      val value = jsonAdapters[index]?.fromJson(input) ?: continue
+      val value = jsonAdapters[index].fromJson(input) ?: continue
 
       // If the value was explicitly null we ignore it rather than forcing null into the field.
       // Otherwise malformed JSON that sets a list to null will create a malformed message, and

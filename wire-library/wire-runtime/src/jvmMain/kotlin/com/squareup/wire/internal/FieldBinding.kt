@@ -183,15 +183,19 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   internal fun getFromBuilder(builder: B): Any? = builderField.get(builder)
 
   fun jsonStringAdapter(syntax: Syntax): JsonFormatter<*>? {
+    when (adapterString) {
+      "com.squareup.wire.ProtoAdapter#BYTES" -> return ByteStringJsonFormatter
+      "com.squareup.wire.ProtoAdapter#DURATION" -> return DurationJsonFormatter
+      "com.squareup.wire.ProtoAdapter#INSTANT" -> return InstantJsonFormatter
+    }
+
     if (syntax == PROTO_2) {
       return when (adapterString) {
-        "com.squareup.wire.ProtoAdapter#BYTES" -> ByteStringJsonFormatter
         "com.squareup.wire.ProtoAdapter#UINT64" -> UnsignedLongAsNumberJsonFormatter
         else -> null
       }
     } else {
       return when (adapterString) {
-        "com.squareup.wire.ProtoAdapter#BYTES" -> ByteStringJsonFormatter
         "com.squareup.wire.ProtoAdapter#INT64",
         "com.squareup.wire.ProtoAdapter#SFIXED64",
         "com.squareup.wire.ProtoAdapter#SINT64" -> LongAsStringJsonFormatter

@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.internal
 
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
+import com.squareup.wire.Duration
+import com.squareup.wire.internal.FieldBinding.JsonFormatter
 
 /**
  * Encode a duration as a JSON string like "1.200s". From the spec:
@@ -30,23 +28,10 @@ import com.squareup.moshi.JsonWriter
  * Note that [Duration] always returns a positive nanosPart, so "-1.200s" is represented as -2
  * seconds and 800_000_000 nanoseconds.
  */
-internal object DurationJsonAdapter : JsonAdapter<Duration>() {
-  override fun toJson(out: JsonWriter, duration: Duration?) {
-    out.value(durationToString(duration!!))
-  }
-
-  override fun fromJson(input: JsonReader): Duration? {
-    val string = input.nextString()
-    try {
-      return stringToDuration(string)
-    } catch (_: NumberFormatException) {
-      throw JsonDataException("not a duration: $string at path ${input.path}")
-    }
-  }
-
-  internal fun durationToString(duration: Duration): String {
-    var seconds = duration.seconds
-    var nanos = duration.nano
+object DurationJsonFormatter : JsonFormatter<Duration> {
+  override fun toStringOrNumber(value: Duration): String {
+    var seconds = value.seconds
+    var nanos = value.nano
     var prefix = ""
     if (seconds < 0L) {
       if (seconds == Long.MIN_VALUE) {
@@ -70,19 +55,19 @@ internal object DurationJsonAdapter : JsonAdapter<Duration>() {
   }
 
   /** Throws a NumberFormatException if the string isn't a number like "1s" or "1.23456789s". */
-  internal fun stringToDuration(string: String): Duration {
-    val sIndex = string.indexOf('s')
-    if (sIndex != string.length - 1) throw NumberFormatException()
+  override fun fromString(value: String): Duration {
+    val sIndex = value.indexOf('s')
+    if (sIndex != value.length - 1) throw NumberFormatException()
 
-    val dotIndex = string.indexOf('.')
+    val dotIndex = value.indexOf('.')
     if (dotIndex == -1) {
-      val seconds = string.substring(0, sIndex).toLong()
+      val seconds = value.substring(0, sIndex).toLong()
       return Duration.ofSeconds(seconds)
     }
 
-    val seconds = string.substring(0, dotIndex).toLong()
-    var nanos = string.substring(dotIndex + 1, sIndex).toLong()
-    if (string.startsWith("-")) nanos = -nanos
+    val seconds = value.substring(0, dotIndex).toLong()
+    var nanos = value.substring(dotIndex + 1, sIndex).toLong()
+    if (value.startsWith("-")) nanos = -nanos
     val nanosDigits = sIndex - (dotIndex + 1)
     for (i in nanosDigits until 9) nanos *= 10
     for (i in 9 until nanosDigits) nanos /= 10

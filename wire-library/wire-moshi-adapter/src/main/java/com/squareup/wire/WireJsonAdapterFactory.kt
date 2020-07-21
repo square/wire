@@ -18,9 +18,7 @@ package com.squareup.wire
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
-import java.lang.reflect.WildcardType
 
 /**
  * A [JsonAdapter.Factory] that allows Wire messages to be serialized and deserialized using the
@@ -74,47 +72,10 @@ class WireJsonAdapterFactory private constructor(
     return when {
       annotations.isNotEmpty() -> null
       rawType == AnyMessage::class.java -> AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
-      rawType == Duration::class.java -> DurationJsonAdapter.nullSafe()
-      rawType == Instant::class.java -> InstantJsonAdapter.nullSafe()
-      rawType == Any::class.java -> StructJsonAdapter.serializeNulls()
-      rawType == Unit::class.java -> StructJsonAdapter.serializeNulls()
-      type.isMapStringStar() -> StructJsonAdapter.serializeNulls()
-      type.isListStar() -> StructJsonAdapter.serializeNulls()
       Message::class.java.isAssignableFrom(rawType) -> {
-        MessageJsonAdapter<Nothing, Nothing>(moshi, type)
+        MessageJsonAdapter<Nothing, Nothing>(moshi, type).nullSafe()
       }
       else -> null
-    }
-  }
-
-  companion object {
-    /** Returns true if [this] is a `Map<String, *>`. */
-    private fun Type.isMapStringStar(): Boolean {
-      if (this !is ParameterizedType) return false
-      if (rawType != Map::class.java) return false
-
-      val keyType = actualTypeArguments[0]
-      val valueType = actualTypeArguments[1]
-      if (keyType != String::class.java) return false
-
-      if (valueType !is WildcardType) return false
-      if (valueType.lowerBounds.isNotEmpty()) return false
-      if (valueType.upperBounds != Object::class.java) return false
-
-      return true
-    }
-
-    /** Returns true if [this] is a `List<*>`. */
-    private fun Type.isListStar(): Boolean {
-      if (this !is ParameterizedType) return false
-      if (rawType != List::class.java) return false
-
-      val valueType = actualTypeArguments[0]
-      if (valueType !is WildcardType) return false
-      if (valueType.lowerBounds.isNotEmpty()) return false
-      if (valueType.upperBounds != Object::class.java) return false
-
-      return true
     }
   }
 }
