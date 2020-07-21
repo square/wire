@@ -92,7 +92,7 @@ extension FooBar.Nested : Proto2Codable {
 }
 
 extension FooBar.Nested : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case value
 
@@ -121,7 +121,7 @@ extension FooBar.More : Proto2Codable {
 }
 
 extension FooBar.More : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case serial
 
@@ -182,7 +182,7 @@ extension FooBar : Proto2Codable {
 }
 
 extension FooBar : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case foo
         case bar

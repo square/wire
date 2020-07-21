@@ -99,7 +99,7 @@ extension Person.PhoneNumber : Proto2Codable {
 }
 
 extension Person.PhoneNumber : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case number
         case type
@@ -145,7 +145,7 @@ extension Person : Proto2Codable {
 }
 
 extension Person : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case name
         case id

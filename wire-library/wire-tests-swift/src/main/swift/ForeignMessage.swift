@@ -36,7 +36,7 @@ extension ForeignMessage : Proto2Codable {
 }
 
 extension ForeignMessage : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case i
 

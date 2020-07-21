@@ -39,7 +39,7 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Proto2Codable {
 }
 
 extension VeryLongProtoNameCausingBrokenLineBreaks : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case foo
 

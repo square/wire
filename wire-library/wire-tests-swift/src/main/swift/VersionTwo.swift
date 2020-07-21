@@ -87,7 +87,7 @@ extension VersionTwo : Proto2Codable {
 }
 
 extension VersionTwo : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case i
         case v2_i

@@ -52,7 +52,7 @@ extension VersionOne : Proto2Codable {
 }
 
 extension VersionOne : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case i
         case obj

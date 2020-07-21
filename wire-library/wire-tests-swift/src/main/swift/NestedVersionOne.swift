@@ -36,7 +36,7 @@ extension NestedVersionOne : Proto2Codable {
 }
 
 extension NestedVersionOne : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case i
 

@@ -481,7 +481,7 @@ extension Form : Codable {
         }
     }
 
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case button_element
         case local_image_element

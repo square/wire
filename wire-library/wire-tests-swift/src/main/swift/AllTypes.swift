@@ -488,7 +488,7 @@ extension AllTypes.NestedMessage : Proto2Codable {
 }
 
 extension AllTypes.NestedMessage : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case a
 
@@ -1061,7 +1061,7 @@ extension AllTypes : Proto2Codable {
 }
 
 extension AllTypes : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case opt_int32
         case opt_uint32

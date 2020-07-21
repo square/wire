@@ -42,7 +42,7 @@ extension OuterMessage : Proto2Codable {
 }
 
 extension OuterMessage : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case outer_number_before
         case embedded_message

@@ -36,7 +36,7 @@ extension Mappy : Proto2Codable {
 }
 
 extension Mappy : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case things
 

@@ -67,7 +67,7 @@ extension ModelEvaluation : Proto2Codable {
 }
 
 extension ModelEvaluation : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case name
         case score

@@ -25,7 +25,6 @@ import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
 import io.outfoxx.swiftpoet.Modifier.FINAL
-import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.OPTIONAL
 import io.outfoxx.swiftpoet.ParameterSpec
@@ -349,7 +348,7 @@ class SwiftGenerator private constructor(
             // Define the keys which are the set of all direct properties and the properties within
             // each oneof.
             addType(TypeSpec.enumBuilder(codingKeys)
-                .addModifiers(PRIVATE)
+                .addModifiers(PUBLIC)
                 .addSuperType(STRING)
                 .addSuperType(codingKey)
                 .apply {

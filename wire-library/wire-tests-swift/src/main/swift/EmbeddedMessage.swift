@@ -42,7 +42,7 @@ extension EmbeddedMessage : Proto2Codable {
 }
 
 extension EmbeddedMessage : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case inner_repeated_number
         case inner_number_after

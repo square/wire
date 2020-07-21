@@ -43,7 +43,7 @@ extension OptionalEnumUser : Proto2Codable {
 }
 
 extension OptionalEnumUser : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case optional_enum
 

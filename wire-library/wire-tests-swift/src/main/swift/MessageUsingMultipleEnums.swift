@@ -45,7 +45,7 @@ extension MessageUsingMultipleEnums : Proto2Codable {
 }
 
 extension MessageUsingMultipleEnums : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case a
         case b

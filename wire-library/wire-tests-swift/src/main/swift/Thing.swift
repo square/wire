@@ -36,7 +36,7 @@ extension Thing : Proto2Codable {
 }
 
 extension Thing : Codable {
-    private enum CodingKeys : String, CodingKey {
+    public enum CodingKeys : String, CodingKey {
 
         case name
 
