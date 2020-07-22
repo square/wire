@@ -92,10 +92,14 @@ class Options(
       // This is an option declared by an extension.
       val extensionsForType = type.extensionFieldsMap()
       path = resolveFieldPath(option.name, extensionsForType.keys)
-      val packageName = linker.packageName()
-      if (path == null && packageName != null) {
+      var packageName = linker.packageName()
+      while (path == null && !packageName.isNullOrBlank()) {
         // If the path couldn't be resolved, attempt again by prefixing it with the package name.
         path = resolveFieldPath(packageName + "." + option.name, extensionsForType.keys)
+        // Retry with one upper level package to resolve relative paths.
+        if (path == null) {
+          packageName = packageName.substringBeforeLast(".", missingDelimiterValue = "")
+        }
       }
       if (path == null) {
         if (validate) {

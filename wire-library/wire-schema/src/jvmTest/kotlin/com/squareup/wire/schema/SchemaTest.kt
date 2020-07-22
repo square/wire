@@ -1995,7 +1995,6 @@ class SchemaTest {
     }
   }
 
-  @Ignore("Let's fix it yo.")
   @Test
   fun resolveOptionsWithRelativePath() {
     val schema = RepoBuilder()
