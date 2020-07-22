@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.graph.Traverser
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -37,6 +36,7 @@ import java.io.Serializable
 import java.nio.file.FileSystem
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.ArrayDeque
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 sealed class Target : Serializable {
@@ -316,50 +316,71 @@ data class SwiftTarget(
     newProfileLoader: NewProfileLoader
   ): SchemaHandler {
     val outputRoot = fs.getPath(outDirectory)
-    val (compilationUnits, orderedModules) = manifest
+    val (modules, moduleOrder) = manifest
 
     if (debug) {
-      println("Modules: ${compilationUnits.keys}")
-      println("Order: $orderedModules")
+      println("Modules: ${modules.keys}")
+      println("Order: $moduleOrder")
     }
 
     // TODO this means you cannot generate the same type in two unrelated modules! fix!
     val typeHandlers = mutableMapOf<ProtoType, SchemaHandler>()
 
-    /** Module name to combined pruning rules in the module and its transitive dependencies. */
-    val modulePruningRules = mutableMapOf<String, PruningRules>()
+    /** The types generated directly in each module (i.e., not including transitives). */
+    val moduleTypes = mutableMapOf<String, Set<ProtoType>>()
 
-    /** Module name to combined map of types in the module and its transitive dependencies. */
-    val moduleExistingTypes = mutableMapOf<String, Map<ProtoType, String>>()
+    for (moduleName in moduleOrder) {
+      val module = modules.getValue(moduleName)
 
-    for (moduleName in orderedModules) {
-      val compilationUnit = compilationUnits.getValue(moduleName)
+      val transitiveDependencySet = mutableSetOf<String>().apply {
+        val queue = ArrayDeque<String>().apply { add(moduleName) }
+        while (queue.isNotEmpty()) {
+          val dependency = modules.getValue(queue.removeFirst())
+          addAll(dependency.dependencies)
+          queue.addAll(dependency.dependencies)
+        }
+      } as Set<String> // TODO use buildSet
 
       val destination = outputRoot.resolve(moduleName)
       Files.createDirectories(destination) // TODO upstream to SwiftPoet's writeTo.
 
       val pruningRules = PruningRules.Builder()
           .apply {
-            for (dependency in compilationUnit.dependencies) {
-              val dependencyRules = modulePruningRules.getValue(dependency)
-              addRoot(dependencyRules.roots)
-              prune(dependencyRules.prunes)
+            for (dependencyName in transitiveDependencySet) {
+              val dependency = modules.getValue(dependencyName)
+              addRoot(dependency.includes)
+              prune(dependency.excludes)
             }
-            addRoot(compilationUnit.includes)
+            addRoot(module.includes)
             // TODO(jw): what do we do about excludes that apply to types in an upstream module? fail?
-            prune(compilationUnit.excludes)
+            prune(module.excludes)
           }
           .build()
-      modulePruningRules[moduleName] = pruningRules
 
-      val existingTypesToModuleName = mutableMapOf<ProtoType, String>().apply {
-        for (dependency in compilationUnit.dependencies) {
-          putAll(moduleExistingTypes.getValue(dependency))
+      val existingTypes = mutableMapOf<ProtoType, String>().apply {
+        val duplicateTypes = mutableMapOf<ProtoType, MutableSet<String>>()
+        for (dependencyName in transitiveDependencySet) {
+          for (type in moduleTypes.getValue(dependencyName)) {
+            val replaced = put(type, dependencyName)
+            if (replaced != null) {
+              duplicateTypes.getOrPut(type) { mutableSetOf(replaced) }.add(dependencyName)
+            }
+          }
         }
-      }
+        check(duplicateTypes.isEmpty()) {
+          buildString {
+            append("Module '$moduleName' sees duplicate types in its dependencies:\n\n")
+            for ((type, sourceModules) in duplicateTypes) {
+              append(" - $type in $sourceModules\n")
+            }
+            append("\nIn order to avoid confusion, each type should be moved up into a dependency ")
+            append("which is common to the modules listed for that type.")
+          }
+        }
+      } as Map<ProtoType, String> // TODO use buildMap
 
       val moduleSchema = schema.prune(pruningRules)
-      val generator = SwiftGenerator(moduleSchema, existingTypesToModuleName)
+      val generator = SwiftGenerator(moduleSchema, existingTypes)
       val moduleGenerator = ModuleSchemaHandler(generator, destination, logger)
 
       if (debug) {
@@ -374,39 +395,40 @@ data class SwiftTarget(
         println()
         println(moduleName)
         println("  Destination: $destination")
-        println("  Dependencies: ${compilationUnit.dependencies}")
+        println("  Dependencies: ${module.dependencies}")
         println("  Rules:")
-        println("   - roots: ${compilationUnit.includes}")
-        println("   - prunes: ${compilationUnit.excludes}")
+        println("   - roots: ${module.includes}")
+        println("   - prunes: ${module.excludes}")
         println("  Schema:")
         println("   - original: ${schema.stats()}")
         println("   - pruned: ${moduleSchema.stats()}")
-        println("  Existing: ${existingTypesToModuleName.size} proto types")
+        println("  Existing: ${existingTypes.size} proto types")
         println("  Content:")
       }
+      val generatedTypes = mutableSetOf<ProtoType>()
       for (protoFile in moduleSchema.protoFiles) {
         for (type in protoFile.typesAndNestedTypes()) {
           val protoType = type.type
-          if (protoType !in existingTypesToModuleName) {
+          if (protoType !in existingTypes) {
             if (debug) {
               println("   - type: $protoType")
             }
-            existingTypesToModuleName[protoType] = moduleName
+            generatedTypes += protoType
             typeHandlers[protoType] = moduleGenerator
           }
         }
         for (service in protoFile.services) {
           val protoType = service.type()
-          if (protoType !in existingTypesToModuleName) {
+          if (protoType !in existingTypes) {
             if (debug) {
               println("   - service: $protoType")
             }
-            existingTypesToModuleName[protoType] = moduleName
+            generatedTypes += protoType
             typeHandlers[protoType] = moduleGenerator
           }
         }
 
-        moduleExistingTypes[moduleName] = existingTypesToModuleName.toMap()
+        moduleTypes[moduleName] = generatedTypes
       }
     }
 
