@@ -23,6 +23,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
+import com.squareup.wire.WireField.Label.OMIT_IDENTITY
 import java.io.IOException
 import java.util.Collections
 import java.util.LinkedHashMap
@@ -34,6 +35,27 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
   typeUrl: String?,
   syntax: Syntax
 ) : ProtoAdapter<M>(FieldEncoding.LENGTH_DELIMITED, messageType.kotlin, typeUrl, syntax) {
+
+  /**
+   * Field bindings by index. The indexes are consistent across all related fields including
+   * [jsonNames], [jsonAlternateNames], and the result of [jsonAdapters].
+   */
+  val fieldBindingsArray: Array<FieldBinding<M, B>> = fieldBindings.values.toTypedArray()
+
+  /** When writing each field as JSON this is the name to use. */
+  val jsonNames: List<String> = fieldBindingsArray.map { it.jsonName }
+
+  /**
+   * When reading JSON these are alternate names for each field. If null the field has no alternate
+   * name.
+   *
+   * In proto3 fields declared in snake_case like `customer_id` are written in camelCase like
+   * `customerId`, but can be read in either form. The alternate name will be absent if the snake
+   * and camel cases are the same, such as in single-word identifiers.
+   */
+  val jsonAlternateNames: List<String?> = fieldBindingsArray.map {
+    if (it.jsonName != it.declaredName) it.declaredName else null
+  }
 
   fun newBuilder(): B = builderType.newInstance()
 
@@ -143,6 +165,34 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     return builder.build()
   }
 
+  /** Returns a message type that supports encoding and decoding JSON objects of type [type]. */
+  fun <F, A> jsonAdapters(
+    jsonIntegration: JsonIntegration<F, A>,
+    framework: F
+  ): List<A> {
+    val fieldBindings = fieldBindings.values.toTypedArray()
+    return fieldBindings.map { jsonIntegration.jsonAdapter(framework, syntax, it) }
+  }
+
+  /**
+   * Walk the fields of [message] and invoke [encodeValue] on each that should be written as JSON.
+   * This omits fields that have the identity value when that is required.
+   */
+  fun <A> writeAllFields(
+    message: M?,
+    jsonAdapters: List<A>,
+    encodeValue: (String, Any?, A) -> Unit
+  ) {
+    for (index in fieldBindingsArray.indices) {
+      val fieldBinding = fieldBindingsArray[index]
+      val value = fieldBinding[message!!]
+      if (fieldBinding.label == OMIT_IDENTITY && value == fieldBinding.identity) {
+        continue
+      }
+      encodeValue(jsonNames[index], value, jsonAdapters[index])
+    }
+  }
+
   companion object {
     private const val REDACTED = "\u2588\u2588"
 
@@ -164,6 +214,17 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
 
       return RuntimeMessageAdapter(messageType, builderType,
           Collections.unmodifiableMap(fieldBindings), typeUrl, syntax)
+    }
+
+    @JvmStatic fun <M : Message<M, B>, B : Builder<M, B>> create(
+      messageType: Class<M>
+    ): RuntimeMessageAdapter<M, B> {
+      val defaultAdapter = get(messageType as Class<*>)
+      return create(
+          messageType = messageType,
+          typeUrl = defaultAdapter.typeUrl,
+          syntax = defaultAdapter.syntax
+      )
     }
 
     private fun <M : Message<M, B>, B : Builder<M, B>> getBuilderType(
