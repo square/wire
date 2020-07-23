@@ -31,6 +31,15 @@ public final class ProtoReader {
 
     // MARK: - Private Properties
 
+    /** The number of slots to preallocate in a collection when we encounter the first value. */
+    private static let collectionPreallocationSlotCount = 5
+
+    /**
+     The maximum allowable value size for which we'll do collection preallocation.
+     If values in the collection are larger than this value then we won't preallocate.
+     */
+    private static let collectionPreallocationMaxValueSize = 128
+
     private let buffer: ReadBuffer
 
     /**
@@ -541,8 +550,8 @@ public final class ProtoReader {
             // than reallocate each time we add a new item. We'll use an arbitrary
             // (small) guess, and make sure we don't do this for large message
             // structs to avoid allocating too much extra memory.
-            if array.isEmpty && MemoryLayout<T>.size <= 128 {
-                array.reserveCapacity(5)
+            if array.isEmpty && MemoryLayout<T>.size <= ProtoReader.collectionPreallocationMaxValueSize {
+                array.reserveCapacity(ProtoReader.collectionPreallocationSlotCount)
             }
 
             // This is a single entry in a regular repeated field
@@ -574,6 +583,11 @@ public final class ProtoReader {
         }
         guard let unwrappedValue = value else {
             throw ProtoDecoder.Error.mapEntryWithoutValue(key: key)
+        }
+
+        // Preallocate a few empty slots to avoid reallocations.
+        if dictionary.isEmpty && MemoryLayout<V>.size <= ProtoReader.collectionPreallocationMaxValueSize {
+            dictionary.reserveCapacity(ProtoReader.collectionPreallocationSlotCount)
         }
 
         dictionary[unwrappedKey] = unwrappedValue
