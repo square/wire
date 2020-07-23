@@ -2020,6 +2020,183 @@ class SchemaTest {
   }
 
   @Test
+  fun optionsWithRelativePathUsedInExtensions() {
+    val schema = RepoBuilder()
+        .add("squareup/domain/message.proto", """
+             |syntax = "proto2";
+             |package squareup.domain;
+             |
+             |message Message{}
+             """.trimMargin())
+        .add("squareup/common/options.proto", """
+             |syntax = "proto2";
+             |package squareup.common;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |import "squareup/domain/message.proto";
+             |
+             |extend squareup.domain.Message {
+             |  optional string type = 12000 [(maps_to) = "sup"];
+             |}
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional string maps_to = 123301;
+             |}
+             """.trimMargin())
+        .schema()
+    assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
+  }
+
+  @Test
+  fun optionsWithRelativePathUsedInExtensionsAmbiguous() {
+    try {
+      RepoBuilder()
+          .add("squareup/domain/message.proto", """
+             |syntax = "proto2";
+             |package squareup.domain;
+             |
+             |message Message{}
+             """.trimMargin())
+          .add("squareup/common/options.proto", """
+             |syntax = "proto2";
+             |package squareup.common;
+             |
+             |import "squareup/domain/message.proto";
+             |import "squareup/options1/special.proto";
+             |import "squareup/options2/special.proto";
+             |
+             |extend squareup.domain.Message {
+             |  optional string type = 12000 [(maps_to) = "sup"];
+             |}
+             """.trimMargin())
+          .add("squareup/options1/special.proto", """
+             |syntax = "proto2";
+             |package squareup.options1;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional string maps_to = 123301;
+             |}
+             """.trimMargin())
+          .add("squareup/options2/special.proto", """
+             |syntax = "proto2";
+             |package squareup.options2;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional string maps_to = 123302;
+             |}
+             """.trimMargin())
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |ambiguous options maps_to defined in
+            |  - /source/squareup/options1/special.proto:7:3
+            |  - /source/squareup/options2/special.proto:7:3
+            |  for field type (/source/squareup/common/options.proto:9:3)
+            |  in message squareup.domain.Message (/source/squareup/domain/message.proto:4:1)
+            """.trimMargin())
+    }
+  }
+
+  @Ignore("We throw as ambiguous but protoc resolve by the using the local one.")
+  @Test
+  fun optionsWithRelativePathUsedInExtensionsShouldUseClosest() {
+    try {
+      RepoBuilder()
+          .add("squareup/domain/message.proto", """
+             |syntax = "proto2";
+             |package squareup.domain;
+             |
+             |message Message{}
+             """.trimMargin())
+          .add("squareup/common/options.proto", """
+             |syntax = "proto2";
+             |package squareup.common;
+             |
+             |import "squareup/domain/message.proto";
+             |import "squareup/options/special.proto";
+             |
+             |extend squareup.domain.Message {
+             |  optional string type = 12000 [(maps_to) = "sup"];
+             |}
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional string maps_to = 123301;
+             |}
+             """.trimMargin())
+          .add("squareup/options/special.proto", """
+             |syntax = "proto2";
+             |package squareup.options;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional string maps_to = 123302;
+             |}
+             """.trimMargin())
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |ambiguous options maps_to defined in
+            |  - /source/squareup/common/options.proto:12:3
+            |  - /source/squareup/options/special.proto:7:3
+            |  for field type (/source/squareup/common/options.proto:9:3)
+            |  in message squareup.domain.Message (/source/squareup/domain/message.proto:4:1)
+            """.trimMargin())
+    }
+  }
+
+  @Test
+  fun optionsWithRelativePathUsedInExtensionsResolvable() {
+    val schema = RepoBuilder()
+        .add("squareup/domain/message.proto", """
+             |syntax = "proto2";
+             |package squareup.domain;
+             |
+             |message Message{}
+             """.trimMargin())
+        .add("squareup/common/options.proto", """
+             |syntax = "proto2";
+             |package squareup.common;
+             |
+             |import "squareup/domain/message.proto";
+             |import "squareup/options1/special.proto";
+             |import "squareup/options2/special.proto";
+             |
+             |extend squareup.domain.Message {
+             |  optional string type = 12000 [(options1.maps_to) = "sup"];
+             |}
+             """.trimMargin())
+        .add("squareup/options1/special.proto", """
+             |syntax = "proto2";
+             |package squareup.options1;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional string maps_to = 123301;
+             |}
+             """.trimMargin())
+        .add("squareup/options2/special.proto", """
+             |syntax = "proto2";
+             |package squareup.options2;
+             |
+             |import "google/protobuf/descriptor.proto";
+             |
+             |extend google.protobuf.FieldOptions {
+             |  optional string maps_to = 123302;
+             |}
+             """.trimMargin())
+        .schema()
+    assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
+  }
+
+  @Test
   fun mapsCannotBeExtensions() {
     try {
       RepoBuilder()
