@@ -30,8 +30,8 @@ data class Manifest(
   @Serializable
   data class Module(
     val dependencies: Set<String> = emptySet(),
-    val includes: Set<String> = setOf("*"),
-    val excludes: Set<String> = emptySet()
+    val roots: Set<String> = setOf("*"),
+    val prunes: Set<String> = emptySet()
   )
 
   companion object {

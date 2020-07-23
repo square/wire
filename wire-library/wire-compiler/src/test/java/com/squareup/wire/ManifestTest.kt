@@ -20,6 +20,46 @@ import org.junit.Assert.fail
 import org.junit.Test
 
 class ManifestTest {
+  @Test fun parseFormat() {
+    val yaml = """
+      |one:
+      |  dependencies:
+      |    - two
+      |    - three
+      |  roots:
+      |    - example.A
+      |    - example.B
+      |  prunes:
+      |    - example.C
+      |    - example.D
+      |two: {}
+      |three: {}
+    """.trimMargin()
+
+    val manifest = Manifest.fromYaml(yaml)
+    assertThat(manifest.compilationUnits.keys).containsExactlyInAnyOrder("one", "two", "three")
+
+    val one = manifest.compilationUnits.getValue("one")
+    assertThat(one.dependencies).containsExactlyInAnyOrder("two", "three")
+    assertThat(one.roots).containsExactlyInAnyOrder("example.A", "example.B")
+    assertThat(one.prunes).containsExactlyInAnyOrder("example.C", "example.D")
+  }
+
+  @Test fun parseFormatFailsOnUnknownKey() {
+    val yaml = """
+      |one:
+      |  includes:
+      |    - example.A
+    """.trimMargin()
+
+    try {
+      Manifest.fromYaml(yaml)
+      fail()
+    } catch (e: Exception) {
+      assertThat(e).hasMessageContaining("Unknown property 'includes'")
+    }
+  }
+
   @Test fun outOfOrderDependency() {
     val yaml = """
       |one:

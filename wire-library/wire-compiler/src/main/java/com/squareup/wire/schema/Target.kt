@@ -348,12 +348,12 @@ data class SwiftTarget(
           .apply {
             for (dependencyName in transitiveDependencySet) {
               val dependency = modules.getValue(dependencyName)
-              addRoot(dependency.includes)
-              prune(dependency.excludes)
+              addRoot(dependency.roots)
+              prune(dependency.prunes)
             }
-            addRoot(module.includes)
-            // TODO(jw): what do we do about excludes that apply to types in an upstream module? fail?
-            prune(module.excludes)
+            addRoot(module.roots)
+            // TODO(jw): what do we do about prunes that apply to types in an upstream module? fail?
+            prune(module.prunes)
           }
           .build()
 
@@ -397,8 +397,8 @@ data class SwiftTarget(
         println("  Destination: $destination")
         println("  Dependencies: ${module.dependencies}")
         println("  Rules:")
-        println("   - roots: ${module.includes}")
-        println("   - prunes: ${module.excludes}")
+        println("   - roots: ${module.roots}")
+        println("   - prunes: ${module.prunes}")
         println("  Schema:")
         println("   - original: ${schema.stats()}")
         println("   - pruned: ${moduleSchema.stats()}")
