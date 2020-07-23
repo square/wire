@@ -1831,13 +1831,20 @@ class SchemaTest {
             |""".trimMargin()
         ).schema()
 
-    assertThat(schema.protoFile("message.proto")!!.options.elements).contains(deprecatedOptionElement)
-    assertThat(schema.getType("Message")!!.options.elements).contains(deprecatedOptionElement)
-    assertThat((schema.getType("Message")!! as MessageType).field("s")!!.options.elements).contains(deprecatedOptionElement)
-    assertThat(schema.getType("Enum")!!.options.elements).contains(deprecatedOptionElement)
-    assertThat((schema.getType("Enum")!! as EnumType).constant("A")!!.options.elements).contains(deprecatedOptionElement)
-    assertThat(schema.getService("Service")!!.options().elements).contains(deprecatedOptionElement)
-    assertThat(schema.getService("Service")!!.rpc("Call")!!.options.elements).contains(deprecatedOptionElement)
+    assertThat(schema.protoFile("message.proto")!!.options.elements)
+        .contains(deprecatedOptionElement)
+    assertThat(schema.getType("Message")!!.options.elements)
+        .contains(deprecatedOptionElement)
+    assertThat((schema.getType("Message")!! as MessageType).field("s")!!.options.elements)
+        .contains(deprecatedOptionElement)
+    assertThat(schema.getType("Enum")!!.options.elements)
+        .contains(deprecatedOptionElement)
+    assertThat((schema.getType("Enum")!! as EnumType).constant("A")!!.options.elements)
+        .contains(deprecatedOptionElement)
+    assertThat(schema.getService("Service")!!.options().elements)
+        .contains(deprecatedOptionElement)
+    assertThat(schema.getService("Service")!!.rpc("Call")!!.options.elements)
+        .contains(deprecatedOptionElement)
   }
 
   @Test
@@ -1986,6 +1993,30 @@ class SchemaTest {
             """.trimMargin()
       )
     }
+  }
+
+  @Test
+  fun resolveOptionsWithRelativePath() {
+    val schema = RepoBuilder()
+        .add("squareup/common/options.proto", """
+             |syntax = "proto2";
+             |package squareup.common;
+             |import "google/protobuf/descriptor.proto";
+             |
+             |extend google.protobuf.FileOptions {
+             |  optional string file_status = 60000;
+             |}
+             """.trimMargin())
+        .add("squareup/domain/message.proto", """
+             |syntax = "proto2";
+             |package squareup.domain;
+             |import "squareup/common/options.proto";
+             |option (common.file_status) = "INTERNAL";
+             |
+             |message Message{}
+             """.trimMargin())
+        .schema()
+    assertThat(schema.protoFile("squareup/domain/message.proto")).isNotNull()
   }
 
   @Test
