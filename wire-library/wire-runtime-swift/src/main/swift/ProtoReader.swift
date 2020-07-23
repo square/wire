@@ -48,6 +48,12 @@ public final class ProtoReader {
     /** How to interpret the next read call. */
     private var state: State
 
+    private var messageEndStack: [UnsafePointer<UInt8>] = {
+        var array = [UnsafePointer<UInt8>]()
+        array.reserveCapacity(5)
+        return array
+    }()
+
     // MARK: - Private Properties - Constants
 
     /** The standard number of levels of message nesting to allow. */
@@ -61,17 +67,89 @@ public final class ProtoReader {
         self.messageStackDepth = 1
     }
 
-    // MARK: - Public Methods - Iterating Tags
+    // MARK: - Public Methods - Decoding - Generated Message Body
 
-    /** Reads each tag within a message, handles it, and returns a byte string with the unknown fields. */
-    public func forEachTag(_ block: (UInt32) throws -> Void) throws -> Data {
-        return try decodeMessage { length in
-            let messageEnd = buffer.pointer.advanced(by: length)
-            while true {
-                guard let tag = try nextTag(messageEnd: messageEnd) else { break }
-                try block(tag)
+    /**
+     Begin a nested message. A call to this method will restrict the reader so that `nextTag`
+     returns nil when the message is complete.
+     */
+    public func beginMessage() throws {
+        guard case let .lengthDelimited(length) = state else {
+            fatalError("Unexpected call to decodeMessage()")
+        }
+
+        if messageStackDepth > ProtoReader.recursionLimit {
+            throw ProtoDecoder.Error.recursionLimitExceeded
+        }
+
+        state = .tag
+
+        messageStackDepth += 1
+
+        messageEndStack.append(buffer.pointer.advanced(by: length))
+    }
+
+    /**
+     Reads and returns the next tag of the message, or `nil` if there are no further tags.
+     This method should be paired with calls to `beginMessage` and `endMessage`.
+     This silently skips groups.
+     */
+    public func nextTag() throws -> UInt32? {
+        if state != .tag {
+            // After reading the previous value the state should have been set to `.tag`
+            fatalError("Unexpected call to nextTag. State is \(state).")
+        }
+
+        while buffer.pointer < messageEndStack.last! && buffer.isDataRemaining {
+            let (tag, wireType) = try readFieldKey()
+            nextFieldWireType = wireType
+
+            switch wireType {
+            case .startGroup:
+                try addUnknownField { writer in
+                    try skipGroup(expectedEndTag: tag, unknownFieldsWriter: writer)
+                }
+
+            case .endGroup:
+                throw ProtoDecoder.Error.unexpectedEndGroupFieldNumber(expected: nil, found: tag)
+
+            case .lengthDelimited:
+                let length = try buffer.readVarint32()
+                state = .lengthDelimited(length: Int(length))
+                return tag
+
+            case .fixed32:
+                state = .fixed32
+                return tag
+
+            case .fixed64:
+                state = .fixed64
+                return tag
+
+            case .varint:
+                state = .varint
+                return tag
             }
         }
+
+        return nil
+    }
+
+    public func endMessage() throws -> Data {
+        guard let expectedEndPointer = messageEndStack.popLast() else {
+            throw ProtoDecoder.Error.unmatchedEndMessage
+        }
+
+        let unknownFieldsData = unknownFieldsByMessageDepth?.removeValue(forKey: messageStackDepth)
+        messageStackDepth -= 1
+
+        if buffer.pointer != expectedEndPointer {
+            throw ProtoDecoder.Error.invalidStructure(
+                message: "Expected to end message at at \(expectedEndPointer - buffer.start), but was at \(buffer.position)"
+            )
+        }
+
+        return unknownFieldsData.flatMap { Data($0) } ?? Data()
     }
 
     // MARK: - Public Methods - Decoding - Single Fields
@@ -428,87 +506,6 @@ public final class ProtoReader {
         return try T(from: self, encoding: encoding)
     }
 
-    /**
-     Begin a nested message. A call to this method will restrict the reader so that [nextTag]
-     returns nil when the message is complete.
-
-     - parameter decode: A block which is called to actually decode the message. The parameter
-                         to the block is the end offset of the message.
-     - returns: Returns all unknown fields in the message, encoded sequentially.
-     */
-    private func decodeMessage(_ decode: (_ length: Int) throws -> Void) throws -> Data {
-        guard case let .lengthDelimited(length) = state else {
-            fatalError("Unexpected call to decodeMessage()")
-        }
-
-        if messageStackDepth > ProtoReader.recursionLimit {
-            throw ProtoDecoder.Error.recursionLimitExceeded
-        }
-
-        state = .tag
-
-        let expectedEndPointer = buffer.pointer.advanced(by: length)
-
-        messageStackDepth += 1
-        try decode(length)
-
-        let unknownFieldsData = unknownFieldsByMessageDepth?.removeValue(forKey: messageStackDepth)
-        messageStackDepth -= 1
-
-        if buffer.pointer != expectedEndPointer {
-            throw ProtoDecoder.Error.invalidStructure(
-                message: "Expected to end message at at \(expectedEndPointer - buffer.start), but was at \(buffer.position)"
-            )
-        }
-
-        return unknownFieldsData.flatMap { Data($0) } ?? Data()
-    }
-
-    /**
-     Reads and returns the next tag of the message, or nil if there are no further tags. Use
-     `nextFieldWireType` after calling this method to query its wire type. This silently skips groups.
-     */
-    private func nextTag(messageEnd: UnsafePointer<UInt8>) throws -> UInt32? {
-        if state != .tag {
-            // After reading the previous value the state should have been set to `.tag`
-            fatalError("Unexpected call to nextTag. State is \(state).")
-        }
-
-        while buffer.pointer < messageEnd && buffer.isDataRemaining {
-            let (tag, wireType) = try readFieldKey()
-            nextFieldWireType = wireType
-
-            switch wireType {
-            case .startGroup:
-                try addUnknownField { writer in
-                    try skipGroup(expectedEndTag: tag, unknownFieldsWriter: writer)
-                }
-
-            case .endGroup:
-                throw ProtoDecoder.Error.unexpectedEndGroupFieldNumber(expected: nil, found: tag)
-
-            case .lengthDelimited:
-                let length = try buffer.readVarint32()
-                state = .lengthDelimited(length: Int(length))
-                return tag
-
-            case .fixed32:
-                state = .fixed32
-                return tag
-
-            case .fixed64:
-                state = .fixed64
-                return tag
-
-            case .varint:
-                state = .varint
-                return tag
-            }
-        }
-
-        return nil
-    }
-
     private func readFieldKey() throws -> (UInt32, FieldWireType) {
         let tagAndWireType = try buffer.readVarint32()
         if tagAndWireType == 0 {
@@ -557,7 +554,8 @@ public final class ProtoReader {
         var key: K?
         var value: V?
 
-        _ = try forEachTag { tag in
+        try beginMessage()
+        while let tag = try nextTag() {
             switch tag {
             case 1: key = try decodeKey()
             case 2: value = try decodeValue()
@@ -565,6 +563,7 @@ public final class ProtoReader {
                 throw ProtoDecoder.Error.unexpectedFieldNumberInMap(tag)
             }
         }
+        _ = try endMessage()
 
         guard let unwrappedKey = key else {
             throw ProtoDecoder.Error.mapEntryWithoutKey(value: value)
