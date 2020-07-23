@@ -74,12 +74,14 @@ extension FooBar.Nested : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var value: FooBar.FooBarBazEnum? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: value = try reader.decode(FooBar.FooBarBazEnum.self)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: value = try reader.decode(FooBar.FooBarBazEnum.self)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.value = value
         self.unknownFields = unknownFields
@@ -103,12 +105,14 @@ extension FooBar.More : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var serial: [Int32] = []
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: try reader.decode(into: &serial)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: try reader.decode(into: &serial)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.serial = try FooBar.More.checkIfMissing(serial, "serial")
         self.unknownFields = unknownFields
@@ -140,20 +144,22 @@ extension FooBar : Proto2Codable {
         var ext: FooBar.FooBarBazEnum? = nil
         var rep: [FooBar.FooBarBazEnum] = []
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: foo = try reader.decode(Int32.self)
-                case 2: bar = try reader.decode(String.self)
-                case 3: baz = try reader.decode(FooBar.Nested.self)
-                case 4: qux = try reader.decode(UInt64.self)
-                case 5: try reader.decode(into: &fred)
-                case 6: daisy = try reader.decode(Double.self)
-                case 7: try reader.decode(into: &nested)
-                case 101: ext = try reader.decode(FooBar.FooBarBazEnum.self)
-                case 102: try reader.decode(into: &rep)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: foo = try reader.decode(Int32.self)
+            case 2: bar = try reader.decode(String.self)
+            case 3: baz = try reader.decode(FooBar.Nested.self)
+            case 4: qux = try reader.decode(UInt64.self)
+            case 5: try reader.decode(into: &fred)
+            case 6: daisy = try reader.decode(Double.self)
+            case 7: try reader.decode(into: &nested)
+            case 101: ext = try reader.decode(FooBar.FooBarBazEnum.self)
+            case 102: try reader.decode(into: &rep)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.foo = foo
         self.bar = bar

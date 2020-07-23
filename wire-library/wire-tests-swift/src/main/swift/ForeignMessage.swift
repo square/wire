@@ -18,12 +18,14 @@ extension ForeignMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var i: Int32? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: i = try reader.decode(Int32.self)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: i = try reader.decode(Int32.self)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.i = i
         self.unknownFields = unknownFields

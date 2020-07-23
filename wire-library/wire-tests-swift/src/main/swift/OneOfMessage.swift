@@ -40,14 +40,16 @@ extension OneOfMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var choice: OneOfMessage.Choice? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: choice = .foo(try reader.decode(Int32.self))
-                case 3: choice = .bar(try reader.decode(String.self))
-                case 4: choice = .baz(try reader.decode(String.self))
-                default: try reader.readUnknownField(tag: tag)
+            case 1: choice = .foo(try reader.decode(Int32.self))
+            case 3: choice = .bar(try reader.decode(String.self))
+            case 4: choice = .baz(try reader.decode(String.self))
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.choice = choice
         self.unknownFields = unknownFields

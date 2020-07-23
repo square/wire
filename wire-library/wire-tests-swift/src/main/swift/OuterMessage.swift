@@ -21,13 +21,15 @@ extension OuterMessage : Proto2Codable {
         var outer_number_before: Int32? = nil
         var embedded_message: EmbeddedMessage? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: outer_number_before = try reader.decode(Int32.self)
-                case 2: embedded_message = try reader.decode(EmbeddedMessage.self)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: outer_number_before = try reader.decode(Int32.self)
+            case 2: embedded_message = try reader.decode(EmbeddedMessage.self)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.outer_number_before = outer_number_before
         self.embedded_message = embedded_message

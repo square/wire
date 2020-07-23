@@ -19,12 +19,14 @@ extension DeprecatedProto : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var foo: String? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: foo = try reader.decode(String.self)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: foo = try reader.decode(String.self)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.foo = foo
         self.unknownFields = unknownFields

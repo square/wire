@@ -43,14 +43,16 @@ extension ModelEvaluation : Proto2Codable {
         var score: Double? = nil
         var models: [String : ModelEvaluation] = [:]
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: name = try reader.decode(String.self)
-                case 2: score = try reader.decode(Double.self)
-                case 3: try reader.decode(into: &models)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: name = try reader.decode(String.self)
+            case 2: score = try reader.decode(Double.self)
+            case 3: try reader.decode(into: &models)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.name = name
         self.score = score

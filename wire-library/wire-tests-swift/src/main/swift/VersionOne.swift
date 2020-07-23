@@ -28,14 +28,16 @@ extension VersionOne : Proto2Codable {
         var obj: NestedVersionOne? = nil
         var en: EnumVersionOne? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: i = try reader.decode(Int32.self)
-                case 7: obj = try reader.decode(NestedVersionOne.self)
-                case 8: en = try reader.decode(EnumVersionOne.self)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: i = try reader.decode(Int32.self)
+            case 7: obj = try reader.decode(NestedVersionOne.self)
+            case 8: en = try reader.decode(EnumVersionOne.self)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.i = i
         self.obj = obj

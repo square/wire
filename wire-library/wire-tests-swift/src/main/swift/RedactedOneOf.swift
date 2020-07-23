@@ -32,13 +32,15 @@ extension RedactedOneOf : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var a: RedactedOneOf.A? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: a = .b(try reader.decode(Int32.self))
-                case 2: a = .c(try reader.decode(String.self))
-                default: try reader.readUnknownField(tag: tag)
+            case 1: a = .b(try reader.decode(Int32.self))
+            case 2: a = .c(try reader.decode(String.self))
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.a = a
         self.unknownFields = unknownFields

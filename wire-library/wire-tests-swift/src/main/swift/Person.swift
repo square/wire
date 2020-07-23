@@ -78,13 +78,15 @@ extension Person.PhoneNumber : Proto2Codable {
         var number: String? = nil
         var type: Person.PhoneType? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: number = try reader.decode(String.self)
-                case 2: type = try reader.decode(Person.PhoneType.self)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: number = try reader.decode(String.self)
+            case 2: type = try reader.decode(Person.PhoneType.self)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.number = try Person.PhoneNumber.checkIfMissing(number, "number")
         self.type = type
@@ -115,16 +117,18 @@ extension Person : Proto2Codable {
         var phone: [Person.PhoneNumber] = []
         var aliases: [String] = []
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: name = try reader.decode(String.self)
-                case 2: id = try reader.decode(Int32.self)
-                case 3: email = try reader.decode(String.self)
-                case 4: try reader.decode(into: &phone)
-                case 5: try reader.decode(into: &aliases)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: name = try reader.decode(String.self)
+            case 2: id = try reader.decode(Int32.self)
+            case 3: email = try reader.decode(String.self)
+            case 4: try reader.decode(into: &phone)
+            case 5: try reader.decode(into: &aliases)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.name = try Person.checkIfMissing(name, "name")
         self.id = try Person.checkIfMissing(id, "id")

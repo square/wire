@@ -25,12 +25,14 @@ extension OptionalEnumUser : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var optional_enum: OptionalEnumUser.OptionalEnum? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: optional_enum = try reader.decode(OptionalEnumUser.OptionalEnum.self)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: optional_enum = try reader.decode(OptionalEnumUser.OptionalEnum.self)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.optional_enum = optional_enum
         self.unknownFields = unknownFields

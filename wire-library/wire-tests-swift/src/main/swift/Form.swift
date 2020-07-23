@@ -158,11 +158,13 @@ public struct Form : Equatable {
 
 extension Form.ButtonElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -177,11 +179,13 @@ extension Form.ButtonElement : Codable {
 
 extension Form.LocalImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -196,11 +200,13 @@ extension Form.LocalImageElement : Codable {
 
 extension Form.RemoteImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -215,11 +221,13 @@ extension Form.RemoteImageElement : Codable {
 
 extension Form.MoneyElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -234,11 +242,13 @@ extension Form.MoneyElement : Codable {
 
 extension Form.SpacerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -253,11 +263,13 @@ extension Form.SpacerElement : Codable {
 
 extension Form.TextElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -272,11 +284,13 @@ extension Form.TextElement : Codable {
 
 extension Form.CustomizedCardElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -291,11 +305,13 @@ extension Form.CustomizedCardElement : Codable {
 
 extension Form.AddressElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -310,11 +326,13 @@ extension Form.AddressElement : Codable {
 
 extension Form.TextInputElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -329,11 +347,13 @@ extension Form.TextInputElement : Codable {
 
 extension Form.OptionPickerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -348,11 +368,13 @@ extension Form.OptionPickerElement : Codable {
 
 extension Form.DetailRowElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -367,11 +389,13 @@ extension Form.DetailRowElement : Codable {
 
 extension Form.CurrencyConversionFlagsElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }
@@ -388,23 +412,25 @@ extension Form : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var choice: Form.Choice? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: choice = .button_element(try reader.decode(Form.ButtonElement.self))
-                case 2: choice = .local_image_element(try reader.decode(Form.LocalImageElement.self))
-                case 3: choice = .remote_image_element(try reader.decode(Form.RemoteImageElement.self))
-                case 4: choice = .money_element(try reader.decode(Form.MoneyElement.self))
-                case 5: choice = .spacer_element(try reader.decode(Form.SpacerElement.self))
-                case 6: choice = .text_element(try reader.decode(Form.TextElement.self))
-                case 7: choice = .customized_card_element(try reader.decode(Form.CustomizedCardElement.self))
-                case 8: choice = .address_element(try reader.decode(Form.AddressElement.self))
-                case 9: choice = .text_input_element(try reader.decode(Form.TextInputElement.self))
-                case 10: choice = .option_picker_element(try reader.decode(Form.OptionPickerElement.self))
-                case 11: choice = .detail_row_element(try reader.decode(Form.DetailRowElement.self))
-                case 12: choice = .currency_conversion_flags_element(try reader.decode(Form.CurrencyConversionFlagsElement.self))
-                default: try reader.readUnknownField(tag: tag)
+            case 1: choice = .button_element(try reader.decode(Form.ButtonElement.self))
+            case 2: choice = .local_image_element(try reader.decode(Form.LocalImageElement.self))
+            case 3: choice = .remote_image_element(try reader.decode(Form.RemoteImageElement.self))
+            case 4: choice = .money_element(try reader.decode(Form.MoneyElement.self))
+            case 5: choice = .spacer_element(try reader.decode(Form.SpacerElement.self))
+            case 6: choice = .text_element(try reader.decode(Form.TextElement.self))
+            case 7: choice = .customized_card_element(try reader.decode(Form.CustomizedCardElement.self))
+            case 8: choice = .address_element(try reader.decode(Form.AddressElement.self))
+            case 9: choice = .text_input_element(try reader.decode(Form.TextInputElement.self))
+            case 10: choice = .option_picker_element(try reader.decode(Form.OptionPickerElement.self))
+            case 11: choice = .detail_row_element(try reader.decode(Form.DetailRowElement.self))
+            case 12: choice = .currency_conversion_flags_element(try reader.decode(Form.CurrencyConversionFlagsElement.self))
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.choice = choice
         self.unknownFields = unknownFields

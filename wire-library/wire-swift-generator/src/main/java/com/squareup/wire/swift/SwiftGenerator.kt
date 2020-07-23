@@ -244,9 +244,10 @@ class SwiftGenerator private constructor(
                 addStatement("")
               }
 
+              addStatement("let token = try reader.beginMessage()")
+              beginControlFlow("while let tag = try reader.nextTag(token: token)")
               addCode(CodeBlock.builder()
-                  .add("let unknownFields = try reader.forEachTag { tag in\n%>")
-                  .beginControlFlow("switch tag")
+                  .add("switch tag {\n")
                   .apply {
                     type.fields.forEach { field ->
                       add("case %L: ", field.tag)
@@ -283,9 +284,10 @@ class SwiftGenerator private constructor(
                     }
                   }
                   .add("default: try reader.readUnknownField(tag: tag)\n")
-                  .endControlFlow()
-                  .add("%<}\n")
+                  .add("}\n")
                   .build())
+              endControlFlow()
+              addStatement("let unknownFields = try reader.endMessage(token: token)")
 
               // Check required and bind members.
               addStatement("")

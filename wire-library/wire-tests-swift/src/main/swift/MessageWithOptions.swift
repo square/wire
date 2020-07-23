@@ -14,11 +14,13 @@ public struct MessageWithOptions : Equatable {
 
 extension MessageWithOptions : Proto2Codable {
     public init(from reader: ProtoReader) throws {
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                default: try reader.readUnknownField(tag: tag)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.unknownFields = unknownFields
     }

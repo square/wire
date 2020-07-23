@@ -24,13 +24,15 @@ extension MessageUsingMultipleEnums : Proto2Codable {
         var a: MessageWithStatus.Status? = nil
         var b: OtherMessageWithStatus.Status? = nil
 
-        let unknownFields = try reader.forEachTag { tag in
+        let token = try reader.beginMessage()
+        while let tag = try reader.nextTag(token: token) {
             switch tag {
-                case 1: a = try reader.decode(MessageWithStatus.Status.self)
-                case 2: b = try reader.decode(OtherMessageWithStatus.Status.self)
-                default: try reader.readUnknownField(tag: tag)
+            case 1: a = try reader.decode(MessageWithStatus.Status.self)
+            case 2: b = try reader.decode(OtherMessageWithStatus.Status.self)
+            default: try reader.readUnknownField(tag: tag)
             }
         }
+        let unknownFields = try reader.endMessage(token: token)
 
         self.a = a
         self.b = b
