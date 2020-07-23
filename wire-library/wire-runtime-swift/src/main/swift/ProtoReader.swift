@@ -537,6 +537,14 @@ public final class ProtoReader {
                 array.append(try decode())
             }
         default:
+            // It's faster to allocate multiple slots in the array up front rather
+            // than reallocate each time we add a new item. We'll use an arbitrary
+            // (small) guess, and make sure we don't do this for large message
+            // structs to avoid allocating too much extra memory.
+            if array.isEmpty && MemoryLayout<T>.size <= 128 {
+                array.reserveCapacity(5)
+            }
+
             // This is a single entry in a regular repeated field
             array.append(try decode())
         }
