@@ -34,7 +34,6 @@ public final class ProtoDecoder {
         case unexpectedEndGroupFieldNumber(expected: UInt32?, found: UInt32)
         case unexpectedFieldNumberInMap(_: UInt32)
         case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
-        case unmatchedEndMessage
         case unterminatedGroup(fieldNumber: UInt32)
 
         var localizedDescription: String {
@@ -72,8 +71,6 @@ public final class ProtoDecoder {
                 return "Map entry includes the field number \(fieldNumber), but only 1 and 2 are allowed."
             case let .unknownEnumCase(type, fieldNumber):
                 return "Unknown case with value \(fieldNumber) found for enum of type \(String(describing: type))."
-            case .unmatchedEndMessage:
-                return "reader.endMessage() was called without a corresponding reader.beginMessage()"
             case let .unterminatedGroup(fieldNumber):
                 return "The group with field number \(fieldNumber) has no matching end-group key."
             }
@@ -98,14 +95,14 @@ public final class ProtoDecoder {
                 count: buffer.count
             )
             let reader = ProtoReader(buffer: readBuffer)
-            try reader.beginMessage()
-            while let tag = try reader.nextTag() {
+            let token = try reader.beginMessage()
+            while let tag = try reader.nextTag(token: token) {
                 switch tag {
                 case 1: value = try reader.decode(type)
                 default: throw Error.invalidStructure(message: "The data root has more than one field. Found field number \(tag).")
                 }
             }
-            _ = try reader.endMessage()
+            _ = try reader.endMessage(token: token)
         }
 
         guard let unwrappedValue = value else {

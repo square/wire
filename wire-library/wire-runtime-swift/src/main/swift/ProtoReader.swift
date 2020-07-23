@@ -48,12 +48,6 @@ public final class ProtoReader {
     /** How to interpret the next read call. */
     private var state: State
 
-    private var messageEndStack: [UnsafePointer<UInt8>] = {
-        var array = [UnsafePointer<UInt8>]()
-        array.reserveCapacity(5)
-        return array
-    }()
-
     // MARK: - Private Properties - Constants
 
     /** The standard number of levels of message nesting to allow. */
@@ -73,7 +67,7 @@ public final class ProtoReader {
      Begin a nested message. A call to this method will restrict the reader so that `nextTag`
      returns nil when the message is complete.
      */
-    public func beginMessage() throws {
+    public func beginMessage() throws -> UnsafePointer<UInt8> {
         guard case let .lengthDelimited(length) = state else {
             fatalError("Unexpected call to decodeMessage()")
         }
@@ -86,7 +80,7 @@ public final class ProtoReader {
 
         messageStackDepth += 1
 
-        messageEndStack.append(buffer.pointer.advanced(by: length))
+        return buffer.pointer.advanced(by: length)
     }
 
     /**
@@ -94,13 +88,13 @@ public final class ProtoReader {
      This method should be paired with calls to `beginMessage` and `endMessage`.
      This silently skips groups.
      */
-    public func nextTag() throws -> UInt32? {
+    public func nextTag(token: UnsafePointer<UInt8>) throws -> UInt32? {
         if state != .tag {
             // After reading the previous value the state should have been set to `.tag`
             fatalError("Unexpected call to nextTag. State is \(state).")
         }
 
-        while buffer.pointer < messageEndStack.last! && buffer.isDataRemaining {
+        while buffer.pointer < token && buffer.isDataRemaining {
             let (tag, wireType) = try readFieldKey()
             nextFieldWireType = wireType
 
@@ -135,10 +129,8 @@ public final class ProtoReader {
         return nil
     }
 
-    public func endMessage() throws -> Data {
-        guard let expectedEndPointer = messageEndStack.popLast() else {
-            throw ProtoDecoder.Error.unmatchedEndMessage
-        }
+    public func endMessage(token: UnsafePointer<UInt8>) throws -> Data {
+        let expectedEndPointer = token
 
         let unknownFieldsData = unknownFieldsByMessageDepth?.removeValue(forKey: messageStackDepth)
         messageStackDepth -= 1
@@ -554,8 +546,8 @@ public final class ProtoReader {
         var key: K?
         var value: V?
 
-        try beginMessage()
-        while let tag = try nextTag() {
+        let token = try beginMessage()
+        while let tag = try nextTag(token: token) {
             switch tag {
             case 1: key = try decodeKey()
             case 2: value = try decodeValue()
@@ -563,7 +555,7 @@ public final class ProtoReader {
                 throw ProtoDecoder.Error.unexpectedFieldNumberInMap(tag)
             }
         }
-        _ = try endMessage()
+        _ = try endMessage(token: token)
 
         guard let unwrappedKey = key else {
             throw ProtoDecoder.Error.mapEntryWithoutKey(value: value)

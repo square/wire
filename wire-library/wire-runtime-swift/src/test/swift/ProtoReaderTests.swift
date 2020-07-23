@@ -762,4 +762,11 @@ extension ProtoReader {
         return value!
     }
 
+    func forEachTag(_ decode: (UInt32) throws -> Void) throws -> Data {
+        let token = try beginMessage()
+        while let tag = try nextTag(token: token) {
+            try decode(tag)
+        }
+        return try endMessage(token: token)
+    }
 }
