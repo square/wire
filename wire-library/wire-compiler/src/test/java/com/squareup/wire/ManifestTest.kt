@@ -37,9 +37,9 @@ class ManifestTest {
     """.trimMargin()
 
     val manifest = Manifest.fromYaml(yaml)
-    assertThat(manifest.compilationUnits.keys).containsExactlyInAnyOrder("one", "two", "three")
+    assertThat(manifest.modules.keys).containsExactlyInAnyOrder("one", "two", "three")
 
-    val one = manifest.compilationUnits.getValue("one")
+    val one = manifest.modules.getValue("one")
     assertThat(one.dependencies).containsExactlyInAnyOrder("two", "three")
     assertThat(one.roots).containsExactlyInAnyOrder("example.A", "example.B")
     assertThat(one.prunes).containsExactlyInAnyOrder("example.C", "example.D")
@@ -69,8 +69,8 @@ class ManifestTest {
     """.trimMargin()
 
     val manifest = Manifest.fromYaml(yaml)
-    assertThat(manifest.compilationUnits.keys).containsExactly("one", "two")
-    assertThat(manifest.compilationUnits.getValue("one").dependencies).containsExactly("two")
+    assertThat(manifest.modules.keys).containsExactly("one", "two")
+    assertThat(manifest.modules.getValue("one").dependencies).containsExactly("two")
   }
 
   @Test fun dependencyCycleThrows() {

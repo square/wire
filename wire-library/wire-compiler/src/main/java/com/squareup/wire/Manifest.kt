@@ -24,7 +24,7 @@ import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 
 data class Manifest(
-  val compilationUnits: Map<String, Module>,
+  val modules: Map<String, Module>,
   val order: List<String>
 ) {
   @Serializable
@@ -37,7 +37,7 @@ data class Manifest(
   companion object {
     @JvmStatic
     val NONE = Manifest(
-        compilationUnits = mapOf("./" to Module()),
+        modules = mapOf("./" to Module()),
         order = listOf("./")
     )
 
