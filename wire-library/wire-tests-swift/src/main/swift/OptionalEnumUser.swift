@@ -24,6 +24,9 @@ public struct OptionalEnumUser {
 extension OptionalEnumUser : Equatable {
 }
 
+extension OptionalEnumUser : Hashable {
+}
+
 extension OptionalEnumUser : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var optional_enum: OptionalEnumUser.OptionalEnum? = nil

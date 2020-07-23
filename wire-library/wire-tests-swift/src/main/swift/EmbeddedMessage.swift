@@ -19,6 +19,9 @@ public struct EmbeddedMessage {
 extension EmbeddedMessage : Equatable {
 }
 
+extension EmbeddedMessage : Hashable {
+}
+
 extension EmbeddedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var inner_repeated_number: [Int32] = []

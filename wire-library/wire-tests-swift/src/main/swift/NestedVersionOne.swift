@@ -17,6 +17,9 @@ public struct NestedVersionOne {
 extension NestedVersionOne : Equatable {
 }
 
+extension NestedVersionOne : Hashable {
+}
+
 extension NestedVersionOne : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var i: Int32? = nil

@@ -31,7 +31,13 @@ public struct RedactedOneOf {
 extension RedactedOneOf.A : Equatable {
 }
 
+extension RedactedOneOf.A : Hashable {
+}
+
 extension RedactedOneOf : Equatable {
+}
+
+extension RedactedOneOf : Hashable {
 }
 
 extension RedactedOneOf : Proto2Codable {

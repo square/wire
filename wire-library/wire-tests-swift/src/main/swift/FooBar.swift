@@ -73,6 +73,9 @@ public struct FooBar {
 extension FooBar.Nested : Equatable {
 }
 
+extension FooBar.Nested : Hashable {
+}
+
 extension FooBar.Nested : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var value: FooBar.FooBarBazEnum? = nil
@@ -107,6 +110,9 @@ extension FooBar.Nested : Codable {
 extension FooBar.More : Equatable {
 }
 
+extension FooBar.More : Hashable {
+}
+
 extension FooBar.More : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var serial: [Int32] = []
@@ -139,6 +145,9 @@ extension FooBar.More : Codable {
 }
 
 extension FooBar : Equatable {
+}
+
+extension FooBar : Hashable {
 }
 
 extension FooBar : Proto2Codable {

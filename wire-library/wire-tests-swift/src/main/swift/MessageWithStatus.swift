@@ -21,6 +21,9 @@ public struct MessageWithStatus {
 extension MessageWithStatus : Equatable {
 }
 
+extension MessageWithStatus : Hashable {
+}
+
 extension MessageWithStatus : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()

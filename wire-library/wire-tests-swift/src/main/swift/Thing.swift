@@ -17,6 +17,9 @@ public struct Thing {
 extension Thing : Equatable {
 }
 
+extension Thing : Hashable {
+}
+
 extension Thing : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var name: String? = nil

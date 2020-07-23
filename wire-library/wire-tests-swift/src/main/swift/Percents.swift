@@ -20,6 +20,9 @@ public struct Percents {
 extension Percents : Equatable {
 }
 
+extension Percents : Hashable {
+}
+
 extension Percents : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var text: String? = nil

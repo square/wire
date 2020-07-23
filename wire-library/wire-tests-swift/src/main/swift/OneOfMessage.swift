@@ -39,7 +39,13 @@ public struct OneOfMessage {
 extension OneOfMessage.Choice : Equatable {
 }
 
+extension OneOfMessage.Choice : Hashable {
+}
+
 extension OneOfMessage : Equatable {
+}
+
+extension OneOfMessage : Hashable {
 }
 
 extension OneOfMessage : Proto2Codable {

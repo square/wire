@@ -159,7 +159,13 @@ public struct Form {
 extension Form.Choice : Equatable {
 }
 
+extension Form.Choice : Hashable {
+}
+
 extension Form.ButtonElement : Equatable {
+}
+
+extension Form.ButtonElement : Hashable {
 }
 
 extension Form.ButtonElement : Proto2Codable {
@@ -186,6 +192,9 @@ extension Form.ButtonElement : Codable {
 extension Form.LocalImageElement : Equatable {
 }
 
+extension Form.LocalImageElement : Hashable {
+}
+
 extension Form.LocalImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -208,6 +217,9 @@ extension Form.LocalImageElement : Codable {
 }
 
 extension Form.RemoteImageElement : Equatable {
+}
+
+extension Form.RemoteImageElement : Hashable {
 }
 
 extension Form.RemoteImageElement : Proto2Codable {
@@ -234,6 +246,9 @@ extension Form.RemoteImageElement : Codable {
 extension Form.MoneyElement : Equatable {
 }
 
+extension Form.MoneyElement : Hashable {
+}
+
 extension Form.MoneyElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -256,6 +271,9 @@ extension Form.MoneyElement : Codable {
 }
 
 extension Form.SpacerElement : Equatable {
+}
+
+extension Form.SpacerElement : Hashable {
 }
 
 extension Form.SpacerElement : Proto2Codable {
@@ -282,6 +300,9 @@ extension Form.SpacerElement : Codable {
 extension Form.TextElement : Equatable {
 }
 
+extension Form.TextElement : Hashable {
+}
+
 extension Form.TextElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -304,6 +325,9 @@ extension Form.TextElement : Codable {
 }
 
 extension Form.CustomizedCardElement : Equatable {
+}
+
+extension Form.CustomizedCardElement : Hashable {
 }
 
 extension Form.CustomizedCardElement : Proto2Codable {
@@ -330,6 +354,9 @@ extension Form.CustomizedCardElement : Codable {
 extension Form.AddressElement : Equatable {
 }
 
+extension Form.AddressElement : Hashable {
+}
+
 extension Form.AddressElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -352,6 +379,9 @@ extension Form.AddressElement : Codable {
 }
 
 extension Form.TextInputElement : Equatable {
+}
+
+extension Form.TextInputElement : Hashable {
 }
 
 extension Form.TextInputElement : Proto2Codable {
@@ -378,6 +408,9 @@ extension Form.TextInputElement : Codable {
 extension Form.OptionPickerElement : Equatable {
 }
 
+extension Form.OptionPickerElement : Hashable {
+}
+
 extension Form.OptionPickerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -400,6 +433,9 @@ extension Form.OptionPickerElement : Codable {
 }
 
 extension Form.DetailRowElement : Equatable {
+}
+
+extension Form.DetailRowElement : Hashable {
 }
 
 extension Form.DetailRowElement : Proto2Codable {
@@ -426,6 +462,9 @@ extension Form.DetailRowElement : Codable {
 extension Form.CurrencyConversionFlagsElement : Equatable {
 }
 
+extension Form.CurrencyConversionFlagsElement : Hashable {
+}
+
 extension Form.CurrencyConversionFlagsElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -448,6 +487,9 @@ extension Form.CurrencyConversionFlagsElement : Codable {
 }
 
 extension Form : Equatable {
+}
+
+extension Form : Hashable {
 }
 
 extension Form : Proto2Codable {

@@ -15,6 +15,9 @@ public struct NoFields {
 extension NoFields : Equatable {
 }
 
+extension NoFields : Hashable {
+}
+
 extension NoFields : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()

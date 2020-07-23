@@ -17,6 +17,9 @@ public struct Mappy {
 extension Mappy : Equatable {
 }
 
+extension Mappy : Hashable {
+}
+
 extension Mappy : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var things: [String : Thing] = [:]

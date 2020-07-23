@@ -40,6 +40,9 @@ public struct ModelEvaluation {
 extension ModelEvaluation : Equatable {
 }
 
+extension ModelEvaluation : Hashable {
+}
+
 extension ModelEvaluation : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var name: String? = nil

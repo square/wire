@@ -17,6 +17,9 @@ public struct ExternalMessage {
 extension ExternalMessage : Equatable {
 }
 
+extension ExternalMessage : Hashable {
+}
+
 extension ExternalMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var f: Float? = nil

@@ -18,6 +18,9 @@ public struct DeprecatedProto {
 extension DeprecatedProto : Equatable {
 }
 
+extension DeprecatedProto : Hashable {
+}
+
 extension DeprecatedProto : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var foo: String? = nil

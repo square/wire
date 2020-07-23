@@ -17,6 +17,9 @@ public struct ForeignMessage {
 extension ForeignMessage : Equatable {
 }
 
+extension ForeignMessage : Hashable {
+}
+
 extension ForeignMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var i: Int32? = nil

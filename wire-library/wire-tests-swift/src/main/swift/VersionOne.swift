@@ -25,6 +25,9 @@ public struct VersionOne {
 extension VersionOne : Equatable {
 }
 
+extension VersionOne : Hashable {
+}
+
 extension VersionOne : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var i: Int32? = nil

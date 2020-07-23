@@ -76,6 +76,9 @@ public struct Person {
 extension Person.PhoneNumber : Equatable {
 }
 
+extension Person.PhoneNumber : Hashable {
+}
+
 extension Person.PhoneNumber : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var number: String? = nil
@@ -113,6 +116,9 @@ extension Person.PhoneNumber : Codable {
 }
 
 extension Person : Equatable {
+}
+
+extension Person : Hashable {
 }
 
 extension Person : Proto2Codable {

@@ -1,5 +1,5 @@
 @propertyWrapper
-public struct JSONString<T : Equatable> : Equatable, Codable {
+public struct JSONString<T : Hashable> : Hashable, Codable {
     public var wrappedValue: T
 
     public init(wrappedValue: T) {

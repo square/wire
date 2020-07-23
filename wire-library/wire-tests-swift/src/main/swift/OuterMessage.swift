@@ -19,6 +19,9 @@ public struct OuterMessage {
 extension OuterMessage : Equatable {
 }
 
+extension OuterMessage : Hashable {
+}
+
 extension OuterMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var outer_number_before: Int32? = nil

@@ -22,6 +22,9 @@ public struct MessageUsingMultipleEnums {
 extension MessageUsingMultipleEnums : Equatable {
 }
 
+extension MessageUsingMultipleEnums : Hashable {
+}
+
 extension MessageUsingMultipleEnums : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var a: MessageWithStatus.Status? = nil

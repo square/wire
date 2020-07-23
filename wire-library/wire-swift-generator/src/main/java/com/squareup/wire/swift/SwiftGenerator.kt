@@ -46,6 +46,7 @@ class SwiftGenerator private constructor(
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
+  private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
@@ -182,6 +183,9 @@ class SwiftGenerator private constructor(
             extensions += ExtensionSpec.builder(enumName)
                 .addSuperType(equatable)
                 .build()
+            extensions += ExtensionSpec.builder(enumName)
+                .addSuperType(hashable)
+                .build()
           }
         }
         .addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
@@ -221,6 +225,9 @@ class SwiftGenerator private constructor(
 
     extensions += ExtensionSpec.builder(structName)
         .addSuperType(equatable)
+        .build()
+    extensions += ExtensionSpec.builder(structName)
+        .addSuperType(hashable)
         .build()
 
     // TODO use a NameAllocator

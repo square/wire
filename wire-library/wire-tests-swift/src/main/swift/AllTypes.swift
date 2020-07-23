@@ -458,6 +458,9 @@ public struct AllTypes {
 extension AllTypes.NestedMessage : Equatable {
 }
 
+extension AllTypes.NestedMessage : Hashable {
+}
+
 extension AllTypes.NestedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var a: Int32? = nil
@@ -490,6 +493,9 @@ extension AllTypes.NestedMessage : Codable {
 }
 
 extension AllTypes : Equatable {
+}
+
+extension AllTypes : Hashable {
 }
 
 extension AllTypes : Proto2Codable {

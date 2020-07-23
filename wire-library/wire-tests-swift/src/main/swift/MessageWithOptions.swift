@@ -15,6 +15,9 @@ public struct MessageWithOptions {
 extension MessageWithOptions : Equatable {
 }
 
+extension MessageWithOptions : Hashable {
+}
+
 extension MessageWithOptions : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
