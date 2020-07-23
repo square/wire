@@ -6,7 +6,7 @@ import Wire
 /**
  * Enum names must be fully qualified in generated Kotlin
  */
-public struct MessageUsingMultipleEnums : Equatable {
+public struct MessageUsingMultipleEnums {
 
     public var a: MessageWithStatus.Status?
     public var b: OtherMessageWithStatus.Status?
@@ -17,6 +17,9 @@ public struct MessageUsingMultipleEnums : Equatable {
         self.b = b
     }
 
+}
+
+extension MessageUsingMultipleEnums : Equatable {
 }
 
 extension MessageUsingMultipleEnums : Proto2Codable {

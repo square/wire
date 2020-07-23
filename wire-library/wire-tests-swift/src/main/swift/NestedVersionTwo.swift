@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct NestedVersionTwo : Equatable {
+public struct NestedVersionTwo {
 
     public var i: Int32?
     public var v2_i: Int32?
@@ -29,6 +29,9 @@ public struct NestedVersionTwo : Equatable {
         self.v2_rs = v2_rs
     }
 
+}
+
+extension NestedVersionTwo : Equatable {
 }
 
 extension NestedVersionTwo : Proto2Codable {

@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Mappy : Equatable {
+public struct Mappy {
 
     public var things: [String : Thing]
     public var unknownFields: Data = .init()
@@ -12,6 +12,9 @@ public struct Mappy : Equatable {
         self.things = things
     }
 
+}
+
+extension Mappy : Equatable {
 }
 
 extension Mappy : Proto2Codable {

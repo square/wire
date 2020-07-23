@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct VersionTwo : Equatable {
+public struct VersionTwo {
 
     public var i: Int32?
     public var v2_i: Int32?
@@ -35,6 +35,9 @@ public struct VersionTwo : Equatable {
         self.en = en
     }
 
+}
+
+extension VersionTwo : Equatable {
 }
 
 extension VersionTwo : Proto2Codable {

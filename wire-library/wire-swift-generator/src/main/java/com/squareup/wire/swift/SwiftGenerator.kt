@@ -116,7 +116,6 @@ class SwiftGenerator private constructor(
 
     val typeSpec =  TypeSpec.structBuilder(structName)
         .addModifiers(PUBLIC)
-        .addSuperType(equatable)
         .apply {
           if (type.documentation.isNotBlank()) {
             addKdoc("%L\n", type.documentation.sanitizeDoc())
@@ -156,7 +155,6 @@ class SwiftGenerator private constructor(
             val writer = if (oneOf.fields.any { it.name == "writer" }) "_writer" else "writer"
             addType(TypeSpec.enumBuilder(enumName)
                 .addModifiers(PUBLIC)
-                .addSuperType(equatable)
                 .apply {
                   oneOf.fields.forEach { oneOfField ->
                     // TODO SwiftPoet needs to support attributing an enum case.
@@ -180,6 +178,10 @@ class SwiftGenerator private constructor(
                     .endControlFlow()
                     .build())
                 .build())
+
+            extensions += ExtensionSpec.builder(enumName)
+                .addSuperType(equatable)
+                .build()
           }
         }
         .addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
@@ -215,6 +217,10 @@ class SwiftGenerator private constructor(
             addType(generateType(nestedType, extensions))
           }
         }
+        .build()
+
+    extensions += ExtensionSpec.builder(structName)
+        .addSuperType(equatable)
         .build()
 
     // TODO use a NameAllocator

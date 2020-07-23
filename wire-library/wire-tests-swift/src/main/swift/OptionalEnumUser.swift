@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct OptionalEnumUser : Equatable {
+public struct OptionalEnumUser {
 
     public var optional_enum: OptionalEnum?
     public var unknownFields: Data = .init()
@@ -19,6 +19,9 @@ public struct OptionalEnumUser : Equatable {
 
     }
 
+}
+
+extension OptionalEnumUser : Equatable {
 }
 
 extension OptionalEnumUser : Proto2Codable {

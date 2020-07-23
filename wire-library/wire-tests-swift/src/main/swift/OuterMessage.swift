@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct OuterMessage : Equatable {
+public struct OuterMessage {
 
     public var outer_number_before: Int32?
     public var embedded_message: EmbeddedMessage?
@@ -14,6 +14,9 @@ public struct OuterMessage : Equatable {
         self.embedded_message = embedded_message
     }
 
+}
+
+extension OuterMessage : Equatable {
 }
 
 extension OuterMessage : Proto2Codable {

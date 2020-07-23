@@ -3,13 +3,16 @@
 import Foundation
 import Wire
 
-public struct NoFields : Equatable {
+public struct NoFields {
 
     public var unknownFields: Data = .init()
 
     public init() {
     }
 
+}
+
+extension NoFields : Equatable {
 }
 
 extension NoFields : Proto2Codable {

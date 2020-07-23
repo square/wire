@@ -3,13 +3,16 @@
 import Foundation
 import Wire
 
-public struct MessageWithOptions : Equatable {
+public struct MessageWithOptions {
 
     public var unknownFields: Data = .init()
 
     public init() {
     }
 
+}
+
+extension MessageWithOptions : Equatable {
 }
 
 extension MessageWithOptions : Proto2Codable {

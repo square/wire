@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct ExternalMessage : Equatable {
+public struct ExternalMessage {
 
     public var f: Float?
     public var unknownFields: Data = .init()
@@ -12,6 +12,9 @@ public struct ExternalMessage : Equatable {
         self.f = f
     }
 
+}
+
+extension ExternalMessage : Equatable {
 }
 
 extension ExternalMessage : Proto2Codable {

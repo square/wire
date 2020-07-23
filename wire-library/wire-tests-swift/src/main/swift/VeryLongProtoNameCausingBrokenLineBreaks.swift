@@ -6,7 +6,7 @@ import Wire
 /**
  * https://github.com/square/wire/issues/1125
  */
-public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable {
+public struct VeryLongProtoNameCausingBrokenLineBreaks {
 
     public var foo: String?
     public var unknownFields: Data = .init()
@@ -15,6 +15,9 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks : Equatable {
         self.foo = foo
     }
 
+}
+
+extension VeryLongProtoNameCausingBrokenLineBreaks : Equatable {
 }
 
 extension VeryLongProtoNameCausingBrokenLineBreaks : Proto2Codable {

@@ -6,7 +6,7 @@ import Wire
 /**
  * It's a one of message.
  */
-public struct OneOfMessage : Equatable {
+public struct OneOfMessage {
 
     /**
      * Must have a foo or a bar or a baz.
@@ -18,7 +18,7 @@ public struct OneOfMessage : Equatable {
         self.choice = choice
     }
 
-    public enum Choice : Equatable {
+    public enum Choice {
 
         case foo(Int32)
         case bar(String)
@@ -34,6 +34,12 @@ public struct OneOfMessage : Equatable {
 
     }
 
+}
+
+extension OneOfMessage.Choice : Equatable {
+}
+
+extension OneOfMessage : Equatable {
 }
 
 extension OneOfMessage : Proto2Codable {

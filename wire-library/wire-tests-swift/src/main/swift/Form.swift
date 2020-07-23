@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Form : Equatable {
+public struct Form {
 
     public var choice: Choice?
     public var unknownFields: Data = .init()
@@ -12,7 +12,7 @@ public struct Form : Equatable {
         self.choice = choice
     }
 
-    public enum Choice : Equatable {
+    public enum Choice {
 
         case button_element(ButtonElement)
         case local_image_element(LocalImageElement)
@@ -46,7 +46,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct ButtonElement : Equatable {
+    public struct ButtonElement {
 
         public var unknownFields: Data = .init()
 
@@ -55,7 +55,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct LocalImageElement : Equatable {
+    public struct LocalImageElement {
 
         public var unknownFields: Data = .init()
 
@@ -64,7 +64,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct RemoteImageElement : Equatable {
+    public struct RemoteImageElement {
 
         public var unknownFields: Data = .init()
 
@@ -73,7 +73,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct MoneyElement : Equatable {
+    public struct MoneyElement {
 
         public var unknownFields: Data = .init()
 
@@ -82,7 +82,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct SpacerElement : Equatable {
+    public struct SpacerElement {
 
         public var unknownFields: Data = .init()
 
@@ -91,7 +91,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct TextElement : Equatable {
+    public struct TextElement {
 
         public var unknownFields: Data = .init()
 
@@ -100,7 +100,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct CustomizedCardElement : Equatable {
+    public struct CustomizedCardElement {
 
         public var unknownFields: Data = .init()
 
@@ -109,7 +109,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct AddressElement : Equatable {
+    public struct AddressElement {
 
         public var unknownFields: Data = .init()
 
@@ -118,7 +118,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct TextInputElement : Equatable {
+    public struct TextInputElement {
 
         public var unknownFields: Data = .init()
 
@@ -127,7 +127,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct OptionPickerElement : Equatable {
+    public struct OptionPickerElement {
 
         public var unknownFields: Data = .init()
 
@@ -136,7 +136,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct DetailRowElement : Equatable {
+    public struct DetailRowElement {
 
         public var unknownFields: Data = .init()
 
@@ -145,7 +145,7 @@ public struct Form : Equatable {
 
     }
 
-    public struct CurrencyConversionFlagsElement : Equatable {
+    public struct CurrencyConversionFlagsElement {
 
         public var unknownFields: Data = .init()
 
@@ -154,6 +154,12 @@ public struct Form : Equatable {
 
     }
 
+}
+
+extension Form.Choice : Equatable {
+}
+
+extension Form.ButtonElement : Equatable {
 }
 
 extension Form.ButtonElement : Proto2Codable {
@@ -177,6 +183,9 @@ extension Form.ButtonElement : Proto2Codable {
 extension Form.ButtonElement : Codable {
 }
 
+extension Form.LocalImageElement : Equatable {
+}
+
 extension Form.LocalImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -196,6 +205,9 @@ extension Form.LocalImageElement : Proto2Codable {
 }
 
 extension Form.LocalImageElement : Codable {
+}
+
+extension Form.RemoteImageElement : Equatable {
 }
 
 extension Form.RemoteImageElement : Proto2Codable {
@@ -219,6 +231,9 @@ extension Form.RemoteImageElement : Proto2Codable {
 extension Form.RemoteImageElement : Codable {
 }
 
+extension Form.MoneyElement : Equatable {
+}
+
 extension Form.MoneyElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -238,6 +253,9 @@ extension Form.MoneyElement : Proto2Codable {
 }
 
 extension Form.MoneyElement : Codable {
+}
+
+extension Form.SpacerElement : Equatable {
 }
 
 extension Form.SpacerElement : Proto2Codable {
@@ -261,6 +279,9 @@ extension Form.SpacerElement : Proto2Codable {
 extension Form.SpacerElement : Codable {
 }
 
+extension Form.TextElement : Equatable {
+}
+
 extension Form.TextElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -280,6 +301,9 @@ extension Form.TextElement : Proto2Codable {
 }
 
 extension Form.TextElement : Codable {
+}
+
+extension Form.CustomizedCardElement : Equatable {
 }
 
 extension Form.CustomizedCardElement : Proto2Codable {
@@ -303,6 +327,9 @@ extension Form.CustomizedCardElement : Proto2Codable {
 extension Form.CustomizedCardElement : Codable {
 }
 
+extension Form.AddressElement : Equatable {
+}
+
 extension Form.AddressElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -322,6 +349,9 @@ extension Form.AddressElement : Proto2Codable {
 }
 
 extension Form.AddressElement : Codable {
+}
+
+extension Form.TextInputElement : Equatable {
 }
 
 extension Form.TextInputElement : Proto2Codable {
@@ -345,6 +375,9 @@ extension Form.TextInputElement : Proto2Codable {
 extension Form.TextInputElement : Codable {
 }
 
+extension Form.OptionPickerElement : Equatable {
+}
+
 extension Form.OptionPickerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -364,6 +397,9 @@ extension Form.OptionPickerElement : Proto2Codable {
 }
 
 extension Form.OptionPickerElement : Codable {
+}
+
+extension Form.DetailRowElement : Equatable {
 }
 
 extension Form.DetailRowElement : Proto2Codable {
@@ -387,6 +423,9 @@ extension Form.DetailRowElement : Proto2Codable {
 extension Form.DetailRowElement : Codable {
 }
 
+extension Form.CurrencyConversionFlagsElement : Equatable {
+}
+
 extension Form.CurrencyConversionFlagsElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         let token = try reader.beginMessage()
@@ -406,6 +445,9 @@ extension Form.CurrencyConversionFlagsElement : Proto2Codable {
 }
 
 extension Form.CurrencyConversionFlagsElement : Codable {
+}
+
+extension Form : Equatable {
 }
 
 extension Form : Proto2Codable {

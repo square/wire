@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct RedactedOneOf : Equatable {
+public struct RedactedOneOf {
 
     public var a: A?
     public var unknownFields: Data = .init()
@@ -12,7 +12,7 @@ public struct RedactedOneOf : Equatable {
         self.a = a
     }
 
-    public enum A : Equatable {
+    public enum A {
 
         case b(Int32)
         case c(String)
@@ -26,6 +26,12 @@ public struct RedactedOneOf : Equatable {
 
     }
 
+}
+
+extension RedactedOneOf.A : Equatable {
+}
+
+extension RedactedOneOf : Equatable {
 }
 
 extension RedactedOneOf : Proto2Codable {

@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct ForeignMessage : Equatable {
+public struct ForeignMessage {
 
     public var i: Int32?
     public var unknownFields: Data = .init()
@@ -12,6 +12,9 @@ public struct ForeignMessage : Equatable {
         self.i = i
     }
 
+}
+
+extension ForeignMessage : Equatable {
 }
 
 extension ForeignMessage : Proto2Codable {

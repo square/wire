@@ -18,7 +18,7 @@ import Wire
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public struct ModelEvaluation : Equatable {
+public struct ModelEvaluation {
 
     public var name: String?
     public var score: Double?
@@ -35,6 +35,9 @@ public struct ModelEvaluation : Equatable {
         self.models = models
     }
 
+}
+
+extension ModelEvaluation : Equatable {
 }
 
 extension ModelEvaluation : Proto2Codable {

@@ -6,7 +6,7 @@ import Wire
 /**
  * Message representing a person, includes their name, unique ID number, email and phone number.
  */
-public struct Person : Equatable {
+public struct Person {
 
     /**
      * The customer's full name.
@@ -52,7 +52,7 @@ public struct Person : Equatable {
 
     }
 
-    public struct PhoneNumber : Equatable {
+    public struct PhoneNumber {
 
         /**
          * The customer's phone number.
@@ -71,6 +71,9 @@ public struct Person : Equatable {
 
     }
 
+}
+
+extension Person.PhoneNumber : Equatable {
 }
 
 extension Person.PhoneNumber : Proto2Codable {
@@ -107,6 +110,9 @@ extension Person.PhoneNumber : Codable {
         case type
 
     }
+}
+
+extension Person : Equatable {
 }
 
 extension Person : Proto2Codable {

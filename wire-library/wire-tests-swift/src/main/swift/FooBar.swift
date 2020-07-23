@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct FooBar : Equatable {
+public struct FooBar {
 
     public var foo: Int32?
     public var bar: String?
@@ -38,7 +38,7 @@ public struct FooBar : Equatable {
         self.rep = rep
     }
 
-    public struct Nested : Equatable {
+    public struct Nested {
 
         public var value: FooBarBazEnum?
         public var unknownFields: Data = .init()
@@ -49,7 +49,7 @@ public struct FooBar : Equatable {
 
     }
 
-    public struct More : Equatable {
+    public struct More {
 
         public var serial: [Int32]
         public var unknownFields: Data = .init()
@@ -68,6 +68,9 @@ public struct FooBar : Equatable {
 
     }
 
+}
+
+extension FooBar.Nested : Equatable {
 }
 
 extension FooBar.Nested : Proto2Codable {
@@ -101,6 +104,9 @@ extension FooBar.Nested : Codable {
     }
 }
 
+extension FooBar.More : Equatable {
+}
+
 extension FooBar.More : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var serial: [Int32] = []
@@ -130,6 +136,9 @@ extension FooBar.More : Codable {
         case serial
 
     }
+}
+
+extension FooBar : Equatable {
 }
 
 extension FooBar : Proto2Codable {

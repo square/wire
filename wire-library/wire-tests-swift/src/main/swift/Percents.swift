@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Percents : Equatable {
+public struct Percents {
 
     /**
      * e.g. "No limits, free to send and just 2.75% to receive".
@@ -15,6 +15,9 @@ public struct Percents : Equatable {
         self.text = text
     }
 
+}
+
+extension Percents : Equatable {
 }
 
 extension Percents : Proto2Codable {

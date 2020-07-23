@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct Thing : Equatable {
+public struct Thing {
 
     public var name: String?
     public var unknownFields: Data = .init()
@@ -12,6 +12,9 @@ public struct Thing : Equatable {
         self.name = name
     }
 
+}
+
+extension Thing : Equatable {
 }
 
 extension Thing : Proto2Codable {

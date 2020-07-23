@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct DeprecatedProto : Equatable {
+public struct DeprecatedProto {
 
     @available(*, deprecated)
     public var foo: String?
@@ -13,6 +13,9 @@ public struct DeprecatedProto : Equatable {
         self.foo = foo
     }
 
+}
+
+extension DeprecatedProto : Equatable {
 }
 
 extension DeprecatedProto : Proto2Codable {

@@ -3,7 +3,7 @@
 import Foundation
 import Wire
 
-public struct MessageWithStatus : Equatable {
+public struct MessageWithStatus {
 
     public var unknownFields: Data = .init()
 
@@ -16,6 +16,9 @@ public struct MessageWithStatus : Equatable {
 
     }
 
+}
+
+extension MessageWithStatus : Equatable {
 }
 
 extension MessageWithStatus : Proto2Codable {
