@@ -102,7 +102,7 @@ extension ReadBuffer {
             pointer = pointer.advanced(by: 1)
 
             result |= UInt32(byte & 0x7f) << shift
-            if (byte & 0x80) == 0 {
+            if byte < 0x80 {
                 // If the high bit of the byte is unset then this is
                 // the last byte in the value.
                 return result
@@ -117,7 +117,7 @@ extension ReadBuffer {
             let byte = pointer.pointee
             pointer = pointer.advanced(by: 1)
 
-            if (byte & 0x80) == 0 {
+            if byte < 0x80 {
                 return result
             }
 
@@ -137,7 +137,7 @@ extension ReadBuffer {
             pointer = pointer.advanced(by: 1)
 
             result |= UInt64(byte & 0x7F) << shift
-            if byte & 0x80 == 0 {
+            if byte < 0x80 {
                 return result
             }
             shift += 7
