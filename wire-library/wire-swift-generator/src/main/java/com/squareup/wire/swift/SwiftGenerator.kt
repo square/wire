@@ -152,6 +152,8 @@ class SwiftGenerator private constructor(
                 }
                 .build())
 
+            // TODO use a NameAllocator
+            val writer = if (oneOf.fields.any { it.name == "writer" }) "_writer" else "writer"
             addType(TypeSpec.enumBuilder(enumName)
                 .addModifiers(PUBLIC)
                 .addSuperType(equatable)
@@ -163,14 +165,14 @@ class SwiftGenerator private constructor(
                   }
                 }
                 .addFunction(FunctionSpec.builder("encode")
-                    .addParameter("to", "writer", protoWriter)
+                    .addParameter("to", writer, protoWriter)
                     .addModifiers(FILEPRIVATE)
                     .throws(true)
                     .beginControlFlow("switch self")
                     .apply {
                       oneOf.fields.forEach { field ->
                         addStatement(
-                            "case .%1N(let %1N): try writer.encode(tag: %2L, value: %1N)",
+                            "case .%1N(let %1N): try $writer.encode(tag: %2L, value: %1N)",
                             field.name, field.tag
                         )
                       }
@@ -215,11 +217,17 @@ class SwiftGenerator private constructor(
         }
         .build()
 
+    // TODO use a NameAllocator
+    val propertyNames = type.fields.map { it.name } + type.oneOfs.map { it.name }
+    val reader = if ("reader" in propertyNames) "_reader" else "reader"
+    val writer = if ("writer" in propertyNames) "_writer" else "writer"
+    val token = if ("token" in propertyNames) "_token" else "token"
+    val tag = if ("tag" in propertyNames) "_tag" else "tag"
     extensions += ExtensionSpec.builder(structName)
         .addSuperType(protoCodable)
         .addFunction(FunctionSpec.constructorBuilder()
             .addModifiers(PUBLIC)
-            .addParameter("from", "reader", protoReader)
+            .addParameter("from", reader, protoReader)
             .throws(true)
             .apply {
               // Declare locals into which everything is writen before promoting to members.
@@ -244,15 +252,15 @@ class SwiftGenerator private constructor(
                 addStatement("")
               }
 
-              addStatement("let token = try reader.beginMessage()")
-              beginControlFlow("while let tag = try reader.nextTag(token: token)")
+              addStatement("let $token = try $reader.beginMessage()")
+              beginControlFlow("while let $tag = try $reader.nextTag(token: $token)")
               addCode(CodeBlock.builder()
-                  .add("switch tag {\n")
+                  .add("switch $tag {\n")
                   .apply {
                     type.fields.forEach { field ->
                       add("case %L: ", field.tag)
                       if (field.isMap) {
-                        add("try reader.decode(into: &%N", field.name)
+                        add("try $reader.decode(into: &%N", field.name)
                         field.keyType.encoding?.let { keyEncoding ->
                           add(", keyEncoding: .%N", keyEncoding)
                         }
@@ -261,10 +269,10 @@ class SwiftGenerator private constructor(
                         }
                       } else {
                         if (field.isRepeated) {
-                          add("try reader.decode(into: &%N", field.name)
+                          add("try $reader.decode(into: &%N", field.name)
                         } else {
                           add(
-                              "%N = try reader.decode(%T.self", field.name,
+                              "%N = try $reader.decode(%T.self", field.name,
                               field.typeName.makeNonOptional()
                           )
                         }
@@ -277,17 +285,17 @@ class SwiftGenerator private constructor(
                     type.oneOfs.forEach { oneOf ->
                       oneOf.fields.forEach { field ->
                         add(
-                            "case %L: %N = .%N(try reader.decode(%T.self))\n", field.tag,
+                            "case %L: %N = .%N(try $reader.decode(%T.self))\n", field.tag,
                             oneOf.name, field.name, field.typeName.makeNonOptional()
                         )
                       }
                     }
                   }
-                  .add("default: try reader.readUnknownField(tag: tag)\n")
+                  .add("default: try $reader.readUnknownField(tag: $tag)\n")
                   .add("}\n")
                   .build())
               endControlFlow()
-              addStatement("let unknownFields = try reader.endMessage(token: token)")
+              addStatement("let unknownFields = try $reader.endMessage(token: $token)")
 
               // Check required and bind members.
               addStatement("")
@@ -307,12 +315,12 @@ class SwiftGenerator private constructor(
             .build())
         .addFunction(FunctionSpec.builder("encode")
             .addModifiers(PUBLIC)
-            .addParameter("to", "writer", protoWriter)
+            .addParameter("to", writer, protoWriter)
             .throws(true)
             .apply {
               type.fields.forEach { field ->
                 if (field.isMap) {
-                  addCode("try writer.encode(tag: %L, value: %N", field.tag, field.name)
+                  addCode("try $writer.encode(tag: %L, value: %N", field.tag, field.name)
                   field.keyType.encoding?.let { keyEncoding ->
                     addCode(", keyEncoding: .%N", keyEncoding)
                   }
@@ -321,7 +329,7 @@ class SwiftGenerator private constructor(
                   }
                   addCode(")\n")
                 } else {
-                  addCode("try writer.encode(tag: %L, value: %N", field.tag, field.name)
+                  addCode("try $writer.encode(tag: %L, value: %N", field.tag, field.name)
                   field.type!!.encoding?.let { encoding ->
                     addCode(", encoding: .%N", encoding)
                   }
@@ -333,11 +341,11 @@ class SwiftGenerator private constructor(
               }
               type.oneOfs.forEach { oneOf ->
                 beginControlFlow("if let %1N = %1N", oneOf.name)
-                addStatement("try %N.encode(to: writer)", oneOf.name)
+                addStatement("try %N.encode(to: $writer)", oneOf.name)
                 endControlFlow()
               }
             }
-            .addStatement("try writer.writeUnknownFields(unknownFields)")
+            .addStatement("try $writer.writeUnknownFields(unknownFields)")
             .build())
         .build()
 

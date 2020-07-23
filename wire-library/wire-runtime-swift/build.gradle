@@ -34,3 +34,10 @@ task generateTestProtos(type: JavaExec) {
       "--swift_out=$swiftOut"
   ]
 }
+
+// TODO make finding test tasks more dynamic
+afterEvaluate {
+  tasks.named('compileTestSwift').configure {
+    it.dependsOn(generateTestProtos)
+  }
+}
