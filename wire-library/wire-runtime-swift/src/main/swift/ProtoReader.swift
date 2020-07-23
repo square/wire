@@ -304,11 +304,11 @@ public final class ProtoReader {
      Decode a single key-value pair from a map of values keyed by a `string`.
      */
     public func decode<V: ProtoDecodable>(into dictionary: inout [String: V]) throws {
-        let (key, value) = try decode(
+        try decode(
+            into: &dictionary,
             decodeKey: { try decode(String.self) },
             decodeValue: { try decode(V.self) }
         )
-        dictionary[key] = value
     }
 
     /**
@@ -317,11 +317,11 @@ public final class ProtoReader {
      If the given value was not known at the time of generating these protos then nothing will be added to the map.
      */
     public func decode<V: RawRepresentable>(into dictionary: inout [String: V]) throws where V.RawValue == UInt32 {
-        let (key, value) = try decode(
+        try decode(
+            into: &dictionary,
             decodeKey: { try decode(String.self) },
             decodeValue: { try decode(V.self) }
         )
-        dictionary[key] = value
     }
 
     /**
@@ -330,11 +330,11 @@ public final class ProtoReader {
     public func decode<K: ProtoIntDecodable, V: ProtoDecodable>(
         into dictionary: inout [K: V], keyEncoding: ProtoIntEncoding = .variable
     ) throws {
-        let (key, value) = try decode(
+        try decode(
+            into: &dictionary,
             decodeKey: { try decode(K.self, encoding: keyEncoding) },
             decodeValue: { try decode(V.self) }
         )
-        dictionary[key] = value
     }
 
     /**
@@ -343,22 +343,22 @@ public final class ProtoReader {
     public func decode<V: ProtoIntDecodable>(
         into dictionary: inout [String: V], valueEncoding: ProtoIntEncoding = .variable
     ) throws {
-        let (key, value) = try decode(
+        try decode(
+            into: &dictionary,
             decodeKey: { try decode(String.self) },
             decodeValue: { try decode(V.self, encoding: valueEncoding) }
         )
-        dictionary[key] = value
     }
 
     /** Decode a single key-value pair from a map of two integer types and add it to the given dictionary */
     public func decode<K: ProtoIntDecodable, V: ProtoIntDecodable>(
         into dictionary: inout [K: V], keyEncoding: ProtoIntEncoding = .variable, valueEncoding: ProtoIntEncoding = .variable
     ) throws {
-        let (key, value) = try decode(
+        try decode(
+            into: &dictionary,
             decodeKey: { try decode(K.self, encoding: keyEncoding) },
             decodeValue: { try decode(V.self, encoding: valueEncoding) }
         )
-        dictionary[key] = value
     }
 
     // MARK: - Public Methods - Unknown Fields
@@ -550,7 +550,11 @@ public final class ProtoReader {
         }
     }
 
-    private func decode<K, V>(decodeKey: () throws -> K, decodeValue: () throws -> V) throws -> (K, V) {
+    private func decode<K, V>(
+        into dictionary: inout [K: V],
+        decodeKey: () throws -> K,
+        decodeValue: () throws -> V
+    ) throws {
         var key: K?
         var value: V?
 
@@ -571,7 +575,8 @@ public final class ProtoReader {
         guard let unwrappedValue = value else {
             throw ProtoDecoder.Error.mapEntryWithoutValue(key: key)
         }
-        return (unwrappedKey, unwrappedValue)
+
+        dictionary[unwrappedKey] = unwrappedValue
     }
 
     // MARK: - Private Methods - Unknown Fields
