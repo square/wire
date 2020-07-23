@@ -93,4 +93,31 @@ class ManifestTest {
       assertThat(e).hasMessage("three's dependency on two forms a cycle")
     }
   }
+
+  @Test fun dependencyOrder() {
+    val yaml = """
+      |one:
+      |  dependencies:
+      |    - two
+      |    - three
+      |
+      |two:
+      |  dependencies:
+      |    - common2
+      |
+      |three:
+      |  dependencies:
+      |    - common1
+      |
+      |common1: {}
+      |
+      |common2: {}
+      |
+    """.trimMargin()
+
+    val manifest = Manifest.fromYaml(yaml)
+    assertThat(manifest.order.subList(0, 2)).containsExactlyInAnyOrder("common1", "common2")
+    assertThat(manifest.order.subList(2, 4)).containsExactlyInAnyOrder("two", "three")
+    assertThat(manifest.order).endsWith("one")
+  }
 }
