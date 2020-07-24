@@ -29,18 +29,18 @@ public struct Form {
 
         fileprivate func encode(to writer: ProtoWriter) throws {
             switch self {
-                case .button_element(let button_element): try writer.encode(tag: 1, value: button_element)
-                case .local_image_element(let local_image_element): try writer.encode(tag: 2, value: local_image_element)
-                case .remote_image_element(let remote_image_element): try writer.encode(tag: 3, value: remote_image_element)
-                case .money_element(let money_element): try writer.encode(tag: 4, value: money_element)
-                case .spacer_element(let spacer_element): try writer.encode(tag: 5, value: spacer_element)
-                case .text_element(let text_element): try writer.encode(tag: 6, value: text_element)
-                case .customized_card_element(let customized_card_element): try writer.encode(tag: 7, value: customized_card_element)
-                case .address_element(let address_element): try writer.encode(tag: 8, value: address_element)
-                case .text_input_element(let text_input_element): try writer.encode(tag: 9, value: text_input_element)
-                case .option_picker_element(let option_picker_element): try writer.encode(tag: 10, value: option_picker_element)
-                case .detail_row_element(let detail_row_element): try writer.encode(tag: 11, value: detail_row_element)
-                case .currency_conversion_flags_element(let currency_conversion_flags_element): try writer.encode(tag: 12, value: currency_conversion_flags_element)
+            case .button_element(let button_element): try writer.encode(tag: 1, value: button_element)
+            case .local_image_element(let local_image_element): try writer.encode(tag: 2, value: local_image_element)
+            case .remote_image_element(let remote_image_element): try writer.encode(tag: 3, value: remote_image_element)
+            case .money_element(let money_element): try writer.encode(tag: 4, value: money_element)
+            case .spacer_element(let spacer_element): try writer.encode(tag: 5, value: spacer_element)
+            case .text_element(let text_element): try writer.encode(tag: 6, value: text_element)
+            case .customized_card_element(let customized_card_element): try writer.encode(tag: 7, value: customized_card_element)
+            case .address_element(let address_element): try writer.encode(tag: 8, value: address_element)
+            case .text_input_element(let text_input_element): try writer.encode(tag: 9, value: text_input_element)
+            case .option_picker_element(let option_picker_element): try writer.encode(tag: 10, value: option_picker_element)
+            case .detail_row_element(let detail_row_element): try writer.encode(tag: 11, value: detail_row_element)
+            case .currency_conversion_flags_element(let currency_conversion_flags_element): try writer.encode(tag: 12, value: currency_conversion_flags_element)
             }
         }
 
@@ -562,19 +562,19 @@ extension Form : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Form.CodingKeys.self)
         switch self.choice {
-            case .button_element(let button_element): try container.encode(button_element, forKey: .button_element)
-            case .local_image_element(let local_image_element): try container.encode(local_image_element, forKey: .local_image_element)
-            case .remote_image_element(let remote_image_element): try container.encode(remote_image_element, forKey: .remote_image_element)
-            case .money_element(let money_element): try container.encode(money_element, forKey: .money_element)
-            case .spacer_element(let spacer_element): try container.encode(spacer_element, forKey: .spacer_element)
-            case .text_element(let text_element): try container.encode(text_element, forKey: .text_element)
-            case .customized_card_element(let customized_card_element): try container.encode(customized_card_element, forKey: .customized_card_element)
-            case .address_element(let address_element): try container.encode(address_element, forKey: .address_element)
-            case .text_input_element(let text_input_element): try container.encode(text_input_element, forKey: .text_input_element)
-            case .option_picker_element(let option_picker_element): try container.encode(option_picker_element, forKey: .option_picker_element)
-            case .detail_row_element(let detail_row_element): try container.encode(detail_row_element, forKey: .detail_row_element)
-            case .currency_conversion_flags_element(let currency_conversion_flags_element): try container.encode(currency_conversion_flags_element, forKey: .currency_conversion_flags_element)
-            case Optional.none: break
+        case .button_element(let button_element): try container.encode(button_element, forKey: .button_element)
+        case .local_image_element(let local_image_element): try container.encode(local_image_element, forKey: .local_image_element)
+        case .remote_image_element(let remote_image_element): try container.encode(remote_image_element, forKey: .remote_image_element)
+        case .money_element(let money_element): try container.encode(money_element, forKey: .money_element)
+        case .spacer_element(let spacer_element): try container.encode(spacer_element, forKey: .spacer_element)
+        case .text_element(let text_element): try container.encode(text_element, forKey: .text_element)
+        case .customized_card_element(let customized_card_element): try container.encode(customized_card_element, forKey: .customized_card_element)
+        case .address_element(let address_element): try container.encode(address_element, forKey: .address_element)
+        case .text_input_element(let text_input_element): try container.encode(text_input_element, forKey: .text_input_element)
+        case .option_picker_element(let option_picker_element): try container.encode(option_picker_element, forKey: .option_picker_element)
+        case .detail_row_element(let detail_row_element): try container.encode(detail_row_element, forKey: .detail_row_element)
+        case .currency_conversion_flags_element(let currency_conversion_flags_element): try container.encode(currency_conversion_flags_element, forKey: .currency_conversion_flags_element)
+        case Optional.none: break
         }
     }
 

@@ -167,7 +167,7 @@ class SwiftGenerator private constructor(
                     .addParameter("to", writer, protoWriter)
                     .addModifiers(FILEPRIVATE)
                     .throws(true)
-                    .beginControlFlow("switch self")
+                    .addCode("switch self {\n")
                     .apply {
                       oneOf.fields.forEach { field ->
                         addStatement(
@@ -176,7 +176,7 @@ class SwiftGenerator private constructor(
                         )
                       }
                     }
-                    .endControlFlow()
+                    .addCode("}\n")
                     .build())
                 .build())
 
@@ -425,14 +425,14 @@ class SwiftGenerator private constructor(
                     addStatement("try container.encode(self.%1N, forKey: .%1N)", field.name)
                   }
                   type.oneOfs.forEach { oneOf ->
-                    beginControlFlow("switch self.%N", oneOf.name)
+                    addCode("switch self.%N {\n", oneOf.name)
                     oneOf.fields.forEach { field ->
                       addStatement(
                           "case .%1N(let %1N): try container.encode(%1N, forKey: .%1N)", field.name
                       )
                     }
                     addStatement("case %T.none: break", OPTIONAL)
-                    endControlFlow()
+                    addCode("}\n")
                   }
                 }
                 .build())

@@ -26,9 +26,9 @@ public struct OneOfMessage {
 
         fileprivate func encode(to writer: ProtoWriter) throws {
             switch self {
-                case .foo(let foo): try writer.encode(tag: 1, value: foo)
-                case .bar(let bar): try writer.encode(tag: 3, value: bar)
-                case .baz(let baz): try writer.encode(tag: 4, value: baz)
+            case .foo(let foo): try writer.encode(tag: 1, value: foo)
+            case .bar(let bar): try writer.encode(tag: 3, value: bar)
+            case .baz(let baz): try writer.encode(tag: 4, value: baz)
             }
         }
 
@@ -94,10 +94,10 @@ extension OneOfMessage : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: OneOfMessage.CodingKeys.self)
         switch self.choice {
-            case .foo(let foo): try container.encode(foo, forKey: .foo)
-            case .bar(let bar): try container.encode(bar, forKey: .bar)
-            case .baz(let baz): try container.encode(baz, forKey: .baz)
-            case Optional.none: break
+        case .foo(let foo): try container.encode(foo, forKey: .foo)
+        case .bar(let bar): try container.encode(bar, forKey: .bar)
+        case .baz(let baz): try container.encode(baz, forKey: .baz)
+        case Optional.none: break
         }
     }
 

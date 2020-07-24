@@ -19,8 +19,8 @@ public struct RedactedOneOf {
 
         fileprivate func encode(to writer: ProtoWriter) throws {
             switch self {
-                case .b(let b): try writer.encode(tag: 1, value: b)
-                case .c(let c): try writer.encode(tag: 2, value: c)
+            case .b(let b): try writer.encode(tag: 1, value: b)
+            case .c(let c): try writer.encode(tag: 2, value: c)
             }
         }
 
@@ -82,9 +82,9 @@ extension RedactedOneOf : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: RedactedOneOf.CodingKeys.self)
         switch self.a {
-            case .b(let b): try container.encode(b, forKey: .b)
-            case .c(let c): try container.encode(c, forKey: .c)
-            case Optional.none: break
+        case .b(let b): try container.encode(b, forKey: .b)
+        case .c(let c): try container.encode(c, forKey: .c)
+        case Optional.none: break
         }
     }
 
