@@ -8,6 +8,7 @@ import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Type
+import com.squareup.wire.schema.internal.DagChecker
 import io.outfoxx.swiftpoet.ARRAY
 import io.outfoxx.swiftpoet.AttributeSpec
 import io.outfoxx.swiftpoet.BOOL
@@ -24,7 +25,6 @@ import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
-import io.outfoxx.swiftpoet.Modifier.FINAL
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.OPTIONAL
 import io.outfoxx.swiftpoet.ParameterSpec
@@ -40,11 +40,13 @@ import java.util.Locale.US
 
 class SwiftGenerator private constructor(
   val schema: Schema,
-  private val nameToTypeName: Map<ProtoType, DeclaredTypeName>
+  private val nameToTypeName: Map<ProtoType, DeclaredTypeName>,
+  private val referenceCycleIndirections: Map<ProtoType, Set<ProtoType>>
 ) {
   private val protoCodable = DeclaredTypeName.typeName("Wire.Proto2Codable")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
+  private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
@@ -110,6 +112,17 @@ class SwiftGenerator private constructor(
         .replace("/\\*".toRegex(), "/&#42;")
   }
 
+  /**
+   * Returns true if [field] inside [type] forms a cycle and needs an indirection to allow it
+   * to compile.
+   */
+  private fun isIndirect(type: MessageType, field: Field): Boolean {
+    if (field.isRepeated) {
+      return false // Arrays are heap-allocated.
+    }
+    return field.type in referenceCycleIndirections.getOrDefault(type.type, emptySet())
+  }
+
   @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
   private fun generateMessage(type: MessageType, extensions: MutableList<ExtensionSpec>): TypeSpec {
     val structName = type.typeName
@@ -136,6 +149,13 @@ class SwiftGenerator private constructor(
             if (field.typeName.needsJsonString()) {
               property.addAttribute(
                   AttributeSpec.builder("JSONString")
+                      .build()
+              )
+            }
+            if (isIndirect(type, field)) {
+              property.addAttribute(
+                  // TODO https://github.com/outfoxx/swiftpoet/issues/14
+                  AttributeSpec.builder(indirect.simpleName)
                       .build()
               )
             }
@@ -205,7 +225,11 @@ class SwiftGenerator private constructor(
                       }
                     }
                     .build())
-                addStatement("self.%1N = %1N", field.name)
+                if (isIndirect(type, field)) {
+                  addStatement("_%1N = %2T(value: %1N)", field.name, indirect)
+                } else {
+                  addStatement("self.%1N = %1N", field.name)
+                }
               }
               type.oneOfs.forEach { oneOf ->
                 val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
@@ -318,7 +342,11 @@ class SwiftGenerator private constructor(
                 } else {
                   CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structName, field.name)
                 }
-                addStatement("self.%N = %L", field.name, initializer)
+                if (isIndirect(type, field)) {
+                  addStatement("_%N = %T(value: %L)", field.name, indirect, initializer)
+                } else {
+                  addStatement("self.%N = %L", field.name, initializer)
+                }
               }
               type.oneOfs.forEach { oneOf ->
                 addStatement("self.%1N = %1N", oneOf.name)
@@ -528,7 +556,7 @@ class SwiftGenerator private constructor(
       schema: Schema,
       existingTypeModuleName: Map<ProtoType, String> = emptyMap()
     ): SwiftGenerator {
-      val map = mutableMapOf<ProtoType, DeclaredTypeName>()
+      val nameToTypeName = mutableMapOf<ProtoType, DeclaredTypeName>()
 
       fun putAll(enclosingClassName: DeclaredTypeName?, types: List<Type>) {
         for (type in types) {
@@ -541,7 +569,7 @@ class SwiftGenerator private constructor(
             val moduleName = existingTypeModuleName[protoType] ?: ""
             DeclaredTypeName(moduleName, name)
           }
-          map[protoType] = className
+          nameToTypeName[protoType] = className
           putAll(className, type.nestedTypes)
         }
       }
@@ -553,13 +581,60 @@ class SwiftGenerator private constructor(
           val protoType = service.type()
           val moduleName = existingTypeModuleName[protoType] ?: ""
           val className = DeclaredTypeName(moduleName, protoType.simpleName)
-          map[protoType] = className
+          nameToTypeName[protoType] = className
         }
       }
 
-      map.putAll(BUILT_IN_TYPES)
+      nameToTypeName.putAll(BUILT_IN_TYPES)
 
-      return SwiftGenerator(schema, map)
+      val referenceCycleIndirections =
+        computeReferenceCycleIndirections(schema, existingTypeModuleName.keys)
+
+      return SwiftGenerator(schema, nameToTypeName, referenceCycleIndirections)
+    }
+
+    private fun computeReferenceCycleIndirections(
+      schema: Schema,
+      existingTypes: Set<ProtoType>
+    ): Map<ProtoType, Set<ProtoType>> {
+      val indirections = mutableMapOf<ProtoType, MutableSet<ProtoType>>()
+
+      var nodes = schema.protoFiles
+          .flatMap { it.typesAndNestedTypes() }
+          .map { it.type }
+          // Ignore types which were already generated. We cannot form a cycle with them.
+          .filter { it !in existingTypes }
+          .toSet()
+      while (true) {
+        val dagChecker = DagChecker(nodes) { protoType ->
+          when (val type = schema.getType(protoType)!!) {
+            is MessageType -> {
+              type.fieldsAndOneOfFields.map { it.type!! }
+                  // Remove edges known to need an indirection to break an already-seen cycle.
+                  .filter { it !in (indirections[protoType] ?: emptySet<ProtoType>()) }
+            }
+            is EnumType -> emptyList()
+            is EnclosingType -> emptyList()
+            else -> throw IllegalArgumentException("Unknown type: $protoType")
+          }
+        }
+
+        val cycles = dagChecker.check()
+        if (cycles.isEmpty()) {
+          break
+        }
+        // Break the first edge in each cycle with an indirection.
+        for (cycle in cycles) {
+          val other = if (cycle.size > 1) cycle[1] else cycle[0]
+          indirections.getOrPut(cycle[0], ::LinkedHashSet) += other
+        }
+
+        // We need to ensure that we've successfully broken all of the reported cycles. Feed the set
+        // of nodes which were present in a cycle back into the check.
+        nodes = cycles.flatten().toSet()
+      }
+
+      return indirections
     }
   }
 }
