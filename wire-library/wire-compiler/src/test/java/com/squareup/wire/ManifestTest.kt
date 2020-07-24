@@ -90,7 +90,10 @@ class ManifestTest {
       Manifest.fromYaml(yaml)
       fail()
     } catch (e: IllegalArgumentException) {
-      assertThat(e).hasMessage("three's dependency on two forms a cycle")
+      assertThat(e).hasMessage("""
+        |ERROR: Manifest modules contain dependency cycles:
+        | - [one, three, two]
+        |""".trimMargin())
     }
   }
 

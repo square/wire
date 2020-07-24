@@ -4,7 +4,7 @@ ext.versions = [
   'errorprone': '2.0.21',
   'grpc': '1.27.1',
   'gson': '2.8.1',
-  'guava': '29.0-jre',
+  'guava': '20.0',
   'javapoet': '1.11.1',
   'kotlinpoet': '1.6.0',
   'jsr305': '3.0.2',

@@ -316,8 +316,26 @@ data class SwiftTarget(
     newProfileLoader: NewProfileLoader
   ): SchemaHandler {
     val outputRoot = fs.getPath(outDirectory)
-    val (modules, moduleRoots, moduleOrder) = manifest
 
+    val modules = manifest.modules
+    val moduleRoots = modules.filterValues { it.dependencies.isEmpty() }.keys
+    val moduleOrder = run {
+      val seen = LinkedHashSet<String>() // Insertion order is important to produce the final list!
+      val queue = ArrayDeque<String>().apply { addAll(moduleRoots) }
+      while (queue.isNotEmpty()) {
+        val currentName = queue.removeFirst()
+        val currentDependencies = modules.getValue(currentName).dependencies
+        if (seen.containsAll(currentDependencies)) {
+          seen += currentName
+
+          val downstreamModules = modules.filterValues { currentName in it.dependencies }.keys
+          queue += downstreamModules
+        } else {
+          queue += currentName
+        }
+      }
+      seen.toList()
+    }
     if (debug) {
       println("Modules: ${modules.keys}")
       println("Roots: $moduleRoots")

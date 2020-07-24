@@ -16,17 +16,13 @@
 package com.squareup.wire
 
 import com.charleskorn.kaml.Yaml
-import com.google.common.graph.GraphBuilder
-import com.google.common.graph.Graphs
-import com.google.common.graph.Traverser
+import com.squareup.wire.schema.internal.DagChecker
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 
 data class Manifest(
-  val modules: Map<String, Module>,
-  val roots: Set<String>,
-  val order: List<String>
+  val modules: Map<String, Module>
 ) {
   @Serializable
   data class Module(
@@ -38,34 +34,30 @@ data class Manifest(
   companion object {
     @JvmStatic
     val NONE = Manifest(
-        modules = mapOf("./" to Module()),
-        roots = setOf("./"),
-        order = listOf("./")
+        modules = mapOf("./" to Module())
     )
 
     private val serializer = MapSerializer(String.serializer(), Module.serializer())
 
     fun fromYaml(string: String): Manifest {
-      val map = Yaml.default.parse(serializer, string)
+      val modules = Yaml.default.parse(serializer, string)
 
-      // Check for cyclic dependencies.
-      val dependencyGraph = GraphBuilder.directed().build<String>()
-      map.forEach { name, module ->
-        dependencyGraph.addNode(name)
-
-        module.dependencies.forEach { dependency ->
-          dependencyGraph.putEdge(dependency, name)
-          require(!Graphs.hasCycle(dependencyGraph)) {
-            "$name's dependency on $dependency forms a cycle"
+      val dagChecker = DagChecker(modules.keys) { moduleName ->
+        modules.getValue(moduleName).dependencies
+      }
+      val cycles = dagChecker.check()
+      require(cycles.isEmpty()) {
+        buildString {
+          append("ERROR: Manifest modules contain dependency cycles:\n")
+          for (cycle in cycles) {
+            append(" - ")
+            append(cycle)
+            append('\n')
           }
         }
       }
 
-      val roots = dependencyGraph.nodes()
-          .filterTo(LinkedHashSet()) { dependencyGraph.predecessors(it).isEmpty() }
-      val order = Traverser.forGraph(dependencyGraph).breadthFirst(roots).toList()
-
-      return Manifest(map, roots, order)
+      return Manifest(modules)
     }
   }
 }
