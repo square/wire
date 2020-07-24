@@ -316,11 +316,39 @@ data class SwiftTarget(
     newProfileLoader: NewProfileLoader
   ): SchemaHandler {
     val outputRoot = fs.getPath(outDirectory)
-    val (modules, moduleOrder) = manifest
+    val (modules, moduleRoots, moduleOrder) = manifest
 
     if (debug) {
       println("Modules: ${modules.keys}")
+      println("Roots: $moduleRoots")
       println("Order: $moduleOrder")
+    }
+
+    val disjointGraphs = moduleRoots
+        .map { root ->
+          val reachableNames = mutableSetOf<String>()
+          val visitQueue = ArrayDeque<String>().apply { add(root) }
+          while (visitQueue.isNotEmpty()) {
+            val visitName = visitQueue.removeFirst()
+            reachableNames += visitName
+
+            val upstreamModules = modules.getValue(visitName).dependencies
+            val downstreamModules = modules.filterValues { visitName in it.dependencies }.keys
+            for (dependency in upstreamModules + downstreamModules) {
+              if (dependency !in reachableNames && dependency !in visitQueue) {
+                visitQueue += dependency
+              }
+            }
+          }
+          // Sort the reachable names by their module order.
+          moduleOrder.filter { it in reachableNames }
+        }
+        .toSet()
+    if (debug) {
+      println("Disjoint Graphs:")
+      for (disjointGraph in disjointGraphs) {
+        println(" - $disjointGraph")
+      }
     }
 
     // TODO this means you cannot generate the same type in two unrelated modules! fix!
@@ -430,6 +458,42 @@ data class SwiftTarget(
 
         moduleTypes[moduleName] = generatedTypes
       }
+    }
+
+    val warnings = mutableListOf<String>()
+    for (moduleGraph in disjointGraphs) {
+      for (currentName in moduleGraph) {
+        for (otherName in moduleGraph) {
+          if (otherName == currentName) {
+            break
+          }
+          val currentTypes = moduleTypes.getValue(currentName)
+          val otherTypes = moduleTypes.getValue(otherName)
+          val duplicates = currentTypes.intersect(otherTypes)
+          if (duplicates.isNotEmpty()) {
+            val currentModule = modules.getValue(currentName)
+            val otherModule = modules.getValue(otherName)
+            for (duplicate in duplicates) {
+              val duplicateName = duplicate.toString()
+              if (duplicateName !in currentModule.roots || duplicateName !in otherModule.roots) {
+                warnings += "$duplicate generated in both $currentName and $otherName"
+              }
+            }
+          }
+        }
+      }
+    }
+    if (warnings.isNotEmpty()) {
+      println()
+      println("WARNING: Duplicate types generated in peer modules")
+      println()
+      for (warning in warnings) {
+        println(" - $warning")
+      }
+      println()
+      println("Consider moving these types into a common dependency of the listed modules.")
+      println("To suppress this warning, explicitly add the type to the roots of both modules.")
+      println()
     }
 
     return object : SchemaHandler {

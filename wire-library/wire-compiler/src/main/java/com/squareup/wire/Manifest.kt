@@ -25,6 +25,7 @@ import kotlinx.serialization.builtins.serializer
 
 data class Manifest(
   val modules: Map<String, Module>,
+  val roots: Set<String>,
   val order: List<String>
 ) {
   @Serializable
@@ -38,6 +39,7 @@ data class Manifest(
     @JvmStatic
     val NONE = Manifest(
         modules = mapOf("./" to Module()),
+        roots = setOf("./"),
         order = listOf("./")
     )
 
@@ -59,10 +61,11 @@ data class Manifest(
         }
       }
 
-      val roots = dependencyGraph.nodes().filter { dependencyGraph.predecessors(it).isEmpty() }
+      val roots = dependencyGraph.nodes()
+          .filterTo(LinkedHashSet()) { dependencyGraph.predecessors(it).isEmpty() }
       val order = Traverser.forGraph(dependencyGraph).breadthFirst(roots).toList()
 
-      return Manifest(map, order)
+      return Manifest(map, roots, order)
     }
   }
 }
