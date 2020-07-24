@@ -332,7 +332,7 @@ class SwiftGenerator private constructor(
             .apply {
               type.fields.forEach { field ->
                 if (field.isMap) {
-                  addCode("try $writer.encode(tag: %L, value: %N", field.tag, field.name)
+                  addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.name)
                   field.keyType.encoding?.let { keyEncoding ->
                     addCode(", keyEncoding: .%N", keyEncoding)
                   }
@@ -341,7 +341,7 @@ class SwiftGenerator private constructor(
                   }
                   addCode(")\n")
                 } else {
-                  addCode("try $writer.encode(tag: %L, value: %N", field.tag, field.name)
+                  addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.name)
                   field.type!!.encoding?.let { encoding ->
                     addCode(", encoding: .%N", encoding)
                   }
@@ -352,7 +352,7 @@ class SwiftGenerator private constructor(
                 }
               }
               type.oneOfs.forEach { oneOf ->
-                beginControlFlow("if let %1N = %1N", oneOf.name)
+                beginControlFlow("if let %1N = self.%1N", oneOf.name)
                 addStatement("try %N.encode(to: $writer)", oneOf.name)
                 endControlFlow()
               }
@@ -392,7 +392,7 @@ class SwiftGenerator private constructor(
                 .apply {
                   type.fields.forEach { field ->
                     addStatement(
-                        "%1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
+                        "self.%1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
                         field.typeName
                     )
                   }
@@ -422,7 +422,7 @@ class SwiftGenerator private constructor(
                 .addStatement("var container = encoder.container(keyedBy: %T.self)", codingKeys)
                 .apply {
                   type.fields.forEach { field ->
-                    addStatement("try container.encode(%1N, forKey: .%1N)", field.name)
+                    addStatement("try container.encode(self.%1N, forKey: .%1N)", field.name)
                   }
                   type.oneOfs.forEach { oneOf ->
                     beginControlFlow("switch self.%N", oneOf.name)

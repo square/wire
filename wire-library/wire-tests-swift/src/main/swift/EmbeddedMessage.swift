@@ -42,8 +42,8 @@ extension EmbeddedMessage : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: inner_repeated_number, packed: true)
-        try writer.encode(tag: 2, value: inner_number_after)
+        try writer.encode(tag: 1, value: self.inner_repeated_number, packed: true)
+        try writer.encode(tag: 2, value: self.inner_number_after)
         try writer.writeUnknownFields(unknownFields)
     }
 }

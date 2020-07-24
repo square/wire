@@ -99,8 +99,8 @@ extension Person.PhoneNumber : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: number)
-        try writer.encode(tag: 2, value: type)
+        try writer.encode(tag: 1, value: self.number)
+        try writer.encode(tag: 2, value: self.type)
         try writer.writeUnknownFields(unknownFields)
     }
 }
@@ -149,11 +149,11 @@ extension Person : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: name)
-        try writer.encode(tag: 2, value: id)
-        try writer.encode(tag: 3, value: email)
-        try writer.encode(tag: 4, value: phone)
-        try writer.encode(tag: 5, value: aliases)
+        try writer.encode(tag: 1, value: self.name)
+        try writer.encode(tag: 2, value: self.id)
+        try writer.encode(tag: 3, value: self.email)
+        try writer.encode(tag: 4, value: self.phone)
+        try writer.encode(tag: 5, value: self.aliases)
         try writer.writeUnknownFields(unknownFields)
     }
 }

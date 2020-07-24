@@ -44,7 +44,7 @@ extension OptionalEnumUser : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: optional_enum)
+        try writer.encode(tag: 1, value: self.optional_enum)
         try writer.writeUnknownFields(unknownFields)
     }
 }

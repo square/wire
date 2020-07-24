@@ -37,7 +37,7 @@ extension Mappy : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: things)
+        try writer.encode(tag: 1, value: self.things)
         try writer.writeUnknownFields(unknownFields)
     }
 }

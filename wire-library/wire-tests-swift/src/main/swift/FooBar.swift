@@ -93,7 +93,7 @@ extension FooBar.Nested : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: value)
+        try writer.encode(tag: 1, value: self.value)
         try writer.writeUnknownFields(unknownFields)
     }
 }
@@ -129,7 +129,7 @@ extension FooBar.More : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: serial)
+        try writer.encode(tag: 1, value: self.serial)
         try writer.writeUnknownFields(unknownFields)
     }
 }
@@ -189,15 +189,15 @@ extension FooBar : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: foo)
-        try writer.encode(tag: 2, value: bar)
-        try writer.encode(tag: 3, value: baz)
-        try writer.encode(tag: 4, value: qux)
-        try writer.encode(tag: 5, value: fred)
-        try writer.encode(tag: 6, value: daisy)
-        try writer.encode(tag: 7, value: nested)
-        try writer.encode(tag: 101, value: ext)
-        try writer.encode(tag: 102, value: rep)
+        try writer.encode(tag: 1, value: self.foo)
+        try writer.encode(tag: 2, value: self.bar)
+        try writer.encode(tag: 3, value: self.baz)
+        try writer.encode(tag: 4, value: self.qux)
+        try writer.encode(tag: 5, value: self.fred)
+        try writer.encode(tag: 6, value: self.daisy)
+        try writer.encode(tag: 7, value: self.nested)
+        try writer.encode(tag: 101, value: self.ext)
+        try writer.encode(tag: 102, value: self.rep)
         try writer.writeUnknownFields(unknownFields)
     }
 }

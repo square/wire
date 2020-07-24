@@ -58,7 +58,7 @@ extension RedactedOneOf : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        if let a = a {
+        if let a = self.a {
             try a.encode(to: writer)
         }
         try writer.writeUnknownFields(unknownFields)

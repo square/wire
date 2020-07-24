@@ -51,9 +51,9 @@ extension VersionOne : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: i)
-        try writer.encode(tag: 7, value: obj)
-        try writer.encode(tag: 8, value: en)
+        try writer.encode(tag: 1, value: self.i)
+        try writer.encode(tag: 7, value: self.obj)
+        try writer.encode(tag: 8, value: self.en)
         try writer.writeUnknownFields(unknownFields)
     }
 }

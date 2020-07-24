@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 message NameClashes {
+  required NestedRequired NestedRequired = 1;
+  message NestedRequired {}
+  optional NestedOptional NestedOptional = 2;
+  message NestedOptional {}
+
   // Standard struct:
   // TODO required string unknownFields = 10;
   // TODO message Equatable {}
+  // TODO message Hashable {}
 
   // Proto conformance:
   required string reader = 20;
@@ -32,6 +38,11 @@ message NameClashes {
 
   // TODO message CodingKeys {}
   // TODO message Codable {}
+
+  // Triggers custom Codable generation to check for clashes in it.
+  oneof dummy {
+    string value = 1000;
+  }
 }
 
 message NameClashesOneOf {

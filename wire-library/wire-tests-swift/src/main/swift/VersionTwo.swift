@@ -81,14 +81,14 @@ extension VersionTwo : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: i)
-        try writer.encode(tag: 2, value: v2_i)
-        try writer.encode(tag: 3, value: v2_s)
-        try writer.encode(tag: 4, value: v2_f32, encoding: .fixed)
-        try writer.encode(tag: 5, value: v2_f64, encoding: .fixed)
-        try writer.encode(tag: 6, value: v2_rs)
-        try writer.encode(tag: 7, value: obj)
-        try writer.encode(tag: 8, value: en)
+        try writer.encode(tag: 1, value: self.i)
+        try writer.encode(tag: 2, value: self.v2_i)
+        try writer.encode(tag: 3, value: self.v2_s)
+        try writer.encode(tag: 4, value: self.v2_f32, encoding: .fixed)
+        try writer.encode(tag: 5, value: self.v2_f64, encoding: .fixed)
+        try writer.encode(tag: 6, value: self.v2_rs)
+        try writer.encode(tag: 7, value: self.obj)
+        try writer.encode(tag: 8, value: self.en)
         try writer.writeUnknownFields(unknownFields)
     }
 }

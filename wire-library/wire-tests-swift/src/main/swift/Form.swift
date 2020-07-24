@@ -508,7 +508,7 @@ extension Form : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        if let choice = choice {
+        if let choice = self.choice {
             try choice.encode(to: writer)
         }
         try writer.writeUnknownFields(unknownFields)

@@ -38,7 +38,7 @@ extension DeprecatedProto : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: foo)
+        try writer.encode(tag: 1, value: self.foo)
         try writer.writeUnknownFields(unknownFields)
     }
 }

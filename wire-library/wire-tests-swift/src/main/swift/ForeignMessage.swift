@@ -37,7 +37,7 @@ extension ForeignMessage : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: i)
+        try writer.encode(tag: 1, value: self.i)
         try writer.writeUnknownFields(unknownFields)
     }
 }

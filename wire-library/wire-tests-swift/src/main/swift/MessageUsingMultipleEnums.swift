@@ -45,8 +45,8 @@ extension MessageUsingMultipleEnums : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: a)
-        try writer.encode(tag: 2, value: b)
+        try writer.encode(tag: 1, value: self.a)
+        try writer.encode(tag: 2, value: self.b)
         try writer.writeUnknownFields(unknownFields)
     }
 }

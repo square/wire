@@ -66,9 +66,9 @@ extension ModelEvaluation : Proto2Codable {
     }
 
     public func encode(to writer: ProtoWriter) throws {
-        try writer.encode(tag: 1, value: name)
-        try writer.encode(tag: 2, value: score)
-        try writer.encode(tag: 3, value: models)
+        try writer.encode(tag: 1, value: self.name)
+        try writer.encode(tag: 2, value: self.score)
+        try writer.encode(tag: 3, value: self.models)
         try writer.writeUnknownFields(unknownFields)
     }
 }
