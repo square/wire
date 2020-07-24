@@ -58,12 +58,11 @@ extension ModelEvaluation : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.name = name
         self.score = score
         self.models = try ModelEvaluation.checkIfMissing(models, "models")
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

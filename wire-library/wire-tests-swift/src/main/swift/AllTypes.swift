@@ -472,10 +472,9 @@ extension AllTypes.NestedMessage : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.a = a
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -773,7 +772,7 @@ extension AllTypes : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.opt_int32 = opt_int32
         self.opt_uint32 = opt_uint32
@@ -908,7 +907,6 @@ extension AllTypes : Proto2Codable {
         self.ext_pack_float = try AllTypes.checkIfMissing(ext_pack_float, "ext_pack_float")
         self.ext_pack_double = try AllTypes.checkIfMissing(ext_pack_double, "ext_pack_double")
         self.ext_pack_nested_enum = try AllTypes.checkIfMissing(ext_pack_nested_enum, "ext_pack_nested_enum")
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

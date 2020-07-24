@@ -58,7 +58,7 @@ extension NestedVersionTwo : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.i = i
         self.v2_i = v2_i
@@ -66,7 +66,6 @@ extension NestedVersionTwo : Proto2Codable {
         self.v2_f32 = v2_f32
         self.v2_f64 = v2_f64
         self.v2_rs = try NestedVersionTwo.checkIfMissing(v2_rs, "v2_rs")
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

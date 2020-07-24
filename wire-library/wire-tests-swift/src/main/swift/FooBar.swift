@@ -87,10 +87,9 @@ extension FooBar.Nested : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.value = value
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -124,10 +123,9 @@ extension FooBar.More : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.serial = try FooBar.More.checkIfMissing(serial, "serial")
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -177,7 +175,7 @@ extension FooBar : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.foo = foo
         self.bar = bar
@@ -188,7 +186,6 @@ extension FooBar : Proto2Codable {
         self.nested = try FooBar.checkIfMissing(nested, "nested")
         self.ext = ext
         self.rep = try FooBar.checkIfMissing(rep, "rep")
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

@@ -31,10 +31,9 @@ extension Thing : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.name = name
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

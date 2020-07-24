@@ -68,7 +68,7 @@ extension VersionTwo : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.i = i
         self.v2_i = v2_i
@@ -78,7 +78,6 @@ extension VersionTwo : Proto2Codable {
         self.v2_rs = try VersionTwo.checkIfMissing(v2_rs, "v2_rs")
         self.obj = obj
         self.en = en
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

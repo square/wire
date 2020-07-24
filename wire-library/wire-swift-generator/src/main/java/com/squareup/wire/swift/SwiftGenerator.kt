@@ -308,7 +308,7 @@ class SwiftGenerator private constructor(
                   .add("}\n")
                   .build())
               endControlFlow()
-              addStatement("let unknownFields = try $reader.endMessage(token: $token)")
+              addStatement("self.unknownFields = try $reader.endMessage(token: $token)")
 
               // Check required and bind members.
               addStatement("")
@@ -323,7 +323,6 @@ class SwiftGenerator private constructor(
               type.oneOfs.forEach { oneOf ->
                 addStatement("self.%1N = %1N", oneOf.name)
               }
-              addStatement("self.unknownFields = unknownFields")
             }
             .build())
         .addFunction(FunctionSpec.builder("encode")

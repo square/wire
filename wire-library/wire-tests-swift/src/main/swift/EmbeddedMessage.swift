@@ -35,11 +35,10 @@ extension EmbeddedMessage : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.inner_repeated_number = try EmbeddedMessage.checkIfMissing(inner_repeated_number, "inner_repeated_number")
         self.inner_number_after = inner_number_after
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

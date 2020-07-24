@@ -176,9 +176,8 @@ extension Form.ButtonElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -203,9 +202,8 @@ extension Form.LocalImageElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -230,9 +228,8 @@ extension Form.RemoteImageElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -257,9 +254,8 @@ extension Form.MoneyElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -284,9 +280,8 @@ extension Form.SpacerElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -311,9 +306,8 @@ extension Form.TextElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -338,9 +332,8 @@ extension Form.CustomizedCardElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -365,9 +358,8 @@ extension Form.AddressElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -392,9 +384,8 @@ extension Form.TextInputElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -419,9 +410,8 @@ extension Form.OptionPickerElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -446,9 +436,8 @@ extension Form.DetailRowElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -473,9 +462,8 @@ extension Form.CurrencyConversionFlagsElement : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -514,10 +502,9 @@ extension Form : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.choice = choice
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

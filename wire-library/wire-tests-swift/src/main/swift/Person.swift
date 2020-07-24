@@ -92,11 +92,10 @@ extension Person.PhoneNumber : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.number = try Person.PhoneNumber.checkIfMissing(number, "number")
         self.type = type
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -140,14 +139,13 @@ extension Person : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.name = try Person.checkIfMissing(name, "name")
         self.id = try Person.checkIfMissing(id, "id")
         self.email = email
         self.phone = try Person.checkIfMissing(phone, "phone")
         self.aliases = try Person.checkIfMissing(aliases, "aliases")
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {

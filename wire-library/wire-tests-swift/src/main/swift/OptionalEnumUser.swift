@@ -38,10 +38,9 @@ extension OptionalEnumUser : Proto2Codable {
             default: try reader.readUnknownField(tag: tag)
             }
         }
-        let unknownFields = try reader.endMessage(token: token)
+        self.unknownFields = try reader.endMessage(token: token)
 
         self.optional_enum = optional_enum
-        self.unknownFields = unknownFields
     }
 
     public func encode(to writer: ProtoWriter) throws {
