@@ -488,8 +488,8 @@ class SwiftGenerator private constructor(
   }
 
   private fun generateEnclosing(type: EnclosingType, extensions: MutableList<ExtensionSpec>): TypeSpec {
-    return TypeSpec.classBuilder(type.typeName)
-        .addModifiers(PUBLIC, FINAL)
+    return TypeSpec.enumBuilder(type.typeName)
+        .addModifiers(PUBLIC)
         .addKdoc("%N\n",
             "*Note:* This type only exists to maintain class structure for its nested types and " +
                 "is not an actual message.")
