@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.identityOrNull
 import java.io.IOException
 import kotlin.reflect.KClass
 
@@ -23,15 +24,22 @@ import kotlin.reflect.KClass
  */
 actual abstract class EnumAdapter<E : WireEnum> protected actual constructor(
   type: KClass<E>,
-  syntax: Syntax
-) : ProtoAdapter<E>(FieldEncoding.VARINT, type, null, syntax) {
-  constructor(type: Class<E>, syntax: Syntax) : this(type.kotlin, syntax)
+  syntax: Syntax,
+  identity: E?
+) : ProtoAdapter<E>(FieldEncoding.VARINT, type, null, syntax, identity) {
+  constructor(type: Class<E>, syntax: Syntax, identity: E?) : this(type.kotlin, syntax, identity)
 
   // Obsolete; for Java classes generated before syntax was added.
-  constructor(type: Class<E>) : this(type.kotlin, Syntax.PROTO_2)
+  constructor(type: Class<E>) : this(type.kotlin, Syntax.PROTO_2, type.identityOrNull)
 
-  // Obsolete; for Java classes generated before syntax was added.
-  constructor(type: KClass<E>) : this(type, Syntax.PROTO_2)
+  // Obsolete; for Java classes generated before identity was added.
+  constructor(type: Class<E>, syntax: Syntax) : this(type.kotlin, syntax, type.identityOrNull)
+
+  // Obsolete; for Kotlin classes generated before syntax was added.
+  constructor(type: KClass<E>) : this(type, Syntax.PROTO_2, type.java.identityOrNull)
+
+  // Obsolete; for Kotlin classes generated before identity was added.
+  constructor(type: KClass<E>, syntax: Syntax) : this(type, syntax, type.java.identityOrNull)
 
   actual override fun encodedSize(value: E): Int = commonEncodedSize(value)
 
