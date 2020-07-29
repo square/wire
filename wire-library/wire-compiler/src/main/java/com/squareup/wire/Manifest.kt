@@ -184,8 +184,8 @@ fun Schema.partition(manifest: Manifest): PartitionedSchema {
       for ((duplicate, sourceModules) in duplicateTypes) {
         errors += """
           |$moduleName sees $duplicate in ${sourceModules.joinToString()}.
-          |  In order to avoid confusion and incompatibility, this type should be moved up into a
-          |  common dependency of the offending modules.
+          |  In order to avoid confusion and incompatibility, either make one of these modules
+          |  depend on the other or move this type up into a common dependency.
           """.trimMargin()
       }
     } as Map<ProtoType, String> // TODO use buildMap
