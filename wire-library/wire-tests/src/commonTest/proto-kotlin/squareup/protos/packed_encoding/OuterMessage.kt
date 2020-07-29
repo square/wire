@@ -79,7 +79,8 @@ class OuterMessage(
       FieldEncoding.LENGTH_DELIMITED, 
       OuterMessage::class, 
       "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: OuterMessage): Int {
         var size = value.unknownFields.size

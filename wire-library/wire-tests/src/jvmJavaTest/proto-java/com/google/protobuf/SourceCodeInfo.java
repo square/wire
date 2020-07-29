@@ -514,7 +514,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
     private static final class ProtoAdapter_Location extends ProtoAdapter<Location> {
       public ProtoAdapter_Location() {
-        super(FieldEncoding.LENGTH_DELIMITED, Location.class, "type.googleapis.com/google.protobuf.SourceCodeInfo.Location", Syntax.PROTO_2);
+        super(FieldEncoding.LENGTH_DELIMITED, Location.class, "type.googleapis.com/google.protobuf.SourceCodeInfo.Location", Syntax.PROTO_2, null);
       }
 
       @Override
@@ -570,7 +570,7 @@ public final class SourceCodeInfo extends Message<SourceCodeInfo, SourceCodeInfo
 
   private static final class ProtoAdapter_SourceCodeInfo extends ProtoAdapter<SourceCodeInfo> {
     public ProtoAdapter_SourceCodeInfo() {
-      super(FieldEncoding.LENGTH_DELIMITED, SourceCodeInfo.class, "type.googleapis.com/google.protobuf.SourceCodeInfo", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, SourceCodeInfo.class, "type.googleapis.com/google.protobuf.SourceCodeInfo", Syntax.PROTO_2, null);
     }
 
     @Override

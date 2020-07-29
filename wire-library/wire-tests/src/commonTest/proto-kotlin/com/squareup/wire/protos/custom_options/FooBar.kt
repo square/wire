@@ -161,7 +161,8 @@ class FooBar(
       FieldEncoding.LENGTH_DELIMITED, 
       FooBar::class, 
       "type.googleapis.com/squareup.protos.custom_options.FooBar", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: FooBar): Int {
         var size = value.unknownFields.size
@@ -291,7 +292,8 @@ class FooBar(
         FieldEncoding.LENGTH_DELIMITED, 
         Nested::class, 
         "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: Nested): Int {
           var size = value.unknownFields.size
@@ -377,7 +379,8 @@ class FooBar(
         FieldEncoding.LENGTH_DELIMITED, 
         More::class, 
         "type.googleapis.com/squareup.protos.custom_options.FooBar.More", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: More): Int {
           var size = value.unknownFields.size
@@ -432,7 +435,8 @@ class FooBar(
       @JvmField
       val ADAPTER: ProtoAdapter<FooBarBazEnum> = object : EnumAdapter<FooBarBazEnum>(
         FooBarBazEnum::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
       }

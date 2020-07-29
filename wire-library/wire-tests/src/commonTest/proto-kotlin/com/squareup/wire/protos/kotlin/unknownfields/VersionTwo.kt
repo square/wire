@@ -137,7 +137,8 @@ class VersionTwo(
       FieldEncoding.LENGTH_DELIMITED, 
       VersionTwo::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionTwo", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: VersionTwo): Int {
         var size = value.unknownFields.size

@@ -145,7 +145,8 @@ class UninterpretedOption(
       FieldEncoding.LENGTH_DELIMITED, 
       UninterpretedOption::class, 
       "type.googleapis.com/google.protobuf.UninterpretedOption", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: UninterpretedOption): Int {
         var size = value.unknownFields.size
@@ -276,7 +277,8 @@ class UninterpretedOption(
         FieldEncoding.LENGTH_DELIMITED, 
         NamePart::class, 
         "type.googleapis.com/google.protobuf.UninterpretedOption.NamePart", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: NamePart): Int {
           var size = value.unknownFields.size

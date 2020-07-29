@@ -30,7 +30,8 @@ enum class DeprecatedEnum(
     @JvmField
     val ADAPTER: ProtoAdapter<DeprecatedEnum> = object : EnumAdapter<DeprecatedEnum>(
       DeprecatedEnum::class, 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun fromValue(value: Int): DeprecatedEnum? = DeprecatedEnum.fromValue(value)
     }

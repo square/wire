@@ -66,7 +66,7 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
 
   private static final class ProtoAdapter_TheRequest extends ProtoAdapter<TheRequest> {
     public ProtoAdapter_TheRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, TheRequest.class, "type.googleapis.com/squareup.wire.protos.roots.TheRequest", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, TheRequest.class, "type.googleapis.com/squareup.wire.protos.roots.TheRequest", Syntax.PROTO_2, null);
     }
 
     @Override

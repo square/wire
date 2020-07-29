@@ -142,7 +142,8 @@ class ModelEvaluation(
       FieldEncoding.LENGTH_DELIMITED, 
       ModelEvaluation::class, 
       "type.googleapis.com/ModelEvaluation", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }

@@ -93,7 +93,7 @@ public final class Foo extends Message<Foo, Foo.Builder> {
 
   private static final class ProtoAdapter_Foo extends ProtoAdapter<Foo> {
     public ProtoAdapter_Foo() {
-      super(FieldEncoding.LENGTH_DELIMITED, Foo.class, "type.googleapis.com/squareup.protos.one_extension.Foo", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, Foo.class, "type.googleapis.com/squareup.protos.one_extension.Foo", Syntax.PROTO_2, null);
     }
 
     @Override

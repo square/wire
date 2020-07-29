@@ -84,7 +84,8 @@ class MessageUsingMultipleEnums(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageUsingMultipleEnums::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageUsingMultipleEnums", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: MessageUsingMultipleEnums): Int {
         var size = value.unknownFields.size

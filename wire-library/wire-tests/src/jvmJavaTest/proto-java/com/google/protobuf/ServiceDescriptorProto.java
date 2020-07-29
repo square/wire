@@ -138,7 +138,7 @@ public final class ServiceDescriptorProto extends Message<ServiceDescriptorProto
 
   private static final class ProtoAdapter_ServiceDescriptorProto extends ProtoAdapter<ServiceDescriptorProto> {
     public ProtoAdapter_ServiceDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class, "type.googleapis.com/google.protobuf.ServiceDescriptorProto", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, ServiceDescriptorProto.class, "type.googleapis.com/google.protobuf.ServiceDescriptorProto", Syntax.PROTO_2, null);
     }
 
     @Override

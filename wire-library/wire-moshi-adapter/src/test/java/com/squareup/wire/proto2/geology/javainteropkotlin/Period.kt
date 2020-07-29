@@ -32,7 +32,8 @@ enum class Period(
     @JvmField
     val ADAPTER: ProtoAdapter<Period> = object : EnumAdapter<Period>(
       Period::class, 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun fromValue(value: Int): Period? = Period.fromValue(value)
     }

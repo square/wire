@@ -51,7 +51,7 @@ public enum Period implements WireEnum {
 
   private static final class ProtoAdapter_Period extends EnumAdapter<Period> {
     ProtoAdapter_Period() {
-      super(Period.class, Syntax.PROTO_2);
+      super(Period.class, Syntax.PROTO_2, null);
     }
 
     @Override

@@ -82,7 +82,8 @@ class Thing(
       FieldEncoding.LENGTH_DELIMITED, 
       Thing::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Thing", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: Thing): Int {
         var size = value.unknownFields.size

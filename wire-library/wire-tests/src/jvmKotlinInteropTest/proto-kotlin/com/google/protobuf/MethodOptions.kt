@@ -165,7 +165,8 @@ class MethodOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       MethodOptions::class, 
       "type.googleapis.com/google.protobuf.MethodOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: MethodOptions): Int {
         var size = value.unknownFields.size
@@ -240,7 +241,8 @@ class MethodOptions(
       @JvmField
       val ADAPTER: ProtoAdapter<IdempotencyLevel> = object : EnumAdapter<IdempotencyLevel>(
         IdempotencyLevel::class, 
-        PROTO_2
+        PROTO_2, 
+        IdempotencyLevel.IDEMPOTENCY_UNKNOWN
       ) {
         override fun fromValue(value: Int): IdempotencyLevel? = IdempotencyLevel.fromValue(value)
       }

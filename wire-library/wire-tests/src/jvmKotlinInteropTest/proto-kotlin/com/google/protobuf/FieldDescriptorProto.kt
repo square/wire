@@ -336,7 +336,8 @@ class FieldDescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       FieldDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.FieldDescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: FieldDescriptorProto): Int {
         var size = value.unknownFields.size
@@ -496,7 +497,8 @@ class FieldDescriptorProto(
       @JvmField
       val ADAPTER: ProtoAdapter<Type> = object : EnumAdapter<Type>(
         Type::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): Type? = Type.fromValue(value)
       }
@@ -542,7 +544,8 @@ class FieldDescriptorProto(
       @JvmField
       val ADAPTER: ProtoAdapter<Label> = object : EnumAdapter<Label>(
         Label::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): Label? = Label.fromValue(value)
       }

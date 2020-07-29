@@ -170,7 +170,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     private ProtoAdapter<Map<String, String>> package_;
 
     public ProtoAdapter_KeywordJava() {
-      super(FieldEncoding.LENGTH_DELIMITED, KeywordJava.class, "type.googleapis.com/squareup.proto2.keywords.KeywordJava", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, KeywordJava.class, "type.googleapis.com/squareup.proto2.keywords.KeywordJava", Syntax.PROTO_2, null);
     }
 
     @Override

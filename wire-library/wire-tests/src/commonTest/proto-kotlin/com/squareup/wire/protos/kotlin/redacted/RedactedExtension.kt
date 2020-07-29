@@ -81,7 +81,8 @@ class RedactedExtension(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedExtension::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedExtension", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: RedactedExtension): Int {
         var size = value.unknownFields.size

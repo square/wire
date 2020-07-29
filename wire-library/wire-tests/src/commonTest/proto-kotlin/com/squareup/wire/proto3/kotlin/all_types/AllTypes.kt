@@ -1037,7 +1037,8 @@ class AllTypes(
       FieldEncoding.LENGTH_DELIMITED, 
       AllTypes::class, 
       "type.googleapis.com/proto3.kotlin.AllTypes", 
-      PROTO_3
+      PROTO_3, 
+      null
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
@@ -1639,7 +1640,8 @@ class AllTypes(
       @JvmField
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class, 
-        PROTO_3
+        PROTO_3, 
+        NestedEnum.UNKNOWN
       ) {
         override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
@@ -1701,7 +1703,8 @@ class AllTypes(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
         "type.googleapis.com/proto3.kotlin.AllTypes.NestedMessage", 
-        PROTO_3
+        PROTO_3, 
+        null
       ) {
         override fun encodedSize(value: NestedMessage): Int {
           var size = value.unknownFields.size

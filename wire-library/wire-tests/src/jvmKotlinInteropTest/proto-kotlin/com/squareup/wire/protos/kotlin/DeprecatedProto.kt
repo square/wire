@@ -85,7 +85,8 @@ class DeprecatedProto(
       FieldEncoding.LENGTH_DELIMITED, 
       DeprecatedProto::class, 
       "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: DeprecatedProto): Int {
         var size = value.unknownFields.size

@@ -71,7 +71,8 @@ class Mappy(
       FieldEncoding.LENGTH_DELIMITED, 
       Mappy::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }

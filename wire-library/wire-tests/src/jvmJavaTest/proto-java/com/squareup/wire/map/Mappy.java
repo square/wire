@@ -97,7 +97,7 @@ public final class Mappy extends Message<Mappy, Mappy.Builder> {
     private ProtoAdapter<Map<String, Thing>> things;
 
     public ProtoAdapter_Mappy() {
-      super(FieldEncoding.LENGTH_DELIMITED, Mappy.class, "type.googleapis.com/com.squareup.wire.map.Mappy", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, Mappy.class, "type.googleapis.com/com.squareup.wire.map.Mappy", Syntax.PROTO_2, null);
     }
 
     @Override

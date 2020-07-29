@@ -317,7 +317,8 @@ class MessageOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageOptions::class, 
       "type.googleapis.com/google.protobuf.MessageOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: MessageOptions): Int {
         var size = value.unknownFields.size

@@ -186,7 +186,7 @@ public final class E extends Message<E, E.Builder> {
 
     private static final class ProtoAdapter_F extends ProtoAdapter<F> {
       public ProtoAdapter_F() {
-        super(FieldEncoding.LENGTH_DELIMITED, F.class, "type.googleapis.com/squareup.protos.roots.E.F", Syntax.PROTO_2);
+        super(FieldEncoding.LENGTH_DELIMITED, F.class, "type.googleapis.com/squareup.protos.roots.E.F", Syntax.PROTO_2, null);
       }
 
       @Override
@@ -230,7 +230,7 @@ public final class E extends Message<E, E.Builder> {
 
   private static final class ProtoAdapter_E extends ProtoAdapter<E> {
     public ProtoAdapter_E() {
-      super(FieldEncoding.LENGTH_DELIMITED, E.class, "type.googleapis.com/squareup.protos.roots.E", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, E.class, "type.googleapis.com/squareup.protos.roots.E", Syntax.PROTO_2, null);
     }
 
     @Override

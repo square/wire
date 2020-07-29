@@ -93,7 +93,8 @@ class ExtensionRangeOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       ExtensionRangeOptions::class, 
       "type.googleapis.com/google.protobuf.ExtensionRangeOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: ExtensionRangeOptions): Int {
         var size = value.unknownFields.size

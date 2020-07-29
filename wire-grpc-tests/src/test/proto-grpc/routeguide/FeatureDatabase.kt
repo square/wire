@@ -73,7 +73,8 @@ class FeatureDatabase(
       FieldEncoding.LENGTH_DELIMITED, 
       FeatureDatabase::class, 
       "type.googleapis.com/routeguide.FeatureDatabase", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: FeatureDatabase): Int {
         var size = value.unknownFields.size

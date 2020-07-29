@@ -134,7 +134,8 @@ class EnumValueOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       EnumValueOptions::class, 
       "type.googleapis.com/google.protobuf.EnumValueOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: EnumValueOptions): Int {
         var size = value.unknownFields.size

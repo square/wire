@@ -82,7 +82,8 @@ class GeneratedCodeInfo(
       FieldEncoding.LENGTH_DELIMITED, 
       GeneratedCodeInfo::class, 
       "type.googleapis.com/google.protobuf.GeneratedCodeInfo", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: GeneratedCodeInfo): Int {
         var size = value.unknownFields.size
@@ -209,7 +210,8 @@ class GeneratedCodeInfo(
         FieldEncoding.LENGTH_DELIMITED, 
         Annotation::class, 
         "type.googleapis.com/google.protobuf.GeneratedCodeInfo.Annotation", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: Annotation): Int {
           var size = value.unknownFields.size

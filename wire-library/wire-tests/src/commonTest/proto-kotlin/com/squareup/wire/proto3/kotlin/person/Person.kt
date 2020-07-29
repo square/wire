@@ -158,7 +158,8 @@ class Person(
       FieldEncoding.LENGTH_DELIMITED, 
       Person::class, 
       "type.googleapis.com/squareup.protos3.kotlin.person.Person", 
-      PROTO_3
+      PROTO_3, 
+      null
     ) {
       override fun encodedSize(value: Person): Int {
         var size = value.unknownFields.size
@@ -241,7 +242,8 @@ class Person(
       @JvmField
       val ADAPTER: ProtoAdapter<PhoneType> = object : EnumAdapter<PhoneType>(
         PhoneType::class, 
-        PROTO_3
+        PROTO_3, 
+        PhoneType.MOBILE
       ) {
         override fun fromValue(value: Int): PhoneType? = PhoneType.fromValue(value)
       }
@@ -322,7 +324,8 @@ class Person(
         FieldEncoding.LENGTH_DELIMITED, 
         PhoneNumber::class, 
         "type.googleapis.com/squareup.protos3.kotlin.person.Person.PhoneNumber", 
-        PROTO_3
+        PROTO_3, 
+        null
       ) {
         override fun encodedSize(value: PhoneNumber): Int {
           var size = value.unknownFields.size

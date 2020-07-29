@@ -89,7 +89,8 @@ class RedactedChild(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedChild::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedChild", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: RedactedChild): Int {
         var size = value.unknownFields.size

@@ -75,7 +75,8 @@ class VeryLongProtoNameCausingBrokenLineBreaks(
       FieldEncoding.LENGTH_DELIMITED, 
       VeryLongProtoNameCausingBrokenLineBreaks::class, 
       "type.googleapis.com/squareup.protos.tostring.VeryLongProtoNameCausingBrokenLineBreaks", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: VeryLongProtoNameCausingBrokenLineBreaks): Int {
         var size = value.unknownFields.size

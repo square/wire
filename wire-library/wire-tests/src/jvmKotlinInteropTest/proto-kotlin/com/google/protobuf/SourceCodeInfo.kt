@@ -184,7 +184,8 @@ class SourceCodeInfo(
       FieldEncoding.LENGTH_DELIMITED, 
       SourceCodeInfo::class, 
       "type.googleapis.com/google.protobuf.SourceCodeInfo", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: SourceCodeInfo): Int {
         var size = value.unknownFields.size
@@ -535,7 +536,8 @@ class SourceCodeInfo(
         FieldEncoding.LENGTH_DELIMITED, 
         Location::class, 
         "type.googleapis.com/google.protobuf.SourceCodeInfo.Location", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: Location): Int {
           var size = value.unknownFields.size

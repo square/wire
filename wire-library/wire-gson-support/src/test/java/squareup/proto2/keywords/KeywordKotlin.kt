@@ -157,7 +157,8 @@ class KeywordKotlin(
       FieldEncoding.LENGTH_DELIMITED, 
       KeywordKotlin::class, 
       "type.googleapis.com/squareup.proto2.keywords.KeywordKotlin", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       private val funAdapter: ProtoAdapter<Map<String, String>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }

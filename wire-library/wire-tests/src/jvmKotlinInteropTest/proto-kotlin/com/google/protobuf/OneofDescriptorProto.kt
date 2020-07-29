@@ -107,7 +107,8 @@ class OneofDescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       OneofDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.OneofDescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: OneofDescriptorProto): Int {
         var size = value.unknownFields.size

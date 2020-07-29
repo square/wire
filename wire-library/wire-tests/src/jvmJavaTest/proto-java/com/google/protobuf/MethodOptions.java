@@ -232,7 +232,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
     private static final class ProtoAdapter_IdempotencyLevel extends EnumAdapter<IdempotencyLevel> {
       ProtoAdapter_IdempotencyLevel() {
-        super(IdempotencyLevel.class, Syntax.PROTO_2);
+        super(IdempotencyLevel.class, Syntax.PROTO_2, IdempotencyLevel.IDEMPOTENCY_UNKNOWN);
       }
 
       @Override
@@ -244,7 +244,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
   private static final class ProtoAdapter_MethodOptions extends ProtoAdapter<MethodOptions> {
     public ProtoAdapter_MethodOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class, "type.googleapis.com/google.protobuf.MethodOptions", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, MethodOptions.class, "type.googleapis.com/google.protobuf.MethodOptions", Syntax.PROTO_2, null);
     }
 
     @Override
