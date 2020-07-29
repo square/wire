@@ -296,7 +296,8 @@ class DescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       DescriptorProto::class, 
       "type.googleapis.com/google.protobuf.DescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: DescriptorProto): Int {
         var size = value.unknownFields.size
@@ -500,7 +501,8 @@ class DescriptorProto(
         FieldEncoding.LENGTH_DELIMITED, 
         ExtensionRange::class, 
         "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: ExtensionRange): Int {
           var size = value.unknownFields.size
@@ -648,7 +650,8 @@ class DescriptorProto(
         FieldEncoding.LENGTH_DELIMITED, 
         ReservedRange::class, 
         "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: ReservedRange): Int {
           var size = value.unknownFields.size

@@ -385,7 +385,8 @@ class FileDescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       FileDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.FileDescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: FileDescriptorProto): Int {
         var size = value.unknownFields.size

@@ -751,7 +751,8 @@ class FileOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       FileOptions::class, 
       "type.googleapis.com/google.protobuf.FileOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: FileOptions): Int {
         var size = value.unknownFields.size
@@ -918,7 +919,8 @@ class FileOptions(
       @JvmField
       val ADAPTER: ProtoAdapter<OptimizeMode> = object : EnumAdapter<OptimizeMode>(
         OptimizeMode::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): OptimizeMode? = OptimizeMode.fromValue(value)
       }

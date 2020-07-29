@@ -768,7 +768,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
     private static final class ProtoAdapter_OptimizeMode extends EnumAdapter<OptimizeMode> {
       ProtoAdapter_OptimizeMode() {
-        super(OptimizeMode.class, Syntax.PROTO_2);
+        super(OptimizeMode.class, Syntax.PROTO_2, null);
       }
 
       @Override
@@ -780,7 +780,7 @@ public final class FileOptions extends Message<FileOptions, FileOptions.Builder>
 
   private static final class ProtoAdapter_FileOptions extends ProtoAdapter<FileOptions> {
     public ProtoAdapter_FileOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, FileOptions.class, "type.googleapis.com/google.protobuf.FileOptions", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, FileOptions.class, "type.googleapis.com/google.protobuf.FileOptions", Syntax.PROTO_2, null);
     }
 
     @Override

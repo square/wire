@@ -247,7 +247,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   private static final class ProtoAdapter_FieldOptions extends ProtoAdapter<FieldOptions> {
     public ProtoAdapter_FieldOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class, "type.googleapis.com/google.protobuf.FieldOptions", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class, "type.googleapis.com/google.protobuf.FieldOptions", Syntax.PROTO_2, null);
     }
 
     @Override

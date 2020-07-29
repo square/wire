@@ -425,7 +425,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     private static final class ProtoAdapter_ExtensionRange extends ProtoAdapter<ExtensionRange> {
       public ProtoAdapter_ExtensionRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class, "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange", Syntax.PROTO_2);
+        super(FieldEncoding.LENGTH_DELIMITED, ExtensionRange.class, "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange", Syntax.PROTO_2, null);
       }
 
       @Override
@@ -587,7 +587,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
     private static final class ProtoAdapter_ReservedRange extends ProtoAdapter<ReservedRange> {
       public ProtoAdapter_ReservedRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, ReservedRange.class, "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange", Syntax.PROTO_2);
+        super(FieldEncoding.LENGTH_DELIMITED, ReservedRange.class, "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange", Syntax.PROTO_2, null);
       }
 
       @Override
@@ -634,7 +634,7 @@ public final class DescriptorProto extends Message<DescriptorProto, DescriptorPr
 
   private static final class ProtoAdapter_DescriptorProto extends ProtoAdapter<DescriptorProto> {
     public ProtoAdapter_DescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class, "type.googleapis.com/google.protobuf.DescriptorProto", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, DescriptorProto.class, "type.googleapis.com/google.protobuf.DescriptorProto", Syntax.PROTO_2, null);
     }
 
     @Override

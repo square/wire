@@ -89,7 +89,8 @@ class RouteNote(
       FieldEncoding.LENGTH_DELIMITED, 
       RouteNote::class, 
       "type.googleapis.com/routeguide.RouteNote", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: RouteNote): Int {
         var size = value.unknownFields.size

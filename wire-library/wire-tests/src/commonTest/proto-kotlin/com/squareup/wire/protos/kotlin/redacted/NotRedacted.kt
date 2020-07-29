@@ -80,7 +80,8 @@ class NotRedacted(
       FieldEncoding.LENGTH_DELIMITED, 
       NotRedacted::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.NotRedacted", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: NotRedacted): Int {
         var size = value.unknownFields.size

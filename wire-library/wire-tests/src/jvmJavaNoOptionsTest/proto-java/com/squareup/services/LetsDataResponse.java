@@ -93,7 +93,7 @@ public final class LetsDataResponse extends Message<LetsDataResponse, LetsDataRe
 
   private static final class ProtoAdapter_LetsDataResponse extends ProtoAdapter<LetsDataResponse> {
     public ProtoAdapter_LetsDataResponse() {
-      super(FieldEncoding.LENGTH_DELIMITED, LetsDataResponse.class, "type.googleapis.com/com.squareup.services.LetsDataResponse", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, LetsDataResponse.class, "type.googleapis.com/com.squareup.services.LetsDataResponse", Syntax.PROTO_2, null);
     }
 
     @Override

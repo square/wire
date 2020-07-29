@@ -133,7 +133,8 @@ class ServiceDescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       ServiceDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.ServiceDescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: ServiceDescriptorProto): Int {
         var size = value.unknownFields.size

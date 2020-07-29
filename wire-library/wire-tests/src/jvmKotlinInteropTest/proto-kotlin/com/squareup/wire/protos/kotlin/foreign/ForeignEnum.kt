@@ -21,7 +21,8 @@ enum class ForeignEnum(
     @JvmField
     val ADAPTER: ProtoAdapter<ForeignEnum> = object : EnumAdapter<ForeignEnum>(
       ForeignEnum::class, 
-      PROTO_2
+      PROTO_2, 
+      ForeignEnum.BAV
     ) {
       override fun fromValue(value: Int): ForeignEnum? = ForeignEnum.fromValue(value)
     }

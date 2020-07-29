@@ -48,7 +48,8 @@ class NoPackageResponse(
       FieldEncoding.LENGTH_DELIMITED, 
       NoPackageResponse::class, 
       "type.googleapis.com/NoPackageResponse", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: NoPackageResponse): Int {
         var size = value.unknownFields.size

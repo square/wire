@@ -88,7 +88,8 @@ class Percents(
       FieldEncoding.LENGTH_DELIMITED, 
       Percents::class, 
       "type.googleapis.com/squareup.protos.kotlin.Percents", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: Percents): Int {
         var size = value.unknownFields.size

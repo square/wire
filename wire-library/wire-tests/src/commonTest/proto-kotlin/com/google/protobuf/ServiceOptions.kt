@@ -98,7 +98,8 @@ class ServiceOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       ServiceOptions::class, 
       "type.googleapis.com/google.protobuf.ServiceOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: ServiceOptions): Int {
         var size = value.unknownFields.size

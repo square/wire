@@ -94,7 +94,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
   private static final class ProtoAdapter_Bar extends ProtoAdapter<Bar> {
     public ProtoAdapter_Bar() {
-      super(FieldEncoding.LENGTH_DELIMITED, Bar.class, "type.googleapis.com/samebasename.single_level.Bar", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, Bar.class, "type.googleapis.com/samebasename.single_level.Bar", Syntax.PROTO_2, null);
     }
 
     @Override

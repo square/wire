@@ -452,7 +452,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     private static final class ProtoAdapter_Type extends EnumAdapter<Type> {
       ProtoAdapter_Type() {
-        super(Type.class, Syntax.PROTO_2);
+        super(Type.class, Syntax.PROTO_2, null);
       }
 
       @Override
@@ -499,7 +499,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
     private static final class ProtoAdapter_Label extends EnumAdapter<Label> {
       ProtoAdapter_Label() {
-        super(Label.class, Syntax.PROTO_2);
+        super(Label.class, Syntax.PROTO_2, null);
       }
 
       @Override
@@ -511,7 +511,7 @@ public final class FieldDescriptorProto extends Message<FieldDescriptorProto, Fi
 
   private static final class ProtoAdapter_FieldDescriptorProto extends ProtoAdapter<FieldDescriptorProto> {
     public ProtoAdapter_FieldDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class, "type.googleapis.com/google.protobuf.FieldDescriptorProto", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, FieldDescriptorProto.class, "type.googleapis.com/google.protobuf.FieldDescriptorProto", Syntax.PROTO_2, null);
     }
 
     @Override

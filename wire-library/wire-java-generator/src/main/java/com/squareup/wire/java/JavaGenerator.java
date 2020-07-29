@@ -559,7 +559,7 @@ public final class JavaGenerator {
 
     if (!emitCompact) {
       // Adds the ProtoAdapter implementation at the bottom.
-      builder.addType(enumAdapter(javaType, adapterJavaType, type.getSyntax()));
+      builder.addType(enumAdapter(javaType, adapterJavaType, type));
     }
 
     return builder.build();
@@ -865,12 +865,13 @@ public final class JavaGenerator {
     return builder.build();
   }
 
-  private TypeSpec enumAdapter(ClassName javaType, ClassName adapterJavaType, Syntax syntax) {
+  private TypeSpec enumAdapter(ClassName javaType, ClassName adapterJavaType, EnumType enumType) {
     return TypeSpec.classBuilder(adapterJavaType.simpleName())
         .superclass(enumAdapterOf(javaType))
         .addModifiers(PRIVATE, STATIC, FINAL)
         .addMethod(MethodSpec.constructorBuilder()
-            .addStatement("super($T.class, $T.$L)", javaType, Syntax.class, syntax.name())
+            .addStatement("super($T.class, $T.$L, $L)",
+                javaType, Syntax.class, enumType.getSyntax().name(), identity(enumType))
             .build())
         .addMethod(MethodSpec.methodBuilder("fromValue")
             .addAnnotation(Override.class)
@@ -896,7 +897,7 @@ public final class JavaGenerator {
 
     adapter.addMethod(MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L)",
+        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L, null)",
             FieldEncoding.class, javaType, type.getType().getTypeUrl(), Syntax.class,
             type.getSyntax().name())
         .build());
@@ -1849,14 +1850,20 @@ public final class JavaGenerator {
         } else if (type instanceof MessageType) {
           return CodeBlock.of("null");
         } else if (type instanceof EnumType) {
-          return CodeBlock.of("$T.$L", typeName(protoType),
-              ((EnumType) type).constant(0).getName());
+          return identity((EnumType) type);
         }
       case REQUIRED:
       default:
         throw new IllegalArgumentException(
             "No identity value for field: " + field + "(" + field.getEncodeMode() + ")");
     }
+  }
+
+  private CodeBlock identity(EnumType enumType) {
+    EnumConstant constantZero = enumType.constant(0);
+    return constantZero != null
+        ? CodeBlock.of("$T.$L", typeName(enumType.getType()), constantZero.getName())
+        : CodeBlock.of("null");
   }
 
   static int valueToInt(@Nullable Object value) {

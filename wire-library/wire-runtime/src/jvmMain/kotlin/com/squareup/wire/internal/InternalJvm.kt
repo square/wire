@@ -19,6 +19,7 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.WireEnum
 
 // Methods for generated code use only. Not subject to public API rules.
 
@@ -33,3 +34,7 @@ fun <T> redactElements(map: java.util.Map<*, T>, adapter: ProtoAdapter<T>) {
     entry.setValue(adapter.redact(entry.value))
   }
 }
+
+/** The enum with constant 0. This is non-null for proto3 enum types. */
+val <E : WireEnum> Class<E>.identityOrNull: E?
+  get() = enumConstants.firstOrNull { (it as WireEnum).value == 0 }

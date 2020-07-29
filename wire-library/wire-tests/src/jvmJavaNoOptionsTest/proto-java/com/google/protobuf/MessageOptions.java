@@ -264,7 +264,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
 
   private static final class ProtoAdapter_MessageOptions extends ProtoAdapter<MessageOptions> {
     public ProtoAdapter_MessageOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, MessageOptions.class, "type.googleapis.com/google.protobuf.MessageOptions", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, MessageOptions.class, "type.googleapis.com/google.protobuf.MessageOptions", Syntax.PROTO_2, null);
     }
 
     @Override

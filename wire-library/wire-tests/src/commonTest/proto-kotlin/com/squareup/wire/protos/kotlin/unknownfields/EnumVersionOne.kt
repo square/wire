@@ -23,7 +23,8 @@ enum class EnumVersionOne(
     @JvmField
     val ADAPTER: ProtoAdapter<EnumVersionOne> = object : EnumAdapter<EnumVersionOne>(
       EnumVersionOne::class, 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun fromValue(value: Int): EnumVersionOne? = EnumVersionOne.fromValue(value)
     }

@@ -314,7 +314,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
     private static final class ProtoAdapter_EnumReservedRange extends ProtoAdapter<EnumReservedRange> {
       public ProtoAdapter_EnumReservedRange() {
-        super(FieldEncoding.LENGTH_DELIMITED, EnumReservedRange.class, "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange", Syntax.PROTO_2);
+        super(FieldEncoding.LENGTH_DELIMITED, EnumReservedRange.class, "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange", Syntax.PROTO_2, null);
       }
 
       @Override
@@ -361,7 +361,7 @@ public final class EnumDescriptorProto extends Message<EnumDescriptorProto, Enum
 
   private static final class ProtoAdapter_EnumDescriptorProto extends ProtoAdapter<EnumDescriptorProto> {
     public ProtoAdapter_EnumDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class, "type.googleapis.com/google.protobuf.EnumDescriptorProto", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, EnumDescriptorProto.class, "type.googleapis.com/google.protobuf.EnumDescriptorProto", Syntax.PROTO_2, null);
     }
 
     @Override

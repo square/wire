@@ -232,7 +232,8 @@ class SimpleMessage(
       FieldEncoding.LENGTH_DELIMITED, 
       SimpleMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: SimpleMessage): Int {
         var size = value.unknownFields.size
@@ -385,7 +386,8 @@ class SimpleMessage(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: NestedMessage): Int {
           var size = value.unknownFields.size
@@ -436,7 +438,8 @@ class SimpleMessage(
       @JvmField
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }

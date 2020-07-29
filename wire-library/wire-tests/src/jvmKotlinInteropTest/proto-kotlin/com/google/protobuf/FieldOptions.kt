@@ -389,7 +389,8 @@ class FieldOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       FieldOptions::class, 
       "type.googleapis.com/google.protobuf.FieldOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: FieldOptions): Int {
         var size = value.unknownFields.size
@@ -485,7 +486,8 @@ class FieldOptions(
       @JvmField
       val ADAPTER: ProtoAdapter<CType> = object : EnumAdapter<CType>(
         CType::class, 
-        PROTO_2
+        PROTO_2, 
+        CType.STRING
       ) {
         override fun fromValue(value: Int): CType? = CType.fromValue(value)
       }
@@ -522,7 +524,8 @@ class FieldOptions(
       @JvmField
       val ADAPTER: ProtoAdapter<JSType> = object : EnumAdapter<JSType>(
         JSType::class, 
-        PROTO_2
+        PROTO_2, 
+        JSType.JS_NORMAL
       ) {
         override fun fromValue(value: Int): JSType? = JSType.fromValue(value)
       }

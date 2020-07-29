@@ -159,7 +159,8 @@ class CamelCase(
       FieldEncoding.LENGTH_DELIMITED, 
       CamelCase::class, 
       "type.googleapis.com/squareup.proto3.CamelCase", 
-      PROTO_3
+      PROTO_3, 
+      null
     ) {
       private val map_int32_Int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
@@ -281,7 +282,8 @@ class CamelCase(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedCamelCase::class, 
         "type.googleapis.com/squareup.proto3.CamelCase.NestedCamelCase", 
-        PROTO_3
+        PROTO_3, 
+        null
       ) {
         override fun encodedSize(value: NestedCamelCase): Int {
           var size = value.unknownFields.size

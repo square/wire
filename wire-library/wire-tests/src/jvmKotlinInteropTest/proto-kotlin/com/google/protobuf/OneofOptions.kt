@@ -93,7 +93,8 @@ class OneofOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       OneofOptions::class, 
       "type.googleapis.com/google.protobuf.OneofOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: OneofOptions): Int {
         var size = value.unknownFields.size

@@ -332,9 +332,6 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun pairOf(a: TypeName, b: TypeName) =
-      Pair::class.asClassName().parameterizedBy(a, b)
-
   private fun nameAllocator(message: Type): NameAllocator {
     return nameAllocatorStore.getOrPut(message) {
       NameAllocator().apply {
@@ -976,8 +973,13 @@ class KotlinGenerator private constructor(
    * ```
    * companion object {
    *  @JvmField
-   *  val ADAPTER : ProtoAdapter<Person> =
-   *      object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class, "square.github.io/wire/unknown") {
+   *  val ADAPTER : ProtoAdapter<Person> = object : ProtoAdapter<Person>(
+   *    FieldEncoding.LENGTH_DELIMITED,
+   *    Person::class,
+   *    "square.github.io/wire/unknown",
+   *    Syntax.PROTO_3,
+   *    null
+   *  ) {
    *    override fun encodedSize(value: Person): Int { .. }
    *    override fun encode(writer: ProtoWriter, value: Person) { .. }
    *    override fun decode(reader: ProtoReader): Person { .. }
@@ -997,8 +999,9 @@ class KotlinGenerator private constructor(
             FieldEncoding::class.asClassName())
         .addSuperclassConstructorParameter("\n%T::class", parentClassName)
         .addSuperclassConstructorParameter("\n%S", type.type.typeUrl!!)
-        .addSuperclassConstructorParameter("\n%M\n⇤",
+        .addSuperclassConstructorParameter("\n%M",
             MemberName(Syntax::class.asClassName(), type.syntax.name))
+        .addSuperclassConstructorParameter("\nnull\n⇤")
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
@@ -1429,8 +1432,9 @@ class KotlinGenerator private constructor(
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
         .addSuperclassConstructorParameter("\n⇥%T::class", parentClassName)
-        .addSuperclassConstructorParameter("\n%M\n⇤",
+        .addSuperclassConstructorParameter("\n%M",
             MemberName(Syntax::class.asClassName(), message.syntax.name))
+        .addSuperclassConstructorParameter("\n%L\n⇤", message.identity())
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
@@ -1501,6 +1505,11 @@ class KotlinGenerator private constructor(
     else -> nameToKotlinName.getValue(this)
   }
 
+  private fun EnumType.identity(): CodeBlock {
+    val enumConstant = constant(0) ?: return CodeBlock.of("null")
+    return CodeBlock.of("%T.%L", type.typeName, enumConstant.name)
+  }
+
   private fun Field.typeNameForBuilderSetter(baseClass: TypeName = type!!.asTypeName()): TypeName {
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
@@ -1548,7 +1557,7 @@ class KotlinGenerator private constructor(
             protoType.isScalar -> PROTOTYPE_TO_IDENTITY_VALUES[protoType]
                 ?: throw IllegalArgumentException("Unexpected scalar proto type: $protoType")
             type is MessageType -> CodeBlock.of("null")
-            type is EnumType -> CodeBlock.of("%T.%L", protoType.typeName, type.constant(0)!!.name)
+            type is EnumType -> type.identity()
             else -> throw IllegalArgumentException(
                 "Unexpected type $protoType for IDENTITY_IF_ABSENT")
           }

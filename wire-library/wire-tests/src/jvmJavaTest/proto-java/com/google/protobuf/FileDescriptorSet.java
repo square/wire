@@ -99,7 +99,7 @@ public final class FileDescriptorSet extends Message<FileDescriptorSet, FileDesc
 
   private static final class ProtoAdapter_FileDescriptorSet extends ProtoAdapter<FileDescriptorSet> {
     public ProtoAdapter_FileDescriptorSet() {
-      super(FieldEncoding.LENGTH_DELIMITED, FileDescriptorSet.class, "type.googleapis.com/google.protobuf.FileDescriptorSet", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, FileDescriptorSet.class, "type.googleapis.com/google.protobuf.FileDescriptorSet", Syntax.PROTO_2, null);
     }
 
     @Override

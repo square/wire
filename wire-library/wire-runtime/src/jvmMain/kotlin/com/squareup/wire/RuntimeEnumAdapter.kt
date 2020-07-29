@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.internal.identityOrNull
 import java.lang.reflect.Method
 
 /**
@@ -23,7 +24,7 @@ import java.lang.reflect.Method
 internal class RuntimeEnumAdapter<E : WireEnum>(
   private val javaType: Class<E>,
   syntax: Syntax
-) : EnumAdapter<E>(javaType.kotlin, syntax) {
+) : EnumAdapter<E>(javaType.kotlin, syntax, javaType.identityOrNull) {
   // Obsolete; for Java classes generated before syntax were added.
   constructor(javaType: Class<E>) : this(javaType, Syntax.PROTO_2)
 

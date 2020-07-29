@@ -117,7 +117,7 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
 
   private static final class ProtoAdapter_ForeignMessage extends ProtoAdapter<ForeignMessage> {
     public ProtoAdapter_ForeignMessage() {
-      super(FieldEncoding.LENGTH_DELIMITED, ForeignMessage.class, "type.googleapis.com/squareup.protos.foreign.ForeignMessage", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, ForeignMessage.class, "type.googleapis.com/squareup.protos.foreign.ForeignMessage", Syntax.PROTO_2, null);
     }
 
     @Override

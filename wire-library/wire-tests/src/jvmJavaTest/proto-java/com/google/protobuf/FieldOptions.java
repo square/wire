@@ -647,7 +647,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     private static final class ProtoAdapter_CType extends EnumAdapter<CType> {
       ProtoAdapter_CType() {
-        super(CType.class, Syntax.PROTO_2);
+        super(CType.class, Syntax.PROTO_2, CType.STRING);
       }
 
       @Override
@@ -700,7 +700,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
     private static final class ProtoAdapter_JSType extends EnumAdapter<JSType> {
       ProtoAdapter_JSType() {
-        super(JSType.class, Syntax.PROTO_2);
+        super(JSType.class, Syntax.PROTO_2, JSType.JS_NORMAL);
       }
 
       @Override
@@ -712,7 +712,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
 
   private static final class ProtoAdapter_FieldOptions extends ProtoAdapter<FieldOptions> {
     public ProtoAdapter_FieldOptions() {
-      super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class, "type.googleapis.com/google.protobuf.FieldOptions", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, FieldOptions.class, "type.googleapis.com/google.protobuf.FieldOptions", Syntax.PROTO_2, null);
     }
 
     @Override

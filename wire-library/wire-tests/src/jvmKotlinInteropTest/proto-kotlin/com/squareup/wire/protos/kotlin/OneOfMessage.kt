@@ -158,7 +158,8 @@ class OneOfMessage(
       FieldEncoding.LENGTH_DELIMITED, 
       OneOfMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: OneOfMessage): Int {
         var size = value.unknownFields.size
