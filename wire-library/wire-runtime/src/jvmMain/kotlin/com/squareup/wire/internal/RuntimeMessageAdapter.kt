@@ -97,14 +97,14 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
         val builderValue = fieldBinding.getFromBuilder(builder)
         if (builderValue != null) {
           val redactedValue = fieldBinding.adapter().redact(builderValue)
-          fieldBinding[builder] = redactedValue
+          fieldBinding.set(builder, redactedValue)
         }
       } else if (isMessage && fieldBinding.label.isRepeated) {
         @Suppress("UNCHECKED_CAST")
         val values = fieldBinding.getFromBuilder(builder) as List<Any>
         @Suppress("UNCHECKED_CAST")
         val adapter = fieldBinding.singleAdapter() as ProtoAdapter<Any>
-        fieldBinding[builder] = values.redactElements(adapter)
+        fieldBinding.set(builder, values.redactElements(adapter))
       }
     }
     builder.clearUnknownFields()
@@ -186,11 +186,18 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     for (index in fieldBindingsArray.indices) {
       val fieldBinding = fieldBindingsArray[index]
       val value = fieldBinding[message!!]
-      if (fieldBinding.label == OMIT_IDENTITY && value == fieldBinding.identity) {
+      if (fieldBinding.omitIdentity() && value == fieldBinding.identity) {
         continue
       }
       encodeValue(jsonNames[index], value, jsonAdapters[index])
     }
+  }
+
+  private fun FieldBinding<M, B>.omitIdentity(): Boolean {
+    if (label == OMIT_IDENTITY) return true
+    if (label.isRepeated && syntax == Syntax.PROTO_3) return true
+    if (isMap && syntax == Syntax.PROTO_3) return true
+    return false
   }
 
   companion object {
