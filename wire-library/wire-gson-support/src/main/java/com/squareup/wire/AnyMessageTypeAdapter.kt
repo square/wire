@@ -21,7 +21,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
-import okio.IOException
+import java.io.IOException
 
 class AnyMessageTypeAdapter(
   private val gson: Gson,
@@ -29,7 +29,7 @@ class AnyMessageTypeAdapter(
 ) : TypeAdapter<AnyMessage>() {
   private val elementAdapter: TypeAdapter<JsonElement> = gson.getAdapter(JsonElement::class.java)
 
-  @Throws(java.io.IOException::class)
+  @Throws(IOException::class)
   override fun write(writer: JsonWriter, value: AnyMessage?) {
     if (value == null) {
       writer.nullValue()
@@ -53,7 +53,7 @@ class AnyMessageTypeAdapter(
     writer.endObject()
   }
 
-  @Throws(java.io.IOException::class)
+  @Throws(IOException::class)
   override fun read(reader: JsonReader): AnyMessage? {
     if (reader.peek() == JsonToken.NULL) {
       reader.nextNull()
