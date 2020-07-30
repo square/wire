@@ -88,7 +88,8 @@ class WhiteboardCommand(
       FieldEncoding.LENGTH_DELIMITED, 
       WhiteboardCommand::class, 
       "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: WhiteboardCommand): Int {
         var size = value.unknownFields.size
@@ -176,7 +177,8 @@ class WhiteboardCommand(
         FieldEncoding.LENGTH_DELIMITED, 
         AddPoint::class, 
         "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.AddPoint", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: AddPoint): Int {
           var size = value.unknownFields.size
@@ -239,7 +241,8 @@ class WhiteboardCommand(
         FieldEncoding.LENGTH_DELIMITED, 
         ClearBoard::class, 
         "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardCommand.ClearBoard", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: ClearBoard): Int {
           var size = value.unknownFields.size
