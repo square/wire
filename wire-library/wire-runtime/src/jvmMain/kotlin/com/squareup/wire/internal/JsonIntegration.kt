@@ -54,7 +54,7 @@ abstract class JsonIntegration<F, A> {
     syntax: Syntax,
     field: FieldBinding<M, B>
   ): A {
-    if (field.isStruct) {
+    if (field.singleAdapter().isStruct) {
       return structAdapter(framework)
     }
 

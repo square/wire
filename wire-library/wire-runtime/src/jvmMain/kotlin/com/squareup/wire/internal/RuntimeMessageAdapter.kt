@@ -186,7 +186,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     for (index in fieldBindingsArray.indices) {
       val fieldBinding = fieldBindingsArray[index]
       val value = fieldBinding[message!!]
-      if (fieldBinding.omitIdentity() && value == fieldBinding.identity) {
+      if (fieldBinding.omitIdentity() && value == fieldBinding.adapter().identity) {
         continue
       }
       encodeValue(jsonNames[index], value, jsonAdapters[index])
