@@ -356,17 +356,7 @@ class StructTest {
       |  "valueB": 33.0,
       |  "valueC": true,
       |  "valueE": {"a": 1.0},
-      |  "valueF": ["a", 3.0],
-      |  "repStruct": [],
-      |  "repList": [],
-      |  "repValueA": [],
-      |  "repNullValue": [],
-      |  "mapInt32Struct": {},
-      |  "mapInt32List": {},
-      |  "mapInt32ValueA": {},
-      |  "mapInt32NullValue": {},
-      |  "oneofStruct": null,
-      |  "oneofList": null
+      |  "valueF": ["a", 3.0]
       |}""".trimMargin()
 
     val wireAllStructJava = AllStructsJ.Builder()
@@ -412,18 +402,8 @@ class StructTest {
       |  "valueE": null,
       |  "valueF": null
       |}""".trimMargin()
-    // Protoc doesn't print those unless explicitly set.
+    // Protoc doesn't print root nulls.
     val moshiJson = """{
-      |  "repStruct": [],
-      |  "repList": [],
-      |  "repValueA": [],
-      |  "repNullValue": [],
-      |  "mapInt32Struct": {},
-      |  "mapInt32List": {},
-      |  "mapInt32ValueA": {},
-      |  "mapInt32NullValue": {},
-      |  "oneofStruct": null,
-      |  "oneofList": null,
       |  "struct": {"a": null},
       |  "list": [],
       |  "valueA": {"a": ["b", 2.0, {"c": false}]},

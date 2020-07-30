@@ -39,8 +39,11 @@ abstract class JsonIntegration<F, A> {
     valueType: Type
   ): A
 
-  /** Should handle nulls probably? */
-  abstract fun structAdapter(): A
+  /**
+   * Returns an adapter that handles trees of Maps, Lists, and other JSON types. Should always
+   * serialize nulls, including when they are values in maps.
+   */
+  abstract fun structAdapter(framework: F): A
 
   /** Returns an adapter that applies [jsonStringAdapter] to each value. */
   abstract fun formatterAdapter(jsonStringAdapter: JsonFormatter<*>): A
@@ -52,7 +55,7 @@ abstract class JsonIntegration<F, A> {
     field: FieldBinding<M, B>
   ): A {
     if (field.isStruct) {
-      return structAdapter()
+      return structAdapter(framework)
     }
 
     val jsonStringAdapter = field.jsonStringAdapter(syntax)

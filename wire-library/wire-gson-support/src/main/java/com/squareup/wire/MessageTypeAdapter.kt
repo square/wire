@@ -15,133 +15,65 @@
  */
 package com.squareup.wire
 
-import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.google.gson.TypeAdapter
-import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
-import com.squareup.wire.WireField.Label
 import com.squareup.wire.internal.FieldBinding
 import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.io.IOException
-import java.math.BigInteger
-
-// 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
-private val POWER_64 = BigInteger("18446744073709551616")
 
 internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
-  private val gson: Gson,
-  type: TypeToken<M>
+  private val messageAdapter: RuntimeMessageAdapter<M, B>,
+  private val jsonAdapters: List<TypeAdapter<Any?>>
 ) : TypeAdapter<M>() {
-  private val defaultAdapter = ProtoAdapter.get(type.rawType as Class<M>)
-  private val messageAdapter = RuntimeMessageAdapter.create(
-      messageType = type.rawType as Class<M>,
-      typeUrl = defaultAdapter.typeUrl,
-      syntax = defaultAdapter.syntax
-  )
-  private val fieldBindings: Map<String, FieldBinding<M, B>> =
-      messageAdapter.fieldBindings.values.associateBy { it.declaredName } +
-          messageAdapter.fieldBindings.values.associateBy { it.jsonName }
+  private val nameToField = mutableMapOf<String, JsonField<M, B>>()
+      .also { map ->
+        for (index in jsonAdapters.indices) {
+          val fieldBinding = messageAdapter.fieldBindingsArray[index]
+          val jsonField = JsonField(jsonAdapters[index], fieldBinding)
+          map[messageAdapter.jsonNames[index]] = jsonField
+          val alternateName = messageAdapter.jsonAlternateNames[index]
+          if (alternateName != null) {
+            map[alternateName] = jsonField
+          }
+        }
+      }
 
   @Throws(IOException::class)
   override fun write(out: JsonWriter, message: M?) {
-    if (message == null) {
-      out.nullValue()
-      return
-    }
-
     out.beginObject()
-    for (tagBinding in messageAdapter.fieldBindings.values) {
-      val value = tagBinding[message] ?: continue
-      out.name(tagBinding.jsonName)
-      emitJson(out, value, tagBinding.singleAdapter(), tagBinding.label)
+    messageAdapter.writeAllFields(message, jsonAdapters) { name, value, jsonAdapter ->
+      out.name(name)
+      jsonAdapter.write(out, value)
     }
     out.endObject()
   }
 
-  private fun emitJson(out: JsonWriter, value: Any, adapter: ProtoAdapter<*>, label: Label) {
-    if (adapter === ProtoAdapter.UINT64) {
-      if (label.isRepeated) {
-        val longs = value as List<Long>
-        out.beginArray()
-        for (i in 0 until longs.size) {
-          emitUint64(longs[i], out)
-        }
-        out.endArray()
-      } else {
-        emitUint64(value as Long, out)
-      }
-    } else {
-      gson.toJson(value, value.javaClass, out)
-    }
-  }
-
-  private fun emitUint64(value: Long, out: JsonWriter) {
-    if (value < 0) {
-      val unsigned = POWER_64.add(BigInteger.valueOf(value))
-      out.value(unsigned)
-    } else {
-      out.value(value)
-    }
-  }
-
   @Throws(IOException::class)
-  override fun read(input: JsonReader): M? {
-    if (input.peek() == JsonToken.NULL) {
-      input.nextNull()
-      return null
-    }
-
-    val elementAdapter = gson.getAdapter(JsonElement::class.java)
+  override fun read(input: JsonReader): M {
     val builder = messageAdapter.newBuilder()
-
     input.beginObject()
-    while (input.peek() != JsonToken.END_OBJECT) {
+    while (input.hasNext()) {
       val name = input.nextName()
 
-      val fieldBinding = fieldBindings[name]
-      if (fieldBinding == null) {
+      val jsonField = nameToField[name]
+      if (jsonField == null) {
         input.skipValue()
-      } else {
-        val element = elementAdapter.read(input)
-        val value = parseValue(fieldBinding, element)
-        fieldBinding[builder] = value
+        continue
       }
-    }
+      val value = jsonField.adapter.read(input) ?: continue
 
+      // If the value was explicitly null we ignore it rather than forcing null into the field.
+      // Otherwise malformed JSON that sets a list to null will create a malformed message, and
+      // we'd rather just ignore that problem.
+      jsonField.fieldBinding.set(builder, value)
+    }
     input.endObject()
     return builder.build()
   }
 
-  private fun parseValue(fieldBinding: FieldBinding<*, *>, element: JsonElement): Any? {
-    if (fieldBinding.label.isRepeated) {
-      if (element.isJsonNull) {
-        return emptyList<Any>()
-      }
-      val itemType = fieldBinding.singleAdapter().type!!.javaObjectType
-      val adapter = gson.getAdapter(itemType)
-      return element.asJsonArray.map(adapter::fromJsonTree)
-    }
-
-    if (fieldBinding.isMap) {
-      if (element.isJsonNull) {
-        return emptyMap<Any, Any>()
-      }
-
-      val keyType = fieldBinding.keyAdapter().type!!.javaObjectType
-      val valueType = fieldBinding.singleAdapter().type!!.javaObjectType
-      val valueAdapter = gson.getAdapter(valueType)
-
-      val jsonObject = element.asJsonObject
-      return jsonObject.entrySet().associateBy(
-          { gson.fromJson(it.key, keyType) },
-          { valueAdapter.fromJsonTree(it.value) }
-      )
-    }
-
-    val elementType = fieldBinding.singleAdapter().type!!.javaObjectType
-    return gson.fromJson(element, elementType)
-  }
+  data class JsonField<M : Message<M, B>, B : Message.Builder<M, B>>(
+    val adapter: TypeAdapter<Any?>,
+    val fieldBinding: FieldBinding<M, B>
+  )
 }

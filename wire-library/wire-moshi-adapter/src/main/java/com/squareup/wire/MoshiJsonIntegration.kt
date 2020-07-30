@@ -43,8 +43,8 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
     return framework.adapter(mapType)
   }
 
-  override fun structAdapter(): JsonAdapter<Any?> =
-    StructJsonAdapter.serializeNulls() as JsonAdapter<Any?>
+  override fun structAdapter(framework: Moshi): JsonAdapter<Any?> =
+      framework.adapter<Any?>(Object::class.java).serializeNulls().nullSafe()
 
   override fun formatterAdapter(jsonFormatter: JsonFormatter<*>): JsonAdapter<Any?> =
     FormatterJsonAdapter(jsonFormatter).nullSafe() as JsonAdapter<Any?>
