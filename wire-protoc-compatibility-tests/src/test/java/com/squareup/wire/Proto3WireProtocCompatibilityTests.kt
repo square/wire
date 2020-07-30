@@ -17,7 +17,6 @@
 
 package com.squareup.wire
 
-import com.google.gson.GsonBuilder
 import com.google.protobuf.Any
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.Duration
@@ -47,9 +46,6 @@ import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessag
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
 import squareup.proto3.kotlin.alltypes.All64 as All64K
 import squareup.proto3.kotlin.alltypes.AllTypes as AllTypesK
-import squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion as BuyOneGetOnePromotionK
-import squareup.proto3.kotlin.pizza.FreeGarlicBreadPromotion as FreeGarlicBreadPromotionK
-import squareup.proto3.kotlin.pizza.Pizza as PizzaK
 import squareup.proto3.kotlin.pizza.PizzaDelivery as PizzaDeliveryK
 
 class Proto3WireProtocCompatibilityTests {
@@ -87,241 +83,29 @@ class Proto3WireProtocCompatibilityTests {
             .setSeconds(-631152000L) // 1950-01-01T00:00:00.250Z.
             .setNanos(250_000_000)
             .build())
+        .setLoyalty(emptyMap<String, Any>().toStruct())
         .build()
-
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "pizzas": [{
-        |    "toppings": ["pineapple", "onion"]
-        |  }],
-        |  "promotion": {
-        |    "@type": "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion",
-        |    "coupon": "MAUI"
-        |  },
-        |  "deliveredWithinOrFree": "1799.500s",
-        |  "orderedAt": "1950-01-01T00:00:00.250Z"
-        |}
-        """.trimMargin()
 
     val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
         .add(PizzaOuterClass.BuyOneGetOnePromotion.getDescriptor())
         .add(PizzaOuterClass.FreeGarlicBreadPromotion.getDescriptor())
         .build()
 
+    // The shared proto schema don't have the same package.
+    val json = PIZZA_DELIVERY_JSON.replace(
+        "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion",
+        "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion"
+    )
+
     val jsonPrinter = JsonFormat.printer()
         .usingTypeRegistry(typeRegistry)
-    assertThat(jsonPrinter.print(pizzaDelivery)).isEqualTo(json)
+    assertJsonEquals(jsonPrinter.print(pizzaDelivery), json)
 
     val jsonParser = JsonFormat.parser().usingTypeRegistry(typeRegistry)
     val parsed = PizzaOuterClass.PizzaDelivery.newBuilder()
         .apply { jsonParser.merge(json, this) }
         .build()
     assertThat(parsed).isEqualTo(pizzaDelivery)
-  }
-
-  @Test fun wireJson() {
-    val pizzaDelivery = PizzaDeliveryK(
-        address = "507 Cross Street",
-        pizzas = listOf(PizzaK(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotionK(coupon = "MAUI")),
-        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L),
-        loyalty = emptyMap<String, Any?>(),
-        ordered_at = ofEpochSecond(-631152000L, 250_000_000L)
-    )
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "deliveredWithinOrFree": "1799.500s",
-        |  "pizzas": [
-        |    {
-        |      "toppings": [
-        |        "pineapple",
-        |        "onion"
-        |      ]
-        |    }
-        |  ],
-        |  "loyalty": {},
-        |  "promotion": {
-        |    "@type": "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion",
-        |    "coupon": "MAUI"
-        |  },
-        |  "orderedAt": "1950-01-01T00:00:00.250Z"
-        |}
-        """.trimMargin()
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory()
-            .plus(listOf(BuyOneGetOnePromotionK.ADAPTER, FreeGarlicBreadPromotionK.ADAPTER)))
-        .build()
-
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java).indent("  ")
-    assertJsonEquals(jsonAdapter.toJson(pizzaDelivery), json)
-    assertThat(jsonAdapter.fromJson(json)).isEqualTo(pizzaDelivery)
-  }
-
-  @Test fun gsonJson() {
-    val pizzaDelivery = PizzaDeliveryK(
-        address = "507 Cross Street",
-        pizzas = listOf(PizzaK(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotionK(coupon = "MAUI")),
-        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L)
-    )
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "deliveredWithinOrFree": "1799.500s",
-        |  "pizzas": [
-        |    {
-        |      "toppings": [
-        |        "pineapple",
-        |        "onion"
-        |      ]
-        |    }
-        |  ],
-        |  "promotion": {
-        |    "@type": "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion",
-        |    "coupon": "MAUI"
-        |  }
-        |}
-        """.trimMargin()
-
-    val gson = GsonBuilder().registerTypeAdapterFactory(
-        WireTypeAdapterFactory().plus(
-            listOf(BuyOneGetOnePromotionK.ADAPTER, FreeGarlicBreadPromotionK.ADAPTER)))
-        .disableHtmlEscaping()
-        .create()
-
-    assertJsonEquals(gson.toJson(pizzaDelivery), json)
-    assertThat(gson.fromJson(json, PizzaDeliveryK::class.java)).isEqualTo(pizzaDelivery)
-  }
-
-  @Test fun wireProtocJsonRoundTrip() {
-    val protocMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
-        .setAddress("507 Cross Street")
-        .addPizzas(PizzaOuterClass.Pizza.newBuilder()
-            .addToppings("pineapple")
-            .addToppings("onion")
-            .build())
-        .setPromotion(Any.pack(PizzaOuterClass.BuyOneGetOnePromotion.newBuilder()
-            .setCoupon("MAUI")
-            .build()))
-        .setLoyalty(Struct.newBuilder().build())
-        .build()
-
-    val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
-        .add(PizzaOuterClass.BuyOneGetOnePromotion.getDescriptor())
-        .add(PizzaOuterClass.FreeGarlicBreadPromotion.getDescriptor())
-        .build()
-
-    val jsonPrinter = JsonFormat.printer()
-        .usingTypeRegistry(typeRegistry)
-    val protocMessageJson = jsonPrinter.print(protocMessage)
-
-    val wireMessage = PizzaDeliveryK(
-        address = "507 Cross Street",
-        pizzas = listOf(PizzaK(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotionK(coupon = "MAUI")),
-        loyalty = emptyMap<String, Any?>()
-    )
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory()
-            .plus(listOf(BuyOneGetOnePromotionK.ADAPTER, FreeGarlicBreadPromotionK.ADAPTER)))
-        .build()
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java)
-    val moshiMessageJson = jsonAdapter.toJson(wireMessage)
-
-    // Parsing the two json because this should be order insensitive.
-    assertJsonEquals(moshiMessageJson, protocMessageJson)
-
-    // Now each parses the other's json.
-    val jsonParser = JsonFormat.parser().usingTypeRegistry(typeRegistry)
-    val protocMessageDecodedFromWireJson = PizzaOuterClass.PizzaDelivery.newBuilder()
-        .apply { jsonParser.merge(moshiMessageJson, this) }
-        .build()
-
-    val wireMessageDecodedFromProtocJson = jsonAdapter.fromJson(protocMessageJson)
-
-    assertThat(protocMessageDecodedFromWireJson).isEqualTo(protocMessage)
-    assertThat(wireMessageDecodedFromProtocJson).isEqualTo(wireMessage)
-  }
-
-  @Test fun unregisteredTypeOnReading() {
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java)
-
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "pizzas": [
-        |    {
-        |      "toppings": [
-        |        "pineapple",
-        |        "onion"
-        |      ]
-        |    }
-        |  ],
-        |  "promotion": {
-        |    "@type": "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion",
-        |    "coupon": "MAUI"
-        |  }
-        |}
-        """.trimMargin()
-
-    try {
-      jsonAdapter.fromJson(json)
-      fail()
-    } catch (expected: JsonDataException) {
-      assertThat(expected).hasMessage("Cannot resolve type: " +
-          "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion in \$.promotion")
-    }
-  }
-
-  @Test fun unregisteredTypeOnWriting() {
-    val pizzaDelivery = PizzaDeliveryK(
-        address = "507 Cross Street",
-        pizzas = listOf(PizzaK(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotionK(coupon = "MAUI"))
-    )
-
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java)
-    try {
-      jsonAdapter.toJson(pizzaDelivery)
-      fail()
-    } catch (expected: JsonDataException) {
-      assertThat(expected)
-          .hasMessage("Cannot find type for url: " +
-              "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion " +
-              "in \$.promotion.@type")
-    }
-  }
-
-  @Test fun anyJsonWithoutType() {
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java)
-
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "pizzas": [
-        |    {
-        |      "toppings": [
-        |        "pineapple",
-        |        "onion"
-        |      ]
-        |    }
-        |  ],
-        |  "promotion": {
-        |    "coupon": "MAUI"
-        |  }
-        |}
-        """.trimMargin()
-
-    try {
-      jsonAdapter.fromJson(json)
-      fail()
-    } catch (expected: JsonDataException) {
-      assertThat(expected).hasMessage("expected @type in \$.promotion")
-    }
   }
 
   @Test fun serializeDefaultAllTypesProtoc() {
@@ -705,10 +489,6 @@ class Proto3WireProtocCompatibilityTests {
         .add(WireJsonAdapterFactory())
         .build()
 
-    private val gson = GsonBuilder().registerTypeAdapterFactory(WireTypeAdapterFactory())
-        .disableHtmlEscaping()
-        .create()
-
     private val defaultAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
         .setInt32(111)
         .setUint32(112)
@@ -880,32 +660,20 @@ class Proto3WireProtocCompatibilityTests {
         .oneof_int32(0)
         .build()
 
-    private val CAMEL_CASE_JSON =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "camel_case_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val CAMEL_CASE_JSON = loadJson("camel_case_proto3.json")
 
-    private val DEFAULT_ALL_TYPES_JSON =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_types_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val DEFAULT_ALL_TYPES_JSON = loadJson("all_types_proto3.json")
 
-    private val ALL_64_JSON_MIN_VALUE =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_64_min_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val ALL_64_JSON_MIN_VALUE = loadJson("all_64_min_proto3.json")
 
-    private val ALL_64_JSON_MAX_VALUE =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_64_max_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val ALL_64_JSON_MAX_VALUE = loadJson("all_64_max_proto3.json")
 
-    private val IDENTITY_ALL_TYPES_JSON =
-        File("../wire-library/wire-tests/src/commonTest/shared/json",
-            "all_types_identity_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val IDENTITY_ALL_TYPES_JSON = loadJson("all_types_identity_proto3.json")
+
+    private val PIZZA_DELIVERY_JSON = loadJson("pizza_delivery_proto3.json")
 
     /** This is used to confirmed identity values are emitted in lists and maps. */
-    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON =
-        File("../wire-library/wire-tests/src/commonTest/shared/json",
-            "all_types_explicit_identity_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON = loadJson("all_types_explicit_identity_proto3.json")
 
     private val explicitIdentityAllTypesWireKotlin = AllTypesK(
         squareup_proto3_kotlin_alltypes_int32 = 0,
@@ -1076,6 +844,11 @@ class Proto3WireProtocCompatibilityTests {
 
     private fun <T : kotlin.Any> list(t: T): List<T> {
       return listOf(t, t)
+    }
+
+    private fun loadJson(fileName: String): String {
+      return File("../wire-library/wire-tests/src/commonTest/shared/json", fileName)
+          .source().use { it.buffer().readUtf8() }
     }
   }
 }

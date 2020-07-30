@@ -16,6 +16,9 @@
 package com.squareup.wire
 
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonIOException
+import com.google.gson.JsonSyntaxException
+import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
 import com.squareup.wire.proto2.alltypes.AllTypes
@@ -23,12 +26,18 @@ import okio.ByteString
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import squareup.proto3.AllStructs
+import squareup.proto3.BuyOneGetOnePromotion
 import squareup.proto3.CamelCase
 import squareup.proto3.CamelCase.NestedCamelCase
+import squareup.proto3.FreeGarlicBreadPromotion
+import squareup.proto3.Pizza
+import squareup.proto3.PizzaDelivery
 import java.io.File
 import java.util.Collections
 
@@ -103,13 +112,19 @@ class WireJsonTest {
         .isEqualTo(NestedCamelCase.Builder().build())
 
     // Encoding.
-    assertThat(jsonLibrary.toJson(nested, NestedCamelCase::class.java)).isEqualTo("""{"oneInt32":1}""")
+    assertThat(jsonLibrary.toJson(nested, NestedCamelCase::class.java)).isEqualTo(
+        """{"oneInt32":1}""")
 
     // More fields
     assertThat(jsonLibrary.fromJson("""{"nestedMessage":{"oneInt32":1}}""", CamelCase::class.java))
-        .isEqualTo(CamelCase.Builder().nested__message(NestedCamelCase.Builder().one_int32(1).build()).build())
-    assertThat(jsonLibrary.fromJson("""{"nested__message":{"one_int32":1}}""", CamelCase::class.java))
-        .isEqualTo(CamelCase.Builder().nested__message(NestedCamelCase.Builder().one_int32(1).build()).build())
+        .isEqualTo(
+            CamelCase.Builder().nested__message(NestedCamelCase.Builder().one_int32(1).build())
+                .build())
+    assertThat(
+        jsonLibrary.fromJson("""{"nested__message":{"one_int32":1}}""", CamelCase::class.java))
+        .isEqualTo(
+            CamelCase.Builder().nested__message(NestedCamelCase.Builder().one_int32(1).build())
+                .build())
     assertThat(jsonLibrary.fromJson("""{"RepInt32":[1, 2]}""", CamelCase::class.java))
         .isEqualTo(CamelCase.Builder()._Rep_int32(listOf(1, 2)).build())
     assertThat(jsonLibrary.fromJson("""{"_Rep_int32":[1, 2]}""", CamelCase::class.java))
@@ -135,6 +150,115 @@ class WireJsonTest {
 
     // Confirm protoc prints the same.
     assertJsonEquals(CAMEL_CASE_JSON, jsonLibrary.toJson(camel, CamelCase::class.java))
+  }
+
+  @Test fun allStruct() {
+    val value = AllStructs.Builder()
+        .struct(mapOf("a" to 1.0))
+        .list(listOf("a", 3.0))
+        .value_a("a")
+        .value_b(33.0)
+        .value_c(true)
+        .value_e(mapOf("a" to 1.0))
+        .value_f(listOf("a", 3.0))
+        .build()
+    val parsed = jsonLibrary.fromJson(ALL_STRUCT_JSON, AllStructs::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, AllStructs::class.java),
+        jsonLibrary.toJson(value, AllStructs::class.java))
+  }
+
+  @Test fun allStructWithIdentities() {
+    val value = AllStructs.Builder()
+        .struct(mapOf("a" to null))
+        .list(emptyList<Any>())
+        .value_a(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))))
+        .value_b(listOf(mapOf("d" to null, "e" to "trois")))
+        .value_c(emptyList<Any>())
+        .value_d(emptyMap<String, Any>())
+        .build()
+    val parsed = jsonLibrary.fromJson(ALL_STRUCT_IDENTITY_JSON, AllStructs::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, AllStructs::class.java),
+        jsonLibrary.toJson(value, AllStructs::class.java))
+  }
+
+  @Test fun pizzaDelivery() {
+    val value = PizzaDelivery.Builder()
+        .address("507 Cross Street")
+        .pizzas(listOf(Pizza.Builder().toppings(listOf("pineapple", "onion")).build()))
+        .promotion(AnyMessage.pack(BuyOneGetOnePromotion.Builder().coupon("MAUI").build()))
+        .delivered_within_or_free(durationOfSeconds(1_799L, 500_000_000L))
+        .loyalty(emptyMap<String, Any?>())
+        .ordered_at(ofEpochSecond(-631152000L, 250_000_000L))
+        .build()
+    val parsed = jsonLibrary.fromJson(PIZZA_DELIVERY_JSON, PizzaDelivery::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, PizzaDelivery::class.java),
+        jsonLibrary.toJson(value, PizzaDelivery::class.java))
+  }
+
+  @Test fun anyMessageWithUnregisteredTypeOnReading() {
+    try {
+      jsonLibrary.fromJson(PIZZA_DELIVERY_UNKNOWN_TYPE_JSON, PizzaDelivery::class.java)
+      fail()
+    } catch (expected: JsonDataException) {
+      // Moshi.
+      assertThat(expected).hasMessage("Cannot resolve type: " +
+          "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion in \$.promotion")
+    } catch (expected: JsonSyntaxException) {
+      // Gson.
+      assertThat(expected)
+          .hasMessageContaining("Cannot resolve type: " +
+              "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion in \$.promotion")
+    }
+  }
+
+  @Test fun anyMessageWithUnregisteredTypeOnWriting() {
+    val value = PizzaDelivery.Builder()
+        .address("507 Cross Street")
+        .pizzas(listOf(Pizza.Builder().toppings(listOf("pineapple", "onion")).build()))
+        .promotion(
+            AnyMessage.pack(FreeGarlicBreadPromotion.Builder().is_extra_cheesey(true).build()))
+        .delivered_within_or_free(durationOfSeconds(1_799L, 500_000_000L))
+        .loyalty(emptyMap<String, Any?>())
+        .ordered_at(ofEpochSecond(-631152000L, 250_000_000L))
+        .build()
+
+    try {
+      jsonLibrary.toJson(value, PizzaDelivery::class.java)
+      fail()
+    } catch (expected: JsonDataException) {
+      // Moshi.
+      assertThat(expected)
+          .hasMessage("Cannot find type for url: " +
+              "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion " +
+              "in \$.promotion.@type")
+    } catch (expected: JsonIOException) {
+      // Gson.
+      assertThat(expected)
+          .hasMessageContaining("Cannot find type for url: " +
+              "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion")
+    }
+  }
+
+  @Test fun anyMessageWithoutType() {
+    try {
+      jsonLibrary.fromJson(PIZZA_DELIVERY_WITHOUT_TYPE_JSON, PizzaDelivery::class.java)
+      fail()
+    } catch (expected: JsonDataException) {
+      // Moshi.
+      assertThat(expected).hasMessage("expected @type in \$.promotion")
+    } catch (expected: JsonSyntaxException) {
+      // Gson.
+      assertThat(expected).hasMessageContaining("expected @type in \$.promotion")
+    }
   }
 
   companion object {
@@ -279,20 +403,28 @@ class WireJsonTest {
           .ext_pack_nested_enum(list(AllTypes.NestedEnum.A))
     }
 
-    private val ALL_TYPES_JSON =
-        File("src/commonTest/shared/json", "all_types_proto2.json")
-            .source().use { it.buffer().readUtf8() }
+    private val ALL_TYPES_JSON = loadJson("all_types_proto2.json")
 
-    private val ALL_TYPES_IDENTITY_JSON =
-        File("src/commonTest/shared/json", "all_types_identity_proto2.json")
-            .source().use { it.buffer().readUtf8() }
+    private val ALL_TYPES_IDENTITY_JSON = loadJson("all_types_identity_proto2.json")
 
-    private val CAMEL_CASE_JSON =
-        File("src/commonTest/shared/json", "camel_case_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val CAMEL_CASE_JSON = loadJson("camel_case_proto3.json")
+
+    private val ALL_STRUCT_JSON = loadJson("all_struct_proto3.json")
+
+    private val ALL_STRUCT_IDENTITY_JSON = loadJson("all_struct_identity_proto3.json")
+
+    private val PIZZA_DELIVERY_JSON = loadJson("pizza_delivery_proto3.json")
+
+    private val PIZZA_DELIVERY_UNKNOWN_TYPE_JSON =
+        loadJson("pizza_delivery_unknown_type_proto3.json")
+
+    private val PIZZA_DELIVERY_WITHOUT_TYPE_JSON =
+        loadJson("pizza_delivery_without_type_proto3.json")
 
     private val moshi = object : JsonLibrary {
-      private val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
+      private val moshi = Moshi.Builder()
+          .add(WireJsonAdapterFactory().plus(listOf(BuyOneGetOnePromotion.ADAPTER)))
+          .build()
 
       override fun toString() = "Moshi"
 
@@ -306,7 +438,9 @@ class WireJsonTest {
     }
 
     private val gson = object : JsonLibrary {
-      private val gson = GsonBuilder().registerTypeAdapterFactory(WireTypeAdapterFactory())
+      private val gson = GsonBuilder()
+          .registerTypeAdapterFactory(
+              WireTypeAdapterFactory().plus(listOf(BuyOneGetOnePromotion.ADAPTER)))
           .disableHtmlEscaping()
           .create()
 
@@ -324,6 +458,10 @@ class WireJsonTest {
     @Parameters(name = "{0}")
     @JvmStatic
     internal fun parameters() = listOf(arrayOf(gson), arrayOf(moshi))
+
+    private fun loadJson(fileName: String): String {
+      return File("src/commonTest/shared/json", fileName).source().use { it.buffer().readUtf8() }
+    }
   }
 }
 

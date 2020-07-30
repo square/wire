@@ -1,0 +1,19 @@
+{
+  "struct": {
+    "a": 1.0
+  },
+  "list": [
+    "a",
+    3.0
+  ],
+  "valueA": "a",
+  "valueB": 33.0,
+  "valueC": true,
+  "valueE": {
+    "a": 1.0
+  },
+  "valueF": [
+    "a",
+    3.0
+  ]
+}
