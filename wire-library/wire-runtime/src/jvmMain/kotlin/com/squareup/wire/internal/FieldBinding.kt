@@ -65,9 +65,13 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
 
   /** The identity value is safe to omit during encoding. */
   val identity: Any? = run {
-    if (wireField.label != WireField.Label.OMIT_IDENTITY) return@run null
+    // TODO(benoit) Use ProtoAdapter.identity to avoid using that hack.
+    // Only set for maps.
+    if (wireField.keyAdapter.isNotEmpty()) return@run emptyMap<Any, Any?>()
 
     if (wireField.label.isRepeated) return@run listOf<Any?>()
+
+    if (wireField.label != WireField.Label.OMIT_IDENTITY) return@run null
 
     if (WireEnum::class.java.isAssignableFrom(messageField.type)) {
       // Proto3 guarantees such constant exists.
@@ -168,7 +172,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  operator fun set(builder: B, value: Any?) {
+  fun set(builder: B, value: Any?) {
     if (label.isOneOf) {
       // In order to maintain the 'oneof' invariant, call the builder setter method rather
       // than setting the builder field directly.

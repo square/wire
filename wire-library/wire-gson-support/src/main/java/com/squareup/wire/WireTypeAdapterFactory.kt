@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
+import com.squareup.wire.internal.RuntimeMessageAdapter
 import okio.ByteString
 
 /**
@@ -40,13 +41,43 @@ import okio.ByteString
  * [bug](https://code.google.com/p/protobuf-java-format/issues/detail?id=47)
  * in the way it serializes unknown fields, so we use our own approach for this case.
  */
-class WireTypeAdapterFactory : TypeAdapterFactory {
+class WireTypeAdapterFactory(
+  private val typeUrlToAdapter: Map<String, ProtoAdapter<*>>
+) : TypeAdapterFactory {
+  constructor() : this(mapOf())
+
+  /**
+   * Returns a new WireJsonAdapterFactory that can encode the messages for [adapters] if they're
+   * used with [AnyMessage].
+   */
+  fun plus(adapters: List<ProtoAdapter<*>>): WireTypeAdapterFactory {
+    val newMap = typeUrlToAdapter.toMutableMap()
+    for (adapter in adapters) {
+      val key = adapter.typeUrl ?: throw IllegalArgumentException(
+          "recompile ${adapter.type} to use it with WireTypeAdapterFactory")
+      newMap[key] = adapter
+    }
+    return WireTypeAdapterFactory(newMap)
+  }
+
+  /**
+   * Returns a new WireTypeAdapterFactory that can encode the messages for [adapter] if they're
+   * used with [AnyMessage].
+   */
+  fun plus(adapter: ProtoAdapter<*>): WireTypeAdapterFactory {
+    return plus(listOf(adapter))
+  }
+
   override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
+    val rawType = type.rawType
+
     return when {
-      type.rawType == ByteString::class.java -> ByteStringTypeAdapter() as TypeAdapter<T>
-      Message::class.java.isAssignableFrom(type.rawType) ->
-        MessageTypeAdapter<Nothing, Nothing>(gson, type as TypeToken<Nothing>) as TypeAdapter<T>
-      type.rawType == Duration::class.java -> DurationTypeAdapter as TypeAdapter<T>
+      rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(gson, typeUrlToAdapter) as TypeAdapter<T>
+      Message::class.java.isAssignableFrom(rawType) -> {
+        val messageAdapter = RuntimeMessageAdapter.create<Nothing, Nothing>(rawType as Class<Nothing>)
+        val jsonAdapters = messageAdapter.jsonAdapters(GsonJsonIntegration, gson)
+        MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>
+      }
       else -> null
     }
   }
