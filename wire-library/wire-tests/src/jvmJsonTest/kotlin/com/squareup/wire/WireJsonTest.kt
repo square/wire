@@ -27,6 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import squareup.proto3.AllStructs
 import squareup.proto3.CamelCase
 import squareup.proto3.CamelCase.NestedCamelCase
 import java.io.File
@@ -135,6 +136,41 @@ class WireJsonTest {
 
     // Confirm protoc prints the same.
     assertJsonEquals(CAMEL_CASE_JSON, jsonLibrary.toJson(camel, CamelCase::class.java))
+  }
+
+  @Test fun allStruct() {
+    val value = AllStructs.Builder()
+        .struct(mapOf("a" to 1.0))
+        .list(listOf("a", 3.0))
+        .value_a("a")
+        .value_b(33.0)
+        .value_c(true)
+        .value_e(mapOf("a" to 1.0))
+        .value_f(listOf("a", 3.0))
+        .build()
+    val parsed = jsonLibrary.fromJson(ALL_STRUCT_JSON, AllStructs::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, AllStructs::class.java),
+        jsonLibrary.toJson(value, AllStructs::class.java))
+  }
+
+  @Test fun allStructWithIdentities() {
+    val value = AllStructs.Builder()
+        .struct(mapOf("a" to null))
+        .list(emptyList<Any>())
+        .value_a(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))))
+        .value_b(listOf(mapOf("d" to null, "e" to "trois")))
+        .value_c(emptyList<Any>())
+        .value_d(emptyMap<String, Any>())
+        .build()
+    val parsed = jsonLibrary.fromJson(ALL_STRUCT_IDENTITY_JSON, AllStructs::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, AllStructs::class.java),
+        jsonLibrary.toJson(value, AllStructs::class.java))
   }
 
   companion object {
@@ -279,17 +315,15 @@ class WireJsonTest {
           .ext_pack_nested_enum(list(AllTypes.NestedEnum.A))
     }
 
-    private val ALL_TYPES_JSON =
-        File("src/commonTest/shared/json", "all_types_proto2.json")
-            .source().use { it.buffer().readUtf8() }
+    private val ALL_TYPES_JSON = loadJson("all_types_proto2.json")
 
-    private val ALL_TYPES_IDENTITY_JSON =
-        File("src/commonTest/shared/json", "all_types_identity_proto2.json")
-            .source().use { it.buffer().readUtf8() }
+    private val ALL_TYPES_IDENTITY_JSON = loadJson("all_types_identity_proto2.json")
 
-    private val CAMEL_CASE_JSON =
-        File("src/commonTest/shared/json", "camel_case_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val CAMEL_CASE_JSON = loadJson("camel_case_proto3.json")
+
+    private val ALL_STRUCT_JSON = loadJson("all_struct_proto3.json")
+
+    private val ALL_STRUCT_IDENTITY_JSON = loadJson("all_struct_identity_proto3.json")
 
     private val moshi = object : JsonLibrary {
       private val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
@@ -324,6 +358,10 @@ class WireJsonTest {
     @Parameters(name = "{0}")
     @JvmStatic
     internal fun parameters() = listOf(arrayOf(gson), arrayOf(moshi))
+
+    private fun loadJson(fileName: String): String {
+      return File("src/commonTest/shared/json", fileName).source().use { it.buffer().readUtf8() }
+    }
   }
 }
 

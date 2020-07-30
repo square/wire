@@ -17,12 +17,8 @@ package com.squareup.wire
 
 import com.google.protobuf.ListValue
 import com.google.protobuf.NullValue
-import com.google.protobuf.util.JsonFormat
-import com.squareup.moshi.Moshi
-import com.squareup.wire.json.assertJsonEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 import squareup.proto3.kotlin.alltypes.AllStructsOuterClass
 import squareup.proto3.java.alltypes.AllStructs as AllStructsJ
@@ -346,116 +342,5 @@ class StructTest {
     assertThat(AllStructsJ.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructJava)
     assertThat(AllStructsK.ADAPTER.encode(wireAllStructKotlin)).isEqualTo(protocAllStructBytes)
     assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructKotlin)
-  }
-
-  @Test fun structJsonRoundTrip() {
-    val json = """{
-      |  "struct": {"a": 1.0},
-      |  "list": ["a", 3.0],
-      |  "valueA": "a",
-      |  "valueB": 33.0,
-      |  "valueC": true,
-      |  "valueE": {"a": 1.0},
-      |  "valueF": ["a", 3.0]
-      |}""".trimMargin()
-
-    val wireAllStructJava = AllStructsJ.Builder()
-        .struct(mapOf("a" to 1.0))
-        .list(listOf("a", 3.0))
-        .null_value(null)
-        .value_a("a")
-        .value_b(33.0)
-        .value_c(true)
-        .value_d(null)
-        .value_e(mapOf("a" to 1.0))
-        .value_f(listOf("a", 3.0))
-        .build()
-    val wireAllStructKotlin = AllStructsK(
-        struct = mapOf("a" to 1.0),
-        list = listOf("a", 3.0),
-        null_value = null,
-        value_a = "a",
-        value_b = 33.0,
-        value_c = true,
-        value_d = null,
-        value_e = mapOf("a" to 1.0),
-        value_f = listOf("a", 3.0)
-    )
-
-    val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
-    val allStructAdapterJava = moshi.adapter(AllStructsJ::class.java)
-    assertJsonEquals(allStructAdapterJava.toJson(wireAllStructJava), json)
-    assertThat(allStructAdapterJava.fromJson(json)).isEqualTo(wireAllStructJava)
-    val allStructAdapterKotlin = moshi.adapter(AllStructsK::class.java)
-    assertJsonEquals(allStructAdapterKotlin.toJson(wireAllStructKotlin), json)
-    assertThat(allStructAdapterKotlin.fromJson(json)).isEqualTo(wireAllStructKotlin)
-  }
-
-  @Test fun structJsonRoundTripWithEmptyOrNestedMapAndList() {
-    val protocJson = """{
-      |  "struct": {"a": null},
-      |  "list": [],
-      |  "valueA": {"a": ["b", 2.0, {"c": false}]},
-      |  "valueB": [{"d": null, "e": "trois"}],
-      |  "valueC": [],
-      |  "valueD": {},
-      |  "valueE": null,
-      |  "valueF": null
-      |}""".trimMargin()
-    // Protoc doesn't print root nulls.
-    val moshiJson = """{
-      |  "struct": {"a": null},
-      |  "list": [],
-      |  "valueA": {"a": ["b", 2.0, {"c": false}]},
-      |  "valueB": [{"d": null, "e": "trois"}],
-      |  "valueC": [],
-      |  "valueD": {}
-      |}""".trimMargin()
-
-    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
-        .setStruct(mapOf("a" to null).toStruct())
-        .setList(emptyListValue())
-        .setValueA(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))).toValue())
-        .setValueB(listOf(mapOf("d" to null, "e" to "trois")).toValue())
-        .setValueC(emptyList<Any>().toValue())
-        .setValueD(emptyMap<String, Any>().toValue())
-        .setValueE(null.toValue())
-        .setValueF(null.toValue())
-        .build()
-
-    val jsonPrinter = JsonFormat.printer()
-    assertJsonEquals(jsonPrinter.print(protocAllStruct), protocJson)
-    val jsonParser = JsonFormat.parser()
-    val protocParsed = AllStructsOuterClass.AllStructs.newBuilder()
-        .apply { jsonParser.merge(protocJson, this) }
-        .build()
-    assertThat(protocParsed).isEqualTo(protocAllStruct)
-
-    val wireAllStructJava = AllStructsJ.Builder()
-        .struct(mapOf("a" to null))
-        .list(emptyList<Any>())
-        .value_a(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))))
-        .value_b(listOf(mapOf("d" to null, "e" to "trois")))
-        .value_c(emptyList<Any>())
-        .value_d(emptyMap<String, Any>())
-        .build()
-    val wireAllStructKotlin = AllStructsK(
-        struct = mapOf("a" to null),
-        list = emptyList<Any>(),
-        value_a = mapOf("a" to listOf("b", 2.0, mapOf("c" to false))),
-        value_b = listOf(mapOf("d" to null, "e" to "trois")),
-        value_c = emptyList<Any>(),
-        value_d = emptyMap<String, Any>()
-    )
-
-    val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
-    val allStructAdapterJava = moshi.adapter(AllStructsJ::class.java)
-    assertJsonEquals(allStructAdapterJava.toJson(wireAllStructJava), moshiJson)
-    assertThat(allStructAdapterJava.fromJson(protocJson)).isEqualTo(wireAllStructJava)
-    assertThat(allStructAdapterJava.fromJson(moshiJson)).isEqualTo(wireAllStructJava)
-    val allStructAdapterKotlin = moshi.adapter(AllStructsK::class.java)
-    assertJsonEquals(allStructAdapterKotlin.toJson(wireAllStructKotlin), moshiJson)
-    assertThat(allStructAdapterKotlin.fromJson(protocJson)).isEqualTo(wireAllStructKotlin)
-    assertThat(allStructAdapterKotlin.fromJson(moshiJson)).isEqualTo(wireAllStructKotlin)
   }
 }
