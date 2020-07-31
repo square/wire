@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package squareup.protos.person;
+syntax = "proto2";
 
 message Nested1 {
   required string name = 1;

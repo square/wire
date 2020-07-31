@@ -15,25 +15,21 @@
  */
 syntax = "proto2";
 
-package squareup.protos.person;
+message Redacted {
+  required string name = 1 [(squareup.protos.redacted_option.redacted) = true];
 
-message Person {
+  optional Redacted2 nested = 2;
+}
+
+message Redacted2 {
   required string name = 1;
-  required int32 id = 2;
-  optional string email = 3;
 
-  enum PhoneType {
-    MOBILE = 0;
-    HOME = 1;
-    WORK = 2;
-  }
+  optional Redacted3 fully_redacted = 2 [(squareup.protos.redacted_option.redacted) = true];
+  optional Redacted3 partially_redacted = 3;
+}
 
-  message PhoneNumber {
-    required string number = 1;
-    optional PhoneType type = 2 [default = HOME];
-  }
+message Redacted3 {
+  required string name = 1;
 
-  repeated PhoneNumber phone = 4;
-
-  repeated string aliases = 5;
+  optional bool enabled = 2 [(squareup.protos.redacted_option.redacted) = true];
 }
