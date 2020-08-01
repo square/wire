@@ -105,6 +105,11 @@ class KotlinGenerator private constructor(
     get() = schema.getType(this) is EnumType
   private val ProtoType.isMessage
     get() = schema.getType(this) is MessageType
+  private val ProtoType.isStruct
+    get() = this == ProtoType.STRUCT_MAP
+        || this == ProtoType.STRUCT_LIST
+        || this == ProtoType.STRUCT_VALUE
+        || this == ProtoType.STRUCT_NULL
   private val ProtoType.isStructNull
     get() = this == ProtoType.STRUCT_NULL
   private val Type.typeName
@@ -743,16 +748,25 @@ class KotlinGenerator private constructor(
             .build())
       }
 
-      parameterSpec.addAnnotation(wireFieldAnnotation(message, field))
-
-      if (javaInterOp) {
-        parameterSpec.addAnnotation(JvmField::class)
+      val initializer = when {
+        field.type!!.isStruct -> {
+          CodeBlock.of("%M(%S, %N)",
+              MemberName("com.squareup.wire.internal", "immutableCopyOfStruct"),
+              fieldName,
+              fieldName
+          )
+        }
+        else -> CodeBlock.of("%N", fieldName)
       }
 
       constructorBuilder.addParameter(parameterSpec.build())
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
-          .initializer(fieldName)
+          .initializer(initializer)
           .apply {
+            addAnnotation(wireFieldAnnotation(message, field))
+            if (javaInterOp) {
+              addAnnotation(JvmField::class)
+            }
             if (field.documentation.isNotBlank()) {
               addKdoc("%L\n", field.documentation.sanitizeKdoc())
             }
