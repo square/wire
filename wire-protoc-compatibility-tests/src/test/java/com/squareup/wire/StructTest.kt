@@ -18,6 +18,7 @@ package com.squareup.wire
 import com.google.protobuf.ListValue
 import com.google.protobuf.NullValue
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.entry
 import org.junit.Assert.fail
 import org.junit.Test
 import squareup.proto3.kotlin.alltypes.AllStructsOuterClass
@@ -342,5 +343,146 @@ class StructTest {
     assertThat(AllStructsJ.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructJava)
     assertThat(AllStructsK.ADAPTER.encode(wireAllStructKotlin)).isEqualTo(protocAllStructBytes)
     assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructKotlin)
+  }
+
+  @Test fun javaListsAreDeeplyImmutable() {
+    val list = mutableListOf(mutableMapOf("a" to "b"), mutableListOf("c"), "d", 5.0, false, null)
+
+    val allStructs = AllStructsJ.Builder()
+        .list(list)
+        .build()
+    assertThat(allStructs.list.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the list. Wire should have defensive copies.
+    (list[0] as MutableMap<*, *>).clear()
+    (list[1] as MutableList<*>).clear()
+    list.clear()
+
+    assertThat(allStructs.list)
+        .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
+  }
+
+  @Test fun kotlinListsAreDeeplyImmutable() {
+    val list = mutableListOf(mutableMapOf("a" to "b"), mutableListOf("c"), "d", 5.0, false, null)
+
+    val allStructs = AllStructsK.Builder()
+        .list(list)
+        .build()
+
+    assertThat(allStructs.list!!.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the list. Wire should have defensive copies.
+    (list[0] as MutableMap<*, *>).clear()
+    (list[1] as MutableList<*>).clear()
+    list.clear()
+
+    assertThat(allStructs.list)
+        .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
+  }
+
+  @Test fun javaMapsAreDeeplyImmutable() {
+    val map = mutableMapOf(
+        "a" to mutableMapOf("g" to "h"),
+        "b" to mutableListOf("i"),
+        "c" to "j",
+        "d" to 5.0,
+        "e" to false,
+        "f" to null
+    )
+
+    val allStructs = AllStructsJ.Builder()
+        .struct(map)
+        .build()
+    assertThat(allStructs.struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    (map["a"] as MutableMap<*, *>).clear()
+    (map["b"] as MutableList<*>).clear()
+    map.clear()
+
+    assertThat(allStructs.struct).containsExactly(
+        entry("a", mapOf("g" to "h")),
+        entry("b", listOf("i")),
+        entry("c", "j"),
+        entry("d", 5.0),
+        entry("e", false),
+        entry("f", null)
+    )
+  }
+
+  @Test fun kotlinMapsAreDeeplyImmutable() {
+    val map = mutableMapOf(
+        "a" to mutableMapOf("g" to "h"),
+        "b" to mutableListOf("i"),
+        "c" to "j",
+        "d" to 5.0,
+        "e" to false,
+        "f" to null
+    )
+
+    val allStructs = AllStructsK.Builder()
+        .struct(map)
+        .build()
+    assertThat(allStructs.struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    (map["a"] as MutableMap<*, *>).clear()
+    (map["b"] as MutableList<*>).clear()
+    map.clear()
+
+    assertThat(allStructs.struct).containsExactly(
+        entry("a", mapOf("g" to "h")),
+        entry("b", listOf("i")),
+        entry("c", "j"),
+        entry("d", 5.0),
+        entry("e", false),
+        entry("f", null)
+    )
+  }
+
+  @Test fun nonStructTypeCannotBeConstructed() {
+    try {
+      AllStructsK.Builder()
+          .struct(mapOf("a" to 1)) // Int.
+          .build()
+    } catch (e: IllegalArgumentException) {
+      assertThat(e).hasMessage("struct value struct must be a JSON type " +
+          "(null, Boolean, Double, String, List, or Map) but was class kotlin.Int: 1")
+    }
+  }
+
+  private fun Any?.isDeeplyUnmodifiable(): Boolean {
+    return when (this) {
+      null -> true
+      is String -> true
+      is Double -> true
+      is Boolean -> true
+      is List<*> -> {
+        this.all { it.isDeeplyUnmodifiable() } && this.isUnmodifiable()
+      }
+      is Map<*, *> -> {
+        this.all { it.key.isDeeplyUnmodifiable() && it.value.isDeeplyUnmodifiable() } &&
+            this.isUnmodifiable()
+      }
+      else -> false
+    }
+  }
+
+  private fun List<*>.isUnmodifiable(): Boolean {
+    try {
+      (this as MutableList<Any>).add("x")
+      return false
+    } catch (_: UnsupportedOperationException) {
+      return true
+    }
+  }
+
+  private fun Map<*, *>.isUnmodifiable(): Boolean {
+    try {
+      (this as MutableMap<Any, Any>).put("x", "x")
+      return false
+    } catch (_: UnsupportedOperationException) {
+      return true
+    }
   }
 }

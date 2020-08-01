@@ -45,11 +45,11 @@ class SimpleMessage(
   /**
    * An optional NestedMessage, *deprecated&#42;//
    */
-  @Deprecated(message = "optional_nested_msg is deprecated")
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
   )
+  @Deprecated(message = "optional_nested_msg is deprecated")
   val optional_nested_msg: NestedMessage? = null,
   /**
    * An optional ExternalMessage
@@ -76,12 +76,12 @@ class SimpleMessage(
   /**
    * A repeated double, deprecated
    */
-  @Deprecated(message = "repeated_double is deprecated")
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REPEATED
   )
+  @Deprecated(message = "repeated_double is deprecated")
   val repeated_double: List<Double> = emptyList(),
   /**
    * enum from another package with an explicit default

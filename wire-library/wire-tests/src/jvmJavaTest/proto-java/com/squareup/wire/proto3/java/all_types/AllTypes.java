@@ -761,10 +761,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.nested_message = builder.nested_message;
     this.any = builder.any;
     this.duration = builder.duration;
-    this.struct = builder.struct;
-    this.list_value = builder.list_value;
-    this.value = builder.value;
-    this.null_value = builder.null_value;
+    this.struct = Internal.immutableCopyOfStruct("struct", builder.struct);
+    this.list_value = Internal.immutableCopyOfStruct("list_value", builder.list_value);
+    this.value = Internal.immutableCopyOfStruct("value", builder.value);
+    this.null_value = Internal.immutableCopyOfStruct("null_value", builder.null_value);
     this.empty = builder.empty;
     this.timestamp = builder.timestamp;
     this.rep_int32 = Internal.immutableCopyOf("rep_int32", builder.rep_int32);
@@ -786,10 +786,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.rep_nested_message = Internal.immutableCopyOf("rep_nested_message", builder.rep_nested_message);
     this.rep_any = Internal.immutableCopyOf("rep_any", builder.rep_any);
     this.rep_duration = Internal.immutableCopyOf("rep_duration", builder.rep_duration);
-    this.rep_struct = Internal.immutableCopyOf("rep_struct", builder.rep_struct);
-    this.rep_list_value = Internal.immutableCopyOf("rep_list_value", builder.rep_list_value);
-    this.rep_value = Internal.immutableCopyOf("rep_value", builder.rep_value);
-    this.rep_null_value = Internal.immutableCopyOf("rep_null_value", builder.rep_null_value);
+    this.rep_struct = Internal.immutableCopyOfStruct("rep_struct", builder.rep_struct);
+    this.rep_list_value = Internal.immutableCopyOfStruct("rep_list_value", builder.rep_list_value);
+    this.rep_value = Internal.immutableCopyOfStruct("rep_value", builder.rep_value);
+    this.rep_null_value = Internal.immutableCopyOfStruct("rep_null_value", builder.rep_null_value);
     this.rep_empty = Internal.immutableCopyOf("rep_empty", builder.rep_empty);
     this.rep_timestamp = Internal.immutableCopyOf("rep_timestamp", builder.rep_timestamp);
     this.pack_int32 = Internal.immutableCopyOf("pack_int32", builder.pack_int32);
@@ -806,7 +806,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.pack_float = Internal.immutableCopyOf("pack_float", builder.pack_float);
     this.pack_double = Internal.immutableCopyOf("pack_double", builder.pack_double);
     this.pack_nested_enum = Internal.immutableCopyOf("pack_nested_enum", builder.pack_nested_enum);
-    this.pack_null_value = Internal.immutableCopyOf("pack_null_value", builder.pack_null_value);
+    this.pack_null_value = Internal.immutableCopyOfStruct("pack_null_value", builder.pack_null_value);
     this.map_int32_int32 = Internal.immutableCopyOf("map_int32_int32", builder.map_int32_int32);
     this.map_string_string = Internal.immutableCopyOf("map_string_string", builder.map_string_string);
     this.map_string_message = Internal.immutableCopyOf("map_string_message", builder.map_string_message);
@@ -824,8 +824,8 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.oneof_nested_message = builder.oneof_nested_message;
     this.oneof_any = builder.oneof_any;
     this.oneof_duration = builder.oneof_duration;
-    this.oneof_struct = builder.oneof_struct;
-    this.oneof_list_value = builder.oneof_list_value;
+    this.oneof_struct = Internal.immutableCopyOfStruct("oneof_struct", builder.oneof_struct);
+    this.oneof_list_value = Internal.immutableCopyOfStruct("oneof_list_value", builder.oneof_list_value);
     this.oneof_empty = builder.oneof_empty;
     this.oneof_timestamp = builder.oneof_timestamp;
   }

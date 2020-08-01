@@ -13,6 +13,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOfStruct
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -63,13 +64,7 @@ class PizzaDelivery(
   )
   @JvmField
   val delivered_within_or_free: Duration? = null,
-  @field:WireField(
-    tag = 6,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.OMIT_IDENTITY
-  )
-  @JvmField
-  val loyalty: Map<String, *>? = null,
+  loyalty: Map<String, *>? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
@@ -80,6 +75,14 @@ class PizzaDelivery(
   val ordered_at: Instant? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<PizzaDelivery, PizzaDelivery.Builder>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 6,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
+    label = WireField.Label.OMIT_IDENTITY
+  )
+  @JvmField
+  val loyalty: Map<String, *>? = immutableCopyOfStruct("loyalty", loyalty)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.phone_number = phone_number

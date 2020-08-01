@@ -93,7 +93,7 @@ public final class PizzaDelivery extends Message<PizzaDelivery, PizzaDelivery.Bu
     this.pizzas = Internal.immutableCopyOf("pizzas", pizzas);
     this.promotion = promotion;
     this.delivered_within_or_free = delivered_within_or_free;
-    this.loyalty = loyalty;
+    this.loyalty = Internal.immutableCopyOfStruct("loyalty", loyalty);
     this.ordered_at = ordered_at;
   }
 

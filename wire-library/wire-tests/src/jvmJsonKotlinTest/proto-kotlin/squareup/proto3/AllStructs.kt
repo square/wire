@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.internal.immutableCopyOfStruct
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
@@ -25,108 +26,19 @@ import kotlin.lazy
 import okio.ByteString
 
 class AllStructs(
-  @field:WireField(
-    tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.OMIT_IDENTITY
-  )
-  @JvmField
-  val struct: Map<String, *>? = null,
-  @field:WireField(
-    tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    label = WireField.Label.OMIT_IDENTITY
-  )
-  @JvmField
-  val list: List<*>? = null,
-  @field:WireField(
-    tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nullValue"
-  )
-  @JvmField
-  val null_value: Nothing? = null,
-  @field:WireField(
-    tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueA"
-  )
-  @JvmField
-  val value_a: Any? = null,
-  @field:WireField(
-    tag = 5,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueB"
-  )
-  @JvmField
-  val value_b: Any? = null,
-  @field:WireField(
-    tag = 6,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueC"
-  )
-  @JvmField
-  val value_c: Any? = null,
-  @field:WireField(
-    tag = 7,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueD"
-  )
-  @JvmField
-  val value_d: Any? = null,
-  @field:WireField(
-    tag = 8,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueE"
-  )
-  @JvmField
-  val value_e: Any? = null,
-  @field:WireField(
-    tag = 9,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "valueF"
-  )
-  @JvmField
-  val value_f: Any? = null,
-  @field:WireField(
-    tag = 101,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.REPEATED,
-    jsonName = "repStruct"
-  )
-  @JvmField
-  val rep_struct: List<Map<String, *>?> = emptyList(),
-  @field:WireField(
-    tag = 102,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    label = WireField.Label.REPEATED,
-    jsonName = "repList"
-  )
-  @JvmField
-  val rep_list: List<List<*>?> = emptyList(),
-  @field:WireField(
-    tag = 103,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.REPEATED,
-    jsonName = "repValueA"
-  )
-  @JvmField
-  val rep_value_a: List<Any?> = emptyList(),
-  @field:WireField(
-    tag = 104,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    label = WireField.Label.REPEATED,
-    jsonName = "repNullValue"
-  )
-  @JvmField
-  val rep_null_value: List<Nothing?> = emptyList(),
+  struct: Map<String, *>? = null,
+  list: List<*>? = null,
+  null_value: Nothing? = null,
+  value_a: Any? = null,
+  value_b: Any? = null,
+  value_c: Any? = null,
+  value_d: Any? = null,
+  value_e: Any? = null,
+  value_f: Any? = null,
+  rep_struct: List<Map<String, *>?> = emptyList(),
+  rep_list: List<List<*>?> = emptyList(),
+  rep_value_a: List<Any?> = emptyList(),
+  rep_null_value: List<Nothing?> = emptyList(),
   @field:WireField(
     tag = 301,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -159,22 +71,141 @@ class AllStructs(
   )
   @JvmField
   val map_int32_null_value: Map<Int, Nothing?> = emptyMap(),
+  oneof_struct: Map<String, *>? = null,
+  oneof_list: List<*>? = null,
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<AllStructs, AllStructs.Builder>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
+    label = WireField.Label.OMIT_IDENTITY
+  )
+  @JvmField
+  val struct: Map<String, *>? = immutableCopyOfStruct("struct", struct)
+
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
+    label = WireField.Label.OMIT_IDENTITY
+  )
+  @JvmField
+  val list: List<*>? = immutableCopyOfStruct("list", list)
+
+  @field:WireField(
+    tag = 3,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "nullValue"
+  )
+  @JvmField
+  val null_value: Nothing? = immutableCopyOfStruct("null_value", null_value)
+
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "valueA"
+  )
+  @JvmField
+  val value_a: Any? = immutableCopyOfStruct("value_a", value_a)
+
+  @field:WireField(
+    tag = 5,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "valueB"
+  )
+  @JvmField
+  val value_b: Any? = immutableCopyOfStruct("value_b", value_b)
+
+  @field:WireField(
+    tag = 6,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "valueC"
+  )
+  @JvmField
+  val value_c: Any? = immutableCopyOfStruct("value_c", value_c)
+
+  @field:WireField(
+    tag = 7,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "valueD"
+  )
+  @JvmField
+  val value_d: Any? = immutableCopyOfStruct("value_d", value_d)
+
+  @field:WireField(
+    tag = 8,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "valueE"
+  )
+  @JvmField
+  val value_e: Any? = immutableCopyOfStruct("value_e", value_e)
+
+  @field:WireField(
+    tag = 9,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "valueF"
+  )
+  @JvmField
+  val value_f: Any? = immutableCopyOfStruct("value_f", value_f)
+
+  @field:WireField(
+    tag = 101,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
+    label = WireField.Label.REPEATED,
+    jsonName = "repStruct"
+  )
+  @JvmField
+  val rep_struct: List<Map<String, *>?> = immutableCopyOfStruct("rep_struct", rep_struct)
+
+  @field:WireField(
+    tag = 102,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
+    label = WireField.Label.REPEATED,
+    jsonName = "repList"
+  )
+  @JvmField
+  val rep_list: List<List<*>?> = immutableCopyOfStruct("rep_list", rep_list)
+
+  @field:WireField(
+    tag = 103,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.REPEATED,
+    jsonName = "repValueA"
+  )
+  @JvmField
+  val rep_value_a: List<Any?> = immutableCopyOfStruct("rep_value_a", rep_value_a)
+
+  @field:WireField(
+    tag = 104,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
+    label = WireField.Label.REPEATED,
+    jsonName = "repNullValue"
+  )
+  @JvmField
+  val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value", rep_null_value)
+
   @field:WireField(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
     jsonName = "oneofStruct"
   )
   @JvmField
-  val oneof_struct: Map<String, *>? = null,
+  val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
+
   @field:WireField(
     tag = 202,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
     jsonName = "oneofList"
   )
   @JvmField
-  val oneof_list: List<*>? = null,
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<AllStructs, AllStructs.Builder>(ADAPTER, unknownFields) {
+  val oneof_list: List<*>? = immutableCopyOfStruct("oneof_list", oneof_list)
+
   init {
     require(countNonNull(oneof_struct, oneof_list) <= 1) {
       "At most one of oneof_struct, oneof_list may be non-null"

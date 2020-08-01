@@ -1390,7 +1390,10 @@ public final class JavaGenerator {
         result.addParameter(param.build());
       }
 
-      if (field.isRepeated() || field.getType().isMap()) {
+      if (isStruct(field.getType())) {
+        result.addStatement("this.$1L = $2T.immutableCopyOfStruct($1S, $3L)", fieldName,
+            Internal.class, fieldAccessName);
+      } else if (field.isRepeated() || field.getType().isMap()) {
         result.addStatement("this.$1L = $2T.immutableCopyOf($1S, $3L)", fieldName,
             Internal.class, fieldAccessName);
       } else {
@@ -1405,6 +1408,13 @@ public final class JavaGenerator {
     result.addParameter(BYTE_STRING, unknownFieldsName);
 
     return result.build();
+  }
+
+  private boolean isStruct(ProtoType protoType) {
+    return protoType.equals(ProtoType.STRUCT_MAP)
+        || protoType.equals(ProtoType.STRUCT_LIST)
+        || protoType.equals(ProtoType.STRUCT_VALUE)
+        || protoType.equals(ProtoType.STRUCT_NULL);
   }
 
   // Example:

@@ -75,6 +75,36 @@ fun <K, V> immutableCopyOf(name: String, map: Map<K?, V?>): Map<K, V> {
   return (result as MutableMap<K, V>).toUnmodifiableMap()
 }
 
+/** Confirms [value] is a struct and returns an immutable copy. */
+fun <T> immutableCopyOfStruct(name: String, value: T): T {
+  return when (value) {
+    null -> value
+    is Boolean -> value
+    is Double -> value
+    is String -> value
+    is List<*> -> {
+      val copy = mutableListOf<Any?>()
+      for (element in value) {
+        copy += immutableCopyOfStruct(name, element)
+      }
+      copy.toUnmodifiableList() as T
+    }
+    is Map<*, *> -> {
+      val copy = mutableMapOf<Any?, Any?>()
+      for ((k, v) in value) {
+        copy[immutableCopyOfStruct(name, k)] = immutableCopyOfStruct(name, v)
+      }
+      copy.toUnmodifiableMap() as T
+    }
+    else -> {
+      throw IllegalArgumentException("struct value $name must be a JSON type " +
+          "(null, Boolean, Double, String, List, or Map) but was ${value.typeName}: $value")
+    }
+  }
+}
+
+private val Any.typeName
+  get() = this::class
 
 @JvmName("-redactElements") // Hide from Java
 fun <T> List<T>.redactElements(adapter: ProtoAdapter<T>): List<T> = map(adapter::redact)

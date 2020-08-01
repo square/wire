@@ -174,25 +174,25 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
     if (Internal.countNonNull(builder.oneof_struct, builder.oneof_list) > 1) {
       throw new IllegalArgumentException("at most one of builder.oneof_struct, builder.oneof_list may be non-null");
     }
-    this.struct = builder.struct;
-    this.list = builder.list;
-    this.null_value = builder.null_value;
-    this.value_a = builder.value_a;
-    this.value_b = builder.value_b;
-    this.value_c = builder.value_c;
-    this.value_d = builder.value_d;
-    this.value_e = builder.value_e;
-    this.value_f = builder.value_f;
-    this.rep_struct = Internal.immutableCopyOf("rep_struct", builder.rep_struct);
-    this.rep_list = Internal.immutableCopyOf("rep_list", builder.rep_list);
-    this.rep_value_a = Internal.immutableCopyOf("rep_value_a", builder.rep_value_a);
-    this.rep_null_value = Internal.immutableCopyOf("rep_null_value", builder.rep_null_value);
+    this.struct = Internal.immutableCopyOfStruct("struct", builder.struct);
+    this.list = Internal.immutableCopyOfStruct("list", builder.list);
+    this.null_value = Internal.immutableCopyOfStruct("null_value", builder.null_value);
+    this.value_a = Internal.immutableCopyOfStruct("value_a", builder.value_a);
+    this.value_b = Internal.immutableCopyOfStruct("value_b", builder.value_b);
+    this.value_c = Internal.immutableCopyOfStruct("value_c", builder.value_c);
+    this.value_d = Internal.immutableCopyOfStruct("value_d", builder.value_d);
+    this.value_e = Internal.immutableCopyOfStruct("value_e", builder.value_e);
+    this.value_f = Internal.immutableCopyOfStruct("value_f", builder.value_f);
+    this.rep_struct = Internal.immutableCopyOfStruct("rep_struct", builder.rep_struct);
+    this.rep_list = Internal.immutableCopyOfStruct("rep_list", builder.rep_list);
+    this.rep_value_a = Internal.immutableCopyOfStruct("rep_value_a", builder.rep_value_a);
+    this.rep_null_value = Internal.immutableCopyOfStruct("rep_null_value", builder.rep_null_value);
     this.map_int32_struct = Internal.immutableCopyOf("map_int32_struct", builder.map_int32_struct);
     this.map_int32_list = Internal.immutableCopyOf("map_int32_list", builder.map_int32_list);
     this.map_int32_value_a = Internal.immutableCopyOf("map_int32_value_a", builder.map_int32_value_a);
     this.map_int32_null_value = Internal.immutableCopyOf("map_int32_null_value", builder.map_int32_null_value);
-    this.oneof_struct = builder.oneof_struct;
-    this.oneof_list = builder.oneof_list;
+    this.oneof_struct = Internal.immutableCopyOfStruct("oneof_struct", builder.oneof_struct);
+    this.oneof_list = Internal.immutableCopyOfStruct("oneof_list", builder.oneof_list);
   }
 
   @Override
