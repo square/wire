@@ -6,7 +6,7 @@ import Foundation
 
 public protocol Redactable: CustomStringConvertible {
 
-    associatedtype RedactedKeyType: RedactedKey
+    associatedtype RedactedKeys: RedactedKey
 
 }
 
@@ -33,7 +33,7 @@ extension Redactable {
             guard let label = label else {
                 return "\(value)"
             }
-            if RedactedKeyType(rawValue: label) != nil {
+            if RedactedKeys(rawValue: label) != nil {
                 // This is a redacted field, but if it's nil then that's ok to print
                 if "\(value)" != "nil" {
                     return "\(label): <redacted>"
