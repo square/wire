@@ -813,10 +813,10 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.map_string_enum = Internal.immutableCopyOf("map_string_enum", builder.map_string_enum);
     this.map_int32_any = Internal.immutableCopyOf("map_int32_any", builder.map_int32_any);
     this.map_int32_duration = Internal.immutableCopyOf("map_int32_duration", builder.map_int32_duration);
-    this.map_int32_struct = Internal.immutableCopyOf("map_int32_struct", builder.map_int32_struct);
-    this.map_int32_list_value = Internal.immutableCopyOf("map_int32_list_value", builder.map_int32_list_value);
-    this.map_int32_value = Internal.immutableCopyOf("map_int32_value", builder.map_int32_value);
-    this.map_int32_null_value = Internal.immutableCopyOf("map_int32_null_value", builder.map_int32_null_value);
+    this.map_int32_struct = Internal.immutableCopyOfMapWithStructValues("map_int32_struct", builder.map_int32_struct);
+    this.map_int32_list_value = Internal.immutableCopyOfMapWithStructValues("map_int32_list_value", builder.map_int32_list_value);
+    this.map_int32_value = Internal.immutableCopyOfMapWithStructValues("map_int32_value", builder.map_int32_value);
+    this.map_int32_null_value = Internal.immutableCopyOfMapWithStructValues("map_int32_null_value", builder.map_int32_null_value);
     this.map_int32_empty = Internal.immutableCopyOf("map_int32_empty", builder.map_int32_empty);
     this.map_int32_timestamp = Internal.immutableCopyOf("map_int32_timestamp", builder.map_int32_timestamp);
     this.oneof_string = builder.oneof_string;

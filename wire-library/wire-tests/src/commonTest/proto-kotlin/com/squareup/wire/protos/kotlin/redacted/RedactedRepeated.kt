@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.AssertionError
@@ -23,13 +24,18 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 class RedactedRepeated(
+  a: List<String> = emptyList(),
+  b: List<Redacted> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<RedactedRepeated, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED,
     redacted = true
   )
-  val a: List<String> = emptyList(),
+  val a: List<String> = immutableCopyOf("a", a)
+
   /**
    * Values in the repeated type need redacting.
    */
@@ -38,9 +44,8 @@ class RedactedRepeated(
     adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val b: List<Redacted> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<RedactedRepeated, Nothing>(ADAPTER, unknownFields) {
+  val b: List<Redacted> = immutableCopyOf("b", b)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN

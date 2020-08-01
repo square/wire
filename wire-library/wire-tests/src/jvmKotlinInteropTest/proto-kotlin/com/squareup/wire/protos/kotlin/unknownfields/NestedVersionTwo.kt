@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
@@ -52,15 +53,17 @@ class NestedVersionTwo(
   )
   @JvmField
   val v2_f64: Long? = null,
+  v2_rs: List<String> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<NestedVersionTwo, NestedVersionTwo.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val v2_rs: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<NestedVersionTwo, NestedVersionTwo.Builder>(ADAPTER, unknownFields) {
+  val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.i = i

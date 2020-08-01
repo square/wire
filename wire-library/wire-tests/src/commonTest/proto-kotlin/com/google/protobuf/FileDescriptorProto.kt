@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -45,61 +46,13 @@ class FileDescriptorProto(
     declaredName = "package"
   )
   val package_: String? = null,
-  /**
-   * Names of files imported by this file.
-   */
-  @field:WireField(
-    tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
-  )
-  val dependency: List<String> = emptyList(),
-  /**
-   * Indexes of the public imported files in the dependency list above.
-   */
-  @field:WireField(
-    tag = 10,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
-  )
-  val public_dependency: List<Int> = emptyList(),
-  /**
-   * Indexes of the weak imported files in the dependency list.
-   * For Google-internal migration only. Do not use.
-   */
-  @field:WireField(
-    tag = 11,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
-  )
-  val weak_dependency: List<Int> = emptyList(),
-  /**
-   * All top-level definitions in this file.
-   */
-  @field:WireField(
-    tag = 4,
-    adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val message_type: List<DescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 5,
-    adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val enum_type: List<EnumDescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 6,
-    adapter = "com.google.protobuf.ServiceDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val service: List<ServiceDescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 7,
-    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val extension: List<FieldDescriptorProto> = emptyList(),
+  dependency: List<String> = emptyList(),
+  public_dependency: List<Int> = emptyList(),
+  weak_dependency: List<Int> = emptyList(),
+  message_type: List<DescriptorProto> = emptyList(),
+  enum_type: List<EnumDescriptorProto> = emptyList(),
+  service: List<ServiceDescriptorProto> = emptyList(),
+  extension: List<FieldDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 8,
     adapter = "com.google.protobuf.FileOptions#ADAPTER"
@@ -127,6 +80,68 @@ class FileDescriptorProto(
   val syntax: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FileDescriptorProto, Nothing>(ADAPTER, unknownFields) {
+  /**
+   * Names of files imported by this file.
+   */
+  @field:WireField(
+    tag = 3,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED
+  )
+  val dependency: List<String> = immutableCopyOf("dependency", dependency)
+
+  /**
+   * Indexes of the public imported files in the dependency list above.
+   */
+  @field:WireField(
+    tag = 10,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.REPEATED
+  )
+  val public_dependency: List<Int> = immutableCopyOf("public_dependency", public_dependency)
+
+  /**
+   * Indexes of the weak imported files in the dependency list.
+   * For Google-internal migration only. Do not use.
+   */
+  @field:WireField(
+    tag = 11,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.REPEATED
+  )
+  val weak_dependency: List<Int> = immutableCopyOf("weak_dependency", weak_dependency)
+
+  /**
+   * All top-level definitions in this file.
+   */
+  @field:WireField(
+    tag = 4,
+    adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val message_type: List<DescriptorProto> = immutableCopyOf("message_type", message_type)
+
+  @field:WireField(
+    tag = 5,
+    adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val enum_type: List<EnumDescriptorProto> = immutableCopyOf("enum_type", enum_type)
+
+  @field:WireField(
+    tag = 6,
+    adapter = "com.google.protobuf.ServiceDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val service: List<ServiceDescriptorProto> = immutableCopyOf("service", service)
+
+  @field:WireField(
+    tag = 7,
+    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val extension: List<FieldDescriptorProto> = immutableCopyOf("extension", extension)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN

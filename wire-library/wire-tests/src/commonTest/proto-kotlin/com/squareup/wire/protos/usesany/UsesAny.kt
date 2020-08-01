@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.AssertionError
@@ -30,14 +31,16 @@ class UsesAny(
     adapter = "com.squareup.wire.AnyMessage#ADAPTER"
   )
   val just_one: AnyMessage? = null,
+  many_anys: List<AnyMessage> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<UsesAny, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val many_anys: List<AnyMessage> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<UsesAny, Nothing>(ADAPTER, unknownFields) {
+  val many_anys: List<AnyMessage> = immutableCopyOf("many_anys", many_anys)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN

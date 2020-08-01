@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.sanitize
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
@@ -44,12 +45,12 @@ class SimpleMessage(
   /**
    * An optional NestedMessage, *deprecated&#42;//
    */
+  @Deprecated(message = "optional_nested_msg is deprecated")
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
   )
   @JvmField
-  @Deprecated(message = "optional_nested_msg is deprecated")
   val optional_nested_msg: NestedMessage? = null,
   /**
    * An optional ExternalMessage
@@ -76,17 +77,7 @@ class SimpleMessage(
   )
   @JvmField
   val required_int32: Int,
-  /**
-   * A repeated double, deprecated
-   */
-  @field:WireField(
-    tag = 6,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  @Deprecated(message = "repeated_double is deprecated")
-  val repeated_double: List<Double> = emptyList(),
+  repeated_double: List<Double> = emptyList(),
   /**
    * enum from another package with an explicit default
    */
@@ -144,6 +135,18 @@ class SimpleMessage(
   val o: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<SimpleMessage, SimpleMessage.Builder>(ADAPTER, unknownFields) {
+  /**
+   * A repeated double, deprecated
+   */
+  @Deprecated(message = "repeated_double is deprecated")
+  @field:WireField(
+    tag = 6,
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val repeated_double: List<Double> = immutableCopyOf("repeated_double", repeated_double)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.optional_int32 = optional_int32

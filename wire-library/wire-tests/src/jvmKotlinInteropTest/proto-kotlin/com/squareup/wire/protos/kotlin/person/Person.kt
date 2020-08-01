@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -59,6 +60,10 @@ class Person(
   )
   @JvmField
   val email: String? = null,
+  phone: List<PhoneNumber> = emptyList(),
+  aliases: List<String> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
   /**
    * A list of the customer's phone numbers.
    */
@@ -68,16 +73,16 @@ class Person(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val phone: List<PhoneNumber> = emptyList(),
+  val phone: List<PhoneNumber> = immutableCopyOf("phone", phone)
+
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val aliases: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
+  val aliases: List<String> = immutableCopyOf("aliases", aliases)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name

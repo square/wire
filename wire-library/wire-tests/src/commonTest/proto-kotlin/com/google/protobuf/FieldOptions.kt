@@ -12,6 +12,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.protos.custom_options.FooBar
 import kotlin.Any
@@ -125,15 +126,7 @@ class FieldOptions(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   val weak: Boolean? = null,
-  /**
-   * The parser stores options it doesn't recognize here. See above.
-   */
-  @field:WireField(
-    tag = 999,
-    adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**
    * Extension source: custom_options.proto
    */
@@ -177,6 +170,17 @@ class FieldOptions(
   val redacted: Boolean? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FieldOptions, Nothing>(ADAPTER, unknownFields) {
+  /**
+   * The parser stores options it doesn't recognize here. See above.
+   */
+  @field:WireField(
+    tag = 999,
+    adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN

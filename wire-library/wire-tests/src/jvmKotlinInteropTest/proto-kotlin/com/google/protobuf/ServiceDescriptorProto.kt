@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -31,13 +32,7 @@ class ServiceDescriptorProto(
   )
   @JvmField
   val name: String? = null,
-  @field:WireField(
-    tag = 2,
-    adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val method: List<MethodDescriptorProto> = emptyList(),
+  method: List<MethodDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.google.protobuf.ServiceOptions#ADAPTER"
@@ -46,6 +41,14 @@ class ServiceDescriptorProto(
   val options: ServiceOptions? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<ServiceDescriptorProto, ServiceDescriptorProto.Builder>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 2,
+    adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val method: List<MethodDescriptorProto> = immutableCopyOf("method", method)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name

@@ -22,6 +22,7 @@ import okio.ByteString.Companion.decodeHex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.fail
 
 class KotlinMapTest {
   private val adapter = Mappy.ADAPTER
@@ -37,6 +38,22 @@ class KotlinMapTest {
 
     val empty = adapter.decode(ByteArray(0))
     assertNotNull(empty.things)
+  }
+
+  @Test fun mapsAreImmutable() {
+    val map = mutableMapOf("one" to Thing("One"))
+
+    val mappy = Mappy(things = map)
+    try {
+      (mappy.things as MutableMap<*, *>).clear()
+      fail()
+    } catch (_: UnsupportedOperationException) {
+      // Mutation failed as expected.
+    }
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+    assertEquals(mapOf("one" to Thing("One")), mappy.things)
   }
 
   companion object {

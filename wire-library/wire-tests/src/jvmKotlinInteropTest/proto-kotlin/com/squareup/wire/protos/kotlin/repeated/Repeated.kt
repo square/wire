@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
@@ -20,15 +21,17 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 class Repeated(
+  things: List<Thing> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<Repeated, Repeated.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.repeated.Thing#ADAPTER",
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val things: List<Thing> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<Repeated, Repeated.Builder>(ADAPTER, unknownFields) {
+  val things: List<Thing> = immutableCopyOf("things", things)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.things = things

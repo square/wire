@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
 import com.squareup.wire.proto2.geology.javainteropkotlin.Period
 import kotlin.Any
@@ -32,16 +33,7 @@ class Dinosaur(
   )
   @JvmField
   val name: String? = null,
-  /**
-   * URLs with images of this dinosaur.
-   */
-  @field:WireField(
-    tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val picture_urls: List<String> = emptyList(),
+  picture_urls: List<String> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
@@ -62,6 +54,17 @@ class Dinosaur(
   val period: Period? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Dinosaur, Dinosaur.Builder>(ADAPTER, unknownFields) {
+  /**
+   * URLs with images of this dinosaur.
+   */
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name

@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
@@ -50,14 +51,16 @@ class NestedVersionTwo(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   val v2_f64: Long? = null,
+  v2_rs: List<String> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<NestedVersionTwo, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED
   )
-  val v2_rs: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<NestedVersionTwo, Nothing>(ADAPTER, unknownFields) {
+  val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN

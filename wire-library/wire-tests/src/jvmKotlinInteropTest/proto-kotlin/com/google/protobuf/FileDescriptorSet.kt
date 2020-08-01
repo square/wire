@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
@@ -24,15 +25,17 @@ import okio.ByteString
  * files it parses.
  */
 class FileDescriptorSet(
+  file: List<FileDescriptorProto> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<FileDescriptorSet, FileDescriptorSet.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.google.protobuf.FileDescriptorProto#ADAPTER",
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val file: List<FileDescriptorProto> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<FileDescriptorSet, FileDescriptorSet.Builder>(ADAPTER, unknownFields) {
+  val file: List<FileDescriptorProto> = immutableCopyOf("file", file)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.file = file

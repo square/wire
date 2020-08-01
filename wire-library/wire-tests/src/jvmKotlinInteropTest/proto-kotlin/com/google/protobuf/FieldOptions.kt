@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
@@ -126,16 +127,7 @@ class FieldOptions(
   )
   @JvmField
   val weak: Boolean? = null,
-  /**
-   * The parser stores options it doesn't recognize here. See above.
-   */
-  @field:WireField(
-    tag = 999,
-    adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**
    * Fields marked with redacted are not to be logged, generally for PCI or PII.
    * Extension source: option_redacted.proto
@@ -148,6 +140,18 @@ class FieldOptions(
   val redacted: Boolean? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FieldOptions, FieldOptions.Builder>(ADAPTER, unknownFields) {
+  /**
+   * The parser stores options it doesn't recognize here. See above.
+   */
+  @field:WireField(
+    tag = 999,
+    adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.ctype = ctype
