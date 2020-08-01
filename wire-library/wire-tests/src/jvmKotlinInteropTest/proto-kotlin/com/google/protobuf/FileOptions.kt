@@ -101,12 +101,12 @@ class FileOptions(
   /**
    * This option does nothing.
    */
-  @Deprecated(message = "java_generate_equals_and_hash is deprecated")
   @field:WireField(
     tag = 20,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   @JvmField
+  @Deprecated(message = "java_generate_equals_and_hash is deprecated")
   val java_generate_equals_and_hash: Boolean? = null,
   /**
    * If set true, then the Java2 code generator will generate code that

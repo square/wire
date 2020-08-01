@@ -16,6 +16,7 @@ import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.internal.immutableCopyOfStruct
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -170,32 +171,10 @@ class AllTypes(
     label = WireField.Label.OMIT_IDENTITY
   )
   val duration: Duration? = null,
-  @field:WireField(
-    tag = 20,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.OMIT_IDENTITY
-  )
-  val struct: Map<String, *>? = null,
-  @field:WireField(
-    tag = 21,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "listValue"
-  )
-  val list_value: List<*>? = null,
-  @field:WireField(
-    tag = 22,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY
-  )
-  val value: Any? = null,
-  @field:WireField(
-    tag = 23,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "nullValue"
-  )
-  val null_value: Nothing? = null,
+  struct: Map<String, *>? = null,
+  list_value: List<*>? = null,
+  value: Any? = null,
+  null_value: Nothing? = null,
   @field:WireField(
     tag = 24,
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
@@ -341,34 +320,10 @@ class AllTypes(
     jsonName = "repDuration"
   )
   val rep_duration: List<Duration> = emptyList(),
-  @field:WireField(
-    tag = 220,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    label = WireField.Label.REPEATED,
-    jsonName = "repStruct"
-  )
-  val rep_struct: List<Map<String, *>?> = emptyList(),
-  @field:WireField(
-    tag = 221,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    label = WireField.Label.REPEATED,
-    jsonName = "repListValue"
-  )
-  val rep_list_value: List<List<*>?> = emptyList(),
-  @field:WireField(
-    tag = 222,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.REPEATED,
-    jsonName = "repValue"
-  )
-  val rep_value: List<Any?> = emptyList(),
-  @field:WireField(
-    tag = 223,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    label = WireField.Label.REPEATED,
-    jsonName = "repNullValue"
-  )
-  val rep_null_value: List<Nothing?> = emptyList(),
+  rep_struct: List<Map<String, *>?> = emptyList(),
+  rep_list_value: List<List<*>?> = emptyList(),
+  rep_value: List<Any?> = emptyList(),
+  rep_null_value: List<Nothing?> = emptyList(),
   @field:WireField(
     tag = 224,
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
@@ -481,13 +436,7 @@ class AllTypes(
     jsonName = "packNestedEnum"
   )
   val pack_nested_enum: List<NestedEnum> = emptyList(),
-  @field:WireField(
-    tag = 323,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    label = WireField.Label.PACKED,
-    jsonName = "packNullValue"
-  )
-  val pack_null_value: List<Nothing?> = emptyList(),
+  pack_null_value: List<Nothing?> = emptyList(),
   @field:WireField(
     tag = 501,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -602,18 +551,8 @@ class AllTypes(
     jsonName = "oneofDuration"
   )
   val oneof_duration: Duration? = null,
-  @field:WireField(
-    tag = 620,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    jsonName = "oneofStruct"
-  )
-  val oneof_struct: Map<String, *>? = null,
-  @field:WireField(
-    tag = 621,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    jsonName = "oneofListValue"
-  )
-  val oneof_list_value: List<*>? = null,
+  oneof_struct: Map<String, *>? = null,
+  oneof_list_value: List<*>? = null,
   /**
    * google.protobuf.Value oneof_value = 622;
    * google.protobuf.NullValue oneof_null_value = 623;
@@ -632,6 +571,90 @@ class AllTypes(
   val oneof_timestamp: Instant? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<AllTypes, Nothing>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 20,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
+    label = WireField.Label.OMIT_IDENTITY
+  )
+  val struct: Map<String, *>? = immutableCopyOfStruct("struct", struct)
+
+  @field:WireField(
+    tag = 21,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "listValue"
+  )
+  val list_value: List<*>? = immutableCopyOfStruct("list_value", list_value)
+
+  @field:WireField(
+    tag = 22,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.OMIT_IDENTITY
+  )
+  val value: Any? = immutableCopyOfStruct("value", value)
+
+  @field:WireField(
+    tag = 23,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
+    label = WireField.Label.OMIT_IDENTITY,
+    jsonName = "nullValue"
+  )
+  val null_value: Nothing? = immutableCopyOfStruct("null_value", null_value)
+
+  @field:WireField(
+    tag = 220,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
+    label = WireField.Label.REPEATED,
+    jsonName = "repStruct"
+  )
+  val rep_struct: List<Map<String, *>?> = immutableCopyOfStruct("rep_struct", rep_struct)
+
+  @field:WireField(
+    tag = 221,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
+    label = WireField.Label.REPEATED,
+    jsonName = "repListValue"
+  )
+  val rep_list_value: List<List<*>?> = immutableCopyOfStruct("rep_list_value", rep_list_value)
+
+  @field:WireField(
+    tag = 222,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    label = WireField.Label.REPEATED,
+    jsonName = "repValue"
+  )
+  val rep_value: List<Any?> = immutableCopyOfStruct("rep_value", rep_value)
+
+  @field:WireField(
+    tag = 223,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
+    label = WireField.Label.REPEATED,
+    jsonName = "repNullValue"
+  )
+  val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value", rep_null_value)
+
+  @field:WireField(
+    tag = 323,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
+    label = WireField.Label.PACKED,
+    jsonName = "packNullValue"
+  )
+  val pack_null_value: List<Nothing?> = immutableCopyOfStruct("pack_null_value", pack_null_value)
+
+  @field:WireField(
+    tag = 620,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
+    jsonName = "oneofStruct"
+  )
+  val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
+
+  @field:WireField(
+    tag = 621,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
+    jsonName = "oneofListValue"
+  )
+  val oneof_list_value: List<*>? = immutableCopyOfStruct("oneof_list_value", oneof_list_value)
+
   init {
     require(countNonNull(oneof_string, oneof_int32, oneof_nested_message, oneof_any, oneof_duration,
         oneof_struct, oneof_list_value, oneof_empty, oneof_timestamp) <= 1) {

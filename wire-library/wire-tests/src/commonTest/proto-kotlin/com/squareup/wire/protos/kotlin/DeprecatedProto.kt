@@ -23,11 +23,11 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 class DeprecatedProto(
-  @Deprecated(message = "foo is deprecated")
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
+  @Deprecated(message = "foo is deprecated")
   val foo: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<DeprecatedProto, Nothing>(ADAPTER, unknownFields) {
