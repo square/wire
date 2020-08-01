@@ -153,6 +153,9 @@ actual abstract class ProtoAdapter<E> actual constructor(
         "Can't create a repeated adapter from a repeated or packed adapter.")
   }
 
+  internal val isStruct: Boolean
+    get() = this == STRUCT_MAP || this == STRUCT_LIST || this == STRUCT_VALUE || this == STRUCT_NULL
+
   actual class EnumConstantNotFoundException actual constructor(
     @JvmField actual val value: Int,
     type: KClass<*>?
