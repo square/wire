@@ -40,6 +40,8 @@ class KotlinMapTest {
     assertNotNull(empty.things)
   }
 
+  @IgnoreJs
+  @IgnoreNative
   @Test fun mapsAreImmutable() {
     val map = mutableMapOf("one" to Thing("One"))
 

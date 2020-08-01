@@ -742,16 +742,24 @@ class KotlinGenerator private constructor(
         parameterSpec.defaultValue(field.identityValue)
       }
 
-      if (field.isDeprecated) {
-        parameterSpec.addAnnotation(AnnotationSpec.builder(Deprecated::class)
-            .addMember("message = %S", "$fieldName is deprecated")
-            .build())
-      }
-
       val initializer = when {
+        field.type!!.valueType?.isStruct == true -> {
+          CodeBlock.of("%M(%S, %N)",
+              MemberName("com.squareup.wire.internal", "immutableCopyOfMapWithStructValues"),
+              fieldName,
+              fieldName
+          )
+        }
         field.type!!.isStruct -> {
           CodeBlock.of("%M(%S, %N)",
               MemberName("com.squareup.wire.internal", "immutableCopyOfStruct"),
+              fieldName,
+              fieldName
+          )
+        }
+        field.isRepeated || field.isMap -> {
+          CodeBlock.of("%M(%S, %N)",
+              MemberName("com.squareup.wire.internal", "immutableCopyOf"),
               fieldName,
               fieldName
           )
@@ -763,6 +771,11 @@ class KotlinGenerator private constructor(
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
           .initializer(initializer)
           .apply {
+            if (field.isDeprecated) {
+              addAnnotation(AnnotationSpec.builder(Deprecated::class)
+                  .addMember("message = %S", "$fieldName is deprecated")
+                  .build())
+            }
             addAnnotation(wireFieldAnnotation(message, field))
             if (javaInterOp) {
               addAnnotation(JvmField::class)

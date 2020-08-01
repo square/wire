@@ -145,8 +145,21 @@ class WireJsonTest {
         .IDitIt_my_wAy("frank")
         .map_int32_Int32(mapOf(1 to 2))
         .build()
-    assertThat(jsonLibrary.toJson(camel, CamelCase::class.java)).isEqualTo(
-        """{"nestedMessage":{"oneInt32":1},"RepInt32":[1,2],"iDitItMyWAy":"frank","mapInt32Int32":{"1":2}}""")
+    assertJsonEquals(jsonLibrary.toJson(camel, CamelCase::class.java), """
+        |{
+        |  "nestedMessage": {
+        |    "oneInt32": 1
+        |  },
+        |  "RepInt32": [
+        |    1,
+        |    2
+        |  ],
+        |  "iDitItMyWAy": "frank",
+        |  "mapInt32Int32": {
+        |    "1": 2
+        |  }
+        |}
+        |""".trimMargin())
 
     // Confirm protoc prints the same.
     assertJsonEquals(CAMEL_CASE_JSON, jsonLibrary.toJson(camel, CamelCase::class.java))
