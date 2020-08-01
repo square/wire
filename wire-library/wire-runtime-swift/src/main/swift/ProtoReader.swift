@@ -29,6 +29,14 @@ public final class ProtoReader {
         case packedValue
     }
 
+    // MARK: -
+
+    private struct MessageFrame {
+        let isProto3: Bool
+        let messageEnd: UnsafePointer<UInt8>
+        var unknownFields: WriteBuffer? = nil
+    }
+
     // MARK: - Private Properties
 
     /** The number of slots to preallocate in a collection when we encounter the first value. */
@@ -43,13 +51,18 @@ public final class ProtoReader {
     private let buffer: ReadBuffer
 
     /**
-     Buffers for unknown fields, keyed by message nesting depth.
-     This dictionary is only allocated when an unknown field is first encountered.
+     A stack of frames where each frame represents a level of message nesting.
      */
-    private var unknownFieldsByMessageDepth: [Int: WriteBuffer]? = nil
+    private var messageStack: UnsafeMutablePointer<MessageFrame>
+    private var messageStackIndex: Int = -1
+    private var messageStackCapacity: Int = 5
 
-    /** The depth of the message nesting. */
-    private var messageStackDepth: Int = 0
+    /**
+     Is the current message a proto3 message (or a proto2 message if false).
+     This is determined prior to decoding the message based on the type's protocol
+     so we store it here temporarily and then copy it into the message frame in `beginMessage`.
+     */
+    private var isProto3Message: Bool = false
 
     /** The encoding of the next value to be read. */
     private var nextFieldWireType: FieldWireType? = nil
@@ -60,14 +73,19 @@ public final class ProtoReader {
     // MARK: - Private Properties - Constants
 
     /** The standard number of levels of message nesting to allow. */
-    private static let recursionLimit: UInt = 65
+    private static let recursionLimit: Int = 65
 
     // MARK: - Initialization
 
     init(buffer: ReadBuffer) {
         self.buffer = buffer
         self.state = .lengthDelimited(length: buffer.count)
-        self.messageStackDepth = 1
+
+        self.messageStack = .allocate(capacity: messageStackCapacity)
+    }
+
+    deinit {
+        messageStack.deallocate()
     }
 
     // MARK: - Public Methods - Decoding - Generated Message Body
@@ -76,20 +94,29 @@ public final class ProtoReader {
      Begin a nested message. A call to this method will restrict the reader so that `nextTag`
      returns nil when the message is complete.
      */
-    public func beginMessage() throws -> UnsafePointer<UInt8> {
+    public func beginMessage() throws -> Int {
         guard case let .lengthDelimited(length) = state else {
             fatalError("Unexpected call to decodeMessage()")
         }
 
-        if messageStackDepth > ProtoReader.recursionLimit {
+        if (messageStackIndex + 1) > ProtoReader.recursionLimit {
             throw ProtoDecoder.Error.recursionLimitExceeded
         }
 
         state = .tag
 
-        messageStackDepth += 1
+        messageStackIndex += 1
+        if messageStackIndex >= messageStackCapacity {
+            expandMessageStack()
+        }
 
-        return buffer.pointer.advanced(by: length)
+        let frame = MessageFrame(
+            isProto3: isProto3Message,
+            messageEnd: buffer.pointer.advanced(by: length)
+        )
+        messageStack.advanced(by: messageStackIndex).initialize(to: frame)
+
+        return messageStackIndex
     }
 
     /**
@@ -97,13 +124,14 @@ public final class ProtoReader {
      This method should be paired with calls to `beginMessage` and `endMessage`.
      This silently skips groups.
      */
-    public func nextTag(token: UnsafePointer<UInt8>) throws -> UInt32? {
+    public func nextTag(token: Int) throws -> UInt32? {
         if state != .tag {
             // After reading the previous value the state should have been set to `.tag`
             fatalError("Unexpected call to nextTag. State is \(state).")
         }
 
-        while buffer.pointer < token && buffer.isDataRemaining {
+        let messageEnd = messageStack[token].messageEnd
+        while buffer.pointer < messageEnd && buffer.isDataRemaining {
             let (tag, wireType) = try readFieldKey()
             nextFieldWireType = wireType
 
@@ -138,19 +166,18 @@ public final class ProtoReader {
         return nil
     }
 
-    public func endMessage(token: UnsafePointer<UInt8>) throws -> Data {
-        let expectedEndPointer = token
+    public func endMessage(token: Int) throws -> Data {
+        let frame = messageStack[token]
 
-        let unknownFieldsData = unknownFieldsByMessageDepth?.removeValue(forKey: messageStackDepth)
-        messageStackDepth -= 1
+        messageStackIndex -= 1
 
-        if buffer.pointer != expectedEndPointer {
+        if buffer.pointer != frame.messageEnd {
             throw ProtoDecoder.Error.invalidStructure(
-                message: "Expected to end message at at \(expectedEndPointer - buffer.start), but was at \(buffer.position)"
+                message: "Expected to end message at at \(frame.messageEnd - buffer.start), but was at \(buffer.position)"
             )
         }
 
-        return unknownFieldsData.flatMap { Data($0) } ?? Data()
+        return frame.unknownFields.flatMap { Data($0) } ?? Data()
     }
 
     // MARK: - Public Methods - Decoding - Single Fields
@@ -215,6 +242,7 @@ public final class ProtoReader {
 
     /** Decode a message field */
     public func decode<T: ProtoDecodable>(_ type: T.Type) throws -> T {
+        isProto3Message = T.self is Proto3Codable.Type
         return try T(from: self)
     }
 
@@ -304,6 +332,7 @@ public final class ProtoReader {
     /** Decode a repeated message field. */
     public func decode<T: ProtoDecodable>(into array: inout [T]) throws {
         // These types do not support packing, so no need to test for it.
+        isProto3Message = T.self is Proto3Codable.Type
         try array.append(T(from: self))
     }
 
@@ -593,6 +622,19 @@ public final class ProtoReader {
         dictionary[unwrappedKey] = unwrappedValue
     }
 
+    // MARK: - Private Methods - Message Stack
+
+    private func expandMessageStack() {
+        let newCapacity = min(messageStackCapacity * 2, ProtoReader.recursionLimit)
+
+        let newMessageStack = UnsafeMutablePointer<MessageFrame>.allocate(capacity: newCapacity)
+        newMessageStack.moveInitialize(from: messageStack, count: messageStackIndex + 1)
+        messageStack.deallocate()
+
+        messageStack = newMessageStack
+        messageStackCapacity = newCapacity
+    }
+
     // MARK: - Private Methods - Unknown Fields
 
     private func addUnknownField<T: ProtoIntEncodable>(tag: UInt32, value: T, encoding: ProtoIntEncoding) throws {
@@ -606,16 +648,10 @@ public final class ProtoReader {
     }
 
     private func addUnknownField(_ block: (ProtoWriter) throws -> Void) rethrows {
-        // The unknown fields map isn't allocated until it's needed.
-        // We need it now, so create it if necessary.
-        if unknownFieldsByMessageDepth == nil {
-            unknownFieldsByMessageDepth = [:]
-        }
-
-        let buffer = unknownFieldsByMessageDepth![messageStackDepth] ?? WriteBuffer()
+        let buffer = messageStack[messageStackIndex].unknownFields ?? WriteBuffer()
         let unknownFieldsWriter = ProtoWriter(data: buffer)
         try block(unknownFieldsWriter)
-        unknownFieldsByMessageDepth![messageStackDepth] = buffer
+        messageStack[messageStackIndex].unknownFields = buffer
     }
 
 }
