@@ -190,7 +190,7 @@ class LinkerTest {
   }
 
   private fun loadAndLinkSchema(): Schema {
-    NewSchemaLoader(fs).use { loader ->
+    SchemaLoader(fs).use { loader ->
       loader.initRoots(
           sourcePath = listOf(Location.get("source-path")),
           protoPath = listOf(Location.get("proto-path"))

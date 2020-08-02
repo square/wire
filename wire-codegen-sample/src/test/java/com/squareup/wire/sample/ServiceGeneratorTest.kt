@@ -19,7 +19,7 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.NewSchemaLoader
+import com.squareup.wire.schema.SchemaLoader
 import com.squareup.wire.schema.Schema
 import okio.buffer
 import okio.sink
@@ -90,7 +90,7 @@ class ServiceGeneratorTest {
 
   @Throws(IOException::class)
   private fun schema(fileToProto: Map<String, String>): Schema {
-    val schemaLoader = NewSchemaLoader(FileSystems.getDefault())
+    val schemaLoader = SchemaLoader(FileSystems.getDefault())
     schemaLoader.initRoots(listOf(Location.get(temporaryFolder.root.toString())))
     for (entry in fileToProto.entries) {
       val file = File(temporaryFolder.root, entry.key)

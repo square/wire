@@ -31,7 +31,7 @@ class MarkdownHandler : CustomHandlerBeta {
     fs: FileSystem,
     outDirectory: String,
     logger: WireLogger,
-    newProfileLoader: NewProfileLoader
+    profileLoader: ProfileLoader
   ): Target.SchemaHandler {
     return object : Target.SchemaHandler {
       override fun handle(type: Type): Path? {

@@ -22,7 +22,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.WireCompiler
 import com.squareup.wire.WireLogger
 import com.squareup.wire.java.JavaGenerator
-import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
@@ -63,7 +62,7 @@ sealed class Target : Serializable {
     schema: Schema,
     fs: FileSystem,
     logger: WireLogger,
-    newProfileLoader: NewProfileLoader
+    profileLoader: ProfileLoader
   ): SchemaHandler
 
   interface SchemaHandler {
@@ -149,10 +148,10 @@ data class JavaTarget(
     schema: Schema,
     fs: FileSystem,
     logger: WireLogger,
-    newProfileLoader: NewProfileLoader
+    profileLoader: ProfileLoader
   ): SchemaHandler {
     val profileName = if (android) "android" else "java"
-    val profile = newProfileLoader.loadProfile(profileName, schema)
+    val profile = profileLoader.loadProfile(profileName, schema)
 
     val javaGenerator = JavaGenerator.get(schema)
         .withProfile(profile)
@@ -218,7 +217,7 @@ data class KotlinTarget(
     schema: Schema,
     fs: FileSystem,
     logger: WireLogger,
-    newProfileLoader: NewProfileLoader
+    profileLoader: ProfileLoader
   ): SchemaHandler {
     val kotlinGenerator = KotlinGenerator(
         schema = schema,
@@ -307,7 +306,7 @@ data class ProtoTarget(
     schema: Schema,
     fs: FileSystem,
     logger: WireLogger,
-    newProfileLoader: NewProfileLoader
+    profileLoader: ProfileLoader
   ): SchemaHandler {
     return object : SchemaHandler {
       override fun handle(type: Type): Path? = null
@@ -359,7 +358,7 @@ data class NullTarget(
     schema: Schema,
     fs: FileSystem,
     logger: WireLogger,
-    newProfileLoader: NewProfileLoader
+    profileLoader: ProfileLoader
   ): SchemaHandler {
     return object : SchemaHandler {
       override fun handle(type: Type): Path? {
@@ -395,7 +394,7 @@ data class CustomTargetBeta(
     schema: Schema,
     fs: FileSystem,
     logger: WireLogger,
-    newProfileLoader: NewProfileLoader
+    profileLoader: ProfileLoader
   ): SchemaHandler {
     val customHandlerType = try {
       Class.forName(customHandlerClass)
@@ -413,7 +412,7 @@ data class CustomTargetBeta(
         ?: throw IllegalArgumentException(
             "$customHandlerClass does not implement CustomHandlerBeta")
 
-    return instance.newHandler(schema, fs, outDirectory, logger, newProfileLoader)
+    return instance.newHandler(schema, fs, outDirectory, logger, profileLoader)
   }
 }
 
@@ -428,11 +427,7 @@ interface CustomHandlerBeta {
     fs: FileSystem,
     outDirectory: String,
     logger: WireLogger,
-    newProfileLoader: NewProfileLoader
+    profileLoader: ProfileLoader
   ): Target.SchemaHandler
 }
 
-// TODO: merge this interface with Loader.
-interface NewProfileLoader {
-  fun loadProfile(name: String, schema: Schema): Profile
-}

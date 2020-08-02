@@ -38,7 +38,7 @@ import java.nio.file.Files
 class RepoBuilder {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
   private val root = fs.getPath("/source")
-  private val schemaLoader = NewSchemaLoader(fs)
+  private val schemaLoader = SchemaLoader(fs)
   private var schema: Schema? = null
 
   fun add(name: String, protoFile: String): RepoBuilder {

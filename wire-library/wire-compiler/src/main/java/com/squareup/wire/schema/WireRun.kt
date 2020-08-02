@@ -175,12 +175,12 @@ data class WireRun(
 ) {
 
   fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
-    return NewSchemaLoader(fs).use { newSchemaLoader ->
+    return SchemaLoader(fs).use { newSchemaLoader ->
       execute(fs, logger, newSchemaLoader)
     }
   }
 
-  private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: NewSchemaLoader) {
+  private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: SchemaLoader) {
     schemaLoader.initRoots(sourcePath, protoPath)
 
     // Validate the schema and resolve references

@@ -27,7 +27,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 import java.io.IOException
 
-class NewProfileLoaderTest {
+class ProfileLoaderTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
 
   @Test @Throws(IOException::class)
@@ -152,7 +152,7 @@ class NewProfileLoaderTest {
     name: String,
     sourcePath: List<Location> = listOf(Location.get("source-path"))
   ): Profile {
-    NewSchemaLoader(fs).use { loader ->
+    SchemaLoader(fs).use { loader ->
       loader.initRoots(sourcePath)
       val schema = loader.loadSchema()
       return loader.loadProfile(name, schema)
