@@ -1390,7 +1390,10 @@ public final class JavaGenerator {
         result.addParameter(param.build());
       }
 
-      if (isStruct(field.getType())) {
+      if (field.getType().isMap() && isStruct(field.getType().getValueType())) {
+        result.addStatement("this.$1L = $2T.immutableCopyOfMapWithStructValues($1S, $3L)",
+            fieldName, Internal.class, fieldAccessName);
+      } else if (isStruct(field.getType())) {
         result.addStatement("this.$1L = $2T.immutableCopyOfStruct($1S, $3L)", fieldName,
             Internal.class, fieldAccessName);
       } else if (field.isRepeated() || field.getType().isMap()) {

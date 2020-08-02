@@ -12,6 +12,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.AssertionError
@@ -51,24 +52,13 @@ class FooBar(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   val qux: Long? = null,
-  @field:WireField(
-    tag = 5,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-    label = WireField.Label.REPEATED
-  )
-  val fred: List<Float> = emptyList(),
+  fred: List<Float> = emptyList(),
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   val daisy: Double? = null,
-  @field:WireField(
-    tag = 7,
-    adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
-    label = WireField.Label.REPEATED,
-    redacted = true
-  )
-  val nested: List<FooBar> = emptyList(),
+  nested: List<FooBar> = emptyList(),
   /**
    * Extension source: custom_options.proto
    */
@@ -77,6 +67,24 @@ class FooBar(
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER"
   )
   val ext: FooBarBazEnum? = null,
+  rep: List<FooBarBazEnum> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<FooBar, Nothing>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 5,
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    label = WireField.Label.REPEATED
+  )
+  val fred: List<Float> = immutableCopyOf("fred", fred)
+
+  @field:WireField(
+    tag = 7,
+    adapter = "com.squareup.wire.protos.custom_options.FooBar#ADAPTER",
+    label = WireField.Label.REPEATED,
+    redacted = true
+  )
+  val nested: List<FooBar> = immutableCopyOf("nested", nested)
+
   /**
    * Extension source: custom_options.proto
    */
@@ -85,9 +93,8 @@ class FooBar(
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val rep: List<FooBarBazEnum> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<FooBar, Nothing>(ADAPTER, unknownFields) {
+  val rep: List<FooBarBazEnum> = immutableCopyOf("rep", rep)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -332,14 +339,16 @@ class FooBar(
   }
 
   class More(
+    serial: List<Int> = emptyList(),
+    unknownFields: ByteString = ByteString.EMPTY
+  ) : Message<More, Nothing>(ADAPTER, unknownFields) {
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.REPEATED
     )
-    val serial: List<Int> = emptyList(),
-    unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<More, Nothing>(ADAPTER, unknownFields) {
+    val serial: List<Int> = immutableCopyOf("serial", serial)
+
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN

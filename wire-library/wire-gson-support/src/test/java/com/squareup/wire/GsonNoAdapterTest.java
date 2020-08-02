@@ -94,8 +94,8 @@ public class GsonNoAdapterTest {
         .picture_urls(Arrays.asList("http://goo.gl/LD5KY5", "http://goo.gl/VYRM67"))
         .build();
     String json = "{"
-        + "\"name\":\"Stegosaurus\","
         + "\"picture_urls\":[\"http://goo.gl/LD5KY5\",\"http://goo.gl/VYRM67\"],"
+        + "\"name\":\"Stegosaurus\","
         + "\"length_meters\":9.0,"
         + "\"mass_kilograms\":5000.0,"
         + "\"period\":\"JURASSIC\""
@@ -142,8 +142,8 @@ public class GsonNoAdapterTest {
             ByteString.EMPTY
         );
     String json = "{"
-        + "\"name\":\"Stegosaurus\","
         + "\"picture_urls\":[\"http://goo.gl/LD5KY5\",\"http://goo.gl/VYRM67\"],"
+        + "\"name\":\"Stegosaurus\","
         + "\"length_meters\":9.0,"
         + "\"mass_kilograms\":5000.0,"
         + "\"period\":\"JURASSIC\""

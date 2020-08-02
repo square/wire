@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -28,6 +29,9 @@ import okio.ByteString
  * source file, but may contain references to different source .proto files.
  */
 class GeneratedCodeInfo(
+  annotation: List<Annotation> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<GeneratedCodeInfo, GeneratedCodeInfo.Builder>(ADAPTER, unknownFields) {
   /**
    * An Annotation connects some span of text in generated code to an element
    * of its generating .proto file.
@@ -38,9 +42,8 @@ class GeneratedCodeInfo(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val annotation: List<Annotation> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<GeneratedCodeInfo, GeneratedCodeInfo.Builder>(ADAPTER, unknownFields) {
+  val annotation: List<Annotation> = immutableCopyOf("annotation", annotation)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.annotation = annotation
@@ -137,17 +140,7 @@ class GeneratedCodeInfo(
   }
 
   class Annotation(
-    /**
-     * Identifies the element in the original source .proto file. This field
-     * is formatted the same as SourceCodeInfo.Location.path.
-     */
-    @field:WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED
-    )
-    @JvmField
-    val path: List<Int> = emptyList(),
+    path: List<Int> = emptyList(),
     /**
      * Identifies the filesystem path to the original source .proto.
      */
@@ -180,6 +173,18 @@ class GeneratedCodeInfo(
     val end: Int? = null,
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<Annotation, Annotation.Builder>(ADAPTER, unknownFields) {
+    /**
+     * Identifies the element in the original source .proto file. This field
+     * is formatted the same as SourceCodeInfo.Location.path.
+     */
+    @field:WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.PACKED
+    )
+    @JvmField
+    val path: List<Int> = immutableCopyOf("path", path)
+
     override fun newBuilder(): Builder {
       val builder = Builder()
       builder.path = path

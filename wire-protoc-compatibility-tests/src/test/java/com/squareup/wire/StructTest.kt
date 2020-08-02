@@ -451,11 +451,68 @@ class StructTest {
     }
   }
 
+  @Test fun javaStructsInMapValuesAreDeeplyImmutable() {
+    val map = mutableMapOf("a" to "b")
+
+    val allStructs = AllStructsJ.Builder()
+        .map_int32_struct(mapOf(5 to map))
+        .build()
+    assertThat(allStructs.map_int32_struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+
+    assertThat(allStructs.map_int32_struct).containsExactly(entry(5, mapOf("a" to "b")))
+  }
+
+  @Test fun kotlinStructsInMapValuesAreDeeplyImmutable() {
+    val map = mutableMapOf("a" to "b")
+
+    val allStructs = AllStructsK.Builder()
+        .map_int32_struct(mapOf(5 to map))
+        .build()
+    assertThat(allStructs.map_int32_struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+
+    assertThat(allStructs.map_int32_struct).containsExactly(entry(5, mapOf("a" to "b")))
+  }
+
+  @Test fun javaStructsInListValuesAreDeeplyImmutable() {
+    val map = mutableMapOf("a" to "b")
+
+    val allStructs = AllStructsJ.Builder()
+        .rep_struct(listOf(map))
+        .build()
+    assertThat(allStructs.rep_struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+
+    assertThat(allStructs.rep_struct).containsExactly(mapOf("a" to "b"))
+  }
+
+  @Test fun kotlinStructsInListValuesAreDeeplyImmutable() {
+    val map = mutableMapOf("a" to "b")
+
+    val allStructs = AllStructsK.Builder()
+        .rep_struct(listOf(map))
+        .build()
+    assertThat(allStructs.rep_struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+
+    assertThat(allStructs.rep_struct).containsExactly(mapOf("a" to "b"))
+  }
+
   private fun Any?.isDeeplyUnmodifiable(): Boolean {
     return when (this) {
       null -> true
       is String -> true
       is Double -> true
+      is Int -> true
       is Boolean -> true
       is List<*> -> {
         this.all { it.isDeeplyUnmodifiable() } && this.isUnmodifiable()

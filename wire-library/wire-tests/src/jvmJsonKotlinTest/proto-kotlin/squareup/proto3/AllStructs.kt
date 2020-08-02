@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.internal.immutableCopyOfMapWithStructValues
 import com.squareup.wire.internal.immutableCopyOfStruct
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
@@ -39,38 +40,10 @@ class AllStructs(
   rep_list: List<List<*>?> = emptyList(),
   rep_value_a: List<Any?> = emptyList(),
   rep_null_value: List<Nothing?> = emptyList(),
-  @field:WireField(
-    tag = 301,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    jsonName = "mapInt32Struct"
-  )
-  @JvmField
-  val map_int32_struct: Map<Int, Map<String, *>?> = emptyMap(),
-  @field:WireField(
-    tag = 302,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    jsonName = "mapInt32List"
-  )
-  @JvmField
-  val map_int32_list: Map<Int, List<*>?> = emptyMap(),
-  @field:WireField(
-    tag = 303,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    jsonName = "mapInt32ValueA"
-  )
-  @JvmField
-  val map_int32_value_a: Map<Int, Any?> = emptyMap(),
-  @field:WireField(
-    tag = 304,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
-    jsonName = "mapInt32NullValue"
-  )
-  @JvmField
-  val map_int32_null_value: Map<Int, Nothing?> = emptyMap(),
+  map_int32_struct: Map<Int, Map<String, *>?> = emptyMap(),
+  map_int32_list: Map<Int, List<*>?> = emptyMap(),
+  map_int32_value_a: Map<Int, Any?> = emptyMap(),
+  map_int32_null_value: Map<Int, Nothing?> = emptyMap(),
   oneof_struct: Map<String, *>? = null,
   oneof_list: List<*>? = null,
   unknownFields: ByteString = ByteString.EMPTY
@@ -189,6 +162,46 @@ class AllStructs(
   )
   @JvmField
   val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value", rep_null_value)
+
+  @field:WireField(
+    tag = 301,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
+    jsonName = "mapInt32Struct"
+  )
+  @JvmField
+  val map_int32_struct: Map<Int, Map<String, *>?> =
+      immutableCopyOfMapWithStructValues("map_int32_struct", map_int32_struct)
+
+  @field:WireField(
+    tag = 302,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
+    jsonName = "mapInt32List"
+  )
+  @JvmField
+  val map_int32_list: Map<Int, List<*>?> = immutableCopyOfMapWithStructValues("map_int32_list",
+      map_int32_list)
+
+  @field:WireField(
+    tag = 303,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
+    jsonName = "mapInt32ValueA"
+  )
+  @JvmField
+  val map_int32_value_a: Map<Int, Any?> = immutableCopyOfMapWithStructValues("map_int32_value_a",
+      map_int32_value_a)
+
+  @field:WireField(
+    tag = 304,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_NULL",
+    jsonName = "mapInt32NullValue"
+  )
+  @JvmField
+  val map_int32_null_value: Map<Int, Nothing?> =
+      immutableCopyOfMapWithStructValues("map_int32_null_value", map_int32_null_value)
 
   @field:WireField(
     tag = 201,

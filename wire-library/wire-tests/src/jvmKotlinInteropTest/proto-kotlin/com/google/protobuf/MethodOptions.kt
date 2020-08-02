@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
@@ -47,6 +48,9 @@ class MethodOptions(
   )
   @JvmField
   val idempotency_level: IdempotencyLevel? = null,
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<MethodOptions, MethodOptions.Builder>(ADAPTER, unknownFields) {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
@@ -56,9 +60,9 @@ class MethodOptions(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<MethodOptions, MethodOptions.Builder>(ADAPTER, unknownFields) {
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.deprecated = deprecated

@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.AssertionError
@@ -26,14 +27,16 @@ import okio.ByteString
  * Not used in the RPC.  Instead, this is here for the form serialized to disk.
  */
 class FeatureDatabase(
+  feature: List<Feature> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<FeatureDatabase, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "routeguide.Feature#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val feature: List<Feature> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<FeatureDatabase, Nothing>(ADAPTER, unknownFields) {
+  val feature: List<Feature> = immutableCopyOf("feature", feature)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN

@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -34,53 +35,70 @@ class DescriptorProto(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val name: String? = null,
-  @field:WireField(
-    tag = 2,
-    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val field: List<FieldDescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 6,
-    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val extension: List<FieldDescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 3,
-    adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val nested_type: List<DescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 4,
-    adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val enum_type: List<EnumDescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 5,
-    adapter = "com.google.protobuf.DescriptorProto${'$'}ExtensionRange#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val extension_range: List<ExtensionRange> = emptyList(),
-  @field:WireField(
-    tag = 8,
-    adapter = "com.google.protobuf.OneofDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val oneof_decl: List<OneofDescriptorProto> = emptyList(),
+  field: List<FieldDescriptorProto> = emptyList(),
+  extension: List<FieldDescriptorProto> = emptyList(),
+  nested_type: List<DescriptorProto> = emptyList(),
+  enum_type: List<EnumDescriptorProto> = emptyList(),
+  extension_range: List<ExtensionRange> = emptyList(),
+  oneof_decl: List<OneofDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 7,
     adapter = "com.google.protobuf.MessageOptions#ADAPTER"
   )
   val options: MessageOptions? = null,
+  reserved_range: List<ReservedRange> = emptyList(),
+  reserved_name: List<String> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<DescriptorProto, Nothing>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 2,
+    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val field: List<FieldDescriptorProto> = immutableCopyOf("field", field)
+
+  @field:WireField(
+    tag = 6,
+    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val extension: List<FieldDescriptorProto> = immutableCopyOf("extension", extension)
+
+  @field:WireField(
+    tag = 3,
+    adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val nested_type: List<DescriptorProto> = immutableCopyOf("nested_type", nested_type)
+
+  @field:WireField(
+    tag = 4,
+    adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val enum_type: List<EnumDescriptorProto> = immutableCopyOf("enum_type", enum_type)
+
+  @field:WireField(
+    tag = 5,
+    adapter = "com.google.protobuf.DescriptorProto${'$'}ExtensionRange#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val extension_range: List<ExtensionRange> = immutableCopyOf("extension_range", extension_range)
+
+  @field:WireField(
+    tag = 8,
+    adapter = "com.google.protobuf.OneofDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val oneof_decl: List<OneofDescriptorProto> = immutableCopyOf("oneof_decl", oneof_decl)
+
   @field:WireField(
     tag = 9,
     adapter = "com.google.protobuf.DescriptorProto${'$'}ReservedRange#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val reserved_range: List<ReservedRange> = emptyList(),
+  val reserved_range: List<ReservedRange> = immutableCopyOf("reserved_range", reserved_range)
+
   /**
    * Reserved field names, which may not be used by fields in the same message.
    * A given name may only be reserved once.
@@ -90,9 +108,8 @@ class DescriptorProto(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED
   )
-  val reserved_name: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<DescriptorProto, Nothing>(ADAPTER, unknownFields) {
+  val reserved_name: List<String> = immutableCopyOf("reserved_name", reserved_name)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN

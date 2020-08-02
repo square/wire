@@ -64,15 +64,25 @@ fun <T> immutableCopyOf(name: String, list: List<T>): List<T> {
   return result as List<T>
 }
 
-fun <K, V> immutableCopyOf(name: String, map: Map<K?, V?>): Map<K, V> {
+fun <K, V> immutableCopyOf(name: String, map: Map<K, V>): Map<K, V> {
   if (map.isEmpty()) {
     return emptyMap()
   }
   val result = LinkedHashMap(map)
   // Check after the map has been copied to defend against races.
-  require(null !in result.keys) { "$name.containsKey(null)" }
-  require(null !in result.values) { "$name.containsValue(null)" }
-  return (result as MutableMap<K, V>).toUnmodifiableMap()
+  require(null !in (result.keys as Collection<K?>)) { "$name.containsKey(null)" }
+  require(null !in (result.values as Collection<V?>)) { "$name.containsValue(null)" }
+  return result.toUnmodifiableMap()
+}
+
+/** Confirms the values of [map] are structs and returns an immutable copy. */
+fun <K, V> immutableCopyOfMapWithStructValues(name: String, map: Map<K, V>): Map<K, V> {
+  val copy = mutableMapOf<K, Any?>()
+  for ((k, v) in map) {
+    require(k != null) { "$name.containsKey(null)" }
+    copy[k] = immutableCopyOfStruct(name, v)
+  }
+  return copy.toUnmodifiableMap() as Map<K, V>
 }
 
 /** Confirms [value] is a struct and returns an immutable copy. */

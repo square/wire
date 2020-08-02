@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -29,6 +30,9 @@ import okio.ByteString
  * FileDescriptorProto was generated.
  */
 class SourceCodeInfo(
+  location: List<Location> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<SourceCodeInfo, SourceCodeInfo.Builder>(ADAPTER, unknownFields) {
   /**
    * A Location identifies a piece of source code in a .proto file which
    * corresponds to a particular definition.  This information is intended
@@ -80,9 +84,8 @@ class SourceCodeInfo(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val location: List<Location> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<SourceCodeInfo, SourceCodeInfo.Builder>(ADAPTER, unknownFields) {
+  val location: List<Location> = immutableCopyOf("location", location)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.location = location
@@ -220,52 +223,8 @@ class SourceCodeInfo(
   }
 
   class Location(
-    /**
-     * Identifies which part of the FileDescriptorProto was defined at this
-     * location.
-     *
-     * Each element is a field number or an index.  They form a path from
-     * the root FileDescriptorProto to the place where the definition.  For
-     * example, this path:
-     *   [ 4, 3, 2, 7, 1 ]
-     * refers to:
-     *   file.message_type(3)  // 4, 3
-     *       .field(7)         // 2, 7
-     *       .name()           // 1
-     * This is because FileDescriptorProto.message_type has field number 4:
-     *   repeated DescriptorProto message_type = 4;
-     * and DescriptorProto.field has field number 2:
-     *   repeated FieldDescriptorProto field = 2;
-     * and FieldDescriptorProto.name has field number 1:
-     *   optional string name = 1;
-     *
-     * Thus, the above path gives the location of a field name.  If we removed
-     * the last element:
-     *   [ 4, 3, 2, 7 ]
-     * this path refers to the whole field declaration (from the beginning
-     * of the label to the terminating semicolon).
-     */
-    @field:WireField(
-      tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED
-    )
-    @JvmField
-    val path: List<Int> = emptyList(),
-    /**
-     * Always has exactly three or four elements: start line, start column,
-     * end line (optional, otherwise assumed same as start line), end column.
-     * These are packed into a single field for efficiency.  Note that line
-     * and column numbers are zero-based -- typically you will want to add
-     * 1 to each before displaying to a user.
-     */
-    @field:WireField(
-      tag = 2,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      label = WireField.Label.PACKED
-    )
-    @JvmField
-    val span: List<Int> = emptyList(),
+    path: List<Int> = emptyList(),
+    span: List<Int> = emptyList(),
     /**
      * If this SourceCodeInfo represents a complete declaration, these are any
      * comments appearing before and after the declaration which appear to be
@@ -327,15 +286,66 @@ class SourceCodeInfo(
     )
     @JvmField
     val trailing_comments: String? = null,
+    leading_detached_comments: List<String> = emptyList(),
+    unknownFields: ByteString = ByteString.EMPTY
+  ) : Message<Location, Location.Builder>(ADAPTER, unknownFields) {
+    /**
+     * Identifies which part of the FileDescriptorProto was defined at this
+     * location.
+     *
+     * Each element is a field number or an index.  They form a path from
+     * the root FileDescriptorProto to the place where the definition.  For
+     * example, this path:
+     *   [ 4, 3, 2, 7, 1 ]
+     * refers to:
+     *   file.message_type(3)  // 4, 3
+     *       .field(7)         // 2, 7
+     *       .name()           // 1
+     * This is because FileDescriptorProto.message_type has field number 4:
+     *   repeated DescriptorProto message_type = 4;
+     * and DescriptorProto.field has field number 2:
+     *   repeated FieldDescriptorProto field = 2;
+     * and FieldDescriptorProto.name has field number 1:
+     *   optional string name = 1;
+     *
+     * Thus, the above path gives the location of a field name.  If we removed
+     * the last element:
+     *   [ 4, 3, 2, 7 ]
+     * this path refers to the whole field declaration (from the beginning
+     * of the label to the terminating semicolon).
+     */
+    @field:WireField(
+      tag = 1,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.PACKED
+    )
+    @JvmField
+    val path: List<Int> = immutableCopyOf("path", path)
+
+    /**
+     * Always has exactly three or four elements: start line, start column,
+     * end line (optional, otherwise assumed same as start line), end column.
+     * These are packed into a single field for efficiency.  Note that line
+     * and column numbers are zero-based -- typically you will want to add
+     * 1 to each before displaying to a user.
+     */
+    @field:WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      label = WireField.Label.PACKED
+    )
+    @JvmField
+    val span: List<Int> = immutableCopyOf("span", span)
+
     @field:WireField(
       tag = 6,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REPEATED
     )
     @JvmField
-    val leading_detached_comments: List<String> = emptyList(),
-    unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<Location, Location.Builder>(ADAPTER, unknownFields) {
+    val leading_detached_comments: List<String> = immutableCopyOf("leading_detached_comments",
+        leading_detached_comments)
+
     override fun newBuilder(): Builder {
       val builder = Builder()
       builder.path = path

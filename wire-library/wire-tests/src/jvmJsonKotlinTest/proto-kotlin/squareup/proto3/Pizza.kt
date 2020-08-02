@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
@@ -20,15 +21,17 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 class Pizza(
+  toppings: List<String> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<Pizza, Pizza.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val toppings: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<Pizza, Pizza.Builder>(ADAPTER, unknownFields) {
+  val toppings: List<String> = immutableCopyOf("toppings", toppings)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.toppings = toppings

@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
@@ -43,6 +44,9 @@ class EnumOptions(
   )
   @JvmField
   val deprecated: Boolean? = null,
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<EnumOptions, EnumOptions.Builder>(ADAPTER, unknownFields) {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
@@ -52,9 +56,9 @@ class EnumOptions(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<EnumOptions, EnumOptions.Builder>(ADAPTER, unknownFields) {
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.allow_alias = allow_alias

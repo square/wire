@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -60,21 +61,8 @@ class Person(
     label = WireField.Label.OMIT_IDENTITY
   )
   val email: String = "",
-  /**
-   * A list of the customer's phone numbers.
-   */
-  @field:WireField(
-    tag = 4,
-    adapter = "com.squareup.wire.proto3.kotlin.person.Person${'$'}PhoneNumber#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val phones: List<PhoneNumber> = emptyList(),
-  @field:WireField(
-    tag = 5,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
-  )
-  val aliases: List<String> = emptyList(),
+  phones: List<PhoneNumber> = emptyList(),
+  aliases: List<String> = emptyList(),
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -87,6 +75,23 @@ class Person(
   val bar: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Nothing>(ADAPTER, unknownFields) {
+  /**
+   * A list of the customer's phone numbers.
+   */
+  @field:WireField(
+    tag = 4,
+    adapter = "com.squareup.wire.proto3.kotlin.person.Person${'$'}PhoneNumber#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val phones: List<PhoneNumber> = immutableCopyOf("phones", phones)
+
+  @field:WireField(
+    tag = 5,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED
+  )
+  val aliases: List<String> = immutableCopyOf("aliases", aliases)
+
   init {
     require(countNonNull(foo, bar) <= 1) {
       "At most one of foo, bar may be non-null"

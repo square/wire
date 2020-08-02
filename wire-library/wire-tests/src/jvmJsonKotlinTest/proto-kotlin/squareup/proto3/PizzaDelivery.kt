@@ -13,6 +13,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.immutableCopyOfStruct
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -42,13 +43,7 @@ class PizzaDelivery(
   )
   @JvmField
   val address: String = "",
-  @field:WireField(
-    tag = 3,
-    adapter = "squareup.proto3.Pizza#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val pizzas: List<Pizza> = emptyList(),
+  pizzas: List<Pizza> = emptyList(),
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
@@ -75,6 +70,14 @@ class PizzaDelivery(
   val ordered_at: Instant? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<PizzaDelivery, PizzaDelivery.Builder>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 3,
+    adapter = "squareup.proto3.Pizza#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val pizzas: List<Pizza> = immutableCopyOf("pizzas", pizzas)
+
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",

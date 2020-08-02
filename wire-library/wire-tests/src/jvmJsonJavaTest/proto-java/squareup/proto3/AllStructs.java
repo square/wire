@@ -187,10 +187,10 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
     this.rep_list = Internal.immutableCopyOfStruct("rep_list", builder.rep_list);
     this.rep_value_a = Internal.immutableCopyOfStruct("rep_value_a", builder.rep_value_a);
     this.rep_null_value = Internal.immutableCopyOfStruct("rep_null_value", builder.rep_null_value);
-    this.map_int32_struct = Internal.immutableCopyOf("map_int32_struct", builder.map_int32_struct);
-    this.map_int32_list = Internal.immutableCopyOf("map_int32_list", builder.map_int32_list);
-    this.map_int32_value_a = Internal.immutableCopyOf("map_int32_value_a", builder.map_int32_value_a);
-    this.map_int32_null_value = Internal.immutableCopyOf("map_int32_null_value", builder.map_int32_null_value);
+    this.map_int32_struct = Internal.immutableCopyOfMapWithStructValues("map_int32_struct", builder.map_int32_struct);
+    this.map_int32_list = Internal.immutableCopyOfMapWithStructValues("map_int32_list", builder.map_int32_list);
+    this.map_int32_value_a = Internal.immutableCopyOfMapWithStructValues("map_int32_value_a", builder.map_int32_value_a);
+    this.map_int32_null_value = Internal.immutableCopyOfMapWithStructValues("map_int32_null_value", builder.map_int32_null_value);
     this.oneof_struct = Internal.immutableCopyOfStruct("oneof_struct", builder.oneof_struct);
     this.oneof_list = Internal.immutableCopyOfStruct("oneof_list", builder.oneof_list);
   }
