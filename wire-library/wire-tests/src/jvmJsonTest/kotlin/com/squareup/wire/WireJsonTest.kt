@@ -261,6 +261,15 @@ class WireJsonTest {
     }
   }
 
+  @Test fun literalNullsReplacedWithIdentityInProto3() {
+    val expected = PizzaDelivery.Builder()
+        .pizzas(listOf(Pizza.Builder().build()))
+        .promotion(AnyMessage.pack(BuyOneGetOnePromotion.Builder().build()))
+        .build()
+    val parsed = jsonLibrary.fromJson(PIZZA_DELIVERY_LITERAL_NULLS_JSON, PizzaDelivery::class.java)
+    assertThat(parsed).isEqualTo(expected)
+  }
+
   companion object {
     // Return a two-element list with a given repeated value
     private fun <T> list(x: T): List<T> = listOf(x, x)
@@ -420,6 +429,9 @@ class WireJsonTest {
 
     private val PIZZA_DELIVERY_WITHOUT_TYPE_JSON =
         loadJson("pizza_delivery_without_type_proto3.json")
+
+    private val PIZZA_DELIVERY_LITERAL_NULLS_JSON =
+        loadJson("pizza_delivery_literal_nulls_proto3.json")
 
     private val moshi = object : JsonLibrary {
       private val moshi = Moshi.Builder()

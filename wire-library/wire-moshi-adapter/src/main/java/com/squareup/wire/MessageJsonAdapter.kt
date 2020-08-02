@@ -60,11 +60,13 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
         continue
       }
       val index = option / 2
-      val value = jsonAdapters[index].fromJson(input) ?: continue
 
-      // If the value was explicitly null we ignore it rather than forcing null into the field.
-      // Otherwise malformed JSON that sets a list to null will create a malformed message, and
-      // we'd rather just ignore that problem.
+      val value = jsonAdapters[index].fromJson(input)
+
+      // "If a value is missing in the JSON-encoded data or if its value is null, it will be
+      // interpreted as the appropriate default value when parsed into a protocol buffer."
+      if (value == null) continue
+
       val fieldBinding = messageAdapter.fieldBindingsArray[index]
       fieldBinding.set(builder, value)
     }
