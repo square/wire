@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.EnumAdapter
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
@@ -150,6 +151,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
       ProtoAdapter.BYTES -> return ByteStringJsonFormatter
       ProtoAdapter.DURATION -> return DurationJsonFormatter
       ProtoAdapter.INSTANT -> return InstantJsonFormatter
+      is EnumAdapter<*> -> return EnumJsonFormatter(adapter)
     }
 
     if (syntax == PROTO_2) {

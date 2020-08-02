@@ -35,6 +35,7 @@ import squareup.proto3.AllStructs
 import squareup.proto3.BuyOneGetOnePromotion
 import squareup.proto3.CamelCase
 import squareup.proto3.CamelCase.NestedCamelCase
+import squareup.proto3.FreeDrinkPromotion
 import squareup.proto3.FreeGarlicBreadPromotion
 import squareup.proto3.Pizza
 import squareup.proto3.PizzaDelivery
@@ -268,6 +269,18 @@ class WireJsonTest {
         .build()
     val parsed = jsonLibrary.fromJson(PIZZA_DELIVERY_LITERAL_NULLS_JSON, PizzaDelivery::class.java)
     assertThat(parsed).isEqualTo(expected)
+  }
+
+  @Test fun enumCanBeDecodedFromInt() {
+    val json = """{"drink":9}"""
+    val value = jsonLibrary.fromJson(json, FreeDrinkPromotion::class.java)
+    assertThat(value.drink).isEqualTo(FreeDrinkPromotion.Drink.ROOT_BEER)
+  }
+
+  @Test fun enumCanBeDecodedFromString() {
+    val json = """{"drink":"ROOT_BEER"}"""
+    val value = jsonLibrary.fromJson(json, FreeDrinkPromotion::class.java)
+    assertThat(value.drink).isEqualTo(FreeDrinkPromotion.Drink.ROOT_BEER)
   }
 
   companion object {

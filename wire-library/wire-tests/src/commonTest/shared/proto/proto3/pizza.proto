@@ -44,3 +44,14 @@ message FreeGarlicBreadPromotion {
   bool is_extra_cheesey = 1;
 }
 
+message FreeDrinkPromotion {
+  Drink drink = 1;
+
+  enum Drink {
+    UNKNOWN = 0;
+    PEPSI = 1;
+    MOUNTAIN_DEW = 2;
+    ROOT_BEER = 9;
+  }
+}
+
