@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
@@ -247,14 +248,16 @@ class WhiteboardUpdate(
   }
 
   class UpdatePoints(
+    points: List<Point> = emptyList(),
+    unknownFields: ByteString = ByteString.EMPTY
+  ) : Message<UpdatePoints, Nothing>(ADAPTER, unknownFields) {
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.whiteboard.Point#ADAPTER",
       label = WireField.Label.REPEATED
     )
-    val points: List<Point> = emptyList(),
-    unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<UpdatePoints, Nothing>(ADAPTER, unknownFields) {
+    val points: List<Point> = immutableCopyOf("points", points)
+
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN

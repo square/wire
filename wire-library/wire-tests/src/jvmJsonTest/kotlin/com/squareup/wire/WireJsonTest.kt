@@ -31,6 +31,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import squareup.proto3.All64
 import squareup.proto3.AllStructs
 import squareup.proto3.BuyOneGetOnePromotion
 import squareup.proto3.CamelCase
@@ -176,6 +177,9 @@ class WireJsonTest {
         .value_e(mapOf("a" to 1.0))
         .value_f(listOf("a", 3.0))
         .build()
+
+    assertJsonEquals(ALL_STRUCT_JSON, jsonLibrary.toJson(value, AllStructs::class.java))
+
     val parsed = jsonLibrary.fromJson(ALL_STRUCT_JSON, AllStructs::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
@@ -193,6 +197,9 @@ class WireJsonTest {
         .value_c(emptyList<Any>())
         .value_d(emptyMap<String, Any>())
         .build()
+
+    assertJsonEquals(ALL_STRUCT_IDENTITY_JSON, jsonLibrary.toJson(value, AllStructs::class.java))
+
     val parsed = jsonLibrary.fromJson(ALL_STRUCT_IDENTITY_JSON, AllStructs::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
@@ -210,6 +217,9 @@ class WireJsonTest {
         .loyalty(emptyMap<String, Any?>())
         .ordered_at(ofEpochSecond(-631152000L, 250_000_000L))
         .build()
+
+    assertJsonEquals(PIZZA_DELIVERY_JSON, jsonLibrary.toJson(value, PizzaDelivery::class.java))
+
     val parsed = jsonLibrary.fromJson(PIZZA_DELIVERY_JSON, PizzaDelivery::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
@@ -294,6 +304,109 @@ class WireJsonTest {
     val json = """{"drink":"ROOT_BEER"}"""
     val value = jsonLibrary.fromJson(json, FreeDrinkPromotion::class.java)
     assertThat(value.drink).isEqualTo(FreeDrinkPromotion.Drink.ROOT_BEER)
+  }
+
+  @Test fun all64MaxValue() {
+    val value = All64.Builder()
+        .my_int64(Long.MAX_VALUE)
+        .my_uint64(Long.MAX_VALUE)
+        .my_sint64(Long.MAX_VALUE)
+        .my_fixed64(Long.MAX_VALUE)
+        .my_sfixed64(Long.MAX_VALUE)
+        .rep_int64(list(Long.MAX_VALUE))
+        .rep_uint64(list(Long.MAX_VALUE))
+        .rep_sint64(list(Long.MAX_VALUE))
+        .rep_fixed64(list(Long.MAX_VALUE))
+        .rep_sfixed64(list(Long.MAX_VALUE))
+        .pack_int64(list(Long.MAX_VALUE))
+        .pack_uint64(list(Long.MAX_VALUE))
+        .pack_sint64(list(Long.MAX_VALUE))
+        .pack_fixed64(list(Long.MAX_VALUE))
+        .pack_sfixed64(list(Long.MAX_VALUE))
+        .oneof_int64(Long.MAX_VALUE)
+        .build()
+
+    assertJsonEquals(ALL_64_JSON_MAX_VALUE, jsonLibrary.toJson(value, All64::class.java))
+
+    val parsed = jsonLibrary.fromJson(ALL_64_JSON_MAX_VALUE, All64::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, All64::class.java),
+        jsonLibrary.toJson(value, All64::class.java))
+  }
+
+  @Test fun all64MainValue() {
+    val value = All64.Builder()
+        .my_int64(Long.MIN_VALUE)
+        .my_uint64(Long.MIN_VALUE)
+        .my_sint64(Long.MIN_VALUE)
+        .my_fixed64(Long.MIN_VALUE)
+        .my_sfixed64(Long.MIN_VALUE)
+        .rep_int64(list(Long.MIN_VALUE))
+        .rep_uint64(list(Long.MIN_VALUE))
+        .rep_sint64(list(Long.MIN_VALUE))
+        .rep_fixed64(list(Long.MIN_VALUE))
+        .rep_sfixed64(list(Long.MIN_VALUE))
+        .pack_int64(list(Long.MIN_VALUE))
+        .pack_uint64(list(Long.MIN_VALUE))
+        .pack_sint64(list(Long.MIN_VALUE))
+        .pack_fixed64(list(Long.MIN_VALUE))
+        .pack_sfixed64(list(Long.MIN_VALUE))
+        .oneof_int64(Long.MIN_VALUE)
+        .build()
+
+    assertJsonEquals(ALL_64_JSON_MIN_VALUE, jsonLibrary.toJson(value, All64::class.java))
+
+    val parsed = jsonLibrary.fromJson(ALL_64_JSON_MIN_VALUE, All64::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, All64::class.java),
+        jsonLibrary.toJson(value, All64::class.java))
+  }
+
+  @Test fun crashOnBigNumbersWhenIntIsSigned() {
+    val json = """{"mySint64": "9223372036854775808"}"""
+
+    val all64 = All64.Builder().build()
+
+    try {
+      assertThat(jsonLibrary.fromJson(json, All64::class.java)).isEqualTo(all64)
+      fail()
+    } catch (e: JsonDataException) {
+      // Moshi.
+      assertThat(e).hasMessage("decode failed: 9223372036854775808 at path \$.mySint64")
+    } catch (e: JsonSyntaxException) {
+      // Gson.
+      assertThat(e).hasMessage("decode failed: 9223372036854775808 at path \$.mySint64")
+    }
+  }
+
+  @Test fun `int64s are encoded with quotes and decoded with either`() {
+    val signed = All64.Builder().my_sint64(123).rep_sint64(listOf(456)).build()
+    assertThat(jsonLibrary.fromJson("""{"mySint64":"123", "repSint64": ["456"]}""",
+        All64::class.java)).isEqualTo(signed)
+    assertThat(jsonLibrary.fromJson("""{"mySint64":123, "repSint64": [456]}""",
+        All64::class.java)).isEqualTo(signed)
+    assertThat(jsonLibrary.fromJson("""{"mySint64":123.0, "repSint64": [456.0]}""",
+        All64::class.java)).isEqualTo(signed)
+
+    val signedJson = jsonLibrary.toJson(signed, , All64::class.java)
+    assertThat(signedJson).contains(""""mySint64":"123"""")
+    assertThat(signedJson).contains(""""repSint64":["456"]""")
+
+    val unsigned = All64.Builder().my_uint64(123).rep_uint64(listOf(456)).build()
+    assertThat(jsonLibrary.fromJson("""{"myUint64":"123", "repUint64": ["456"]}""",
+        All64::class.java)).isEqualTo(unsigned)
+    assertThat(jsonLibrary.fromJson("""{"myUint64":123, "repUint64": [456]}""",
+        All64::class.java)).isEqualTo(unsigned)
+    assertThat(jsonLibrary.fromJson("""{"myUint64":123.0, "repUint64": [456.0]}""",
+        All64::class.java)).isEqualTo(unsigned)
+
+    val unsignedJson = jsonLibrary.toJson(unsigned)
+    assertThat(unsignedJson).contains(""""myUint64":"123"""")
+    assertThat(unsignedJson).contains(""""repUint64":["456"]""")
   }
 
   companion object {
@@ -458,6 +571,10 @@ class WireJsonTest {
 
     private val PIZZA_DELIVERY_LITERAL_NULLS_JSON =
         loadJson("pizza_delivery_literal_nulls_proto3.json")
+
+    private val ALL_64_JSON_MIN_VALUE = loadJson("all_64_min_proto3.json")
+
+    private val ALL_64_JSON_MAX_VALUE = loadJson("all_64_max_proto3.json")
 
     private val moshi = object : JsonLibrary {
       private val moshi = Moshi.Builder()

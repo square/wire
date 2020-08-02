@@ -238,33 +238,6 @@ class Proto3WireProtocCompatibilityTests {
         allTypesAdapter.toJson(explicitIdentityAllTypesWireKotlin))
   }
 
-  @Test fun `int64s are encoded with quotes and decoded with either`() {
-    val all64Adapter: JsonAdapter<All64K> = moshi.adapter(All64K::class.java)
-
-    val signed = All64K(my_sint64 = 123, rep_sint64 = listOf(456))
-    assertThat(all64Adapter.fromJson("""{"mySint64":"123", "repSint64": ["456"]}""")).isEqualTo(
-        signed)
-    assertThat(all64Adapter.fromJson("""{"mySint64":123, "repSint64": [456]}""")).isEqualTo(signed)
-    assertThat(all64Adapter.fromJson("""{"mySint64":123.0, "repSint64": [456.0]}""")).isEqualTo(
-        signed)
-
-    val signedJson = all64Adapter.toJson(signed)
-    assertThat(signedJson).contains(""""mySint64":"123"""")
-    assertThat(signedJson).contains(""""repSint64":["456"]""")
-
-    val unsigned = All64K(my_uint64 = 123, rep_uint64 = listOf(456))
-    assertThat(all64Adapter.fromJson("""{"myUint64":"123", "repUint64": ["456"]}""")).isEqualTo(
-        unsigned)
-    assertThat(all64Adapter.fromJson("""{"myUint64":123, "repUint64": [456]}""")).isEqualTo(
-        unsigned)
-    assertThat(all64Adapter.fromJson("""{"myUint64":123.0, "repUint64": [456.0]}""")).isEqualTo(
-        unsigned)
-
-    val unsignedJson = all64Adapter.toJson(unsigned)
-    assertThat(unsignedJson).contains(""""myUint64":"123"""")
-    assertThat(unsignedJson).contains(""""repUint64":["456"]""")
-  }
-
   @Test fun `protoc validation camel case json`() {
     val protocCamel = CamelCaseOuterClass.CamelCase.newBuilder()
         .setNestedMessage(CamelCaseOuterClass.CamelCase.NestedCamelCase.newBuilder().setOneInt32(1))
@@ -304,34 +277,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(all64)
   }
 
-  @Test fun all64JsonMoshiMaxValue() {
-    val all64 = All64K(
-        my_int64 = Long.MAX_VALUE,
-        my_uint64 = Long.MAX_VALUE,
-        my_sint64 = Long.MAX_VALUE,
-        my_fixed64 = Long.MAX_VALUE,
-        my_sfixed64 = Long.MAX_VALUE,
-        rep_int64 = list(Long.MAX_VALUE),
-        rep_uint64 = list(Long.MAX_VALUE),
-        rep_sint64 = list(Long.MAX_VALUE),
-        rep_fixed64 = list(Long.MAX_VALUE),
-        rep_sfixed64 = list(Long.MAX_VALUE),
-        pack_int64 = list(Long.MAX_VALUE),
-        pack_uint64 = list(Long.MAX_VALUE),
-        pack_sint64 = list(Long.MAX_VALUE),
-        pack_fixed64 = list(Long.MAX_VALUE),
-        pack_sfixed64 = list(Long.MAX_VALUE),
-        oneof_int64 = Long.MAX_VALUE
-    )
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
-    val jsonAdapter = moshi.adapter(All64K::class.java).indent("  ")
-    assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON_MAX_VALUE)
-    assertThat(jsonAdapter.fromJson(ALL_64_JSON_MAX_VALUE)).isEqualTo(all64)
-  }
-
   @Test fun all64JsonProtocMinValue() {
     val all64 = All64OuterClass.All64.newBuilder()
         .setMyInt64(Long.MIN_VALUE)
@@ -360,52 +305,6 @@ class Proto3WireProtocCompatibilityTests {
         .apply { jsonParser.merge(ALL_64_JSON_MIN_VALUE, this) }
         .build()
     assertThat(parsed).isEqualTo(all64)
-  }
-
-  @Test fun all64JsonMoshiMinValue() {
-    val all64 = All64K(
-        my_int64 = Long.MIN_VALUE,
-        my_uint64 = Long.MIN_VALUE,
-        my_sint64 = Long.MIN_VALUE,
-        my_fixed64 = Long.MIN_VALUE,
-        my_sfixed64 = Long.MIN_VALUE,
-        rep_int64 = list(Long.MIN_VALUE),
-        rep_uint64 = list(Long.MIN_VALUE),
-        rep_sint64 = list(Long.MIN_VALUE),
-        rep_fixed64 = list(Long.MIN_VALUE),
-        rep_sfixed64 = list(Long.MIN_VALUE),
-        pack_int64 = list(Long.MIN_VALUE),
-        pack_uint64 = list(Long.MIN_VALUE),
-        pack_sint64 = list(Long.MIN_VALUE),
-        pack_fixed64 = list(Long.MIN_VALUE),
-        pack_sfixed64 = list(Long.MIN_VALUE),
-        oneof_int64 = Long.MIN_VALUE
-    )
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
-    val jsonAdapter = moshi.adapter(All64K::class.java).indent("  ")
-    assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON_MIN_VALUE)
-    assertThat(jsonAdapter.fromJson(ALL_64_JSON_MIN_VALUE)).isEqualTo(all64)
-  }
-
-  @Test fun crashOnBigNumbersWhenIntIsSigned() {
-    val json = """{"mySint64": "9223372036854775808"}"""
-
-    val all64 = All64K()
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
-    val jsonAdapter = moshi.adapter(All64K::class.java)
-    try {
-      assertThat(jsonAdapter.fromJson(json)).isEqualTo(all64)
-      fail()
-    } catch (e: JsonDataException) {
-      assertThat(e)
-          .hasMessageContaining("decode failed: 9223372036854775808 at path \$.mySint64")
-    }
   }
 
   @Test fun durationProto() {
