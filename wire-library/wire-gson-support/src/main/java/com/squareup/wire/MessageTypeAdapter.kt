@@ -61,11 +61,12 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
         input.skipValue()
         continue
       }
-      val value = jsonField.adapter.read(input) ?: continue
+      val value = jsonField.adapter.read(input)
 
-      // If the value was explicitly null we ignore it rather than forcing null into the field.
-      // Otherwise malformed JSON that sets a list to null will create a malformed message, and
-      // we'd rather just ignore that problem.
+      // "If a value is missing in the JSON-encoded data or if its value is null, it will be
+      // interpreted as the appropriate default value when parsed into a protocol buffer."
+      if (value == null) continue
+
       jsonField.fieldBinding.set(builder, value)
     }
     input.endObject()
