@@ -392,7 +392,7 @@ class WireJsonTest {
     assertThat(jsonLibrary.fromJson("""{"mySint64":123.0, "repSint64": [456.0]}""",
         All64::class.java)).isEqualTo(signed)
 
-    val signedJson = jsonLibrary.toJson(signed, , All64::class.java)
+    val signedJson = jsonLibrary.toJson(signed, All64::class.java)
     assertThat(signedJson).contains(""""mySint64":"123"""")
     assertThat(signedJson).contains(""""repSint64":["456"]""")
 
@@ -404,7 +404,7 @@ class WireJsonTest {
     assertThat(jsonLibrary.fromJson("""{"myUint64":123.0, "repUint64": [456.0]}""",
         All64::class.java)).isEqualTo(unsigned)
 
-    val unsignedJson = jsonLibrary.toJson(unsigned)
+    val unsignedJson = jsonLibrary.toJson(unsigned, All64::class.java)
     assertThat(unsignedJson).contains(""""myUint64":"123"""")
     assertThat(unsignedJson).contains(""""repUint64":["456"]""")
   }
