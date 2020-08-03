@@ -116,6 +116,7 @@ public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
 
     public Builder() {
       _Rep_int32 = Internal.newMutableList();
+      IDitIt_my_wAy = "";
       map_int32_Int32 = Internal.newMutableMap();
     }
 
@@ -203,6 +204,7 @@ public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
       public Integer one_int32;
 
       public Builder() {
+        one_int32 = 0;
       }
 
       public Builder one_int32(Integer one_int32) {

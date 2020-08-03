@@ -159,6 +159,8 @@ public final class PizzaDelivery extends Message<PizzaDelivery, PizzaDelivery.Bu
     public Instant ordered_at;
 
     public Builder() {
+      phone_number = "";
+      address = "";
       pizzas = Internal.newMutableList();
     }
 

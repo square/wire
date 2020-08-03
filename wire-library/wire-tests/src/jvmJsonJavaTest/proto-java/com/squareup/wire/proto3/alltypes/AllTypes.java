@@ -862,6 +862,22 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     public NestedMessage oneof_nested_message;
 
     public Builder() {
+      my_int32 = 0;
+      my_uint32 = 0;
+      my_sint32 = 0;
+      my_fixed32 = 0;
+      my_sfixed32 = 0;
+      my_int64 = 0L;
+      my_uint64 = 0L;
+      my_sint64 = 0L;
+      my_fixed64 = 0L;
+      my_sfixed64 = 0L;
+      my_bool = false;
+      my_float = 0f;
+      my_double = 0.0;
+      my_string = "";
+      my_bytes = ByteString.EMPTY;
+      nested_enum = NestedEnum.UNKNOWN;
       rep_int32 = Internal.newMutableList();
       rep_uint32 = Internal.newMutableList();
       rep_sint32 = Internal.newMutableList();
@@ -1306,6 +1322,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       public Integer a;
 
       public Builder() {
+        a = 0;
       }
 
       public Builder a(Integer a) {

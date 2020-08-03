@@ -1630,6 +1630,13 @@ public final class JavaGenerator {
       return CodeBlock.of("$T.newMutableList()", Internal.class);
     } else if (field.getType().isMap()) {
       return CodeBlock.of("$T.newMutableMap()", Internal.class);
+    } else if (field.getEncodeMode() == Field.EncodeMode.OMIT_IDENTITY) {
+      CodeBlock identityValue = identityValue(field);
+      if (identityValue.equals(CodeBlock.of("null"))) {
+        return null;
+      } else {
+        return identityValue(field);
+      }
     } else {
       return null;
     }

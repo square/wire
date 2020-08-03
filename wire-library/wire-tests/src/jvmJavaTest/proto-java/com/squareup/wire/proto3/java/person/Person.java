@@ -194,6 +194,9 @@ public final class Person extends Message<Person, Person.Builder> {
     public String bar;
 
     public Builder() {
+      name = "";
+      id = 0;
+      email = "";
       phones = Internal.newMutableList();
       aliases = Internal.newMutableList();
     }
@@ -389,6 +392,8 @@ public final class Person extends Message<Person, Person.Builder> {
       public PhoneType type;
 
       public Builder() {
+        number = "";
+        type = PhoneType.MOBILE;
       }
 
       /**

@@ -67,6 +67,7 @@ public final class BuyOneGetOnePromotion extends Message<BuyOneGetOnePromotion, 
     public String coupon;
 
     public Builder() {
+      coupon = "";
     }
 
     public Builder coupon(String coupon) {

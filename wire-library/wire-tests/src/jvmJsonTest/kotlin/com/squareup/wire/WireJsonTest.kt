@@ -446,7 +446,6 @@ class WireJsonTest {
         jsonLibrary.toJson(value, AllTypesProto3::class.java))
   }
 
-  @Ignore("Java needs a fix.")
   @Test fun deserializeExplicitIdentityAllTypesMoshi() {
     val value = allTypesExplicitIdentityProto3Builder().build()
 

@@ -67,6 +67,7 @@ public final class FreeDrinkPromotion extends Message<FreeDrinkPromotion, FreeDr
     public Drink drink;
 
     public Builder() {
+      drink = Drink.UNKNOWN;
     }
 
     public Builder drink(Drink drink) {

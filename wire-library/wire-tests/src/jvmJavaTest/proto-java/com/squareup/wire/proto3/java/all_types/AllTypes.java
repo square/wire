@@ -1379,6 +1379,22 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     public Instant oneof_timestamp;
 
     public Builder() {
+      int32 = 0;
+      uint32 = 0;
+      sint32 = 0;
+      fixed32 = 0;
+      sfixed32 = 0;
+      int64 = 0L;
+      uint64 = 0L;
+      sint64 = 0L;
+      fixed64 = 0L;
+      sfixed64 = 0L;
+      bool = false;
+      float_ = 0f;
+      double_ = 0.0;
+      string = "";
+      bytes = ByteString.EMPTY;
+      nested_enum = NestedEnum.UNKNOWN;
       rep_int32 = Internal.newMutableList();
       rep_uint32 = Internal.newMutableList();
       rep_sint32 = Internal.newMutableList();
@@ -2100,6 +2116,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       public Integer a;
 
       public Builder() {
+        a = 0;
       }
 
       public Builder a(Integer a) {
