@@ -1402,6 +1402,16 @@ public final class JavaGenerator {
         result.addParameter(param.build());
       }
 
+      if (field.getEncodeMode() == Field.EncodeMode.OMIT_IDENTITY && field.getType().isScalar()) {
+        // Other scalars use not-boxed types to guarantee a value.
+        if (field.getType() == ProtoType.STRING || field.getType() == ProtoType.BYTES) {
+          result.beginControlFlow("if ($L == null)", fieldAccessName);
+          result.addStatement("throw new IllegalArgumentException($S)",
+              fieldAccessName + " == null");
+          result.endControlFlow();
+        }
+      }
+
       if (field.getType().isMap() && isStruct(field.getType().getValueType())) {
         result.addStatement("this.$1L = $2T.immutableCopyOfMapWithStructValues($1S, $3L)",
             fieldName, Internal.class, fieldAccessName);

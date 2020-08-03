@@ -62,6 +62,9 @@ public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
     super(ADAPTER, unknownFields);
     this.nested__message = nested__message;
     this._Rep_int32 = Internal.immutableCopyOf("_Rep_int32", _Rep_int32);
+    if (IDitIt_my_wAy == null) {
+      throw new IllegalArgumentException("IDitIt_my_wAy == null");
+    }
     this.IDitIt_my_wAy = IDitIt_my_wAy;
     this.map_int32_Int32 = Internal.immutableCopyOf("map_int32_Int32", map_int32_Int32);
   }

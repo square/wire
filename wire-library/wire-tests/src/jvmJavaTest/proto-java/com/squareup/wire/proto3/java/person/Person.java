@@ -104,8 +104,14 @@ public final class Person extends Message<Person, Person.Builder> {
     if (Internal.countNonNull(foo, bar) > 1) {
       throw new IllegalArgumentException("at most one of foo, bar may be non-null");
     }
+    if (name == null) {
+      throw new IllegalArgumentException("name == null");
+    }
     this.name = name;
     this.id = id;
+    if (email == null) {
+      throw new IllegalArgumentException("email == null");
+    }
     this.email = email;
     this.phones = Internal.immutableCopyOf("phones", phones);
     this.aliases = Internal.immutableCopyOf("aliases", aliases);
@@ -333,6 +339,9 @@ public final class Person extends Message<Person, Person.Builder> {
 
     public PhoneNumber(String number, PhoneType type, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
+      if (number == null) {
+        throw new IllegalArgumentException("number == null");
+      }
       this.number = number;
       this.type = type;
     }

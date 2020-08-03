@@ -84,7 +84,13 @@ public final class PizzaDelivery extends Message<PizzaDelivery, PizzaDelivery.Bu
       AnyMessage promotion, Duration delivered_within_or_free, Map<String, ?> loyalty,
       Instant ordered_at, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
+    if (phone_number == null) {
+      throw new IllegalArgumentException("phone_number == null");
+    }
     this.phone_number = phone_number;
+    if (address == null) {
+      throw new IllegalArgumentException("address == null");
+    }
     this.address = address;
     this.pizzas = Internal.immutableCopyOf("pizzas", pizzas);
     this.promotion = promotion;

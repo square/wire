@@ -484,7 +484,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.my_bool = builder.my_bool;
     this.my_float = builder.my_float;
     this.my_double = builder.my_double;
+    if (builder.my_string == null) {
+      throw new IllegalArgumentException("builder.my_string == null");
+    }
     this.my_string = builder.my_string;
+    if (builder.my_bytes == null) {
+      throw new IllegalArgumentException("builder.my_bytes == null");
+    }
     this.my_bytes = builder.my_bytes;
     this.nested_enum = builder.nested_enum;
     this.nested_message = builder.nested_message;
