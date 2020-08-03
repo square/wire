@@ -317,6 +317,11 @@ public final class All64 extends Message<All64, All64.Builder> {
     public Long oneof_sfixed64;
 
     public Builder() {
+      my_int64 = 0L;
+      my_uint64 = 0L;
+      my_sint64 = 0L;
+      my_fixed64 = 0L;
+      my_sfixed64 = 0L;
       rep_int64 = Internal.newMutableList();
       rep_uint64 = Internal.newMutableList();
       rep_sint64 = Internal.newMutableList();

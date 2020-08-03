@@ -119,8 +119,7 @@ class Proto3WireProtocCompatibilityTests {
   @Test fun explicitIdentityAllTypes() {
     val protocBytes = explicitIdentityAllTypesProtoc.toByteArray()
     assertThat(AllTypesJ.ADAPTER.encode(explicitIdentityAllTypesWireJava)).isEqualTo(protocBytes)
-    // TODO(benoit)
-    // assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireJava)
+     assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireJava)
     assertThat(AllTypesK.ADAPTER.encode(explicitIdentityAllTypesWireKotlin)).isEqualTo(protocBytes)
     assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireKotlin)
   }

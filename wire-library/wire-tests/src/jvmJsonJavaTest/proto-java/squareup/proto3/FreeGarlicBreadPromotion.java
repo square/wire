@@ -68,6 +68,7 @@ public final class FreeGarlicBreadPromotion extends Message<FreeGarlicBreadPromo
     public Boolean is_extra_cheesey;
 
     public Builder() {
+      is_extra_cheesey = false;
     }
 
     public Builder is_extra_cheesey(Boolean is_extra_cheesey) {
