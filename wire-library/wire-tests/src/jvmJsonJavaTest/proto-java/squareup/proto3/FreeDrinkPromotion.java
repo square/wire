@@ -17,8 +17,6 @@ public final class FreeDrinkPromotion extends Message<FreeDrinkPromotion, FreeDr
 
   private static final long serialVersionUID = 0L;
 
-  public static final Drink DEFAULT_DRINK = Drink.UNKNOWN;
-
   @WireField(
       tag = 1,
       adapter = "squareup.proto3.FreeDrinkPromotion$Drink#ADAPTER",

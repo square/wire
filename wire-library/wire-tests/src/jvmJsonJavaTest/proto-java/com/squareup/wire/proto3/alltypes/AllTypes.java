@@ -25,38 +25,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   private static final long serialVersionUID = 0L;
 
-  public static final Integer DEFAULT_MY_INT32 = 0;
-
-  public static final Integer DEFAULT_MY_UINT32 = 0;
-
-  public static final Integer DEFAULT_MY_SINT32 = 0;
-
-  public static final Integer DEFAULT_MY_FIXED32 = 0;
-
-  public static final Integer DEFAULT_MY_SFIXED32 = 0;
-
-  public static final Long DEFAULT_MY_INT64 = 0L;
-
-  public static final Long DEFAULT_MY_UINT64 = 0L;
-
-  public static final Long DEFAULT_MY_SINT64 = 0L;
-
-  public static final Long DEFAULT_MY_FIXED64 = 0L;
-
-  public static final Long DEFAULT_MY_SFIXED64 = 0L;
-
-  public static final Boolean DEFAULT_MY_BOOL = false;
-
-  public static final Float DEFAULT_MY_FLOAT = 0.0f;
-
-  public static final Double DEFAULT_MY_DOUBLE = 0.0d;
-
-  public static final String DEFAULT_MY_STRING = "";
-
-  public static final ByteString DEFAULT_MY_BYTES = ByteString.EMPTY;
-
-  public static final NestedEnum DEFAULT_NESTED_ENUM = NestedEnum.UNKNOWN;
-
   public static final String DEFAULT_ONEOF_STRING = "";
 
   public static final Integer DEFAULT_ONEOF_INT32 = 0;
@@ -67,7 +35,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myInt32"
   )
-  public final Integer my_int32;
+  public final int my_int32;
 
   @WireField(
       tag = 2,
@@ -75,7 +43,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myUint32"
   )
-  public final Integer my_uint32;
+  public final int my_uint32;
 
   @WireField(
       tag = 3,
@@ -83,7 +51,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "mySint32"
   )
-  public final Integer my_sint32;
+  public final int my_sint32;
 
   @WireField(
       tag = 4,
@@ -91,7 +59,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myFixed32"
   )
-  public final Integer my_fixed32;
+  public final int my_fixed32;
 
   @WireField(
       tag = 5,
@@ -99,7 +67,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "mySfixed32"
   )
-  public final Integer my_sfixed32;
+  public final int my_sfixed32;
 
   @WireField(
       tag = 6,
@@ -107,7 +75,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myInt64"
   )
-  public final Long my_int64;
+  public final long my_int64;
 
   @WireField(
       tag = 7,
@@ -115,7 +83,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myUint64"
   )
-  public final Long my_uint64;
+  public final long my_uint64;
 
   @WireField(
       tag = 8,
@@ -123,7 +91,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "mySint64"
   )
-  public final Long my_sint64;
+  public final long my_sint64;
 
   @WireField(
       tag = 9,
@@ -131,7 +99,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myFixed64"
   )
-  public final Long my_fixed64;
+  public final long my_fixed64;
 
   @WireField(
       tag = 10,
@@ -139,7 +107,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "mySfixed64"
   )
-  public final Long my_sfixed64;
+  public final long my_sfixed64;
 
   @WireField(
       tag = 11,
@@ -147,7 +115,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myBool"
   )
-  public final Boolean my_bool;
+  public final boolean my_bool;
 
   @WireField(
       tag = 12,
@@ -155,7 +123,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myFloat"
   )
-  public final Float my_float;
+  public final float my_float;
 
   @WireField(
       tag = 13,
@@ -163,7 +131,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myDouble"
   )
-  public final Double my_double;
+  public final double my_double;
 
   @WireField(
       tag = 14,
@@ -690,19 +658,19 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (my_int32 != null ? my_int32.hashCode() : 0);
-      result = result * 37 + (my_uint32 != null ? my_uint32.hashCode() : 0);
-      result = result * 37 + (my_sint32 != null ? my_sint32.hashCode() : 0);
-      result = result * 37 + (my_fixed32 != null ? my_fixed32.hashCode() : 0);
-      result = result * 37 + (my_sfixed32 != null ? my_sfixed32.hashCode() : 0);
-      result = result * 37 + (my_int64 != null ? my_int64.hashCode() : 0);
-      result = result * 37 + (my_uint64 != null ? my_uint64.hashCode() : 0);
-      result = result * 37 + (my_sint64 != null ? my_sint64.hashCode() : 0);
-      result = result * 37 + (my_fixed64 != null ? my_fixed64.hashCode() : 0);
-      result = result * 37 + (my_sfixed64 != null ? my_sfixed64.hashCode() : 0);
-      result = result * 37 + (my_bool != null ? my_bool.hashCode() : 0);
-      result = result * 37 + (my_float != null ? my_float.hashCode() : 0);
-      result = result * 37 + (my_double != null ? my_double.hashCode() : 0);
+      result = result * 37 + Integer.hashCode(my_int32);
+      result = result * 37 + Integer.hashCode(my_uint32);
+      result = result * 37 + Integer.hashCode(my_sint32);
+      result = result * 37 + Integer.hashCode(my_fixed32);
+      result = result * 37 + Integer.hashCode(my_sfixed32);
+      result = result * 37 + Long.hashCode(my_int64);
+      result = result * 37 + Long.hashCode(my_uint64);
+      result = result * 37 + Long.hashCode(my_sint64);
+      result = result * 37 + Long.hashCode(my_fixed64);
+      result = result * 37 + Long.hashCode(my_sfixed64);
+      result = result * 37 + Boolean.hashCode(my_bool);
+      result = result * 37 + Float.hashCode(my_float);
+      result = result * 37 + Double.hashCode(my_double);
       result = result * 37 + (my_string != null ? my_string.hashCode() : 0);
       result = result * 37 + (my_bytes != null ? my_bytes.hashCode() : 0);
       result = result * 37 + (nested_enum != null ? nested_enum.hashCode() : 0);
@@ -751,31 +719,31 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   public static final class Builder extends Message.Builder<AllTypes, Builder> {
-    public Integer my_int32;
+    public int my_int32;
 
-    public Integer my_uint32;
+    public int my_uint32;
 
-    public Integer my_sint32;
+    public int my_sint32;
 
-    public Integer my_fixed32;
+    public int my_fixed32;
 
-    public Integer my_sfixed32;
+    public int my_sfixed32;
 
-    public Long my_int64;
+    public long my_int64;
 
-    public Long my_uint64;
+    public long my_uint64;
 
-    public Long my_sint64;
+    public long my_sint64;
 
-    public Long my_fixed64;
+    public long my_fixed64;
 
-    public Long my_sfixed64;
+    public long my_sfixed64;
 
-    public Boolean my_bool;
+    public boolean my_bool;
 
-    public Float my_float;
+    public float my_float;
 
-    public Double my_double;
+    public double my_double;
 
     public String my_string;
 
@@ -915,67 +883,67 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       map_string_enum = Internal.newMutableMap();
     }
 
-    public Builder my_int32(Integer my_int32) {
+    public Builder my_int32(int my_int32) {
       this.my_int32 = my_int32;
       return this;
     }
 
-    public Builder my_uint32(Integer my_uint32) {
+    public Builder my_uint32(int my_uint32) {
       this.my_uint32 = my_uint32;
       return this;
     }
 
-    public Builder my_sint32(Integer my_sint32) {
+    public Builder my_sint32(int my_sint32) {
       this.my_sint32 = my_sint32;
       return this;
     }
 
-    public Builder my_fixed32(Integer my_fixed32) {
+    public Builder my_fixed32(int my_fixed32) {
       this.my_fixed32 = my_fixed32;
       return this;
     }
 
-    public Builder my_sfixed32(Integer my_sfixed32) {
+    public Builder my_sfixed32(int my_sfixed32) {
       this.my_sfixed32 = my_sfixed32;
       return this;
     }
 
-    public Builder my_int64(Long my_int64) {
+    public Builder my_int64(long my_int64) {
       this.my_int64 = my_int64;
       return this;
     }
 
-    public Builder my_uint64(Long my_uint64) {
+    public Builder my_uint64(long my_uint64) {
       this.my_uint64 = my_uint64;
       return this;
     }
 
-    public Builder my_sint64(Long my_sint64) {
+    public Builder my_sint64(long my_sint64) {
       this.my_sint64 = my_sint64;
       return this;
     }
 
-    public Builder my_fixed64(Long my_fixed64) {
+    public Builder my_fixed64(long my_fixed64) {
       this.my_fixed64 = my_fixed64;
       return this;
     }
 
-    public Builder my_sfixed64(Long my_sfixed64) {
+    public Builder my_sfixed64(long my_sfixed64) {
       this.my_sfixed64 = my_sfixed64;
       return this;
     }
 
-    public Builder my_bool(Boolean my_bool) {
+    public Builder my_bool(boolean my_bool) {
       this.my_bool = my_bool;
       return this;
     }
 
-    public Builder my_float(Float my_float) {
+    public Builder my_float(float my_float) {
       this.my_float = my_float;
       return this;
     }
 
-    public Builder my_double(Double my_double) {
+    public Builder my_double(double my_double) {
       this.my_double = my_double;
       return this;
     }
@@ -1272,20 +1240,18 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final long serialVersionUID = 0L;
 
-    public static final Integer DEFAULT_A = 0;
-
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#INT32",
         label = WireField.Label.OMIT_IDENTITY
     )
-    public final Integer a;
+    public final int a;
 
-    public NestedMessage(Integer a) {
+    public NestedMessage(int a) {
       this(a, ByteString.EMPTY);
     }
 
-    public NestedMessage(Integer a, ByteString unknownFields) {
+    public NestedMessage(int a, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.a = a;
     }
@@ -1312,20 +1278,20 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       int result = super.hashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
-        result = result * 37 + (a != null ? a.hashCode() : 0);
+        result = result * 37 + Integer.hashCode(a);
         super.hashCode = result;
       }
       return result;
     }
 
     public static final class Builder extends Message.Builder<NestedMessage, Builder> {
-      public Integer a;
+      public int a;
 
       public Builder() {
         a = 0;
       }
 
-      public Builder a(Integer a) {
+      public Builder a(int a) {
         this.a = a;
         return this;
       }

@@ -20,8 +20,6 @@ public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
 
   private static final long serialVersionUID = 0L;
 
-  public static final String DEFAULT_IDITIT_MY_WAY = "";
-
   @WireField(
       tag = 1,
       adapter = "squareup.proto3.CamelCase$NestedCamelCase#ADAPTER",
@@ -153,21 +151,19 @@ public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
 
     private static final long serialVersionUID = 0L;
 
-    public static final Integer DEFAULT_ONE_INT32 = 0;
-
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#INT32",
         label = WireField.Label.OMIT_IDENTITY,
         jsonName = "oneInt32"
     )
-    public final Integer one_int32;
+    public final int one_int32;
 
-    public NestedCamelCase(Integer one_int32) {
+    public NestedCamelCase(int one_int32) {
       this(one_int32, ByteString.EMPTY);
     }
 
-    public NestedCamelCase(Integer one_int32, ByteString unknownFields) {
+    public NestedCamelCase(int one_int32, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.one_int32 = one_int32;
     }
@@ -194,20 +190,20 @@ public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
       int result = super.hashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
-        result = result * 37 + (one_int32 != null ? one_int32.hashCode() : 0);
+        result = result * 37 + Integer.hashCode(one_int32);
         super.hashCode = result;
       }
       return result;
     }
 
     public static final class Builder extends Message.Builder<NestedCamelCase, Builder> {
-      public Integer one_int32;
+      public int one_int32;
 
       public Builder() {
         one_int32 = 0;
       }
 
-      public Builder one_int32(Integer one_int32) {
+      public Builder one_int32(int one_int32) {
         this.one_int32 = one_int32;
         return this;
       }

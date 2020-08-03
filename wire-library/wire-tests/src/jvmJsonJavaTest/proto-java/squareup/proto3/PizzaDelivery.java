@@ -22,10 +22,6 @@ public final class PizzaDelivery extends Message<PizzaDelivery, PizzaDelivery.Bu
 
   private static final long serialVersionUID = 0L;
 
-  public static final String DEFAULT_PHONE_NUMBER = "";
-
-  public static final String DEFAULT_ADDRESS = "";
-
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",

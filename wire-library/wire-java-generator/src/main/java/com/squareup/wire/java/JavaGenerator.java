@@ -118,21 +118,21 @@ public final class JavaGenerator {
 
   private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
       ImmutableMap.<ProtoType, TypeName>builder()
-          .put(ProtoType.BOOL, TypeName.BOOLEAN.box())
+          .put(ProtoType.BOOL, TypeName.BOOLEAN)
           .put(ProtoType.BYTES, ClassName.get(ByteString.class))
-          .put(ProtoType.DOUBLE, TypeName.DOUBLE.box())
-          .put(ProtoType.FLOAT, TypeName.FLOAT.box())
-          .put(ProtoType.FIXED32, TypeName.INT.box())
-          .put(ProtoType.FIXED64, TypeName.LONG.box())
-          .put(ProtoType.INT32, TypeName.INT.box())
-          .put(ProtoType.INT64, TypeName.LONG.box())
-          .put(ProtoType.SFIXED32, TypeName.INT.box())
-          .put(ProtoType.SFIXED64, TypeName.LONG.box())
-          .put(ProtoType.SINT32, TypeName.INT.box())
-          .put(ProtoType.SINT64, TypeName.LONG.box())
+          .put(ProtoType.DOUBLE, TypeName.DOUBLE)
+          .put(ProtoType.FLOAT, TypeName.FLOAT)
+          .put(ProtoType.FIXED32, TypeName.INT)
+          .put(ProtoType.FIXED64, TypeName.LONG)
+          .put(ProtoType.INT32, TypeName.INT)
+          .put(ProtoType.INT64, TypeName.LONG)
+          .put(ProtoType.SFIXED32, TypeName.INT)
+          .put(ProtoType.SFIXED64, TypeName.LONG)
+          .put(ProtoType.SINT32, TypeName.INT)
+          .put(ProtoType.SINT64, TypeName.LONG)
           .put(ProtoType.STRING, ClassName.get(String.class))
-          .put(ProtoType.UINT32, TypeName.INT.box())
-          .put(ProtoType.UINT64, TypeName.LONG.box())
+          .put(ProtoType.UINT32, TypeName.INT)
+          .put(ProtoType.UINT64, TypeName.LONG)
           .put(ProtoType.ANY, ClassName.get("com.squareup.wire", "AnyMessage"))
           .put(ProtoType.DURATION, ClassName.get("java.time", "Duration"))
           .put(ProtoType.TIMESTAMP, ClassName.get("java.time", "Instant"))
@@ -485,7 +485,7 @@ public final class JavaGenerator {
       for (ProtoMember protoMember : constant.getOptions().getMap().keySet()) {
         Field optionField = schema.getField(protoMember);
         if (allOptionFieldsBuilder.add(protoMember)) {
-          TypeName optionJavaType = typeName(optionField.getType());
+          TypeName optionJavaType = typeName(optionField.getType()).box();
           builder.addField(optionJavaType, optionField.getName(), PUBLIC, FINAL);
           constructorBuilder.addParameter(optionJavaType, optionField.getName());
           constructorBuilder.addStatement(
@@ -612,11 +612,13 @@ public final class JavaGenerator {
 
     for (Field field : type.getFieldsAndOneOfFields()) {
       TypeName fieldJavaType = fieldType(field);
+      Field.EncodeMode encodeMode = field.getEncodeMode();
 
       if ((field.getType().isScalar() || isEnum(field.getType()))
           && !field.getType().equals(ProtoType.STRUCT_NULL)
-          && !field.isRepeated()
-          && !field.isPacked()) {
+          && encodeMode != Field.EncodeMode.REPEATED
+          && encodeMode != Field.EncodeMode.PACKED
+          && encodeMode != Field.EncodeMode.OMIT_IDENTITY) {
         builder.addField(defaultField(nameAllocator, field, fieldJavaType));
       }
 
@@ -632,7 +634,7 @@ public final class JavaGenerator {
       if (field.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
       }
-      if (emitAndroidAnnotations && field.getEncodeMode() == Field.EncodeMode.NULL_IF_ABSENT) {
+      if (emitAndroidAnnotations && encodeMode == Field.EncodeMode.NULL_IF_ABSENT) {
         fieldBuilder.addAnnotation(NULLABLE);
       }
       builder.addField(fieldBuilder.build());
@@ -1190,11 +1192,21 @@ public final class JavaGenerator {
     ProtoType type = field.getType();
     if (type.isMap()) {
       return ParameterizedTypeName.get(ClassName.get(Map.class),
-          typeName(type.getKeyType()),
-          typeName(type.getValueType()));
+          typeName(type.getKeyType()).box(),
+          typeName(type.getValueType()).box());
     }
+
     TypeName messageType = typeName(type);
-    return field.isRepeated() ? listOf(messageType) : messageType;
+    switch (field.getEncodeMode()) {
+      case REPEATED:
+      case PACKED:
+        return listOf(messageType.box());
+      case NULL_IF_ABSENT:
+      case REQUIRED:
+        return messageType.box();
+      default:
+        return messageType;
+    }
   }
 
   // Example:
@@ -1498,8 +1510,21 @@ public final class JavaGenerator {
     result.addStatement("$N = unknownFields().hashCode()", resultName);
     for (Field field : fields) {
       String fieldName = localNameAllocator.get(field);
+      TypeName typeName = fieldType(field);
       result.addCode("$1N = $1N * 37 + ", resultName);
-      if (field.isRepeated() || field.isRequired() || field.getType().isMap()) {
+      if (typeName == TypeName.BOOLEAN) {
+        result.addStatement("$T.hashCode($N)", Boolean.class, fieldName);
+      } else if (typeName == TypeName.INT) {
+        result.addStatement("$T.hashCode($N)", Integer.class, fieldName);
+      } else if (typeName == TypeName.LONG) {
+        result.addStatement("$T.hashCode($N)", Long.class, fieldName);
+      } else if (typeName == TypeName.FLOAT) {
+        result.addStatement("$T.hashCode($N)", Float.class, fieldName);
+      } else if (typeName == TypeName.DOUBLE) {
+        result.addStatement("$T.hashCode($N)", Double.class, fieldName);
+      } else if (field.isRequired()
+          || field.isRepeated()
+          || field.getType().isMap()) {
         result.addStatement("$L.hashCode()", fieldName);
       } else {
         result.addStatement("($1L != null ? $1L.hashCode() : 0)", fieldName);
@@ -1554,21 +1579,20 @@ public final class JavaGenerator {
 
     for (Field field : type.getFieldsAndOneOfFields()) {
       String fieldName = nameAllocator.get(field);
+      TypeName fieldType = fieldType(field);
       if (field.isRepeated() || field.getType().isMap()) {
         result.addCode("if (!$N.isEmpty()) ", fieldName);
-      } else if (!field.isRequired()) {
+      } else if (!field.isRequired() && !fieldType.isPrimitive()) {
         result.addCode("if ($N != null) ", fieldName);
       }
       if (field.isRedacted()) {
         result.addStatement("$N.append(\", $N=██\")", builderName, field.getName());
+      } else if (field.getType().equals(ProtoType.STRING)) {
+        result.addStatement("$N.append(\", $N=\").append($T.sanitize($L))", builderName,
+            field.getName(), Internal.class, fieldName);
       } else {
-        if (field.getType().equals(ProtoType.STRING)) {
-          result.addStatement("$N.append(\", $N=\").append($T.sanitize($L))", builderName,
-              field.getName(), Internal.class, fieldName);
-        } else {
-          result.addStatement("$N.append(\", $N=\").append($L)", builderName, field.getName(),
-              fieldName);
-        }
+        result.addStatement("$N.append(\", $N=\").append($L)", builderName, field.getName(),
+            fieldName);
       }
     }
 
@@ -1811,23 +1835,23 @@ public final class JavaGenerator {
       builder.add("\n$>$>.build()$<$<");
       return builder.build();
 
-    } else if (javaType.equals(TypeName.BOOLEAN.box())) {
+    } else if (javaType.equals(TypeName.BOOLEAN)) {
       return CodeBlock.of("$L", value != null ? value : false);
 
-    } else if (javaType.equals(TypeName.INT.box())) {
+    } else if (javaType.equals(TypeName.INT)) {
       return CodeBlock.of("$L", valueToInt(value));
 
-    } else if (javaType.equals(TypeName.LONG.box())) {
+    } else if (javaType.equals(TypeName.LONG)) {
       return CodeBlock.of("$LL", Long.toString(valueToLong(value)));
 
-    } else if (javaType.equals(TypeName.FLOAT.box())) {
+    } else if (javaType.equals(TypeName.FLOAT)) {
       return CodeBlock.of("$Lf", value != null ? String.valueOf(value) : 0f);
 
-    } else if (javaType.equals(TypeName.DOUBLE.box())) {
+    } else if (javaType.equals(TypeName.DOUBLE)) {
       return CodeBlock.of("$Ld", value != null ? String.valueOf(value) : 0d);
 
     } else if (javaType.equals(STRING)) {
-      return CodeBlock.of("$S", value != null ? (String) value : "");
+      return CodeBlock.of("$S", value != null ? value : "");
 
     } else if (javaType.equals(BYTE_STRING)) {
       if (value == null) {

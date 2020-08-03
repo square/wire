@@ -18,16 +18,6 @@ public final class All64 extends Message<All64, All64.Builder> {
 
   private static final long serialVersionUID = 0L;
 
-  public static final Long DEFAULT_MY_INT64 = 0L;
-
-  public static final Long DEFAULT_MY_UINT64 = 0L;
-
-  public static final Long DEFAULT_MY_SINT64 = 0L;
-
-  public static final Long DEFAULT_MY_FIXED64 = 0L;
-
-  public static final Long DEFAULT_MY_SFIXED64 = 0L;
-
   public static final Long DEFAULT_ONEOF_INT64 = 0L;
 
   public static final Long DEFAULT_ONEOF_SFIXED64 = 0L;
@@ -41,7 +31,7 @@ public final class All64 extends Message<All64, All64.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myInt64"
   )
-  public final Long my_int64;
+  public final long my_int64;
 
   @WireField(
       tag = 2,
@@ -49,7 +39,7 @@ public final class All64 extends Message<All64, All64.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myUint64"
   )
-  public final Long my_uint64;
+  public final long my_uint64;
 
   @WireField(
       tag = 3,
@@ -57,7 +47,7 @@ public final class All64 extends Message<All64, All64.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "mySint64"
   )
-  public final Long my_sint64;
+  public final long my_sint64;
 
   @WireField(
       tag = 4,
@@ -65,7 +55,7 @@ public final class All64 extends Message<All64, All64.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "myFixed64"
   )
-  public final Long my_fixed64;
+  public final long my_fixed64;
 
   @WireField(
       tag = 5,
@@ -73,7 +63,7 @@ public final class All64 extends Message<All64, All64.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "mySfixed64"
   )
-  public final Long my_sfixed64;
+  public final long my_sfixed64;
 
   @WireField(
       tag = 201,
@@ -169,7 +159,7 @@ public final class All64 extends Message<All64, All64.Builder> {
   )
   public final Long oneof_sfixed64;
 
-  public All64(Long my_int64, Long my_uint64, Long my_sint64, Long my_fixed64, Long my_sfixed64,
+  public All64(long my_int64, long my_uint64, long my_sint64, long my_fixed64, long my_sfixed64,
       List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64,
       List<Long> rep_sfixed64, List<Long> pack_int64, List<Long> pack_uint64,
       List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, Long oneof_int64,
@@ -177,7 +167,7 @@ public final class All64 extends Message<All64, All64.Builder> {
     this(my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, oneof_int64, oneof_sfixed64, ByteString.EMPTY);
   }
 
-  public All64(Long my_int64, Long my_uint64, Long my_sint64, Long my_fixed64, Long my_sfixed64,
+  public All64(long my_int64, long my_uint64, long my_sint64, long my_fixed64, long my_sfixed64,
       List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64,
       List<Long> rep_sfixed64, List<Long> pack_int64, List<Long> pack_uint64,
       List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, Long oneof_int64,
@@ -259,11 +249,11 @@ public final class All64 extends Message<All64, All64.Builder> {
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (my_int64 != null ? my_int64.hashCode() : 0);
-      result = result * 37 + (my_uint64 != null ? my_uint64.hashCode() : 0);
-      result = result * 37 + (my_sint64 != null ? my_sint64.hashCode() : 0);
-      result = result * 37 + (my_fixed64 != null ? my_fixed64.hashCode() : 0);
-      result = result * 37 + (my_sfixed64 != null ? my_sfixed64.hashCode() : 0);
+      result = result * 37 + Long.hashCode(my_int64);
+      result = result * 37 + Long.hashCode(my_uint64);
+      result = result * 37 + Long.hashCode(my_sint64);
+      result = result * 37 + Long.hashCode(my_fixed64);
+      result = result * 37 + Long.hashCode(my_sfixed64);
       result = result * 37 + rep_int64.hashCode();
       result = result * 37 + rep_uint64.hashCode();
       result = result * 37 + rep_sint64.hashCode();
@@ -282,15 +272,15 @@ public final class All64 extends Message<All64, All64.Builder> {
   }
 
   public static final class Builder extends Message.Builder<All64, Builder> {
-    public Long my_int64;
+    public long my_int64;
 
-    public Long my_uint64;
+    public long my_uint64;
 
-    public Long my_sint64;
+    public long my_sint64;
 
-    public Long my_fixed64;
+    public long my_fixed64;
 
-    public Long my_sfixed64;
+    public long my_sfixed64;
 
     public List<Long> rep_int64;
 
@@ -337,27 +327,27 @@ public final class All64 extends Message<All64, All64.Builder> {
     /**
      * Prefixing so the generated code doesn't rename it weirdly.
      */
-    public Builder my_int64(Long my_int64) {
+    public Builder my_int64(long my_int64) {
       this.my_int64 = my_int64;
       return this;
     }
 
-    public Builder my_uint64(Long my_uint64) {
+    public Builder my_uint64(long my_uint64) {
       this.my_uint64 = my_uint64;
       return this;
     }
 
-    public Builder my_sint64(Long my_sint64) {
+    public Builder my_sint64(long my_sint64) {
       this.my_sint64 = my_sint64;
       return this;
     }
 
-    public Builder my_fixed64(Long my_fixed64) {
+    public Builder my_fixed64(long my_fixed64) {
       this.my_fixed64 = my_fixed64;
       return this;
     }
 
-    public Builder my_sfixed64(Long my_sfixed64) {
+    public Builder my_sfixed64(long my_sfixed64) {
       this.my_sfixed64 = my_sfixed64;
       return this;
     }
