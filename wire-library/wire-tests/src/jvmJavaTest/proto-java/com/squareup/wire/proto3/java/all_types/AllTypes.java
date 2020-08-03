@@ -37,38 +37,6 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   private static final long serialVersionUID = 0L;
 
-  public static final Integer DEFAULT_INT32 = 0;
-
-  public static final Integer DEFAULT_UINT32 = 0;
-
-  public static final Integer DEFAULT_SINT32 = 0;
-
-  public static final Integer DEFAULT_FIXED32 = 0;
-
-  public static final Integer DEFAULT_SFIXED32 = 0;
-
-  public static final Long DEFAULT_INT64 = 0L;
-
-  public static final Long DEFAULT_UINT64 = 0L;
-
-  public static final Long DEFAULT_SINT64 = 0L;
-
-  public static final Long DEFAULT_FIXED64 = 0L;
-
-  public static final Long DEFAULT_SFIXED64 = 0L;
-
-  public static final Boolean DEFAULT_BOOL = false;
-
-  public static final Float DEFAULT_FLOAT_ = 0.0f;
-
-  public static final Double DEFAULT_DOUBLE_ = 0.0d;
-
-  public static final String DEFAULT_STRING = "";
-
-  public static final ByteString DEFAULT_BYTES = ByteString.EMPTY;
-
-  public static final NestedEnum DEFAULT_NESTED_ENUM = NestedEnum.UNKNOWN;
-
   public static final String DEFAULT_ONEOF_STRING = "";
 
   public static final Integer DEFAULT_ONEOF_INT32 = 0;
@@ -78,77 +46,77 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Integer int32;
+  public final int int32;
 
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#UINT32",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Integer uint32;
+  public final int uint32;
 
   @WireField(
       tag = 3,
       adapter = "com.squareup.wire.ProtoAdapter#SINT32",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Integer sint32;
+  public final int sint32;
 
   @WireField(
       tag = 4,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Integer fixed32;
+  public final int fixed32;
 
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Integer sfixed32;
+  public final int sfixed32;
 
   @WireField(
       tag = 6,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Long int64;
+  public final long int64;
 
   @WireField(
       tag = 7,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Long uint64;
+  public final long uint64;
 
   @WireField(
       tag = 8,
       adapter = "com.squareup.wire.ProtoAdapter#SINT64",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Long sint64;
+  public final long sint64;
 
   @WireField(
       tag = 9,
       adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Long fixed64;
+  public final long fixed64;
 
   @WireField(
       tag = 10,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Long sfixed64;
+  public final long sfixed64;
 
   @WireField(
       tag = 11,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Boolean bool;
+  public final boolean bool;
 
   @WireField(
       tag = 12,
@@ -156,7 +124,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       declaredName = "float"
   )
-  public final Float float_;
+  public final float float_;
 
   @WireField(
       tag = 13,
@@ -164,7 +132,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY,
       declaredName = "double"
   )
-  public final Double double_;
+  public final double double_;
 
   @WireField(
       tag = 14,
@@ -1022,19 +990,19 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (int32 != null ? int32.hashCode() : 0);
-      result = result * 37 + (uint32 != null ? uint32.hashCode() : 0);
-      result = result * 37 + (sint32 != null ? sint32.hashCode() : 0);
-      result = result * 37 + (fixed32 != null ? fixed32.hashCode() : 0);
-      result = result * 37 + (sfixed32 != null ? sfixed32.hashCode() : 0);
-      result = result * 37 + (int64 != null ? int64.hashCode() : 0);
-      result = result * 37 + (uint64 != null ? uint64.hashCode() : 0);
-      result = result * 37 + (sint64 != null ? sint64.hashCode() : 0);
-      result = result * 37 + (fixed64 != null ? fixed64.hashCode() : 0);
-      result = result * 37 + (sfixed64 != null ? sfixed64.hashCode() : 0);
-      result = result * 37 + (bool != null ? bool.hashCode() : 0);
-      result = result * 37 + (float_ != null ? float_.hashCode() : 0);
-      result = result * 37 + (double_ != null ? double_.hashCode() : 0);
+      result = result * 37 + Integer.hashCode(int32);
+      result = result * 37 + Integer.hashCode(uint32);
+      result = result * 37 + Integer.hashCode(sint32);
+      result = result * 37 + Integer.hashCode(fixed32);
+      result = result * 37 + Integer.hashCode(sfixed32);
+      result = result * 37 + Long.hashCode(int64);
+      result = result * 37 + Long.hashCode(uint64);
+      result = result * 37 + Long.hashCode(sint64);
+      result = result * 37 + Long.hashCode(fixed64);
+      result = result * 37 + Long.hashCode(sfixed64);
+      result = result * 37 + Boolean.hashCode(bool);
+      result = result * 37 + Float.hashCode(float_);
+      result = result * 37 + Double.hashCode(double_);
       result = result * 37 + (string != null ? string.hashCode() : 0);
       result = result * 37 + (bytes != null ? bytes.hashCode() : 0);
       result = result * 37 + (nested_enum != null ? nested_enum.hashCode() : 0);
@@ -1116,19 +1084,19 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    if (int32 != null) builder.append(", int32=").append(int32);
-    if (uint32 != null) builder.append(", uint32=").append(uint32);
-    if (sint32 != null) builder.append(", sint32=").append(sint32);
-    if (fixed32 != null) builder.append(", fixed32=").append(fixed32);
-    if (sfixed32 != null) builder.append(", sfixed32=").append(sfixed32);
-    if (int64 != null) builder.append(", int64=").append(int64);
-    if (uint64 != null) builder.append(", uint64=").append(uint64);
-    if (sint64 != null) builder.append(", sint64=").append(sint64);
-    if (fixed64 != null) builder.append(", fixed64=").append(fixed64);
-    if (sfixed64 != null) builder.append(", sfixed64=").append(sfixed64);
-    if (bool != null) builder.append(", bool=").append(bool);
-    if (float_ != null) builder.append(", float=").append(float_);
-    if (double_ != null) builder.append(", double=").append(double_);
+    builder.append(", int32=").append(int32);
+    builder.append(", uint32=").append(uint32);
+    builder.append(", sint32=").append(sint32);
+    builder.append(", fixed32=").append(fixed32);
+    builder.append(", sfixed32=").append(sfixed32);
+    builder.append(", int64=").append(int64);
+    builder.append(", uint64=").append(uint64);
+    builder.append(", sint64=").append(sint64);
+    builder.append(", fixed64=").append(fixed64);
+    builder.append(", sfixed64=").append(sfixed64);
+    builder.append(", bool=").append(bool);
+    builder.append(", float=").append(float_);
+    builder.append(", double=").append(double_);
     if (string != null) builder.append(", string=").append(Internal.sanitize(string));
     if (bytes != null) builder.append(", bytes=").append(bytes);
     if (nested_enum != null) builder.append(", nested_enum=").append(nested_enum);
@@ -1206,31 +1174,31 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   }
 
   public static final class Builder extends Message.Builder<AllTypes, Builder> {
-    public Integer int32;
+    public int int32;
 
-    public Integer uint32;
+    public int uint32;
 
-    public Integer sint32;
+    public int sint32;
 
-    public Integer fixed32;
+    public int fixed32;
 
-    public Integer sfixed32;
+    public int sfixed32;
 
-    public Long int64;
+    public long int64;
 
-    public Long uint64;
+    public long uint64;
 
-    public Long sint64;
+    public long sint64;
 
-    public Long fixed64;
+    public long fixed64;
 
-    public Long sfixed64;
+    public long sfixed64;
 
-    public Boolean bool;
+    public boolean bool;
 
-    public Float float_;
+    public float float_;
 
-    public Double double_;
+    public double double_;
 
     public String string;
 
@@ -1433,67 +1401,67 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       map_int32_timestamp = Internal.newMutableMap();
     }
 
-    public Builder int32(Integer int32) {
+    public Builder int32(int int32) {
       this.int32 = int32;
       return this;
     }
 
-    public Builder uint32(Integer uint32) {
+    public Builder uint32(int uint32) {
       this.uint32 = uint32;
       return this;
     }
 
-    public Builder sint32(Integer sint32) {
+    public Builder sint32(int sint32) {
       this.sint32 = sint32;
       return this;
     }
 
-    public Builder fixed32(Integer fixed32) {
+    public Builder fixed32(int fixed32) {
       this.fixed32 = fixed32;
       return this;
     }
 
-    public Builder sfixed32(Integer sfixed32) {
+    public Builder sfixed32(int sfixed32) {
       this.sfixed32 = sfixed32;
       return this;
     }
 
-    public Builder int64(Long int64) {
+    public Builder int64(long int64) {
       this.int64 = int64;
       return this;
     }
 
-    public Builder uint64(Long uint64) {
+    public Builder uint64(long uint64) {
       this.uint64 = uint64;
       return this;
     }
 
-    public Builder sint64(Long sint64) {
+    public Builder sint64(long sint64) {
       this.sint64 = sint64;
       return this;
     }
 
-    public Builder fixed64(Long fixed64) {
+    public Builder fixed64(long fixed64) {
       this.fixed64 = fixed64;
       return this;
     }
 
-    public Builder sfixed64(Long sfixed64) {
+    public Builder sfixed64(long sfixed64) {
       this.sfixed64 = sfixed64;
       return this;
     }
 
-    public Builder bool(Boolean bool) {
+    public Builder bool(boolean bool) {
       this.bool = bool;
       return this;
     }
 
-    public Builder float_(Float float_) {
+    public Builder float_(float float_) {
       this.float_ = float_;
       return this;
     }
 
-    public Builder double_(Double double_) {
+    public Builder double_(double double_) {
       this.double_ = double_;
       return this;
     }
@@ -2043,20 +2011,18 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final long serialVersionUID = 0L;
 
-    public static final Integer DEFAULT_A = 0;
-
     @WireField(
         tag = 1,
         adapter = "com.squareup.wire.ProtoAdapter#INT32",
         label = WireField.Label.OMIT_IDENTITY
     )
-    public final Integer a;
+    public final int a;
 
-    public NestedMessage(Integer a) {
+    public NestedMessage(int a) {
       this(a, ByteString.EMPTY);
     }
 
-    public NestedMessage(Integer a, ByteString unknownFields) {
+    public NestedMessage(int a, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
       this.a = a;
     }
@@ -2083,7 +2049,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       int result = super.hashCode;
       if (result == 0) {
         result = unknownFields().hashCode();
-        result = result * 37 + (a != null ? a.hashCode() : 0);
+        result = result * 37 + Integer.hashCode(a);
         super.hashCode = result;
       }
       return result;
@@ -2092,17 +2058,17 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      if (a != null) builder.append(", a=").append(a);
+      builder.append(", a=").append(a);
       return builder.replace(0, 2, "NestedMessage{").append('}').toString();
     }
 
     public static final class Builder extends Message.Builder<NestedMessage, Builder> {
-      public Integer a;
+      public int a;
 
       public Builder() {
       }
 
-      public Builder a(Integer a) {
+      public Builder a(int a) {
         this.a = a;
         return this;
       }

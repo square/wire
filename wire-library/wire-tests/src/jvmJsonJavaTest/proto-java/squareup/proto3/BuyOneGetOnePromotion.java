@@ -17,8 +17,6 @@ public final class BuyOneGetOnePromotion extends Message<BuyOneGetOnePromotion, 
 
   private static final long serialVersionUID = 0L;
 
-  public static final String DEFAULT_COUPON = "";
-
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",

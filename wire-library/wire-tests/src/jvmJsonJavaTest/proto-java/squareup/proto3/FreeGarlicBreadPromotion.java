@@ -17,21 +17,19 @@ public final class FreeGarlicBreadPromotion extends Message<FreeGarlicBreadPromo
 
   private static final long serialVersionUID = 0L;
 
-  public static final Boolean DEFAULT_IS_EXTRA_CHEESEY = false;
-
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#BOOL",
       label = WireField.Label.OMIT_IDENTITY,
       jsonName = "isExtraCheesey"
   )
-  public final Boolean is_extra_cheesey;
+  public final boolean is_extra_cheesey;
 
-  public FreeGarlicBreadPromotion(Boolean is_extra_cheesey) {
+  public FreeGarlicBreadPromotion(boolean is_extra_cheesey) {
     this(is_extra_cheesey, ByteString.EMPTY);
   }
 
-  public FreeGarlicBreadPromotion(Boolean is_extra_cheesey, ByteString unknownFields) {
+  public FreeGarlicBreadPromotion(boolean is_extra_cheesey, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.is_extra_cheesey = is_extra_cheesey;
   }
@@ -58,19 +56,19 @@ public final class FreeGarlicBreadPromotion extends Message<FreeGarlicBreadPromo
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
-      result = result * 37 + (is_extra_cheesey != null ? is_extra_cheesey.hashCode() : 0);
+      result = result * 37 + Boolean.hashCode(is_extra_cheesey);
       super.hashCode = result;
     }
     return result;
   }
 
   public static final class Builder extends Message.Builder<FreeGarlicBreadPromotion, Builder> {
-    public Boolean is_extra_cheesey;
+    public boolean is_extra_cheesey;
 
     public Builder() {
     }
 
-    public Builder is_extra_cheesey(Boolean is_extra_cheesey) {
+    public Builder is_extra_cheesey(boolean is_extra_cheesey) {
       this.is_extra_cheesey = is_extra_cheesey;
       return this;
     }
