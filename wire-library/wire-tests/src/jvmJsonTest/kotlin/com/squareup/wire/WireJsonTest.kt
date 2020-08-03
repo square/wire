@@ -21,12 +21,12 @@ import com.google.gson.JsonSyntaxException
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
-import com.squareup.wire.proto2.alltypes.AllTypes
 import okio.ByteString
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -42,6 +42,8 @@ import squareup.proto3.Pizza
 import squareup.proto3.PizzaDelivery
 import java.io.File
 import java.util.Collections
+import com.squareup.wire.proto2.alltypes.AllTypes as AllTypesProto2
+import com.squareup.wire.proto3.alltypes.AllTypes as AllTypesProto3
 
 /**
  * Tests meant to be executed against both Java generated and Kotlin generated code among different
@@ -53,37 +55,37 @@ class WireJsonTest {
   internal lateinit var jsonLibrary: JsonLibrary
 
   @Test fun allTypesSerializeTest() {
-    val value = allTypesBuilder().build()
-    assertJsonEquals(ALL_TYPES_JSON, jsonLibrary.toJson(value, AllTypes::class.java))
+    val value = allTypesProto2Builder().build()
+    assertJsonEquals(ALL_TYPES_PROTO2_JSON, jsonLibrary.toJson(value, AllTypesProto2::class.java))
   }
 
   @Test fun allTypesDeserializeTest() {
-    val value = allTypesBuilder().build()
-    val parsed = jsonLibrary.fromJson(ALL_TYPES_JSON, AllTypes::class.java)
+    val value = allTypesProto2Builder().build()
+    val parsed = jsonLibrary.fromJson(ALL_TYPES_PROTO2_JSON, AllTypesProto2::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
-        jsonLibrary.toJson(parsed, AllTypes::class.java),
-        jsonLibrary.toJson(value, AllTypes::class.java))
+        jsonLibrary.toJson(parsed, AllTypesProto2::class.java),
+        jsonLibrary.toJson(value, AllTypesProto2::class.java))
   }
 
   @Test fun allTypesIdentitySerializeTest() {
-    val value = allTypesIdentityBuilder().build()
-    assertJsonEquals(ALL_TYPES_IDENTITY_JSON, jsonLibrary.toJson(value, AllTypes::class.java))
+    val value = allTypesProto2IdentityBuilder().build()
+    assertJsonEquals(ALL_TYPES_IDENTITY_PROTO2_JSON, jsonLibrary.toJson(value, AllTypesProto2::class.java))
   }
 
   @Test fun allTypesIdentityDeserializeTest() {
-    val value = allTypesIdentityBuilder().build()
-    val parsed = jsonLibrary.fromJson(ALL_TYPES_IDENTITY_JSON, AllTypes::class.java)
+    val value = allTypesProto2IdentityBuilder().build()
+    val parsed = jsonLibrary.fromJson(ALL_TYPES_IDENTITY_PROTO2_JSON, AllTypesProto2::class.java)
     assertThat(parsed).isEqualTo(value)
     assertThat(parsed.toString()).isEqualTo(value.toString())
     assertJsonEquals(
-        jsonLibrary.toJson(parsed, AllTypes::class.java),
-        jsonLibrary.toJson(value, AllTypes::class.java))
+        jsonLibrary.toJson(parsed, AllTypesProto2::class.java),
+        jsonLibrary.toJson(value, AllTypesProto2::class.java))
   }
 
   @Test fun omitsUnknownFields() {
-    val builder = allTypesBuilder()
+    val builder = allTypesProto2Builder()
     builder.addUnknownField(9000, FieldEncoding.FIXED32, 9000)
     builder.addUnknownField(9001, FieldEncoding.FIXED64, 9001L)
     builder.addUnknownField(9002, FieldEncoding.LENGTH_DELIMITED,
@@ -91,7 +93,7 @@ class WireJsonTest {
     builder.addUnknownField(9003, FieldEncoding.VARINT, 9003L)
 
     val value = builder.build()
-    assertJsonEquals(ALL_TYPES_JSON, jsonLibrary.toJson(value, AllTypes::class.java))
+    assertJsonEquals(ALL_TYPES_PROTO2_JSON, jsonLibrary.toJson(value, AllTypesProto2::class.java))
   }
 
   @Test fun fieldNamesAreEncodedWithCamelCaseAndDecodedWithEither() {
@@ -409,12 +411,70 @@ class WireJsonTest {
     assertThat(unsignedJson).contains(""""repUint64":["456"]""")
   }
 
+  @Test fun serializeAllTypesProto3() {
+    val json = jsonLibrary.toJson(allTypesProto3Builder().build(), AllTypesProto3::class.java)
+    assertJsonEquals(ALL_TYPES_PROTO3_JSON, json)
+  }
+
+  @Test fun deserializeAllTypesProto3() {
+    val allTypes = allTypesProto3Builder().build()
+    val parsed = jsonLibrary.fromJson(ALL_TYPES_PROTO3_JSON, AllTypesProto3::class.java)
+    assertThat(parsed).isEqualTo(allTypes)
+    assertThat(parsed.toString()).isEqualTo(allTypes.toString())
+    assertJsonEquals(jsonLibrary.toJson(parsed, AllTypesProto3::class.java),
+        jsonLibrary.toJson(allTypes, AllTypesProto3::class.java))
+  }
+
+  @Test fun serializeIdentityAllTypesMoshi() {
+    val allTypes = AllTypesProto3.Builder().build()
+    assertJsonEquals(ALL_TYPES_IDENTITY_PROTO3_JSON,
+        jsonLibrary.toJson(allTypes, AllTypesProto3::class.java))
+  }
+
+  @Test fun deserializeIdentityAllTypesMoshi() {
+    val allTypes = AllTypesProto3.Builder().build()
+    val parsed = jsonLibrary.fromJson(ALL_TYPES_IDENTITY_PROTO3_JSON, AllTypesProto3::class.java)
+    assertThat(parsed).isEqualTo(allTypes)
+    assertThat(parsed.toString()).isEqualTo(allTypes.toString())
+    assertJsonEquals(jsonLibrary.toJson(parsed, AllTypesProto3::class.java),
+        jsonLibrary.toJson(allTypes, AllTypesProto3::class.java))
+  }
+
+  @Test fun serializeExplicitIdentityAllTypesMoshi() {
+    val value = allTypesExplicitIdentityProto3Builder().build()
+    assertJsonEquals(ALL_TYPES_EXPLICITY_IDENTITY_PROTO3_JSON,
+        jsonLibrary.toJson(value, AllTypesProto3::class.java))
+  }
+
+  @Ignore("Java needs a fix.")
+  @Test fun deserializeExplicitIdentityAllTypesMoshi() {
+    val value = allTypesExplicitIdentityProto3Builder().build()
+
+    val parsed = jsonLibrary.fromJson(ALL_TYPES_EXPLICITY_IDENTITY_PROTO3_JSON,
+        AllTypesProto3::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(jsonLibrary.toJson(parsed, AllTypesProto3::class.java),
+        jsonLibrary.toJson(value, AllTypesProto3::class.java))
+  }
+
+  @Test fun minusDoubleZero() {
+    val value = AllTypesProto3.Builder().my_double(-0.0).build()
+    val json = "{\"myDouble\": -0.0}"
+
+    assertJsonEquals(json, jsonLibrary.toJson(value, AllTypesProto3::class.java))
+
+    val parsed = jsonLibrary.fromJson(json, AllTypesProto3::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+  }
+
   companion object {
     // Return a two-element list with a given repeated value
     private fun <T> list(x: T): List<T> = listOf(x, x)
 
-    private fun allTypesIdentityBuilder(): AllTypes.Builder {
-      return AllTypes.Builder()
+    private fun allTypesProto2IdentityBuilder(): AllTypesProto2.Builder {
+      return AllTypesProto2.Builder()
           .opt_int32(0)
           .opt_uint32(0)
           .opt_sint32(0)
@@ -430,7 +490,7 @@ class WireJsonTest {
           .opt_double(0.0)
           .opt_string("")
           .opt_bytes(ByteString.EMPTY)
-          .opt_nested_enum(AllTypes.NestedEnum.A)
+          .opt_nested_enum(AllTypesProto2.NestedEnum.A)
           .opt_nested_message(null)
           .req_int32(0)
           .req_uint32(0)
@@ -447,14 +507,14 @@ class WireJsonTest {
           .req_double(0.0)
           .req_string("")
           .req_bytes(ByteString.EMPTY)
-          .req_nested_enum(AllTypes.NestedEnum.A)
-          .req_nested_message(AllTypes.NestedMessage.Builder().a(0).build())
+          .req_nested_enum(AllTypesProto2.NestedEnum.A)
+          .req_nested_message(AllTypesProto2.NestedMessage.Builder().a(0).build())
     }
 
-    private fun allTypesBuilder(): AllTypes.Builder {
+    private fun allTypesProto2Builder(): AllTypesProto2.Builder {
       val bytes = ByteString.of(123.toByte(), 125.toByte())
-      val nestedMessage = AllTypes.NestedMessage.Builder().a(999).build()
-      return AllTypes.Builder()
+      val nestedMessage = AllTypesProto2.NestedMessage.Builder().a(999).build()
+      return AllTypesProto2.Builder()
           .opt_int32(111)
           .opt_uint32(112)
           .opt_sint32(113)
@@ -470,7 +530,7 @@ class WireJsonTest {
           .opt_double(123.0)
           .opt_string("124")
           .opt_bytes(bytes)
-          .opt_nested_enum(AllTypes.NestedEnum.A)
+          .opt_nested_enum(AllTypesProto2.NestedEnum.A)
           .opt_nested_message(nestedMessage)
           .req_int32(111)
           .req_uint32(112)
@@ -487,7 +547,7 @@ class WireJsonTest {
           .req_double(123.0)
           .req_string("124")
           .req_bytes(bytes)
-          .req_nested_enum(AllTypes.NestedEnum.A)
+          .req_nested_enum(AllTypesProto2.NestedEnum.A)
           .req_nested_message(nestedMessage)
           .rep_int32(list(111))
           .rep_uint32(list(112))
@@ -504,7 +564,7 @@ class WireJsonTest {
           .rep_double(list(123.0))
           .rep_string(list("124"))
           .rep_bytes(list(bytes))
-          .rep_nested_enum(list(AllTypes.NestedEnum.A))
+          .rep_nested_enum(list(AllTypesProto2.NestedEnum.A))
           .rep_nested_message(list(nestedMessage))
           .pack_int32(list(111))
           .pack_uint32(list(112))
@@ -519,11 +579,11 @@ class WireJsonTest {
           .pack_bool(list(true))
           .pack_float(list(122.0f))
           .pack_double(list(123.0))
-          .pack_nested_enum(list(AllTypes.NestedEnum.A))
+          .pack_nested_enum(list(AllTypesProto2.NestedEnum.A))
           .map_int32_int32(Collections.singletonMap(1, 2))
           .map_string_string(Collections.singletonMap("key", "value"))
-          .map_string_message(Collections.singletonMap("message", AllTypes.NestedMessage(1)))
-          .map_string_enum(Collections.singletonMap("enum", AllTypes.NestedEnum.A))
+          .map_string_message(Collections.singletonMap("message", AllTypesProto2.NestedMessage(1)))
+          .map_string_enum(Collections.singletonMap("enum", AllTypesProto2.NestedEnum.A))
           .oneof_int32(4444)
           .ext_opt_int32(Int.MAX_VALUE)
           .ext_opt_int64(Long.MIN_VALUE / 2 + 178)
@@ -532,7 +592,7 @@ class WireJsonTest {
           .ext_opt_bool(true)
           .ext_opt_float(1.2345e6f)
           .ext_opt_double(1.2345e67)
-          .ext_opt_nested_enum(AllTypes.NestedEnum.A)
+          .ext_opt_nested_enum(AllTypesProto2.NestedEnum.A)
           .ext_opt_nested_message(nestedMessage)
           .ext_rep_int32(list(Int.MAX_VALUE))
           .ext_rep_uint64(list(Long.MIN_VALUE / 2 + 178))
@@ -540,7 +600,7 @@ class WireJsonTest {
           .ext_rep_bool(list(true))
           .ext_rep_float(list(1.2345e6f))
           .ext_rep_double(list(1.2345e67))
-          .ext_rep_nested_enum(list(AllTypes.NestedEnum.A))
+          .ext_rep_nested_enum(list(AllTypesProto2.NestedEnum.A))
           .ext_rep_nested_message(list(nestedMessage))
           .ext_pack_int32(list(Int.MAX_VALUE))
           .ext_pack_uint64(list(Long.MIN_VALUE / 2 + 178))
@@ -548,12 +608,132 @@ class WireJsonTest {
           .ext_pack_bool(list(true))
           .ext_pack_float(list(1.2345e6f))
           .ext_pack_double(list(1.2345e67))
-          .ext_pack_nested_enum(list(AllTypes.NestedEnum.A))
+          .ext_pack_nested_enum(list(AllTypesProto2.NestedEnum.A))
     }
 
-    private val ALL_TYPES_JSON = loadJson("all_types_proto2.json")
+    private fun allTypesProto3Builder(): AllTypesProto3.Builder {
+      return AllTypesProto3.Builder()
+          .my_int32(111)
+          .my_uint32(112)
+          .my_sint32(113)
+          .my_fixed32(114)
+          .my_sfixed32(115)
+          .my_int64(116L)
+          .my_uint64(117L)
+          .my_sint64(118L)
+          .my_fixed64(119L)
+          .my_sfixed64(120L)
+          .my_bool(true)
+          .my_float(122.0F)
+          .my_double(123.0)
+          .my_string("124")
+          .my_bytes(ByteString.of(123, 125))
+          .nested_enum(AllTypesProto3.NestedEnum.A)
+          .nested_message(AllTypesProto3.NestedMessage(999))
+          .rep_int32(list(111))
+          .rep_uint32(list(112))
+          .rep_sint32(list(113))
+          .rep_fixed32(list(114))
+          .rep_sfixed32(list(115))
+          .rep_int64(list(116L))
+          .rep_uint64(list(117L))
+          .rep_sint64(list(118L))
+          .rep_fixed64(list(119L))
+          .rep_sfixed64(list(120L))
+          .rep_bool(list(true))
+          .rep_float(list(122.0F))
+          .rep_double(list(123.0))
+          .rep_string(list("124"))
+          .rep_bytes(list(ByteString.of(123, 125)))
+          .rep_nested_enum(list(AllTypesProto3.NestedEnum.A))
+          .rep_nested_message(list(AllTypesProto3.NestedMessage(999)))
+          .pack_int32(list(111))
+          .pack_uint32(list(112))
+          .pack_sint32(list(113))
+          .pack_fixed32(list(114))
+          .pack_sfixed32(list(115))
+          .pack_int64(list(116L))
+          .pack_uint64(list(117L))
+          .pack_sint64(list(118L))
+          .pack_fixed64(list(119L))
+          .pack_sfixed64(list(120L))
+          .pack_bool(list(true))
+          .pack_float(list(122.0F))
+          .pack_double(list(123.0))
+          .pack_nested_enum(list(AllTypesProto3.NestedEnum.A))
+          .map_int32_int32(mapOf(1 to 2))
+          .map_string_string(mapOf("key" to "value"))
+          .map_string_message(mapOf("message" to AllTypesProto3.NestedMessage(1)))
+          .map_string_enum(mapOf("enum" to AllTypesProto3.NestedEnum.A))
+          .oneof_int32(0)
+    }
 
-    private val ALL_TYPES_IDENTITY_JSON = loadJson("all_types_identity_proto2.json")
+    private fun allTypesExplicitIdentityProto3Builder(): AllTypesProto3.Builder {
+      return AllTypesProto3.Builder()
+          .my_int32(0)
+          .my_uint32(0)
+          .my_sint32(0)
+          .my_fixed32(0)
+          .my_sfixed32(0)
+          .my_int64(0L)
+          .my_uint64(0L)
+          .my_sint64(0L)
+          .my_fixed64(0L)
+          .my_sfixed64(0L)
+          .my_bool(false)
+          .my_float(0F)
+          .my_double(0.0)
+          .my_string("")
+          .my_bytes(ByteString.EMPTY)
+          .nested_enum(AllTypesProto3.NestedEnum.UNKNOWN)
+          .nested_message(AllTypesProto3.NestedMessage(0))
+          .rep_int32(list(0))
+          .rep_uint32(list(0))
+          .rep_sint32(list(0))
+          .rep_fixed32(list(0))
+          .rep_sfixed32(emptyList())
+          .rep_int64(emptyList())
+          .rep_uint64(emptyList())
+          .rep_sint64(emptyList())
+          .rep_fixed64(emptyList())
+          .rep_sfixed64(emptyList())
+          .rep_bool(emptyList())
+          .rep_float(emptyList())
+          .rep_double(emptyList())
+          .rep_string(list(""))
+          .rep_bytes(list(ByteString.EMPTY))
+          .rep_nested_enum(emptyList())
+          .rep_nested_message(emptyList())
+          .pack_int32(emptyList())
+          .pack_uint32(emptyList())
+          .pack_sint32(emptyList())
+          .pack_fixed32(emptyList())
+          .pack_sfixed32(list(0))
+          .pack_int64(list(0L))
+          .pack_uint64(list(0L))
+          .pack_sint64(list(0L))
+          .pack_fixed64(list(0L))
+          .pack_sfixed64(list(0L))
+          .pack_bool(list(false))
+          .pack_float(list(0F))
+          .pack_double(list(0.0))
+          .pack_nested_enum(list(AllTypesProto3.NestedEnum.UNKNOWN))
+          .map_int32_int32(mapOf(0 to 0))
+          .map_string_message(mapOf("" to AllTypesProto3.NestedMessage.Builder().build()))
+          .map_string_enum(mapOf("" to AllTypesProto3.NestedEnum.UNKNOWN))
+          .oneof_int32(0)
+    }
+
+    private val ALL_TYPES_PROTO2_JSON = loadJson("all_types_proto2.json")
+
+    private val ALL_TYPES_IDENTITY_PROTO2_JSON = loadJson("all_types_identity_proto2.json")
+
+    private val ALL_TYPES_PROTO3_JSON = loadJson("all_types_proto3.json")
+
+    private val ALL_TYPES_IDENTITY_PROTO3_JSON = loadJson("all_types_identity_proto3.json")
+
+    private val ALL_TYPES_EXPLICITY_IDENTITY_PROTO3_JSON =
+        loadJson("all_types_explicit_identity_proto3.json")
 
     private val CAMEL_CASE_JSON = loadJson("camel_case_proto3.json")
 

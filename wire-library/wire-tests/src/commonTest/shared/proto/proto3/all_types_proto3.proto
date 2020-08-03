@@ -15,7 +15,9 @@
  */
 syntax = "proto3";
 
-package squareup.proto3.kotlin.alltypes;
+package squareup.proto3;
+
+option java_package = "com.squareup.wire.proto3.alltypes";
 
 message AllTypes {
   enum NestedEnum {
