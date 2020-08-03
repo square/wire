@@ -19,7 +19,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 
-class ManifestTest {
+class ManifestParseTest {
   @Test fun parseFormat() {
     val yaml = """
       |one:

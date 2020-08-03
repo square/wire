@@ -93,12 +93,12 @@ data class Manifest(
   }
 }
 
+/** Module name to partition info. The iteration order of this map is the generation order. */
 class PartitionedSchema(
-  /** Module name to partition info. The iteration order of this map is the generation order. */
-  val modules: Map<String, Partition>,
+  modules: Map<String, Partition>,
   val warnings: List<String>,
   val errors: List<String>
-) {
+) : Map<String, Partition> by modules {
   class Partition(
     val schema: Schema,
     val types: Set<ProtoType>,
@@ -273,7 +273,7 @@ fun PartitionedSchema.buildSchemaHandler(
   factory: (name: String, partition: Partition) -> SchemaHandler
 ): SchemaHandler {
   // TODO this means you cannot generate the same type in two unrelated modules! fix!
-  val handlers = modules
+  val handlers = this
       .map { (name, partition) ->
         // Create the handler for each partition.
         partition to factory(name, partition)
