@@ -31,12 +31,14 @@ import okio.ByteString
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.fail
 import org.junit.Test
 import squareup.proto3.kotlin.alltypes.All64OuterClass
 import squareup.proto3.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto3.kotlin.alltypes.CamelCaseOuterClass
 import squareup.proto3.kotlin.pizza.PizzaOuterClass
 import java.io.File
+import java.lang.IllegalArgumentException
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as RequiredExtensionK
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
@@ -324,6 +326,24 @@ class Proto3WireProtocCompatibilityTests {
 
     val protocJson = JsonFormat.printer().print(protoc)
     assertJsonEquals("{\"myDouble\": -0.0}", protocJson)
+  }
+
+  @Test fun cannotPassNullToIdentityString(){
+    try {
+      AllTypesJ.Builder().string(null).build()
+      fail()
+    } catch (exception: IllegalArgumentException) {
+      assertThat(exception).hasMessage("builder.string == null")
+    }
+  }
+
+  @Test fun cannotPassNullToIdentityBytes(){
+    try {
+      AllTypesJ.Builder().bytes(null).build()
+      fail()
+    } catch (exception: IllegalArgumentException) {
+      assertThat(exception).hasMessage("builder.bytes == null")
+    }
   }
 
   companion object {

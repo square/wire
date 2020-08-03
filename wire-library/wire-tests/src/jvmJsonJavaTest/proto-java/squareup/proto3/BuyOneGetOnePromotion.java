@@ -30,6 +30,9 @@ public final class BuyOneGetOnePromotion extends Message<BuyOneGetOnePromotion, 
 
   public BuyOneGetOnePromotion(String coupon, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
+    if (coupon == null) {
+      throw new IllegalArgumentException("coupon == null");
+    }
     this.coupon = coupon;
   }
 

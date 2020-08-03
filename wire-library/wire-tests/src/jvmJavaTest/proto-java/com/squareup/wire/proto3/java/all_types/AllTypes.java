@@ -723,7 +723,13 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.bool = builder.bool;
     this.float_ = builder.float_;
     this.double_ = builder.double_;
+    if (builder.string == null) {
+      throw new IllegalArgumentException("builder.string == null");
+    }
     this.string = builder.string;
+    if (builder.bytes == null) {
+      throw new IllegalArgumentException("builder.bytes == null");
+    }
     this.bytes = builder.bytes;
     this.nested_enum = builder.nested_enum;
     this.nested_message = builder.nested_message;
