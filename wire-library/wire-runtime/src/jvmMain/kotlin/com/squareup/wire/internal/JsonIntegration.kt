@@ -35,8 +35,8 @@ abstract class JsonIntegration<F, A> {
   // TODO(jwilson): fix frameworks so this takes key+value adapters instead of their types.
   abstract fun mapAdapter(
     framework: F,
-    keyType: Type,
-    valueType: Type
+    keyAdapter: A,
+    valueAdapter: A
   ): A
 
   /**
@@ -67,12 +67,15 @@ abstract class JsonIntegration<F, A> {
     return when {
       field.label.isRepeated -> listAdapter(singleAdapter)
       field.isMap -> {
-        val keyType = field.keyAdapter().type?.javaObjectType!!
-        val valueType = field.singleAdapter().type?.javaObjectType!!
+        val keyJsonStringAdapter = field.jsonStringAdapter(syntax)
+        val keyAdapter = when {
+          keyJsonStringAdapter != null -> formatterAdapter(keyJsonStringAdapter)
+          else -> frameworkAdapter(framework, field.keyAdapter().type?.javaObjectType as Type)
+        }
         mapAdapter(
             framework = framework,
-            keyType = keyType,
-            valueType = valueType
+            keyAdapter = keyAdapter,
+            valueAdapter = singleAdapter
         )
       }
       else -> singleAdapter

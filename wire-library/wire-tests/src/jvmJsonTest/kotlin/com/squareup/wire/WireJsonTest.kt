@@ -326,6 +326,7 @@ class WireJsonTest {
         .pack_fixed64(list(Long.MAX_VALUE))
         .pack_sfixed64(list(Long.MAX_VALUE))
         .oneof_int64(Long.MAX_VALUE)
+        .map_int64_sfixed64(mapOf(Long.MAX_VALUE to Long.MAX_VALUE))
         .build()
 
     assertJsonEquals(ALL_64_JSON_MAX_VALUE, jsonLibrary.toJson(value, All64::class.java))
@@ -338,7 +339,7 @@ class WireJsonTest {
         jsonLibrary.toJson(value, All64::class.java))
   }
 
-  @Test fun all64MainValue() {
+  @Test fun all64MinValue() {
     val value = All64.Builder()
         .my_int64(Long.MIN_VALUE)
         .my_uint64(Long.MIN_VALUE)
@@ -356,6 +357,7 @@ class WireJsonTest {
         .pack_fixed64(list(Long.MIN_VALUE))
         .pack_sfixed64(list(Long.MIN_VALUE))
         .oneof_int64(Long.MIN_VALUE)
+        .map_int64_sfixed64(mapOf(Long.MIN_VALUE to Long.MIN_VALUE))
         .build()
 
     assertJsonEquals(ALL_64_JSON_MIN_VALUE, jsonLibrary.toJson(value, All64::class.java))

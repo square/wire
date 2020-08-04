@@ -36,11 +36,10 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
 
   override fun mapAdapter(
     framework: Moshi,
-    keyType: Type,
-    valueType: Type
+    keyAdapter: JsonAdapter<Any?>,
+    valueAdapter: JsonAdapter<Any?>
   ): JsonAdapter<Any?> {
-    val mapType = Types.newParameterizedType(Map::class.java, keyType, valueType)
-    return framework.adapter(mapType)
+    return MapJsonAdapter(keyAdapter, valueAdapter).nullSafe() as JsonAdapter<Any?>
   }
 
   override fun structAdapter(framework: Moshi): JsonAdapter<Any?> =
@@ -97,6 +96,45 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
         single.toJson(writer, v)
       }
       writer.endArray()
+    }
+  }
+
+  /**
+   * Adapt a map of keys and values by delegating to an adapter for a single key, and an adapter
+   * for a single value.
+   */
+  private class MapJsonAdapter<K, V>(
+    private val keyAdapter: JsonAdapter<K>,
+    private val valueAdapter: JsonAdapter<V>
+  ): JsonAdapter<Map<K, V?>>() {
+    override fun fromJson(reader: JsonReader): Map<K, V?>? {
+      val result = mutableMapOf<K, V?>()
+      reader.beginObject()
+      while (reader.hasNext()) {
+//        reader.promoteNameToValue()
+        val name = keyAdapter.fromJson(reader)!!
+        val value = valueAdapter.fromJson(reader)
+        val replaced = result.put(name, value)
+        if (replaced != null) {
+          throw JsonDataException(
+              """Map key '$name' has multiple values at path ${reader.path}: $replaced and $value""")
+        }
+      }
+      reader.endObject()
+      return result.toMap()
+    }
+
+    override fun toJson(writer: JsonWriter, value: Map<K, V?>?) {
+      writer.beginObject()
+      for ((k, v) in value!!.entries) {
+        if (k == null) {
+          throw JsonDataException("Map key is null at " + writer.path)
+        }
+//        writer.promoteValueToName()
+        keyAdapter.toJson(writer, k)
+        valueAdapter.toJson(writer, v)
+      }
+      writer.endObject()
     }
   }
 }

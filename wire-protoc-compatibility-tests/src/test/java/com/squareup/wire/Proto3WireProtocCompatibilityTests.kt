@@ -216,6 +216,7 @@ class Proto3WireProtocCompatibilityTests {
         .addAllPackFixed64(list(Long.MAX_VALUE))
         .addAllPackSfixed64(list(Long.MAX_VALUE))
         .setOneofInt64(Long.MAX_VALUE)
+        .putMapInt64Sfixed64(Long.MAX_VALUE, Long.MAX_VALUE)
         .build()
 
     val jsonPrinter = JsonFormat.printer()
@@ -246,6 +247,7 @@ class Proto3WireProtocCompatibilityTests {
         .addAllPackFixed64(list(Long.MIN_VALUE))
         .addAllPackSfixed64(list(Long.MIN_VALUE))
         .setOneofInt64(Long.MIN_VALUE)
+        .putMapInt64Sfixed64(Long.MIN_VALUE, Long.MIN_VALUE)
         .build()
 
     val jsonPrinter = JsonFormat.printer()

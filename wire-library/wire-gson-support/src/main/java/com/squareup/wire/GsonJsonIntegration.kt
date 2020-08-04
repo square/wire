@@ -18,11 +18,13 @@ package com.squareup.wire
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.TypeAdapter
+import com.google.gson.internal.JsonReaderInternalAccess
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.squareup.wire.internal.FieldBinding.JsonFormatter
 import com.squareup.wire.internal.JsonIntegration
+import java.io.IOException
 import java.lang.reflect.Type
 
 internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>() {
@@ -36,11 +38,10 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
 
   override fun mapAdapter(
     framework: Gson,
-    keyType: Type,
-    valueType: Type
+    keyAdapter: TypeAdapter<Any?>,
+    valueAdapter: TypeAdapter<Any?>
   ): TypeAdapter<Any?> {
-    val mapType = TypeToken.getParameterized(Map::class.java, keyType, valueType)
-    return framework.getAdapter(mapType) as TypeAdapter<Any?>
+    return MapTypeAdapter(keyAdapter, valueAdapter).nullSafe() as TypeAdapter<Any?>
   }
 
   fun <T> TypeAdapter<T>.serializeNulls(): TypeAdapter<T> {
@@ -111,6 +112,45 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
         single.write(writer, v)
       }
       writer.endArray()
+    }
+  }
+
+  /**
+   * Adapt a map of keys and values by delegating to an adapter for a single key, and an adapter
+   * for a single value.
+   */
+  private class MapTypeAdapter<K, V>(
+    private val keyAdapter: TypeAdapter<K>,
+    private val valueAdapter: TypeAdapter<V>
+  ) : TypeAdapter<Map<K, V?>>() {
+    override fun read(reader: JsonReader): Map<K, V?>? {
+      val result = mutableMapOf<K, V?>()
+      reader.beginObject()
+      while (reader.hasNext()) {
+        JsonReaderInternalAccess.INSTANCE.promoteNameToValue(reader)
+        val name = keyAdapter.read(reader)!!
+        val value = valueAdapter.read(reader)
+        val replaced = result.put(name, value)
+        if (replaced != null) {
+          throw IOException(
+              """Map key '$name' has multiple values at path ${reader.path}: $replaced and $value""")
+        }
+      }
+      reader.endObject()
+      return result.toMap()
+    }
+
+    override fun write(writer: JsonWriter, value: Map<K, V?>?) {
+      writer.beginObject()
+      for ((k, v) in value!!.entries) {
+        if (k == null) {
+          throw IOException("Map key is null")
+        }
+//        writer.promoteValueToName()
+        keyAdapter.write(writer, k)
+        valueAdapter.write(writer, v)
+      }
+      writer.endObject()
     }
   }
 }
