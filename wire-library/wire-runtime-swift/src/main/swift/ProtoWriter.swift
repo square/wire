@@ -27,6 +27,25 @@ public final class ProtoWriter {
 
     // MARK: - Public Methods - Encoding - Single Fields
 
+    /** Encode a `bytes` field */
+    public func encode(tag: UInt32, value: Data?) throws {
+        guard let value = value else { return }
+
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
+
+        writeVarint(key)
+        try encodeLengthDelimited() { try value.encode(to: self) }
+    }
+
+    /** Encode a `double` field */
+    public func encode(tag: UInt32, value: Double?) throws {
+        guard let value = value else { return }
+
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .fixed64)
+        writeVarint(key)
+        try value.encode(to: self)
+    }
+
     /** Encode an `enum` field */
     public func encode<T: RawRepresentable>(tag: UInt32, value: T?) throws where T.RawValue == UInt32 {
         guard let value = value else { return }
@@ -35,13 +54,49 @@ public final class ProtoWriter {
         }
     }
 
-    /** Encode an integer field */
-    public func encode<T: ProtoIntEncodable>(tag: UInt32, value: T?, encoding: ProtoIntEncoding = .variable) throws {
+    /** Encode a `float` field */
+    public func encode(tag: UInt32, value: Float?) throws {
         guard let value = value else { return }
-        let wireType = ProtoWriter.wireType(for: type(of: value), encoding: encoding)
-        try encode(tag: tag, wireType: wireType, value: value) {
-            try $0.encode(to: self, encoding: encoding)
-        }
+
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .fixed32)
+        writeVarint(key)
+        try value.encode(to: self)
+    }
+
+    /** Encode an `int32`, `sfixed32`, or `sint32` field */
+    public func encode(tag: UInt32, value: Int32?, encoding: ProtoIntEncoding = .variable) throws {
+        guard let value = value else { return }
+        let wireType: FieldWireType = encoding == .fixed ? .fixed32 : .varint
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
+        writeVarint(key)
+        try value.encode(to: self, encoding: encoding)
+    }
+
+    /** Encode an `int64`, `sfixed64`, or `sint64` field */
+    public func encode(tag: UInt32, value: Int64?, encoding: ProtoIntEncoding = .variable) throws {
+        guard let value = value else { return }
+        let wireType: FieldWireType = encoding == .fixed ? .fixed64 : .varint
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
+        writeVarint(key)
+        try value.encode(to: self, encoding: encoding)
+    }
+
+    /** Encode a `fixed32` or `uint32` field */
+    public func encode(tag: UInt32, value: UInt32?, encoding: ProtoIntEncoding = .variable) throws {
+        guard let value = value else { return }
+        let wireType: FieldWireType = encoding == .fixed ? .fixed32 : .varint
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
+        writeVarint(key)
+        try value.encode(to: self, encoding: encoding)
+    }
+
+    /** Encode a `fixed64` or `uint64` field */
+    public func encode(tag: UInt32, value: UInt64?, encoding: ProtoIntEncoding = .variable) throws {
+        guard let value = value else { return }
+        let wireType: FieldWireType = encoding == .fixed ? .fixed64 : .varint
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
+        writeVarint(key)
+        try value.encode(to: self, encoding: encoding)
     }
 
     /**
@@ -62,6 +117,15 @@ public final class ProtoWriter {
         }
     }
 
+    public func encode(tag: UInt32, value: String?) throws {
+        guard let value = value else { return }
+
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
+
+        writeVarint(key)
+        try encodeLengthDelimited() { try value.encode(to: self) }
+    }
+
     // MARK: - Public Methods - Encoding - Repeated Fields
 
     /**
@@ -73,6 +137,19 @@ public final class ProtoWriter {
 
         try encode(tag: tag, wireType: .varint, value: value, packed: packed) { value in
             try value.encode(to: self)
+        }
+    }
+
+    /** Encode a repeated `bytes` field */
+    public func encode(tag: UInt32, value: [Data]?) throws {
+        guard let value = value else { return }
+
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
+        for item in value {
+            writeVarint(key)
+            try encodeLengthDelimited() {
+                try item.encode(to: self)
+            }
         }
     }
 
@@ -88,6 +165,14 @@ public final class ProtoWriter {
         }
     }
 
+    /** Encoded a repeated `enum` field */
+    public func encode<T: RawRepresentable>(tag: UInt32, value: [T]?, packed: Bool = false) throws where T.RawValue == UInt32 {
+        guard let value = value else { return }
+        encode(tag: tag, wireType: .varint, value: value, packed: packed) {
+            writeVarint($0.rawValue)
+        }
+    }
+
     /**
      Encode a repeated `float` field.
      This method is distinct from the generic repeated `ProtoEncodable` one because floats can be packed.
@@ -100,18 +185,50 @@ public final class ProtoWriter {
         }
     }
 
-    /** Encoded a repeated `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: [T]?, packed: Bool = false) throws where T.RawValue == UInt32 {
+    /** Encode a repeated `int32`, `sfixed32`, or `sint32` field */
+    public func encode(tag: UInt32, value: [Int32]?, encoding: ProtoIntEncoding = .variable, packed: Bool = false) throws {
         guard let value = value else { return }
-        encode(tag: tag, wireType: .varint, value: value, packed: packed) {
-            writeVarint($0.rawValue)
+        let wireType: FieldWireType = encoding == .fixed ? .fixed32 : .varint
+        try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
+            try $0.encode(to: self, encoding: encoding)
         }
     }
 
-    /** Encode a repeated integer field */
-    public func encode<T: ProtoIntEncodable>(tag: UInt32, value: [T]?, encoding: ProtoIntEncoding = .variable, packed: Bool = false) throws {
+    /** Encode a repeated `int64`, `sfixed64`, or `sint64` field */
+    public func encode(tag: UInt32, value: [Int64]?, encoding: ProtoIntEncoding = .variable, packed: Bool = false) throws {
         guard let value = value else { return }
-        let wireType = ProtoWriter.wireType(for: T.self, encoding: encoding)
+        let wireType: FieldWireType = encoding == .fixed ? .fixed64 : .varint
+        try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
+            try $0.encode(to: self, encoding: encoding)
+        }
+    }
+
+    /** Encode a repeated `string` field */
+    public func encode(tag: UInt32, value: [String]?) throws {
+        guard let value = value else { return }
+
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
+        for item in value {
+            writeVarint(key)
+            try encodeLengthDelimited() {
+                try item.encode(to: self)
+            }
+        }
+    }
+
+    /** Encode a repeated  `fixed32` or `uint32` field */
+    public func encode(tag: UInt32, value: [UInt32]?, encoding: ProtoIntEncoding = .variable, packed: Bool = false) throws {
+        guard let value = value else { return }
+        let wireType: FieldWireType = encoding == .fixed ? .fixed32 : .varint
+        try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
+            try $0.encode(to: self, encoding: encoding)
+        }
+    }
+
+    /** Encode a repeated `fixed64` or `uint64` field */
+    public func encode(tag: UInt32, value: [UInt64]?, encoding: ProtoIntEncoding = .variable, packed: Bool = false) throws {
+        guard let value = value else { return }
+        let wireType: FieldWireType = encoding == .fixed ? .fixed64 : .varint
         try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
             try $0.encode(to: self, encoding: encoding)
         }
@@ -123,9 +240,11 @@ public final class ProtoWriter {
 
         // We can assume length-delimited here because `bool`, `double` and `float` have their
         // own overloads and all other types use wire types of length-delimited.
-        try encode(tag: tag, wireType: .lengthDelimited, value: value, packed: false) { value in
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
+        for item in value {
+            writeVarint(key)
             try encodeLengthDelimited() {
-                try value.encode(to: self)
+                try item.encode(to: self)
             }
         }
     }
@@ -255,6 +374,19 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
         writeVarint(key)
         try encode(value)
+    }
+
+    /**
+     Encode an integer field.
+     This generic version is used in map and repeated field encoding. For individual fields there are distinct overloads for performance reasons.
+     This method is `internal` and not `private` because it's used by `ProtoReader` when unknown fields are encountered.
+     */
+    func encode<T: ProtoIntEncodable>(tag: UInt32, value: T?, encoding: ProtoIntEncoding = .variable) throws {
+        guard let value = value else { return }
+        let wireType = ProtoWriter.wireType(for: type(of: value), encoding: encoding)
+        try encode(tag: tag, wireType: wireType, value: value) {
+            try $0.encode(to: self, encoding: encoding)
+        }
     }
 
     /**

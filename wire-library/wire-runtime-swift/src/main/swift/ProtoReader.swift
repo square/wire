@@ -215,12 +215,12 @@ public final class ProtoReader {
         return try Float(from: self)
     }
 
-    /** Decode an `int32` field */
+    /** Decode an `int32`, `sfixed32`, or `sint32` field */
     public func decode(_ type: Int32.Type, encoding: ProtoIntEncoding = .variable) throws -> Int32 {
         return try Int32(from: self, encoding: encoding)
     }
 
-    /** Decode an `int64` field */
+    /** Decode an `int64`, `sfixed64`, or `sint64` field */
     public func decode(_ type: Int64.Type, encoding: ProtoIntEncoding = .variable) throws -> Int64 {
         return try Int64(from: self, encoding: encoding)
     }
@@ -230,12 +230,12 @@ public final class ProtoReader {
         return try String(from: self)
     }
 
-    /** Decode an `uint32` field */
+    /** Decode a `fixed32` or `uint32` field */
     public func decode(_ type: UInt32.Type, encoding: ProtoIntEncoding = .variable) throws -> UInt32 {
         return try UInt32(from: self, encoding: encoding)
     }
 
-    /** Decode an `uint64` field */
+    /** Decode a `fixed64` or `uint64` field */
     public func decode(_ type: UInt64.Type, encoding: ProtoIntEncoding = .variable) throws -> UInt64 {
         return try UInt64(from: self, encoding: encoding)
     }
@@ -295,14 +295,14 @@ public final class ProtoReader {
         }
     }
 
-    /** Decode a repeated `int32` field */
+    /** Decode a repeated `int32`, `sfixed32`, or `sint32` field */
     public func decode(into array: inout [Int32], encoding: ProtoIntEncoding = .variable) throws {
         try decode(into: &array) {
             return try Int32(from: self, encoding: encoding)
         }
     }
 
-    /** Decode a repeated `int64` field */
+    /** Decode a repeated `int64`, `sfixed64`, or `sint64` field */
     public func decode(into array: inout [Int64], encoding: ProtoIntEncoding = .variable) throws {
         try decode(into: &array) {
             return try Int64(from: self, encoding: encoding)
@@ -315,14 +315,14 @@ public final class ProtoReader {
         try array.append(String(from: self))
     }
 
-    /** Decode a repeated `uint32` field */
+    /** Decode a repeated `fixed32` or `uint32` field */
     public func decode(into array: inout [UInt32], encoding: ProtoIntEncoding = .variable) throws {
         try decode(into: &array) {
             return try UInt32(from: self, encoding: encoding)
         }
     }
 
-    /** Decode a repeated `uint64` field */
+    /** Decode a repeated `fixed64`, or `uint64` field */
     public func decode(into array: inout [UInt64], encoding: ProtoIntEncoding = .variable) throws {
         try decode(into: &array) {
             return try UInt64(from: self, encoding: encoding)
