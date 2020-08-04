@@ -10,6 +10,8 @@ extension Bool : ProtoCodable {
 
     // MARK: - ProtoDecodable
 
+    public static var protoSyntax: ProtoSyntax? { nil }
+
     public init(from reader: ProtoReader) throws {
         self = try reader.readVarint32() == 0 ? false : true
     }
@@ -31,6 +33,8 @@ extension Data : ProtoCodable {
 
     // MARK: - ProtoDecodable
 
+    public static var protoSyntax: ProtoSyntax? { nil }
+
     public init(from reader: ProtoReader) throws {
         self = try reader.readData()
     }
@@ -49,6 +53,8 @@ extension Data : ProtoCodable {
 extension Double : ProtoCodable {
 
     // MARK: - ProtoDecodable
+
+    public static var protoSyntax: ProtoSyntax? { nil }
 
     public init(from reader: ProtoReader) throws {
         self = try Double(bitPattern: reader.readFixed64())
@@ -71,6 +77,8 @@ extension Float : ProtoCodable {
 
     // MARK: - ProtoDecodable
 
+    public static var protoSyntax: ProtoSyntax? { nil }
+
     public init(from reader: ProtoReader) throws {
         self = try Float(bitPattern: reader.readFixed32())
     }
@@ -91,6 +99,8 @@ extension Float : ProtoCodable {
 extension String : ProtoCodable {
 
     // MARK: - ProtoDecodable
+
+    public static var protoSyntax: ProtoSyntax? { nil }
 
     /** Reads a `string` field value from the stream. */
     public init(from reader: ProtoReader) throws {

@@ -9,6 +9,8 @@
  */
 public protocol ProtoDecodable {
 
+    static var protoSyntax: ProtoSyntax? { get }
+
     init(from reader: ProtoReader) throws
 
 }
@@ -22,6 +24,8 @@ public protocol ProtoEncodable {
 
     /** The wire type to use in the key for this field */
     static var protoFieldWireType: FieldWireType { get }
+
+    static var protoSyntax: ProtoSyntax? { get }
 
     func encode(to writer: ProtoWriter) throws
 
@@ -52,11 +56,23 @@ public typealias ProtoCodable = ProtoDecodable & ProtoEncodable
  */
 public protocol Proto2Codable: ProtoCodable {}
 
+extension Proto2Codable {
+
+    public static var protoSyntax: ProtoSyntax? { .proto2 }
+
+}
+
 /**
  A marker protocol indicating that a given struct was generated from a .proto file
  that was using the Proto3 specification
  */
 public protocol Proto3Codable: ProtoCodable {}
+
+extension Proto3Codable {
+
+    public static var protoSyntax: ProtoSyntax? { .proto3 }
+
+}
 
 // MARK: -
 

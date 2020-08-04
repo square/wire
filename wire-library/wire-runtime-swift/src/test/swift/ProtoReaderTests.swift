@@ -612,6 +612,9 @@ final class ProtoReaderTests: XCTestCase {
     }
 
     struct NestedMessage: ProtoDecodable {
+
+        static var protoSyntax: ProtoSyntax? { .proto2 }
+
         let unknownFields: Data
 
         init(from reader: ProtoReader) throws {

@@ -242,7 +242,7 @@ public final class ProtoReader {
 
     /** Decode a message field */
     public func decode<T: ProtoDecodable>(_ type: T.Type) throws -> T {
-        isProto3Message = T.self is Proto3Codable.Type
+        isProto3Message = T.self.protoSyntax == .proto3
         return try T(from: self)
     }
 
