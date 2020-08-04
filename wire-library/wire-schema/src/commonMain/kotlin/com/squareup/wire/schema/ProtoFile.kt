@@ -107,6 +107,10 @@ class ProtoFile private constructor(
     return javaPackage?.toString()
   }
 
+  fun wirePackage(): String? {
+    return options.get(WIRE_PACKAGE)?.toString()
+  }
+
   /**
    * Returns a new proto file that omits types, services, extensions, and options not in
    * `pruningRules`.
@@ -190,6 +194,7 @@ class ProtoFile private constructor(
 
   companion object {
     val JAVA_PACKAGE = ProtoMember.get(Options.FILE_OPTIONS, "java_package")
+    val WIRE_PACKAGE = ProtoMember.get(Options.FILE_OPTIONS, "wire.wire_package")
 
     fun get(protoFileElement: ProtoFileElement): ProtoFile {
       val packageName = protoFileElement.packageName
