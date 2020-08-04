@@ -47,6 +47,8 @@ class SwiftGenerator private constructor(
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
+  private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
+  private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
   private val equatable = DeclaredTypeName.typeName("Swift.Equatable")
   private val hashable = DeclaredTypeName.typeName("Swift.Hashable")
   private val codable = DeclaredTypeName.typeName("Swift.Codable")
@@ -206,6 +208,24 @@ class SwiftGenerator private constructor(
             extensions += ExtensionSpec.builder(enumName)
                 .addSuperType(hashable)
                 .build()
+
+            if (oneOf.fields.any { it.isRedacted }) {
+              extensions += ExtensionSpec.builder(enumName)
+                  .addSuperType(redactable)
+                  .addType(TypeSpec.enumBuilder("RedactedKeys")
+                      .addModifiers(PUBLIC)
+                      .addSuperType(STRING)
+                      .addSuperType(redactedKey)
+                      .apply {
+                        oneOf.fields.forEach { field ->
+                          if (field.isRedacted) {
+                            addEnumCase(field.name)
+                          }
+                        }
+                      }
+                      .build())
+                  .build()
+            }
           }
         }
         .addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
@@ -388,6 +408,24 @@ class SwiftGenerator private constructor(
             .addStatement("try $writer.writeUnknownFields(unknownFields)")
             .build())
         .build()
+
+    if (type.fields.any { it.isRedacted }) {
+      extensions += ExtensionSpec.builder(structName)
+          .addSuperType(redactable)
+          .addType(TypeSpec.enumBuilder("RedactedKeys")
+              .addModifiers(PUBLIC)
+              .addSuperType(STRING)
+              .addSuperType(redactedKey)
+              .apply {
+                type.fields.forEach { field ->
+                  if (field.isRedacted) {
+                    addEnumCase(field.name)
+                  }
+                }
+              }
+              .build())
+          .build()
+    }
 
     extensions += ExtensionSpec.builder(structName)
         .addSuperType(codable)

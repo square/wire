@@ -12,7 +12,20 @@ final class RedactableTests: XCTestCase {
         let redacted = Redacted(name: "Foo")
         XCTAssertEqual(
             redacted.description,
-            "Redacted(name: <redacted>, nested: nil, unknownFields: 0 bytes)"
+            "Redacted(name: <redacted>, nested: nil, choice: nil, unknownFields: 0 bytes)"
+        )
+    }
+
+    func testRedactedOneOf() {
+        let redacted1 = Redacted(name: "Foo", choice: .yes("yes"))
+        XCTAssertEqual(
+            redacted1.description,
+            "Redacted(name: <redacted>, nested: nil, choice: Optional(Choice(yes: \"yes\")), unknownFields: 0 bytes)"
+        )
+        let redacted2 = Redacted(name: "Foo", choice: .no("no"))
+        XCTAssertEqual(
+            redacted2.description,
+            "Redacted(name: <redacted>, nested: nil, choice: Optional(Choice(no: <redacted>)), unknownFields: 0 bytes)"
         )
     }
 

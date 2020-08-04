@@ -19,6 +19,11 @@ message Redacted {
   required string name = 1 [(squareup.protos.redacted_option.redacted) = true];
 
   optional Redacted2 nested = 2;
+
+  oneof choice {
+    string yes = 3;
+    string no = 4 [(squareup.protos.redacted_option.redacted) = true];
+  }
 }
 
 message Redacted2 {
