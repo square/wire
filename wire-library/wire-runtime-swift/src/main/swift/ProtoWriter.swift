@@ -18,9 +18,22 @@ public final class ProtoWriter {
      */
     private static let lengthDelimitedInitialReservedLengthSize = 2
 
+    // MARK: -
+
+    private struct MessageFrame {
+        let isProto3: Bool
+    }
+
     // MARK: - Properties
 
     private(set) var buffer: WriteBuffer
+
+    /**
+     A stack of frames where each frame represents a level of message nesting.
+     */
+    private var messageStack: UnsafeMutablePointer<MessageFrame>
+    private var messageStackIndex: Int = -1
+    private var messageStackCapacity: Int = 5
 
     var outputFormatting: ProtoEncoder.OutputFormatting
 
@@ -32,6 +45,12 @@ public final class ProtoWriter {
     ) {
         self.buffer = data
         self.outputFormatting = outputFormatting
+
+        self.messageStack = .allocate(capacity: messageStackCapacity)
+    }
+
+    deinit {
+        messageStack.deallocate()
     }
 
     // MARK: - Public Methods - Encoding - Single Fields
@@ -43,9 +62,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
 
         writeVarint(key)
-        let startOffset = beginLengthDelimitedEncode()
+        let startOffset = beginLengthDelimitedEncode(syntax: nil)
         try value.encode(to: self)
-        endLengthDelimitedEncode(startOffset: startOffset)
+        endLengthDelimitedEncode(startOffset: startOffset, isMessage: false)
     }
 
     /** Encode a `double` field */
@@ -117,14 +136,16 @@ public final class ProtoWriter {
     public func encode(tag: UInt32, value: ProtoEncodable?) throws {
         guard let value = value else { return }
 
-        let wireType = type(of: value).protoFieldWireType
+        let valueType = type(of: value)
+        let wireType = valueType.protoFieldWireType
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
 
         writeVarint(key)
         if wireType == .lengthDelimited {
-            let startOffset = beginLengthDelimitedEncode()
+            let syntax = valueType.protoSyntax
+            let startOffset = beginLengthDelimitedEncode(syntax: syntax)
             try value.encode(to: self)
-            endLengthDelimitedEncode(startOffset: startOffset)
+            endLengthDelimitedEncode(startOffset: startOffset, isMessage: syntax != nil)
         } else {
             try value.encode(to: self)
         }
@@ -136,9 +157,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
 
         writeVarint(key)
-        let startOffset = beginLengthDelimitedEncode()
+        let startOffset = beginLengthDelimitedEncode(syntax: nil)
         try value.encode(to: self)
-        endLengthDelimitedEncode(startOffset: startOffset)
+        endLengthDelimitedEncode(startOffset: startOffset, isMessage: false)
     }
 
     // MARK: - Public Methods - Encoding - Repeated Fields
@@ -162,9 +183,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
         for item in value {
             writeVarint(key)
-            let startOffset = beginLengthDelimitedEncode()
+            let startOffset = beginLengthDelimitedEncode(syntax: nil)
             try item.encode(to: self)
-            endLengthDelimitedEncode(startOffset: startOffset)
+            endLengthDelimitedEncode(startOffset: startOffset, isMessage: false)
         }
     }
 
@@ -225,9 +246,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
         for item in value {
             writeVarint(key)
-            let startOffset = beginLengthDelimitedEncode()
+            let startOffset = beginLengthDelimitedEncode(syntax: nil)
             try item.encode(to: self)
-            endLengthDelimitedEncode(startOffset: startOffset)
+            endLengthDelimitedEncode(startOffset: startOffset, isMessage: false)
         }
     }
 
@@ -256,11 +277,12 @@ public final class ProtoWriter {
         // We can assume length-delimited here because `bool`, `double` and `float` have their
         // own overloads and all other types use wire types of length-delimited.
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
+        let syntax = T.protoSyntax
         for item in value {
             writeVarint(key)
-            let startOffset = beginLengthDelimitedEncode()
+            let startOffset = beginLengthDelimitedEncode(syntax: syntax)
             try item.encode(to: self)
-            endLengthDelimitedEncode(startOffset: startOffset)
+            endLengthDelimitedEncode(startOffset: startOffset, isMessage: syntax != nil)
         }
     }
 
@@ -412,11 +434,11 @@ public final class ProtoWriter {
         if packed {
             let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
             writeVarint(key)
-            let startOffset = beginLengthDelimitedEncode()
+            let startOffset = beginLengthDelimitedEncode(syntax: nil)
             for item in value {
                 try encode(item)
             }
-            endLengthDelimitedEncode(startOffset: startOffset)
+            endLengthDelimitedEncode(startOffset: startOffset, isMessage: false)
         } else {
             let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
             for item in value {
@@ -429,27 +451,57 @@ public final class ProtoWriter {
     private func encode<K: Comparable, V>(tag: UInt32, value: [K: V], encode: (K, V) throws -> Void) throws {
         let fieldKey = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
 
+        let syntax = (V.self as? ProtoEncodable.Type)?.protoSyntax
         if outputFormatting.contains(.sortedKeys) {
             // Sort the keys to get a deterministic binary output
             // This is mostly useful for testing purposes.
             let sortedKeys = value.keys.sorted()
             for key in sortedKeys {
                 writeVarint(fieldKey)
-                let startOffset = beginLengthDelimitedEncode()
+                let startOffset = beginLengthDelimitedEncode(syntax: syntax)
                 try encode(key, value[key]!)
-                endLengthDelimitedEncode(startOffset: startOffset)
+                endLengthDelimitedEncode(startOffset: startOffset, isMessage: syntax != nil)
             }
         } else {
             for entry in value {
                 writeVarint(fieldKey)
-                let startOffset = beginLengthDelimitedEncode()
+                let startOffset = beginLengthDelimitedEncode(syntax: syntax)
                 try encode(entry.key, entry.value)
-                endLengthDelimitedEncode(startOffset: startOffset)
+                endLengthDelimitedEncode(startOffset: startOffset, isMessage: syntax != nil)
             }
         }
     }
 
-    private func beginLengthDelimitedEncode() -> Int {
+    /**
+     Encodes a length-delimited field by:
+     - Call `beginLengthDelimitedEncode` to reserve some space to write the length out
+     - Writing the data out in the calling method
+     - Call `endLengthDelimitedEncode` to write the size of the data into the reserved space,
+       expanding or contracting the space as needed based on the amount of data written.
+     */
+    private func beginLengthDelimitedEncode(syntax: ProtoSyntax?) -> Int {
+        let isProto3: Bool?
+        if let syntax = syntax {
+            isProto3 = syntax == .proto3
+        } else {
+            // No need for a stack frame as there won't be additional recursion.
+            // This is a simple string, bytes, or other well-known type.
+            isProto3 = nil
+        }
+
+        if let isProto3 = isProto3 {
+            messageStackIndex += 1
+            if messageStackIndex >= messageStackCapacity {
+                expandMessageStack()
+            }
+            let frame = MessageFrame(
+                isProto3: isProto3
+            )
+            messageStack.advanced(by: messageStackIndex).initialize(to: frame)
+        }
+
+        // Reserve some space for the encoded size of the field.
+        // If this guess ends up being wrong we'll adjust it after the encode.
         let startOffset = buffer.count
         let reservedSize = ProtoWriter.lengthDelimitedInitialReservedLengthSize
         for _ in 0 ..< reservedSize {
@@ -458,7 +510,7 @@ public final class ProtoWriter {
         return startOffset
     }
 
-    private func endLengthDelimitedEncode(startOffset: Int) {
+    private func endLengthDelimitedEncode(startOffset: Int, isMessage: Bool) {
         let reservedSize = ProtoWriter.lengthDelimitedInitialReservedLengthSize
         let writtenCount = UInt32(buffer.count - startOffset - reservedSize)
 
@@ -470,6 +522,10 @@ public final class ProtoWriter {
         }
 
         buffer.writeVarint(writtenCount, at: startOffset)
+
+        if isMessage {
+            messageStackIndex -= 1
+        }
     }
 
     private static func wireType<T: ProtoIntEncodable>(for valueType: T.Type, encoding: ProtoIntEncoding) -> FieldWireType {
@@ -485,6 +541,19 @@ public final class ProtoWriter {
         } else {
             return .varint
         }
+    }
+
+    // MARK: - Private Methods - Message Stack
+
+    private func expandMessageStack() {
+        let newCapacity = messageStackCapacity * 2
+
+        let newMessageStack = UnsafeMutablePointer<MessageFrame>.allocate(capacity: newCapacity)
+        newMessageStack.moveInitialize(from: messageStack, count: messageStackIndex + 1)
+        messageStack.deallocate()
+
+        messageStack = newMessageStack
+        messageStackCapacity = newCapacity
     }
 
 }
