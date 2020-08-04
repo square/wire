@@ -1141,6 +1141,66 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("""val count: Long = 0"""))
   }
 
+  @Test fun wirePackageTakesPrecedenceOverJavaPackage() {
+    val repoBuilder = RepoBuilder()
+        .add("proto_package/person.proto", """
+        |package proto_package;
+        |import "wire/extensions.proto";
+        |
+        |option java_package = "java_package";
+        |option (wire.wire_package) = "wire_package";
+        |
+        |message Person {
+        |	required string name = 1;
+        |}
+        |""".trimMargin())
+    val code = repoBuilder.generateKotlin("proto_package.Person")
+    assertTrue(code.contains("package wire_package"))
+    assertTrue(code.contains("class Person"))
+  }
+
+  @Test fun wirePackageTakesPrecedenceOverProtoPackage() {
+    val repoBuilder = RepoBuilder()
+        .add("proto_package/person.proto", """
+        |package proto_package;
+        |import "wire/extensions.proto";
+        |
+        |option (wire.wire_package) = "wire_package";
+        |
+        |message Person {
+        |	required string name = 1;
+        |}
+        |""".trimMargin())
+    val code = repoBuilder.generateKotlin("proto_package.Person")
+    assertTrue(code.contains("package wire_package"))
+    assertTrue(code.contains("class Person"))
+  }
+
+  @Test fun wirePackageUsedInImport() {
+    val repoBuilder = RepoBuilder()
+        .add("proto_package/person.proto", """
+        |package proto_package;
+        |import "wire/extensions.proto";
+        |
+        |option (wire.wire_package) = "wire_package";
+        |
+        |message Person {
+        |	required string name = 1;
+        |}
+        |""".trimMargin())
+        .add("city_package/home.proto", """
+        |package city_package;
+        |import "proto_package/person.proto";
+        |
+        |message Home {
+        |	repeated proto_package.Person person = 1;
+        |}
+        |""".trimMargin())
+    val code = repoBuilder.generateKotlin("city_package.Home")
+    assertTrue(code.contains("package city_package"))
+    assertTrue(code.contains("import wire_package.Person"))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

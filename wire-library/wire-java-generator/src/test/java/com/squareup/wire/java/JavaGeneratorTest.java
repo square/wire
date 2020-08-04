@@ -552,4 +552,60 @@ public final class JavaGeneratorTest {
         + "      return builder.replace(0, 2, \"PhoneNumber{\").append('}').toString();\n"
         + "    }");
   }
+
+  @Test public void wirePackageTakesPrecedenceOverJavaPackage() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("proto_package/person.proto",
+            "package proto_package;\n"
+                + "import \"wire/extensions.proto\";\n"
+                + "\n"
+                + "option java_package = \"java_package\";\n"
+                + "option (wire.wire_package) = \"wire_package\";\n"
+                + "\n"
+                + "message Person {\n"
+                + "	required string name = 1;\n"
+                + "}\n");
+    String code = repoBuilder.generateCode("proto_package.Person");
+    assertThat(code).contains("package wire_package");
+    assertThat(code).contains("class Person");
+  }
+
+  @Test public void wirePackageTakesPrecedenceOverProtoPackage() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("proto_package/person.proto",
+            "package proto_package;\n"
+            + "import \"wire/extensions.proto\";\n"
+            + "\n"
+            + "option (wire.wire_package) = \"wire_package\";\n"
+            + "\n"
+            + "message Person {\n"
+            + "	required string name = 1;\n"
+            + "}\n");
+    String code = repoBuilder.generateCode("proto_package.Person");
+    assertThat(code).contains("package wire_package");
+    assertThat(code).contains("class Person");
+  }
+
+  @Test public void wirePackageUsedInImport() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("proto_package/person.proto",
+        "package proto_package;\n"
+            + "import \"wire/extensions.proto\";\n"
+            + "\n"
+            + "option (wire.wire_package) = \"wire_package\";\n"
+            + "\n"
+            + "message Person {\n"
+            + "	required string name = 1;\n"
+            + "}\n")
+        .add("city_package/home.proto",
+            "package city_package;\n"
+            + "import \"proto_package/person.proto\";\n"
+            + "\n"
+            + "message Home {\n"
+            + "	repeated proto_package.Person person = 1;\n"
+            + "}\n");
+    String code = repoBuilder.generateCode("city_package.Home");
+    assertThat(code).contains("package city_package");
+    assertThat(code).contains("import wire_package.Person");
+  }
 }

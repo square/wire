@@ -374,9 +374,11 @@ public final class JavaGenerator {
   }
 
   private static String javaPackage(ProtoFile protoFile) {
-    String javaPackage = protoFile.javaPackage();
-    if (javaPackage != null) {
-      return javaPackage;
+    String wirePackage = protoFile.wirePackage();
+    if (wirePackage != null) {
+      return wirePackage;
+    } else if (protoFile.javaPackage() != null) {
+      return protoFile.javaPackage();
     } else if (protoFile.getPackageName() != null) {
       return protoFile.getPackageName();
     } else {

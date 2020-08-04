@@ -1712,4 +1712,4 @@ class KotlinGenerator private constructor(
   }
 }
 
-private fun ProtoFile.kotlinPackage() = javaPackage() ?: packageName ?: ""
+private fun ProtoFile.kotlinPackage() = wirePackage() ?: javaPackage() ?: packageName ?: ""
