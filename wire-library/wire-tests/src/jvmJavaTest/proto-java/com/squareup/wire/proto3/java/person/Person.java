@@ -343,6 +343,9 @@ public final class Person extends Message<Person, Person.Builder> {
         throw new IllegalArgumentException("number == null");
       }
       this.number = number;
+      if (type == null) {
+        throw new IllegalArgumentException("type == null");
+      }
       this.type = type;
     }
 

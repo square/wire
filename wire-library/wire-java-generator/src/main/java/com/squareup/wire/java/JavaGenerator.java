@@ -1408,7 +1408,7 @@ public final class JavaGenerator {
         // Other scalars use not-boxed types to guarantee a value.
         if (field.getType().isScalar()
             && (field.getType() == ProtoType.STRING || field.getType() == ProtoType.BYTES)
-            || isEnum(field.getType())) {
+            || (isEnum(field.getType()) && !field.getType().equals(ProtoType.STRUCT_NULL))) {
           result.beginControlFlow("if ($L == null)", fieldAccessName);
           result.addStatement("throw new IllegalArgumentException($S)",
               fieldAccessName + " == null");

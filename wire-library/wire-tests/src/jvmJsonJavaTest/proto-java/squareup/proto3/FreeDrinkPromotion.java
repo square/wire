@@ -30,6 +30,9 @@ public final class FreeDrinkPromotion extends Message<FreeDrinkPromotion, FreeDr
 
   public FreeDrinkPromotion(Drink drink, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
+    if (drink == null) {
+      throw new IllegalArgumentException("drink == null");
+    }
     this.drink = drink;
   }
 
