@@ -9,6 +9,15 @@ import Foundation
  */
 public final class ProtoWriter {
 
+    // MARK: - Private Properties
+
+    /**
+     The number of bytes to initially reserve when doing a length-delimited encode.
+     This space will be used to store the length of the data. If the length of the data
+     ends up needing more or less space then the data will be moved accordingly.
+     */
+    private static let lengthDelimitedInitialReservedLengthSize = 2
+
     // MARK: - Properties
 
     private(set) var buffer: WriteBuffer
@@ -34,7 +43,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
 
         writeVarint(key)
-        try encodeLengthDelimited() { try value.encode(to: self) }
+        let startOffset = beginLengthDelimitedEncode()
+        try value.encode(to: self)
+        endLengthDelimitedEncode(startOffset: startOffset)
     }
 
     /** Encode a `double` field */
@@ -111,7 +122,9 @@ public final class ProtoWriter {
 
         writeVarint(key)
         if wireType == .lengthDelimited {
-            try encodeLengthDelimited() { try value.encode(to: self) }
+            let startOffset = beginLengthDelimitedEncode()
+            try value.encode(to: self)
+            endLengthDelimitedEncode(startOffset: startOffset)
         } else {
             try value.encode(to: self)
         }
@@ -123,7 +136,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
 
         writeVarint(key)
-        try encodeLengthDelimited() { try value.encode(to: self) }
+        let startOffset = beginLengthDelimitedEncode()
+        try value.encode(to: self)
+        endLengthDelimitedEncode(startOffset: startOffset)
     }
 
     // MARK: - Public Methods - Encoding - Repeated Fields
@@ -147,9 +162,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
         for item in value {
             writeVarint(key)
-            try encodeLengthDelimited() {
-                try item.encode(to: self)
-            }
+            let startOffset = beginLengthDelimitedEncode()
+            try item.encode(to: self)
+            endLengthDelimitedEncode(startOffset: startOffset)
         }
     }
 
@@ -210,9 +225,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
         for item in value {
             writeVarint(key)
-            try encodeLengthDelimited() {
-                try item.encode(to: self)
-            }
+            let startOffset = beginLengthDelimitedEncode()
+            try item.encode(to: self)
+            endLengthDelimitedEncode(startOffset: startOffset)
         }
     }
 
@@ -243,9 +258,9 @@ public final class ProtoWriter {
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
         for item in value {
             writeVarint(key)
-            try encodeLengthDelimited() {
-                try item.encode(to: self)
-            }
+            let startOffset = beginLengthDelimitedEncode()
+            try item.encode(to: self)
+            endLengthDelimitedEncode(startOffset: startOffset)
         }
     }
 
@@ -397,11 +412,11 @@ public final class ProtoWriter {
         if packed {
             let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
             writeVarint(key)
-            try encodeLengthDelimited {
-                for item in value {
-                    try encode(item)
-                }
+            let startOffset = beginLengthDelimitedEncode()
+            for item in value {
+                try encode(item)
             }
+            endLengthDelimitedEncode(startOffset: startOffset)
         } else {
             let key = ProtoWriter.makeFieldKey(tag: tag, wireType: wireType)
             for item in value {
@@ -420,29 +435,31 @@ public final class ProtoWriter {
             let sortedKeys = value.keys.sorted()
             for key in sortedKeys {
                 writeVarint(fieldKey)
-                try encodeLengthDelimited {
-                    try encode(key, value[key]!)
-                }
+                let startOffset = beginLengthDelimitedEncode()
+                try encode(key, value[key]!)
+                endLengthDelimitedEncode(startOffset: startOffset)
             }
         } else {
             for entry in value {
                 writeVarint(fieldKey)
-                try encodeLengthDelimited {
-                    try encode(entry.key, entry.value)
-                }
+                let startOffset = beginLengthDelimitedEncode()
+                try encode(entry.key, entry.value)
+                endLengthDelimitedEncode(startOffset: startOffset)
             }
         }
     }
 
-    private func encodeLengthDelimited(_ encode: () throws -> Void) rethrows {
+    private func beginLengthDelimitedEncode() -> Int {
         let startOffset = buffer.count
-        let reservedSize = 2
+        let reservedSize = ProtoWriter.lengthDelimitedInitialReservedLengthSize
         for _ in 0 ..< reservedSize {
             buffer.append(0)
         }
+        return startOffset
+    }
 
-        try encode()
-
+    private func endLengthDelimitedEncode(startOffset: Int) {
+        let reservedSize = ProtoWriter.lengthDelimitedInitialReservedLengthSize
         let writtenCount = UInt32(buffer.count - startOffset - reservedSize)
 
         let sizeSize = Int(writtenCount.varintSize)
