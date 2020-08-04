@@ -11,6 +11,7 @@ import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.util.List;
+import java.util.Map;
 import okio.ByteString;
 
 public final class All64 extends Message<All64, All64.Builder> {
@@ -146,6 +147,14 @@ public final class All64 extends Message<All64, All64.Builder> {
   public final List<Long> pack_sfixed64;
 
   @WireField(
+      tag = 501,
+      keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      jsonName = "mapInt64Sfixed64"
+  )
+  public final Map<Long, Long> map_int64_sfixed64;
+
+  @WireField(
       tag = 401,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
       jsonName = "oneofInt64"
@@ -159,40 +168,29 @@ public final class All64 extends Message<All64, All64.Builder> {
   )
   public final Long oneof_sfixed64;
 
-  public All64(long my_int64, long my_uint64, long my_sint64, long my_fixed64, long my_sfixed64,
-      List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64,
-      List<Long> rep_sfixed64, List<Long> pack_int64, List<Long> pack_uint64,
-      List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, Long oneof_int64,
-      Long oneof_sfixed64) {
-    this(my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, oneof_int64, oneof_sfixed64, ByteString.EMPTY);
-  }
-
-  public All64(long my_int64, long my_uint64, long my_sint64, long my_fixed64, long my_sfixed64,
-      List<Long> rep_int64, List<Long> rep_uint64, List<Long> rep_sint64, List<Long> rep_fixed64,
-      List<Long> rep_sfixed64, List<Long> pack_int64, List<Long> pack_uint64,
-      List<Long> pack_sint64, List<Long> pack_fixed64, List<Long> pack_sfixed64, Long oneof_int64,
-      Long oneof_sfixed64, ByteString unknownFields) {
+  public All64(Builder builder, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
-    if (Internal.countNonNull(oneof_int64, oneof_sfixed64) > 1) {
-      throw new IllegalArgumentException("at most one of oneof_int64, oneof_sfixed64 may be non-null");
+    if (Internal.countNonNull(builder.oneof_int64, builder.oneof_sfixed64) > 1) {
+      throw new IllegalArgumentException("at most one of builder.oneof_int64, builder.oneof_sfixed64 may be non-null");
     }
-    this.my_int64 = my_int64;
-    this.my_uint64 = my_uint64;
-    this.my_sint64 = my_sint64;
-    this.my_fixed64 = my_fixed64;
-    this.my_sfixed64 = my_sfixed64;
-    this.rep_int64 = Internal.immutableCopyOf("rep_int64", rep_int64);
-    this.rep_uint64 = Internal.immutableCopyOf("rep_uint64", rep_uint64);
-    this.rep_sint64 = Internal.immutableCopyOf("rep_sint64", rep_sint64);
-    this.rep_fixed64 = Internal.immutableCopyOf("rep_fixed64", rep_fixed64);
-    this.rep_sfixed64 = Internal.immutableCopyOf("rep_sfixed64", rep_sfixed64);
-    this.pack_int64 = Internal.immutableCopyOf("pack_int64", pack_int64);
-    this.pack_uint64 = Internal.immutableCopyOf("pack_uint64", pack_uint64);
-    this.pack_sint64 = Internal.immutableCopyOf("pack_sint64", pack_sint64);
-    this.pack_fixed64 = Internal.immutableCopyOf("pack_fixed64", pack_fixed64);
-    this.pack_sfixed64 = Internal.immutableCopyOf("pack_sfixed64", pack_sfixed64);
-    this.oneof_int64 = oneof_int64;
-    this.oneof_sfixed64 = oneof_sfixed64;
+    this.my_int64 = builder.my_int64;
+    this.my_uint64 = builder.my_uint64;
+    this.my_sint64 = builder.my_sint64;
+    this.my_fixed64 = builder.my_fixed64;
+    this.my_sfixed64 = builder.my_sfixed64;
+    this.rep_int64 = Internal.immutableCopyOf("rep_int64", builder.rep_int64);
+    this.rep_uint64 = Internal.immutableCopyOf("rep_uint64", builder.rep_uint64);
+    this.rep_sint64 = Internal.immutableCopyOf("rep_sint64", builder.rep_sint64);
+    this.rep_fixed64 = Internal.immutableCopyOf("rep_fixed64", builder.rep_fixed64);
+    this.rep_sfixed64 = Internal.immutableCopyOf("rep_sfixed64", builder.rep_sfixed64);
+    this.pack_int64 = Internal.immutableCopyOf("pack_int64", builder.pack_int64);
+    this.pack_uint64 = Internal.immutableCopyOf("pack_uint64", builder.pack_uint64);
+    this.pack_sint64 = Internal.immutableCopyOf("pack_sint64", builder.pack_sint64);
+    this.pack_fixed64 = Internal.immutableCopyOf("pack_fixed64", builder.pack_fixed64);
+    this.pack_sfixed64 = Internal.immutableCopyOf("pack_sfixed64", builder.pack_sfixed64);
+    this.map_int64_sfixed64 = Internal.immutableCopyOf("map_int64_sfixed64", builder.map_int64_sfixed64);
+    this.oneof_int64 = builder.oneof_int64;
+    this.oneof_sfixed64 = builder.oneof_sfixed64;
   }
 
   @Override
@@ -213,6 +211,7 @@ public final class All64 extends Message<All64, All64.Builder> {
     builder.pack_sint64 = Internal.copyOf(pack_sint64);
     builder.pack_fixed64 = Internal.copyOf(pack_fixed64);
     builder.pack_sfixed64 = Internal.copyOf(pack_sfixed64);
+    builder.map_int64_sfixed64 = Internal.copyOf(map_int64_sfixed64);
     builder.oneof_int64 = oneof_int64;
     builder.oneof_sfixed64 = oneof_sfixed64;
     builder.addUnknownFields(unknownFields());
@@ -240,6 +239,7 @@ public final class All64 extends Message<All64, All64.Builder> {
         && pack_sint64.equals(o.pack_sint64)
         && pack_fixed64.equals(o.pack_fixed64)
         && pack_sfixed64.equals(o.pack_sfixed64)
+        && map_int64_sfixed64.equals(o.map_int64_sfixed64)
         && Internal.equals(oneof_int64, o.oneof_int64)
         && Internal.equals(oneof_sfixed64, o.oneof_sfixed64);
   }
@@ -264,6 +264,7 @@ public final class All64 extends Message<All64, All64.Builder> {
       result = result * 37 + pack_sint64.hashCode();
       result = result * 37 + pack_fixed64.hashCode();
       result = result * 37 + pack_sfixed64.hashCode();
+      result = result * 37 + map_int64_sfixed64.hashCode();
       result = result * 37 + (oneof_int64 != null ? oneof_int64.hashCode() : 0);
       result = result * 37 + (oneof_sfixed64 != null ? oneof_sfixed64.hashCode() : 0);
       super.hashCode = result;
@@ -302,6 +303,8 @@ public final class All64 extends Message<All64, All64.Builder> {
 
     public List<Long> pack_sfixed64;
 
+    public Map<Long, Long> map_int64_sfixed64;
+
     public Long oneof_int64;
 
     public Long oneof_sfixed64;
@@ -322,6 +325,7 @@ public final class All64 extends Message<All64, All64.Builder> {
       pack_sint64 = Internal.newMutableList();
       pack_fixed64 = Internal.newMutableList();
       pack_sfixed64 = Internal.newMutableList();
+      map_int64_sfixed64 = Internal.newMutableMap();
     }
 
     /**
@@ -412,6 +416,12 @@ public final class All64 extends Message<All64, All64.Builder> {
       return this;
     }
 
+    public Builder map_int64_sfixed64(Map<Long, Long> map_int64_sfixed64) {
+      Internal.checkElementsNotNull(map_int64_sfixed64);
+      this.map_int64_sfixed64 = map_int64_sfixed64;
+      return this;
+    }
+
     public Builder oneof_int64(Long oneof_int64) {
       this.oneof_int64 = oneof_int64;
       this.oneof_sfixed64 = null;
@@ -426,7 +436,7 @@ public final class All64 extends Message<All64, All64.Builder> {
 
     @Override
     public All64 build() {
-      return new All64(my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, pack_int64, pack_uint64, pack_sint64, pack_fixed64, pack_sfixed64, oneof_int64, oneof_sfixed64, super.buildUnknownFields());
+      return new All64(this, super.buildUnknownFields());
     }
   }
 }
