@@ -1404,9 +1404,11 @@ public final class JavaGenerator {
         result.addParameter(param.build());
       }
 
-      if (field.getEncodeMode() == Field.EncodeMode.OMIT_IDENTITY && field.getType().isScalar()) {
+      if (field.getEncodeMode() == Field.EncodeMode.OMIT_IDENTITY) {
         // Other scalars use not-boxed types to guarantee a value.
-        if (field.getType() == ProtoType.STRING || field.getType() == ProtoType.BYTES) {
+        if (field.getType().isScalar()
+            && (field.getType() == ProtoType.STRING || field.getType() == ProtoType.BYTES)
+            || isEnum(field.getType())) {
           result.beginControlFlow("if ($L == null)", fieldAccessName);
           result.addStatement("throw new IllegalArgumentException($S)",
               fieldAccessName + " == null");

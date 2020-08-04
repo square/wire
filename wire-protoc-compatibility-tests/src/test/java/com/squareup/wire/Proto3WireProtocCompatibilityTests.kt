@@ -346,6 +346,15 @@ class Proto3WireProtocCompatibilityTests {
     }
   }
 
+  @Test fun cannotPassNullToIdentityEnum(){
+    try {
+      AllTypesJ.Builder().nested_enum(null).build()
+      fail()
+    } catch (exception: IllegalArgumentException) {
+      assertThat(exception).hasMessage("builder.nested_enum == null")
+    }
+  }
+
   companion object {
     private val defaultAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
         .setMyInt32(111)
