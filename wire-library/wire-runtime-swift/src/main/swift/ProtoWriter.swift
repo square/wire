@@ -135,8 +135,8 @@ public final class ProtoWriter {
     public func encode(tag: UInt32, value: [Bool]?, packed: Bool = false) throws {
         guard let value = value else { return }
 
-        try encode(tag: tag, wireType: .varint, value: value, packed: packed) { value in
-            try value.encode(to: self)
+        try encode(tag: tag, wireType: .varint, value: value, packed: packed) { item in
+            try item.encode(to: self)
         }
     }
 
@@ -160,8 +160,8 @@ public final class ProtoWriter {
     public func encode(tag: UInt32, value: [Double]?, packed: Bool = false) throws {
         guard let value = value else { return }
 
-        try encode(tag: tag, wireType: .fixed64, value: value, packed: packed) { value in
-            try value.encode(to: self)
+        try encode(tag: tag, wireType: .fixed64, value: value, packed: packed) { item in
+            try item.encode(to: self)
         }
     }
 
@@ -180,8 +180,8 @@ public final class ProtoWriter {
     public func encode(tag: UInt32, value: [Float]?, packed: Bool = false) throws {
         guard let value = value else { return }
 
-        try encode(tag: tag, wireType: .fixed32, value: value, packed: packed) { value in
-            try value.encode(to: self)
+        try encode(tag: tag, wireType: .fixed32, value: value, packed: packed) { item in
+            try item.encode(to: self)
         }
     }
 
@@ -252,16 +252,16 @@ public final class ProtoWriter {
     // MARK: - Public Methods - Encoding - Maps
 
     public func encode<V: ProtoEncodable>(tag: UInt32, value: [String: V]) throws {
-        try encode(tag: tag, value: value) { key, value in
+        try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key)
-            try encode(tag: 2, value: value)
+            try encode(tag: 2, value: item)
         }
     }
 
     public func encode<V: RawRepresentable>(tag: UInt32, value: [String: V]) throws where V.RawValue == UInt32 {
-        try encode(tag: tag, value: value) { key, value in
+        try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key)
-            try encode(tag: 2, value: value.rawValue, encoding: .variable)
+            try encode(tag: 2, value: item.rawValue, encoding: .variable)
         }
     }
 
@@ -270,9 +270,9 @@ public final class ProtoWriter {
         value: [K: V],
         keyEncoding: ProtoIntEncoding = .variable
     ) throws {
-        try encode(tag: tag, value: value) { key, value in
+        try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key, encoding: keyEncoding)
-            try encode(tag: 2, value: value)
+            try encode(tag: 2, value: item)
         }
     }
 
@@ -281,9 +281,9 @@ public final class ProtoWriter {
         value: [K: V],
         keyEncoding: ProtoIntEncoding = .variable
     ) throws where V.RawValue == UInt32 {
-        try encode(tag: tag, value: value) { key, value in
+        try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key, encoding: keyEncoding)
-            try encode(tag: 2, value: value.rawValue, encoding: .variable)
+            try encode(tag: 2, value: item.rawValue, encoding: .variable)
         }
     }
 
@@ -292,9 +292,9 @@ public final class ProtoWriter {
         value: [String: V],
         valueEncoding: ProtoIntEncoding = .variable
     ) throws {
-        try encode(tag: tag, value: value) { key, value in
+        try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key)
-            try encode(tag: 2, value: value, encoding: valueEncoding)
+            try encode(tag: 2, value: item, encoding: valueEncoding)
         }
     }
 
@@ -304,9 +304,9 @@ public final class ProtoWriter {
         keyEncoding: ProtoIntEncoding = .variable,
         valueEncoding: ProtoIntEncoding = .variable
     ) throws {
-        try encode(tag: tag, value: value) { key, value in
+        try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key, encoding: keyEncoding)
-            try encode(tag: 2, value: value, encoding: valueEncoding)
+            try encode(tag: 2, value: item, encoding: valueEncoding)
         }
     }
 
