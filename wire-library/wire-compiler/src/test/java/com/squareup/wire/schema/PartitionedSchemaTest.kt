@@ -22,7 +22,6 @@ import org.junit.Ignore
 import org.junit.Test
 
 class ManifestPartitionTest {
-  @Ignore("We currently have no way of filtering this out in a Schema")
   @Test fun upstreamPruneIsNotGeneratedDownstream() {
     val schema = RepoBuilder()
         .add("example.proto", """

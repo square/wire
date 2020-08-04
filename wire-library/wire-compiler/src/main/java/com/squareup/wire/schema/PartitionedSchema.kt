@@ -60,10 +60,30 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
       }
     } as Map<ProtoType, String> // TODO use buildMap
 
-    val prunedSchema = if (module.pruningRules != null) {
-      prune(module.pruningRules)
-    } else {
+    val stubbedSchema = if (upstreamTypes.isEmpty()) {
       this
+    } else {
+      // Replace types which have already been generated with stub types that have no external
+      // references. This ensures our types can still link. More critically, it ensures that
+      // transitive types which were pruned upstream will only be generated in this module if they
+      // are reachable from this module's types.
+      val stubbedFiles = protoFiles.map { protoFile ->
+        protoFile.copy(
+            types = protoFile.types.map { type ->
+              if (type.type in upstreamTypes) type.asStub() else type
+            },
+            services = protoFile.services.map { service ->
+              if (service.type() in upstreamTypes) service.asStub() else service
+            }
+        )
+      }
+      Schema.fromFiles(stubbedFiles)
+    }
+
+    val prunedSchema = if (module.pruningRules != null) {
+      stubbedSchema.prune(module.pruningRules)
+    } else {
+      stubbedSchema
     }
 
     val ownedTypes = prunedSchema.protoFiles
@@ -110,3 +130,33 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
 
   return PartitionedSchema(partitions, warnings, errors)
 }
+
+/** Return a copy of this type with all possible type references removed. */
+private fun Type.asStub(): Type = when {
+  // Don't stub the built-in protobuf types which model concepts like options.
+  type.toString().startsWith("google.protobuf.") -> this
+
+  this is MessageType -> copy(
+      declaredFields = emptyList(),
+      extensionFields = mutableListOf(),
+      nestedTypes = nestedTypes.map { it.asStub() },
+      options = Options(Options.MESSAGE_OPTIONS, emptyList())
+  )
+
+  this is EnumType -> copy(
+      constants = emptyList(),
+      options = Options(Options.ENUM_OPTIONS, emptyList())
+  )
+
+  this is EnclosingType -> copy(
+      nestedTypes = nestedTypes.map { it.asStub() }
+  )
+
+  else -> throw AssertionError("Unknown type $type")
+}
+
+/** Return a copy of this service with all possible type references removed. */
+private fun Service.asStub() = copy(
+    rpcs = emptyList(),
+    options = Options(Options.SERVICE_OPTIONS, emptyList())
+)

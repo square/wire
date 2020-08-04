@@ -20,7 +20,7 @@ import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
 import com.squareup.wire.schema.internal.parser.EnumElement
 import kotlin.jvm.JvmStatic
 
-class EnumType private constructor(
+data class EnumType(
   override val type: ProtoType,
   override val location: Location,
   override val documentation: String,

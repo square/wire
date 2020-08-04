@@ -19,7 +19,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.schema.internal.parser.MessageElement
 
 /** An empty type which only holds nested types.  */
-class EnclosingType internal constructor(
+data class EnclosingType(
   override val location: Location,
   override val type: ProtoType,
   override val documentation: String,
