@@ -118,19 +118,23 @@ final class ProtoWriterTests: XCTestCase {
             opt_uint32: 0,
             opt_uint64: 0,
             opt_float: 0,
-            opt_double: 0
+            opt_double: 0,
+            opt_bytes: .init(),
+            opt_string: ""
         )
         try writer.encode(tag: 1, value: proto)
 
         // All values are encoded in proto2, even defaults.
         XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: """
-            0A16                // Message tag and length
+            0A1A                // Message tag and length
             0800                // tag 1 and value: opt_int32
             1000                // tag 2 and value: opt_int64
             1800                // tag 3 and value: opt_uint32
             2000                // tag 4 and value: opt_uint64
             2D00000000          // tag 5 and value: opt_float
             310000000000000000  // tag 6 and value: opt_float
+            3A00                // tag 7 and length 0: opt_bytes
+            4200                // tag 8 and length 0: opt_string
         """)!)
     }
 
@@ -168,7 +172,9 @@ final class ProtoWriterTests: XCTestCase {
             req_uint32: 0,
             req_uint64: 0,
             req_float: 0,
-            req_double: 0
+            req_double: 0,
+            req_bytes: .init(),
+            req_string: ""
         )
         try writer.encode(tag: 1, value: proto)
 

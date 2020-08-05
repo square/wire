@@ -61,7 +61,13 @@ public final class ProtoWriter {
 
     // MARK: - Public Methods - Encoding - Single Fields
 
-    /** Encode a `bytes` field */
+    /** Encode an optional `bytes` field */
+    public func encode(tag: UInt32, value: Data) throws {
+        if value.isEmpty && isProto3 { return }
+        try encode(tag: tag, value: value as Data?)
+    }
+
+    /** Encode an optional `bytes` field */
     public func encode(tag: UInt32, value: Data?) throws {
         guard let value = value else { return }
 
@@ -197,6 +203,13 @@ public final class ProtoWriter {
         }
     }
 
+    /** Encode a required `string` field */
+    public func encode(tag: UInt32, value: String) throws {
+        if value.isEmpty && isProto3 { return }
+        try encode(tag: tag, value: value as String?)
+    }
+
+    /** Encode an optional `string` field */
     public func encode(tag: UInt32, value: String?) throws {
         guard let value = value else { return }
 

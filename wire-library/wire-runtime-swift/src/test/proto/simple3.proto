@@ -25,6 +25,10 @@ message SimpleOptional3 {
 
   optional float opt_float = 5;
   optional double opt_double = 6;
+
+  optional bytes opt_bytes = 7;
+
+  optional string opt_string = 8;
 }
 
 message SimpleRequired3 {
@@ -35,4 +39,8 @@ message SimpleRequired3 {
 
   float req_float = 5;
   double req_double = 6;
+
+  bytes req_bytes = 7;
+
+  string req_string = 8;
 }
