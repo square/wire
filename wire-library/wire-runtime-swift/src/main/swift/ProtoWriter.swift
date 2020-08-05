@@ -233,8 +233,8 @@ public final class ProtoWriter {
      Encode a repeated `bool` field.
      This method is distinct from the generic repeated `ProtoEncodable` one because bools can be packed.
      */
-    public func encode(tag: UInt32, value: [Bool]?, packed: Bool? = nil) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [Bool], packed: Bool? = nil) throws {
+        guard !value.isEmpty else { return }
 
         try encode(tag: tag, wireType: .varint, value: value, packed: packed) { item in
             try item.encode(to: self)
@@ -242,8 +242,8 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated `bytes` field */
-    public func encode(tag: UInt32, value: [Data]?) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [Data]) throws {
+        guard !value.isEmpty else { return }
 
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
         for item in value {
@@ -258,8 +258,8 @@ public final class ProtoWriter {
      Encode a repeated `double` field.
      This method is distinct from the generic repeated `ProtoEncodable` one because doubles can be packed.
      */
-    public func encode(tag: UInt32, value: [Double]?, packed: Bool? = nil) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [Double], packed: Bool? = nil) throws {
+        guard !value.isEmpty else { return }
 
         try encode(tag: tag, wireType: .fixed64, value: value, packed: packed) { item in
             try item.encode(to: self)
@@ -267,8 +267,9 @@ public final class ProtoWriter {
     }
 
     /** Encoded a repeated `enum` field */
-    public func encode<T: RawRepresentable>(tag: UInt32, value: [T]?, packed: Bool? = nil) throws where T.RawValue == UInt32 {
-        guard let value = value else { return }
+    public func encode<T: RawRepresentable>(tag: UInt32, value: [T], packed: Bool? = nil) throws where T.RawValue == UInt32 {
+        guard !value.isEmpty else { return }
+
         encode(tag: tag, wireType: .varint, value: value, packed: packed) {
             writeVarint($0.rawValue)
         }
@@ -278,8 +279,8 @@ public final class ProtoWriter {
      Encode a repeated `float` field.
      This method is distinct from the generic repeated `ProtoEncodable` one because floats can be packed.
      */
-    public func encode(tag: UInt32, value: [Float]?, packed: Bool? = nil) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [Float], packed: Bool? = nil) throws {
+        guard !value.isEmpty else { return }
 
         try encode(tag: tag, wireType: .fixed32, value: value, packed: packed) { item in
             try item.encode(to: self)
@@ -287,8 +288,9 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated `int32`, `sfixed32`, or `sint32` field */
-    public func encode(tag: UInt32, value: [Int32]?, encoding: ProtoIntEncoding = .variable, packed: Bool? = nil) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [Int32], encoding: ProtoIntEncoding = .variable, packed: Bool? = nil) throws {
+        guard !value.isEmpty else { return }
+
         let wireType: FieldWireType = encoding == .fixed ? .fixed32 : .varint
         try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
             try $0.encode(to: self, encoding: encoding)
@@ -296,8 +298,9 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated `int64`, `sfixed64`, or `sint64` field */
-    public func encode(tag: UInt32, value: [Int64]?, encoding: ProtoIntEncoding = .variable, packed: Bool? = nil) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [Int64], encoding: ProtoIntEncoding = .variable, packed: Bool? = nil) throws {
+        guard !value.isEmpty else { return }
+
         let wireType: FieldWireType = encoding == .fixed ? .fixed64 : .varint
         try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
             try $0.encode(to: self, encoding: encoding)
@@ -305,8 +308,8 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated `string` field */
-    public func encode(tag: UInt32, value: [String]?) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [String]) throws {
+        guard !value.isEmpty else { return }
 
         let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
         for item in value {
@@ -318,8 +321,9 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated  `fixed32` or `uint32` field */
-    public func encode(tag: UInt32, value: [UInt32]?, encoding: ProtoIntEncoding = .variable, packed: Bool? = nil) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [UInt32], encoding: ProtoIntEncoding = .variable, packed: Bool? = nil) throws {
+        guard !value.isEmpty else { return }
+
         let wireType: FieldWireType = encoding == .fixed ? .fixed32 : .varint
         try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
             try $0.encode(to: self, encoding: encoding)
@@ -327,8 +331,7 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated `fixed64` or `uint64` field */
-    public func encode(tag: UInt32, value: [UInt64]?, encoding: ProtoIntEncoding = .variable, packed: Bool? = nil) throws {
-        guard let value = value else { return }
+    public func encode(tag: UInt32, value: [UInt64], encoding: ProtoIntEncoding = .variable, packed: Bool? = nil) throws {
         let wireType: FieldWireType = encoding == .fixed ? .fixed64 : .varint
         try encode(tag: tag, wireType: wireType, value: value, packed: packed) {
             try $0.encode(to: self, encoding: encoding)
@@ -336,8 +339,8 @@ public final class ProtoWriter {
     }
 
     /** Encode a repeated field which has a single encoding mechanism, like messages, strings, and bytes. */
-    public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]?) throws {
-        guard let value = value else { return }
+    public func encode<T: ProtoEncodable>(tag: UInt32, value: [T]) throws {
+        guard !value.isEmpty else { return }
 
         // We can assume length-delimited here because `bool`, `double` and `float` have their
         // own overloads and all other types use wire types of length-delimited.
@@ -354,6 +357,8 @@ public final class ProtoWriter {
     // MARK: - Public Methods - Encoding - Maps
 
     public func encode<V: ProtoEncodable>(tag: UInt32, value: [String: V]) throws {
+        guard !value.isEmpty else { return }
+
         try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key)
             try encode(tag: 2, value: item)
@@ -361,6 +366,8 @@ public final class ProtoWriter {
     }
 
     public func encode<V: RawRepresentable>(tag: UInt32, value: [String: V]) throws where V.RawValue == UInt32 {
+        guard !value.isEmpty else { return }
+
         try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key)
             try encode(tag: 2, value: item.rawValue, encoding: .variable)
@@ -372,6 +379,8 @@ public final class ProtoWriter {
         value: [K: V],
         keyEncoding: ProtoIntEncoding = .variable
     ) throws {
+        guard !value.isEmpty else { return }
+
         try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key, encoding: keyEncoding)
             try encode(tag: 2, value: item)
@@ -383,6 +392,8 @@ public final class ProtoWriter {
         value: [K: V],
         keyEncoding: ProtoIntEncoding = .variable
     ) throws where V.RawValue == UInt32 {
+        guard !value.isEmpty else { return }
+
         try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key, encoding: keyEncoding)
             try encode(tag: 2, value: item.rawValue, encoding: .variable)
@@ -394,6 +405,8 @@ public final class ProtoWriter {
         value: [String: V],
         valueEncoding: ProtoIntEncoding = .variable
     ) throws {
+        guard !value.isEmpty else { return }
+
         try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key)
             try encode(tag: 2, value: item, encoding: valueEncoding)
@@ -406,6 +419,8 @@ public final class ProtoWriter {
         keyEncoding: ProtoIntEncoding = .variable,
         valueEncoding: ProtoIntEncoding = .variable
     ) throws {
+        guard !value.isEmpty else { return }
+
         try encode(tag: tag, value: value) { key, item in
             try encode(tag: 1, value: key, encoding: keyEncoding)
             try encode(tag: 2, value: item, encoding: valueEncoding)
