@@ -35,6 +35,12 @@ public final class ProtoWriter {
     private var messageStackIndex: Int = -1
     private var messageStackCapacity: Int = 5
 
+    /**
+     Whether or not the currently being written message uses proto3 syntax.
+     This is also available in the message stack, but accessing it here is faster.
+     */
+    private var isProto3: Bool = false
+
     var outputFormatting: ProtoEncoder.OutputFormatting
 
     // MARK: - Life Cycle
@@ -431,7 +437,7 @@ public final class ProtoWriter {
      The public repeated field encoding methods should call this method to handle
      */
     private func encode<T>(tag: UInt32, wireType: FieldWireType, value: [T], packed: Bool?, encode: (T) throws -> Void) rethrows {
-        let packed: Bool = packed ?? messageStack[messageStackIndex].isProto3
+        let packed: Bool = packed ?? isProto3
         if packed {
             let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
             writeVarint(key)
@@ -499,6 +505,9 @@ public final class ProtoWriter {
                 isProto3: isProto3
             )
             messageStack.advanced(by: messageStackIndex).initialize(to: frame)
+
+            // Cache this value as an ivar for quick access.
+            self.isProto3 = isProto3
         }
 
         // Reserve some space for the encoded size of the field.
@@ -526,6 +535,9 @@ public final class ProtoWriter {
 
         if isMessage {
             messageStackIndex -= 1
+
+            // We popped the stack, so update the quick-access ivar.
+            isProto3 = messageStack[messageStackIndex].isProto3
         }
     }
 
