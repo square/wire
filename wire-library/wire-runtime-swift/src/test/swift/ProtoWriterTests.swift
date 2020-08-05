@@ -273,6 +273,58 @@ final class ProtoWriterTests: XCTestCase {
         XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "0A_06_01_FFFFFFFF0F")!)
     }
 
+    func testEncodePackedRepeatedProto2Default() throws {
+        let writer = ProtoWriter()
+        let person = Person(name: "name", id: 1, email: "email", ids: [1, 2, 3])
+        try writer.encode(tag: 1, value: person)
+
+        // Proto2 should used "packed: false" by default.
+        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: """
+            0A           // (Tag 1 | Length Delimited)
+            15           // Length 21 for Person message
+            0A           // (Tag 1 | Length Delimited)
+            04           // Length 4 for name
+            6E616D65     // "name" data
+            10           // (Tag 2 | Varint)
+            01           // id 1
+            1A           // (Tag 3 | Length Delimited)
+            05           // Length 5 for email
+            656D61696C   // "email" data
+            // The relevant part
+            30           // (Tag 6 | Varint)
+            01           // repeated id 1
+            30           // (Tag 6 | Varint)
+            02           // repeated id 2
+            30           // (Tag 6 | Varint)
+            03           // repeated id 3
+        """)!)
+    }
+
+    func testEncodePackedRepeatedProto3Default() throws {
+        let writer = ProtoWriter()
+        let person = Person3(name: "name", id: 1, email: "email", ids: [1, 2, 3])
+        try writer.encode(tag: 1, value: person)
+
+        // Proto3 should used "packed: true" by default.
+        print(Data(writer.buffer).hexEncodedString())
+        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: """
+            0A           // (Tag 1 | Length Delimited)
+            14           // Length 20 for Person message
+            0A           // (Tag 1 | Length Delimited)
+            04           // Length 4 for name
+            6E616D65     // "name" data
+            10           // (Tag 2 | Varint)
+            01           // id 1
+            1A           // (Tag 3 | Length Delimited)
+            05           // Length 5 for email
+            656D61696C   // "email" data
+            // The relevant part
+            32           // (Tag 6 | Length Delimited)
+            03           // Length 3 for repeated ids
+            010203       // Repeated ids 1, 2, and 3
+        """)!)
+    }
+
     // MARK: - Tests - Encoding Maps
 
     func testEncodeUInt32ToUInt32FixedMap() throws {

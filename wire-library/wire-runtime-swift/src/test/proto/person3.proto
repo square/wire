@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-syntax = "proto2";
+syntax = "proto3";
 
 package squareup.protos.person;
 
-message Person {
-  required string name = 1;
-  required int32 id = 2;
+message Person3 {
+  string name = 1;
+  int32 id = 2;
   optional string email = 3;
 
   enum PhoneType {
@@ -29,8 +29,8 @@ message Person {
   }
 
   message PhoneNumber {
-    required string number = 1;
-    optional PhoneType type = 2 [default = HOME];
+    string number = 1;
+    PhoneType type = 2;
   }
 
   repeated PhoneNumber phone = 4;
