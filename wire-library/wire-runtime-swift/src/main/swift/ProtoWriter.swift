@@ -94,7 +94,13 @@ public final class ProtoWriter {
         try value.encode(to: self)
     }
 
-    /** Encode an `enum` field */
+    /** Encode a required `enum` field */
+    public func encode<T: RawRepresentable>(tag: UInt32, value: T) throws where T.RawValue == UInt32 {
+        if value.rawValue == 0 && isProto3 { return }
+        try encode(tag: tag, value: value as T?)
+    }
+
+    /** Encode an optional `enum` field */
     public func encode<T: RawRepresentable>(tag: UInt32, value: T?) throws where T.RawValue == UInt32 {
         guard let value = value else { return }
         encode(tag: tag, wireType: .varint, value: value) {

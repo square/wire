@@ -18,6 +18,11 @@ syntax = "proto2";
 package squareup.protos.person;
 
 message SimpleOptional2 {
+  enum NestedEnum {
+    UNKNOWN = 0;
+    A = 1;
+  }
+
   optional int32 opt_int32 = 1;
   optional int64 opt_int64 = 2;
   optional uint32 opt_uint32 = 3;
@@ -29,9 +34,16 @@ message SimpleOptional2 {
   optional bytes opt_bytes = 7;
 
   optional string opt_string = 8;
+
+  optional NestedEnum opt_enum = 9;
 }
 
 message SimpleRequired2 {
+  enum NestedEnum {
+    UNKNOWN = 0;
+    A = 1;
+  }
+
   required int32 req_int32 = 1;
   required int64 req_int64 = 2;
   required uint32 req_uint32 = 3;
@@ -43,4 +55,6 @@ message SimpleRequired2 {
   optional bytes req_bytes = 7;
 
   required string req_string = 8;
+
+  required NestedEnum req_enum = 9;
 }
