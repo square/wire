@@ -731,6 +731,9 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       throw new IllegalArgumentException("builder.bytes == null");
     }
     this.bytes = builder.bytes;
+    if (builder.nested_enum == null) {
+      throw new IllegalArgumentException("builder.nested_enum == null");
+    }
     this.nested_enum = builder.nested_enum;
     this.nested_message = builder.nested_message;
     this.any = builder.any;

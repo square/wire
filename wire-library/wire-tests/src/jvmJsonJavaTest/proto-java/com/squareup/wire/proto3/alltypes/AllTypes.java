@@ -492,6 +492,9 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       throw new IllegalArgumentException("builder.my_bytes == null");
     }
     this.my_bytes = builder.my_bytes;
+    if (builder.nested_enum == null) {
+      throw new IllegalArgumentException("builder.nested_enum == null");
+    }
     this.nested_enum = builder.nested_enum;
     this.nested_message = builder.nested_message;
     this.rep_int32 = Internal.immutableCopyOf("rep_int32", builder.rep_int32);
