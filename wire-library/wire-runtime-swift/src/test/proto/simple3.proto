@@ -36,6 +36,10 @@ message SimpleOptional3 {
   optional string opt_string = 8;
 
   optional NestedEnum opt_enum = 9;
+
+  repeated int32 repeated_int32 = 10;
+  repeated string repeated_string = 11;
+  map<int32, string> map_int32_string = 12;
 }
 
 message SimpleRequired3 {
@@ -57,4 +61,8 @@ message SimpleRequired3 {
   string req_string = 8;
 
   NestedEnum req_enum = 9;
+
+  repeated int32 repeated_int32 = 10;
+  repeated string repeated_string = 11;
+  map<int32, string> map_int32_string = 12;
 }

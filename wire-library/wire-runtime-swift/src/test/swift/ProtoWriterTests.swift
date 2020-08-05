@@ -121,7 +121,10 @@ final class ProtoWriterTests: XCTestCase {
             opt_double: 0,
             opt_bytes: .init(),
             opt_string: "",
-            opt_enum: .UNKNOWN
+            opt_enum: .UNKNOWN,
+            repeated_int32: [],
+            repeated_string: [],
+            map_int32_string: [:]
         )
         try writer.encode(tag: 1, value: proto)
 
@@ -177,7 +180,10 @@ final class ProtoWriterTests: XCTestCase {
             req_double: 0,
             req_bytes: .init(),
             req_string: "",
-            req_enum: .UNKNOWN
+            req_enum: .UNKNOWN,
+            repeated_int32: [],
+            repeated_string: [],
+            map_int32_string: [:]
         )
         try writer.encode(tag: 1, value: proto)
 
