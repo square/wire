@@ -56,7 +56,7 @@ message SimpleRequired2 {
   required float req_float = 5;
   required double req_double = 6;
 
-  optional bytes req_bytes = 7;
+  required bytes req_bytes = 7;
 
   required string req_string = 8;
 
