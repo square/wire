@@ -22,6 +22,9 @@ message SimpleOptional2 {
   optional int64 opt_int64 = 2;
   optional uint32 opt_uint32 = 3;
   optional uint64 opt_uint64 = 4;
+
+  optional float opt_float = 5;
+  optional double opt_double = 6;
 }
 
 message SimpleRequired2 {
@@ -29,4 +32,7 @@ message SimpleRequired2 {
   required int64 req_int64 = 2;
   required uint32 req_uint32 = 3;
   required uint64 req_uint64 = 4;
+
+  required float req_float = 5;
+  required double req_double = 6;
 }

@@ -116,12 +116,22 @@ final class ProtoWriterTests: XCTestCase {
             opt_int32: 0,
             opt_int64: 0,
             opt_uint32: 0,
-            opt_uint64: 0
+            opt_uint64: 0,
+            opt_float: 0,
+            opt_double: 0
         )
         try writer.encode(tag: 1, value: proto)
 
         // All values are encoded in proto2, even defaults.
-        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "0A080800100018002000")!)
+        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: """
+            0A16                // Message tag and length
+            0800                // tag 1 and value: opt_int32
+            1000                // tag 2 and value: opt_int64
+            1800                // tag 3 and value: opt_uint32
+            2000                // tag 4 and value: opt_uint64
+            2D00000000          // tag 5 and value: opt_float
+            310000000000000000  // tag 6 and value: opt_float
+        """)!)
     }
 
     // Re-enable this test when the Wire compiler properly outputs
@@ -132,12 +142,22 @@ final class ProtoWriterTests: XCTestCase {
 //            opt_int32: 0,
 //            opt_int64: 0,
 //            opt_uint32: 0,
-//            opt_uint64: 0
+//            opt_uint64: 0,
+//            opt_float: 0,
+//            opt_double: 0
 //        )
 //        try writer.encode(tag: 1, value: proto)
 //
 //        // All values are encoded for optional fields in proto3, even ones matching defaults.
-//        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "0A080800100018002000")!)
+//        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: """
+//            0A16                // Message tag and length
+//            0800                // tag 1 and value: opt_int32
+//            1000                // tag 2 and value: opt_int64
+//            1800                // tag 3 and value: opt_uint32
+//            2000                // tag 4 and value: opt_uint64
+//            2D00000000          // tag 5 and value: opt_float
+//            310000000000000000  // tag 6 and value: opt_float
+//        """)!)
 //    }
 
     func testEncodeRequiredDefaultProto3Values() throws {
@@ -146,7 +166,9 @@ final class ProtoWriterTests: XCTestCase {
             req_int32: 0,
             req_int64: 0,
             req_uint32: 0,
-            req_uint64: 0
+            req_uint64: 0,
+            req_float: 0,
+            req_double: 0
         )
         try writer.encode(tag: 1, value: proto)
 

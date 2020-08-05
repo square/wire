@@ -73,7 +73,13 @@ public final class ProtoWriter {
         endLengthDelimitedEncode(startOffset: startOffset, isMessage: false)
     }
 
-    /** Encode a `double` field */
+    /** Encode a required `double` field */
+    public func encode(tag: UInt32, value: Double) throws {
+        if value == 0 && isProto3 { return }
+        try encode(tag: tag, value: value as Double?)
+    }
+
+    /** Encode an optional `double` field */
     public func encode(tag: UInt32, value: Double?) throws {
         guard let value = value else { return }
 
@@ -90,7 +96,13 @@ public final class ProtoWriter {
         }
     }
 
-    /** Encode a `float` field */
+    /** Encode a required `float` field */
+    public func encode(tag: UInt32, value: Float) throws {
+        if value == 0 && isProto3 { return }
+        try encode(tag: tag, value: value as Float?)
+    }
+
+    /** Encode an optional `float` field */
     public func encode(tag: UInt32, value: Float?) throws {
         guard let value = value else { return }
 
