@@ -363,7 +363,7 @@ class SwiftGenerator private constructor(
               // Check required and bind members.
               addStatement("")
               type.fields.forEach { field ->
-                val initializer = if (field.typeName.optional) {
+                val initializer = if (field.typeName.optional || field.isRepeated || field.isMap) {
                   CodeBlock.of("%N", field.name)
                 } else {
                   CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structName, field.name)

@@ -62,7 +62,7 @@ extension ModelEvaluation : Proto2Codable {
 
         self.name = name
         self.score = score
-        self.models = try ModelEvaluation.checkIfMissing(models, "models")
+        self.models = models
     }
 
     public func encode(to writer: ProtoWriter) throws {

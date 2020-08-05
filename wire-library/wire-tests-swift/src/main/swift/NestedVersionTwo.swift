@@ -65,7 +65,7 @@ extension NestedVersionTwo : Proto2Codable {
         self.v2_s = v2_s
         self.v2_f32 = v2_f32
         self.v2_f64 = v2_f64
-        self.v2_rs = try NestedVersionTwo.checkIfMissing(v2_rs, "v2_rs")
+        self.v2_rs = v2_rs
     }
 
     public func encode(to writer: ProtoWriter) throws {

@@ -144,8 +144,8 @@ extension Person : Proto2Codable {
         self.name = try Person.checkIfMissing(name, "name")
         self.id = try Person.checkIfMissing(id, "id")
         self.email = email
-        self.phone = try Person.checkIfMissing(phone, "phone")
-        self.aliases = try Person.checkIfMissing(aliases, "aliases")
+        self.phone = phone
+        self.aliases = aliases
     }
 
     public func encode(to writer: ProtoWriter) throws {

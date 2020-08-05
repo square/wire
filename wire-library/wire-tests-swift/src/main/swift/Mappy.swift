@@ -33,7 +33,7 @@ extension Mappy : Proto2Codable {
         }
         self.unknownFields = try reader.endMessage(token: token)
 
-        self.things = try Mappy.checkIfMissing(things, "things")
+        self.things = things
     }
 
     public func encode(to writer: ProtoWriter) throws {

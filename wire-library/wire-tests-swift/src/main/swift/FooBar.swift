@@ -125,7 +125,7 @@ extension FooBar.More : Proto2Codable {
         }
         self.unknownFields = try reader.endMessage(token: token)
 
-        self.serial = try FooBar.More.checkIfMissing(serial, "serial")
+        self.serial = serial
     }
 
     public func encode(to writer: ProtoWriter) throws {
@@ -181,11 +181,11 @@ extension FooBar : Proto2Codable {
         self.bar = bar
         self.baz = baz
         self.qux = qux
-        self.fred = try FooBar.checkIfMissing(fred, "fred")
+        self.fred = fred
         self.daisy = daisy
-        self.nested = try FooBar.checkIfMissing(nested, "nested")
+        self.nested = nested
         self.ext = ext
-        self.rep = try FooBar.checkIfMissing(rep, "rep")
+        self.rep = rep
     }
 
     public func encode(to writer: ProtoWriter) throws {

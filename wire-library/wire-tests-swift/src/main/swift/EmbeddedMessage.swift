@@ -37,7 +37,7 @@ extension EmbeddedMessage : Proto2Codable {
         }
         self.unknownFields = try reader.endMessage(token: token)
 
-        self.inner_repeated_number = try EmbeddedMessage.checkIfMissing(inner_repeated_number, "inner_repeated_number")
+        self.inner_repeated_number = inner_repeated_number
         self.inner_number_after = inner_number_after
     }
 

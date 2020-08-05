@@ -75,7 +75,7 @@ extension VersionTwo : Proto2Codable {
         self.v2_s = v2_s
         self.v2_f32 = v2_f32
         self.v2_f64 = v2_f64
-        self.v2_rs = try VersionTwo.checkIfMissing(v2_rs, "v2_rs")
+        self.v2_rs = v2_rs
         self.obj = obj
         self.en = en
     }
