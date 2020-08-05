@@ -1,5 +1,7 @@
 package com.squareup.wire.swift
 
+import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
@@ -43,7 +45,8 @@ class SwiftGenerator private constructor(
   private val nameToTypeName: Map<ProtoType, DeclaredTypeName>,
   private val referenceCycleIndirections: Map<ProtoType, Set<ProtoType>>
 ) {
-  private val protoCodable = DeclaredTypeName.typeName("Wire.Proto2Codable")
+  private val proto2Codable = DeclaredTypeName.typeName("Wire.Proto2Codable")
+  private val proto3Codable = DeclaredTypeName.typeName("Wire.Proto3Codable")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
@@ -281,7 +284,10 @@ class SwiftGenerator private constructor(
     val token = if ("token" in propertyNames) "_token" else "token"
     val tag = if ("tag" in propertyNames) "_tag" else "tag"
     extensions += ExtensionSpec.builder(structName)
-        .addSuperType(protoCodable)
+        .addSuperType(when (type.syntax) {
+          PROTO_2 -> proto2Codable
+          PROTO_3 -> proto3Codable
+        })
         .addFunction(FunctionSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .addParameter("from", reader, protoReader)
