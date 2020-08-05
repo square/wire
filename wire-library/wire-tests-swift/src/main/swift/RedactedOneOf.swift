@@ -34,6 +34,14 @@ extension RedactedOneOf.A : Equatable {
 extension RedactedOneOf.A : Hashable {
 }
 
+extension RedactedOneOf.A : Redactable {
+    public enum RedactedKeys : String, RedactedKey {
+
+        case c
+
+    }
+}
+
 extension RedactedOneOf : Equatable {
 }
 
