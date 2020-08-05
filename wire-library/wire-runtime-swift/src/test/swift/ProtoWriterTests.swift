@@ -108,6 +108,52 @@ final class ProtoWriterTests: XCTestCase {
         XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "0D_19049E3F")!)
     }
 
+    // MARK: - Tests - Encoding Default Proto3 Values
+
+    func testEncodeDefaultProto2Values() throws {
+        let writer = ProtoWriter()
+        let proto = SimpleOptional2(
+            opt_int32: 0,
+            opt_int64: 0,
+            opt_uint32: 0,
+            opt_uint64: 0
+        )
+        try writer.encode(tag: 1, value: proto)
+
+        // All values are encoded in proto2, even defaults.
+        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "0A080800100018002000")!)
+    }
+
+    // Re-enable this test when the Wire compiler properly outputs
+    // nullable types for optional proto3 fields.
+//    func testEncodeOptionalDefaultProto3Values() throws {
+//        let writer = ProtoWriter()
+//        let proto = SimpleOptional3(
+//            opt_int32: 0,
+//            opt_int64: 0,
+//            opt_uint32: 0,
+//            opt_uint64: 0
+//        )
+//        try writer.encode(tag: 1, value: proto)
+//
+//        // All values are encoded for optional fields in proto3, even ones matching defaults.
+//        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "0A080800100018002000")!)
+//    }
+
+    func testEncodeRequiredDefaultProto3Values() throws {
+        let writer = ProtoWriter()
+        let proto = SimpleRequired3(
+            req_int32: 0,
+            req_int64: 0,
+            req_uint32: 0,
+            req_uint64: 0
+        )
+        try writer.encode(tag: 1, value: proto)
+
+        // No data should be encoded. Just the top-level message tag with a length of zero.
+        XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: "0A00")!)
+    }
+
     // MARK: - Tests - Encoding Messages And More
 
     func testEncodeBool() throws {
@@ -306,7 +352,6 @@ final class ProtoWriterTests: XCTestCase {
         try writer.encode(tag: 1, value: person)
 
         // Proto3 should used "packed: true" by default.
-        print(Data(writer.buffer).hexEncodedString())
         XCTAssertEqual(Data(writer.buffer), Data(hexEncoded: """
             0A           // (Tag 1 | Length Delimited)
             14           // Length 20 for Person message

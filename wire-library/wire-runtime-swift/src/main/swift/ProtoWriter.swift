@@ -99,7 +99,14 @@ public final class ProtoWriter {
         try value.encode(to: self)
     }
 
-    /** Encode an `int32`, `sfixed32`, or `sint32` field */
+    /** Encode a required `int32`, `sfixed32`, or `sint32` field */
+    public func encode(tag: UInt32, value: Int32, encoding: ProtoIntEncoding = .variable) throws {
+        // Don't encode default values if using proto3 syntax.
+        if value == 0 && isProto3 { return }
+        try encode(tag: tag, value: value as Int32?, encoding: encoding)
+    }
+
+    /** Encode an optional `int32`, `sfixed32`, or `sint32` field */
     public func encode(tag: UInt32, value: Int32?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
         let wireType: FieldWireType = encoding == .fixed ? .fixed32 : .varint
@@ -108,7 +115,14 @@ public final class ProtoWriter {
         try value.encode(to: self, encoding: encoding)
     }
 
-    /** Encode an `int64`, `sfixed64`, or `sint64` field */
+    /** Encode a required `int64`, `sfixed64`, or `sint64` field */
+    public func encode(tag: UInt32, value: Int64, encoding: ProtoIntEncoding = .variable) throws {
+        // Don't encode default values if using proto3 syntax.
+        if value == 0 && isProto3 { return }
+        try encode(tag: tag, value: value as Int64?, encoding: encoding)
+    }
+
+    /** Encode an optional `int64`, `sfixed64`, or `sint64` field */
     public func encode(tag: UInt32, value: Int64?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
         let wireType: FieldWireType = encoding == .fixed ? .fixed64 : .varint
@@ -117,7 +131,14 @@ public final class ProtoWriter {
         try value.encode(to: self, encoding: encoding)
     }
 
-    /** Encode a `fixed32` or `uint32` field */
+    /** Encode a required `fixed32` or `uint32` field */
+    public func encode(tag: UInt32, value: UInt32, encoding: ProtoIntEncoding = .variable) throws {
+        // Don't encode default values if using proto3 syntax.
+        if value == 0 && isProto3 { return }
+        try encode(tag: tag, value: value as UInt32?, encoding: encoding)
+    }
+
+    /** Encode an optional `fixed32` or `uint32` field */
     public func encode(tag: UInt32, value: UInt32?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
         let wireType: FieldWireType = encoding == .fixed ? .fixed32 : .varint
@@ -126,7 +147,14 @@ public final class ProtoWriter {
         try value.encode(to: self, encoding: encoding)
     }
 
-    /** Encode a `fixed64` or `uint64` field */
+    /** Encode a required `fixed64` or `uint64` field */
+    public func encode(tag: UInt32, value: UInt64, encoding: ProtoIntEncoding = .variable) throws {
+        // Don't encode default values if using proto3 syntax.
+        if value == 0 && isProto3 { return }
+        try encode(tag: tag, value: value as UInt64?, encoding: encoding)
+    }
+
+    /** Encode an optional `fixed64` or `uint64` field */
     public func encode(tag: UInt32, value: UInt64?, encoding: ProtoIntEncoding = .variable) throws {
         guard let value = value else { return }
         let wireType: FieldWireType = encoding == .fixed ? .fixed64 : .varint
