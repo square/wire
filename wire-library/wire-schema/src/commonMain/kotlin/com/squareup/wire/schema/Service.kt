@@ -80,8 +80,30 @@ class Service private constructor(
   fun validate(linker: Linker) {
     var linker = linker
     linker = linker.withContext(this)
+    validateRpcUniqueness(linker, rpcs)
     for (rpc in rpcs) {
       rpc.validate(linker)
+    }
+  }
+
+  private fun validateRpcUniqueness(
+    linker: Linker,
+    rpcs: List<Rpc>
+  ) {
+    val nameToRpc = linkedMapOf<String, MutableSet<Rpc>>()
+    for (rpc in rpcs) {
+      nameToRpc.getOrPut(rpc.name, { mutableSetOf() }).add(rpc)
+    }
+    for ((key, values) in nameToRpc) {
+      if (values.size > 1) {
+        val error = buildString {
+          append("mutable rpcs share name $key:")
+          values.forEachIndexed { index, rpc ->
+            append("\n  ${index + 1}. ${rpc.name} (${rpc.location})")
+          }
+        }
+        linker.addError(error)
+      }
     }
   }
 

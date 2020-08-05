@@ -65,8 +65,22 @@ class ProtoParser internal constructor(
       }
 
       when (val declaration = readDeclaration(documentation, Context.FILE)) {
-        is TypeElement -> nestedTypes.add(declaration)
-        is ServiceElement -> services.add(declaration)
+        is TypeElement -> {
+          val duplicate = nestedTypes.find { it.name == declaration.name }
+          if (duplicate != null) {
+            error("${declaration.name} (${declaration.location}) is already defined at " +
+                "${duplicate.location}")
+          }
+          nestedTypes.add(declaration)
+        }
+        is ServiceElement -> {
+          val duplicate = services.find { it.name == declaration.name }
+          if (duplicate != null) {
+            error("${declaration.name} (${declaration.location}) is already defined at " +
+                "${duplicate.location}")
+          }
+          services.add(declaration)
+        }
         is OptionElement -> options.add(declaration)
         is ExtendElement -> extendsList.add(declaration)
       }

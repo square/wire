@@ -2269,4 +2269,68 @@ class SchemaTest {
       )
     }
   }
+
+  @Test
+  fun duplicateMessagesWithMembers() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+          |message Message {
+          |  optional string name = 1;
+          |}
+          |message Message {
+          |  optional string title = 1;
+          |}
+        """.trimMargin())
+          .schema()
+      fail()
+    } catch (exception: IllegalStateException) {
+      assertThat(exception).hasMessage(
+          "Message (/source/message.proto:4:1) is already defined at /source/message.proto:1:1")
+    }
+  }
+
+  @Test
+  fun duplicateServicesWithRpcs() {
+    try {
+      RepoBuilder()
+          .add("service.proto", """
+          |service Service {
+          |  rpc Send (Data) returns (Data) {}
+          |}
+          |service Service {
+          |  rpc Receive (Data) returns (Data) {}
+          |}
+          |message Data {}
+        """.trimMargin())
+          .schema()
+      fail()
+    } catch (exception: IllegalStateException) {
+      assertThat(exception).hasMessage(
+          "Service (/source/service.proto:4:1) is already defined at /source/service.proto:1:1")
+    }
+  }
+
+  @Test
+  fun duplicateRpcsInSameService() {
+    try {
+      RepoBuilder()
+          .add("service.proto", """
+          |service Service {
+          |  rpc Send (Data) returns (Data) {}
+          |  rpc Send (Data) returns (Data) {}
+          |}
+          |message Data {}
+        """.trimMargin())
+          .schema()
+      fail()
+    } catch (exception: SchemaException) {
+      assertThat(exception).hasMessage("""
+        |mutable rpcs share name Send:
+        |  1. Send (/source/service.proto:2:3)
+        |  2. Send (/source/service.proto:3:3)
+        |  for service Service (/source/service.proto:1:1)
+      """.trimMargin())
+    }
+  }
 }
