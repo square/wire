@@ -15,25 +15,10 @@
  */
 syntax = "proto2";
 
-message Nested1 {
-  required string name = 1;
-
-  optional Nested2 nested = 2;
-}
-
-message Nested2 {
-  required string name = 1;
-
-  optional Nested3 nested = 2;
-}
+import "nested4.proto";
 
 message Nested3 {
   required string name = 1;
 
   optional Nested4 nested = 2;
 }
-
-message Nested4 {
-  required string name = 1;
-}
-
