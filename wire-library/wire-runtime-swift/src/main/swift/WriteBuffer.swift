@@ -15,6 +15,8 @@ final class WriteBuffer {
     fileprivate var storage: UnsafeMutablePointer<UInt8>!
     private(set) var capacity: Int
 
+    fileprivate var freeOnDeinit: Bool = true
+
     private(set) var count: Int = 0
 
     // MARK: - Initialization
@@ -28,7 +30,9 @@ final class WriteBuffer {
     }
 
     deinit {
-        free(storage)
+        if freeOnDeinit {
+            free(storage)
+        }
     }
 
     // MARK: - Public Methods
@@ -129,11 +133,16 @@ final class WriteBuffer {
 
 extension Data {
 
-    init(_ buffer: WriteBuffer) {
+    init(_ buffer: WriteBuffer, copyBytes: Bool) {
         if buffer.count == 0 {
             self = Data()
         } else {
-            self = Data(bytes: buffer.storage, count: buffer.count)
+            if copyBytes {
+                self = Data(bytes: buffer.storage, count: buffer.count)
+            } else {
+                buffer.freeOnDeinit = false
+                self = Data(bytesNoCopy: buffer.storage, count: buffer.count, deallocator: .free)
+            }
         }
     }
 

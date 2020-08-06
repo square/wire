@@ -73,7 +73,7 @@ public final class ProtoEncoder {
         
         try writer.encode(tag: 1, value: value)
 
-        return Data(writer.buffer)
+        return Data(writer.buffer, copyBytes: false)
     }
 
 }

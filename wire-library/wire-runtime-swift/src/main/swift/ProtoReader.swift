@@ -177,7 +177,7 @@ public final class ProtoReader {
             )
         }
 
-        return frame.unknownFields.flatMap { Data($0) } ?? Data()
+        return frame.unknownFields.flatMap { Data($0, copyBytes: false) } ?? Data()
     }
 
     // MARK: - Public Methods - Decoding - Single Fields
