@@ -250,6 +250,181 @@ final class ProtoWriterTests: XCTestCase {
         assertBufferEqual(writer, "08_01")
     }
 
+    // MARK: - Tests - Encoding Proto3 Well-Known Types
+
+    func testEncodeBoolValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: true, boxed: true)
+
+        assertBufferEqual(writer, """
+            0A   // (Tag 1 | Length Delimited)
+            02   // Length 2
+            08   // (Tag 1 | Varint)
+            01   // Value "true"
+        """)
+    }
+
+    func testEncodeNilBoolValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as Bool?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
+    func testEncodeBytesValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: Data(hexEncoded: "001122334455")!, boxed: true)
+
+        assertBufferEqual(writer, """
+            0A           // (Tag 1 | Length Delimited)
+            08           // Length 8
+            0A           // (tag 1 | Length Delimited)
+            06           // Data length 6
+            001122334455 // Random data
+        """)
+    }
+
+    func testEncodeNilBytesValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as Data?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
+    func testEncodeDoubleValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: Double(1.2345), boxed: true)
+
+        assertBufferEqual(writer, """
+            0A                // (Tag 1 | Length Delimited)
+            09                // Length 9
+            09                // (Tag 1 | Fixed64)
+            8D976E1283C0F33F  // Value 1.2345
+        """)
+    }
+
+    func testEncodeNilDoubleValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as Double?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
+    func testEncodeFloatValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: Float(1.2345), boxed: true)
+
+        assertBufferEqual(writer, """
+            0A        // (Tag 1 | Length Delimited)
+            05        // Length 9
+            0D        // (Tag 1 | Fixed32)
+            19049E3F  // Value 1.2345
+        """)
+    }
+
+    func testEncodeNilFloatValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as Float?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
+    func testEncodeInt32Value() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: Int32(-5), boxed: true)
+
+        assertBufferEqual(writer, """
+            0A         // (Tag 1 | Length Delimited)
+            06         // Length 6
+            08         // (Tag 1 | Varint)
+            FBFFFFFF0F // Value -5
+        """)
+    }
+
+    func testEncodeNilInt32Value() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as Int32?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
+    func testEncodeInt64Value() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: Int64(-5), boxed: true)
+
+        assertBufferEqual(writer, """
+            0A                   // (Tag 1 | Length Delimited)
+            0B                   // Length 11
+            08                   // (Tag 1 | Varint)
+            FBFFFFFFFFFFFFFFFF01 // Value -5
+        """)
+    }
+
+    func testEncodeNilInt64Value() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as Int64?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
+    func testEncodeStringValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: "foo", boxed: true)
+
+        assertBufferEqual(writer, """
+            0A     // (Tag 1 | Length Delimited)
+            05     // Length 5
+            0A     // (tag 1 | Length Delimited)
+            03     // String length 3
+            666F6F // "foo"
+        """)
+    }
+
+    func testEncodeNilStringValue() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as String?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
+    func testEncodeUInt32Value() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: UInt32(5), boxed: true)
+
+        assertBufferEqual(writer, """
+            0A // (Tag 1 | Length Delimited)
+            02 // Length 2
+            08 // (Tag 1 | Varint)
+            05 // Value 5
+        """)
+    }
+
+    func testEncodeNilUInt32Value() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as UInt32?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
+    func testEncodeUInt64Value() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: UInt64(5), boxed: true)
+
+        assertBufferEqual(writer, """
+            0A // (Tag 1 | Length Delimited)
+            02 // Length 2
+            08 // (Tag 1 | Varint)
+            05 // Value 5
+        """)
+    }
+
+    func testEncodeNilUInt64Value() throws {
+        let writer = ProtoWriter()
+        try writer.encode(tag: 1, value: nil as UInt64?, boxed: true)
+
+        assertBufferEqual(writer, "")
+    }
+
     // MARK: - Tests - Encoding Repeated Fields
 
     func testEncodeRepeatedBools() throws {

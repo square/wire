@@ -227,6 +227,89 @@ public final class ProtoWriter {
         endLengthDelimitedEncode(startOffset: startOffset, isMessage: false)
     }
 
+    // MARK: - Public Methods - Encoding - Proto3 Well-Known Types
+
+    /**
+     Encode a `BoolValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: Bool?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value) }
+    }
+
+    /**
+     Encode a `BytesValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: Data?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value) }
+    }
+
+    /**
+     Encode a `DoubleValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: Double?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value) }
+    }
+
+    /**
+     Encode a `FloatValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: Float?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value) }
+    }
+
+    /**
+     Encode a `Int32Value` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: Int32?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value, encoding: .variable) }
+    }
+
+    /**
+     Encode a `Int64Value` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: Int64?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value, encoding: .variable) }
+    }
+
+    /**
+     Encode a `StringValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: String?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value) }
+    }
+
+    /**
+     Encode a `UInt32Value` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: UInt32?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value, encoding: .variable) }
+    }
+
+    /**
+     Encode a `UInt64Value` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func encode(tag: UInt32, value: UInt64?, boxed: Bool) throws {
+        guard let value = value else { return }
+        try encodeBoxed(tag: tag) { try encode(tag: 1, value: value, encoding: .variable) }
+    }
+
     // MARK: - Public Methods - Encoding - Repeated Fields
 
     /**
@@ -551,6 +634,15 @@ public final class ProtoWriter {
                 endLengthDelimitedEncode(startOffset: startOffset, isMessage: syntax != nil)
             }
         }
+    }
+
+    private func encodeBoxed(tag: UInt32, _ encode: () throws -> Void) rethrows {
+        let key = ProtoWriter.makeFieldKey(tag: tag, wireType: .lengthDelimited)
+        writeVarint(key)
+
+        let startOffset = beginLengthDelimitedEncode(syntax: nil)
+        try encode()
+        endLengthDelimitedEncode(startOffset: startOffset, isMessage: false)
     }
 
     /**
