@@ -20,6 +20,7 @@ public final class ProtoDecoder {
 
     public enum Error: Swift.Error, LocalizedError {
 
+        case boxedValueMissingField(type: Any.Type)
         case emptyData
         case fieldKeyValueZero
         case invalidFieldWireType(_: UInt32)
@@ -33,6 +34,7 @@ public final class ProtoDecoder {
         case unexpectedEndOfData
         case unexpectedEndGroupFieldNumber(expected: UInt32?, found: UInt32)
         case unexpectedFieldNumberInMap(_: UInt32)
+        case unexpectedFieldNumberInBoxedValue(_: UInt32)
         case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
         case unterminatedGroup(fieldNumber: UInt32)
 
@@ -57,6 +59,8 @@ public final class ProtoDecoder {
                 return "Map entry with \(key ?? "") did not include a value."
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
+            case let .boxedValueMissingField(type):
+                return "Boxed value for type \(type) is missing field 1 (the value field)."
             case .recursionLimitExceeded:
                 return "Message nesting exceeds the maximum allowed depth."
             case .unexpectedEndOfData:
@@ -67,6 +71,8 @@ public final class ProtoDecoder {
                 } else {
                     return "Found end-group key with field number \(found) but no matching start-group key existed."
                 }
+            case let .unexpectedFieldNumberInBoxedValue(fieldNumber):
+                return "Boxed value includes the field number \(fieldNumber), but only field 1 is allowed."
             case let .unexpectedFieldNumberInMap(fieldNumber):
                 return "Map entry includes the field number \(fieldNumber), but only 1 and 2 are allowed."
             case let .unknownEnumCase(type, fieldNumber):

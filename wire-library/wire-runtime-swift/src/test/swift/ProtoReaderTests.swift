@@ -100,7 +100,7 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
-    func testDecodeData() throws {
+    func testDecodeBytes() throws {
         let data = Data(hexEncoded: """
             0A           // (tag 1 | Length Delimited)
             06           // Data length
@@ -130,6 +130,127 @@ final class ProtoReaderTests: XCTestCase {
         let data = Data(hexEncoded: "666F6F")!
         try test(data: data) { reader in
             XCTAssertEqual(try reader.decode(String.self), "foo")
+        }
+    }
+
+    // MARK: - Tests - Decoding Proto3 Well-Known Types
+
+    func testDecodeBoolValue() throws {
+        let data = Data(hexEncoded: """
+            0A   // (Tag 1 | Length Delimited)
+            02   // Length 2
+            08   // (Tag 1 | Varint)
+            01   // Value "true"
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(Bool.self, boxed: true) }
+            XCTAssertEqual(value, true)
+        }
+    }
+
+    func testDecodeBytesValue() throws {
+        let data = Data(hexEncoded: """
+            0A           // (Tag 1 | Length Delimited)
+            08           // Length 8
+            0A           // (tag 1 | Length Delimited)
+            06           // Data length 6
+            001122334455 // Random data
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(Data.self, boxed: true) }
+            XCTAssertEqual(value, Data(hexEncoded: "001122334455")!)
+        }
+    }
+
+    func testDecodeDoubleValue() throws {
+        let data = Data(hexEncoded: """
+            0A                // (Tag 1 | Length Delimited)
+            09                // Length 9
+            09                // (Tag 1 | Fixed64)
+            8D976E1283C0F33F  // Value 1.2345
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(Double.self, boxed: true) }
+            XCTAssertEqual(value, 1.2345)
+        }
+    }
+
+    func testDecodeFloatValue() throws {
+        let data = Data(hexEncoded: """
+            0A        // (Tag 1 | Length Delimited)
+            05        // Length 9
+            0D        // (Tag 1 | Fixed32)
+            19049E3F  // Value 1.2345
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(Float.self, boxed: true) }
+            XCTAssertEqual(value, 1.2345)
+        }
+    }
+
+    func testDecodeInt32Value() throws {
+        let data = Data(hexEncoded: """
+            0A         // (Tag 1 | Length Delimited)
+            06         // Length 6
+            08         // (Tag 1 | Varint)
+            FBFFFFFF0F // Value -5
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(Int32.self, boxed: true) }
+            XCTAssertEqual(value, -5)
+        }
+    }
+
+    func testDecodeInt64Value() throws {
+        let data = Data(hexEncoded: """
+            0A                   // (Tag 1 | Length Delimited)
+            0B                   // Length 11
+            08                   // (Tag 1 | Varint)
+            FBFFFFFFFFFFFFFFFF01 // Value -5
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(Int64.self, boxed: true) }
+            XCTAssertEqual(value, -5)
+        }
+    }
+
+    func testDecodeStringValue() throws {
+        let data = Data(hexEncoded: """
+            0A     // (Tag 1 | Length Delimited)
+            05     // Length 5
+            0A     // (tag 1 | Length Delimited)
+            03     // String length 3
+            666F6F // "foo"
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(String.self, boxed: true) }
+            XCTAssertEqual(value, "foo")
+        }
+    }
+
+    func testDecodeUInt32Value() throws {
+        let data = Data(hexEncoded: """
+            0A // (Tag 1 | Length Delimited)
+            02 // Length 2
+            08 // (Tag 1 | Varint)
+            05 // Value 5
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(UInt32.self, boxed: true) }
+            XCTAssertEqual(value, 5)
+        }
+    }
+
+    func testDecodeUInt64Value() throws {
+        let data = Data(hexEncoded: """
+            0A // (Tag 1 | Length Delimited)
+            02 // Length 2
+            08 // (Tag 1 | Varint)
+            05 // Value 5
+        """)!
+        try test(data: data) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(UInt64.self, boxed: true) }
+            XCTAssertEqual(value, 5)
         }
     }
 

@@ -246,6 +246,89 @@ public final class ProtoReader {
         return try T(from: self)
     }
 
+    // MARK: - Public Methods - Decoding - Proto3 Well-Known Types
+
+    /**
+     Decode a `BoolValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: Bool.Type, boxed: Bool) throws -> Bool {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try Bool(from: self) }
+    }
+
+    /**
+     Decode a `BytesValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: Data.Type, boxed: Bool) throws -> Data {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try Data(from: self) }
+    }
+
+    /**
+     Decode a `DoubleValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: Double.Type, boxed: Bool) throws -> Double {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try Double(from: self) }
+    }
+
+    /**
+     Decode a `FloatValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: Float.Type, boxed: Bool) throws -> Float {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try Float(from: self) }
+    }
+
+    /**
+     Decode a `Int32Value` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: Int32.Type, boxed: Bool) throws -> Int32 {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try Int32(from: self, encoding: .variable) }
+    }
+
+    /**
+     Decode a `Int64Value` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: Int64.Type, boxed: Bool) throws -> Int64 {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try Int64(from: self, encoding: .variable) }
+    }
+
+    /**
+     Decode a `StringValue` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: String.Type, boxed: Bool) throws -> String {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try String(from: self) }
+    }
+
+    /**
+     Decode a `UInt32Value` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: UInt32.Type, boxed: Bool) throws -> UInt32 {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try UInt32(from: self, encoding: .variable) }
+    }
+
+    /**
+     Decode a `UInt64Value` message field.
+     The `boxed` argument is a placebo and just gets us a unique method signature that looks nice. It should always be `true`.
+     */
+    public func decode(_ type: UInt64.Type, boxed: Bool) throws -> UInt64 {
+        assert(boxed, "For non-boxed values, use decode(_:)")
+        return try decodeBoxed { try UInt64(from: self, encoding: .variable) }
+    }
+
     // MARK: - Public Methods - Decoding - Repeated Fields
 
     /**
@@ -534,6 +617,23 @@ public final class ProtoReader {
      */
     private func decode<T: ProtoIntDecodable>(_ type: T.Type, encoding: ProtoIntEncoding = .variable) throws -> T {
         return try T(from: self, encoding: encoding)
+    }
+
+    private func decodeBoxed<T>(_ decode: () throws -> T) throws -> T {
+        var result: T?
+        let token = try beginMessage()
+        while let tag = try nextTag(token: token) {
+            switch tag {
+            case 1: result = try decode()
+            default:
+                throw ProtoDecoder.Error.unexpectedFieldNumberInBoxedValue(tag)
+            }
+        }
+        _ = try endMessage(token: token)
+        guard let unwrappedResult = result else {
+            throw ProtoDecoder.Error.boxedValueMissingField(type: T.self)
+        }
+        return unwrappedResult
     }
 
     private func readFieldKey() throws -> (UInt32, FieldWireType) {
