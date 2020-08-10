@@ -650,6 +650,29 @@ class WireRunTest {
         .contains("class Orange")
   }
 
+  @Test
+  fun partitionAcrossFiles() {
+    fs.add("protos/one.proto", """
+      |syntax = "proto2";
+      |message A {}
+      |message B {}
+      |""".trimMargin())
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("protos")),
+        modules = mapOf(
+            "a" to Module(pruningRules = PruningRules.Builder()
+                .prune("B")
+                .build()),
+            "b" to Module(dependencies = setOf("a"))
+        ),
+        targets = listOf(JavaTarget(outDirectory = "gen"))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("gen/a")).containsExactly("gen/a/A.java")
+    assertThat(fs.find("gen/b")).containsExactly("gen/b/B.java")
+  }
+
   @Test fun crashWhenTypeGenerationConflicts() {
     fs.add("protos/one/au.proto", """
           |package one;

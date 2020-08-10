@@ -259,13 +259,19 @@ data class WireRun(
           continue
         }
 
+        // Remove types from the file which are not owned by this partition.
+        val filteredProtoFile = protoFile.copy(
+            types = protoFile.types.filter { it.type in partition.types },
+            services = protoFile.services.filter { it.type in partition.types }
+        )
+
         val claimedDefinitions = ClaimedDefinitions()
         claimedDefinitions.claim(ProtoType.ANY)
 
         for (target in targetsExclusiveLast) {
           val schemaHandler = targetToSchemaHandler.getValue(target)
           schemaHandler.handle(
-              protoFile,
+              filteredProtoFile,
               targetToEmittingRules.getValue(target),
               claimedDefinitions,
               claimedPaths,
