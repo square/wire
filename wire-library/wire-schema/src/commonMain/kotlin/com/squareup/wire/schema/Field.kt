@@ -194,11 +194,11 @@ data class Field(
     enclosingType: ProtoType,
     service: Service
   ): Boolean {
-    if (service.type() !in markSet) return false
+    if (service.type !in markSet) return false
 
     val protoMember = ProtoMember.get(enclosingType, if (isExtension) qualifiedName else name)
-    if (service.options().assignsMember(protoMember)) return true
-    if (service.rpcs().any { it.options.assignsMember(protoMember) }) return true
+    if (service.options.assignsMember(protoMember)) return true
+    if (service.rpcs.any { it.options.assignsMember(protoMember) }) return true
 
     return false
   }

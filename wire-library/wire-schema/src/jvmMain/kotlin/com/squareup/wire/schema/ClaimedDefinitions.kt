@@ -27,12 +27,12 @@ class ClaimedDefinitions {
   }
 
   fun claim(service: Service) {
-    claim(service.type())
+    claim(service.type)
   }
 
   operator fun contains(type: ProtoType) = set.contains(type)
 
   operator fun contains(type: Type) = contains(type.type)
 
-  operator fun contains(service: Service) = contains(service.type())
+  operator fun contains(service: Service) = contains(service.type)
 }

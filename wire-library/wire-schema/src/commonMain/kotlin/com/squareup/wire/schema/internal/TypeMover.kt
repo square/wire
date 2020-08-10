@@ -187,7 +187,7 @@ class TypeMover(
   }
 
   private fun Service.collectReferencedTypes(sink: MutableSet<ProtoType>) {
-    for (rpc in rpcs()) {
+    for (rpc in rpcs) {
       rpc.collectReferencedTypes(sink)
     }
   }
