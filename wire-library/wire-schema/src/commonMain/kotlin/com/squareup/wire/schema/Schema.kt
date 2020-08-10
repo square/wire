@@ -28,15 +28,17 @@ import kotlin.jvm.JvmOverloads
 class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
   val protoFiles: List<ProtoFile> = protoFiles.sortedBy { it.location.path }
 
-  private val protoFilesIndex: Map<ProtoType?, ProtoFile?>
+  private val protoFilesIndex: Map<ProtoType, ProtoFile>
   private val typesIndex: Map<String, Type>
   private val servicesIndex: Map<String, Service>
   init {
-    val index = mutableMapOf<ProtoType?, ProtoFile?>()
+    val index = mutableMapOf<ProtoType, ProtoFile>()
     typesIndex = buildTypesIndex(protoFiles, index)
     servicesIndex = buildServicesIndex(protoFiles, index)
     protoFilesIndex = index
   }
+
+  val types: Set<ProtoType> get() = protoFilesIndex.keys
 
   /** Returns the proto file at [path], or null if this schema has no such file.  */
   fun protoFile(path: String): ProtoFile? = protoFiles.firstOrNull { it.location.path == path }
@@ -129,7 +131,7 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
 
     private fun buildTypesIndex(
       protoFiles: Iterable<ProtoFile>,
-      protoFilesIndex: MutableMap<ProtoType?, ProtoFile?>
+      protoFilesIndex: MutableMap<ProtoType, ProtoFile>
     ): Map<String, Type> {
       val typesByName = mutableMapOf<String, Type>()
 
@@ -154,7 +156,7 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
 
     private fun buildServicesIndex(
       protoFiles: Iterable<ProtoFile>,
-      protoFilesIndex: MutableMap<ProtoType?, ProtoFile?>
+      protoFilesIndex: MutableMap<ProtoType, ProtoFile>
     ): Map<String, Service> {
       val result = mutableMapOf<String, Service>()
       for (protoFile in protoFiles) {

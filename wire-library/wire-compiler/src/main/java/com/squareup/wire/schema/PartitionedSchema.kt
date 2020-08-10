@@ -20,16 +20,16 @@ import com.squareup.wire.schema.WireRun.Module
 
 internal class PartitionedSchema(
   /** Module name to partition info. The iteration order of this map is the generation order. */
-  val modules: Map<String, Partition>,
+  val partitions: Map<String, Partition>,
   val warnings: List<String>,
   val errors: List<String>
 ) {
   class Partition(
     val schema: Schema,
     /** The types that this partition will generate. */
-    val types: Set<ProtoType>,
+    val types: Set<ProtoType> = schema.types,
     /** These are the types depended upon by [types] associated with their module name. */
-    val transitiveUpstreamTypes: Map<ProtoType, String>
+    val transitiveUpstreamTypes: Map<ProtoType, String> = emptyMap()
   )
 }
 

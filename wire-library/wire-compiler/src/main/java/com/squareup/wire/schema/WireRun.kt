@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.ConsoleWireLogger
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireLogger
+import com.squareup.wire.schema.PartitionedSchema.Partition
 import com.squareup.wire.schema.internal.DagChecker
 import com.squareup.wire.schema.internal.TypeMover
 import java.nio.file.FileSystem
@@ -175,11 +176,11 @@ data class WireRun(
    * A map from module dir to module info which dictates how the loaded types are partitioned and
    * generated.
    *
-   * By default a single module is used which includes everything in the root output directory.
+   * When empty everything is generated in the root output directory.
    * If desired, multiple modules can be specified along with dependencies between them. Types
    * which appear in dependencies will not be re-generated.
    */
-  val modules: Map<String, Module> = mapOf(DEFAULT_MODULE_NAME to Module()),
+  val modules: Map<String, Module> = emptyMap(),
 
   /** True to build proto3 artifacts. This is unsupported and does not work. */
   val proto3Preview: Boolean = false
@@ -231,13 +232,20 @@ data class WireRun(
     }
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
 
-    val partitionedSchema = schema.partition(modules)
+    val partitions = if (modules.isNotEmpty()) {
+      val partitionedSchema = schema.partition(modules)
+      // TODO handle errors and warnings
+      partitionedSchema.partitions
+    } else {
+      // Synthesize a single partition that includes everything from the schema.
+      mapOf(null to Partition(schema))
+    }
 
     val skippedForSyntax = mutableListOf<ProtoFile>()
     val claimedPaths = mutableMapOf<Path, String>()
-    for ((moduleName, partition) in partitionedSchema.modules) {
+    for ((moduleName, partition) in partitions) {
       val targetToSchemaHandler = targets.associateWith {
-        it.newHandler(partition.schema, moduleName.takeIf { it != DEFAULT_MODULE_NAME }, fs, logger, schemaLoader)
+        it.newHandler(partition.schema, moduleName, fs, logger, schemaLoader)
       }
 
       // Call each target.
@@ -319,5 +327,3 @@ data class WireRun(
     return TypeMover(prunedSchema, moves).move()
   }
 }
-
-private const val DEFAULT_MODULE_NAME = "."
