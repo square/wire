@@ -18,7 +18,6 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.WireRun.Module
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 
 class ManifestPartitionTest {
@@ -55,14 +54,14 @@ class ManifestPartitionTest {
 
     val partitionedSchema = schema.partition(modules)
 
-    val commonPartition = partitionedSchema.modules.getValue("common")
+    val commonPartition = partitionedSchema.partitions.getValue("common")
     // B has no field of type C because of its inclusion in common's prune list.
     assertThat(commonPartition.schema.getMessage("B").field("c")).isNull()
     // C is not generated in common because of its inclusion in the prune list.
     assertThat(commonPartition.types).doesNotContain(ProtoType.get("C"))
 
     // C is not in feature because its only dependant is B which is from common.
-    val featurePartition = partitionedSchema.modules.getValue("feature")
+    val featurePartition = partitionedSchema.partitions.getValue("feature")
     assertThat(featurePartition.types).doesNotContain(ProtoType.get("C"))
   }
 
@@ -100,13 +99,13 @@ class ManifestPartitionTest {
 
     val partitionedSchema = schema.partition(modules)
 
-    val commonPartition = partitionedSchema.modules.getValue("common")
+    val commonPartition = partitionedSchema.partitions.getValue("common")
     // B has no field of type C because of its inclusion in common's prune list.
     assertThat(commonPartition.schema.getMessage("B").field("c")).isNull()
     // C is not generated in common because of its inclusion in the prune list.
     assertThat(commonPartition.types).doesNotContain(ProtoType.get("C"))
 
-    val featurePartition = partitionedSchema.modules.getValue("feature")
+    val featurePartition = partitionedSchema.partitions.getValue("feature")
     // A has a field of type C because common's prunes do not apply to feature.
     assertThat(featurePartition.schema.getMessage("A").field("c")).isNotNull()
     // C is generated in feature because common's prunes do not apply and A depends on it.
