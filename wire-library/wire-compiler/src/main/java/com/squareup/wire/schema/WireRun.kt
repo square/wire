@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.ConsoleWireLogger
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireLogger
+import com.squareup.wire.schema.internal.DagChecker
 import com.squareup.wire.schema.internal.TypeMover
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -170,9 +171,40 @@ data class WireRun(
    */
   val targets: List<Target>,
 
+  /**
+   * A map from module dir to module info which dictates how the loaded types are partitioned and
+   * generated.
+   *
+   * By default a single module is used which includes everything in the root output directory.
+   * If desired, multiple modules can be specified along with dependencies between them. Types
+   * which appear in dependencies will not be re-generated.
+   */
+  val modules: Map<String, Module> = mapOf(DEFAULT_MODULE_NAME to Module()),
+
   /** True to build proto3 artifacts. This is unsupported and does not work. */
   val proto3Preview: Boolean = false
 ) {
+  data class Module(
+    val dependencies: Set<String> = emptySet(),
+    val pruningRules: PruningRules? = null
+  )
+
+  init {
+    val dagChecker = DagChecker(modules.keys) { moduleName ->
+      modules.getValue(moduleName).dependencies
+    }
+    val cycles = dagChecker.check()
+    require(cycles.isEmpty()) {
+      buildString {
+        append("ERROR: Modules contain dependency cycle(s):\n")
+        for (cycle in cycles) {
+          append(" - ")
+          append(cycle)
+          append('\n')
+        }
+      }
+    }
+  }
 
   fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
     return SchemaLoader(fs).use { newSchemaLoader ->
@@ -197,35 +229,40 @@ data class WireRun(
           .exclude(it.excludes)
           .build()
     }
-    val targetToSchemaHandler = targets.associateWith {
-      it.newHandler(schema, fs, logger, schemaLoader)
-    }
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
 
-    // Call each target.
+    val partitionedSchema = schema.partition(modules)
+
     val skippedForSyntax = mutableListOf<ProtoFile>()
     val claimedPaths = mutableMapOf<Path, String>()
-    for (protoFile in schema.protoFiles) {
-      if (protoFile.syntax == Syntax.PROTO_3 && !proto3Preview) {
-        skippedForSyntax += protoFile
-        continue
-      }
-      if (protoFile.location.path !in sourceLocationPaths &&
-          protoFile.location.path !in moveTargetPaths) {
-        continue
+    for ((moduleName, partition) in partitionedSchema.modules) {
+      val targetToSchemaHandler = targets.associateWith {
+        it.newHandler(partition.schema, moduleName.takeIf { it != DEFAULT_MODULE_NAME }, fs, logger, schemaLoader)
       }
 
-      val claimedDefinitions = ClaimedDefinitions()
-      claimedDefinitions.claim(ProtoType.ANY)
+      // Call each target.
+      for (protoFile in partition.schema.protoFiles) {
+        if (protoFile.syntax == Syntax.PROTO_3 && !proto3Preview) {
+          skippedForSyntax += protoFile
+          continue
+        }
+        if (protoFile.location.path !in sourceLocationPaths &&
+            protoFile.location.path !in moveTargetPaths) {
+          continue
+        }
 
-      for (target in targetsExclusiveLast) {
-        val schemaHandler = targetToSchemaHandler.getValue(target)
-        schemaHandler.handle(
-            protoFile,
-            targetToEmittingRules.getValue(target),
-            claimedDefinitions,
-            claimedPaths,
-            isExclusive = target.exclusive)
+        val claimedDefinitions = ClaimedDefinitions()
+        claimedDefinitions.claim(ProtoType.ANY)
+
+        for (target in targetsExclusiveLast) {
+          val schemaHandler = targetToSchemaHandler.getValue(target)
+          schemaHandler.handle(
+              protoFile,
+              targetToEmittingRules.getValue(target),
+              claimedDefinitions,
+              claimedPaths,
+              isExclusive = target.exclusive)
+        }
       }
     }
 
@@ -282,3 +319,5 @@ data class WireRun(
     return TypeMover(prunedSchema, moves).move()
   }
 }
+
+private const val DEFAULT_MODULE_NAME = "."

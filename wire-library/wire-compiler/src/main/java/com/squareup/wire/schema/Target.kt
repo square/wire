@@ -58,8 +58,14 @@ sealed class Target : Serializable {
    */
   abstract val exclusive: Boolean
 
+  /**
+   * @param moduleName The module name for source generation which should correspond to a
+   * subdirectory in the target's output directory. If null, generation should occur directly into
+   * the root output directory.
+   */
   internal abstract fun newHandler(
     schema: Schema,
+    moduleName: String?,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
@@ -146,12 +152,21 @@ data class JavaTarget(
 ) : Target() {
   override fun newHandler(
     schema: Schema,
+    moduleName: String?,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
   ): SchemaHandler {
     val profileName = if (android) "android" else "java"
     val profile = profileLoader.loadProfile(profileName, schema)
+    val modulePath = run {
+      val outPath = fs.getPath(outDirectory)
+      if (moduleName != null) {
+        outPath.resolve(moduleName)
+      } else {
+        outPath
+      }
+    }
 
     val javaGenerator = JavaGenerator.get(schema)
         .withProfile(profile)
@@ -167,13 +182,12 @@ data class JavaTarget(
             .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
             .addFileComment("\nSource: \$L in \$L", type.type, type.location.withPathOnly())
             .build()
-        val generatedFilePath =
-            fs.getPath(outDirectory, javaFile.packageName, "${javaFile.typeSpec.name}.java")
+        val generatedFilePath = modulePath.resolve(javaFile.packageName)
+            .resolve("${javaFile.typeSpec.name}.java")
 
-        val path = fs.getPath(outDirectory)
-        logger.artifact(path, javaFile)
+        logger.artifact(modulePath, javaFile)
         try {
-          javaFile.writeTo(path)
+          javaFile.writeTo(modulePath)
         } catch (e: IOException) {
           throw IOException("Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} " +
               "to $outDirectory", e)
@@ -215,10 +229,19 @@ data class KotlinTarget(
 ) : Target() {
   override fun newHandler(
     schema: Schema,
+    moduleName: String?,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
   ): SchemaHandler {
+    val modulePath = run {
+      val outPath = fs.getPath(outDirectory)
+      if (moduleName != null) {
+        outPath.resolve(moduleName)
+      } else {
+        outPath
+      }
+    }
     val kotlinGenerator = KotlinGenerator(
         schema = schema,
         emitAndroid = android,
@@ -237,13 +260,11 @@ data class KotlinTarget(
             .addType(typeSpec)
             .build()
         val generatedFilePath =
-            fs.getPath(outDirectory, kotlinFile.packageName, "${kotlinFile.name}.kt")
+            modulePath.resolve(kotlinFile.packageName).resolve("${kotlinFile.name}.kt")
 
-        val path = fs.getPath(outDirectory)
-        logger.artifact(path, kotlinFile)
-
+        logger.artifact(modulePath, kotlinFile)
         try {
-          kotlinFile.writeTo(path)
+          kotlinFile.writeTo(modulePath)
         } catch (e: IOException) {
           throw IOException("Error emitting " +
               "${kotlinFile.packageName}.${className.canonicalName} to $outDirectory", e)
@@ -304,10 +325,19 @@ data class ProtoTarget(
 
   override fun newHandler(
     schema: Schema,
+    moduleName: String?,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
   ): SchemaHandler {
+    val modulePath = run {
+      val outPath = fs.getPath(outDirectory)
+      if (moduleName != null) {
+        outPath.resolve(moduleName)
+      } else {
+        outPath
+      }
+    }
     return object : SchemaHandler {
       override fun handle(type: Type): Path? = null
       override fun handle(service: Service): List<Path> = emptyList()
@@ -322,7 +352,7 @@ data class ProtoTarget(
 
         val relativePath: String = protoFile.location.path
             .substringBeforeLast("/", missingDelimiterValue = ".")
-        val outputDirectory = fs.getPath(outDirectory, relativePath)
+        val outputDirectory = modulePath.resolve(relativePath)
 
         require(Files.notExists(outputDirectory) || Files.isDirectory(outputDirectory)) {
           "path $outputDirectory exists but is not a directory."
@@ -356,6 +386,7 @@ data class NullTarget(
 
   override fun newHandler(
     schema: Schema,
+    moduleName: String?,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
@@ -392,6 +423,7 @@ data class CustomTargetBeta(
 ) : Target() {
   override fun newHandler(
     schema: Schema,
+    moduleName: String?,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
