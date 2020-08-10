@@ -21,7 +21,7 @@ import com.squareup.wire.schema.internal.parser.FieldElement
 import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import kotlin.jvm.JvmStatic
 
-class Field private constructor(
+data class Field(
   val packageName: String?,
 
   val location: Location,

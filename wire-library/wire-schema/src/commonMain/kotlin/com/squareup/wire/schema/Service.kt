@@ -23,7 +23,7 @@ import com.squareup.wire.schema.Rpc.Companion.fromElements
 import com.squareup.wire.schema.internal.parser.ServiceElement
 import kotlin.jvm.JvmStatic
 
-class Service private constructor(
+data class Service(
   private val protoType: ProtoType,
   private val location: Location,
   private val documentation: String,

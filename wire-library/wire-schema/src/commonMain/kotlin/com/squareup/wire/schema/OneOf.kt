@@ -18,7 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.schema.internal.parser.OneOfElement
 import kotlin.jvm.JvmStatic
 
-class OneOf private constructor(
+data class OneOf(
   val name: String,
   val documentation: String,
   val fields: List<Field>

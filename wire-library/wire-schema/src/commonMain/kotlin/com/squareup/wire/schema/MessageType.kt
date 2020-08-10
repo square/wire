@@ -30,7 +30,7 @@ import com.squareup.wire.schema.internal.parser.MessageElement
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
-class MessageType private constructor(
+data class MessageType(
   override val type: ProtoType,
   override val location: Location,
   override val documentation: String,

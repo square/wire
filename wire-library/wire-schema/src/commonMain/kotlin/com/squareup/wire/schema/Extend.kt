@@ -19,7 +19,7 @@ import com.squareup.wire.schema.Field.Companion.retainAll
 import com.squareup.wire.schema.internal.parser.ExtendElement
 import kotlin.jvm.JvmStatic
 
-class Extend private constructor(
+data class Extend(
   val location: Location,
   val documentation: String,
   val name: String,

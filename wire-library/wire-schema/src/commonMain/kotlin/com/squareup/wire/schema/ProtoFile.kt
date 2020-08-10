@@ -21,7 +21,7 @@ import com.squareup.wire.schema.Service.Companion.fromElements
 import com.squareup.wire.schema.Type.Companion.fromElements
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 
-class ProtoFile private constructor(
+data class ProtoFile(
   val location: Location,
   val imports: List<String>,
   val publicImports: List<String>,
@@ -33,30 +33,6 @@ class ProtoFile private constructor(
   val syntax: Syntax?
 ) {
   private var javaPackage: Any? = null
-
-  internal fun copy(
-    location: Location = this.location,
-    imports: List<String> = this.imports,
-    publicImports: List<String> = this.publicImports,
-    packageName: String? = this.packageName,
-    types: List<Type> = this.types,
-    services: List<Service> = this.services,
-    extendList: List<Extend> = this.extendList,
-    options: Options = this.options,
-    syntax: Syntax? = this.syntax
-  ): ProtoFile {
-    return ProtoFile(
-        location = location,
-        imports = imports,
-        publicImports = publicImports,
-        packageName = packageName,
-        types = types,
-        services = services,
-        extendList = extendList,
-        options = options,
-        syntax = syntax
-    )
-  }
 
   fun toElement(): ProtoFileElement {
     return ProtoFileElement(
