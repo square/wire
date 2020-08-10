@@ -39,7 +39,7 @@ class MarkdownHandler : CustomHandlerBeta {
       }
 
       override fun handle(service: Service): List<Path> {
-        return listOf(writeMarkdownFile(service.type(), toMarkdown(service)))
+        return listOf(writeMarkdownFile(service.type, toMarkdown(service)))
       }
 
       private fun writeMarkdownFile(protoType: ProtoType, markdown: String): Path {
@@ -73,9 +73,9 @@ class MarkdownHandler : CustomHandlerBeta {
 
   private fun toMarkdown(service: Service): String {
     return """
-        |# ${service.type().simpleName}
+        |# ${service.type.simpleName}
         |
-        |${service.documentation()}
+        |${service.documentation}
         |""".trimMargin()
   }
 }

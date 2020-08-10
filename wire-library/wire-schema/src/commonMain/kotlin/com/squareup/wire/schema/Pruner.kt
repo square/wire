@@ -68,7 +68,7 @@ internal class Pruner(
       markRootsIncludingNested(type)
     }
     for (service in protoFile.services) {
-      markRoots(service.type())
+      markRoots(service.type)
     }
   }
 
@@ -235,9 +235,9 @@ internal class Pruner(
           options = type.options
 
         } else if (service != null) {
-          options = service.options()
-          for (rpc in service.rpcs()) {
-            result.add(get(service.type(), rpc.name))
+          options = service.options
+          for (rpc in service.rpcs) {
+            result.add(get(service.type, rpc.name))
           }
 
         } else {

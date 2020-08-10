@@ -21,44 +21,26 @@ import com.squareup.wire.schema.ProtoMember.Companion.get
 import com.squareup.wire.schema.ProtoType.Companion.get
 import com.squareup.wire.schema.Rpc.Companion.fromElements
 import com.squareup.wire.schema.internal.parser.ServiceElement
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 data class Service(
-  private val protoType: ProtoType,
-  private val location: Location,
-  private val documentation: String,
-  private val name: String,
-  private val rpcs: List<Rpc>,
-  private val options: Options
+  @get:JvmName("type") // For binary compatibility.
+  val type: ProtoType,
+  @get:JvmName("location") // For binary compatibility.
+  val location: Location,
+  @get:JvmName("documentation") // For binary compatibility.
+  val documentation: String,
+  @get:JvmName("name") // For binary compatibility.
+  val name: String,
+  @get:JvmName("rpcs") // For binary compatibility.
+  val rpcs: List<Rpc>,
+  @get:JvmName("options") // For binary compatibility.
+  val options: Options
 ) {
-  // TODO(Benoit) public val for the followings.
-  fun location(): Location {
-    return location
-  }
-
-  fun type(): ProtoType {
-    return protoType
-  }
-
-  fun documentation(): String {
-    return documentation
-  }
-
-  fun name(): String {
-    return name
-  }
-
-  fun rpcs(): List<Rpc> {
-    return rpcs
-  }
-
   /** Returns the RPC named `name`, or null if this service has no such method.  */
   fun rpc(name: String): Rpc? {
     return rpcs.find { it.name == name }
-  }
-
-  fun options(): Options {
-    return options
   }
 
   fun link(linker: Linker) {
@@ -70,7 +52,7 @@ data class Service(
   }
 
   fun linkOptions(linker: Linker, validate: Boolean) {
-    var linker = linker.withContext(this)
+    val linker = linker.withContext(this)
     for (rpc in rpcs) {
       rpc.linkOptions(linker, validate)
     }
@@ -112,19 +94,19 @@ data class Service(
     markSet: MarkSet
   ): Service? {
     // If this service is not retained, prune it.
-    if (!markSet.contains(protoType)) {
+    if (!markSet.contains(type)) {
       return null
     }
 
     val retainedRpcs = mutableListOf<Rpc>()
     for (rpc in rpcs) {
       val retainedRpc = rpc.retainAll(schema, markSet)
-      if (retainedRpc != null && markSet.contains(get(protoType, rpc.name))) {
+      if (retainedRpc != null && markSet.contains(get(type, rpc.name))) {
         retainedRpcs.add(retainedRpc)
       }
     }
 
-    return Service(protoType, location, documentation, name, retainedRpcs,
+    return Service(type, location, documentation, name, retainedRpcs,
         options.retainAll(schema, markSet))
   }
 

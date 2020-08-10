@@ -115,7 +115,7 @@ class KotlinGenerator private constructor(
   private val Type.typeName
     get() = type.typeName
   private val Service.serviceName
-    get() = type().typeName
+    get() = type.typeName
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName as ClassName
@@ -208,15 +208,15 @@ class KotlinGenerator private constructor(
     }
     builder
         .apply {
-          if (service.documentation().isNotBlank()) {
-            addKdoc("%L\n", service.documentation().sanitizeKdoc())
+          if (service.documentation.isNotBlank()) {
+            addKdoc("%L\n", service.documentation.sanitizeKdoc())
           }
         }
 
-    val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
+    val rpcs = if (onlyRpc == null) service.rpcs else listOf(onlyRpc)
     for (rpc in rpcs) {
       builder.addFunction(generateRpcFunction(
-          rpc, service.name(), service.type().enclosingTypeOrPackage, isImplementation))
+          rpc, service.name, service.type.enclosingTypeOrPackage, isImplementation))
     }
 
     val key = if (isImplementation) implementationName else interfaceName
@@ -1691,8 +1691,8 @@ class KotlinGenerator private constructor(
         putAll(kotlinPackage, null, protoFile.types)
 
         for (service in protoFile.services) {
-          val className = ClassName(kotlinPackage, service.type().simpleName)
-          map[service.type()] = className
+          val className = ClassName(kotlinPackage, service.type.simpleName)
+          map[service.type] = className
         }
       }
 

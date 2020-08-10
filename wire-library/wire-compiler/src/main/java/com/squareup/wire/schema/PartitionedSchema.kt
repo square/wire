@@ -73,7 +73,7 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
               if (type.type in upstreamTypes) type.asStub() else type
             },
             services = protoFile.services.map { service ->
-              if (service.type() in upstreamTypes) service.asStub() else service
+              if (service.type in upstreamTypes) service.asStub() else service
             }
         )
       }
@@ -89,7 +89,7 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
     val ownedTypes = prunedSchema.protoFiles
         .flatMap { protoFile ->
           val messageTypes = protoFile.typesAndNestedTypes().map { it.type }
-          val serviceTypes = protoFile.services.map { it.type() }
+          val serviceTypes = protoFile.services.map { it.type }
           messageTypes + serviceTypes
         }
         .filter { it !in upstreamTypes }

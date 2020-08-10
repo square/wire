@@ -161,8 +161,8 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
       val result = mutableMapOf<String, Service>()
       for (protoFile in protoFiles) {
         for (service in protoFile.services) {
-          result[service.type().toString()] = service
-          protoFilesIndex[service.type()] = protoFile
+          result[service.type.toString()] = service
+          protoFilesIndex[service.type] = protoFile
         }
       }
       return result

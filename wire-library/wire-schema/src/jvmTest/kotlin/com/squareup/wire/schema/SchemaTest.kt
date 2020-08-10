@@ -1069,8 +1069,8 @@ class SchemaTest {
         .schema()
     val service = schema.getService("pa.Service")!!
     val b = schema.getType("pb.B") as MessageType
-    assertThat(service.rpcs()[0].requestType).isEqualTo(b.type)
-    assertThat(service.rpcs()[0].responseType).isEqualTo(b.type)
+    assertThat(service.rpcs[0].requestType).isEqualTo(b.type)
+    assertThat(service.rpcs[0].responseType).isEqualTo(b.type)
   }
 
   @Test
@@ -1841,7 +1841,7 @@ class SchemaTest {
         .contains(deprecatedOptionElement)
     assertThat((schema.getType("Enum")!! as EnumType).constant("A")!!.options.elements)
         .contains(deprecatedOptionElement)
-    assertThat(schema.getService("Service")!!.options().elements)
+    assertThat(schema.getService("Service")!!.options.elements)
         .contains(deprecatedOptionElement)
     assertThat(schema.getService("Service")!!.rpc("Call")!!.options.elements)
         .contains(deprecatedOptionElement)
