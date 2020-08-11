@@ -62,10 +62,13 @@ sealed class Target : Serializable {
    * @param moduleName The module name for source generation which should correspond to a
    * subdirectory in the target's output directory. If null, generation should occur directly into
    * the root output directory.
+   * @param upstreamTypes Types and their associated module name which were already generated. The
+   * returned handler will be invoked only for types in [schema] which are NOT present in this map.
    */
   internal abstract fun newHandler(
     schema: Schema,
     moduleName: String?,
+    upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
@@ -153,6 +156,7 @@ data class JavaTarget(
   override fun newHandler(
     schema: Schema,
     moduleName: String?,
+    upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
@@ -231,6 +235,7 @@ data class KotlinTarget(
   override fun newHandler(
     schema: Schema,
     moduleName: String?,
+    upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
@@ -329,6 +334,7 @@ data class ProtoTarget(
   override fun newHandler(
     schema: Schema,
     moduleName: String?,
+    upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
@@ -392,6 +398,7 @@ data class NullTarget(
   override fun newHandler(
     schema: Schema,
     moduleName: String?,
+    upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
@@ -429,6 +436,7 @@ data class CustomTargetBeta(
   override fun newHandler(
     schema: Schema,
     moduleName: String?,
+    upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
     profileLoader: ProfileLoader
