@@ -1,5 +1,6 @@
 apply plugin: 'application'
 apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = 'com.squareup.wire.WireCompiler'
@@ -17,6 +18,8 @@ dependencies {
   implementation project(':wire-java-generator')
   implementation deps.okio.jvm
   implementation deps.guava
+  implementation deps.kotlin.serialization
+  implementation deps.kaml
   testImplementation deps.junit
   testImplementation deps.assertj
   testImplementation deps.jimfs

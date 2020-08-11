@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.schema.WireRun
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.File
@@ -102,6 +103,23 @@ class CommandLineOptionsTest {
 
     compiler = parseArgs("--java_out=.", "--includes=com.example.Foo,com.example.Bar")
     assertThat(compiler.treeShakingRoots).containsExactly("com.example.Foo", "com.example.Bar")
+  }
+
+  @Test
+  fun manifestModules() {
+    val tmpFile = File.createTempFile("proto", ".yaml")
+    tmpFile.writeText("""
+      |a: {}
+      |b:
+      |  dependencies:
+      |   - a
+      |""".trimMargin())
+
+    val compiler =
+      parseArgs("--java_out=.", "--experimental-module-manifest=${tmpFile.absolutePath}")
+
+    assertThat(compiler.modules).isEqualTo(
+        mapOf("a" to WireRun.Module(), "b" to WireRun.Module(dependencies = setOf("a"))))
   }
 
   private fun parseArgs(vararg args: String) = WireCompiler.forArgs(args = *args)
