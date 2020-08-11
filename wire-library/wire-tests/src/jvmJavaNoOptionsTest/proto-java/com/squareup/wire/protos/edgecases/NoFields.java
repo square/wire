@@ -66,7 +66,7 @@ public final class NoFields extends Message<NoFields, NoFields.Builder> {
 
   private static final class ProtoAdapter_NoFields extends ProtoAdapter<NoFields> {
     public ProtoAdapter_NoFields() {
-      super(FieldEncoding.LENGTH_DELIMITED, NoFields.class, "type.googleapis.com/squareup.protos.edgecases.NoFields", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, NoFields.class, "type.googleapis.com/squareup.protos.edgecases.NoFields", Syntax.PROTO_2, null);
     }
 
     @Override

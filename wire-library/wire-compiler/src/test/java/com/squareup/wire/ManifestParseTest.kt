@@ -36,13 +36,13 @@ class ManifestParseTest {
       |three: {}
     """.trimMargin()
 
-    val manifest = Manifest.fromYaml(yaml)
-    assertThat(manifest.modules.keys).containsExactlyInAnyOrder("one", "two", "three")
+    val modules = parseManifestModules(yaml)
+    assertThat(modules.keys).containsExactlyInAnyOrder("one", "two", "three")
 
-    val one = manifest.modules.getValue("one")
+    val one = modules.getValue("one")
     assertThat(one.dependencies).containsExactlyInAnyOrder("two", "three")
-    assertThat(one.roots).containsExactlyInAnyOrder("example.A", "example.B")
-    assertThat(one.prunes).containsExactlyInAnyOrder("example.C", "example.D")
+    assertThat(one.pruningRules!!.roots).containsExactlyInAnyOrder("example.A", "example.B")
+    assertThat(one.pruningRules!!.prunes).containsExactlyInAnyOrder("example.C", "example.D")
   }
 
   @Test fun parseFormatFailsOnUnknownKey() {
@@ -53,7 +53,7 @@ class ManifestParseTest {
     """.trimMargin()
 
     try {
-      Manifest.fromYaml(yaml)
+      parseManifestModules(yaml)
       fail()
     } catch (e: Exception) {
       assertThat(e).hasMessageContaining("Unknown property 'includes'")
@@ -68,59 +68,8 @@ class ManifestParseTest {
       |two: {}
     """.trimMargin()
 
-    val manifest = Manifest.fromYaml(yaml)
-    assertThat(manifest.modules.keys).containsExactly("one", "two")
-    assertThat(manifest.modules.getValue("one").dependencies).containsExactly("two")
-  }
-
-  @Test fun dependencyCycleThrows() {
-    val yaml = """
-      |one:
-      |  dependencies:
-      |    - three
-      |two:
-      |  dependencies:
-      |   - one
-      |three:
-      |  dependencies:
-      |    - two
-    """.trimMargin()
-
-    try {
-      Manifest.fromYaml(yaml)
-      fail()
-    } catch (e: IllegalArgumentException) {
-      assertThat(e).hasMessage("""
-        |ERROR: Manifest modules contain dependency cycles:
-        | - [one, three, two]
-        |""".trimMargin())
-    }
-  }
-
-  @Test fun dependencyOrder() {
-    val yaml = """
-      |one:
-      |  dependencies:
-      |    - two
-      |    - three
-      |
-      |two:
-      |  dependencies:
-      |    - common2
-      |
-      |three:
-      |  dependencies:
-      |    - common1
-      |
-      |common1: {}
-      |
-      |common2: {}
-      |
-    """.trimMargin()
-
-    val manifest = Manifest.fromYaml(yaml)
-    assertThat(manifest.order.subList(0, 2)).containsExactlyInAnyOrder("common1", "common2")
-    assertThat(manifest.order.subList(2, 4)).containsExactlyInAnyOrder("two", "three")
-    assertThat(manifest.order).endsWith("one")
+    val modules = parseManifestModules(yaml)
+    assertThat(modules.keys).containsExactly("one", "two")
+    assertThat(modules.getValue("one").dependencies).containsExactly("two")
   }
 }

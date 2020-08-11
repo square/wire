@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.AssertionError
@@ -23,6 +24,9 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 class OneofOptions(
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<OneofOptions, Nothing>(ADAPTER, unknownFields) {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
@@ -31,9 +35,9 @@ class OneofOptions(
     adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<OneofOptions, Nothing>(ADAPTER, unknownFields) {
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -75,7 +79,8 @@ class OneofOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       OneofOptions::class, 
       "type.googleapis.com/google.protobuf.OneofOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: OneofOptions): Int {
         var size = value.unknownFields.size

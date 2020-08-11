@@ -19,7 +19,7 @@ import com.squareup.wire.schema.internal.isValidTag
 import com.squareup.wire.schema.internal.parser.ExtensionsElement
 import kotlin.jvm.JvmStatic
 
-class Extensions private constructor(
+data class Extensions(
   val location: Location,
   val documentation: String,
   val values: List<Any>

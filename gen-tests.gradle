@@ -98,7 +98,7 @@ task generateGsonAdapterCompactJavaTests(type: JavaExec) {
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2',
           '--java_out=wire-library/wire-gson-support/src/test/java',
           '--compact',
-          'all_types.proto'
+          'all_types_proto2.proto'
   ]
 }
 
@@ -418,7 +418,7 @@ task generateMoshiAdapterCompactJavaTests(type: JavaExec) {
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2',
           '--java_out=wire-library/wire-moshi-adapter/src/test/java',
           '--compact',
-          'all_types.proto'
+          'all_types_proto2.proto'
   ]
 }
 
@@ -491,8 +491,12 @@ task generateSharedJsonCompactJavaTests(type: JavaExec) {
           '--java_out=wire-library/wire-tests/src/jvmJsonJavaTest/proto-java',
           '--proto3-preview=UNSUPPORTED',
           '--compact',
-          'all_types.proto',
+          'all64.proto',
+          'all_types_proto2.proto',
+          'all_types_proto3.proto',
+          'all_structs.proto',
           'camel_case.proto',
+          'pizza.proto',
   ]
 }
 
@@ -507,8 +511,12 @@ task generateSharedJsonKotlinTests(type: JavaExec) {
           '--kotlin_out=wire-library/wire-tests/src/jvmJsonKotlinTest/proto-kotlin',
           '--proto3-preview=UNSUPPORTED',
           '--java_interop',
-          'all_types.proto',
+          'all64.proto',
+          'all_types_proto2.proto',
+          'all_types_proto3.proto',
+          'all_structs.proto',
           'camel_case.proto',
+          'pizza.proto',
   ]
 }
 

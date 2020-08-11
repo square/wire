@@ -17,7 +17,6 @@
 
 package com.squareup.wire
 
-import com.google.gson.GsonBuilder
 import com.google.protobuf.Any
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.Duration
@@ -27,9 +26,6 @@ import com.google.protobuf.Struct
 import com.google.protobuf.Timestamp
 import com.google.protobuf.Value
 import com.google.protobuf.util.JsonFormat
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
 import okio.ByteString
 import okio.buffer
@@ -42,14 +38,11 @@ import squareup.proto3.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto3.kotlin.alltypes.CamelCaseOuterClass
 import squareup.proto3.kotlin.pizza.PizzaOuterClass
 import java.io.File
+import java.lang.IllegalArgumentException
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as RequiredExtensionK
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
-import squareup.proto3.kotlin.alltypes.All64 as All64K
-import squareup.proto3.kotlin.alltypes.AllTypes as AllTypesK
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
-import squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion as BuyOneGetOnePromotionK
-import squareup.proto3.kotlin.pizza.FreeGarlicBreadPromotion as FreeGarlicBreadPromotionK
-import squareup.proto3.kotlin.pizza.Pizza as PizzaK
+import squareup.proto3.kotlin.alltypes.AllTypes as AllTypesK
 import squareup.proto3.kotlin.pizza.PizzaDelivery as PizzaDeliveryK
 
 class Proto3WireProtocCompatibilityTests {
@@ -87,235 +80,29 @@ class Proto3WireProtocCompatibilityTests {
             .setSeconds(-631152000L) // 1950-01-01T00:00:00.250Z.
             .setNanos(250_000_000)
             .build())
+        .setLoyalty(emptyMap<String, Any>().toStruct())
         .build()
-
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "pizzas": [{
-        |    "toppings": ["pineapple", "onion"]
-        |  }],
-        |  "promotion": {
-        |    "@type": "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion",
-        |    "coupon": "MAUI"
-        |  },
-        |  "deliveredWithinOrFree": "1799.500s",
-        |  "orderedAt": "1950-01-01T00:00:00.250Z"
-        |}
-        """.trimMargin()
 
     val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
         .add(PizzaOuterClass.BuyOneGetOnePromotion.getDescriptor())
         .add(PizzaOuterClass.FreeGarlicBreadPromotion.getDescriptor())
         .build()
 
+    // The shared proto schema don't have the same package.
+    val json = PIZZA_DELIVERY_JSON.replace(
+        "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion",
+        "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion"
+    )
+
     val jsonPrinter = JsonFormat.printer()
         .usingTypeRegistry(typeRegistry)
-    assertThat(jsonPrinter.print(pizzaDelivery)).isEqualTo(json)
+    assertJsonEquals(jsonPrinter.print(pizzaDelivery), json)
 
     val jsonParser = JsonFormat.parser().usingTypeRegistry(typeRegistry)
     val parsed = PizzaOuterClass.PizzaDelivery.newBuilder()
         .apply { jsonParser.merge(json, this) }
         .build()
     assertThat(parsed).isEqualTo(pizzaDelivery)
-  }
-
-  @Test fun wireJson() {
-    val pizzaDelivery = PizzaDeliveryK(
-        address = "507 Cross Street",
-        pizzas = listOf(PizzaK(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotionK(coupon = "MAUI")),
-        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L),
-        loyalty = emptyMap<String, Any?>(),
-        ordered_at = ofEpochSecond(-631152000L, 250_000_000L)
-    )
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "deliveredWithinOrFree": "1799.500s",
-        |  "pizzas": [
-        |    {
-        |      "toppings": [
-        |        "pineapple",
-        |        "onion"
-        |      ]
-        |    }
-        |  ],
-        |  "loyalty": {},
-        |  "promotion": {
-        |    "@type": "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion",
-        |    "coupon": "MAUI"
-        |  },
-        |  "orderedAt": "1950-01-01T00:00:00.250Z"
-        |}
-        """.trimMargin()
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory()
-            .plus(listOf(BuyOneGetOnePromotionK.ADAPTER, FreeGarlicBreadPromotionK.ADAPTER)))
-        .build()
-
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java).indent("  ")
-    assertJsonEquals(jsonAdapter.toJson(pizzaDelivery), json)
-    assertThat(jsonAdapter.fromJson(json)).isEqualTo(pizzaDelivery)
-  }
-
-  @Test fun gsonJson() {
-    val pizzaDelivery = PizzaDeliveryK(
-        address = "507 Cross Street",
-        pizzas = listOf(PizzaK(toppings = listOf("pineapple", "onion"))),
-        delivered_within_or_free = durationOfSeconds(1_799L, 500_000_000L)
-    )
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "deliveredWithinOrFree": "1799.500s",
-        |  "phoneNumber": "",
-        |  "pizzas": [
-        |    {
-        |      "toppings": [
-        |        "pineapple",
-        |        "onion"
-        |      ]
-        |    }
-        |  ]
-        |}
-        """.trimMargin()
-
-    val gson = GsonBuilder().registerTypeAdapterFactory(WireTypeAdapterFactory())
-        .disableHtmlEscaping()
-        .create()
-
-    assertJsonEquals(gson.toJson(pizzaDelivery), json)
-    assertThat(gson.fromJson(json, PizzaDeliveryK::class.java)).isEqualTo(pizzaDelivery)
-  }
-
-  @Test fun wireProtocJsonRoundTrip() {
-    val protocMessage = PizzaOuterClass.PizzaDelivery.newBuilder()
-        .setAddress("507 Cross Street")
-        .addPizzas(PizzaOuterClass.Pizza.newBuilder()
-            .addToppings("pineapple")
-            .addToppings("onion")
-            .build())
-        .setPromotion(Any.pack(PizzaOuterClass.BuyOneGetOnePromotion.newBuilder()
-            .setCoupon("MAUI")
-            .build()))
-        .setLoyalty(Struct.newBuilder().build())
-        .build()
-
-    val typeRegistry = JsonFormat.TypeRegistry.newBuilder()
-        .add(PizzaOuterClass.BuyOneGetOnePromotion.getDescriptor())
-        .add(PizzaOuterClass.FreeGarlicBreadPromotion.getDescriptor())
-        .build()
-
-    val jsonPrinter = JsonFormat.printer()
-        .usingTypeRegistry(typeRegistry)
-    val protocMessageJson = jsonPrinter.print(protocMessage)
-
-    val wireMessage = PizzaDeliveryK(
-        address = "507 Cross Street",
-        pizzas = listOf(PizzaK(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotionK(coupon = "MAUI")),
-        loyalty = emptyMap<String, Any?>()
-    )
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory()
-            .plus(listOf(BuyOneGetOnePromotionK.ADAPTER, FreeGarlicBreadPromotionK.ADAPTER)))
-        .build()
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java)
-    val moshiMessageJson = jsonAdapter.toJson(wireMessage)
-
-    // Parsing the two json because this should be order insensitive.
-    assertJsonEquals(moshiMessageJson, protocMessageJson)
-
-    // Now each parses the other's json.
-    val jsonParser = JsonFormat.parser().usingTypeRegistry(typeRegistry)
-    val protocMessageDecodedFromWireJson = PizzaOuterClass.PizzaDelivery.newBuilder()
-        .apply { jsonParser.merge(moshiMessageJson, this) }
-        .build()
-
-    val wireMessageDecodedFromProtocJson = jsonAdapter.fromJson(protocMessageJson)
-
-    assertThat(protocMessageDecodedFromWireJson).isEqualTo(protocMessage)
-    assertThat(wireMessageDecodedFromProtocJson).isEqualTo(wireMessage)
-  }
-
-  @Test fun unregisteredTypeOnReading() {
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java)
-
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "pizzas": [
-        |    {
-        |      "toppings": [
-        |        "pineapple",
-        |        "onion"
-        |      ]
-        |    }
-        |  ],
-        |  "promotion": {
-        |    "@type": "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion",
-        |    "coupon": "MAUI"
-        |  }
-        |}
-        """.trimMargin()
-
-    try {
-      jsonAdapter.fromJson(json)
-      fail()
-    } catch (expected: JsonDataException) {
-      assertThat(expected).hasMessage("Cannot resolve type: " +
-          "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion in \$.promotion")
-    }
-  }
-
-  @Test fun unregisteredTypeOnWriting() {
-    val pizzaDelivery = PizzaDeliveryK(
-        address = "507 Cross Street",
-        pizzas = listOf(PizzaK(toppings = listOf("pineapple", "onion"))),
-        promotion = AnyMessage.pack(BuyOneGetOnePromotionK(coupon = "MAUI"))
-    )
-
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java)
-    try {
-      jsonAdapter.toJson(pizzaDelivery)
-      fail()
-    } catch (expected: JsonDataException) {
-      assertThat(expected)
-          .hasMessage("Cannot find type for url: " +
-              "type.googleapis.com/squareup.proto3.kotlin.pizza.BuyOneGetOnePromotion " +
-              "in \$.promotion.@type")
-    }
-  }
-
-  @Test fun anyJsonWithoutType() {
-    val jsonAdapter = moshi.adapter(PizzaDeliveryK::class.java)
-
-    val json = """
-        |{
-        |  "address": "507 Cross Street",
-        |  "pizzas": [
-        |    {
-        |      "toppings": [
-        |        "pineapple",
-        |        "onion"
-        |      ]
-        |    }
-        |  ],
-        |  "promotion": {
-        |    "coupon": "MAUI"
-        |  }
-        |}
-        """.trimMargin()
-
-    try {
-      jsonAdapter.fromJson(json)
-      fail()
-    } catch (expected: JsonDataException) {
-      assertThat(expected).hasMessage("expected @type in \$.promotion")
-    }
   }
 
   @Test fun serializeDefaultAllTypesProtoc() {
@@ -334,8 +121,7 @@ class Proto3WireProtocCompatibilityTests {
   @Test fun explicitIdentityAllTypes() {
     val protocBytes = explicitIdentityAllTypesProtoc.toByteArray()
     assertThat(AllTypesJ.ADAPTER.encode(explicitIdentityAllTypesWireJava)).isEqualTo(protocBytes)
-    // TODO(benoit)
-    // assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireJava)
+     assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireJava)
     assertThat(AllTypesK.ADAPTER.encode(explicitIdentityAllTypesWireKotlin)).isEqualTo(protocBytes)
     assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireKotlin)
   }
@@ -352,11 +138,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(wireMessageKotlin)
   }
 
-  @Test fun serializeDefaultAllTypesMoshi() {
-    assertJsonEquals(DEFAULT_ALL_TYPES_JSON,
-        moshi.adapter(AllTypesK::class.java).toJson(defaultAllTypesWireKotlin))
-  }
-
   @Test fun deserializeDefaultAllTypesProtoc() {
     val allTypes = defaultAllTypesProtoc
     val jsonParser = JsonFormat.parser()
@@ -370,16 +151,6 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(allTypes))
   }
 
-  @Test fun deserializeDefaultAllTypesMoshi() {
-    val allTypesAdapter: JsonAdapter<AllTypesK> = moshi.adapter(AllTypesK::class.java)
-
-    val allTypes = defaultAllTypesWireKotlin
-    val parsed = allTypesAdapter.fromJson(DEFAULT_ALL_TYPES_JSON)
-    assertThat(parsed).isEqualTo(allTypes)
-    assertThat(parsed.toString()).isEqualTo(allTypes.toString())
-    assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes))
-  }
-
   @Test fun serializeIdentityAllTypesProtoc() {
     val identityAllTypes = AllTypesOuterClass.AllTypes.newBuilder().build()
 
@@ -387,79 +158,10 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(IDENTITY_ALL_TYPES_JSON, jsonPrinter.print(identityAllTypes))
   }
 
-  @Test fun serializeIdentityAllTypesMoshi() {
-    // Moshi prints empty lists and empty arrays.
-    val moshiJson = """{
-      |  "mapInt32Int32": {},
-      |  "mapStringEnum": {},
-      |  "mapStringMessage": {},
-      |  "mapStringString": {},
-      |  "packBool": [],
-      |  "packDouble": [],
-      |  "packFixed32": [],
-      |  "packFixed64": [],
-      |  "packFloat": [],
-      |  "packInt32": [],
-      |  "packInt64": [],
-      |  "packNestedEnum": [],
-      |  "packSfixed32": [],
-      |  "packSfixed64": [],
-      |  "packSint32": [],
-      |  "packSint64": [],
-      |  "packUint32": [],
-      |  "packUint64": [],
-      |  "repBool": [],
-      |  "repBytes": [],
-      |  "repDouble": [],
-      |  "repFixed32": [],
-      |  "repFixed64": [],
-      |  "repFloat": [],
-      |  "repInt32": [],
-      |  "repInt64": [],
-      |  "repNestedEnum": [],
-      |  "repNestedMessage": [],
-      |  "repSfixed32": [],
-      |  "repSfixed64": [],
-      |  "repSint32": [],
-      |  "repSint64": [],
-      |  "repString": [],
-      |  "repUint32": [],
-      |  "repUint64": []
-      |${IDENTITY_ALL_TYPES_JSON.substring(1)}""".trimMargin()
-
-    val allTypes = AllTypesK()
-    assertJsonEquals(moshiJson, moshi.adapter(AllTypesK::class.java).toJson(allTypes))
-  }
-
   @Test fun serializeExplicitIdentityAllTypesProtoc() {
     val jsonPrinter = JsonFormat.printer()
     assertJsonEquals(EXPLICIT_IDENTITY_ALL_TYPES_JSON,
         jsonPrinter.print(explicitIdentityAllTypesProtoc))
-  }
-
-  @Test fun serializeExplicitIdentityAllTypesMoshi() {
-    // Moshi prints empty lists and empty arrays.
-    val moshiJson = """{
-      |  "mapStringString": {},
-      |  "repBool": [],
-      |  "repUint64": [],
-      |  "repDouble": [],
-      |  "repFixed64": [],
-      |  "repSint64": [],
-      |  "repNestedMessage": [],
-      |  "repSfixed64": [],
-      |  "repFloat": [],
-      |  "repInt64": [],
-      |  "packFixed32": [],
-      |  "packInt32": [],
-      |  "packSint32": [],
-      |  "packUint32": [],
-      |  "repNestedEnum": [],
-      |  "repSfixed32": [],
-      |${EXPLICIT_IDENTITY_ALL_TYPES_JSON.substring(1)}""".trimMargin()
-
-    assertJsonEquals(moshiJson,
-        moshi.adapter(AllTypesK::class.java).toJson(explicitIdentityAllTypesWireKotlin))
   }
 
   @Test fun deserializeIdentityAllTypesProtoc() {
@@ -475,16 +177,6 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(identityAllTypes))
   }
 
-  @Test fun deserializeIdentityAllTypesMoshi() {
-    val allTypesAdapter: JsonAdapter<AllTypesK> = moshi.adapter(AllTypesK::class.java)
-
-    val allTypes = AllTypesK()
-    val parsed = allTypesAdapter.fromJson(IDENTITY_ALL_TYPES_JSON)
-    assertThat(parsed).isEqualTo(allTypes)
-    assertThat(parsed.toString()).isEqualTo(allTypes.toString())
-    assertJsonEquals(allTypesAdapter.toJson(parsed), allTypesAdapter.toJson(allTypes))
-  }
-
   @Test fun deserializeExplicitIdentityAllTypesProtoc() {
     val jsonParser = JsonFormat.parser()
     val parsed = AllTypesOuterClass.AllTypes.newBuilder()
@@ -495,43 +187,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed.toString()).isEqualTo(explicitIdentityAllTypesProtoc.toString())
     val jsonPrinter = JsonFormat.printer()
     assertJsonEquals(jsonPrinter.print(parsed), jsonPrinter.print(explicitIdentityAllTypesProtoc))
-  }
-
-  @Test fun deserializeExplicitIdentityAllTypesMoshi() {
-    val allTypesAdapter: JsonAdapter<AllTypesK> = moshi.adapter(AllTypesK::class.java)
-
-    val parsed = allTypesAdapter.fromJson(EXPLICIT_IDENTITY_ALL_TYPES_JSON)
-    assertThat(parsed).isEqualTo(explicitIdentityAllTypesWireKotlin)
-    assertThat(parsed.toString()).isEqualTo(explicitIdentityAllTypesWireKotlin.toString())
-    assertJsonEquals(allTypesAdapter.toJson(parsed),
-        allTypesAdapter.toJson(explicitIdentityAllTypesWireKotlin))
-  }
-
-  @Test fun `int64s are encoded with quotes and decoded with either`() {
-    val all64Adapter: JsonAdapter<All64K> = moshi.adapter(All64K::class.java)
-
-    val signed = All64K(my_sint64 = 123, rep_sint64 = listOf(456))
-    assertThat(all64Adapter.fromJson("""{"mySint64":"123", "repSint64": ["456"]}""")).isEqualTo(
-        signed)
-    assertThat(all64Adapter.fromJson("""{"mySint64":123, "repSint64": [456]}""")).isEqualTo(signed)
-    assertThat(all64Adapter.fromJson("""{"mySint64":123.0, "repSint64": [456.0]}""")).isEqualTo(
-        signed)
-
-    val signedJson = all64Adapter.toJson(signed)
-    assertThat(signedJson).contains(""""mySint64":"123"""")
-    assertThat(signedJson).contains(""""repSint64":["456"]""")
-
-    val unsigned = All64K(my_uint64 = 123, rep_uint64 = listOf(456))
-    assertThat(all64Adapter.fromJson("""{"myUint64":"123", "repUint64": ["456"]}""")).isEqualTo(
-        unsigned)
-    assertThat(all64Adapter.fromJson("""{"myUint64":123, "repUint64": [456]}""")).isEqualTo(
-        unsigned)
-    assertThat(all64Adapter.fromJson("""{"myUint64":123.0, "repUint64": [456.0]}""")).isEqualTo(
-        unsigned)
-
-    val unsignedJson = all64Adapter.toJson(unsigned)
-    assertThat(unsignedJson).contains(""""myUint64":"123"""")
-    assertThat(unsignedJson).contains(""""repUint64":["456"]""")
   }
 
   @Test fun `protoc validation camel case json`() {
@@ -573,34 +228,6 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(parsed).isEqualTo(all64)
   }
 
-  @Test fun all64JsonMoshiMaxValue() {
-    val all64 = All64K(
-        my_int64 = Long.MAX_VALUE,
-        my_uint64 = Long.MAX_VALUE,
-        my_sint64 = Long.MAX_VALUE,
-        my_fixed64 = Long.MAX_VALUE,
-        my_sfixed64 = Long.MAX_VALUE,
-        rep_int64 = list(Long.MAX_VALUE),
-        rep_uint64 = list(Long.MAX_VALUE),
-        rep_sint64 = list(Long.MAX_VALUE),
-        rep_fixed64 = list(Long.MAX_VALUE),
-        rep_sfixed64 = list(Long.MAX_VALUE),
-        pack_int64 = list(Long.MAX_VALUE),
-        pack_uint64 = list(Long.MAX_VALUE),
-        pack_sint64 = list(Long.MAX_VALUE),
-        pack_fixed64 = list(Long.MAX_VALUE),
-        pack_sfixed64 = list(Long.MAX_VALUE),
-        oneof_int64 = Long.MAX_VALUE
-    )
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
-    val jsonAdapter = moshi.adapter(All64K::class.java).indent("  ")
-    assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON_MAX_VALUE)
-    assertThat(jsonAdapter.fromJson(ALL_64_JSON_MAX_VALUE)).isEqualTo(all64)
-  }
-
   @Test fun all64JsonProtocMinValue() {
     val all64 = All64OuterClass.All64.newBuilder()
         .setMyInt64(Long.MIN_VALUE)
@@ -629,52 +256,6 @@ class Proto3WireProtocCompatibilityTests {
         .apply { jsonParser.merge(ALL_64_JSON_MIN_VALUE, this) }
         .build()
     assertThat(parsed).isEqualTo(all64)
-  }
-
-  @Test fun all64JsonMoshiMinValue() {
-    val all64 = All64K(
-        my_int64 = Long.MIN_VALUE,
-        my_uint64 = Long.MIN_VALUE,
-        my_sint64 = Long.MIN_VALUE,
-        my_fixed64 = Long.MIN_VALUE,
-        my_sfixed64 = Long.MIN_VALUE,
-        rep_int64 = list(Long.MIN_VALUE),
-        rep_uint64 = list(Long.MIN_VALUE),
-        rep_sint64 = list(Long.MIN_VALUE),
-        rep_fixed64 = list(Long.MIN_VALUE),
-        rep_sfixed64 = list(Long.MIN_VALUE),
-        pack_int64 = list(Long.MIN_VALUE),
-        pack_uint64 = list(Long.MIN_VALUE),
-        pack_sint64 = list(Long.MIN_VALUE),
-        pack_fixed64 = list(Long.MIN_VALUE),
-        pack_sfixed64 = list(Long.MIN_VALUE),
-        oneof_int64 = Long.MIN_VALUE
-    )
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
-    val jsonAdapter = moshi.adapter(All64K::class.java).indent("  ")
-    assertJsonEquals(jsonAdapter.toJson(all64), ALL_64_JSON_MIN_VALUE)
-    assertThat(jsonAdapter.fromJson(ALL_64_JSON_MIN_VALUE)).isEqualTo(all64)
-  }
-
-  @Test fun crashOnBigNumbersWhenIntIsSigned() {
-    val json = """{"mySint64": "9223372036854775808"}"""
-
-    val all64 = All64K()
-
-    val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
-    val jsonAdapter = moshi.adapter(All64K::class.java)
-    try {
-      assertThat(jsonAdapter.fromJson(json)).isEqualTo(all64)
-      fail()
-    } catch (e: JsonDataException) {
-      assertThat(e)
-          .hasMessageContaining("decode failed: 9223372036854775808 at path \$.mySint64")
-    }
   }
 
   @Test fun durationProto() {
@@ -735,49 +316,62 @@ class Proto3WireProtocCompatibilityTests {
 
   @Test fun minusDoubleZero() {
     val protoc = AllTypesOuterClass.AllTypes.newBuilder()
-        .setDouble(-0.0)
+        .setMyDouble(-0.0)
         .build()
-    val wireKotlin = AllTypesK(squareup_proto3_kotlin_alltypes_double = -0.0)
+    val wireKotlin = AllTypesK(my_double = -0.0)
 
     val protocByteArray = protoc.toByteArray()
     assertThat(AllTypesK.ADAPTER.encode(wireKotlin)).isEqualTo(protocByteArray)
     assertThat(AllTypesK.ADAPTER.decode(protocByteArray)).isEqualTo(wireKotlin)
 
     val protocJson = JsonFormat.printer().print(protoc)
-    val wireKotlinJson = moshi.adapter(AllTypesK::class.java).toJson(wireKotlin)
-    assertJsonEquals("{\"double\": -0.0}", protocJson)
-    // We parse-check because Wire prints empty lists and empty maps while protoc doesn't.
-    assertThat(wireKotlinJson).contains("\"double\":-0.0")
+    assertJsonEquals("{\"myDouble\": -0.0}", protocJson)
+  }
 
-    val parsedWireKotlin = moshi.adapter(AllTypesK::class.java).fromJson(protocJson)
-    assertThat(parsedWireKotlin).isEqualTo(wireKotlin)
+  @Test fun cannotPassNullToIdentityString(){
+    try {
+      AllTypesJ.Builder().string(null).build()
+      fail()
+    } catch (exception: IllegalArgumentException) {
+      assertThat(exception).hasMessage("builder.string == null")
+    }
+  }
+
+  @Test fun cannotPassNullToIdentityBytes(){
+    try {
+      AllTypesJ.Builder().bytes(null).build()
+      fail()
+    } catch (exception: IllegalArgumentException) {
+      assertThat(exception).hasMessage("builder.bytes == null")
+    }
+  }
+
+  @Test fun cannotPassNullToIdentityEnum(){
+    try {
+      AllTypesJ.Builder().nested_enum(null).build()
+      fail()
+    } catch (exception: IllegalArgumentException) {
+      assertThat(exception).hasMessage("builder.nested_enum == null")
+    }
   }
 
   companion object {
-    private val moshi = Moshi.Builder()
-        .add(WireJsonAdapterFactory())
-        .build()
-
-    private val gson = GsonBuilder().registerTypeAdapterFactory(WireTypeAdapterFactory())
-        .disableHtmlEscaping()
-        .create()
-
     private val defaultAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
-        .setInt32(111)
-        .setUint32(112)
-        .setSint32(113)
-        .setFixed32(114)
-        .setSfixed32(115)
-        .setInt64(116L)
-        .setUint64(117L)
-        .setSint64(118L)
-        .setFixed64(119L)
-        .setSfixed64(120L)
-        .setBool(true)
-        .setFloat(122.0F)
-        .setDouble(123.0)
-        .setString("124")
-        .setBytes(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray()))
+        .setMyInt32(111)
+        .setMyUint32(112)
+        .setMySint32(113)
+        .setMyFixed32(114)
+        .setMySfixed32(115)
+        .setMyInt64(116L)
+        .setMyUint64(117L)
+        .setMySint64(118L)
+        .setMyFixed64(119L)
+        .setMySfixed64(120L)
+        .setMyBool(true)
+        .setMyFloat(122.0F)
+        .setMyDouble(123.0)
+        .setMyString("124")
+        .setMyBytes(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray()))
         .setNestedEnum(AllTypesOuterClass.AllTypes.NestedEnum.A)
         .setNestedMessage(AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build())
         .addAllRepInt32(list(111))
@@ -822,21 +416,21 @@ class Proto3WireProtocCompatibilityTests {
         .build()
 
     private val defaultAllTypesWireKotlin = AllTypesK(
-        squareup_proto3_kotlin_alltypes_int32 = 111,
-        squareup_proto3_kotlin_alltypes_uint32 = 112,
-        squareup_proto3_kotlin_alltypes_sint32 = 113,
-        squareup_proto3_kotlin_alltypes_fixed32 = 114,
-        squareup_proto3_kotlin_alltypes_sfixed32 = 115,
-        squareup_proto3_kotlin_alltypes_int64 = 116L,
-        squareup_proto3_kotlin_alltypes_uint64 = 117L,
-        squareup_proto3_kotlin_alltypes_sint64 = 118L,
-        squareup_proto3_kotlin_alltypes_fixed64 = 119L,
-        squareup_proto3_kotlin_alltypes_sfixed64 = 120L,
-        squareup_proto3_kotlin_alltypes_bool = true,
-        squareup_proto3_kotlin_alltypes_float = 122.0F,
-        squareup_proto3_kotlin_alltypes_double = 123.0,
-        squareup_proto3_kotlin_alltypes_string = "124",
-        squareup_proto3_kotlin_alltypes_bytes = ByteString.of(123, 125),
+        my_int32 = 111,
+        my_uint32 = 112,
+        my_sint32 = 113,
+        my_fixed32 = 114,
+        my_sfixed32 = 115,
+        my_int64 = 116L,
+        my_uint64 = 117L,
+        my_sint64 = 118L,
+        my_fixed64 = 119L,
+        my_sfixed64 = 120L,
+        my_bool = true,
+        my_float = 122.0F,
+        my_double = 123.0,
+        my_string = "124",
+        my_bytes = ByteString.of(123, 125),
         nested_enum = AllTypesK.NestedEnum.A,
         nested_message = AllTypesK.NestedMessage(a = 999),
         rep_int32 = list(111),
@@ -933,47 +527,37 @@ class Proto3WireProtocCompatibilityTests {
         .oneof_int32(0)
         .build()
 
-    private val CAMEL_CASE_JSON =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "camel_case_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val CAMEL_CASE_JSON = loadJson("camel_case_proto3.json")
 
-    private val DEFAULT_ALL_TYPES_JSON =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_types_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val DEFAULT_ALL_TYPES_JSON = loadJson("all_types_proto3.json")
 
-    private val ALL_64_JSON_MIN_VALUE =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_64_min_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val ALL_64_JSON_MIN_VALUE = loadJson("all_64_min_proto3.json")
 
-    private val ALL_64_JSON_MAX_VALUE =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_64_max_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val ALL_64_JSON_MAX_VALUE = loadJson("all_64_max_proto3.json")
 
-    private val IDENTITY_ALL_TYPES_JSON =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_types_identity_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val IDENTITY_ALL_TYPES_JSON = loadJson("all_types_identity_proto3.json")
+
+    private val PIZZA_DELIVERY_JSON = loadJson("pizza_delivery_proto3.json")
 
     /** This is used to confirmed identity values are emitted in lists and maps. */
-    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON =
-        File("../wire-library/wire-tests/src/commonTest/shared/json", "all_types_explicit_identity_proto3.json")
-            .source().use { it.buffer().readUtf8() }
+    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON = loadJson("all_types_explicit_identity_proto3.json")
 
     private val explicitIdentityAllTypesWireKotlin = AllTypesK(
-        squareup_proto3_kotlin_alltypes_int32 = 0,
-        squareup_proto3_kotlin_alltypes_uint32 = 0,
-        squareup_proto3_kotlin_alltypes_sint32 = 0,
-        squareup_proto3_kotlin_alltypes_fixed32 = 0,
-        squareup_proto3_kotlin_alltypes_sfixed32 = 0,
-        squareup_proto3_kotlin_alltypes_int64 = 0L,
-        squareup_proto3_kotlin_alltypes_uint64 = 0L,
-        squareup_proto3_kotlin_alltypes_sint64 = 0L,
-        squareup_proto3_kotlin_alltypes_fixed64 = 0L,
-        squareup_proto3_kotlin_alltypes_sfixed64 = 0L,
-        squareup_proto3_kotlin_alltypes_bool = false,
-        squareup_proto3_kotlin_alltypes_float = 0F,
-        squareup_proto3_kotlin_alltypes_double = 0.0,
-        squareup_proto3_kotlin_alltypes_string = "",
-        squareup_proto3_kotlin_alltypes_bytes = ByteString.EMPTY,
+        my_int32 = 0,
+        my_uint32 = 0,
+        my_sint32 = 0,
+        my_fixed32 = 0,
+        my_sfixed32 = 0,
+        my_int64 = 0L,
+        my_uint64 = 0L,
+        my_sint64 = 0L,
+        my_fixed64 = 0L,
+        my_sfixed64 = 0L,
+        my_bool = false,
+        my_float = 0F,
+        my_double = 0.0,
+        my_string = "",
+        my_bytes = ByteString.EMPTY,
         nested_enum = AllTypesK.NestedEnum.UNKNOWN,
         nested_message = AllTypesK.NestedMessage(a = 0),
         rep_int32 = list(0),
@@ -1063,27 +647,27 @@ class Proto3WireProtocCompatibilityTests {
         .pack_double(list(0.0))
         .pack_nested_enum(list(AllTypesJ.NestedEnum.UNKNOWN))
         .map_int32_int32(mapOf(0 to 0))
-        .map_string_message(mapOf("" to AllTypesJ.NestedMessage(null)))
+        .map_string_message(mapOf("" to AllTypesJ.NestedMessage.Builder().build()))
         .map_string_enum(mapOf("" to AllTypesJ.NestedEnum.UNKNOWN))
         .oneof_int32(0)
         .build()
 
     private val explicitIdentityAllTypesProtoc = AllTypesOuterClass.AllTypes.newBuilder()
-        .setInt32(0)
-        .setUint32(0)
-        .setSint32(0)
-        .setFixed32(0)
-        .setSfixed32(0)
-        .setInt64(0L)
-        .setUint64(0L)
-        .setSint64(0L)
-        .setFixed64(0L)
-        .setSfixed64(0L)
-        .setBool(false)
-        .setFloat(0F)
-        .setDouble(0.0)
-        .setString("")
-        .setBytes(com.google.protobuf.ByteString.copyFrom(ByteString.EMPTY.toByteArray()))
+        .setMyInt32(0)
+        .setMyUint32(0)
+        .setMySint32(0)
+        .setMyFixed32(0)
+        .setMySfixed32(0)
+        .setMyInt64(0L)
+        .setMyUint64(0L)
+        .setMySint64(0L)
+        .setMyFixed64(0L)
+        .setMySfixed64(0L)
+        .setMyBool(false)
+        .setMyFloat(0F)
+        .setMyDouble(0.0)
+        .setMyString("")
+        .setMyBytes(com.google.protobuf.ByteString.copyFrom(ByteString.EMPTY.toByteArray()))
         .setNestedEnum(AllTypesOuterClass.AllTypes.NestedEnum.UNKNOWN)
         .setNestedMessage(AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(0).build())
         .addAllRepInt32(list(0))
@@ -1127,6 +711,11 @@ class Proto3WireProtocCompatibilityTests {
 
     private fun <T : kotlin.Any> list(t: T): List<T> {
       return listOf(t, t)
+    }
+
+    private fun loadJson(fileName: String): String {
+      return File("../wire-library/wire-tests/src/commonTest/shared/json", fileName)
+          .source().use { it.buffer().readUtf8() }
     }
   }
 }

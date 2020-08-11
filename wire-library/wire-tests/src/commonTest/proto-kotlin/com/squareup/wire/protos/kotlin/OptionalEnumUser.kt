@@ -72,7 +72,8 @@ class OptionalEnumUser(
       FieldEncoding.LENGTH_DELIMITED, 
       OptionalEnumUser::class, 
       "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: OptionalEnumUser): Int {
         var size = value.unknownFields.size
@@ -120,7 +121,8 @@ class OptionalEnumUser(
       @JvmField
       val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
         OptionalEnum::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): OptionalEnum? = OptionalEnum.fromValue(value)
       }

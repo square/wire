@@ -486,7 +486,7 @@ class Linker {
         }
 
         is Service -> {
-          error.append("$prefix service ${context.type()} (${context.location()})")
+          error.append("$prefix service ${context.type} (${context.location})")
         }
 
         is Extensions -> {

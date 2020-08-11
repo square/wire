@@ -129,7 +129,8 @@ class EnumValueDescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       EnumValueDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.EnumValueDescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: EnumValueDescriptorProto): Int {
         var size = value.unknownFields.size

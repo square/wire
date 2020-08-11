@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
@@ -20,6 +21,9 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 class ExtensionRangeOptions(
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<ExtensionRangeOptions, ExtensionRangeOptions.Builder>(ADAPTER, unknownFields) {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
@@ -29,9 +33,9 @@ class ExtensionRangeOptions(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<ExtensionRangeOptions, ExtensionRangeOptions.Builder>(ADAPTER, unknownFields) {
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.uninterpreted_option = uninterpreted_option
@@ -93,7 +97,8 @@ class ExtensionRangeOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       ExtensionRangeOptions::class, 
       "type.googleapis.com/google.protobuf.ExtensionRangeOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: ExtensionRangeOptions): Int {
         var size = value.unknownFields.size

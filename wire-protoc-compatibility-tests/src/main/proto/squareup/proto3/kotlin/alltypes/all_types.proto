@@ -27,21 +27,21 @@ message AllTypes {
     int32 a = 1;
   }
 
-  int32 int32 = 1;
-  uint32 uint32 = 2;
-  sint32 sint32 = 3;
-  fixed32 fixed32 = 4;
-  sfixed32 sfixed32 = 5;
-  int64 int64 = 6;
-  uint64 uint64 = 7;
-  sint64 sint64 = 8;
-  fixed64 fixed64 = 9;
-  sfixed64 sfixed64 = 10;
-  bool bool = 11;
-  float float = 12;
-  double double = 13;
-  string string = 14;
-  bytes bytes = 15;
+  int32 my_int32 = 1;
+  uint32 my_uint32 = 2;
+  sint32 my_sint32 = 3;
+  fixed32 my_fixed32 = 4;
+  sfixed32 my_sfixed32 = 5;
+  int64 my_int64 = 6;
+  uint64 my_uint64 = 7;
+  sint64 my_sint64 = 8;
+  fixed64 my_fixed64 = 9;
+  sfixed64 my_sfixed64 = 10;
+  bool my_bool = 11;
+  float my_float = 12;
+  double my_double = 13;
+  string my_string = 14;
+  bytes my_bytes = 15;
   NestedEnum nested_enum = 16;
   NestedMessage nested_message = 17;
 

@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -33,12 +34,7 @@ class ServiceDescriptorProto(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val name: String? = null,
-  @field:WireField(
-    tag = 2,
-    adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val method: List<MethodDescriptorProto> = emptyList(),
+  method: List<MethodDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.google.protobuf.ServiceOptions#ADAPTER"
@@ -46,6 +42,13 @@ class ServiceDescriptorProto(
   val options: ServiceOptions? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<ServiceDescriptorProto, Nothing>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 2,
+    adapter = "com.google.protobuf.MethodDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val method: List<MethodDescriptorProto> = immutableCopyOf("method", method)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -96,7 +99,8 @@ class ServiceDescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       ServiceDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.ServiceDescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: ServiceDescriptorProto): Int {
         var size = value.unknownFields.size

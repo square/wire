@@ -114,7 +114,7 @@ public final class OneExtension extends Message<OneExtension, OneExtension.Build
 
   private static final class ProtoAdapter_OneExtension extends ProtoAdapter<OneExtension> {
     public ProtoAdapter_OneExtension() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneExtension.class, "type.googleapis.com/squareup.protos.one_extension.OneExtension", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, OneExtension.class, "type.googleapis.com/squareup.protos.one_extension.OneExtension", Syntax.PROTO_2, null);
     }
 
     @Override

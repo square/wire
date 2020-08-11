@@ -18,6 +18,8 @@ package com.squareup.wire.schema
 import com.squareup.wire.ConsoleWireLogger
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireLogger
+import com.squareup.wire.schema.PartitionedSchema.Partition
+import com.squareup.wire.schema.internal.DagChecker
 import com.squareup.wire.schema.internal.TypeMover
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -170,17 +172,48 @@ data class WireRun(
    */
   val targets: List<Target>,
 
+  /**
+   * A map from module dir to module info which dictates how the loaded types are partitioned and
+   * generated.
+   *
+   * When empty everything is generated in the root output directory.
+   * If desired, multiple modules can be specified along with dependencies between them. Types
+   * which appear in dependencies will not be re-generated.
+   */
+  val modules: Map<String, Module> = emptyMap(),
+
   /** True to build proto3 artifacts. This is unsupported and does not work. */
   val proto3Preview: Boolean = false
 ) {
+  data class Module(
+    val dependencies: Set<String> = emptySet(),
+    val pruningRules: PruningRules? = null
+  )
+
+  init {
+    val dagChecker = DagChecker(modules.keys) { moduleName ->
+      modules.getValue(moduleName).dependencies
+    }
+    val cycles = dagChecker.check()
+    require(cycles.isEmpty()) {
+      buildString {
+        append("ERROR: Modules contain dependency cycle(s):\n")
+        for (cycle in cycles) {
+          append(" - ")
+          append(cycle)
+          append('\n')
+        }
+      }
+    }
+  }
 
   fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
-    return NewSchemaLoader(fs).use { newSchemaLoader ->
+    return SchemaLoader(fs).use { newSchemaLoader ->
       execute(fs, logger, newSchemaLoader)
     }
   }
 
-  private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: NewSchemaLoader) {
+  private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: SchemaLoader) {
     schemaLoader.initRoots(sourcePath, protoPath)
 
     // Validate the schema and resolve references
@@ -197,35 +230,56 @@ data class WireRun(
           .exclude(it.excludes)
           .build()
     }
-    val targetToSchemaHandler = targets.associateWith {
-      it.newHandler(schema, fs, logger, schemaLoader)
-    }
     val targetsExclusiveLast = targets.sortedBy { it.exclusive }
 
-    // Call each target.
+    val partitions = if (modules.isNotEmpty()) {
+      val partitionedSchema = schema.partition(modules)
+      // TODO handle errors and warnings
+      partitionedSchema.partitions
+    } else {
+      // Synthesize a single partition that includes everything from the schema.
+      mapOf(null to Partition(schema))
+    }
+
     val skippedForSyntax = mutableListOf<ProtoFile>()
     val claimedPaths = mutableMapOf<Path, String>()
-    for (protoFile in schema.protoFiles) {
-      if (protoFile.syntax == Syntax.PROTO_3 && !proto3Preview) {
-        skippedForSyntax += protoFile
-        continue
-      }
-      if (protoFile.location.path !in sourceLocationPaths &&
-          protoFile.location.path !in moveTargetPaths) {
-        continue
+    for ((moduleName, partition) in partitions) {
+      val targetToSchemaHandler = targets.associateWith {
+        it.newHandler(
+            partition.schema, moduleName, partition.transitiveUpstreamTypes, fs, logger,
+            schemaLoader
+        )
       }
 
-      val claimedDefinitions = ClaimedDefinitions()
-      claimedDefinitions.claim(ProtoType.ANY)
+      // Call each target.
+      for (protoFile in partition.schema.protoFiles) {
+        if (protoFile.syntax == Syntax.PROTO_3 && !proto3Preview) {
+          skippedForSyntax += protoFile
+          continue
+        }
+        if (protoFile.location.path !in sourceLocationPaths &&
+            protoFile.location.path !in moveTargetPaths) {
+          continue
+        }
 
-      for (target in targetsExclusiveLast) {
-        val schemaHandler = targetToSchemaHandler.getValue(target)
-        schemaHandler.handle(
-            protoFile,
-            targetToEmittingRules.getValue(target),
-            claimedDefinitions,
-            claimedPaths,
-            isExclusive = target.exclusive)
+        // Remove types from the file which are not owned by this partition.
+        val filteredProtoFile = protoFile.copy(
+            types = protoFile.types.filter { it.type in partition.types },
+            services = protoFile.services.filter { it.type in partition.types }
+        )
+
+        val claimedDefinitions = ClaimedDefinitions()
+        claimedDefinitions.claim(ProtoType.ANY)
+
+        for (target in targetsExclusiveLast) {
+          val schemaHandler = targetToSchemaHandler.getValue(target)
+          schemaHandler.handle(
+              filteredProtoFile,
+              targetToEmittingRules.getValue(target),
+              claimedDefinitions,
+              claimedPaths,
+              isExclusive = target.exclusive)
+        }
       }
     }
 

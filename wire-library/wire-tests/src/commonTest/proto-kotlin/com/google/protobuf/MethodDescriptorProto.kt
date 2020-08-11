@@ -134,7 +134,8 @@ class MethodDescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       MethodDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.MethodDescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: MethodDescriptorProto): Int {
         var size = value.unknownFields.size

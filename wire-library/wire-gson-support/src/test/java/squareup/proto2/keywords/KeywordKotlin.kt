@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -39,6 +40,10 @@ class KeywordKotlin(
   )
   @JvmField
   val when_: Int,
+  fun_: Map<String, String> = emptyMap(),
+  return_: List<Boolean> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<KeywordKotlin, KeywordKotlin.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -46,7 +51,8 @@ class KeywordKotlin(
     declaredName = "fun"
   )
   @JvmField
-  val fun_: Map<String, String> = emptyMap(),
+  val fun_: Map<String, String> = immutableCopyOf("fun_", fun_)
+
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
@@ -54,9 +60,8 @@ class KeywordKotlin(
     declaredName = "return"
   )
   @JvmField
-  val return_: List<Boolean> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<KeywordKotlin, KeywordKotlin.Builder>(ADAPTER, unknownFields) {
+  val return_: List<Boolean> = immutableCopyOf("return_", return_)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.object_ = object_
@@ -157,7 +162,8 @@ class KeywordKotlin(
       FieldEncoding.LENGTH_DELIMITED, 
       KeywordKotlin::class, 
       "type.googleapis.com/squareup.proto2.keywords.KeywordKotlin", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       private val funAdapter: ProtoAdapter<Map<String, String>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }

@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -34,17 +35,23 @@ class EnumDescriptorProto(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val name: String? = null,
-  @field:WireField(
-    tag = 2,
-    adapter = "com.google.protobuf.EnumValueDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val value: List<EnumValueDescriptorProto> = emptyList(),
+  value: List<EnumValueDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.google.protobuf.EnumOptions#ADAPTER"
   )
   val options: EnumOptions? = null,
+  reserved_range: List<EnumReservedRange> = emptyList(),
+  reserved_name: List<String> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<EnumDescriptorProto, Nothing>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 2,
+    adapter = "com.google.protobuf.EnumValueDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val value: List<EnumValueDescriptorProto> = immutableCopyOf("value", value)
+
   /**
    * Range of reserved numeric values. Reserved numeric values may not be used
    * by enum values in the same enum declaration. Reserved ranges may not
@@ -55,7 +62,8 @@ class EnumDescriptorProto(
     adapter = "com.google.protobuf.EnumDescriptorProto${'$'}EnumReservedRange#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val reserved_range: List<EnumReservedRange> = emptyList(),
+  val reserved_range: List<EnumReservedRange> = immutableCopyOf("reserved_range", reserved_range)
+
   /**
    * Reserved enum value names, which may not be reused. A given name may only
    * be reserved once.
@@ -65,9 +73,8 @@ class EnumDescriptorProto(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED
   )
-  val reserved_name: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<EnumDescriptorProto, Nothing>(ADAPTER, unknownFields) {
+  val reserved_name: List<String> = immutableCopyOf("reserved_name", reserved_name)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -126,7 +133,8 @@ class EnumDescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       EnumDescriptorProto::class, 
       "type.googleapis.com/google.protobuf.EnumDescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: EnumDescriptorProto): Int {
         var size = value.unknownFields.size
@@ -254,7 +262,8 @@ class EnumDescriptorProto(
         FieldEncoding.LENGTH_DELIMITED, 
         EnumReservedRange::class, 
         "type.googleapis.com/google.protobuf.EnumDescriptorProto.EnumReservedRange", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: EnumReservedRange): Int {
           var size = value.unknownFields.size

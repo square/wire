@@ -7,6 +7,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -48,15 +49,17 @@ class ModelEvaluation(
   )
   @JvmField
   val score: Double? = null,
+  models: Map<String, ModelEvaluation> = emptyMap(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<ModelEvaluation, ModelEvaluation.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
     adapter = "ModelEvaluation#ADAPTER"
   )
   @JvmField
-  val models: Map<String, ModelEvaluation> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<ModelEvaluation, ModelEvaluation.Builder>(ADAPTER, unknownFields) {
+  val models: Map<String, ModelEvaluation> = immutableCopyOf("models", models)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
@@ -142,7 +145,8 @@ class ModelEvaluation(
       FieldEncoding.LENGTH_DELIMITED, 
       ModelEvaluation::class, 
       "type.googleapis.com/ModelEvaluation", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }

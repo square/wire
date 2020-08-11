@@ -39,7 +39,7 @@ public enum ForeignEnum implements WireEnum {
 
   private static final class ProtoAdapter_ForeignEnum extends EnumAdapter<ForeignEnum> {
     ProtoAdapter_ForeignEnum() {
-      super(ForeignEnum.class, Syntax.PROTO_2);
+      super(ForeignEnum.class, Syntax.PROTO_2, ForeignEnum.BAV);
     }
 
     @Override

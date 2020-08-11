@@ -17,7 +17,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.parser.EnumConstantElement
 
-class EnumConstant private constructor(
+data class EnumConstant(
   val location: Location,
   val name: String,
   val tag: Int,

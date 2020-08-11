@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.AssertionError
@@ -27,14 +28,16 @@ import okio.ByteString
  * files it parses.
  */
 class FileDescriptorSet(
+  file: List<FileDescriptorProto> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<FileDescriptorSet, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 1,
     adapter = "com.google.protobuf.FileDescriptorProto#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val file: List<FileDescriptorProto> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<FileDescriptorSet, Nothing>(ADAPTER, unknownFields) {
+  val file: List<FileDescriptorProto> = immutableCopyOf("file", file)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -74,7 +77,8 @@ class FileDescriptorSet(
       FieldEncoding.LENGTH_DELIMITED, 
       FileDescriptorSet::class, 
       "type.googleapis.com/google.protobuf.FileDescriptorSet", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: FileDescriptorSet): Int {
         var size = value.unknownFields.size

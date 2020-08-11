@@ -116,7 +116,8 @@ class RouteSummary(
       FieldEncoding.LENGTH_DELIMITED, 
       RouteSummary::class, 
       "type.googleapis.com/routeguide.RouteSummary", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: RouteSummary): Int {
         var size = value.unknownFields.size

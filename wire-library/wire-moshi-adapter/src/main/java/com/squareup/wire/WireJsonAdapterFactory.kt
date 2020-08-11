@@ -18,6 +18,7 @@ package com.squareup.wire
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.lang.reflect.Type
 
 /**
@@ -73,7 +74,9 @@ class WireJsonAdapterFactory private constructor(
       annotations.isNotEmpty() -> null
       rawType == AnyMessage::class.java -> AnyMessageJsonAdapter(moshi, typeUrlToAdapter)
       Message::class.java.isAssignableFrom(rawType) -> {
-        MessageJsonAdapter<Nothing, Nothing>(moshi, type).nullSafe()
+        val messageAdapter = RuntimeMessageAdapter.create<Nothing, Nothing>(type as Class<Nothing>)
+        val jsonAdapters = messageAdapter.jsonAdapters(MoshiJsonIntegration, moshi)
+        MessageJsonAdapter(messageAdapter, jsonAdapters).nullSafe()
       }
       else -> null
     }

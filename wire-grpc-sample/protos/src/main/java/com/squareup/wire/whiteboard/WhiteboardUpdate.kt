@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
@@ -90,7 +91,8 @@ class WhiteboardUpdate(
       FieldEncoding.LENGTH_DELIMITED, 
       WhiteboardUpdate::class, 
       "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: WhiteboardUpdate): Int {
         var size = value.unknownFields.size
@@ -200,7 +202,8 @@ class WhiteboardUpdate(
         FieldEncoding.LENGTH_DELIMITED, 
         InitialiseBoard::class, 
         "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate.InitialiseBoard", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: InitialiseBoard): Int {
           var size = value.unknownFields.size
@@ -245,14 +248,16 @@ class WhiteboardUpdate(
   }
 
   class UpdatePoints(
+    points: List<Point> = emptyList(),
+    unknownFields: ByteString = ByteString.EMPTY
+  ) : Message<UpdatePoints, Nothing>(ADAPTER, unknownFields) {
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.whiteboard.Point#ADAPTER",
       label = WireField.Label.REPEATED
     )
-    val points: List<Point> = emptyList(),
-    unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<UpdatePoints, Nothing>(ADAPTER, unknownFields) {
+    val points: List<Point> = immutableCopyOf("points", points)
+
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
@@ -292,7 +297,8 @@ class WhiteboardUpdate(
         FieldEncoding.LENGTH_DELIMITED, 
         UpdatePoints::class, 
         "type.googleapis.com/com.squareup.wire.whiteboard.WhiteboardUpdate.UpdatePoints", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: UpdatePoints): Int {
           var size = value.unknownFields.size

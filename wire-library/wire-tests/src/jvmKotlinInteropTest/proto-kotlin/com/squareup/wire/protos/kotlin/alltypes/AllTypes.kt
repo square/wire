@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -254,223 +255,37 @@ class AllTypes(
   )
   @JvmField
   val req_nested_message: NestedMessage,
-  @field:WireField(
-    tag = 201,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_int32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 202,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_uint32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 203,
-    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_sint32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 204,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_fixed32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 205,
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_sfixed32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 206,
-    adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_int64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 207,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_uint64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 208,
-    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_sint64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 209,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_fixed64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 210,
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_sfixed64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 211,
-    adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_bool: List<Boolean> = emptyList(),
-  @field:WireField(
-    tag = 212,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_float: List<Float> = emptyList(),
-  @field:WireField(
-    tag = 213,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_double: List<Double> = emptyList(),
-  @field:WireField(
-    tag = 214,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_string: List<String> = emptyList(),
-  @field:WireField(
-    tag = 215,
-    adapter = "com.squareup.wire.ProtoAdapter#BYTES",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_bytes: List<ByteString> = emptyList(),
-  @field:WireField(
-    tag = 216,
-    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_nested_enum: List<NestedEnum> = emptyList(),
-  @field:WireField(
-    tag = 217,
-    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val rep_nested_message: List<NestedMessage> = emptyList(),
-  @field:WireField(
-    tag = 301,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_int32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 302,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_uint32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 303,
-    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_sint32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 304,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_fixed32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 305,
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_sfixed32: List<Int> = emptyList(),
-  @field:WireField(
-    tag = 306,
-    adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_int64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 307,
-    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_uint64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 308,
-    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_sint64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 309,
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_fixed64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 310,
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_sfixed64: List<Long> = emptyList(),
-  @field:WireField(
-    tag = 311,
-    adapter = "com.squareup.wire.ProtoAdapter#BOOL",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_bool: List<Boolean> = emptyList(),
-  @field:WireField(
-    tag = 312,
-    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_float: List<Float> = emptyList(),
-  @field:WireField(
-    tag = 313,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_double: List<Double> = emptyList(),
-  @field:WireField(
-    tag = 316,
-    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
-    label = WireField.Label.PACKED
-  )
-  @JvmField
-  val pack_nested_enum: List<NestedEnum> = emptyList(),
+  rep_int32: List<Int> = emptyList(),
+  rep_uint32: List<Int> = emptyList(),
+  rep_sint32: List<Int> = emptyList(),
+  rep_fixed32: List<Int> = emptyList(),
+  rep_sfixed32: List<Int> = emptyList(),
+  rep_int64: List<Long> = emptyList(),
+  rep_uint64: List<Long> = emptyList(),
+  rep_sint64: List<Long> = emptyList(),
+  rep_fixed64: List<Long> = emptyList(),
+  rep_sfixed64: List<Long> = emptyList(),
+  rep_bool: List<Boolean> = emptyList(),
+  rep_float: List<Float> = emptyList(),
+  rep_double: List<Double> = emptyList(),
+  rep_string: List<String> = emptyList(),
+  rep_bytes: List<ByteString> = emptyList(),
+  rep_nested_enum: List<NestedEnum> = emptyList(),
+  rep_nested_message: List<NestedMessage> = emptyList(),
+  pack_int32: List<Int> = emptyList(),
+  pack_uint32: List<Int> = emptyList(),
+  pack_sint32: List<Int> = emptyList(),
+  pack_fixed32: List<Int> = emptyList(),
+  pack_sfixed32: List<Int> = emptyList(),
+  pack_int64: List<Long> = emptyList(),
+  pack_uint64: List<Long> = emptyList(),
+  pack_sint64: List<Long> = emptyList(),
+  pack_fixed64: List<Long> = emptyList(),
+  pack_sfixed64: List<Long> = emptyList(),
+  pack_bool: List<Boolean> = emptyList(),
+  pack_float: List<Float> = emptyList(),
+  pack_double: List<Double> = emptyList(),
+  pack_nested_enum: List<NestedEnum> = emptyList(),
   @field:WireField(
     tag = 401,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -567,34 +382,10 @@ class AllTypes(
   )
   @JvmField
   val default_nested_enum: NestedEnum? = null,
-  @field:WireField(
-    tag = 501,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
-  )
-  @JvmField
-  val map_int32_int32: Map<Int, Int> = emptyMap(),
-  @field:WireField(
-    tag = 502,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
-  )
-  @JvmField
-  val map_string_string: Map<String, String> = emptyMap(),
-  @field:WireField(
-    tag = 503,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
-  )
-  @JvmField
-  val map_string_message: Map<String, NestedMessage> = emptyMap(),
-  @field:WireField(
-    tag = 504,
-    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
-  )
-  @JvmField
-  val map_string_enum: Map<String, NestedEnum> = emptyMap(),
+  map_int32_int32: Map<Int, Int> = emptyMap(),
+  map_string_string: Map<String, String> = emptyMap(),
+  map_string_message: Map<String, NestedMessage> = emptyMap(),
+  map_string_enum: Map<String, NestedEnum> = emptyMap(),
   /**
    * Extension source: all_types.proto
    */
@@ -748,6 +539,322 @@ class AllTypes(
   )
   @JvmField
   val ext_opt_nested_message: NestedMessage? = null,
+  ext_rep_int32: List<Int> = emptyList(),
+  ext_rep_uint32: List<Int> = emptyList(),
+  ext_rep_sint32: List<Int> = emptyList(),
+  ext_rep_fixed32: List<Int> = emptyList(),
+  ext_rep_sfixed32: List<Int> = emptyList(),
+  ext_rep_int64: List<Long> = emptyList(),
+  ext_rep_uint64: List<Long> = emptyList(),
+  ext_rep_sint64: List<Long> = emptyList(),
+  ext_rep_fixed64: List<Long> = emptyList(),
+  ext_rep_sfixed64: List<Long> = emptyList(),
+  ext_rep_bool: List<Boolean> = emptyList(),
+  ext_rep_float: List<Float> = emptyList(),
+  ext_rep_double: List<Double> = emptyList(),
+  ext_rep_string: List<String> = emptyList(),
+  ext_rep_bytes: List<ByteString> = emptyList(),
+  ext_rep_nested_enum: List<NestedEnum> = emptyList(),
+  ext_rep_nested_message: List<NestedMessage> = emptyList(),
+  ext_pack_int32: List<Int> = emptyList(),
+  ext_pack_uint32: List<Int> = emptyList(),
+  ext_pack_sint32: List<Int> = emptyList(),
+  ext_pack_fixed32: List<Int> = emptyList(),
+  ext_pack_sfixed32: List<Int> = emptyList(),
+  ext_pack_int64: List<Long> = emptyList(),
+  ext_pack_uint64: List<Long> = emptyList(),
+  ext_pack_sint64: List<Long> = emptyList(),
+  ext_pack_fixed64: List<Long> = emptyList(),
+  ext_pack_sfixed64: List<Long> = emptyList(),
+  ext_pack_bool: List<Boolean> = emptyList(),
+  ext_pack_float: List<Float> = emptyList(),
+  ext_pack_double: List<Double> = emptyList(),
+  ext_pack_nested_enum: List<NestedEnum> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<AllTypes, AllTypes.Builder>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 201,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
+
+  @field:WireField(
+    tag = 202,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
+
+  @field:WireField(
+    tag = 203,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
+
+  @field:WireField(
+    tag = 204,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
+
+  @field:WireField(
+    tag = 205,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
+
+  @field:WireField(
+    tag = 206,
+    adapter = "com.squareup.wire.ProtoAdapter#INT64",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
+
+  @field:WireField(
+    tag = 207,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
+
+  @field:WireField(
+    tag = 208,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
+
+  @field:WireField(
+    tag = 209,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
+
+  @field:WireField(
+    tag = 210,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
+
+  @field:WireField(
+    tag = 211,
+    adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_bool: List<Boolean> = immutableCopyOf("rep_bool", rep_bool)
+
+  @field:WireField(
+    tag = 212,
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_float: List<Float> = immutableCopyOf("rep_float", rep_float)
+
+  @field:WireField(
+    tag = 213,
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_double: List<Double> = immutableCopyOf("rep_double", rep_double)
+
+  @field:WireField(
+    tag = 214,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_string: List<String> = immutableCopyOf("rep_string", rep_string)
+
+  @field:WireField(
+    tag = 215,
+    adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_bytes: List<ByteString> = immutableCopyOf("rep_bytes", rep_bytes)
+
+  @field:WireField(
+    tag = 216,
+    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_nested_enum: List<NestedEnum> = immutableCopyOf("rep_nested_enum", rep_nested_enum)
+
+  @field:WireField(
+    tag = 217,
+    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
+      rep_nested_message)
+
+  @field:WireField(
+    tag = 301,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
+
+  @field:WireField(
+    tag = 302,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
+
+  @field:WireField(
+    tag = 303,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
+
+  @field:WireField(
+    tag = 304,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
+
+  @field:WireField(
+    tag = 305,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
+
+  @field:WireField(
+    tag = 306,
+    adapter = "com.squareup.wire.ProtoAdapter#INT64",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
+
+  @field:WireField(
+    tag = 307,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
+
+  @field:WireField(
+    tag = 308,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
+
+  @field:WireField(
+    tag = 309,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
+
+  @field:WireField(
+    tag = 310,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
+
+  @field:WireField(
+    tag = 311,
+    adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_bool: List<Boolean> = immutableCopyOf("pack_bool", pack_bool)
+
+  @field:WireField(
+    tag = 312,
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_float: List<Float> = immutableCopyOf("pack_float", pack_float)
+
+  @field:WireField(
+    tag = 313,
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_double: List<Double> = immutableCopyOf("pack_double", pack_double)
+
+  @field:WireField(
+    tag = 316,
+    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
+    label = WireField.Label.PACKED
+  )
+  @JvmField
+  val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum", pack_nested_enum)
+
+  @field:WireField(
+    tag = 501,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  @JvmField
+  val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
+
+  @field:WireField(
+    tag = 502,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+  )
+  @JvmField
+  val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
+      map_string_string)
+
+  @field:WireField(
+    tag = 503,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
+  )
+  @JvmField
+  val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
+      map_string_message)
+
+  @field:WireField(
+    tag = 504,
+    keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
+    adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
+  )
+  @JvmField
+  val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum", map_string_enum)
+
   /**
    * Extension source: all_types.proto
    */
@@ -757,7 +864,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_int32: List<Int> = emptyList(),
+  val ext_rep_int32: List<Int> = immutableCopyOf("ext_rep_int32", ext_rep_int32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -767,7 +875,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_uint32: List<Int> = emptyList(),
+  val ext_rep_uint32: List<Int> = immutableCopyOf("ext_rep_uint32", ext_rep_uint32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -777,7 +886,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_sint32: List<Int> = emptyList(),
+  val ext_rep_sint32: List<Int> = immutableCopyOf("ext_rep_sint32", ext_rep_sint32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -787,7 +897,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_fixed32: List<Int> = emptyList(),
+  val ext_rep_fixed32: List<Int> = immutableCopyOf("ext_rep_fixed32", ext_rep_fixed32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -797,7 +908,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_sfixed32: List<Int> = emptyList(),
+  val ext_rep_sfixed32: List<Int> = immutableCopyOf("ext_rep_sfixed32", ext_rep_sfixed32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -807,7 +919,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_int64: List<Long> = emptyList(),
+  val ext_rep_int64: List<Long> = immutableCopyOf("ext_rep_int64", ext_rep_int64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -817,7 +930,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_uint64: List<Long> = emptyList(),
+  val ext_rep_uint64: List<Long> = immutableCopyOf("ext_rep_uint64", ext_rep_uint64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -827,7 +941,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_sint64: List<Long> = emptyList(),
+  val ext_rep_sint64: List<Long> = immutableCopyOf("ext_rep_sint64", ext_rep_sint64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -837,7 +952,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_fixed64: List<Long> = emptyList(),
+  val ext_rep_fixed64: List<Long> = immutableCopyOf("ext_rep_fixed64", ext_rep_fixed64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -847,7 +963,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_sfixed64: List<Long> = emptyList(),
+  val ext_rep_sfixed64: List<Long> = immutableCopyOf("ext_rep_sfixed64", ext_rep_sfixed64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -857,7 +974,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_bool: List<Boolean> = emptyList(),
+  val ext_rep_bool: List<Boolean> = immutableCopyOf("ext_rep_bool", ext_rep_bool)
+
   /**
    * Extension source: all_types.proto
    */
@@ -867,7 +985,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_float: List<Float> = emptyList(),
+  val ext_rep_float: List<Float> = immutableCopyOf("ext_rep_float", ext_rep_float)
+
   /**
    * Extension source: all_types.proto
    */
@@ -877,7 +996,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_double: List<Double> = emptyList(),
+  val ext_rep_double: List<Double> = immutableCopyOf("ext_rep_double", ext_rep_double)
+
   /**
    * Extension source: all_types.proto
    */
@@ -887,7 +1007,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_string: List<String> = emptyList(),
+  val ext_rep_string: List<String> = immutableCopyOf("ext_rep_string", ext_rep_string)
+
   /**
    * Extension source: all_types.proto
    */
@@ -897,7 +1018,8 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_bytes: List<ByteString> = emptyList(),
+  val ext_rep_bytes: List<ByteString> = immutableCopyOf("ext_rep_bytes", ext_rep_bytes)
+
   /**
    * Extension source: all_types.proto
    */
@@ -907,7 +1029,9 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_nested_enum: List<NestedEnum> = emptyList(),
+  val ext_rep_nested_enum: List<NestedEnum> = immutableCopyOf("ext_rep_nested_enum",
+      ext_rep_nested_enum)
+
   /**
    * Extension source: all_types.proto
    */
@@ -917,7 +1041,9 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_nested_message: List<NestedMessage> = emptyList(),
+  val ext_rep_nested_message: List<NestedMessage> = immutableCopyOf("ext_rep_nested_message",
+      ext_rep_nested_message)
+
   /**
    * Extension source: all_types.proto
    */
@@ -927,7 +1053,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_int32: List<Int> = emptyList(),
+  val ext_pack_int32: List<Int> = immutableCopyOf("ext_pack_int32", ext_pack_int32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -937,7 +1064,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_uint32: List<Int> = emptyList(),
+  val ext_pack_uint32: List<Int> = immutableCopyOf("ext_pack_uint32", ext_pack_uint32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -947,7 +1075,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_sint32: List<Int> = emptyList(),
+  val ext_pack_sint32: List<Int> = immutableCopyOf("ext_pack_sint32", ext_pack_sint32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -957,7 +1086,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_fixed32: List<Int> = emptyList(),
+  val ext_pack_fixed32: List<Int> = immutableCopyOf("ext_pack_fixed32", ext_pack_fixed32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -967,7 +1097,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_sfixed32: List<Int> = emptyList(),
+  val ext_pack_sfixed32: List<Int> = immutableCopyOf("ext_pack_sfixed32", ext_pack_sfixed32)
+
   /**
    * Extension source: all_types.proto
    */
@@ -977,7 +1108,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_int64: List<Long> = emptyList(),
+  val ext_pack_int64: List<Long> = immutableCopyOf("ext_pack_int64", ext_pack_int64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -987,7 +1119,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_uint64: List<Long> = emptyList(),
+  val ext_pack_uint64: List<Long> = immutableCopyOf("ext_pack_uint64", ext_pack_uint64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -997,7 +1130,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_sint64: List<Long> = emptyList(),
+  val ext_pack_sint64: List<Long> = immutableCopyOf("ext_pack_sint64", ext_pack_sint64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -1007,7 +1141,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_fixed64: List<Long> = emptyList(),
+  val ext_pack_fixed64: List<Long> = immutableCopyOf("ext_pack_fixed64", ext_pack_fixed64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -1017,7 +1152,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_sfixed64: List<Long> = emptyList(),
+  val ext_pack_sfixed64: List<Long> = immutableCopyOf("ext_pack_sfixed64", ext_pack_sfixed64)
+
   /**
    * Extension source: all_types.proto
    */
@@ -1027,7 +1163,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_bool: List<Boolean> = emptyList(),
+  val ext_pack_bool: List<Boolean> = immutableCopyOf("ext_pack_bool", ext_pack_bool)
+
   /**
    * Extension source: all_types.proto
    */
@@ -1037,7 +1174,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_float: List<Float> = emptyList(),
+  val ext_pack_float: List<Float> = immutableCopyOf("ext_pack_float", ext_pack_float)
+
   /**
    * Extension source: all_types.proto
    */
@@ -1047,7 +1185,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_double: List<Double> = emptyList(),
+  val ext_pack_double: List<Double> = immutableCopyOf("ext_pack_double", ext_pack_double)
+
   /**
    * Extension source: all_types.proto
    */
@@ -1057,9 +1196,9 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_nested_enum: List<NestedEnum> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<AllTypes, AllTypes.Builder>(ADAPTER, unknownFields) {
+  val ext_pack_nested_enum: List<NestedEnum> = immutableCopyOf("ext_pack_nested_enum",
+      ext_pack_nested_enum)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.opt_int32 = opt_int32
@@ -3090,7 +3229,8 @@ class AllTypes(
       FieldEncoding.LENGTH_DELIMITED, 
       AllTypes::class, 
       "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
@@ -3847,7 +3987,8 @@ class AllTypes(
       @JvmField
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class, 
-        PROTO_2
+        PROTO_2, 
+        NestedEnum.UNKNOWN
       ) {
         override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
@@ -3925,7 +4066,8 @@ class AllTypes(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes.NestedMessage", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: NestedMessage): Int {
           var size = value.unknownFields.size

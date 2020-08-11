@@ -17,12 +17,9 @@ package com.squareup.wire
 
 import com.google.protobuf.ListValue
 import com.google.protobuf.NullValue
-import com.google.protobuf.util.JsonFormat
-import com.squareup.moshi.Moshi
-import com.squareup.wire.json.assertJsonEquals
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.entry
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 import squareup.proto3.kotlin.alltypes.AllStructsOuterClass
 import squareup.proto3.java.alltypes.AllStructs as AllStructsJ
@@ -348,134 +345,201 @@ class StructTest {
     assertThat(AllStructsK.ADAPTER.decode(protocAllStructBytes)).isEqualTo(wireAllStructKotlin)
   }
 
-  @Test fun structJsonRoundTrip() {
-    val json = """{
-      |  "struct": {"a": 1.0},
-      |  "list": ["a", 3.0],
-      |  "valueA": "a",
-      |  "valueB": 33.0,
-      |  "valueC": true,
-      |  "valueE": {"a": 1.0},
-      |  "valueF": ["a", 3.0],
-      |  "repStruct": [],
-      |  "repList": [],
-      |  "repValueA": [],
-      |  "repNullValue": [],
-      |  "mapInt32Struct": {},
-      |  "mapInt32List": {},
-      |  "mapInt32ValueA": {},
-      |  "mapInt32NullValue": {},
-      |  "oneofStruct": null,
-      |  "oneofList": null
-      |}""".trimMargin()
+  @Test fun javaListsAreDeeplyImmutable() {
+    val list = mutableListOf(mutableMapOf("a" to "b"), mutableListOf("c"), "d", 5.0, false, null)
 
-    val wireAllStructJava = AllStructsJ.Builder()
-        .struct(mapOf("a" to 1.0))
-        .list(listOf("a", 3.0))
-        .null_value(null)
-        .value_a("a")
-        .value_b(33.0)
-        .value_c(true)
-        .value_d(null)
-        .value_e(mapOf("a" to 1.0))
-        .value_f(listOf("a", 3.0))
+    val allStructs = AllStructsJ.Builder()
+        .list(list)
         .build()
-    val wireAllStructKotlin = AllStructsK(
-        struct = mapOf("a" to 1.0),
-        list = listOf("a", 3.0),
-        null_value = null,
-        value_a = "a",
-        value_b = 33.0,
-        value_c = true,
-        value_d = null,
-        value_e = mapOf("a" to 1.0),
-        value_f = listOf("a", 3.0)
-    )
+    assertThat(allStructs.list.isDeeplyUnmodifiable()).isTrue()
 
-    val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
-    val allStructAdapterJava = moshi.adapter(AllStructsJ::class.java)
-    assertJsonEquals(allStructAdapterJava.toJson(wireAllStructJava), json)
-    assertThat(allStructAdapterJava.fromJson(json)).isEqualTo(wireAllStructJava)
-    val allStructAdapterKotlin = moshi.adapter(AllStructsK::class.java)
-    assertJsonEquals(allStructAdapterKotlin.toJson(wireAllStructKotlin), json)
-    assertThat(allStructAdapterKotlin.fromJson(json)).isEqualTo(wireAllStructKotlin)
+    // Mutate the values used to create the list. Wire should have defensive copies.
+    (list[0] as MutableMap<*, *>).clear()
+    (list[1] as MutableList<*>).clear()
+    list.clear()
+
+    assertThat(allStructs.list)
+        .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
   }
 
-  @Test fun structJsonRoundTripWithEmptyOrNestedMapAndList() {
-    val protocJson = """{
-      |  "struct": {"a": null},
-      |  "list": [],
-      |  "valueA": {"a": ["b", 2.0, {"c": false}]},
-      |  "valueB": [{"d": null, "e": "trois"}],
-      |  "valueC": [],
-      |  "valueD": {},
-      |  "valueE": null,
-      |  "valueF": null
-      |}""".trimMargin()
-    // Protoc doesn't print those unless explicitly set.
-    val moshiJson = """{
-      |  "repStruct": [],
-      |  "repList": [],
-      |  "repValueA": [],
-      |  "repNullValue": [],
-      |  "mapInt32Struct": {},
-      |  "mapInt32List": {},
-      |  "mapInt32ValueA": {},
-      |  "mapInt32NullValue": {},
-      |  "oneofStruct": null,
-      |  "oneofList": null,
-      |  "struct": {"a": null},
-      |  "list": [],
-      |  "valueA": {"a": ["b", 2.0, {"c": false}]},
-      |  "valueB": [{"d": null, "e": "trois"}],
-      |  "valueC": [],
-      |  "valueD": {}
-      |}""".trimMargin()
+  @Test fun kotlinListsAreDeeplyImmutable() {
+    val list = mutableListOf(mutableMapOf("a" to "b"), mutableListOf("c"), "d", 5.0, false, null)
 
-    val protocAllStruct = AllStructsOuterClass.AllStructs.newBuilder()
-        .setStruct(mapOf("a" to null).toStruct())
-        .setList(emptyListValue())
-        .setValueA(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))).toValue())
-        .setValueB(listOf(mapOf("d" to null, "e" to "trois")).toValue())
-        .setValueC(emptyList<Any>().toValue())
-        .setValueD(emptyMap<String, Any>().toValue())
-        .setValueE(null.toValue())
-        .setValueF(null.toValue())
+    val allStructs = AllStructsK.Builder()
+        .list(list)
         .build()
 
-    val jsonPrinter = JsonFormat.printer()
-    assertJsonEquals(jsonPrinter.print(protocAllStruct), protocJson)
-    val jsonParser = JsonFormat.parser()
-    val protocParsed = AllStructsOuterClass.AllStructs.newBuilder()
-        .apply { jsonParser.merge(protocJson, this) }
-        .build()
-    assertThat(protocParsed).isEqualTo(protocAllStruct)
+    assertThat(allStructs.list!!.isDeeplyUnmodifiable()).isTrue()
 
-    val wireAllStructJava = AllStructsJ.Builder()
-        .struct(mapOf("a" to null))
-        .list(emptyList<Any>())
-        .value_a(mapOf("a" to listOf("b", 2.0, mapOf("c" to false))))
-        .value_b(listOf(mapOf("d" to null, "e" to "trois")))
-        .value_c(emptyList<Any>())
-        .value_d(emptyMap<String, Any>())
-        .build()
-    val wireAllStructKotlin = AllStructsK(
-        struct = mapOf("a" to null),
-        list = emptyList<Any>(),
-        value_a = mapOf("a" to listOf("b", 2.0, mapOf("c" to false))),
-        value_b = listOf(mapOf("d" to null, "e" to "trois")),
-        value_c = emptyList<Any>(),
-        value_d = emptyMap<String, Any>()
+    // Mutate the values used to create the list. Wire should have defensive copies.
+    (list[0] as MutableMap<*, *>).clear()
+    (list[1] as MutableList<*>).clear()
+    list.clear()
+
+    assertThat(allStructs.list)
+        .containsExactly(mapOf("a" to "b"), listOf("c"), "d", 5.0, false, null)
+  }
+
+  @Test fun javaMapsAreDeeplyImmutable() {
+    val map = mutableMapOf(
+        "a" to mutableMapOf("g" to "h"),
+        "b" to mutableListOf("i"),
+        "c" to "j",
+        "d" to 5.0,
+        "e" to false,
+        "f" to null
     )
 
-    val moshi = Moshi.Builder().add(WireJsonAdapterFactory()).build()
-    val allStructAdapterJava = moshi.adapter(AllStructsJ::class.java)
-    assertJsonEquals(allStructAdapterJava.toJson(wireAllStructJava), moshiJson)
-    assertThat(allStructAdapterJava.fromJson(protocJson)).isEqualTo(wireAllStructJava)
-    assertThat(allStructAdapterJava.fromJson(moshiJson)).isEqualTo(wireAllStructJava)
-    val allStructAdapterKotlin = moshi.adapter(AllStructsK::class.java)
-    assertJsonEquals(allStructAdapterKotlin.toJson(wireAllStructKotlin), moshiJson)
-    assertThat(allStructAdapterKotlin.fromJson(protocJson)).isEqualTo(wireAllStructKotlin)
-    assertThat(allStructAdapterKotlin.fromJson(moshiJson)).isEqualTo(wireAllStructKotlin)
+    val allStructs = AllStructsJ.Builder()
+        .struct(map)
+        .build()
+    assertThat(allStructs.struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    (map["a"] as MutableMap<*, *>).clear()
+    (map["b"] as MutableList<*>).clear()
+    map.clear()
+
+    assertThat(allStructs.struct).containsExactly(
+        entry("a", mapOf("g" to "h")),
+        entry("b", listOf("i")),
+        entry("c", "j"),
+        entry("d", 5.0),
+        entry("e", false),
+        entry("f", null)
+    )
+  }
+
+  @Test fun kotlinMapsAreDeeplyImmutable() {
+    val map = mutableMapOf(
+        "a" to mutableMapOf("g" to "h"),
+        "b" to mutableListOf("i"),
+        "c" to "j",
+        "d" to 5.0,
+        "e" to false,
+        "f" to null
+    )
+
+    val allStructs = AllStructsK.Builder()
+        .struct(map)
+        .build()
+    assertThat(allStructs.struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    (map["a"] as MutableMap<*, *>).clear()
+    (map["b"] as MutableList<*>).clear()
+    map.clear()
+
+    assertThat(allStructs.struct).containsExactly(
+        entry("a", mapOf("g" to "h")),
+        entry("b", listOf("i")),
+        entry("c", "j"),
+        entry("d", 5.0),
+        entry("e", false),
+        entry("f", null)
+    )
+  }
+
+  @Test fun nonStructTypeCannotBeConstructed() {
+    try {
+      AllStructsK.Builder()
+          .struct(mapOf("a" to 1)) // Int.
+          .build()
+    } catch (e: IllegalArgumentException) {
+      assertThat(e).hasMessage("struct value struct must be a JSON type " +
+          "(null, Boolean, Double, String, List, or Map) but was class kotlin.Int: 1")
+    }
+  }
+
+  @Test fun javaStructsInMapValuesAreDeeplyImmutable() {
+    val map = mutableMapOf("a" to "b")
+
+    val allStructs = AllStructsJ.Builder()
+        .map_int32_struct(mapOf(5 to map))
+        .build()
+    assertThat(allStructs.map_int32_struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+
+    assertThat(allStructs.map_int32_struct).containsExactly(entry(5, mapOf("a" to "b")))
+  }
+
+  @Test fun kotlinStructsInMapValuesAreDeeplyImmutable() {
+    val map = mutableMapOf("a" to "b")
+
+    val allStructs = AllStructsK.Builder()
+        .map_int32_struct(mapOf(5 to map))
+        .build()
+    assertThat(allStructs.map_int32_struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+
+    assertThat(allStructs.map_int32_struct).containsExactly(entry(5, mapOf("a" to "b")))
+  }
+
+  @Test fun javaStructsInListValuesAreDeeplyImmutable() {
+    val map = mutableMapOf("a" to "b")
+
+    val allStructs = AllStructsJ.Builder()
+        .rep_struct(listOf(map))
+        .build()
+    assertThat(allStructs.rep_struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+
+    assertThat(allStructs.rep_struct).containsExactly(mapOf("a" to "b"))
+  }
+
+  @Test fun kotlinStructsInListValuesAreDeeplyImmutable() {
+    val map = mutableMapOf("a" to "b")
+
+    val allStructs = AllStructsK.Builder()
+        .rep_struct(listOf(map))
+        .build()
+    assertThat(allStructs.rep_struct.isDeeplyUnmodifiable()).isTrue()
+
+    // Mutate the values used to create the map. Wire should have defensive copies.
+    map.clear()
+
+    assertThat(allStructs.rep_struct).containsExactly(mapOf("a" to "b"))
+  }
+
+  private fun Any?.isDeeplyUnmodifiable(): Boolean {
+    return when (this) {
+      null -> true
+      is String -> true
+      is Double -> true
+      is Int -> true
+      is Boolean -> true
+      is List<*> -> {
+        this.all { it.isDeeplyUnmodifiable() } && this.isUnmodifiable()
+      }
+      is Map<*, *> -> {
+        this.all { it.key.isDeeplyUnmodifiable() && it.value.isDeeplyUnmodifiable() } &&
+            this.isUnmodifiable()
+      }
+      else -> false
+    }
+  }
+
+  private fun List<*>.isUnmodifiable(): Boolean {
+    try {
+      (this as MutableList<Any>).add("x")
+      return false
+    } catch (_: UnsupportedOperationException) {
+      return true
+    }
+  }
+
+  private fun Map<*, *>.isUnmodifiable(): Boolean {
+    try {
+      (this as MutableMap<Any, Any>).put("x", "x")
+      return false
+    } catch (_: UnsupportedOperationException) {
+      return true
+    }
   }
 }

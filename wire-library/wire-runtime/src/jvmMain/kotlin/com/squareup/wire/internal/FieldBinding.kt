@@ -15,11 +15,11 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.EnumAdapter
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
-import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
@@ -56,44 +56,6 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
 
   val isMap: Boolean
     get() = keyAdapterString.isNotEmpty()
-
-  val isStruct: Boolean =
-      wireField.adapter == "com.squareup.wire.ProtoAdapter#STRUCT_MAP" ||
-          wireField.adapter == "com.squareup.wire.ProtoAdapter#STRUCT_LIST" ||
-          wireField.adapter == "com.squareup.wire.ProtoAdapter#STRUCT_VALUE" ||
-          wireField.adapter == "com.squareup.wire.ProtoAdapter#STRUCT_NULL"
-
-  /** The identity value is safe to omit during encoding. */
-  val identity: Any? = run {
-    if (wireField.label != WireField.Label.OMIT_IDENTITY) return@run null
-
-    if (wireField.label.isRepeated) return@run listOf<Any?>()
-
-    if (WireEnum::class.java.isAssignableFrom(messageField.type)) {
-      // Proto3 guarantees such constant exists.
-      return@run messageField.type.enumConstants
-          .first { constant -> (constant as WireEnum).value == 0 } as WireEnum
-    }
-
-    return@run when (wireField.adapter) {
-      "com.squareup.wire.ProtoAdapter#BOOL" -> false
-      "com.squareup.wire.ProtoAdapter#BYTES" -> ByteString.EMPTY
-      "com.squareup.wire.ProtoAdapter#DOUBLE" -> 0.0
-      "com.squareup.wire.ProtoAdapter#FLOAT" -> 0.0f
-      "com.squareup.wire.ProtoAdapter#INT32",
-      "com.squareup.wire.ProtoAdapter#UINT32",
-      "com.squareup.wire.ProtoAdapter#SINT32",
-      "com.squareup.wire.ProtoAdapter#FIXED32",
-      "com.squareup.wire.ProtoAdapter#SFIXED32" -> 0
-      "com.squareup.wire.ProtoAdapter#INT64",
-      "com.squareup.wire.ProtoAdapter#UINT64",
-      "com.squareup.wire.ProtoAdapter#SINT64",
-      "com.squareup.wire.ProtoAdapter#FIXED64",
-      "com.squareup.wire.ProtoAdapter#SFIXED64" -> 0L
-      "com.squareup.wire.ProtoAdapter#STRING" -> ""
-      else -> null
-    }
-  }
 
   private fun getBuilderField(builderType: Class<*>, name: String): Field {
     try {
@@ -168,7 +130,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  operator fun set(builder: B, value: Any?) {
+  fun set(builder: B, value: Any?) {
     if (label.isOneOf) {
       // In order to maintain the 'oneof' invariant, call the builder setter method rather
       // than setting the builder field directly.
@@ -183,24 +145,27 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   internal fun getFromBuilder(builder: B): Any? = builderField.get(builder)
 
   fun jsonStringAdapter(syntax: Syntax): JsonFormatter<*>? {
-    when (adapterString) {
-      "com.squareup.wire.ProtoAdapter#BYTES" -> return ByteStringJsonFormatter
-      "com.squareup.wire.ProtoAdapter#DURATION" -> return DurationJsonFormatter
-      "com.squareup.wire.ProtoAdapter#INSTANT" -> return InstantJsonFormatter
+    val adapter = singleAdapter()
+
+    when (adapter) {
+      ProtoAdapter.BYTES -> return ByteStringJsonFormatter
+      ProtoAdapter.DURATION -> return DurationJsonFormatter
+      ProtoAdapter.INSTANT -> return InstantJsonFormatter
+      is EnumAdapter<*> -> return EnumJsonFormatter(adapter)
     }
 
     if (syntax == PROTO_2) {
-      return when (adapterString) {
-        "com.squareup.wire.ProtoAdapter#UINT64" -> UnsignedLongAsNumberJsonFormatter
+      return when (adapter) {
+        ProtoAdapter.UINT64 -> UnsignedLongAsNumberJsonFormatter
         else -> null
       }
     } else {
-      return when (adapterString) {
-        "com.squareup.wire.ProtoAdapter#INT64",
-        "com.squareup.wire.ProtoAdapter#SFIXED64",
-        "com.squareup.wire.ProtoAdapter#SINT64" -> LongAsStringJsonFormatter
-        "com.squareup.wire.ProtoAdapter#FIXED64",
-        "com.squareup.wire.ProtoAdapter#UINT64" -> UnsignedLongAsStringJsonFormatter
+      return when (adapter) {
+        ProtoAdapter.INT64,
+        ProtoAdapter.SFIXED64,
+        ProtoAdapter.SINT64 -> LongAsStringJsonFormatter
+        ProtoAdapter.FIXED64,
+        ProtoAdapter.UINT64 -> UnsignedLongAsStringJsonFormatter
         else -> null
       }
     }

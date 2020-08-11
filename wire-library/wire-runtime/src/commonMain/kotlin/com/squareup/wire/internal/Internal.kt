@@ -64,17 +64,57 @@ fun <T> immutableCopyOf(name: String, list: List<T>): List<T> {
   return result as List<T>
 }
 
-fun <K, V> immutableCopyOf(name: String, map: Map<K?, V?>): Map<K, V> {
+fun <K, V> immutableCopyOf(name: String, map: Map<K, V>): Map<K, V> {
   if (map.isEmpty()) {
     return emptyMap()
   }
   val result = LinkedHashMap(map)
   // Check after the map has been copied to defend against races.
-  require(null !in result.keys) { "$name.containsKey(null)" }
-  require(null !in result.values) { "$name.containsValue(null)" }
-  return (result as MutableMap<K, V>).toUnmodifiableMap()
+  require(null !in (result.keys as Collection<K?>)) { "$name.containsKey(null)" }
+  require(null !in (result.values as Collection<V?>)) { "$name.containsValue(null)" }
+  return result.toUnmodifiableMap()
 }
 
+/** Confirms the values of [map] are structs and returns an immutable copy. */
+fun <K, V> immutableCopyOfMapWithStructValues(name: String, map: Map<K, V>): Map<K, V> {
+  val copy = mutableMapOf<K, Any?>()
+  for ((k, v) in map) {
+    require(k != null) { "$name.containsKey(null)" }
+    copy[k] = immutableCopyOfStruct(name, v)
+  }
+  return copy.toUnmodifiableMap() as Map<K, V>
+}
+
+/** Confirms [value] is a struct and returns an immutable copy. */
+fun <T> immutableCopyOfStruct(name: String, value: T): T {
+  return when (value) {
+    null -> value
+    is Boolean -> value
+    is Double -> value
+    is String -> value
+    is List<*> -> {
+      val copy = mutableListOf<Any?>()
+      for (element in value) {
+        copy += immutableCopyOfStruct(name, element)
+      }
+      copy.toUnmodifiableList() as T
+    }
+    is Map<*, *> -> {
+      val copy = mutableMapOf<Any?, Any?>()
+      for ((k, v) in value) {
+        copy[immutableCopyOfStruct(name, k)] = immutableCopyOfStruct(name, v)
+      }
+      copy.toUnmodifiableMap() as T
+    }
+    else -> {
+      throw IllegalArgumentException("struct value $name must be a JSON type " +
+          "(null, Boolean, Double, String, List, or Map) but was ${value.typeName}: $value")
+    }
+  }
+}
+
+private val Any.typeName
+  get() = this::class
 
 @JvmName("-redactElements") // Hide from Java
 fun <T> List<T>.redactElements(adapter: ProtoAdapter<T>): List<T> = map(adapter::redact)

@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
 import com.squareup.wire.proto2.geology.kotlin.Period
 import kotlin.Any
@@ -34,15 +35,7 @@ class Dinosaur(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val name: String? = null,
-  /**
-   * URLs with images of this dinosaur.
-   */
-  @field:WireField(
-    tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    label = WireField.Label.REPEATED
-  )
-  val picture_urls: List<String> = emptyList(),
+  picture_urls: List<String> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
@@ -60,6 +53,16 @@ class Dinosaur(
   val period: Period? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Dinosaur, Nothing>(ADAPTER, unknownFields) {
+  /**
+   * URLs with images of this dinosaur.
+   */
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    label = WireField.Label.REPEATED
+  )
+  val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -117,7 +120,8 @@ class Dinosaur(
       FieldEncoding.LENGTH_DELIMITED, 
       Dinosaur::class, 
       "type.googleapis.com/squareup.dinosaurs.kotlin.Dinosaur", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: Dinosaur): Int {
         var size = value.unknownFields.size

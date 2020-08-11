@@ -191,7 +191,7 @@ public final class Dinosaur extends Message<Dinosaur, Dinosaur.Builder> {
 
   private static final class ProtoAdapter_Dinosaur extends ProtoAdapter<Dinosaur> {
     public ProtoAdapter_Dinosaur() {
-      super(FieldEncoding.LENGTH_DELIMITED, Dinosaur.class, "type.googleapis.com/squareup.dinosaurs.java.Dinosaur", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, Dinosaur.class, "type.googleapis.com/squareup.dinosaurs.java.Dinosaur", Syntax.PROTO_2, null);
     }
 
     @Override

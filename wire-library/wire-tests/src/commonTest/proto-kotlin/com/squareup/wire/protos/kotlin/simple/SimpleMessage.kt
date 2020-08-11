@@ -12,6 +12,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.sanitize
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
@@ -73,16 +74,7 @@ class SimpleMessage(
     label = WireField.Label.REQUIRED
   )
   val required_int32: Int,
-  /**
-   * A repeated double, deprecated
-   */
-  @Deprecated(message = "repeated_double is deprecated")
-  @field:WireField(
-    tag = 6,
-    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
-    label = WireField.Label.REPEATED
-  )
-  val repeated_double: List<Double> = emptyList(),
+  repeated_double: List<Double> = emptyList(),
   /**
    * enum from another package with an explicit default
    */
@@ -134,6 +126,17 @@ class SimpleMessage(
   val o: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<SimpleMessage, Nothing>(ADAPTER, unknownFields) {
+  /**
+   * A repeated double, deprecated
+   */
+  @Deprecated(message = "repeated_double is deprecated")
+  @field:WireField(
+    tag = 6,
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    label = WireField.Label.REPEATED
+  )
+  val repeated_double: List<Double> = immutableCopyOf("repeated_double", repeated_double)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -232,7 +235,8 @@ class SimpleMessage(
       FieldEncoding.LENGTH_DELIMITED, 
       SimpleMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: SimpleMessage): Int {
         var size = value.unknownFields.size
@@ -385,7 +389,8 @@ class SimpleMessage(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: NestedMessage): Int {
           var size = value.unknownFields.size
@@ -436,7 +441,8 @@ class SimpleMessage(
       @JvmField
       val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }

@@ -97,7 +97,7 @@ class WireCompiler internal constructor(
   val sourceFileNames: List<String>,
   val treeShakingRoots: List<String>,
   val treeShakingRubbish: List<String>,
-  val manifest: Manifest,
+  val modules: Map<String, WireRun.Module>,
   val dryRun: Boolean,
   val namedFilesOnly: Boolean,
   val emitAndroid: Boolean,
@@ -127,8 +127,7 @@ class WireCompiler internal constructor(
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(
-          outDirectory = swiftOut,
-          manifest = manifest
+          outDirectory = swiftOut
       )
     }
 
@@ -154,6 +153,7 @@ class WireCompiler internal constructor(
           treeShakingRoots = treeShakingRoots,
           treeShakingRubbish = treeShakingRubbish,
           targets = targets,
+          modules = modules,
           proto3Preview = proto3Preview == "UNSUPPORTED"
       )
 
@@ -204,7 +204,7 @@ class WireCompiler internal constructor(
     private const val FILES_FLAG = "--files="
     private const val INCLUDES_FLAG = "--includes="
     private const val EXCLUDES_FLAG = "--excludes="
-    private const val MANIFEST_FLAG = "--manifest="
+    private const val MANIFEST_FLAG = "--experimental-module-manifest="
     private const val QUIET_FLAG = "--quiet"
     private const val DRY_RUN_FLAG = "--dry_run"
     private const val NAMED_FILES_ONLY = "--named_files_only"
@@ -238,7 +238,7 @@ class WireCompiler internal constructor(
       val treeShakingRoots = mutableListOf<String>()
       val treeShakingRubbish = mutableListOf<String>()
       val protoPaths = mutableListOf<String>()
-      var manifest = Manifest.NONE
+      var modules = mapOf<String, WireRun.Module>()
       var javaOut: String? = null
       var kotlinOut: String? = null
       var swiftOut: String? = null
@@ -295,7 +295,7 @@ class WireCompiler internal constructor(
 
           arg.startsWith(MANIFEST_FLAG) -> {
             val yaml = File(arg.substring(MANIFEST_FLAG.length)).readText()
-            manifest = Manifest.fromYaml(yaml)
+            modules = parseManifestModules(yaml)
           }
 
           arg.startsWith(PROTO3_PREVIEW) -> {
@@ -326,7 +326,7 @@ class WireCompiler internal constructor(
       }
 
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, swiftOut,
-          sourceFileNames, treeShakingRoots, treeShakingRubbish, manifest, dryRun, namedFilesOnly,
+          sourceFileNames, treeShakingRoots, treeShakingRubbish, modules, dryRun, namedFilesOnly,
           emitAndroid, emitAndroidAnnotations, emitCompact, javaInterop, proto3Preview)
     }
   }

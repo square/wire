@@ -113,7 +113,7 @@ public final class NotRedacted extends Message<NotRedacted, NotRedacted.Builder>
 
   private static final class ProtoAdapter_NotRedacted extends ProtoAdapter<NotRedacted> {
     public ProtoAdapter_NotRedacted() {
-      super(FieldEncoding.LENGTH_DELIMITED, NotRedacted.class, "type.googleapis.com/squareup.protos.redacted_test.NotRedacted", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, NotRedacted.class, "type.googleapis.com/squareup.protos.redacted_test.NotRedacted", Syntax.PROTO_2, null);
     }
 
     @Override

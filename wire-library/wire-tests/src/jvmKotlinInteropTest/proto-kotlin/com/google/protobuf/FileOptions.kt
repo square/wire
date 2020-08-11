@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -273,6 +274,9 @@ class FileOptions(
   )
   @JvmField
   val ruby_package: String? = null,
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<FileOptions, FileOptions.Builder>(ADAPTER, unknownFields) {
   /**
    * The parser stores options it doesn't recognize here.
    * See the documentation for the "Options" section above.
@@ -283,9 +287,9 @@ class FileOptions(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<FileOptions, FileOptions.Builder>(ADAPTER, unknownFields) {
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.java_package = java_package
@@ -751,7 +755,8 @@ class FileOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       FileOptions::class, 
       "type.googleapis.com/google.protobuf.FileOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: FileOptions): Int {
         var size = value.unknownFields.size
@@ -918,7 +923,8 @@ class FileOptions(
       @JvmField
       val ADAPTER: ProtoAdapter<OptimizeMode> = object : EnumAdapter<OptimizeMode>(
         OptimizeMode::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): OptimizeMode? = OptimizeMode.fromValue(value)
       }

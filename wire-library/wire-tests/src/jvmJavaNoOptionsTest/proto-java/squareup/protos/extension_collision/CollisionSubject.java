@@ -93,7 +93,7 @@ public final class CollisionSubject extends Message<CollisionSubject, CollisionS
 
   private static final class ProtoAdapter_CollisionSubject extends ProtoAdapter<CollisionSubject> {
     public ProtoAdapter_CollisionSubject() {
-      super(FieldEncoding.LENGTH_DELIMITED, CollisionSubject.class, "type.googleapis.com/squareup.protos.extension_collision.CollisionSubject", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, CollisionSubject.class, "type.googleapis.com/squareup.protos.extension_collision.CollisionSubject", Syntax.PROTO_2, null);
     }
 
     @Override

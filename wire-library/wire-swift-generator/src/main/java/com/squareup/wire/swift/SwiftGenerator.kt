@@ -622,7 +622,7 @@ class SwiftGenerator private constructor(
         putAll(null, protoFile.types)
 
         for (service in protoFile.services) {
-          val protoType = service.type()
+          val protoType = service.type
           val moduleName = existingTypeModuleName[protoType] ?: ""
           val className = DeclaredTypeName(moduleName, protoType.simpleName)
           nameToTypeName[protoType] = className

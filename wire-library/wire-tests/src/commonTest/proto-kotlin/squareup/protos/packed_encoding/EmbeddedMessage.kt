@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -23,12 +24,7 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 class EmbeddedMessage(
-  @field:WireField(
-    tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.PACKED
-  )
-  val inner_repeated_number: List<Int> = emptyList(),
+  inner_repeated_number: List<Int> = emptyList(),
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
@@ -36,6 +32,14 @@ class EmbeddedMessage(
   val inner_number_after: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<EmbeddedMessage, Nothing>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 1,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.PACKED
+  )
+  val inner_repeated_number: List<Int> = immutableCopyOf("inner_repeated_number",
+      inner_repeated_number)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -82,7 +86,8 @@ class EmbeddedMessage(
       FieldEncoding.LENGTH_DELIMITED, 
       EmbeddedMessage::class, 
       "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: EmbeddedMessage): Int {
         var size = value.unknownFields.size

@@ -30,9 +30,9 @@ import java.util.TreeSet
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
  * loaded from where so that we can use that information later when deciding what to generate.
  */
-class NewSchemaLoader(
-  private val fs: FileSystem
-) : Closeable, Loader, NewProfileLoader {
+class SchemaLoader(
+  private val fileSystem: FileSystem
+) : Closeable, Loader, ProfileLoader {
   private val closer = Closer.create()
 
   /** Errors accumulated by this load. */
@@ -149,7 +149,7 @@ class NewSchemaLoader(
     val result = mutableListOf<Root>()
     for (location in locations) {
       try {
-        result += location.roots(fs, closer, baseToRoots)
+        result += location.roots(fileSystem, closer, baseToRoots)
       } catch (e: IllegalArgumentException) {
         errors += e.message!!
       }

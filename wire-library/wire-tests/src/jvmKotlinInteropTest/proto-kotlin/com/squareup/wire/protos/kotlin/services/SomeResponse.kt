@@ -48,7 +48,8 @@ class SomeResponse(
       FieldEncoding.LENGTH_DELIMITED, 
       SomeResponse::class, 
       "type.googleapis.com/squareup.protos.kotlin.SomeResponse", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: SomeResponse): Int {
         var size = value.unknownFields.size

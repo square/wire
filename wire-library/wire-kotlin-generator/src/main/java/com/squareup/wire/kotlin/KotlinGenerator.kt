@@ -105,12 +105,17 @@ class KotlinGenerator private constructor(
     get() = schema.getType(this) is EnumType
   private val ProtoType.isMessage
     get() = schema.getType(this) is MessageType
+  private val ProtoType.isStruct
+    get() = this == ProtoType.STRUCT_MAP
+        || this == ProtoType.STRUCT_LIST
+        || this == ProtoType.STRUCT_VALUE
+        || this == ProtoType.STRUCT_NULL
   private val ProtoType.isStructNull
     get() = this == ProtoType.STRUCT_NULL
   private val Type.typeName
     get() = type.typeName
   private val Service.serviceName
-    get() = type().typeName
+    get() = type.typeName
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName as ClassName
@@ -203,15 +208,15 @@ class KotlinGenerator private constructor(
     }
     builder
         .apply {
-          if (service.documentation().isNotBlank()) {
-            addKdoc("%L\n", service.documentation().sanitizeKdoc())
+          if (service.documentation.isNotBlank()) {
+            addKdoc("%L\n", service.documentation.sanitizeKdoc())
           }
         }
 
-    val rpcs = if (onlyRpc == null) service.rpcs() else listOf(onlyRpc)
+    val rpcs = if (onlyRpc == null) service.rpcs else listOf(onlyRpc)
     for (rpc in rpcs) {
       builder.addFunction(generateRpcFunction(
-          rpc, service.name(), service.type().enclosingTypeOrPackage, isImplementation))
+          rpc, service.name, service.type.enclosingTypeOrPackage, isImplementation))
     }
 
     val key = if (isImplementation) implementationName else interfaceName
@@ -331,9 +336,6 @@ class KotlinGenerator private constructor(
       RpcCallStyle.BLOCKING -> MessageSource::class.asClassName().parameterizedBy(typeName)
     }
   }
-
-  private fun pairOf(a: TypeName, b: TypeName) =
-      Pair::class.asClassName().parameterizedBy(a, b)
 
   private fun nameAllocator(message: Type): NameAllocator {
     return nameAllocatorStore.getOrPut(message) {
@@ -740,22 +742,44 @@ class KotlinGenerator private constructor(
         parameterSpec.defaultValue(field.identityValue)
       }
 
-      if (field.isDeprecated) {
-        parameterSpec.addAnnotation(AnnotationSpec.builder(Deprecated::class)
-            .addMember("message = %S", "$fieldName is deprecated")
-            .build())
-      }
-
-      parameterSpec.addAnnotation(wireFieldAnnotation(message, field))
-
-      if (javaInterOp) {
-        parameterSpec.addAnnotation(JvmField::class)
+      val initializer = when {
+        field.type!!.valueType?.isStruct == true -> {
+          CodeBlock.of("%M(%S, %N)",
+              MemberName("com.squareup.wire.internal", "immutableCopyOfMapWithStructValues"),
+              fieldName,
+              fieldName
+          )
+        }
+        field.type!!.isStruct -> {
+          CodeBlock.of("%M(%S, %N)",
+              MemberName("com.squareup.wire.internal", "immutableCopyOfStruct"),
+              fieldName,
+              fieldName
+          )
+        }
+        field.isRepeated || field.isMap -> {
+          CodeBlock.of("%M(%S, %N)",
+              MemberName("com.squareup.wire.internal", "immutableCopyOf"),
+              fieldName,
+              fieldName
+          )
+        }
+        else -> CodeBlock.of("%N", fieldName)
       }
 
       constructorBuilder.addParameter(parameterSpec.build())
       classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
-          .initializer(fieldName)
+          .initializer(initializer)
           .apply {
+            if (field.isDeprecated) {
+              addAnnotation(AnnotationSpec.builder(Deprecated::class)
+                  .addMember("message = %S", "$fieldName is deprecated")
+                  .build())
+            }
+            addAnnotation(wireFieldAnnotation(message, field))
+            if (javaInterOp) {
+              addAnnotation(JvmField::class)
+            }
             if (field.documentation.isNotBlank()) {
               addKdoc("%L\n", field.documentation.sanitizeKdoc())
             }
@@ -976,8 +1000,13 @@ class KotlinGenerator private constructor(
    * ```
    * companion object {
    *  @JvmField
-   *  val ADAPTER : ProtoAdapter<Person> =
-   *      object : ProtoAdapter<Person>(FieldEncoding.LENGTH_DELIMITED, Person::class, "square.github.io/wire/unknown") {
+   *  val ADAPTER : ProtoAdapter<Person> = object : ProtoAdapter<Person>(
+   *    FieldEncoding.LENGTH_DELIMITED,
+   *    Person::class,
+   *    "square.github.io/wire/unknown",
+   *    Syntax.PROTO_3,
+   *    null
+   *  ) {
    *    override fun encodedSize(value: Person): Int { .. }
    *    override fun encode(writer: ProtoWriter, value: Person) { .. }
    *    override fun decode(reader: ProtoReader): Person { .. }
@@ -997,8 +1026,9 @@ class KotlinGenerator private constructor(
             FieldEncoding::class.asClassName())
         .addSuperclassConstructorParameter("\n%T::class", parentClassName)
         .addSuperclassConstructorParameter("\n%S", type.type.typeUrl!!)
-        .addSuperclassConstructorParameter("\n%M\n⇤",
+        .addSuperclassConstructorParameter("\n%M",
             MemberName(Syntax::class.asClassName(), type.syntax.name))
+        .addSuperclassConstructorParameter("\nnull\n⇤")
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type))
         .addFunction(decodeFun(type))
@@ -1429,8 +1459,9 @@ class KotlinGenerator private constructor(
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(EnumAdapter::class.asClassName().parameterizedBy(parentClassName))
         .addSuperclassConstructorParameter("\n⇥%T::class", parentClassName)
-        .addSuperclassConstructorParameter("\n%M\n⇤",
+        .addSuperclassConstructorParameter("\n%M",
             MemberName(Syntax::class.asClassName(), message.syntax.name))
+        .addSuperclassConstructorParameter("\n%L\n⇤", message.identity())
         .addFunction(FunSpec.builder("fromValue")
             .addModifiers(OVERRIDE)
             .addParameter(valueName, Int::class)
@@ -1501,6 +1532,11 @@ class KotlinGenerator private constructor(
     else -> nameToKotlinName.getValue(this)
   }
 
+  private fun EnumType.identity(): CodeBlock {
+    val enumConstant = constant(0) ?: return CodeBlock.of("null")
+    return CodeBlock.of("%T.%L", type.typeName, enumConstant.name)
+  }
+
   private fun Field.typeNameForBuilderSetter(baseClass: TypeName = type!!.asTypeName()): TypeName {
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
@@ -1548,7 +1584,7 @@ class KotlinGenerator private constructor(
             protoType.isScalar -> PROTOTYPE_TO_IDENTITY_VALUES[protoType]
                 ?: throw IllegalArgumentException("Unexpected scalar proto type: $protoType")
             type is MessageType -> CodeBlock.of("null")
-            type is EnumType -> CodeBlock.of("%T.%L", protoType.typeName, type.constant(0)!!.name)
+            type is EnumType -> type.identity()
             else -> throw IllegalArgumentException(
                 "Unexpected type $protoType for IDENTITY_IF_ABSENT")
           }
@@ -1655,8 +1691,8 @@ class KotlinGenerator private constructor(
         putAll(kotlinPackage, null, protoFile.types)
 
         for (service in protoFile.services) {
-          val className = ClassName(kotlinPackage, service.type().simpleName)
-          map[service.type()] = className
+          val className = ClassName(kotlinPackage, service.type.simpleName)
+          map[service.type] = className
         }
       }
 
@@ -1676,4 +1712,4 @@ class KotlinGenerator private constructor(
   }
 }
 
-private fun ProtoFile.kotlinPackage() = javaPackage() ?: packageName ?: ""
+private fun ProtoFile.kotlinPackage() = wirePackage() ?: javaPackage() ?: packageName ?: ""

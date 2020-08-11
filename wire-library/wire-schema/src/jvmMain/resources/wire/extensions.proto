@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+syntax = "proto2";
+
 package wire;
 
 import "google/protobuf/descriptor.proto";
@@ -51,4 +53,13 @@ extend google.protobuf.EnumValueOptions {
    * or any subsequent version.
    */
   optional string until = 1077;
+}
+
+extend google.protobuf.FileOptions {
+  /**
+   * Sets the JVM package where classes generated from this .proto will be placed. `wire_package`
+   * takes precedence over `java_package` which itself takes precedence over the proto package.
+   * This option can be used to avoid collision when generating from both Wire and Protoc.
+   */
+  optional string wire_package = 1087;
 }

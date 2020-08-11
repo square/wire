@@ -45,7 +45,7 @@ public enum EnumVersionTwo implements WireEnum {
 
   private static final class ProtoAdapter_EnumVersionTwo extends EnumAdapter<EnumVersionTwo> {
     ProtoAdapter_EnumVersionTwo() {
-      super(EnumVersionTwo.class, Syntax.PROTO_2);
+      super(EnumVersionTwo.class, Syntax.PROTO_2, null);
     }
 
     @Override

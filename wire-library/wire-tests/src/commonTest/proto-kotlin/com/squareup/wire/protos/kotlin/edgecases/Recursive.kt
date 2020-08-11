@@ -79,7 +79,8 @@ class Recursive(
       FieldEncoding.LENGTH_DELIMITED, 
       Recursive::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.Recursive", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: Recursive): Int {
         var size = value.unknownFields.size

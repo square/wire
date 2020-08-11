@@ -68,7 +68,8 @@ class NestedVersionOne(
       FieldEncoding.LENGTH_DELIMITED, 
       NestedVersionOne::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionOne", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: NestedVersionOne): Int {
         var size = value.unknownFields.size

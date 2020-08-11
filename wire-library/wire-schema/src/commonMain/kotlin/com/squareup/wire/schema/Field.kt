@@ -21,7 +21,7 @@ import com.squareup.wire.schema.internal.parser.FieldElement
 import com.squareup.wire.schema.internal.parser.OptionElement.Companion.PACKED_OPTION_ELEMENT
 import kotlin.jvm.JvmStatic
 
-class Field private constructor(
+data class Field(
   val packageName: String?,
 
   val location: Location,
@@ -194,11 +194,11 @@ class Field private constructor(
     enclosingType: ProtoType,
     service: Service
   ): Boolean {
-    if (service.type() !in markSet) return false
+    if (service.type !in markSet) return false
 
     val protoMember = ProtoMember.get(enclosingType, if (isExtension) qualifiedName else name)
-    if (service.options().assignsMember(protoMember)) return true
-    if (service.rpcs().any { it.options.assignsMember(protoMember) }) return true
+    if (service.options.assignsMember(protoMember)) return true
+    if (service.rpcs.any { it.options.assignsMember(protoMember) }) return true
 
     return false
   }

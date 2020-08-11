@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
@@ -32,14 +33,7 @@ class CamelCase(
   )
   @JvmField
   val nested__message: NestedCamelCase? = null,
-  @field:WireField(
-    tag = 2,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.PACKED,
-    jsonName = "RepInt32"
-  )
-  @JvmField
-  val _Rep_int32: List<Int> = emptyList(),
+  _Rep_int32: List<Int> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -48,6 +42,18 @@ class CamelCase(
   )
   @JvmField
   val IDitIt_my_wAy: String = "",
+  map_int32_Int32: Map<Int, Int> = emptyMap(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<CamelCase, CamelCase.Builder>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 2,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.PACKED,
+    jsonName = "RepInt32"
+  )
+  @JvmField
+  val _Rep_int32: List<Int> = immutableCopyOf("_Rep_int32", _Rep_int32)
+
   @field:WireField(
     tag = 4,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -55,9 +61,8 @@ class CamelCase(
     jsonName = "mapInt32Int32"
   )
   @JvmField
-  val map_int32_Int32: Map<Int, Int> = emptyMap(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<CamelCase, CamelCase.Builder>(ADAPTER, unknownFields) {
+  val map_int32_Int32: Map<Int, Int> = immutableCopyOf("map_int32_Int32", map_int32_Int32)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.nested__message = nested__message
@@ -159,7 +164,8 @@ class CamelCase(
       FieldEncoding.LENGTH_DELIMITED, 
       CamelCase::class, 
       "type.googleapis.com/squareup.proto3.CamelCase", 
-      PROTO_3
+      PROTO_3, 
+      null
     ) {
       private val map_int32_Int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
@@ -281,7 +287,8 @@ class CamelCase(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedCamelCase::class, 
         "type.googleapis.com/squareup.proto3.CamelCase.NestedCamelCase", 
-        PROTO_3
+        PROTO_3, 
+        null
       ) {
         override fun encodedSize(value: NestedCamelCase): Int {
           var size = value.unknownFields.size

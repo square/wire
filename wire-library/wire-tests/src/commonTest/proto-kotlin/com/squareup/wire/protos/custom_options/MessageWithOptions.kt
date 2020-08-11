@@ -48,7 +48,8 @@ class MessageWithOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithOptions::class, 
       "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: MessageWithOptions): Int {
         var size = value.unknownFields.size

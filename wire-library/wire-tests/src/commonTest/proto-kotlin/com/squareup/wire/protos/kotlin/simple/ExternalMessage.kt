@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -29,15 +30,7 @@ class ExternalMessage(
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   val f: Float? = null,
-  /**
-   * Extension source: simple_message.proto
-   */
-  @field:WireField(
-    tag = 125,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
-  )
-  val fooext: List<Int> = emptyList(),
+  fooext: List<Int> = emptyList(),
   /**
    * Extension source: simple_message.proto
    */
@@ -72,6 +65,16 @@ class ExternalMessage(
   val nested_enum_ext: SimpleMessage.NestedEnum? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<ExternalMessage, Nothing>(ADAPTER, unknownFields) {
+  /**
+   * Extension source: simple_message.proto
+   */
+  @field:WireField(
+    tag = 125,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.REPEATED
+  )
+  val fooext: List<Int> = immutableCopyOf("fooext", fooext)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -136,7 +139,8 @@ class ExternalMessage(
       FieldEncoding.LENGTH_DELIMITED, 
       ExternalMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: ExternalMessage): Int {
         var size = value.unknownFields.size

@@ -93,7 +93,7 @@ public final class SendDataRequest extends Message<SendDataRequest, SendDataRequ
 
   private static final class ProtoAdapter_SendDataRequest extends ProtoAdapter<SendDataRequest> {
     public ProtoAdapter_SendDataRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, SendDataRequest.class, "type.googleapis.com/com.squareup.services.anotherpackage.SendDataRequest", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, SendDataRequest.class, "type.googleapis.com/com.squareup.services.anotherpackage.SendDataRequest", Syntax.PROTO_2, null);
     }
 
     @Override

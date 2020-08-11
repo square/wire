@@ -11,6 +11,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
@@ -28,15 +29,17 @@ class UsesAny(
   )
   @JvmField
   val just_one: AnyMessage? = null,
+  many_anys: List<AnyMessage> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<UsesAny, UsesAny.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val many_anys: List<AnyMessage> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<UsesAny, UsesAny.Builder>(ADAPTER, unknownFields) {
+  val many_anys: List<AnyMessage> = immutableCopyOf("many_anys", many_anys)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.just_one = just_one
@@ -109,7 +112,8 @@ class UsesAny(
       FieldEncoding.LENGTH_DELIMITED, 
       UsesAny::class, 
       "type.googleapis.com/squareup.protos.usesany.UsesAny", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: UsesAny): Int {
         var size = value.unknownFields.size

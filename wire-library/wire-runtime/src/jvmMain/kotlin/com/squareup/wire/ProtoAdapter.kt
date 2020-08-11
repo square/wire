@@ -31,7 +31,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
   actual val type: KClass<*>?,
   actual val typeUrl: String?,
-  actual val syntax: Syntax
+  actual val syntax: Syntax,
+  actual val identity: E?
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
     this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
@@ -46,20 +47,33 @@ actual abstract class ProtoAdapter<E> actual constructor(
   // Obsolete; for Java classes generated before typeUrl was added.
   constructor(fieldEncoding: FieldEncoding, type: Class<*>) : this(fieldEncoding, type.kotlin)
 
-  // Obsolete; for Kotlin classes generated before typeUrl was added.
-  constructor(fieldEncoding: FieldEncoding, type: KClass<*>?) :
-      this(fieldEncoding, type, null, Syntax.PROTO_2)
-
   // Obsolete; for Java classes generated before syntax was added.
   constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?) :
       this(fieldEncoding, type.kotlin, typeUrl, Syntax.PROTO_2)
+
+  // Obsolete; for Java classes generated before identity was added.
+  constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?, syntax: Syntax) :
+      this(fieldEncoding, type.kotlin, typeUrl, syntax)
+
+  // Obsolete; for Kotlin classes generated before typeUrl was added.
+  constructor(fieldEncoding: FieldEncoding, type: KClass<*>?) :
+      this(fieldEncoding, type, null, Syntax.PROTO_2)
 
   // Obsolete; for Kotlin classes generated before syntax was added.
   constructor(fieldEncoding: FieldEncoding, type: KClass<*>?, typeUrl: String?) :
       this(fieldEncoding, type, typeUrl, Syntax.PROTO_2)
 
-  constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?, syntax: Syntax) :
-      this(fieldEncoding, type.kotlin, typeUrl, syntax)
+  // Obsolete; for Kotlin classes generated before identity was added.
+  constructor(fieldEncoding: FieldEncoding, type: KClass<*>?, typeUrl: String?, syntax: Syntax) :
+      this(fieldEncoding, type, typeUrl, syntax, null)
+
+  constructor(
+    fieldEncoding: FieldEncoding,
+    type: Class<*>,
+    typeUrl: String?,
+    syntax: Syntax,
+    identity: E?
+  ) : this(fieldEncoding, type.kotlin, typeUrl, syntax, identity)
 
   actual abstract fun redact(value: E): E
 
@@ -138,6 +152,9 @@ actual abstract class ProtoAdapter<E> actual constructor(
     return repeatedAdapter ?: throw UnsupportedOperationException(
         "Can't create a repeated adapter from a repeated or packed adapter.")
   }
+
+  internal val isStruct: Boolean
+    get() = this == STRUCT_MAP || this == STRUCT_LIST || this == STRUCT_VALUE || this == STRUCT_NULL
 
   actual class EnumConstantNotFoundException actual constructor(
     @JvmField actual val value: Int,

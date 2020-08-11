@@ -94,7 +94,7 @@ public final class OneField extends Message<OneField, OneField.Builder> {
 
   private static final class ProtoAdapter_OneField extends ProtoAdapter<OneField> {
     public ProtoAdapter_OneField() {
-      super(FieldEncoding.LENGTH_DELIMITED, OneField.class, "type.googleapis.com/squareup.protos.edgecases.OneField", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, OneField.class, "type.googleapis.com/squareup.protos.edgecases.OneField", Syntax.PROTO_2, null);
     }
 
     @Override

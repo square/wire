@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Float
@@ -27,16 +28,7 @@ class ExternalMessage(
   )
   @JvmField
   val f: Float? = null,
-  /**
-   * Extension source: simple_message.proto
-   */
-  @field:WireField(
-    tag = 125,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val fooext: List<Int> = emptyList(),
+  fooext: List<Int> = emptyList(),
   /**
    * Extension source: simple_message.proto
    */
@@ -75,6 +67,17 @@ class ExternalMessage(
   val nested_enum_ext: SimpleMessage.NestedEnum? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<ExternalMessage, ExternalMessage.Builder>(ADAPTER, unknownFields) {
+  /**
+   * Extension source: simple_message.proto
+   */
+  @field:WireField(
+    tag = 125,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val fooext: List<Int> = immutableCopyOf("fooext", fooext)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.f = f
@@ -206,7 +209,8 @@ class ExternalMessage(
       FieldEncoding.LENGTH_DELIMITED, 
       ExternalMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: ExternalMessage): Int {
         var size = value.unknownFields.size

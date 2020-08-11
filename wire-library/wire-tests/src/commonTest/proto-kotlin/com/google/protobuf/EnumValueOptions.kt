@@ -9,6 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.protos.custom_options.FooBar
 import kotlin.Any
@@ -36,15 +37,7 @@ class EnumValueOptions(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   val deprecated: Boolean? = null,
-  /**
-   * The parser stores options it doesn't recognize here. See above.
-   */
-  @field:WireField(
-    tag = 999,
-    adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**
    * Extension source: custom_options.proto
    */
@@ -71,6 +64,17 @@ class EnumValueOptions(
   val foreign_enum_value_option: Boolean? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<EnumValueOptions, Nothing>(ADAPTER, unknownFields) {
+  /**
+   * The parser stores options it doesn't recognize here. See above.
+   */
+  @field:WireField(
+    tag = 999,
+    adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -134,7 +138,8 @@ class EnumValueOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       EnumValueOptions::class, 
       "type.googleapis.com/google.protobuf.EnumValueOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: EnumValueOptions): Int {
         var size = value.unknownFields.size

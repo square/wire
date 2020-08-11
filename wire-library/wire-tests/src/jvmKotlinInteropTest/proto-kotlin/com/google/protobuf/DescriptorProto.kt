@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
 import kotlin.Any
@@ -32,61 +33,78 @@ class DescriptorProto(
   )
   @JvmField
   val name: String? = null,
-  @field:WireField(
-    tag = 2,
-    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val field: List<FieldDescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 6,
-    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val extension: List<FieldDescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 3,
-    adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val nested_type: List<DescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 4,
-    adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val enum_type: List<EnumDescriptorProto> = emptyList(),
-  @field:WireField(
-    tag = 5,
-    adapter = "com.google.protobuf.DescriptorProto${'$'}ExtensionRange#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val extension_range: List<ExtensionRange> = emptyList(),
-  @field:WireField(
-    tag = 8,
-    adapter = "com.google.protobuf.OneofDescriptorProto#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val oneof_decl: List<OneofDescriptorProto> = emptyList(),
+  field: List<FieldDescriptorProto> = emptyList(),
+  extension: List<FieldDescriptorProto> = emptyList(),
+  nested_type: List<DescriptorProto> = emptyList(),
+  enum_type: List<EnumDescriptorProto> = emptyList(),
+  extension_range: List<ExtensionRange> = emptyList(),
+  oneof_decl: List<OneofDescriptorProto> = emptyList(),
   @field:WireField(
     tag = 7,
     adapter = "com.google.protobuf.MessageOptions#ADAPTER"
   )
   @JvmField
   val options: MessageOptions? = null,
+  reserved_range: List<ReservedRange> = emptyList(),
+  reserved_name: List<String> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<DescriptorProto, DescriptorProto.Builder>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 2,
+    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val field: List<FieldDescriptorProto> = immutableCopyOf("field", field)
+
+  @field:WireField(
+    tag = 6,
+    adapter = "com.google.protobuf.FieldDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val extension: List<FieldDescriptorProto> = immutableCopyOf("extension", extension)
+
+  @field:WireField(
+    tag = 3,
+    adapter = "com.google.protobuf.DescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val nested_type: List<DescriptorProto> = immutableCopyOf("nested_type", nested_type)
+
+  @field:WireField(
+    tag = 4,
+    adapter = "com.google.protobuf.EnumDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val enum_type: List<EnumDescriptorProto> = immutableCopyOf("enum_type", enum_type)
+
+  @field:WireField(
+    tag = 5,
+    adapter = "com.google.protobuf.DescriptorProto${'$'}ExtensionRange#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val extension_range: List<ExtensionRange> = immutableCopyOf("extension_range", extension_range)
+
+  @field:WireField(
+    tag = 8,
+    adapter = "com.google.protobuf.OneofDescriptorProto#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val oneof_decl: List<OneofDescriptorProto> = immutableCopyOf("oneof_decl", oneof_decl)
+
   @field:WireField(
     tag = 9,
     adapter = "com.google.protobuf.DescriptorProto${'$'}ReservedRange#ADAPTER",
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val reserved_range: List<ReservedRange> = emptyList(),
+  val reserved_range: List<ReservedRange> = immutableCopyOf("reserved_range", reserved_range)
+
   /**
    * Reserved field names, which may not be used by fields in the same message.
    * A given name may only be reserved once.
@@ -97,9 +115,8 @@ class DescriptorProto(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val reserved_name: List<String> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<DescriptorProto, DescriptorProto.Builder>(ADAPTER, unknownFields) {
+  val reserved_name: List<String> = immutableCopyOf("reserved_name", reserved_name)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
@@ -296,7 +313,8 @@ class DescriptorProto(
       FieldEncoding.LENGTH_DELIMITED, 
       DescriptorProto::class, 
       "type.googleapis.com/google.protobuf.DescriptorProto", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: DescriptorProto): Int {
         var size = value.unknownFields.size
@@ -500,7 +518,8 @@ class DescriptorProto(
         FieldEncoding.LENGTH_DELIMITED, 
         ExtensionRange::class, 
         "type.googleapis.com/google.protobuf.DescriptorProto.ExtensionRange", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: ExtensionRange): Int {
           var size = value.unknownFields.size
@@ -648,7 +667,8 @@ class DescriptorProto(
         FieldEncoding.LENGTH_DELIMITED, 
         ReservedRange::class, 
         "type.googleapis.com/google.protobuf.DescriptorProto.ReservedRange", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: ReservedRange): Int {
           var size = value.unknownFields.size

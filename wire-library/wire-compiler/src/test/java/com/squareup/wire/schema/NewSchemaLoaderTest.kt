@@ -85,7 +85,7 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin())
 
-    NewSchemaLoader(fs).use { loader ->
+    SchemaLoader(fs).use { loader ->
       loader.initRoots(
           sourcePath = listOf(
               Location.get("colors/src/main/proto")
@@ -115,7 +115,7 @@ class NewSchemaLoaderTest {
   @Test
   fun noSourcesFound() {
     val exception = assertFailsWith<IllegalArgumentException> {
-      NewSchemaLoader(fs).use { loader ->
+      SchemaLoader(fs).use { loader ->
         loader.initRoots(sourcePath = listOf())
         loader.loadSourcePathFiles()
       }
@@ -132,7 +132,7 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin())
 
-    NewSchemaLoader(fs).use { loader ->
+    SchemaLoader(fs).use { loader ->
       loader.initRoots(
           sourcePath = listOf(Location.get("colors/src/main/proto", "squareup/shapes/blue.proto"))
       )
@@ -152,7 +152,7 @@ class NewSchemaLoaderTest {
         """.trimMargin())
 
     val exception = assertFailsWith<IllegalArgumentException> {
-      NewSchemaLoader(fs).use { loader ->
+      SchemaLoader(fs).use { loader ->
         loader.initRoots(
             sourcePath = listOf(Location.get("colors/src/main/proto/squareup/shapes/blue.proto"))
         )
@@ -179,7 +179,7 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin())
 
-    NewSchemaLoader(fs).use { loader ->
+    SchemaLoader(fs).use { loader ->
       loader.initRoots(
           sourcePath = listOf(Location.get("colors/src/main/proto")),
           protoPath = listOf(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
@@ -228,7 +228,7 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin(), charset = UTF_32LE, bom = "ffff0000".decodeHex())
 
-    val sourcePathFiles = NewSchemaLoader(fs).use { loader ->
+    val sourcePathFiles = SchemaLoader(fs).use { loader ->
       loader.initRoots(sourcePath = listOf(Location.get("colors")))
       loader.loadSourcePathFiles()
     }
@@ -254,7 +254,7 @@ class NewSchemaLoaderTest {
         "../../../secret/proto"
     )
 
-    NewSchemaLoader(fs).use { loader ->
+    SchemaLoader(fs).use { loader ->
       loader.initRoots(
           sourcePath = listOf(Location.get("colors/src/main/proto"))
       )
@@ -277,7 +277,7 @@ class NewSchemaLoaderTest {
         "../../../../../../secret/proto/squareup/colors/blue.proto"
     )
 
-    NewSchemaLoader(fs).use { loader ->
+    SchemaLoader(fs).use { loader ->
       loader.initRoots(
           sourcePath = listOf(Location.get("colors/src/main/proto"))
       )
@@ -313,7 +313,7 @@ class NewSchemaLoaderTest {
         """.trimMargin())
 
     val exception = assertFailsWith<IllegalArgumentException> {
-      NewSchemaLoader(fs).use { loader ->
+      SchemaLoader(fs).use { loader ->
         loader.initRoots(
             sourcePath = listOf(
                 Location.get("colors/src/main/proto")
@@ -363,7 +363,7 @@ class NewSchemaLoaderTest {
         """.trimMargin())
 
     val exception = assertFailsWith<IllegalArgumentException> {
-      NewSchemaLoader(fs).use { loader ->
+      SchemaLoader(fs).use { loader ->
         loader.initRoots(
             sourcePath = listOf(
                 Location.get("colors/src/main/proto")
@@ -387,7 +387,7 @@ class NewSchemaLoaderTest {
 
   @Test
   fun locationsToCheck() {
-    val newSchemaLoader = NewSchemaLoader(fs)
+    val newSchemaLoader = SchemaLoader(fs)
     val result = newSchemaLoader.locationsToCheck("java", listOf(
         Location.get("shared-protos.jar", "squareup/cash/money/Money.proto"),
         Location.get("src/main/proto", "squareup/cash/Service.proto"),
@@ -409,7 +409,7 @@ class NewSchemaLoaderTest {
 
   @Test
   fun pathsToAttempt() {
-    val newSchemaLoader = NewSchemaLoader(fs)
+    val newSchemaLoader = SchemaLoader(fs)
     val result = newSchemaLoader.locationsToCheck("android", listOf(
         Location.get("/a/b", "c/d/e.proto")
     ))
@@ -422,7 +422,7 @@ class NewSchemaLoaderTest {
 
   @Test
   fun pathsToAttemptMultipleRoots() {
-    val newSchemaLoader = NewSchemaLoader(fs)
+    val newSchemaLoader = SchemaLoader(fs)
     val result = newSchemaLoader.locationsToCheck("android", listOf(
         Location.get("/a/b", "c/d/e.proto"),
         Location.get("/a/b", "c/f/g/h.proto"),

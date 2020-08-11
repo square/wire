@@ -12,6 +12,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.AssertionError
@@ -48,6 +49,9 @@ class MethodOptions(
     adapter = "com.google.protobuf.MethodOptions${'$'}IdempotencyLevel#ADAPTER"
   )
   val idempotency_level: IdempotencyLevel? = null,
+  uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<MethodOptions, Nothing>(ADAPTER, unknownFields) {
   /**
    * The parser stores options it doesn't recognize here. See above.
    */
@@ -56,9 +60,9 @@ class MethodOptions(
     adapter = "com.google.protobuf.UninterpretedOption#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val uninterpreted_option: List<UninterpretedOption> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<MethodOptions, Nothing>(ADAPTER, unknownFields) {
+  val uninterpreted_option: List<UninterpretedOption> = immutableCopyOf("uninterpreted_option",
+      uninterpreted_option)
+
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
@@ -115,7 +119,8 @@ class MethodOptions(
       FieldEncoding.LENGTH_DELIMITED, 
       MethodOptions::class, 
       "type.googleapis.com/google.protobuf.MethodOptions", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: MethodOptions): Int {
         var size = value.unknownFields.size
@@ -190,7 +195,8 @@ class MethodOptions(
       @JvmField
       val ADAPTER: ProtoAdapter<IdempotencyLevel> = object : EnumAdapter<IdempotencyLevel>(
         IdempotencyLevel::class, 
-        PROTO_2
+        PROTO_2, 
+        IdempotencyLevel.IDEMPOTENCY_UNKNOWN
       ) {
         override fun fromValue(value: Int): IdempotencyLevel? = IdempotencyLevel.fromValue(value)
       }

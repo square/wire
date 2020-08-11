@@ -87,7 +87,8 @@ class RedactedOneOf(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedOneOf::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedOneOf", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: RedactedOneOf): Int {
         var size = value.unknownFields.size

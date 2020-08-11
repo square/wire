@@ -30,12 +30,6 @@ public final class Person extends Message<Person, Person.Builder> {
 
   private static final long serialVersionUID = 0L;
 
-  public static final String DEFAULT_NAME = "";
-
-  public static final Integer DEFAULT_ID = 0;
-
-  public static final String DEFAULT_EMAIL = "";
-
   public static final Integer DEFAULT_FOO = 0;
 
   public static final String DEFAULT_BAR = "";
@@ -58,7 +52,7 @@ public final class Person extends Message<Person, Person.Builder> {
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.OMIT_IDENTITY
   )
-  public final Integer id;
+  public final int id;
 
   /**
    * Email address for the customer.
@@ -99,19 +93,25 @@ public final class Person extends Message<Person, Person.Builder> {
   )
   public final String bar;
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phones,
-      List<String> aliases, Integer foo, String bar) {
+  public Person(String name, int id, String email, List<PhoneNumber> phones, List<String> aliases,
+      Integer foo, String bar) {
     this(name, id, email, phones, aliases, foo, bar, ByteString.EMPTY);
   }
 
-  public Person(String name, Integer id, String email, List<PhoneNumber> phones,
-      List<String> aliases, Integer foo, String bar, ByteString unknownFields) {
+  public Person(String name, int id, String email, List<PhoneNumber> phones, List<String> aliases,
+      Integer foo, String bar, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     if (Internal.countNonNull(foo, bar) > 1) {
       throw new IllegalArgumentException("at most one of foo, bar may be non-null");
     }
+    if (name == null) {
+      throw new IllegalArgumentException("name == null");
+    }
     this.name = name;
     this.id = id;
+    if (email == null) {
+      throw new IllegalArgumentException("email == null");
+    }
     this.email = email;
     this.phones = Internal.immutableCopyOf("phones", phones);
     this.aliases = Internal.immutableCopyOf("aliases", aliases);
@@ -154,7 +154,7 @@ public final class Person extends Message<Person, Person.Builder> {
     if (result == 0) {
       result = unknownFields().hashCode();
       result = result * 37 + (name != null ? name.hashCode() : 0);
-      result = result * 37 + (id != null ? id.hashCode() : 0);
+      result = result * 37 + Integer.hashCode(id);
       result = result * 37 + (email != null ? email.hashCode() : 0);
       result = result * 37 + phones.hashCode();
       result = result * 37 + aliases.hashCode();
@@ -169,7 +169,7 @@ public final class Person extends Message<Person, Person.Builder> {
   public String toString() {
     StringBuilder builder = new StringBuilder();
     if (name != null) builder.append(", name=").append(Internal.sanitize(name));
-    if (id != null) builder.append(", id=").append(id);
+    builder.append(", id=").append(id);
     if (email != null) builder.append(", email=").append(Internal.sanitize(email));
     if (!phones.isEmpty()) builder.append(", phones=").append(phones);
     if (!aliases.isEmpty()) builder.append(", aliases=").append(Internal.sanitize(aliases));
@@ -181,7 +181,7 @@ public final class Person extends Message<Person, Person.Builder> {
   public static final class Builder extends Message.Builder<Person, Builder> {
     public String name;
 
-    public Integer id;
+    public int id;
 
     public String email;
 
@@ -194,6 +194,9 @@ public final class Person extends Message<Person, Person.Builder> {
     public String bar;
 
     public Builder() {
+      name = "";
+      id = 0;
+      email = "";
       phones = Internal.newMutableList();
       aliases = Internal.newMutableList();
     }
@@ -209,7 +212,7 @@ public final class Person extends Message<Person, Person.Builder> {
     /**
      * The customer's ID number.
      */
-    public Builder id(Integer id) {
+    public Builder id(int id) {
       this.id = id;
       return this;
     }
@@ -295,7 +298,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneType extends EnumAdapter<PhoneType> {
       ProtoAdapter_PhoneType() {
-        super(PhoneType.class, Syntax.PROTO_3);
+        super(PhoneType.class, Syntax.PROTO_3, PhoneType.MOBILE);
       }
 
       @Override
@@ -309,10 +312,6 @@ public final class Person extends Message<Person, Person.Builder> {
     public static final ProtoAdapter<PhoneNumber> ADAPTER = new ProtoAdapter_PhoneNumber();
 
     private static final long serialVersionUID = 0L;
-
-    public static final String DEFAULT_NUMBER = "";
-
-    public static final PhoneType DEFAULT_TYPE = PhoneType.MOBILE;
 
     /**
      * The customer's phone number.
@@ -340,7 +339,13 @@ public final class Person extends Message<Person, Person.Builder> {
 
     public PhoneNumber(String number, PhoneType type, ByteString unknownFields) {
       super(ADAPTER, unknownFields);
+      if (number == null) {
+        throw new IllegalArgumentException("number == null");
+      }
       this.number = number;
+      if (type == null) {
+        throw new IllegalArgumentException("type == null");
+      }
       this.type = type;
     }
 
@@ -389,6 +394,8 @@ public final class Person extends Message<Person, Person.Builder> {
       public PhoneType type;
 
       public Builder() {
+        number = "";
+        type = PhoneType.MOBILE;
       }
 
       /**
@@ -415,7 +422,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
       public ProtoAdapter_PhoneNumber() {
-        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.protos3.java.person.Person.PhoneNumber", Syntax.PROTO_3);
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.protos3.java.person.Person.PhoneNumber", Syntax.PROTO_3, null);
       }
 
       @Override
@@ -473,7 +480,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
     public ProtoAdapter_Person() {
-      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.protos3.java.person.Person", Syntax.PROTO_3);
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.protos3.java.person.Person", Syntax.PROTO_3, null);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -34,13 +35,7 @@ import okio.ByteString
  * in them.
  */
 class UninterpretedOption(
-  @field:WireField(
-    tag = 2,
-    adapter = "com.google.protobuf.UninterpretedOption${'$'}NamePart#ADAPTER",
-    label = WireField.Label.REPEATED
-  )
-  @JvmField
-  val name: List<NamePart> = emptyList(),
+  name: List<NamePart> = emptyList(),
   /**
    * The value of the uninterpreted option, in whatever type the tokenizer
    * identified it as during parsing. Exactly one of these should be set.
@@ -83,6 +78,14 @@ class UninterpretedOption(
   val aggregate_value: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<UninterpretedOption, UninterpretedOption.Builder>(ADAPTER, unknownFields) {
+  @field:WireField(
+    tag = 2,
+    adapter = "com.google.protobuf.UninterpretedOption${'$'}NamePart#ADAPTER",
+    label = WireField.Label.REPEATED
+  )
+  @JvmField
+  val name: List<NamePart> = immutableCopyOf("name", name)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
@@ -230,7 +233,8 @@ class UninterpretedOption(
       FieldEncoding.LENGTH_DELIMITED, 
       UninterpretedOption::class, 
       "type.googleapis.com/google.protobuf.UninterpretedOption", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: UninterpretedOption): Int {
         var size = value.unknownFields.size
@@ -389,7 +393,8 @@ class UninterpretedOption(
         FieldEncoding.LENGTH_DELIMITED, 
         NamePart::class, 
         "type.googleapis.com/google.protobuf.UninterpretedOption.NamePart", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: NamePart): Int {
           var size = value.unknownFields.size

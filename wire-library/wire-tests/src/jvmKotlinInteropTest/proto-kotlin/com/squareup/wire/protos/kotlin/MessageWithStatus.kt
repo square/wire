@@ -54,7 +54,8 @@ class MessageWithStatus(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: MessageWithStatus): Int {
         var size = value.unknownFields.size
@@ -87,7 +88,8 @@ class MessageWithStatus(
       @JvmField
       val ADAPTER: ProtoAdapter<Status> = object : EnumAdapter<Status>(
         Status::class, 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun fromValue(value: Int): Status? = Status.fromValue(value)
       }

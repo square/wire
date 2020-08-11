@@ -218,7 +218,7 @@ public final class MethodDescriptorProto extends Message<MethodDescriptorProto, 
 
   private static final class ProtoAdapter_MethodDescriptorProto extends ProtoAdapter<MethodDescriptorProto> {
     public ProtoAdapter_MethodDescriptorProto() {
-      super(FieldEncoding.LENGTH_DELIMITED, MethodDescriptorProto.class, "type.googleapis.com/google.protobuf.MethodDescriptorProto", Syntax.PROTO_2);
+      super(FieldEncoding.LENGTH_DELIMITED, MethodDescriptorProto.class, "type.googleapis.com/google.protobuf.MethodDescriptorProto", Syntax.PROTO_2, null);
     }
 
     @Override

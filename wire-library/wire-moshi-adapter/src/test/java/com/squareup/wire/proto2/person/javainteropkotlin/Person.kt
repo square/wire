@@ -13,6 +13,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
+import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.missingRequiredFields
 import com.squareup.wire.internal.redactElements
 import com.squareup.wire.internal.sanitize
@@ -59,6 +60,9 @@ class Person(
   )
   @JvmField
   val email: String? = null,
+  phone: List<PhoneNumber> = emptyList(),
+  unknownFields: ByteString = ByteString.EMPTY
+) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
   /**
    * A list of the customer's phone numbers.
    */
@@ -68,9 +72,8 @@ class Person(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val phone: List<PhoneNumber> = emptyList(),
-  unknownFields: ByteString = ByteString.EMPTY
-) : Message<Person, Person.Builder>(ADAPTER, unknownFields) {
+  val phone: List<PhoneNumber> = immutableCopyOf("phone", phone)
+
   override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
@@ -183,7 +186,8 @@ class Person(
       FieldEncoding.LENGTH_DELIMITED, 
       Person::class, 
       "type.googleapis.com/squareup.proto2.person.javainteropkotlin.Person", 
-      PROTO_2
+      PROTO_2, 
+      null
     ) {
       override fun encodedSize(value: Person): Int {
         var size = value.unknownFields.size
@@ -251,7 +255,8 @@ class Person(
       @JvmField
       val ADAPTER: ProtoAdapter<PhoneType> = object : EnumAdapter<PhoneType>(
         PhoneType::class, 
-        PROTO_2
+        PROTO_2, 
+        PhoneType.MOBILE
       ) {
         override fun fromValue(value: Int): PhoneType? = PhoneType.fromValue(value)
       }
@@ -368,7 +373,8 @@ class Person(
         FieldEncoding.LENGTH_DELIMITED, 
         PhoneNumber::class, 
         "type.googleapis.com/squareup.proto2.person.javainteropkotlin.Person.PhoneNumber", 
-        PROTO_2
+        PROTO_2, 
+        null
       ) {
         override fun encodedSize(value: PhoneNumber): Int {
           var size = value.unknownFields.size
