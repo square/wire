@@ -1,6 +1,6 @@
 apply plugin: 'application'
 apply plugin: 'org.jetbrains.kotlin.jvm'
-apply plugin: 'kotlinx-serialization'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = 'com.squareup.wire.WireCompiler'
