@@ -241,8 +241,9 @@ wire {
 Another way to prune obsolete fields is to assign them a version, then to generate your code
 against a version range or a unique version. The fields out of the version range will get pruned.
 
-Members, or enum constants, may be declared with `wire.since` and `wire.until` options. For example,
-these options declare a field `age` that was replaced with `birth_date` in version "5.0":
+Members may be declared with `wire.since` and `wire.until` options; enum constant can use
+`wire.constant_since` and `wire.constant_until`. For example, these options declare a field `age`
+that was replaced with `birth_date` in version "5.0":
 
 ```proto
 import "wire/extensions.proto";

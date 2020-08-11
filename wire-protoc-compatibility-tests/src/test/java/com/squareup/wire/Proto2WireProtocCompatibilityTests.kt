@@ -24,6 +24,8 @@ import squareup.proto2.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extOptBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extPackBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extRepBool
+import squareup.proto2.kotlin.extensions.WireMessageOuterClass
+import squareup.proto2.wire.extensions.WireMessage
 import com.squareup.wire.proto2.kotlin.simple.SimpleMessage as SimpleMessageK
 import squareup.proto2.kotlin.alltypes.AllTypes as AllTypesK
 
@@ -78,6 +80,11 @@ class Proto2WireProtocCompatibilityTests {
 
     assertThat(AllTypesOuterClass.AllTypes.parseFrom(byteArrayWire, allTypesRegistry))
         .isEqualTo(identityAllTypesProtoc)
+  }
+
+  @Test fun protocDontThrowUpOnWireExtensions() {
+    assertThat(WireMessageOuterClass.WireMessage.newBuilder().build()).isNotNull()
+    assertThat(WireMessage()).isNotNull()
   }
 
   companion object {
