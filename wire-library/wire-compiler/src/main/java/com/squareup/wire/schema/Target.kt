@@ -167,6 +167,7 @@ data class JavaTarget(
         outPath
       }
     }
+    Files.createDirectories(modulePath)
 
     val javaGenerator = JavaGenerator.get(schema)
         .withProfile(profile)
@@ -242,6 +243,8 @@ data class KotlinTarget(
         outPath
       }
     }
+    Files.createDirectories(modulePath)
+
     val kotlinGenerator = KotlinGenerator(
         schema = schema,
         emitAndroid = android,
@@ -338,6 +341,8 @@ data class ProtoTarget(
         outPath
       }
     }
+    Files.createDirectories(modulePath)
+
     return object : SchemaHandler {
       override fun handle(type: Type): Path? = null
       override fun handle(service: Service): List<Path> = emptyList()
