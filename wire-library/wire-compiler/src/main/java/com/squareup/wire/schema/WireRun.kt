@@ -245,7 +245,10 @@ data class WireRun(
     val claimedPaths = mutableMapOf<Path, String>()
     for ((moduleName, partition) in partitions) {
       val targetToSchemaHandler = targets.associateWith {
-        it.newHandler(partition.schema, moduleName, fs, logger, schemaLoader)
+        it.newHandler(
+            partition.schema, moduleName, partition.transitiveUpstreamTypes, fs, logger,
+            schemaLoader
+        )
       }
 
       // Call each target.
