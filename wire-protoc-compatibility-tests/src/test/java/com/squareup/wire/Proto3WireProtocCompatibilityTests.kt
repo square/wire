@@ -33,10 +33,12 @@ import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
+import squareup.proto3.kotlin.extensions.WireMessageOuterClass
 import squareup.proto3.kotlin.alltypes.All64OuterClass
 import squareup.proto3.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto3.kotlin.alltypes.CamelCaseOuterClass
 import squareup.proto3.kotlin.pizza.PizzaOuterClass
+import squareup.proto3.wire.extensions.WireMessage
 import java.io.File
 import java.lang.IllegalArgumentException
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as RequiredExtensionK
@@ -353,6 +355,11 @@ class Proto3WireProtocCompatibilityTests {
     } catch (exception: IllegalArgumentException) {
       assertThat(exception).hasMessage("builder.nested_enum == null")
     }
+  }
+
+  @Test fun protocDontThrowUpOnWireExtensions() {
+    assertThat(WireMessageOuterClass.WireMessage.newBuilder().build()).isNotNull()
+    assertThat(WireMessage()).isNotNull()
   }
 
   companion object {

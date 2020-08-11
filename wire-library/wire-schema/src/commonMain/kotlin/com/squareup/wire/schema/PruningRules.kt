@@ -266,8 +266,8 @@ class PruningRules private constructor(builder: Builder) {
   companion object {
     internal val FIELD_SINCE = ProtoMember.get(Options.FIELD_OPTIONS, "wire.since")
     internal val FIELD_UNTIL = ProtoMember.get(Options.FIELD_OPTIONS, "wire.until")
-    internal val ENUM_CONSTANT_SINCE = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.since")
-    internal val ENUM_CONSTANT_UNTIL = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.until")
+    internal val ENUM_CONSTANT_SINCE = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.constant_since")
+    internal val ENUM_CONSTANT_UNTIL = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, "wire.constant_until")
 
     /**
      * Returns the identifier or wildcard that encloses [identifier], or null if it is not enclosed.
