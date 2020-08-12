@@ -22,24 +22,31 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 
+private val defaultRoots = setOf("*")
+private val defaultPrunes = emptySet<String>()
+
 @Serializable
 private data class ManifestModule(
   val dependencies: Set<String> = emptySet(),
-  val roots: Set<String> = setOf("*"),
-  val prunes: Set<String> = emptySet()
+  val roots: Set<String> = defaultRoots,
+  val prunes: Set<String> = defaultPrunes
 )
 
 private val serializer = MapSerializer(String.serializer(), ManifestModule.serializer())
 
-internal fun parseManifestModules(string: String): Map<String, WireRun.Module> {
-  val modules = Yaml.default.parse(serializer, string)
+internal fun parseManifestModules(yaml: String): Map<String, WireRun.Module> {
+  val modules = Yaml.default.parse(serializer, yaml)
   return modules.mapValues { (_, module) ->
     WireRun.Module(
         dependencies = module.dependencies,
-        pruningRules = PruningRules.Builder()
-            .addRoot(module.roots)
-            .prune(module.prunes)
-            .build()
+        pruningRules = if (module.roots != defaultRoots || module.prunes != defaultPrunes) {
+          PruningRules.Builder()
+              .addRoot(module.roots)
+              .prune(module.prunes)
+              .build()
+        } else {
+          null
+        }
     )
   }
 }

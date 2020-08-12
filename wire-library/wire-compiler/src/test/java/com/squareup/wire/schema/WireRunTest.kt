@@ -673,6 +673,49 @@ class WireRunTest {
     assertThat(fs.find("gen/b")).containsExactly("gen/b/B.java")
   }
 
+  @Test
+  fun partitionWithOptionsIsNotLinkedTwice() {
+    // This test exercises a bug where stub replacement would cause options to get linked twice
+    // which would then fail as a duplicate.
+
+    fs.add("protos/one.proto", """
+      |syntax = "proto2";
+      |package example;
+      |
+      |import 'google/protobuf/descriptor.proto';
+      |
+      |extend google.protobuf.MessageOptions {
+      |  optional string type = 12000 [(maps_to) = 'test'];
+      |}
+      |extend google.protobuf.FieldOptions {
+      |  optional string maps_to = 123301;
+      |}
+      |
+      |message A {
+      |}
+      |message B {
+      |}
+      |""".trimMargin())
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("protos")),
+        modules = mapOf(
+            "a" to Module(
+                pruningRules = PruningRules.Builder()
+                    .prune("example.B")
+                    .build()
+            ),
+            "b" to Module(
+                dependencies = setOf("a")
+            )
+        ),
+        targets = listOf(JavaTarget(outDirectory = "gen"))
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("gen/a")).containsExactly("gen/a/example/A.java")
+    assertThat(fs.find("gen/b")).containsExactly("gen/b/example/B.java")
+  }
+
   @Test fun crashWhenTypeGenerationConflicts() {
     fs.add("protos/one/au.proto", """
           |package one;

@@ -1592,9 +1592,9 @@ class PrunerTest {
             |import "wire/extensions.proto";
             |
             |enum Roshambo {
-            |  ROCK = 1 [(wire.until) = "29"];
-            |  SCISSORS = 2 [(wire.since) = "30"];
-            |  PAPER = 3 [(wire.since) = "29"];
+            |  ROCK = 1 [(wire.constant_until) = "29"];
+            |  SCISSORS = 2 [(wire.constant_since) = "30"];
+            |  PAPER = 3 [(wire.constant_since) = "29"];
             |}
             """.trimMargin())
         .schema()
@@ -1615,9 +1615,9 @@ class PrunerTest {
             |import "wire/extensions.proto";
             |
             |enum Roshambo {
-            |  ROCK = 1 [(wire.until) = "29"];
-            |  SCISSORS = 2 [(wire.since) = "30"];
-            |  PAPER = 3 [(wire.since) = "29"];
+            |  ROCK = 1 [(wire.constant_until) = "29"];
+            |  SCISSORS = 2 [(wire.constant_since) = "30"];
+            |  PAPER = 3 [(wire.constant_since) = "29"];
             |}
             """.trimMargin())
         .schema()
