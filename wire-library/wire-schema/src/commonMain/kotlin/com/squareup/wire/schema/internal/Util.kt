@@ -25,7 +25,7 @@ import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
 import com.squareup.wire.schema.internal.parser.OptionElement
 
-// TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-20760
+// TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-34102
 fun StringBuilder.appendDocumentation(
   documentation: String
 ) {
@@ -61,7 +61,7 @@ internal fun StringBuilder.appendOptions(
   append(']')
 }
 
-// TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-20760
+// TODO internal and friend for wire-java-generator: https://youtrack.jetbrains.com/issue/KT-34102
 fun StringBuilder.appendIndented(
   value: String
 ) {
@@ -97,7 +97,7 @@ expect interface MutableQueue<T : Any> : MutableCollection<T> {
 
 internal expect fun <T : Any> mutableQueueOf(): MutableQueue<T>
 
-// TODO internal and friend for wire-compiler: https://youtrack.jetbrains.com/issue/KT-20760
+// TODO internal and friend for wire-compiler: https://youtrack.jetbrains.com/issue/KT-34102
 /**
  * Replace types in this schema which are present in [typesToStub] with empty shells that have no
  * outward references. This has to be done in this module so that we can access the internal
