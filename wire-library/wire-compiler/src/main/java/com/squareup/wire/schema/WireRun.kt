@@ -241,7 +241,7 @@ data class WireRun(
       mapOf(null to Partition(schema))
     }
 
-    val skippedForSyntax = mutableListOf<ProtoFile>()
+    val skippedForSyntax = mutableSetOf<Location>()
     val claimedPaths = mutableMapOf<Path, String>()
     for ((moduleName, partition) in partitions) {
       val targetToSchemaHandler = targets.associateWith {
@@ -254,7 +254,7 @@ data class WireRun(
       // Call each target.
       for (protoFile in partition.schema.protoFiles) {
         if (protoFile.syntax == Syntax.PROTO_3 && !proto3Preview) {
-          skippedForSyntax += protoFile
+          skippedForSyntax += protoFile.location
           continue
         }
         if (protoFile.location.path !in sourceLocationPaths &&
@@ -300,7 +300,7 @@ data class WireRun(
     if (skippedForSyntax.isNotEmpty()) {
       logger.info("""Skipped .proto files with unsupported syntax. Add this line to fix:
           |  syntax = "proto2";
-          |  ${skippedForSyntax.joinToString(separator = "\n  ") { it.location.toString() }}
+          |  ${skippedForSyntax.joinToString(separator = "\n  ") { it.toString() }}
           """.trimMargin())
     }
   }
