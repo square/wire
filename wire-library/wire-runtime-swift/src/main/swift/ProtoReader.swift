@@ -138,7 +138,7 @@ public final class ProtoReader {
             return nil
         }
 
-        if state != .tag {
+        guard state == .tag else {
             // After reading the previous value the state should have been set to `.tag`
             fatalError("Unexpected call to nextTag. State is \(state).")
         }
@@ -180,7 +180,14 @@ public final class ProtoReader {
     }
 
     public func endMessage(token: Int) throws -> Data {
-        guard token != -1 else { return Data() }
+        guard token != -1 else {
+            // Special case the empty reader.
+            // It's reused, so we don't want to mutate it.
+            if self !== ProtoReader.empty {
+                state = .tag
+            }
+            return Data()
+        }
 
         let frame = messageStack[token]
 

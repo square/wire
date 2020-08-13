@@ -14,4 +14,15 @@ final class ProtoDecoderTests: XCTestCase {
         XCTAssertEqual(object, SimpleOptional2())
     }
 
+    func testDecodeEmptyDataTwice() throws {
+        let decoder = ProtoDecoder()
+        // The empty message case is optimized to reuse objects, so make sure
+        // that no unexpected state changes persist from one decode to another.
+        let object1 = try decoder.decode(SimpleOptional2.self, from: Data())
+        let object2 = try decoder.decode(SimpleOptional2.self, from: Data())
+
+        XCTAssertEqual(object1, SimpleOptional2())
+        XCTAssertEqual(object2, SimpleOptional2())
+    }
+
 }

@@ -133,6 +133,20 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testDecodeNestedEmptyMessage() throws {
+        let data = Data(hexEncoded: """
+            0A     // (Tag 1 | Varint) for `name`
+            03     // Length 3
+            426F62 // "Bob"
+            12     // (Tag 2 | Length Delimited) for `child1`
+            00     // Length 0
+        """)!
+        try test(data: data) { reader in
+            let expected = Parent(name: "Bob", child: .init())
+            XCTAssertEqual(try reader.decode(Parent.self), expected)
+        }
+    }
+
     // MARK: - Tests - Decoding Proto3 Well-Known Types
 
     func testDecodeBoolValue() throws {
