@@ -159,12 +159,27 @@ class SchemaLoader(
 
   internal fun reportLoadingErrors() {
     if (missingImports.isNotEmpty()) {
-      errors += """
-          |unable to resolve ${missingImports.size} imports:
-          |  ${missingImports.joinToString(separator = "\n  ")}
+      val originalToImports = mutableMapOf<String, MutableSet<String>>()
+      for (root in (protoPathRoots!! + sourcePathRoots!!)) {
+        val protoFiles = root.allProtoFiles().map { it.parse() }
+        for (protoFile in protoFiles) {
+          val containedMissingImports = protoFile.imports.filter { it in missingImports }
+          originalToImports.getOrPut(protoFile.location.toString(), { mutableSetOf() })
+              .also { it.addAll(containedMissingImports) }
+        }
+      }
+      val errorMessage = StringBuilder("unable to resolve ${missingImports.size} imports:\n")
+      for ((original, missingImports) in originalToImports) {
+        if (missingImports.size > 0) {
+          errorMessage.append("  ${missingImports.joinToString(separator = "\n  ")}\n")
+          errorMessage.append("    imported by $original\n")
+        }
+      }
+      errorMessage.append("""
           |searching ${protoPathRoots!!.size} proto paths:
           |  ${protoPathRoots!!.joinToString(separator = "\n  ")}
-          """.trimMargin()
+          """.trimMargin())
+      errors += errorMessage.toString()
     }
     checkForErrors()
   }

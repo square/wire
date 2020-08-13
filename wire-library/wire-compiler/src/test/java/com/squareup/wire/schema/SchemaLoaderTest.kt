@@ -30,7 +30,7 @@ import kotlin.text.Charsets.UTF_32BE
 import kotlin.text.Charsets.UTF_32LE
 import kotlin.text.Charsets.UTF_8
 
-class NewSchemaLoaderTest {
+class SchemaLoaderTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
 
   @Test
@@ -333,6 +333,7 @@ class NewSchemaLoaderTest {
         |unable to resolve 2 imports:
         |  squareup/curves/circle.proto
         |  squareup/polygons/rectangle.proto
+        |    imported by colors/src/main/proto/squareup/colors/blue.proto
         |searching 2 proto paths:
         |  polygons/src/main/proto
         |  lib/curves.zip
