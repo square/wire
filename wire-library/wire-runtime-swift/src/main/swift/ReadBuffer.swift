@@ -35,6 +35,20 @@ final class ReadBuffer {
 
     // MARK: - Initialization
 
+    /// Create an empty buffer
+    init() {
+        var storage: UnsafePointer<UInt8>?
+        Data().withUnsafeBytes {
+            // You're not supposed to use the raw pointer outside of this block,
+            // but (a) the empty `Data` object is a tagged pointer and won't change,
+            // and (b) we're not actually ever reading from the pointer.
+            storage = $0.baseAddress!.bindMemory(to: UInt8.self, capacity: 0)
+        }
+        self.start = storage!
+        self.end = storage!
+        self.pointer = storage!
+    }
+
     init(storage: UnsafePointer<UInt8>, count: Int) {
         self.start = storage
         self.end = storage.advanced(by: count)

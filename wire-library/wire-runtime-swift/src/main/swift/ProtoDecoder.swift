@@ -21,7 +21,6 @@ public final class ProtoDecoder {
     public enum Error: Swift.Error, LocalizedError {
 
         case boxedValueMissingField(type: Any.Type)
-        case emptyData
         case fieldKeyValueZero
         case invalidFieldWireType(_: UInt32)
         case invalidStructure(message: String)
@@ -40,8 +39,6 @@ public final class ProtoDecoder {
 
         var localizedDescription: String {
             switch self {
-            case .emptyData:
-                return "The data to deserialize is empty."
             case .fieldKeyValueZero:
                 return "Message field has a field number of zero, which is invalid."
             case let .invalidFieldWireType(value):
@@ -92,8 +89,10 @@ public final class ProtoDecoder {
     public func decode<T: ProtoDecodable>(_ type: T.Type, from data: Data) throws -> T {
         var value: T?
         try data.withUnsafeBytes { buffer in
+            // Handle the empty-data case.
             guard let baseAddress = buffer.baseAddress, buffer.count > 0 else {
-                throw Error.emptyData
+                value = try T(from: .empty)
+                return
             }
 
             let readBuffer = ReadBuffer(
@@ -101,14 +100,7 @@ public final class ProtoDecoder {
                 count: buffer.count
             )
             let reader = ProtoReader(buffer: readBuffer)
-            let token = try reader.beginMessage()
-            while let tag = try reader.nextTag(token: token) {
-                switch tag {
-                case 1: value = try reader.decode(type)
-                default: throw Error.invalidStructure(message: "The data root has more than one field. Found field number \(tag).")
-                }
-            }
-            _ = try reader.endMessage(token: token)
+            value = try reader.decode(type)
         }
 
         guard let unwrappedValue = value else {

@@ -37,6 +37,10 @@ public final class ProtoReader {
         var unknownFields: WriteBuffer? = nil
     }
 
+    // MARK: - Public Properties
+
+    static let empty = ProtoReader(buffer: .init())
+
     // MARK: - Private Properties
 
     /** The number of slots to preallocate in a collection when we encounter the first value. */
@@ -96,7 +100,11 @@ public final class ProtoReader {
      */
     public func beginMessage() throws -> Int {
         guard case let .lengthDelimited(length) = state else {
-            fatalError("Unexpected call to decodeMessage()")
+            fatalError("Unexpected call to beginMessage()")
+        }
+        if length == 0 {
+            // Indicate that this is an empty message.
+            return -1
         }
 
         if (messageStackIndex + 1) > ProtoReader.recursionLimit {
@@ -125,6 +133,11 @@ public final class ProtoReader {
      This silently skips groups.
      */
     public func nextTag(token: Int) throws -> UInt32? {
+        guard token != -1 else {
+            // This is an empty message, so bail out.
+            return nil
+        }
+
         if state != .tag {
             // After reading the previous value the state should have been set to `.tag`
             fatalError("Unexpected call to nextTag. State is \(state).")
@@ -167,6 +180,8 @@ public final class ProtoReader {
     }
 
     public func endMessage(token: Int) throws -> Data {
+        guard token != -1 else { return Data() }
+
         let frame = messageStack[token]
 
         messageStackIndex -= 1
