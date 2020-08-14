@@ -110,9 +110,6 @@ data class MessageType(
     for (field in declaredFields) {
       field.link(linker)
     }
-    for (field in extensionFields) {
-      field.link(linker)
-    }
     for (oneOf in oneOfs) {
       oneOf.link(linker)
     }
@@ -124,9 +121,6 @@ data class MessageType(
       nestedType.linkOptions(linker, syntaxRules, validate)
     }
     for (field in declaredFields) {
-      field.linkOptions(linker, syntaxRules, validate)
-    }
-    for (field in extensionFields) {
       field.linkOptions(linker, syntaxRules, validate)
     }
     for (oneOf in oneOfs) {

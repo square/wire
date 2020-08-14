@@ -42,6 +42,10 @@ class MarkdownHandler : CustomHandlerBeta {
         return listOf(writeMarkdownFile(service.type, toMarkdown(service)))
       }
 
+      override fun handle(extend: Extend, field: Field): Path? {
+        return null
+      }
+
       private fun writeMarkdownFile(protoType: ProtoType, markdown: String): Path {
         val path = fs.getPath(outDirectory, *toPath(protoType).toTypedArray())
         Files.createDirectories(path.parent)

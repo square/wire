@@ -17,6 +17,7 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Field.Companion.retainAll
 import com.squareup.wire.schema.internal.parser.ExtendElement
+import com.squareup.wire.schema.internal.parser.OptionElement
 import kotlin.jvm.JvmStatic
 
 data class Extend(
@@ -36,6 +37,16 @@ data class Extend(
     if (type != null) {
       (type as MessageType).addExtensionFields(fields)
     }
+    for (field in fields) {
+      field.link(linker)
+    }
+  }
+
+  fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
+    val linker = linker.withContext(this)
+    for (field in fields) {
+      field.linkOptions(linker, syntaxRules, validate)
+    }
   }
 
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
@@ -50,7 +61,9 @@ data class Extend(
   fun retainAll(schema: Schema, markSet: MarkSet): Extend? {
     val retainedFields = retainAll(schema, markSet, type!!, fields)
     if (retainedFields.isEmpty()) return null
-    return Extend(location, documentation, name, retainedFields)
+    val result = Extend(location, documentation, name, retainedFields)
+    result.type = type
+    return result
   }
 
   companion object {

@@ -79,6 +79,8 @@ sealed class Target : Serializable {
     fun handle(type: Type): Path?
     /** Returns the [Path]s of the files which [service] will have been generated into. */
     fun handle(service: Service): List<Path>
+    /** Returns the [Path] of the files which [field] will have been generated into. */
+    fun handle(extend: Extend, field: Field): Path?
     /**
      * This will handle all [Type]s and [Service]s of the `protoFile` in respect to the emitting
      * rules. If exclusive, the handled [Type]s and [Service]s should be added to the consumed set.
@@ -127,6 +129,18 @@ sealed class Target : Serializable {
 
             // We don't let other targets handle this one.
             if (isExclusive) claimedDefinitions.claim(service)
+          }
+
+      // TODO(jwilson): extend emitting rules to support include/exclude of extension fields.
+      protoFile.extendList
+          .flatMap { extend -> extend.fields.map { field -> extend to field } }
+          .filter { it.second !in claimedDefinitions }
+          .forEach { extendToField ->
+            val (extend, field) = extendToField
+            handle(extend, field)
+
+            // We don't let other targets handle this one.
+            if (isExclusive) claimedDefinitions.claim(field)
           }
     }
   }
@@ -183,9 +197,29 @@ data class JavaTarget(
       override fun handle(type: Type): Path? {
         val typeSpec = javaGenerator.generateType(type)
         val javaTypeName = javaGenerator.generatedTypeName(type)
+        return write(javaTypeName, typeSpec, type.type, type.location)
+      }
+
+      override fun handle(service: Service): List<Path> {
+        // Service handling isn't supporting in Java.
+        return emptyList()
+      }
+
+      override fun handle(extend: Extend, field: Field): Path? {
+        val typeSpec = javaGenerator.generateExtendField(extend, field) ?: return null
+        val javaTypeName = javaGenerator.generatedTypeName(field)
+        return write(javaTypeName, typeSpec, field.qualifiedName, field.location)
+      }
+
+      private fun write(
+        javaTypeName: com.squareup.javapoet.ClassName,
+        typeSpec: com.squareup.javapoet.TypeSpec,
+        source: Any,
+        location: Location
+      ): Path {
         val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
             .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
-            .addFileComment("\nSource: \$L in \$L", type.type, type.location.withPathOnly())
+            .addFileComment("\nSource: \$L in \$L", source, location.withPathOnly())
             .build()
         val generatedFilePath = modulePath.resolve(javaFile.packageName)
             .resolve("${javaFile.typeSpec.name}.java")
@@ -198,11 +232,6 @@ data class JavaTarget(
               "to $outDirectory", e)
         }
         return generatedFilePath
-      }
-
-      override fun handle(service: Service): List<Path> {
-        // Service handling isn't supporting in Java.
-        return emptyList()
       }
     }
   }
@@ -300,6 +329,10 @@ data class KotlinTarget(
         return generatedPaths
       }
 
+      override fun handle(extend: Extend, field: Field): Path? {
+        return null // TODO(jwilson): support extension fields in Kotlin.
+      }
+
       private fun write(service: Service, name: ClassName, typeSpec: TypeSpec): Path {
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
@@ -352,6 +385,7 @@ data class ProtoTarget(
     return object : SchemaHandler {
       override fun handle(type: Type): Path? = null
       override fun handle(service: Service): List<Path> = emptyList()
+      override fun handle(extend: Extend, field: Field) = null
       override fun handle(
         protoFile: ProtoFile,
         emittingRules: EmittingRules,
@@ -412,6 +446,10 @@ data class NullTarget(
       override fun handle(service: Service): List<Path> {
         logger.artifactSkipped(service.type)
         return emptyList()
+      }
+
+      override fun handle(extend: Extend, field: Field): Path? {
+        return null
       }
     }
   }

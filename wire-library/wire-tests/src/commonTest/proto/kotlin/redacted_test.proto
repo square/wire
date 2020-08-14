@@ -25,7 +25,7 @@ message NotRedacted {
   optional string b = 2;
 }
 
-message Redacted {
+message RedactedFields {
   optional string a = 1 [(squareup.protos.kotlin.redacted_option.redacted) = true];
   optional string b = 2 [(squareup.protos.kotlin.redacted_option.redacted) = false];
   optional string c = 3;
@@ -34,7 +34,7 @@ message Redacted {
 
 message RedactedChild {
   optional string a = 1;
-  optional Redacted b = 2;
+  optional RedactedFields b = 2;
   optional NotRedacted c = 3;
 }
 
@@ -50,7 +50,7 @@ message RedactedRepeated {
   repeated string a = 1 [(squareup.protos.kotlin.redacted_option.redacted) = true];
 
   // Values in the repeated type need redacting.
-  repeated Redacted b = 2;
+  repeated RedactedFields b = 2;
 }
 
 message RedactedRequired {
@@ -62,6 +62,6 @@ message RedactedExtension {
   optional string e = 2;
 }
 
-extend Redacted {
+extend RedactedFields {
   optional RedactedExtension extension = 10;
 }

@@ -25,6 +25,8 @@ internal class FileLinker(
   private var typesRegistered = false
   private var extensionsLinked = false
   private var importedExtensionsRegistered = false
+  private var extensionOptionsLinked = false
+  private var importedExtensionOptionsLinked = false
   private var fileOptionsLinked = false
   /** The set of types defined in this file whose members have been linked. */
   private val typesWithMembersLinked: MutableSet<ProtoType> = LinkedHashSet()
@@ -94,6 +96,25 @@ internal class FileLinker(
     }
   }
 
+  fun requireExtensionOptionsLinked(validate: Boolean) {
+    if (extensionOptionsLinked) return
+    extensionOptionsLinked = true
+
+    for (extend in protoFile.extendList) {
+      val syntaxRules = SyntaxRules.get(protoFile.syntax)
+      extend.linkOptions(linker, syntaxRules, validate)
+    }
+  }
+
+  fun requireImportedExtensionOptionsLinked(validate: Boolean) {
+    if (importedExtensionOptionsLinked) return
+    importedExtensionOptionsLinked = true
+
+    for (importedFileLinker in linker.contextImportedTypes()) {
+      importedFileLinker.requireExtensionOptionsLinked(validate)
+    }
+  }
+
   fun linkMembers() {
     linkMembersRecursive(protoFile.types)
     for (service in protoFile.services) {
@@ -122,6 +143,7 @@ internal class FileLinker(
    */
   fun linkOptions(syntaxRules: SyntaxRules, validate: Boolean) {
     requireFileOptionsLinked(validate)
+    requireExtensionOptionsLinked(validate)
     for (type in protoFile.types) {
       type.linkOptions(linker, syntaxRules, validate)
     }

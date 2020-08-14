@@ -560,7 +560,7 @@ class SchemaTest {
       assertThat(expected).hasMessage("""
             |unable to resolve foo_package.Foo
             |  for field unknown (/source/message.proto:4:3)
-            |  in message Message (/source/message.proto:1:1)
+            |  in extend Message (/source/message.proto:3:1)
             """.trimMargin()
       )
     }
@@ -2097,7 +2097,7 @@ class SchemaTest {
             |  - /source/squareup/options1/special.proto:7:3
             |  - /source/squareup/options2/special.proto:7:3
             |  for field type (/source/squareup/common/options.proto:9:3)
-            |  in message squareup.domain.Message (/source/squareup/domain/message.proto:4:1)
+            |  in extend squareup.domain.Message (/source/squareup/common/options.proto:8:1)
             """.trimMargin())
     }
   }

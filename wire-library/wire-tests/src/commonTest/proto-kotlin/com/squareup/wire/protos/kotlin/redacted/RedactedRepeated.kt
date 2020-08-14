@@ -25,7 +25,7 @@ import okio.ByteString
 
 class RedactedRepeated(
   a: List<String> = emptyList(),
-  b: List<Redacted> = emptyList(),
+  b: List<RedactedFields> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedRepeated, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -41,10 +41,10 @@ class RedactedRepeated(
    */
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER",
+    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val b: List<Redacted> = immutableCopyOf("b", b)
+  val b: List<RedactedFields> = immutableCopyOf("b", b)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
@@ -81,7 +81,7 @@ class RedactedRepeated(
 
   fun copy(
     a: List<String> = this.a,
-    b: List<Redacted> = this.b,
+    b: List<RedactedFields> = this.b,
     unknownFields: ByteString = this.unknownFields
   ): RedactedRepeated = RedactedRepeated(a, b, unknownFields)
 
@@ -97,23 +97,23 @@ class RedactedRepeated(
       override fun encodedSize(value: RedactedRepeated): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
-        size += Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
+        size += RedactedFields.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
         return size
       }
 
       override fun encode(writer: ProtoWriter, value: RedactedRepeated) {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
-        Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
+        RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun decode(reader: ProtoReader): RedactedRepeated {
         val a = mutableListOf<String>()
-        val b = mutableListOf<Redacted>()
+        val b = mutableListOf<RedactedFields>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> a.add(ProtoAdapter.STRING.decode(reader))
-            2 -> b.add(Redacted.ADAPTER.decode(reader))
+            2 -> b.add(RedactedFields.ADAPTER.decode(reader))
             else -> reader.readUnknownField(tag)
           }
         }
@@ -126,7 +126,7 @@ class RedactedRepeated(
 
       override fun redact(value: RedactedRepeated): RedactedRepeated = value.copy(
         a = emptyList(),
-        b = value.b.redactElements(Redacted.ADAPTER),
+        b = value.b.redactElements(RedactedFields.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
     }
