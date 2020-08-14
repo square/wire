@@ -50,7 +50,7 @@ actual fun camelCase(string: String, upperCamel: Boolean): String {
         if (char in 'a'..'z') char += 'A' - 'a'
       }
       append(char)
-      uppercase = upperCamel
+      uppercase = false
     }
   }
 }

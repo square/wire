@@ -32,9 +32,9 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
 
   @WireField(
       tag = 2,
-      adapter = "com.squareup.wire.protos.redacted.Redacted#ADAPTER"
+      adapter = "com.squareup.wire.protos.redacted.RedactedFields#ADAPTER"
   )
-  public final Redacted b;
+  public final RedactedFields b;
 
   @WireField(
       tag = 3,
@@ -42,11 +42,11 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
   )
   public final NotRedacted c;
 
-  public RedactedChild(String a, Redacted b, NotRedacted c) {
+  public RedactedChild(String a, RedactedFields b, NotRedacted c) {
     this(a, b, c, ByteString.EMPTY);
   }
 
-  public RedactedChild(String a, Redacted b, NotRedacted c, ByteString unknownFields) {
+  public RedactedChild(String a, RedactedFields b, NotRedacted c, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.a = a;
     this.b = b;
@@ -99,7 +99,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
   public static final class Builder extends Message.Builder<RedactedChild, Builder> {
     public String a;
 
-    public Redacted b;
+    public RedactedFields b;
 
     public NotRedacted c;
 
@@ -111,7 +111,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
       return this;
     }
 
-    public Builder b(Redacted b) {
+    public Builder b(RedactedFields b) {
       this.b = b;
       return this;
     }
@@ -136,7 +136,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
     public int encodedSize(RedactedChild value) {
       int result = 0;
       result += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a);
-      result += Redacted.ADAPTER.encodedSizeWithTag(2, value.b);
+      result += RedactedFields.ADAPTER.encodedSizeWithTag(2, value.b);
       result += NotRedacted.ADAPTER.encodedSizeWithTag(3, value.c);
       result += value.unknownFields().size();
       return result;
@@ -145,7 +145,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
     @Override
     public void encode(ProtoWriter writer, RedactedChild value) throws IOException {
       ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a);
-      Redacted.ADAPTER.encodeWithTag(writer, 2, value.b);
+      RedactedFields.ADAPTER.encodeWithTag(writer, 2, value.b);
       NotRedacted.ADAPTER.encodeWithTag(writer, 3, value.c);
       writer.writeBytes(value.unknownFields());
     }
@@ -157,7 +157,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
           case 1: builder.a(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.b(Redacted.ADAPTER.decode(reader)); break;
+          case 2: builder.b(RedactedFields.ADAPTER.decode(reader)); break;
           case 3: builder.c(NotRedacted.ADAPTER.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
@@ -171,7 +171,7 @@ public final class RedactedChild extends Message<RedactedChild, RedactedChild.Bu
     @Override
     public RedactedChild redact(RedactedChild value) {
       Builder builder = value.newBuilder();
-      if (builder.b != null) builder.b = Redacted.ADAPTER.redact(builder.b);
+      if (builder.b != null) builder.b = RedactedFields.ADAPTER.redact(builder.b);
       if (builder.c != null) builder.c = NotRedacted.ADAPTER.redact(builder.c);
       builder.clearUnknownFields();
       return builder.build();

@@ -37,16 +37,16 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
    */
   @WireField(
       tag = 2,
-      adapter = "com.squareup.wire.protos.redacted.Redacted#ADAPTER",
+      adapter = "com.squareup.wire.protos.redacted.RedactedFields#ADAPTER",
       label = WireField.Label.REPEATED
   )
-  public final List<Redacted> b;
+  public final List<RedactedFields> b;
 
-  public RedactedRepeated(List<String> a, List<Redacted> b) {
+  public RedactedRepeated(List<String> a, List<RedactedFields> b) {
     this(a, b, ByteString.EMPTY);
   }
 
-  public RedactedRepeated(List<String> a, List<Redacted> b, ByteString unknownFields) {
+  public RedactedRepeated(List<String> a, List<RedactedFields> b, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.a = Internal.immutableCopyOf("a", a);
     this.b = Internal.immutableCopyOf("b", b);
@@ -94,7 +94,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
   public static final class Builder extends Message.Builder<RedactedRepeated, Builder> {
     public List<String> a;
 
-    public List<Redacted> b;
+    public List<RedactedFields> b;
 
     public Builder() {
       a = Internal.newMutableList();
@@ -110,7 +110,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     /**
      * Values in the repeated type need redacting.
      */
-    public Builder b(List<Redacted> b) {
+    public Builder b(List<RedactedFields> b) {
       Internal.checkElementsNotNull(b);
       this.b = b;
       return this;
@@ -131,7 +131,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     public int encodedSize(RedactedRepeated value) {
       int result = 0;
       result += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a);
-      result += Redacted.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b);
+      result += RedactedFields.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b);
       result += value.unknownFields().size();
       return result;
     }
@@ -139,7 +139,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     @Override
     public void encode(ProtoWriter writer, RedactedRepeated value) throws IOException {
       ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a);
-      Redacted.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b);
+      RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -150,7 +150,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
           case 1: builder.a.add(ProtoAdapter.STRING.decode(reader)); break;
-          case 2: builder.b.add(Redacted.ADAPTER.decode(reader)); break;
+          case 2: builder.b.add(RedactedFields.ADAPTER.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }
@@ -164,7 +164,7 @@ public final class RedactedRepeated extends Message<RedactedRepeated, RedactedRe
     public RedactedRepeated redact(RedactedRepeated value) {
       Builder builder = value.newBuilder();
       builder.a = Collections.emptyList();
-      Internal.redactElements(builder.b, Redacted.ADAPTER);
+      Internal.redactElements(builder.b, RedactedFields.ADAPTER);
       builder.clearUnknownFields();
       return builder.build();
     }

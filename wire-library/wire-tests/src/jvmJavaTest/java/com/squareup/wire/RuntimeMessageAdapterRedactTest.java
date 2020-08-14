@@ -16,10 +16,10 @@
 package com.squareup.wire;
 
 import com.squareup.wire.protos.redacted.NotRedacted;
-import com.squareup.wire.protos.redacted.Redacted;
 import com.squareup.wire.protos.redacted.RedactedChild;
 import com.squareup.wire.protos.redacted.RedactedCycleA;
 import com.squareup.wire.protos.redacted.RedactedExtension;
+import com.squareup.wire.protos.redacted.RedactedFields;
 import com.squareup.wire.protos.redacted.RedactedRepeated;
 import com.squareup.wire.protos.redacted.RedactedRequired;
 import java.io.IOException;
@@ -31,21 +31,23 @@ import static org.junit.Assert.fail;
 
 public class RuntimeMessageAdapterRedactTest {
   @Test public void string() throws IOException {
-    Redacted redacted = new Redacted.Builder().a("a").b("b").c("c").build();
-    assertThat(redacted.toString()).isEqualTo("Redacted{a=██, b=b, c=c}");
+    RedactedFields redacted = new RedactedFields.Builder().a("a").b("b").c("c").build();
+    assertThat(redacted.toString()).isEqualTo("RedactedFields{a=██, b=b, c=c}");
 
     RedactedRepeated redactedRepeated = new RedactedRepeated.Builder()
         .a(Arrays.asList("a", "b"))
-        .b(Arrays.asList(new Redacted("a", "b", "c", null), new Redacted("d", "e", "f", null)))
+        .b(Arrays.asList(
+            new RedactedFields("a", "b", "c", null), new RedactedFields("d", "e", "f", null)))
         .build();
     assertThat(redactedRepeated.toString()).isEqualTo(
-        "RedactedRepeated{a=██, b=[Redacted{a=██, b=b, c=c}, Redacted{a=██, b=e, c=f}]}");
+        "RedactedRepeated{a=██, b=[RedactedFields{a=██, b=b, c=c},"
+            + " RedactedFields{a=██, b=e, c=f}]}");
   }
 
   @Test public void message() {
-    Redacted message = new Redacted.Builder().a("a").b("b").c("c").build();
-    Redacted expected = message.newBuilder().a(null).build();
-    assertThat(Redacted.ADAPTER.redact(message)).isEqualTo(expected);
+    RedactedFields message = new RedactedFields.Builder().a("a").b("b").c("c").build();
+    RedactedFields expected = message.newBuilder().a(null).build();
+    assertThat(RedactedFields.ADAPTER.redact(message)).isEqualTo(expected);
   }
 
   @Test public void messageWithNoRedactions() {
@@ -56,7 +58,7 @@ public class RuntimeMessageAdapterRedactTest {
   @Test public void nestedRedactions() {
     RedactedChild message = new RedactedChild.Builder()
         .a("a")
-        .b(new Redacted.Builder().a("a").b("b").c("c").build())
+        .b(new RedactedFields.Builder().a("a").b("b").c("c").build())
         .c(new NotRedacted.Builder().a("a").b("b").build())
         .build();
     RedactedChild expected = message.newBuilder()
@@ -66,18 +68,18 @@ public class RuntimeMessageAdapterRedactTest {
   }
 
   @Test public void redactedExtensions() {
-    Redacted message = new Redacted.Builder()
+    RedactedFields message = new RedactedFields.Builder()
         .extension(new RedactedExtension.Builder()
             .d("d")
             .e("e")
             .build())
         .build();
-    Redacted expected = new Redacted.Builder()
+    RedactedFields expected = new RedactedFields.Builder()
         .extension(new RedactedExtension.Builder()
             .e("e")
             .build())
         .build();
-    assertThat(Redacted.ADAPTER.redact(message)).isEqualTo(expected);
+    assertThat(RedactedFields.ADAPTER.redact(message)).isEqualTo(expected);
   }
 
   @Test public void messageCycle() {
@@ -88,10 +90,12 @@ public class RuntimeMessageAdapterRedactTest {
   @Test public void repeatedField() {
     RedactedRepeated message = new RedactedRepeated.Builder()
         .a(Arrays.asList("a", "b"))
-        .b(Arrays.asList(new Redacted("a", "b", "c", null), new Redacted("d", "e", "f", null)))
+        .b(Arrays.asList(
+            new RedactedFields("a", "b", "c", null), new RedactedFields("d", "e", "f", null)))
         .build();
     RedactedRepeated expected = new RedactedRepeated.Builder()
-        .b(Arrays.asList(new Redacted(null, "b", "c", null), new Redacted(null, "e", "f", null)))
+        .b(Arrays.asList(
+            new RedactedFields(null, "b", "c", null), new RedactedFields(null, "e", "f", null)))
         .build();
     RedactedRepeated actual = RedactedRepeated.ADAPTER.redact(message);
     assertThat(actual).isEqualTo(expected);

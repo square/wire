@@ -30,9 +30,9 @@ class RedactedChild(
   val a: String? = null,
   @field:WireField(
     tag = 2,
-    adapter = "com.squareup.wire.protos.kotlin.redacted.Redacted#ADAPTER"
+    adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER"
   )
-  val b: Redacted? = null,
+  val b: RedactedFields? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.kotlin.redacted.NotRedacted#ADAPTER"
@@ -78,7 +78,7 @@ class RedactedChild(
 
   fun copy(
     a: String? = this.a,
-    b: Redacted? = this.b,
+    b: RedactedFields? = this.b,
     c: NotRedacted? = this.c,
     unknownFields: ByteString = this.unknownFields
   ): RedactedChild = RedactedChild(a, b, c, unknownFields)
@@ -95,26 +95,26 @@ class RedactedChild(
       override fun encodedSize(value: RedactedChild): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
-        size += Redacted.ADAPTER.encodedSizeWithTag(2, value.b)
+        size += RedactedFields.ADAPTER.encodedSizeWithTag(2, value.b)
         size += NotRedacted.ADAPTER.encodedSizeWithTag(3, value.c)
         return size
       }
 
       override fun encode(writer: ProtoWriter, value: RedactedChild) {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
-        Redacted.ADAPTER.encodeWithTag(writer, 2, value.b)
+        RedactedFields.ADAPTER.encodeWithTag(writer, 2, value.b)
         NotRedacted.ADAPTER.encodeWithTag(writer, 3, value.c)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun decode(reader: ProtoReader): RedactedChild {
         var a: String? = null
-        var b: Redacted? = null
+        var b: RedactedFields? = null
         var c: NotRedacted? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> a = ProtoAdapter.STRING.decode(reader)
-            2 -> b = Redacted.ADAPTER.decode(reader)
+            2 -> b = RedactedFields.ADAPTER.decode(reader)
             3 -> c = NotRedacted.ADAPTER.decode(reader)
             else -> reader.readUnknownField(tag)
           }
@@ -128,7 +128,7 @@ class RedactedChild(
       }
 
       override fun redact(value: RedactedChild): RedactedChild = value.copy(
-        b = value.b?.let(Redacted.ADAPTER::redact),
+        b = value.b?.let(RedactedFields.ADAPTER::redact),
         c = value.c?.let(NotRedacted.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
