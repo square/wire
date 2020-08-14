@@ -712,8 +712,15 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("gen/a")).containsExactly("gen/a/example/A.java")
-    assertThat(fs.find("gen/b")).containsExactly("gen/b/example/B.java")
+    // TODO(jwilson): fix modules to treat extension fields as first-class objects.
+    assertThat(fs.find("gen/a")).containsExactly(
+        "gen/a/example/A.java",
+        "gen/a/example/MapsTo.java",
+        "gen/a/example/Type.java")
+    assertThat(fs.find("gen/b")).containsExactly(
+        "gen/b/example/B.java",
+        "gen/b/example/MapsTo.java",
+        "gen/b/example/Type.java")
   }
 
   @Test fun crashWhenTypeGenerationConflicts() {

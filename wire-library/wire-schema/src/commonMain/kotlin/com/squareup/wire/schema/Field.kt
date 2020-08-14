@@ -88,6 +88,9 @@ data class Field(
   var jsonName: String? = null
     private set
 
+  val member: ProtoMember
+    get() = ProtoMember.get(type!!, this)
+
   private fun isPackable(linker: Linker, type: ProtoType): Boolean {
     return type != ProtoType.STRING &&
         type != ProtoType.BYTES &&

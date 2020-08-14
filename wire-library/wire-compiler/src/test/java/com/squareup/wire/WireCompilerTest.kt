@@ -195,7 +195,13 @@ class WireCompilerTest {
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/custom_options/FooBar.java",
-        "com/squareup/wire/protos/custom_options/MessageWithOptions.java")
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionOne.java",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionTwo.java",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionThree.java",
+        "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.java",
+        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.java",
+        "com/squareup/wire/protos/redacted/Redacted.java")
     assertJavaOutputs(outputs)
   }
 
@@ -222,6 +228,7 @@ class WireCompilerTest {
         "com/squareup/wire/protos/redacted/RedactedCycleA.java",
         "com/squareup/wire/protos/redacted/RedactedCycleB.java",
         "com/squareup/wire/protos/redacted/RedactedExtension.java",
+        "com/squareup/wire/protos/redacted/RedactedFields.java",
         "com/squareup/wire/protos/redacted/RedactedRepeated.java",
         "com/squareup/wire/protos/redacted/RedactedRequired.java")
     assertJavaOutputs(outputs)
@@ -490,7 +497,7 @@ class WireCompilerTest {
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/kotlin/redacted/NotRedacted.kt",
-        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedFields.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedChild.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedCycleA.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedCycleB.kt",

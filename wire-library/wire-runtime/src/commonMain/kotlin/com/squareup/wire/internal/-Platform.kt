@@ -33,7 +33,15 @@ expect fun <T> MutableList<T>.toUnmodifiableList(): List<T>
 
 expect fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V>
 
-// This should mirror the logic of `fieldNameToJsonName` in `com/google/protobuf/Descriptors.java`,
-// except it lower case the first character as well (protoc seems to do this step earlier).
-// See https://github.com/protocolbuffers/protobuf/blob/master/java/core/src/main/java/com/google/protobuf/Descriptors.java
-expect fun camelCase(string: String): String
+/**
+ * Convert [string], from snake case to camel case.
+ *
+ * When [upperCamel] is true, this should mirror the logic of `fieldNameToJsonName` in
+ * `com/google/protobuf/Descriptors.java`, except it lower cases the first character as well (protoc
+ * seems to do this step earlier).
+ *
+ * See https://github.com/protocolbuffers/protobuf/blob/master/java/core/src/main/java/com/google/protobuf/Descriptors.java
+ *
+ * @param upperCamel true to uppercase the first character.
+ */
+expect fun camelCase(string: String, upperCamel: Boolean): String

@@ -92,9 +92,12 @@ class Linker {
     }
 
     for (fileLinker in sourceFiles) {
-      // TODO(benoit) Create a map to cache those.
       val syntaxRules = SyntaxRules.get(fileLinker.protoFile.syntax)
       fileLinker.linkOptions(syntaxRules, validate = true)
+    }
+
+    for (fileLinker in sourceFiles) {
+      fileLinker.requireImportedExtensionOptionsLinked(validate = false)
     }
 
     // For compactness we'd prefer to link the options of source files only. But we link file

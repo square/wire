@@ -49,6 +49,7 @@ import com.squareup.wire.internal.Internal;
 import com.squareup.wire.schema.EnclosingType;
 import com.squareup.wire.schema.EnumConstant;
 import com.squareup.wire.schema.EnumType;
+import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
@@ -59,6 +60,10 @@ import com.squareup.wire.schema.Schema;
 import com.squareup.wire.schema.Service;
 import com.squareup.wire.schema.Type;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.math.BigInteger;
 import java.net.ProtocolException;
 import java.util.ArrayList;
@@ -76,6 +81,7 @@ import javax.annotation.Nullable;
 import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.squareup.wire.internal._PlatformKt.camelCase;
 import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
 import static com.squareup.wire.schema.Options.ENUM_VALUE_OPTIONS;
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
@@ -219,16 +225,24 @@ public final class JavaGenerator {
   });
 
   private final Schema schema;
-  private final ImmutableMap<ProtoType, TypeName> nameToJavaName;
+
+  /** Proto type to the corresponding Java type. This honors the Java package extension. */
+  private final ImmutableMap<ProtoType, TypeName> typeToJavaName;
+
+  /** Proto member to the corresponding Java type. This is only used for extension fields. */
+  private final ImmutableMap<ProtoMember, TypeName> memberToJavaName;
+
   private final Profile profile;
   private final boolean emitAndroid;
   private final boolean emitAndroidAnnotations;
   private final boolean emitCompact;
 
-  private JavaGenerator(Schema schema, Map<ProtoType, TypeName> nameToJavaName, Profile profile,
-      boolean emitAndroid, boolean emitAndroidAnnotations, boolean emitCompact) {
+  private JavaGenerator(Schema schema, Map<ProtoType, TypeName> typeToJavaName,
+      Map<ProtoMember, TypeName> memberToJavaName, Profile profile, boolean emitAndroid,
+      boolean emitAndroidAnnotations, boolean emitCompact) {
     this.schema = schema;
-    this.nameToJavaName = ImmutableMap.copyOf(nameToJavaName);
+    this.typeToJavaName = ImmutableMap.copyOf(typeToJavaName);
+    this.memberToJavaName = ImmutableMap.copyOf(memberToJavaName);
     this.profile = profile;
     this.emitAndroid = emitAndroid;
     this.emitAndroidAnnotations = emitAndroidAnnotations || emitAndroid;
@@ -236,27 +250,28 @@ public final class JavaGenerator {
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitAndroidAnnotations,
-        emitCompact);
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact);
   }
 
   public JavaGenerator withAndroidAnnotations(boolean emitAndroidAnnotations) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitAndroidAnnotations,
-        emitCompact);
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact);
   }
 
   public JavaGenerator withCompact(boolean emitCompact) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitAndroidAnnotations,
-        emitCompact);
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact);
   }
 
   public JavaGenerator withProfile(Profile profile) {
-    return new JavaGenerator(schema, nameToJavaName, profile, emitAndroid, emitAndroidAnnotations,
-        emitCompact);
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact);
   }
 
   public static JavaGenerator get(Schema schema) {
     Map<ProtoType, TypeName> nameToJavaName = new LinkedHashMap<>();
+    Map<ProtoMember, TypeName> memberToJavaName = new LinkedHashMap<>();
 
     for (ProtoFile protoFile : schema.getProtoFiles()) {
       String javaPackage = javaPackage(protoFile);
@@ -266,11 +281,25 @@ public final class JavaGenerator {
         ClassName className = ClassName.get(javaPackage, service.type().getSimpleName());
         nameToJavaName.put(service.type(), className);
       }
+
+      for (Extend extend : protoFile.getExtendList()) {
+        if (annotationTargetType(extend) == null) continue;
+
+        for (Field field : extend.getFields()) {
+          if (!eligibleAsAnnotationMember(schema, field.getType())) continue;
+
+          ProtoMember protoMember = field.getMember();
+          String simpleName = camelCase(protoMember.getSimpleName(), true);
+          ClassName className = ClassName.get(javaPackage, simpleName);
+          memberToJavaName.put(protoMember, className);
+        }
+      }
     }
 
     nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
 
-    return new JavaGenerator(schema, nameToJavaName, new Profile(), false, false, false);
+    return new JavaGenerator(
+        schema, nameToJavaName, memberToJavaName, new Profile(), false, false, false);
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -297,7 +326,7 @@ public final class JavaGenerator {
   public TypeName typeName(ProtoType protoType) {
     TypeName profileJavaName = profile.getTarget(protoType);
     if (profileJavaName != null) return profileJavaName;
-    TypeName candidate = nameToJavaName.get(protoType);
+    TypeName candidate = typeToJavaName.get(protoType);
     checkArgument(candidate != null, "unexpected type %s", protoType);
     return candidate;
   }
@@ -310,7 +339,7 @@ public final class JavaGenerator {
     TypeName profileJavaName = profile.getTarget(protoType);
     if (profileJavaName == null) return null;
 
-    TypeName typeName = nameToJavaName.get(protoType);
+    TypeName typeName = typeToJavaName.get(protoType);
     Type type = schema.getType(protoType);
 
     ClassName javaName;
@@ -1922,6 +1951,64 @@ public final class JavaGenerator {
     return constantZero != null
         ? CodeBlock.of("$T.$L", typeName(enumType.getType()), constantZero.getName())
         : CodeBlock.of("null");
+  }
+
+  /** Returns the full name of the class generated for {@code field}. */
+  public ClassName generatedTypeName(Field field) {
+    return (ClassName) memberToJavaName.get(field.getMember());
+  }
+
+  // Example:
+  //
+  // @Retention(RetentionPolicy.RUNTIME)
+  // @Target(ElementType.FIELD)
+  // public @interface MyFieldOption {
+  //   String value();
+  // }
+  public @Nullable TypeSpec generateExtendField(Extend extend, Field field) {
+    checkArgument(extend.getFields().contains(field));
+
+    ElementType elementType = annotationTargetType(extend);
+    if (elementType == null) return null;
+
+    if (!eligibleAsAnnotationMember(schema, field.getType())) return null;
+    TypeName returnType = typeName(field.getType());
+
+    ClassName javaType = generatedTypeName(field);
+
+    TypeSpec.Builder builder = TypeSpec.annotationBuilder(javaType.simpleName())
+        .addModifiers(PUBLIC)
+        .addAnnotation(AnnotationSpec.builder(Retention.class)
+            .addMember("value", "$T.$L", RetentionPolicy.class, RetentionPolicy.RUNTIME)
+            .build())
+        .addAnnotation(AnnotationSpec.builder(Target.class)
+            .addMember("value", "$T.$L", ElementType.class, elementType)
+            .build());
+
+    if (!field.getDocumentation().isEmpty()) {
+      builder.addJavadoc("$L\n", field.getDocumentation());
+    }
+
+    builder.addMethod(MethodSpec.methodBuilder("value")
+        .returns(returnType)
+        .addModifiers(PUBLIC, ABSTRACT)
+        .build());
+
+    return builder.build();
+  }
+
+  private static @Nullable ElementType annotationTargetType(Extend extend) {
+    if (extend.getType().equals(MESSAGE_OPTIONS)) {
+      return ElementType.TYPE;
+    } else if (extend.getType().equals(FIELD_OPTIONS)) {
+      return ElementType.FIELD;
+    } else {
+      return null;
+    }
+  }
+
+  private static boolean eligibleAsAnnotationMember(Schema schema, ProtoType type) {
+    return type.isScalar() || schema.getType(type) instanceof EnumType;
   }
 
   static int valueToInt(@Nullable Object value) {

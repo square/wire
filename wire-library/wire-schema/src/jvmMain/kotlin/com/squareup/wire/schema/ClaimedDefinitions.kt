@@ -16,10 +16,15 @@
 package com.squareup.wire.schema
 
 class ClaimedDefinitions {
-  private val set = mutableSetOf<ProtoType>()
+  private val types = mutableSetOf<ProtoType>()
+  private val members = mutableSetOf<ProtoMember>()
 
   fun claim(type: ProtoType) {
-    set.add(type)
+    types.add(type)
+  }
+
+  fun claim(member: ProtoMember) {
+    members.add(member)
   }
 
   fun claim(type: Type) {
@@ -30,9 +35,17 @@ class ClaimedDefinitions {
     claim(service.type)
   }
 
-  operator fun contains(type: ProtoType) = set.contains(type)
+  fun claim(field: Field) {
+    claim(field.member)
+  }
+
+  operator fun contains(type: ProtoType) = type in types
+
+  operator fun contains(member: ProtoMember) = member in members
 
   operator fun contains(type: Type) = contains(type.type)
 
   operator fun contains(service: Service) = contains(service.type)
+
+  operator fun contains(field: Field) = contains(field.member)
 }

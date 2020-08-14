@@ -20,6 +20,7 @@ import com.squareup.wire.protos.kotlin.redacted.Redacted
 import com.squareup.wire.protos.kotlin.redacted.RedactedChild
 import com.squareup.wire.protos.kotlin.redacted.RedactedCycleA
 import com.squareup.wire.protos.kotlin.redacted.RedactedExtension
+import com.squareup.wire.protos.kotlin.redacted.RedactedFields
 import com.squareup.wire.protos.kotlin.redacted.RedactedRepeated
 import com.squareup.wire.protos.kotlin.redacted.RedactedRequired
 import kotlin.test.Test
@@ -32,10 +33,10 @@ class RedactTest {
     assertEquals("Redacted{a=██, b=b, c=c}", redacted.toString())
     val redactedRepeated = RedactedRepeated(
         a = listOf("a", "b"),
-        b = listOf(Redacted("a", "b", "c", null), Redacted("d", "e", "f", null))
+        b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
     )
-    assertEquals("RedactedRepeated{a=██, b=[Redacted{a=██, b=b, c=c}, Redacted{a=██, b=e, c=f}]}",
-        redactedRepeated.toString())
+    assertEquals("RedactedRepeated{a=██, b=[RedactedFields{a=██, b=b, c=c}, " +
+        "RedactedFields{a=██, b=e, c=f}]}", redactedRepeated.toString())
   }
 
   @Test fun message() {
@@ -52,7 +53,7 @@ class RedactTest {
   @Test fun nestedRedactions() {
     val message = RedactedChild(
         a = "a",
-        b = Redacted(a = "a", b = "b", c = "c"),
+        b = RedactedFields(a = "a", b = "b", c = "c"),
         c = NotRedacted(a = "a", b = "b")
     )
     val expected = message.copy(b = message.b!!.copy(a = null))
@@ -73,10 +74,10 @@ class RedactTest {
   @Test fun repeatedField() {
     val message = RedactedRepeated(
         a = listOf("a", "b"),
-        b = listOf(Redacted("a", "b", "c", null), Redacted("d", "e", "f", null))
+        b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
     )
     val expected = RedactedRepeated(
-        b = listOf(Redacted(null, "b", "c", null), Redacted(null, "e", "f", null))
+        b = listOf(RedactedFields(null, "b", "c", null), RedactedFields(null, "e", "f", null))
     )
     val actual = RedactedRepeated.ADAPTER.redact(message)
     assertEquals(expected, actual)

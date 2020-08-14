@@ -29,6 +29,9 @@ class ProtoMember private constructor(
   val type: ProtoType,
   val member: String
 ) {
+  val simpleName: String
+    get() = member.substringAfterLast('.') // Strip package prefix for extension fields.
+
   override fun equals(other: Any?) =
       other is ProtoMember && type == other.type && member == other.member
 
