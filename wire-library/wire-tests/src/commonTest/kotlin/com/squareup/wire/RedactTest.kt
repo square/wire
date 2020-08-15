@@ -16,7 +16,6 @@
 package com.squareup.wire
 
 import com.squareup.wire.protos.kotlin.redacted.NotRedacted
-import com.squareup.wire.protos.kotlin.redacted.Redacted
 import com.squareup.wire.protos.kotlin.redacted.RedactedChild
 import com.squareup.wire.protos.kotlin.redacted.RedactedCycleA
 import com.squareup.wire.protos.kotlin.redacted.RedactedExtension
@@ -29,8 +28,8 @@ import kotlin.test.fail
 
 class RedactTest {
   @Test fun string() {
-    val redacted = Redacted(a = "a", b = "b", c = "c")
-    assertEquals("Redacted{a=██, b=b, c=c}", redacted.toString())
+    val redacted = RedactedFields(a = "a", b = "b", c = "c")
+    assertEquals("RedactedFields{a=██, b=b, c=c}", redacted.toString())
     val redactedRepeated = RedactedRepeated(
         a = listOf("a", "b"),
         b = listOf(RedactedFields("a", "b", "c", null), RedactedFields("d", "e", "f", null))
@@ -40,9 +39,9 @@ class RedactTest {
   }
 
   @Test fun message() {
-    val message = Redacted(a = "a", b = "b", c = "c")
+    val message = RedactedFields(a = "a", b = "b", c = "c")
     val expected = message.copy(a = null)
-    assertEquals(expected, Redacted.ADAPTER.redact(message))
+    assertEquals(expected, RedactedFields.ADAPTER.redact(message))
   }
 
   @Test fun messageWithNoRedactions() {
@@ -61,9 +60,9 @@ class RedactTest {
   }
 
   @Test fun redactedExtensions() {
-    val message = Redacted(extension = RedactedExtension(d = "d", e = "e"))
-    val expected = Redacted(extension = RedactedExtension(e = "e"))
-    assertEquals(expected, Redacted.ADAPTER.redact(message))
+    val message = RedactedFields(extension = RedactedExtension(d = "d", e = "e"))
+    val expected = RedactedFields(extension = RedactedExtension(e = "e"))
+    assertEquals(expected, RedactedFields.ADAPTER.redact(message))
   }
 
   @Test fun messageCycle() {

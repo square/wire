@@ -44,4 +44,4 @@ expect fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V>
  *
  * @param upperCamel true to uppercase the first character.
  */
-expect fun camelCase(string: String, upperCamel: Boolean): String
+expect fun camelCase(string: String, upperCamel: Boolean = false): String

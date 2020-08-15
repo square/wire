@@ -291,22 +291,7 @@ data class KotlinTarget(
       override fun handle(type: Type): Path? {
         val typeSpec = kotlinGenerator.generateType(type)
         val className = kotlinGenerator.generatedTypeName(type)
-        val kotlinFile = FileSpec.builder(className.packageName, typeSpec.name!!)
-            .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-            .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
-            .addType(typeSpec)
-            .build()
-        val generatedFilePath =
-            modulePath.resolve(kotlinFile.packageName).resolve("${kotlinFile.name}.kt")
-
-        logger.artifact(modulePath, kotlinFile)
-        try {
-          kotlinFile.writeTo(modulePath)
-        } catch (e: IOException) {
-          throw IOException("Error emitting " +
-              "${kotlinFile.packageName}.${className.canonicalName} to $outDirectory", e)
-        }
-        return generatedFilePath
+        return write(className, typeSpec, type.type, type.location)
       }
 
       override fun handle(service: Service): List<Path> {
@@ -316,13 +301,13 @@ data class KotlinTarget(
           service.rpcs.forEach { rpc ->
             val map = kotlinGenerator.generateServiceTypeSpecs(service, rpc)
             for ((className, typeSpec) in map) {
-              generatedPaths.add(write(service, className, typeSpec))
+              generatedPaths.add(write(className, typeSpec, service.type, service.location))
             }
           }
         } else {
           val map = kotlinGenerator.generateServiceTypeSpecs(service, null)
           for ((className, typeSpec) in map) {
-            generatedPaths.add(write(service, className, typeSpec))
+            generatedPaths.add(write(className, typeSpec, service.type, service.location))
           }
         }
 
@@ -330,26 +315,31 @@ data class KotlinTarget(
       }
 
       override fun handle(extend: Extend, field: Field): Path? {
-        return null // TODO(jwilson): support extension fields in Kotlin.
+        val typeSpec = kotlinGenerator.generateExtendField(extend, field) ?: return null
+        val name = kotlinGenerator.generatedTypeName(field)
+        return write(name, typeSpec, field.qualifiedName, field.location)
       }
 
-      private fun write(service: Service, name: ClassName, typeSpec: TypeSpec): Path {
+      private fun write(
+        name: ClassName,
+        typeSpec: TypeSpec,
+        source: Any,
+        location: Location
+      ): Path {
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-            .addComment("\nSource: %L in %L", service.type, service.location.withPathOnly())
+            .addComment("\nSource: %L in %L", source, location.withPathOnly())
             .addType(typeSpec)
             .build()
-        val generatedFilePath =
-            fs.getPath(outDirectory, kotlinFile.packageName, "${kotlinFile.name}.kt")
-
+        val generatedFilePath = modulePath.resolve(kotlinFile.packageName)
+            .resolve("${kotlinFile.name}.kt")
         val path = fs.getPath(outDirectory)
-        logger.artifact(path, kotlinFile)
 
+        logger.artifact(path, kotlinFile)
         try {
           kotlinFile.writeTo(path)
         } catch (e: IOException) {
-          throw IOException("Error emitting " +
-              "${kotlinFile.packageName}.${service.type} to $outDirectory", e)
+          throw IOException("Error emitting ${kotlinFile.packageName}.$source to $outDirectory", e)
         }
         return generatedFilePath
       }

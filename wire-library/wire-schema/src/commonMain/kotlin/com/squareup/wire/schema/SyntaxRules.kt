@@ -106,7 +106,7 @@ interface SyntaxRules {
         return Field.EncodeMode.OMIT_IDENTITY
       }
 
-      override fun jsonName(name: String): String = camelCase(name, false)
+      override fun jsonName(name: String): String = camelCase(name, upperCamel = false)
     }
   }
 }
