@@ -19,8 +19,10 @@ import okio.ByteString
 import kotlin.jvm.JvmField
 
 /**
- * TODO(oldergod): documentation
- * TODO(oldergod): JSON
+ * A [ProtoAdapter] for the `google.protobuf.Any` type. `Any` wraps an arbitrary protobuf message.
+ * [typeUrl] is used to identify the type of the message, defined as
+ * 'type.googleapis.com/full.type.name'. [value] is the serialized representation of the wrapped
+ * message.
  */
 class AnyMessage(
   val typeUrl: String,
@@ -91,7 +93,7 @@ class AnyMessage(
       }
 
       override fun decode(reader: ProtoReader): AnyMessage {
-        var typeUrl = "square.github.io/wire/unknown" // TODO: what does protoc do?
+        var typeUrl = ""
         var value = ByteString.EMPTY
         reader.forEachTag { tag ->
           when (tag) {
