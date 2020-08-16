@@ -29,6 +29,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.ABSTRACT
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
+import com.squareup.kotlinpoet.KModifier.PUBLIC
 import com.squareup.kotlinpoet.LONG
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.MemberName.Companion.member
@@ -64,8 +65,10 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
+import com.squareup.wire.internal.camelCase
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumType
+import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Field.EncodeMode
 import com.squareup.wire.schema.MessageType
@@ -91,7 +94,8 @@ import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
-  private val nameToKotlinName: Map<ProtoType, TypeName>,
+  private val typeToKotlinName: Map<ProtoType, TypeName>,
+  private val memberToKotlinName: Map<ProtoMember, TypeName>,
   private val emitAndroid: Boolean,
   private val javaInterOp: Boolean,
   private val rpcCallStyle: RpcCallStyle,
@@ -100,7 +104,7 @@ class KotlinGenerator private constructor(
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
   private val ProtoType.typeName
-    get() = nameToKotlinName.getValue(this)
+    get() = typeToKotlinName.getValue(this)
   private val ProtoType.isEnum
     get() = schema.getType(this) is EnumType
   private val ProtoType.isMessage
@@ -119,6 +123,9 @@ class KotlinGenerator private constructor(
 
   /** Returns the full name of the class generated for [type].  */
   fun generatedTypeName(type: Type) = type.typeName as ClassName
+
+  /** Returns the full name of the class generated for [field].  */
+  fun generatedTypeName(field: Field) = memberToKotlinName[field.member] as ClassName
 
   /**
    * Returns the full name of the class generated for [service]#[rpc]. This returns a name like
@@ -249,7 +256,7 @@ class KotlinGenerator private constructor(
           .build()
       funSpecBuilder
           .addAnnotation(wireRpcAnnotationSpec)
-          .addModifiers(KModifier.ABSTRACT)
+          .addModifiers(ABSTRACT)
       if (rpcCallStyle == RpcCallStyle.SUSPENDING) {
         funSpecBuilder.addModifiers(KModifier.SUSPEND)
       }
@@ -1127,7 +1134,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun decodeFun(message: MessageType): FunSpec {
-    val className = nameToKotlinName.getValue(message.type)
+    val className = typeToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message).copy()
 
     val declarationBody = buildCodeBlock {
@@ -1207,7 +1214,7 @@ class KotlinGenerator private constructor(
   }
 
   private fun redactFun(message: MessageType): FunSpec {
-    val className = nameToKotlinName.getValue(message.type)
+    val className = typeToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message)
     val result = FunSpec.builder("redact")
         .addModifiers(OVERRIDE)
@@ -1418,7 +1425,7 @@ class KotlinGenerator private constructor(
   private fun generateEnumCompanion(message: EnumType): TypeSpec {
     val nameAllocator = nameAllocator(message)
     val companionObjectBuilder = TypeSpec.companionObjectBuilder()
-    val parentClassName = nameToKotlinName.getValue(message.type)
+    val parentClassName = typeToKotlinName.getValue(message.type)
     val valueName = nameAllocator["value"]
     val fromValue = FunSpec.builder("fromValue")
         .jvmStatic()
@@ -1449,7 +1456,7 @@ class KotlinGenerator private constructor(
    * ```
    */
   private fun generateEnumAdapter(message: EnumType): PropertySpec {
-    val parentClassName = nameToKotlinName.getValue(message.type)
+    val parentClassName = typeToKotlinName.getValue(message.type)
     val nameAllocator = nameAllocator(message)
 
     val adapterName = nameAllocator["ADAPTER"]
@@ -1507,6 +1514,46 @@ class KotlinGenerator private constructor(
     return classBuilder.build()
   }
 
+  /**
+   * Example
+   * ```
+   * @Retention(AnnotationRetention.RUNTIME)
+   * @Target(AnnotationTarget.FIELD)
+   * annotation class MyFieldOption(val value: String)
+   * ```
+   */
+  fun generateExtendField(
+    extend: Extend,
+    field: Field
+  ): TypeSpec? {
+    require(field in extend.fields)
+    val annotationTarget = extend.annotationTarget ?: return null
+
+    if (!eligibleAsAnnotationMember(schema, field.type!!)) return null
+    val returnType = field.type!!.typeName
+
+    val kotlinType = generatedTypeName(field)
+
+    val builder = TypeSpec.annotationBuilder(kotlinType)
+        .addModifiers(PUBLIC)
+        .addAnnotation(AnnotationSpec.builder(Retention::class)
+            .addMember("%T.%L", AnnotationRetention::class, AnnotationRetention.RUNTIME)
+            .build())
+        .addAnnotation(AnnotationSpec.builder(Target::class)
+            .addMember("%T.%L", AnnotationTarget::class, annotationTarget)
+            .build())
+    if (field.documentation.isNotEmpty()) {
+      builder.addKdoc("%L\n", field.documentation)
+    }
+    builder.primaryConstructor(FunSpec.constructorBuilder()
+        .addParameter("value", returnType)
+        .build())
+    builder.addProperty(PropertySpec.builder("value", returnType, PUBLIC)
+        .initializer("value")
+        .build())
+    return builder.build()
+  }
+
   private fun Field.getDeclaration(allocatedName: String) = when {
     isRepeated -> CodeBlock.of("val $allocatedName = mutableListOf<%T>()", type!!.typeName)
     isMap -> CodeBlock.of("val $allocatedName = mutableMapOf<%T, %T>()",
@@ -1529,7 +1576,7 @@ class KotlinGenerator private constructor(
   private fun ProtoType.asTypeName(): TypeName = when {
     isMap -> Map::class.asTypeName()
         .parameterizedBy(keyType!!.asTypeName(), valueType!!.asTypeName())
-    else -> nameToKotlinName.getValue(this)
+    else -> typeToKotlinName.getValue(this)
   }
 
   private fun EnumType.identity(): CodeBlock {
@@ -1675,13 +1722,14 @@ class KotlinGenerator private constructor(
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT
     ): KotlinGenerator {
-      val map = mutableMapOf<ProtoType, TypeName>()
+      val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
+      val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
 
       fun putAll(kotlinPackage: String, enclosingClassName: ClassName?, types: List<Type>) {
         for (type in types) {
           val className = enclosingClassName?.nestedClass(type.type.simpleName)
               ?: ClassName(kotlinPackage, type.type.simpleName)
-          map[type.type] = className
+          typeToKotlinName[type.type] = className
           putAll(kotlinPackage, className, type.nestedTypes)
         }
       }
@@ -1692,14 +1740,43 @@ class KotlinGenerator private constructor(
 
         for (service in protoFile.services) {
           val className = ClassName(kotlinPackage, service.type.simpleName)
-          map[service.type] = className
+          typeToKotlinName[service.type] = className
+        }
+
+        for (extend in protoFile.extendList) {
+          if (extend.annotationTarget == null) continue
+          for (field in extend.fields) {
+            if (!eligibleAsAnnotationMember(schema, field.type!!)) continue
+            val protoMember = field.member
+            val simpleName = camelCase(protoMember.simpleName, upperCamel = true)
+            val className = ClassName(kotlinPackage, simpleName)
+            memberToKotlinName[protoMember] = className
+          }
         }
       }
 
-      map.putAll(BUILT_IN_TYPES)
+      typeToKotlinName.putAll(BUILT_IN_TYPES)
 
-      return KotlinGenerator(schema, map, emitAndroid, javaInterop, rpcCallStyle, rpcRole)
+      return KotlinGenerator(
+          schema = schema,
+          typeToKotlinName = typeToKotlinName,
+          memberToKotlinName = memberToKotlinName,
+          emitAndroid = emitAndroid,
+          javaInterOp = javaInterop,
+          rpcCallStyle = rpcCallStyle,
+          rpcRole = rpcRole
+      )
     }
+
+    private val Extend.annotationTarget: AnnotationTarget?
+      get() = when (type) {
+        MESSAGE_OPTIONS -> AnnotationTarget.CLASS
+        FIELD_OPTIONS -> AnnotationTarget.PROPERTY
+        else -> null
+      }
+
+    private fun eligibleAsAnnotationMember(schema: Schema, type: ProtoType): Boolean =
+        type.isScalar || schema.getType(type) is EnumType
 
     internal fun String.sanitizeKdoc(): String {
       return this

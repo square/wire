@@ -485,8 +485,15 @@ class WireCompilerTest {
     compileToKotlin(sources, "--named_files_only")
 
     val outputs = arrayOf(
-            "com/squareup/wire/protos/custom_options/FooBar.kt",
-            "com/squareup/wire/protos/custom_options/MessageWithOptions.kt")
+        "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.kt",
+        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.kt",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionOne.kt",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionTwo.kt",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionThree.kt",
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.kt",
+        "com/squareup/wire/protos/custom_options/FooBar.kt",
+        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt"
+    )
     assertKotlinOutputs(outputs)
   }
 
@@ -497,6 +504,7 @@ class WireCompilerTest {
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/kotlin/redacted/NotRedacted.kt",
+        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedFields.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedChild.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedCycleA.kt",
@@ -513,7 +521,10 @@ class WireCompilerTest {
     val sources = arrayOf("redacted_one_of.proto", "option_redacted.proto")
     compileToKotlin(sources)
 
-    val outputs = arrayOf("com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt")
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt"
+    )
     assertKotlinOutputs(outputs)
   }
 
@@ -522,7 +533,10 @@ class WireCompilerTest {
     val sources = arrayOf("redacted_one_of.proto", "option_redacted.proto")
     compileToKotlin(sources, "--java_interop")
 
-    val outputs = arrayOf("com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt")
+    val outputs = arrayOf(
+        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt",
+        "com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt"
+    )
     assertKotlinOutputs(outputs, ".java.interop")
   }
 
