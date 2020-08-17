@@ -7,6 +7,7 @@ import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Field.EncodeMode
 import com.squareup.wire.schema.MessageType
+import com.squareup.wire.schema.OneOf
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Type
@@ -27,16 +28,20 @@ import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.INT32
 import io.outfoxx.swiftpoet.INT64
 import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
+import io.outfoxx.swiftpoet.Modifier.MUTATING
+import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
 import io.outfoxx.swiftpoet.OPTIONAL
 import io.outfoxx.swiftpoet.ParameterSpec
 import io.outfoxx.swiftpoet.ParameterizedTypeName
 import io.outfoxx.swiftpoet.PropertySpec
 import io.outfoxx.swiftpoet.STRING
+import io.outfoxx.swiftpoet.TypeAliasSpec
 import io.outfoxx.swiftpoet.TypeName
 import io.outfoxx.swiftpoet.TypeSpec
 import io.outfoxx.swiftpoet.UINT32
 import io.outfoxx.swiftpoet.UINT64
+import io.outfoxx.swiftpoet.joinToCode
 import io.outfoxx.swiftpoet.parameterizedBy
 import java.util.Locale.US
 
@@ -49,6 +54,7 @@ class SwiftGenerator private constructor(
   private val proto3Codable = DeclaredTypeName.typeName("Wire.Proto3Codable")
   private val protoReader = DeclaredTypeName.typeName("Wire.ProtoReader")
   private val protoWriter = DeclaredTypeName.typeName("Wire.ProtoWriter")
+  private val heap = DeclaredTypeName.typeName("Wire.Heap")
   private val indirect = DeclaredTypeName.typeName("Wire.Indirect")
   private val redactable = DeclaredTypeName.typeName("Wire.Redactable")
   private val redactedKey = DeclaredTypeName.typeName("Wire.RedactedKey")
@@ -94,7 +100,9 @@ class SwiftGenerator private constructor(
 
   fun generateTypeTo(type: Type, builder: FileSpec.Builder) {
     val extensions = mutableListOf<ExtensionSpec>()
-    builder.addType(generateType(type, extensions))
+    generateType(type, extensions).forEach {
+      builder.addType(it)
+    }
 
     for (extension in extensions) {
       builder.addExtension(extension)
@@ -103,8 +111,8 @@ class SwiftGenerator private constructor(
 
   private fun generateType(type: Type, extensions: MutableList<ExtensionSpec>) = when (type) {
     is MessageType -> generateMessage(type, extensions)
-    is EnumType -> generateEnum(type, extensions)
-    is EnclosingType -> generateEnclosing(type, extensions)
+    is EnumType -> listOf(generateEnum(type, extensions))
+    is EnclosingType -> listOf(generateEnclosing(type, extensions))
     else -> error("Unknown type $type")
   }
 
@@ -128,295 +136,75 @@ class SwiftGenerator private constructor(
     return field.type in referenceCycleIndirections.getOrDefault(type.type, emptySet())
   }
 
-  @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
-  private fun generateMessage(type: MessageType, extensions: MutableList<ExtensionSpec>): TypeSpec {
-    val structName = type.typeName
-    val oneOfEnumNames = type.oneOfs.associateWith { structName.nestedType(it.name.capitalize(US)) }
+  private val MessageType.isHeapAllocated get() = fields.size + oneOfs.size >= 16
 
-    val typeSpec =  TypeSpec.structBuilder(structName)
+  @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
+  private fun generateMessage(type: MessageType, extensions: MutableList<ExtensionSpec>): List<TypeSpec> {
+    val structType = type.typeName
+    val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name.capitalize(US)) }
+
+    // TODO use a NameAllocator
+    val propertyNames = type.fields.map { it.name } + type.oneOfs.map { it.name }
+
+    val storageType = structType.peerType("_${structType.simpleName}")
+    val storageName = if ("storage" in propertyNames) "_storage" else "storage"
+
+    val typeSpecs = mutableListOf<TypeSpec>()
+
+    typeSpecs +=  TypeSpec.structBuilder(structType)
         .addModifiers(PUBLIC)
         .apply {
           if (type.documentation.isNotBlank()) {
             addKdoc("%L\n", type.documentation.sanitizeDoc())
           }
-          type.fields.forEach { field ->
-            val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
-            if (field.documentation.isNotBlank()) {
-              property.addKdoc("%L\n", field.documentation.sanitizeDoc())
-            }
-            if (field.isDeprecated) {
-              property.addAttribute(
-                  AttributeSpec.builder("available")
-                      .addArguments("*", "deprecated")
-                      .build()
-              )
-            }
-            if (field.typeName.needsJsonString()) {
-              property.addAttribute(
-                  AttributeSpec.builder("JSONString")
-                      .build()
-              )
-            }
-            if (isIndirect(type, field)) {
-              property.addAttribute(
-                  // TODO https://github.com/outfoxx/swiftpoet/issues/14
-                  AttributeSpec.builder(indirect.simpleName)
-                      .build()
-              )
-            }
-            addProperty(property.build())
-          }
-          type.oneOfs.forEach { oneOf ->
-            val enumName = oneOfEnumNames.getValue(oneOf)
 
-            addProperty(PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
-                .apply {
-                  if (oneOf.documentation.isNotBlank()) {
-                    addKdoc("%N\n", oneOf.documentation.sanitizeDoc())
-                  }
-                }
+          if (type.isHeapAllocated) {
+            addProperty(PropertySpec.varBuilder(storageName, storageType, PRIVATE)
+                // TODO https://github.com/outfoxx/swiftpoet/issues/14
+                .addAttribute(heap.simpleName)
                 .build())
-
-            // TODO use a NameAllocator
-            val writer = if (oneOf.fields.any { it.name == "writer" }) "_writer" else "writer"
-            addType(TypeSpec.enumBuilder(enumName)
+            generateMessageStoragePropertyDelegates(type, storageName, oneOfEnumNames)
+            addFunction(FunctionSpec.constructorBuilder()
                 .addModifiers(PUBLIC)
+                .addParameters(type, oneOfEnumNames, includeDefaults = true)
                 .apply {
-                  oneOf.fields.forEach { oneOfField ->
-                    // TODO SwiftPoet needs to support attributing an enum case.
-                    // TODO SwiftPoet needs to support documenting an enum case.
-                    addEnumCase(oneOfField.name, oneOfField.typeName.makeNonOptional())
+                  val storageParams = mutableListOf<CodeBlock>()
+                  type.fields.forEach { field ->
+                    storageParams += CodeBlock.of("%1N: %1N", field.name)
                   }
+                  type.oneOfs.forEach { oneOf ->
+                    storageParams += CodeBlock.of("%1N: %1N", oneOf.name)
+                  }
+                  addStatement("_storage = %T(value: %T(%L))", heap, storageType,
+                      storageParams.joinToCode(separator = ",%W"))
                 }
-                .addFunction(FunctionSpec.builder("encode")
-                    .addParameter("to", writer, protoWriter)
-                    .addModifiers(FILEPRIVATE)
-                    .throws(true)
-                    .addCode("switch self {\n")
-                    .apply {
-                      oneOf.fields.forEach { field ->
-                        addStatement(
-                            "case .%1N(let %1N): try $writer.encode(tag: %2L, value: %1N)",
-                            field.name, field.tag
-                        )
-                      }
-                    }
-                    .addCode("}\n")
-                    .build())
                 .build())
-
-            extensions += ExtensionSpec.builder(enumName)
-                .addSuperType(equatable)
-                .build()
-            extensions += ExtensionSpec.builder(enumName)
-                .addSuperType(hashable)
-                .build()
-
-            if (oneOf.fields.any { it.isRedacted }) {
-              extensions += ExtensionSpec.builder(enumName)
-                  .addSuperType(redactable)
-                  .addType(TypeSpec.enumBuilder("RedactedKeys")
-                      .addModifiers(PUBLIC)
-                      .addSuperType(STRING)
-                      .addSuperType(redactedKey)
-                      .apply {
-                        oneOf.fields.forEach { field ->
-                          if (field.isRedacted) {
-                            addEnumCase(field.name)
-                          }
-                        }
-                      }
-                      .build())
-                  .build()
-            }
+            addFunction(FunctionSpec.builder("copyStorage")
+                .addModifiers(PRIVATE, MUTATING)
+                .beginControlFlow("if !isKnownUniquelyReferenced(&_%N)", storageName)
+                .addStatement("_%1N = %2T(value: %1N)", storageName, heap)
+                .endControlFlow()
+                .build())
+          } else {
+            generateMessageProperties(type, oneOfEnumNames)
+            generateMessageConstructor(type, oneOfEnumNames)
           }
-        }
-        .addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
-              .initializer(".init()")
-              .build())
-        .addFunction(FunctionSpec.constructorBuilder()
-            .addModifiers(PUBLIC)
-            .apply {
-              type.fields.forEach { field ->
-                val fieldType = field.typeName
-                addParameter(ParameterSpec.builder(field.name, fieldType)
-                    .apply {
-                      when {
-                        field.isMap -> defaultValue("[:]")
-                        field.isRepeated -> defaultValue("[]")
-                        fieldType.optional -> defaultValue("nil")
-                      }
-                    }
-                    .build())
-                if (isIndirect(type, field)) {
-                  addStatement("_%1N = %2T(value: %1N)", field.name, indirect)
-                } else {
-                  addStatement("self.%1N = %1N", field.name)
-                }
-              }
-              type.oneOfs.forEach { oneOf ->
-                val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
-                addParameter(ParameterSpec.builder(oneOf.name, enumName)
-                    .defaultValue("nil")
-                    .build())
-                addStatement("self.%1N = %1N", oneOf.name)
-              }
-            }
-            .build())
-        .apply {
+
+          generateMessageOneOfs(type, oneOfEnumNames, extensions)
+
           type.nestedTypes.forEach { nestedType ->
-            addType(generateType(nestedType, extensions))
+            generateType(nestedType, extensions).forEach {
+              addType(it)
+            }
           }
         }
         .build()
 
-    extensions += ExtensionSpec.builder(structName)
-        .addSuperType(equatable)
-        .build()
-    extensions += ExtensionSpec.builder(structName)
-        .addSuperType(hashable)
-        .build()
+    extensions += ExtensionSpec.builder(structType).addSuperType(equatable).build()
+    extensions += ExtensionSpec.builder(structType).addSuperType(hashable).build()
 
-    // TODO use a NameAllocator
-    val propertyNames = type.fields.map { it.name } + type.oneOfs.map { it.name }
-    val reader = if ("reader" in propertyNames) "_reader" else "reader"
-    val writer = if ("writer" in propertyNames) "_writer" else "writer"
-    val token = if ("token" in propertyNames) "_token" else "token"
-    val tag = if ("tag" in propertyNames) "_tag" else "tag"
-    extensions += ExtensionSpec.builder(structName)
-        .addSuperType(when (type.syntax) {
-          PROTO_2 -> proto2Codable
-          PROTO_3 -> proto3Codable
-        })
-        .addFunction(FunctionSpec.constructorBuilder()
-            .addModifiers(PUBLIC)
-            .addParameter("from", reader, protoReader)
-            .throws(true)
-            .apply {
-              // Declare locals into which everything is writen before promoting to members.
-              type.fields.forEach { field ->
-                val localType = if (field.isRepeated || field.isMap) {
-                  field.typeName
-                } else {
-                  field.typeName.makeOptional()
-                }
-                val initializer = when {
-                  field.isMap -> "[:]"
-                  field.isRepeated -> "[]"
-                  else -> "nil"
-                }
-                addStatement("var %N: %T = %L", field.name, localType, initializer)
-              }
-              type.oneOfs.forEach { oneOf ->
-                val enumName = oneOfEnumNames.getValue(oneOf)
-                addStatement("var %N: %T = nil", oneOf.name, enumName.makeOptional())
-              }
-              if (type.fieldsAndOneOfFields.isNotEmpty()) {
-                addStatement("")
-              }
-
-              addStatement("let $token = try $reader.beginMessage()")
-              beginControlFlow("while let $tag = try $reader.nextTag(token: $token)")
-              addCode(CodeBlock.builder()
-                  .add("switch $tag {\n")
-                  .apply {
-                    type.fields.forEach { field ->
-                      add("case %L: ", field.tag)
-                      if (field.isMap) {
-                        add("try $reader.decode(into: &%N", field.name)
-                        field.keyType.encoding?.let { keyEncoding ->
-                          add(", keyEncoding: .%N", keyEncoding)
-                        }
-                        field.valueType.encoding?.let { valueEncoding ->
-                          add(", valueEncoding: .%N", valueEncoding)
-                        }
-                      } else {
-                        if (field.isRepeated) {
-                          add("try $reader.decode(into: &%N", field.name)
-                        } else {
-                          add(
-                              "%N = try $reader.decode(%T.self", field.name,
-                              field.typeName.makeNonOptional()
-                          )
-                        }
-                        field.type!!.encoding?.let { encoding ->
-                          add(", encoding: .%N", encoding)
-                        }
-                      }
-                      add(")\n")
-                    }
-                    type.oneOfs.forEach { oneOf ->
-                      oneOf.fields.forEach { field ->
-                        add(
-                            "case %L: %N = .%N(try $reader.decode(%T.self))\n", field.tag,
-                            oneOf.name, field.name, field.typeName.makeNonOptional()
-                        )
-                      }
-                    }
-                  }
-                  .add("default: try $reader.readUnknownField(tag: $tag)\n")
-                  .add("}\n")
-                  .build())
-              endControlFlow()
-              addStatement("self.unknownFields = try $reader.endMessage(token: $token)")
-
-              // Check required and bind members.
-              addStatement("")
-              type.fields.forEach { field ->
-                val initializer = if (field.typeName.optional || field.isRepeated || field.isMap) {
-                  CodeBlock.of("%N", field.name)
-                } else {
-                  CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structName, field.name)
-                }
-                if (isIndirect(type, field)) {
-                  addStatement("_%N = %T(value: %L)", field.name, indirect, initializer)
-                } else {
-                  addStatement("self.%N = %L", field.name, initializer)
-                }
-              }
-              type.oneOfs.forEach { oneOf ->
-                addStatement("self.%1N = %1N", oneOf.name)
-              }
-            }
-            .build())
-        .addFunction(FunctionSpec.builder("encode")
-            .addModifiers(PUBLIC)
-            .addParameter("to", writer, protoWriter)
-            .throws(true)
-            .apply {
-              type.fields.forEach { field ->
-                if (field.isMap) {
-                  addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.name)
-                  field.keyType.encoding?.let { keyEncoding ->
-                    addCode(", keyEncoding: .%N", keyEncoding)
-                  }
-                  field.valueType.encoding?.let { valueEncoding ->
-                    addCode(", valueEncoding: .%N", valueEncoding)
-                  }
-                  addCode(")\n")
-                } else {
-                  addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.name)
-                  field.type!!.encoding?.let { encoding ->
-                    addCode(", encoding: .%N", encoding)
-                  }
-                  if (field.isPacked) {
-                    addCode(", packed: true")
-                  }
-                  addCode(")\n")
-                }
-              }
-              type.oneOfs.forEach { oneOf ->
-                beginControlFlow("if let %1N = self.%1N", oneOf.name)
-                addStatement("try %N.encode(to: $writer)", oneOf.name)
-                endControlFlow()
-              }
-            }
-            .addStatement("try $writer.writeUnknownFields(unknownFields)")
-            .build())
-        .build()
-
-    if (type.fields.any { it.isRedacted }) {
-      extensions += ExtensionSpec.builder(structName)
+    val redactionExtension = if (type.fields.any { it.isRedacted }) {
+      ExtensionSpec.builder(structType)
           .addSuperType(redactable)
           .addType(TypeSpec.enumBuilder("RedactedKeys")
               .addModifiers(PUBLIC)
@@ -430,13 +218,227 @@ class SwiftGenerator private constructor(
                 }
               }
               .build())
-          .build()
+    } else {
+      null
     }
 
-    extensions += ExtensionSpec.builder(structName)
+    if (type.isHeapAllocated) {
+      typeSpecs += TypeSpec.structBuilder(storageType)
+          .addModifiers(PRIVATE)
+          .apply {
+            generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
+            generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
+          }
+          .build()
+
+      extensions += ExtensionSpec.builder(structType)
+          .addSuperType(type.codeableType)
+          .addFunction(FunctionSpec.constructorBuilder()
+              .addModifiers(PUBLIC)
+              .addParameter("from", "reader", protoReader)
+              .throws(true)
+              .addStatement("_%N = %T(value: try %T(from: reader))", storageName, heap, storageType)
+              .build())
+          .addFunction(FunctionSpec.builder("encode")
+              .addModifiers(PUBLIC)
+              .addParameter("to", "writer", protoWriter)
+              .throws(true)
+              .addStatement("try %N.encode(to: writer)", storageName)
+              .build())
+          .build()
+      extensions += ExtensionSpec.builder(storageType)
+          .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
+          .build()
+
+      extensions += ExtensionSpec.builder(structType).addSuperType(codable).build()
+      extensions += messageCodableExtension(type, storageType)
+
+      extensions += ExtensionSpec.builder(storageType).addSuperType(equatable).build()
+      extensions += ExtensionSpec.builder(storageType).addSuperType(hashable).build()
+
+      if (redactionExtension != null) {
+        redactionExtension.addProperty(PropertySpec.varBuilder("description", STRING)
+            .addModifiers(PUBLIC)
+            .getter(FunctionSpec.getterBuilder()
+                .addStatement("return %N.description", storageName)
+                .build())
+            .build())
+
+        extensions += ExtensionSpec.builder(storageType)
+            .addSuperType(redactable)
+            .addTypeAlias(TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
+                .build())
+            .build()
+      }
+    } else {
+      extensions += ExtensionSpec.builder(structType)
+          .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
+          .build()
+
+      extensions += messageCodableExtension(type, structType)
+    }
+
+    if (redactionExtension != null) {
+      extensions += redactionExtension.build()
+    }
+
+    return typeSpecs
+  }
+
+  private fun ExtensionSpec.Builder.messageProtoCodableExtension(
+    type: MessageType,
+    structType: DeclaredTypeName,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    propertyNames: Collection<String>
+  ): ExtensionSpec.Builder = apply {
+    addSuperType(type.codeableType)
+
+    val reader = if ("reader" in propertyNames) "_reader" else "reader"
+    val token = if ("token" in propertyNames) "_token" else "token"
+    val tag = if ("tag" in propertyNames) "_tag" else "tag"
+    addFunction(FunctionSpec.constructorBuilder()
+        .addModifiers(PUBLIC)
+        .addParameter("from", reader, protoReader)
+        .throws(true)
+        .apply {
+          // Declare locals into which everything is writen before promoting to members.
+          type.fields.forEach { field ->
+            val localType = if (field.isRepeated || field.isMap) {
+              field.typeName
+            } else {
+              field.typeName.makeOptional()
+            }
+            val initializer = when {
+              field.isMap -> "[:]"
+              field.isRepeated -> "[]"
+              else -> "nil"
+            }
+            addStatement("var %N: %T = %L", field.name, localType, initializer)
+          }
+          type.oneOfs.forEach { oneOf ->
+            val enumName = oneOfEnumNames.getValue(oneOf)
+            addStatement("var %N: %T = nil", oneOf.name, enumName.makeOptional())
+          }
+          if (type.fieldsAndOneOfFields.isNotEmpty()) {
+            addStatement("")
+          }
+
+          addStatement("let $token = try $reader.beginMessage()")
+          beginControlFlow("while let $tag = try $reader.nextTag(token: $token)")
+          addCode(CodeBlock.builder()
+              .add("switch $tag {\n")
+              .apply {
+                type.fields.forEach { field ->
+                  add("case %L: ", field.tag)
+                  if (field.isMap) {
+                    add("try $reader.decode(into: &%N", field.name)
+                    field.keyType.encoding?.let { keyEncoding ->
+                      add(", keyEncoding: .%N", keyEncoding)
+                    }
+                    field.valueType.encoding?.let { valueEncoding ->
+                      add(", valueEncoding: .%N", valueEncoding)
+                    }
+                  } else {
+                    if (field.isRepeated) {
+                      add("try $reader.decode(into: &%N", field.name)
+                    } else {
+                      add(
+                          "%N = try $reader.decode(%T.self", field.name,
+                          field.typeName.makeNonOptional()
+                      )
+                    }
+                    field.type!!.encoding?.let { encoding ->
+                      add(", encoding: .%N", encoding)
+                    }
+                  }
+                  add(")\n")
+                }
+                type.oneOfs.forEach { oneOf ->
+                  oneOf.fields.forEach { field ->
+                    add(
+                        "case %L: %N = .%N(try $reader.decode(%T.self))\n", field.tag,
+                        oneOf.name, field.name, field.typeName.makeNonOptional()
+                    )
+                  }
+                }
+              }
+              .add("default: try $reader.readUnknownField(tag: $tag)\n")
+              .add("}\n")
+              .build())
+          endControlFlow()
+          addStatement("self.unknownFields = try $reader.endMessage(token: $token)")
+
+          // Check required and bind members.
+          addStatement("")
+          type.fields.forEach { field ->
+            val initializer = if (field.typeName.optional || field.isRepeated || field.isMap) {
+              CodeBlock.of("%N", field.name)
+            } else {
+              CodeBlock.of("try %1T.checkIfMissing(%2N, %2S)", structType, field.name)
+            }
+            if (isIndirect(type, field)) {
+              addStatement("_%N = %T(value: %L)", field.name, indirect, initializer)
+            } else {
+              addStatement("self.%N = %L", field.name, initializer)
+            }
+          }
+          type.oneOfs.forEach { oneOf ->
+            addStatement("self.%1N = %1N", oneOf.name)
+          }
+        }
+        .build())
+
+    val writer = if ("writer" in propertyNames) "_writer" else "writer"
+    addFunction(FunctionSpec.builder("encode")
+        .addModifiers(PUBLIC)
+        .addParameter("to", writer, protoWriter)
+        .throws(true)
+        .apply {
+          type.fields.forEach { field ->
+            if (field.isMap) {
+              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.name)
+              field.keyType.encoding?.let { keyEncoding ->
+                addCode(", keyEncoding: .%N", keyEncoding)
+              }
+              field.valueType.encoding?.let { valueEncoding ->
+                addCode(", valueEncoding: .%N", valueEncoding)
+              }
+              addCode(")\n")
+            } else {
+              addCode("try $writer.encode(tag: %L, value: self.%N", field.tag, field.name)
+              field.type!!.encoding?.let { encoding ->
+                addCode(", encoding: .%N", encoding)
+              }
+              if (field.isPacked) {
+                addCode(", packed: true")
+              }
+              addCode(")\n")
+            }
+          }
+          type.oneOfs.forEach { oneOf ->
+            beginControlFlow("if let %1N = self.%1N", oneOf.name)
+            addStatement("try %N.encode(to: $writer)", oneOf.name)
+            endControlFlow()
+          }
+        }
+        .addStatement("try $writer.writeUnknownFields(unknownFields)")
+        .build())
+  }
+
+  private val MessageType.codeableType: DeclaredTypeName
+    get() = when (syntax) {
+      PROTO_2 -> proto2Codable
+      PROTO_3 -> proto3Codable
+    }
+
+  private fun messageCodableExtension(
+    type: MessageType,
+    structType: DeclaredTypeName
+  ): ExtensionSpec {
+    return ExtensionSpec.builder(structType)
         .addSuperType(codable)
         .apply {
-          val codingKeys = structName.nestedType("CodingKeys")
+          val codingKeys = structType.nestedType("CodingKeys")
 
           if (type.fieldsAndOneOfFields.isNotEmpty()) {
             // Define the keys which are the set of all direct properties and the properties within
@@ -511,8 +513,219 @@ class SwiftGenerator private constructor(
           }
         }
         .build()
+  }
 
-    return typeSpec
+  private fun ParameterSpec.Builder.withFieldDefault(field: Field) = apply {
+    when {
+      field.isMap -> defaultValue("[:]")
+      field.isRepeated -> defaultValue("[]")
+      field.typeName.optional -> defaultValue("nil")
+    }
+  }
+
+  private fun FunctionSpec.Builder.addParameters(
+    type: MessageType,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    includeDefaults: Boolean = true
+  ) = apply {
+    type.fields.forEach { field ->
+      val fieldType = field.typeName
+      addParameter(ParameterSpec.builder(field.name, fieldType)
+          .apply {
+            if (includeDefaults) {
+              withFieldDefault(field)
+            }
+          }
+          .build())
+    }
+    type.oneOfs.forEach { oneOf ->
+      val enumName = oneOfEnumNames.getValue(oneOf).makeOptional()
+      addParameter(
+          ParameterSpec.builder(oneOf.name, enumName)
+              .defaultValue("nil")
+              .build()
+      )
+    }
+  }
+
+  private fun TypeSpec.Builder.generateMessageConstructor(
+    type: MessageType,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    includeDefaults: Boolean = true
+  ) {
+    addFunction(FunctionSpec.constructorBuilder()
+        .addModifiers(PUBLIC)
+        .addParameters(type, oneOfEnumNames, includeDefaults)
+        .apply {
+          type.fields.forEach { field ->
+            if (isIndirect(type, field)) {
+              addStatement("_%1N = %2T(value: %1N)", field.name, indirect)
+            } else {
+              addStatement("self.%1N = %1N", field.name)
+            }
+          }
+          type.oneOfs.forEach { oneOf ->
+            addStatement("self.%1N = %1N", oneOf.name)
+          }
+        }
+        .build())
+  }
+
+  private fun TypeSpec.Builder.generateMessageProperties(
+    type: MessageType,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    forStorageType: Boolean = false
+  ) {
+    type.fields.forEach { field ->
+      val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
+      if (!forStorageType && field.documentation.isNotBlank()) {
+        property.addKdoc("%L\n", field.documentation.sanitizeDoc())
+      }
+      if (!forStorageType && field.isDeprecated) {
+        property.addAttribute(
+            AttributeSpec.builder("available")
+                .addArguments("*", "deprecated")
+                .build()
+        )
+      }
+      if (field.typeName.needsJsonString()) {
+        property.addAttribute("JSONString")
+      }
+      if (isIndirect(type, field)) {
+        // TODO https://github.com/outfoxx/swiftpoet/issues/14
+        property.addAttribute(indirect.simpleName)
+      }
+      addProperty(property.build())
+    }
+
+    type.oneOfs.forEach { oneOf ->
+      val enumName = oneOfEnumNames.getValue(oneOf)
+
+      addProperty(PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+          .apply {
+            if (oneOf.documentation.isNotBlank()) {
+              addKdoc("%N\n", oneOf.documentation.sanitizeDoc())
+            }
+          }
+          .build())
+    }
+
+    addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
+        .initializer(".init()")
+        .build())
+  }
+
+  private fun TypeSpec.Builder.generateMessageStoragePropertyDelegates(
+    type: MessageType,
+    storageName: String,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>
+  ) {
+    type.fields.forEach { field ->
+      val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
+          .getter(FunctionSpec.getterBuilder()
+              .addStatement("%N.%N", storageName, field.name)
+              .build())
+          .setter(FunctionSpec.setterBuilder()
+              .addStatement("copyStorage()")
+              .addStatement("%N.%N = newValue", storageName, field.name)
+              .build())
+      if (field.documentation.isNotBlank()) {
+        property.addKdoc("%L\n", field.documentation.sanitizeDoc())
+      }
+      if (field.isDeprecated) {
+        property.addAttribute(
+            AttributeSpec.builder("available")
+                .addArguments("*", "deprecated")
+                .build()
+        )
+      }
+      addProperty(property.build())
+    }
+
+    type.oneOfs.forEach { oneOf ->
+      val enumName = oneOfEnumNames.getValue(oneOf)
+
+      addProperty(PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+          .apply {
+            if (oneOf.documentation.isNotBlank()) {
+              addKdoc("%N\n", oneOf.documentation.sanitizeDoc())
+            }
+          }
+          .build())
+    }
+
+    addProperty(PropertySpec.varBuilder("unknownFields", DATA, PUBLIC)
+        .getter(FunctionSpec.getterBuilder()
+            .addStatement("%N.unknownFields", storageName)
+            .build())
+        .setter(FunctionSpec.setterBuilder()
+            .addStatement("copyStorage()")
+            .addStatement("%N.unknownFields = newValue", storageName)
+            .build())
+        .build())
+  }
+
+  private fun TypeSpec.Builder.generateMessageOneOfs(
+    type: MessageType,
+    oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
+    extensions: MutableList<ExtensionSpec>
+  ) {
+    type.oneOfs.forEach { oneOf ->
+      val enumName = oneOfEnumNames.getValue(oneOf)
+
+      // TODO use a NameAllocator
+      val writer = if (oneOf.fields.any { it.name == "writer" }) "_writer" else "writer"
+      addType(TypeSpec.enumBuilder(enumName)
+          .addModifiers(PUBLIC)
+          .apply {
+            oneOf.fields.forEach { oneOfField ->
+              // TODO SwiftPoet needs to support attributing an enum case.
+              // TODO SwiftPoet needs to support documenting an enum case.
+              addEnumCase(oneOfField.name, oneOfField.typeName.makeNonOptional())
+            }
+          }
+          .addFunction(FunctionSpec.builder("encode")
+              .addParameter("to", writer, protoWriter)
+              .addModifiers(FILEPRIVATE)
+              .throws(true)
+              .addCode("switch self {\n")
+              .apply {
+                oneOf.fields.forEach { field ->
+                  addStatement(
+                      "case .%1N(let %1N): try $writer.encode(tag: %2L, value: %1N)",
+                      field.name, field.tag
+                  )
+                }
+              }
+              .addCode("}\n")
+              .build())
+          .build())
+
+      extensions += ExtensionSpec.builder(enumName)
+          .addSuperType(equatable)
+          .build()
+      extensions += ExtensionSpec.builder(enumName)
+          .addSuperType(hashable)
+          .build()
+
+      if (oneOf.fields.any { it.isRedacted }) {
+        extensions += ExtensionSpec.builder(enumName)
+            .addSuperType(redactable)
+            .addType(TypeSpec.enumBuilder("RedactedKeys")
+                .addModifiers(PUBLIC)
+                .addSuperType(STRING)
+                .addSuperType(redactedKey)
+                .apply {
+                  oneOf.fields.forEach { field ->
+                    if (field.isRedacted) {
+                      addEnumCase(field.name)
+                    }
+                  }
+                }
+                .build())
+            .build()
+      }
+    }
   }
 
   private val ProtoType.encoding: String?
@@ -554,7 +767,9 @@ class SwiftGenerator private constructor(
             addEnumCase(constant.name, constant.tag.toString())
           }
           type.nestedTypes.forEach { nestedType ->
-            addType(generateType(nestedType, extensions))
+            generateType(nestedType, extensions).forEach {
+              addType(it)
+            }
           }
         }
         .build()
@@ -568,7 +783,9 @@ class SwiftGenerator private constructor(
                 "is not an actual message.")
         .apply {
           type.nestedTypes.forEach { nestedType ->
-            addType(generateType(nestedType, extensions))
+            generateType(nestedType, extensions).forEach {
+              addType(it)
+            }
           }
         }
         .build()

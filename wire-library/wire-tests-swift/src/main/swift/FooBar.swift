@@ -203,14 +203,6 @@ extension FooBar : Proto2Codable {
     }
 }
 
-extension FooBar : Redactable {
-    public enum RedactedKeys : String, RedactedKey {
-
-        case nested
-
-    }
-}
-
 extension FooBar : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -223,6 +215,14 @@ extension FooBar : Codable {
         case nested
         case ext
         case rep
+
+    }
+}
+
+extension FooBar : Redactable {
+    public enum RedactedKeys : String, RedactedKey {
+
+        case nested
 
     }
 }

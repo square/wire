@@ -36,6 +36,7 @@ class TypeSpec private constructor(
   val propertySpecs = builder.propertySpecs.toImmutableList()
   val funSpecs = builder.functionSpecs.toImmutableList()
   val typeSpecs = builder.typeSpecs.toImmutableList()
+  val typeAliasSpecs = builder.typeAliasSpecs.toImmutableList()
 
   fun toBuilder(): Builder {
     val builder = Builder(kind, name)
@@ -47,6 +48,7 @@ class TypeSpec private constructor(
     builder.propertySpecs += propertySpecs
     builder.functionSpecs += funSpecs
     builder.typeSpecs += typeSpecs
+    builder.typeAliasSpecs += typeAliasSpecs
     builder.associatedTypes += associatedTypes
     return builder
   }
@@ -152,6 +154,15 @@ class TypeSpec private constructor(
         }
       }
 
+      // Type aliases.
+      if (typeAliasSpecs.isNotEmpty()) {
+        firstMember = false
+        typeAliasSpecs.forEach { typeAliasSpec ->
+          codeWriter.emit("\n")
+          typeAliasSpec.emit(codeWriter)
+        }
+      }
+
       codeWriter.unindent()
       codeWriter.popType()
 
@@ -245,6 +256,7 @@ class TypeSpec private constructor(
     internal val propertySpecs = mutableListOf<PropertySpec>()
     internal val functionSpecs = mutableListOf<FunctionSpec>()
     internal val typeSpecs = mutableListOf<TypeSpec>()
+    internal val typeAliasSpecs = mutableListOf<TypeAliasSpec>()
     internal val associatedTypes = mutableListOf<TypeVariableName>()
     internal val isEnum get() = kind is Kind.Enum
     internal val isClass = kind is Kind.Class
@@ -354,6 +366,16 @@ class TypeSpec private constructor(
     fun addType(typeSpec: TypeSpec) = apply {
       check(!isProtocol) { "${this.name} is a protocol, it cannot contain nested types" }
       typeSpecs += typeSpec
+    }
+
+    fun addTypeAliases(typeAliasSpecs: Iterable<TypeAliasSpec>) = apply {
+      check(!isProtocol) { "${this.name} is a protocol, it cannot contain nested types" }
+      this.typeAliasSpecs += typeAliasSpecs
+    }
+
+    fun addTypeAlias(typeAliasSpec: TypeAliasSpec) = apply {
+      check(!isProtocol) { "${this.name} is a protocol, it cannot contain nested types" }
+      typeAliasSpecs += typeAliasSpec
     }
 
     fun addAssociatedType(typeVariable: TypeVariableName) = apply {

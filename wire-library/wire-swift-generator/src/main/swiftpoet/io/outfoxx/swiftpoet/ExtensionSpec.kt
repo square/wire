@@ -28,6 +28,7 @@ class ExtensionSpec private constructor(builder: ExtensionSpec.Builder) {
   val propertySpecs = builder.propertySpecs.toImmutableList()
   val funSpecs = builder.functionSpecs.toImmutableList()
   val typeSpecs = builder.typeSpecs.toImmutableList()
+  val typeAliasSpecs = builder.typeAliasSpecs.toImmutableList()
 
   fun toBuilder(): Builder {
     val builder = Builder(extendedType)
@@ -36,6 +37,7 @@ class ExtensionSpec private constructor(builder: ExtensionSpec.Builder) {
     builder.propertySpecs += propertySpecs
     builder.functionSpecs += funSpecs
     builder.typeSpecs += typeSpecs
+    builder.typeAliasSpecs += typeAliasSpecs
     return builder
   }
 
@@ -95,6 +97,13 @@ class ExtensionSpec private constructor(builder: ExtensionSpec.Builder) {
         firstMember = false
       }
 
+      // Type aliases.
+      for (typeAliasSpec in typeAliasSpecs) {
+        if (!firstMember) codeWriter.emit("\n")
+        typeAliasSpec.emit(codeWriter)
+        firstMember = false
+      }
+
       codeWriter.unindent()
       codeWriter.popType()
 
@@ -124,6 +133,7 @@ class ExtensionSpec private constructor(builder: ExtensionSpec.Builder) {
     internal val propertySpecs = mutableListOf<PropertySpec>()
     internal val functionSpecs = mutableListOf<FunctionSpec>()
     internal val typeSpecs = mutableListOf<TypeSpec>()
+    internal val typeAliasSpecs = mutableListOf<TypeAliasSpec>()
 
     fun addKdoc(format: String, vararg args: Any) = apply {
       kdoc.add(format, *args)
@@ -175,6 +185,14 @@ class ExtensionSpec private constructor(builder: ExtensionSpec.Builder) {
 
     fun addType(typeSpec: TypeSpec) = apply {
       typeSpecs += typeSpec
+    }
+
+    fun addTypeAliases(typeAliasSpecs: Iterable<TypeAliasSpec>) = apply {
+      this.typeAliasSpecs += typeAliasSpecs
+    }
+
+    fun addTypeAlias(typeAliasSpec: TypeAliasSpec) = apply {
+      typeAliasSpecs += typeAliasSpec
     }
 
     fun build(): ExtensionSpec {
