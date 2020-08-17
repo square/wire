@@ -31,10 +31,6 @@ allprojects {
   repositories {
     mavenCentral()
     google()
-    // TODO Remove before landing into open source!!
-    maven {
-      url 'https://oss.sonatype.org/content/repositories/snapshots/'
-    }
   }
 }
 

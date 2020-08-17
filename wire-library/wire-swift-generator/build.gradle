@@ -7,8 +7,16 @@ jar {
   }
 }
 
+sourceSets {
+  main {
+    java {
+      srcDirs += ['src/main/swiftpoet']
+    }
+  }
+}
+
 dependencies {
-  api 'io.outfoxx:swiftpoet:0.4.0-SNAPSHOT'
+  // TODO api 'io.outfoxx:swiftpoet:0.4.0'
   api project(':wire-schema')
   api deps.kotlin.stdlib.jdk8
 }

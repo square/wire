@@ -30,10 +30,6 @@ buildscript {
     mavenCentral()
     gradlePluginPortal()
     google()
-    // TODO Remove before landing into open source!!
-    maven {
-      url 'https://oss.sonatype.org/content/repositories/snapshots/'
-    }
   }
 }
 
@@ -42,10 +38,6 @@ allprojects {
     mavenCentral()
     google()
     jcenter()
-    // TODO Remove before landing into open source!!
-    maven {
-      url 'https://oss.sonatype.org/content/repositories/snapshots/'
-    }
   }
 }
 
