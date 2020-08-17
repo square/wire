@@ -160,7 +160,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmField actual val value: Int,
     type: KClass<*>?
   ) : IllegalArgumentException("Unknown enum tag $value for ${type?.java?.name}") {
-    constructor(value: Int, type: Class<*>): this(value, type.kotlin)
+    constructor(value: Int, type: Class<*>) : this(value, type.kotlin)
   }
 
   actual companion object {
@@ -251,12 +251,37 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmField actual val DOUBLE: ProtoAdapter<Double> = commonDouble()
     @JvmField actual val BYTES: ProtoAdapter<ByteString> = commonBytes()
     @JvmField actual val STRING: ProtoAdapter<String> = commonString()
-    @JvmField actual val DURATION: ProtoAdapter<Duration> = commonDuration()
-    @JvmField actual val INSTANT: ProtoAdapter<Instant> = commonInstant()
     @JvmField actual val EMPTY: ProtoAdapter<Unit> = commonEmpty()
     @JvmField actual val STRUCT_MAP: ProtoAdapter<Map<String, *>?> = commonStructMap()
     @JvmField actual val STRUCT_LIST: ProtoAdapter<List<*>?> = commonStructList()
     @JvmField actual val STRUCT_NULL: ProtoAdapter<Nothing?> = commonStructNull()
     @JvmField actual val STRUCT_VALUE: ProtoAdapter<Any?> = commonStructValue()
+    @JvmField actual val DURATION: ProtoAdapter<Duration> = try {
+      commonDuration()
+    } catch (_: NoClassDefFoundError) {
+      UnsupportedTypeProtoAdapter() as ProtoAdapter<Duration>
+    }
+    @JvmField actual val INSTANT: ProtoAdapter<Instant> = try {
+      commonInstant()
+    } catch (_: NoClassDefFoundError) {
+      UnsupportedTypeProtoAdapter() as ProtoAdapter<Instant>
+    }
+
+    /**
+     * Stub [ProtoAdapter] for Wire types which are typeliased to `java.time` types on the JVM
+     * such as [Duration] and [Instant]. This proto adapter is used when the corresponding
+     * `java.time` type is missing from the JVM classpath.
+     */
+    class UnsupportedTypeProtoAdapter : ProtoAdapter<Nothing>(FieldEncoding.LENGTH_DELIMITED,
+        Nothing::class) {
+      override fun redact(value: Nothing) =
+          throw IllegalStateException("Operation not supported.")
+      override fun encodedSize(value: Nothing) =
+          throw IllegalStateException("Operation not supported.")
+      override fun encode(writer: ProtoWriter, value: Nothing) =
+          throw IllegalStateException("Operation not supported.")
+      override fun decode(reader: ProtoReader): Nothing =
+          throw IllegalStateException("Operation not supported.")
+    }
   }
 }
