@@ -15,12 +15,18 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.protos.kotlin.edgecases.NoFields
 import com.squareup.wire.protos.kotlin.edgecases.OneField
 import com.squareup.wire.protos.usesany.UsesAny
+import okio.ByteString
 import okio.ByteString.Companion.decodeHex
+import kotlin.jvm.JvmField
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class AnyMessageTest {
   @Test fun happyPath() {
@@ -64,6 +70,74 @@ class AnyMessageTest {
 
     assertEquals(hex, usesAny.encodeByteString().hex())
     assertEquals(usesAny, UsesAny.ADAPTER.decode(hex.decodeHex()))
+  }
+
+  @Test fun decodingWithMissingTypeUrl() {
+    val hex = "0a0412020803120412020803120412020804"
+
+    val usesAny = UsesAny.ADAPTER.decode(hex.decodeHex())
+    assertEquals("", usesAny.just_one!!.typeUrl)
+    assertEquals(2, usesAny.many_anys.size)
+    for (manyAny in usesAny.many_anys) {
+      assertEquals("", manyAny.typeUrl)
+    }
+  }
+
+  @Test fun unpackWithWrongTypeUrlThrow() {
+    val usesAny = UsesAny(
+        just_one = AnyMessage.pack(OneField(opt_int32 = 3)),
+        many_anys = listOf()
+    )
+
+    try {
+      usesAny.just_one!!.unpack(NoFields.ADAPTER)
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertEquals("type mismatch: type.googleapis.com/squareup.protos.kotlin.edgecases.OneField " +
+          "!= type.googleapis.com/squareup.protos.kotlin.edgecases.NoFields", expected.message)
+    }
+  }
+
+  @Test fun unpackOrNullWithWrongTypeUrlReturnsNull() {
+    val usesAny = UsesAny(
+        just_one = AnyMessage.pack(OneField(opt_int32 = 3)),
+        many_anys = listOf()
+    )
+
+    assertNull(usesAny.just_one!!.unpackOrNull(NoTypeUrlMessage.ADAPTER))
+  }
+
+  @Test fun packWithoutATypeUrlThrows() {
+    try {
+      AnyMessage.pack(NoTypeUrlMessage())
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertTrue(expected.message!!.startsWith("recompile class "), expected.message)
+      assertTrue(expected.message!!.endsWith("NoTypeUrlMessage to use it with AnyMessage"),
+          expected.message)
+    }
+  }
+
+  private class NoTypeUrlMessage(
+    unknownFields: ByteString = ByteString.EMPTY
+  ) : Message<NoTypeUrlMessage, Nothing>(ADAPTER, unknownFields) {
+    override fun newBuilder(): Nothing = throw AssertionError()
+
+    companion object {
+      @JvmField
+      val ADAPTER: ProtoAdapter<NoTypeUrlMessage> = object : ProtoAdapter<NoTypeUrlMessage>(
+          FieldEncoding.LENGTH_DELIMITED,
+          NoTypeUrlMessage::class,
+          null, // TypeUrl.
+          Syntax.PROTO_2,
+          null // Identity.
+      ) {
+        override fun encodedSize(value: NoTypeUrlMessage) = TODO()
+        override fun encode(writer: ProtoWriter, value: NoTypeUrlMessage) = TODO()
+        override fun decode(reader: ProtoReader): NoTypeUrlMessage = TODO()
+        override fun redact(value: NoTypeUrlMessage): NoTypeUrlMessage = TODO()
+      }
+    }
   }
 }
 
