@@ -25,6 +25,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.test.fail
 
 class AnyMessageTest {
@@ -111,8 +112,9 @@ class AnyMessageTest {
       AnyMessage.pack(NoTypeUrlMessage())
       fail()
     } catch (expected: IllegalStateException) {
-      assertEquals("recompile class com.squareup.wire.AnyMessageTest\$NoTypeUrlMessage to use " +
-          "it with AnyMessage", expected.message)
+      assertTrue(expected.message!!.startsWith("recompile class "), expected.message)
+      assertTrue(expected.message!!.endsWith("NoTypeUrlMessage to use it with AnyMessage"),
+          expected.message)
     }
   }
 
