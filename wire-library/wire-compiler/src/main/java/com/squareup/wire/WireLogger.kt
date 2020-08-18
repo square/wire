@@ -19,12 +19,14 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.schema.ProtoType
 import java.nio.file.Path
+import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 interface WireLogger {
   fun setQuiet(quiet: Boolean)
   fun artifact(outputPath: Path, filePath: String)
   fun artifact(outputPath: Path, javaFile: JavaFile)
   fun artifact(outputPath: Path, kotlinFile: FileSpec)
+  fun artifact(outputPath: Path, type: ProtoType, swiftFile: SwiftFileSpec)
   fun artifactSkipped(type: ProtoType)
   fun info(message: String)
 }

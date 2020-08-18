@@ -25,6 +25,7 @@ import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.swift.SwiftGenerator
 import okio.buffer
 import okio.sink
 import java.io.IOException
@@ -32,6 +33,7 @@ import java.io.Serializable
 import java.nio.file.FileSystem
 import java.nio.file.Files
 import java.nio.file.Path
+import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 sealed class Target : Serializable {
   /**
@@ -343,6 +345,60 @@ data class KotlinTarget(
         }
         return generatedFilePath
       }
+    }
+  }
+}
+
+data class SwiftTarget(
+  override val includes: List<String> = listOf("*"),
+  override val excludes: List<String> = listOf(),
+  override val exclusive: Boolean = true,
+  val outDirectory: String
+) : Target() {
+  override fun newHandler(
+    schema: Schema,
+    moduleName: String?,
+    upstreamTypes: Map<ProtoType, String>,
+    fs: FileSystem,
+    logger: WireLogger,
+    profileLoader: ProfileLoader
+  ): SchemaHandler {
+    val modulePath = run {
+      val outPath = fs.getPath(outDirectory)
+      if (moduleName != null) {
+        outPath.resolve(moduleName)
+      } else {
+        outPath
+      }
+    }
+    Files.createDirectories(modulePath)
+
+    val generator = SwiftGenerator(schema, upstreamTypes)
+    return object : SchemaHandler {
+      override fun handle(type: Type): Path? {
+        val typeName = generator.generatedTypeName(type)
+        val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
+            .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
+            .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
+            .indent("    ")
+            .apply {
+              generator.generateTypeTo(type, this)
+            }
+            .build()
+
+        try {
+          swiftFile.writeTo(modulePath)
+        } catch (e: IOException) {
+          throw IOException(
+              "Error emitting ${swiftFile.moduleName}.${typeName.canonicalName} to $modulePath", e)
+        }
+
+        logger.artifact(modulePath, type.type, swiftFile)
+        return modulePath.resolve("${swiftFile.name}.swift")
+      }
+
+      override fun handle(service: Service) = emptyList<Path>()
+      override fun handle(extend: Extend, field: Field): Path? = null
     }
   }
 }

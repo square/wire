@@ -1,0 +1,54 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto2";
+
+message NameClashes {
+  required NestedRequired NestedRequired = 1;
+  message NestedRequired {}
+  optional NestedOptional NestedOptional = 2;
+  message NestedOptional {}
+
+  // Standard struct:
+  // TODO required string unknownFields = 10;
+  // TODO message Equatable {}
+  // TODO message Hashable {}
+
+  // Proto conformance:
+  required string reader = 20;
+  required string writer = 21;
+  required string tag = 22;
+  required string token = 23;
+  // TODO message ProtoWriter {}
+  // TODO message ProtoReader {}
+
+  // Json conformance:
+  required string encoder = 30;
+  required string decoder = 31;
+
+  // TODO message CodingKeys {}
+  // TODO message Codable {}
+
+  // Triggers custom Codable generation to check for clashes in it.
+  oneof dummy {
+    string value = 1000;
+  }
+}
+
+message NameClashesOneOf {
+  oneof choice {
+    string writer = 1;
+  }
+}

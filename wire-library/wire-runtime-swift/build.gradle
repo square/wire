@@ -1,0 +1,44 @@
+apply plugin: 'swift-library'
+apply plugin: 'xctest'
+
+library {
+  module.set('Wire')
+}
+
+configurations {
+  wire {
+    attributes {
+      // Despite being a Swift module, we want JVM dependencies in this configuration.
+      def gradleUsage = Attribute.of("org.gradle.usage", String)
+      attribute(gradleUsage, 'java-runtime')
+    }
+  }
+}
+
+dependencies {
+  wire project(':wire-compiler')
+}
+
+task generateTestProtos(type: JavaExec) {
+  def swiftOut = 'src/test/swift/gen'
+  doFirst {
+    def outFile = file(swiftOut)
+    outFile.deleteDir()
+    outFile.mkdir()
+  }
+
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto3-preview=UNSUPPORTED',
+      '--proto_path=src/test/proto',
+      "--swift_out=$swiftOut"
+  ]
+}
+
+// TODO make finding test tasks more dynamic
+afterEvaluate {
+  tasks.named('compileTestSwift').configure {
+    it.dependsOn(generateTestProtos)
+  }
+}

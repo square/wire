@@ -1,0 +1,68 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+
+package squareup.protos.person;
+
+message SimpleOptional3 {
+  enum NestedEnum {
+    UNKNOWN = 0;
+    A = 1;
+  }
+
+  optional int32 opt_int32 = 1;
+  optional int64 opt_int64 = 2;
+  optional uint32 opt_uint32 = 3;
+  optional uint64 opt_uint64 = 4;
+
+  optional float opt_float = 5;
+  optional double opt_double = 6;
+
+  optional bytes opt_bytes = 7;
+
+  optional string opt_string = 8;
+
+  optional NestedEnum opt_enum = 9;
+
+  repeated int32 repeated_int32 = 10;
+  repeated string repeated_string = 11;
+  map<int32, string> map_int32_string = 12;
+}
+
+message SimpleRequired3 {
+  enum NestedEnum {
+    UNKNOWN = 0;
+    A = 1;
+  }
+
+  int32 req_int32 = 1;
+  int64 req_int64 = 2;
+  uint32 req_uint32 = 3;
+  uint64 req_uint64 = 4;
+
+  float req_float = 5;
+  double req_double = 6;
+
+  bytes req_bytes = 7;
+
+  string req_string = 8;
+
+  NestedEnum req_enum = 9;
+
+  repeated int32 repeated_int32 = 10;
+  repeated string repeated_string = 11;
+  map<int32, string> map_int32_string = 12;
+}
