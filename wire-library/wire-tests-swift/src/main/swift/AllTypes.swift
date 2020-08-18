@@ -10,10 +10,15 @@ public struct AllTypes {
     public var opt_sint32: Int32?
     public var opt_fixed32: UInt32?
     public var opt_sfixed32: Int32?
+    @JSONString
     public var opt_int64: Int64?
+    @JSONString
     public var opt_uint64: UInt64?
+    @JSONString
     public var opt_sint64: Int64?
+    @JSONString
     public var opt_fixed64: UInt64?
+    @JSONString
     public var opt_sfixed64: Int64?
     public var opt_bool: Bool?
     public var opt_float: Float?
@@ -90,10 +95,15 @@ public struct AllTypes {
     public var default_sint32: Int32?
     public var default_fixed32: UInt32?
     public var default_sfixed32: Int32?
+    @JSONString
     public var default_int64: Int64?
+    @JSONString
     public var default_uint64: UInt64?
+    @JSONString
     public var default_sint64: Int64?
+    @JSONString
     public var default_fixed64: UInt64?
+    @JSONString
     public var default_sfixed64: Int64?
     public var default_bool: Bool?
     public var default_float: Float?
@@ -110,10 +120,15 @@ public struct AllTypes {
     public var ext_opt_sint32: Int32?
     public var ext_opt_fixed32: UInt32?
     public var ext_opt_sfixed32: Int32?
+    @JSONString
     public var ext_opt_int64: Int64?
+    @JSONString
     public var ext_opt_uint64: UInt64?
+    @JSONString
     public var ext_opt_sint64: Int64?
+    @JSONString
     public var ext_opt_fixed64: UInt64?
+    @JSONString
     public var ext_opt_sfixed64: Int64?
     public var ext_opt_bool: Bool?
     public var ext_opt_float: Float?

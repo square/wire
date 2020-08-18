@@ -9,6 +9,7 @@ public struct VersionTwo {
     public var v2_i: Int32?
     public var v2_s: String?
     public var v2_f32: UInt32?
+    @JSONString
     public var v2_f64: UInt64?
     public var v2_rs: [String]
     public var obj: NestedVersionTwo?

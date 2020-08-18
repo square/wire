@@ -8,6 +8,7 @@ public struct FooBar {
     public var foo: Int32?
     public var bar: String?
     public var baz: Nested?
+    @JSONString
     public var qux: UInt64?
     public var fred: [Float]
     public var daisy: Double?

@@ -523,13 +523,15 @@ class SwiftGenerator private constructor(
     }
 
   private fun TypeName.needsJsonString(): Boolean {
-    if (this == INT64 || this == UINT64) {
+    val self = makeNonOptional()
+    if (self == INT64 || self == UINT64) {
       return true
     }
-    if (this is ParameterizedTypeName) {
-      when (rawType) {
-        ARRAY -> return typeArguments[0].needsJsonString()
-        DICTIONARY -> return typeArguments[0].needsJsonString() || typeArguments[1].needsJsonString()
+    if (self is ParameterizedTypeName) {
+      when (self.rawType) {
+        ARRAY -> return self.typeArguments[0].needsJsonString()
+        DICTIONARY -> return self.typeArguments[0].needsJsonString() ||
+            self.typeArguments[1].needsJsonString()
       }
     }
     return false
