@@ -20,7 +20,7 @@ import com.squareup.moshi.JsonReader
 import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 
-fun assertJsonEquals(a: String, b: String) {
-  assertThat(JsonReader.of(Buffer().writeUtf8(a)).readJsonValue())
-      .isEqualTo(JsonReader.of(Buffer().writeUtf8(b)).readJsonValue())
+fun assertJsonEquals(expected: String, value: String) {
+  assertThat(JsonReader.of(Buffer().writeUtf8(value)).readJsonValue())
+      .isEqualTo(JsonReader.of(Buffer().writeUtf8(expected)).readJsonValue())
 }

@@ -29,25 +29,26 @@ class ProtoAdapterIdentityTest {
   @Test fun generatedAdaptersHaveNullIdentities() {
     for (protoAdapter in builtInProtoAdapters) {
       when {
-        protoAdapter.type == Boolean::class -> {
+        protoAdapter.type == Boolean::class && protoAdapter.syntax === Syntax.PROTO_2 -> {
           assertThat(protoAdapter.identity).isEqualTo(false)
         }
         protoAdapter.type == Nothing::class -> {
           // StructNull's <Nothing> in Kotlin is <Void> in Java.
           assertThat(protoAdapter.identity).isNull()
         }
-        protoAdapter.type.isPrimitive -> {
+        protoAdapter.type.isPrimitive && protoAdapter.syntax === Syntax.PROTO_2 -> {
           // All other primitive types are numbers and must have 0 as their identity value.
           assertThat((protoAdapter.identity as Number).toDouble()).isEqualTo(0.0)
         }
-        protoAdapter.type == ByteString::class -> {
+        protoAdapter.type == ByteString::class && protoAdapter.syntax === Syntax.PROTO_2 -> {
           assertThat(protoAdapter.identity).isEqualTo(ByteString.EMPTY)
         }
-        protoAdapter.type == String::class -> {
+        protoAdapter.type == String::class && protoAdapter.syntax === Syntax.PROTO_2 -> {
           assertThat(protoAdapter.identity).isEqualTo("")
         }
         else -> {
-          // All other types are messages and must have null as their identity value.
+          // All other types are messages or wrappers (nullable primitives) and must have null as
+          // their identity value.
           assertThat(protoAdapter.identity).isNull()
         }
       }

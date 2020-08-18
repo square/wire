@@ -36,15 +36,17 @@ import org.junit.Test
 import squareup.proto3.kotlin.extensions.WireMessageOuterClass
 import squareup.proto3.kotlin.alltypes.All64OuterClass
 import squareup.proto3.kotlin.alltypes.AllTypesOuterClass
+import squareup.proto3.kotlin.alltypes.AllWrappersOuterClass
 import squareup.proto3.kotlin.alltypes.CamelCaseOuterClass
 import squareup.proto3.kotlin.pizza.PizzaOuterClass
 import squareup.proto3.wire.extensions.WireMessage
 import java.io.File
-import java.lang.IllegalArgumentException
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as RequiredExtensionK
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
+import squareup.proto3.java.alltypes.AllWrappers as AllWrappersJ
 import squareup.proto3.kotlin.alltypes.AllTypes as AllTypesK
+import squareup.proto3.kotlin.alltypes.AllWrappers as AllWrappersK
 import squareup.proto3.kotlin.pizza.PizzaDelivery as PizzaDeliveryK
 
 class Proto3WireProtocCompatibilityTests {
@@ -123,7 +125,7 @@ class Proto3WireProtocCompatibilityTests {
   @Test fun explicitIdentityAllTypes() {
     val protocBytes = explicitIdentityAllTypesProtoc.toByteArray()
     assertThat(AllTypesJ.ADAPTER.encode(explicitIdentityAllTypesWireJava)).isEqualTo(protocBytes)
-     assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireJava)
+    assertThat(AllTypesJ.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireJava)
     assertThat(AllTypesK.ADAPTER.encode(explicitIdentityAllTypesWireKotlin)).isEqualTo(protocBytes)
     assertThat(AllTypesK.ADAPTER.decode(protocBytes)).isEqualTo(explicitIdentityAllTypesWireKotlin)
   }
@@ -314,6 +316,25 @@ class Proto3WireProtocCompatibilityTests {
     val googleMessageBytes = googleMessage.toByteArray()
     assertThat(wireMessage.encode()).isEqualTo(googleMessageBytes)
     assertThat(PizzaDeliveryK.ADAPTER.decode(googleMessageBytes)).isEqualTo(wireMessage)
+  }
+
+  @Test fun wrappersProtoc() {
+    val protocBytes = defaultAllWrappersProtoc.toByteArray()
+    assertThat(AllWrappersJ.ADAPTER.encode(defaultAllWrappersWireJava)).isEqualTo(protocBytes)
+    assertThat(AllWrappersJ.ADAPTER.decode(protocBytes)).isEqualTo(defaultAllWrappersWireJava)
+    assertThat(AllWrappersK.ADAPTER.encode(defaultAllWrappersWireKotlin)).isEqualTo(protocBytes)
+    assertThat(AllWrappersK.ADAPTER.decode(protocBytes)).isEqualTo(defaultAllWrappersWireKotlin)
+  }
+
+  @Test fun wrappersProtocJson() {
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(defaultAllWrappersProtoc), ALL_WRAPPERS_JSON)
+
+    val jsonParser = JsonFormat.parser()
+    val parsed = AllWrappersOuterClass.AllWrappers.newBuilder()
+        .apply { jsonParser.merge(ALL_WRAPPERS_JSON, this) }
+        .build()
+    assertThat(parsed).isEqualTo(defaultAllWrappersProtoc)
   }
 
   @Test fun minusDoubleZero() {
@@ -534,6 +555,96 @@ class Proto3WireProtocCompatibilityTests {
         .oneof_int32(0)
         .build()
 
+    private val defaultAllWrappersProtoc = AllWrappersOuterClass.AllWrappers.newBuilder()
+        .setDoubleValue(33.0.toDoubleValue())
+        .setFloatValue(806f.toFloatValue())
+        .setInt64Value(Long.MIN_VALUE.toInt64Value())
+        .setUint64Value(Long.MIN_VALUE.toUInt64Value())
+        .setInt32Value(Int.MIN_VALUE.toInt32Value())
+        .setUint32Value(Int.MIN_VALUE.toUInt32Value())
+        .setBoolValue(true.toBoolValue())
+        .setStringValue("Bo knows wrappers".toStringValue())
+        .setBytesValue(ByteString.of(123, 125).toBytesValue())
+        .addAllRepDoubleValue(list((-33.0).toDoubleValue()))
+        .addAllRepFloatValue(list((-806f).toFloatValue()))
+        .addAllRepInt64Value(list(Long.MAX_VALUE.toInt64Value()))
+        .addAllRepUint64Value(list(Long.MAX_VALUE.toUInt64Value()))
+        .addAllRepInt32Value(list(Int.MAX_VALUE.toInt32Value()))
+        .addAllRepUint32Value(list(Int.MAX_VALUE.toUInt32Value()))
+        .addAllRepBoolValue(list(true.toBoolValue()))
+        .addAllRepStringValue(list("Bo knows wrappers".toStringValue()))
+        .addAllRepBytesValue(list(ByteString.of(123, 125).toBytesValue()))
+        .putAllMapInt32DoubleValue(mapOf(23 to 33.0.toDoubleValue()))
+        .putAllMapInt32FloatValue(mapOf(23 to 806f.toFloatValue()))
+        .putAllMapInt32Int64Value(mapOf(23 to Long.MIN_VALUE.toInt64Value()))
+        .putAllMapInt32Uint64Value(mapOf(23 to Long.MIN_VALUE.toUInt64Value()))
+        .putAllMapInt32Int32Value(mapOf(23 to Int.MIN_VALUE.toInt32Value()))
+        .putAllMapInt32Uint32Value(mapOf(23 to Int.MIN_VALUE.toUInt32Value()))
+        .putAllMapInt32BoolValue(mapOf(23 to true.toBoolValue()))
+        .putAllMapInt32StringValue(mapOf(23 to "Bo knows wrappers".toStringValue()))
+        .putAllMapInt32BytesValue(mapOf(23 to ByteString.of(123, 125).toBytesValue()))
+        .build()
+
+    private val defaultAllWrappersWireKotlin = AllWrappersK(
+        double_value = 33.0,
+        float_value = 806f,
+        int64_value = Long.MIN_VALUE,
+        uint64_value = Long.MIN_VALUE,
+        int32_value = Int.MIN_VALUE,
+        uint32_value = Int.MIN_VALUE,
+        bool_value = true,
+        string_value = "Bo knows wrappers",
+        bytes_value = ByteString.of(123, 125),
+        rep_double_value = list((-33.0)),
+        rep_float_value = list((-806f)),
+        rep_int64_value = list(Long.MAX_VALUE),
+        rep_uint64_value = list(Long.MAX_VALUE),
+        rep_int32_value = list(Int.MAX_VALUE),
+        rep_uint32_value = list(Int.MAX_VALUE),
+        rep_bool_value = list(true),
+        rep_string_value = list("Bo knows wrappers"),
+        rep_bytes_value = list(ByteString.of(123, 125)),
+        map_int32_double_value = mapOf(23 to 33.0),
+        map_int32_float_value = mapOf(23 to 806f),
+        map_int32_int64_value = mapOf(23 to Long.MIN_VALUE),
+        map_int32_uint64_value = mapOf(23 to Long.MIN_VALUE),
+        map_int32_int32_value = mapOf(23 to Int.MIN_VALUE),
+        map_int32_uint32_value = mapOf(23 to Int.MIN_VALUE),
+        map_int32_bool_value = mapOf(23 to true),
+        map_int32_string_value = mapOf(23 to "Bo knows wrappers"),
+        map_int32_bytes_value = mapOf(23 to ByteString.of(123, 125))
+    )
+
+    private val defaultAllWrappersWireJava = AllWrappersJ.Builder()
+        .double_value(33.0)
+        .float_value(806f)
+        .int64_value(Long.MIN_VALUE)
+        .uint64_value(Long.MIN_VALUE)
+        .int32_value(Int.MIN_VALUE)
+        .uint32_value(Int.MIN_VALUE)
+        .bool_value(true)
+        .string_value("Bo knows wrappers")
+        .bytes_value(ByteString.of(123, 125))
+        .rep_double_value(list((-33.0)))
+        .rep_float_value(list((-806f)))
+        .rep_int64_value(list(Long.MAX_VALUE))
+        .rep_uint64_value(list(Long.MAX_VALUE))
+        .rep_int32_value(list(Int.MAX_VALUE))
+        .rep_uint32_value(list(Int.MAX_VALUE))
+        .rep_bool_value(list(true))
+        .rep_string_value(list("Bo knows wrappers"))
+        .rep_bytes_value(list(ByteString.of(123, 125)))
+        .map_int32_double_value(mapOf(23 to 33.0))
+        .map_int32_float_value(mapOf(23 to 806f))
+        .map_int32_int64_value(mapOf(23 to Long.MIN_VALUE))
+        .map_int32_uint64_value(mapOf(23 to Long.MIN_VALUE))
+        .map_int32_int32_value(mapOf(23 to Int.MIN_VALUE))
+        .map_int32_uint32_value(mapOf(23 to Int.MIN_VALUE))
+        .map_int32_bool_value(mapOf(23 to true))
+        .map_int32_string_value(mapOf(23 to "Bo knows wrappers"))
+        .map_int32_bytes_value(mapOf(23 to ByteString.of(123, 125)))
+        .build()
+
     private val CAMEL_CASE_JSON = loadJson("camel_case_proto3.json")
 
     private val DEFAULT_ALL_TYPES_JSON = loadJson("all_types_proto3.json")
@@ -548,6 +659,8 @@ class Proto3WireProtocCompatibilityTests {
 
     /** This is used to confirmed identity values are emitted in lists and maps. */
     private val EXPLICIT_IDENTITY_ALL_TYPES_JSON = loadJson("all_types_explicit_identity_proto3.json")
+
+    private val ALL_WRAPPERS_JSON = loadJson("all_wrappers_proto3.json")
 
     private val explicitIdentityAllTypesWireKotlin = AllTypesK(
         my_int32 = 0,
