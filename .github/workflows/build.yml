@@ -41,7 +41,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -p wire-library -Dkjs=false -Dknative=false build
+          ./gradlew -p wire-library -Dkjs=false -Dknative=false build -Pswift=false
           ./gradlew build
 
   multiplatform:
