@@ -148,24 +148,27 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
     val adapter = singleAdapter()
 
     when (adapter) {
-      ProtoAdapter.BYTES -> return ByteStringJsonFormatter
+      ProtoAdapter.BYTES,
+      ProtoAdapter.BYTES_VALUE -> return ByteStringJsonFormatter
       ProtoAdapter.DURATION -> return DurationJsonFormatter
       ProtoAdapter.INSTANT -> return InstantJsonFormatter
       is EnumAdapter<*> -> return EnumJsonFormatter(adapter)
     }
 
-    if (syntax == PROTO_2) {
+    if (syntax === PROTO_2) {
       return when (adapter) {
-        ProtoAdapter.UINT64 -> UnsignedLongAsNumberJsonFormatter
+        ProtoAdapter.UINT64, ProtoAdapter.UINT64_VALUE -> UnsignedLongAsNumberJsonFormatter
         else -> null
       }
     } else {
       return when (adapter) {
         ProtoAdapter.INT64,
         ProtoAdapter.SFIXED64,
-        ProtoAdapter.SINT64 -> LongAsStringJsonFormatter
+        ProtoAdapter.SINT64,
+        ProtoAdapter.INT64_VALUE -> LongAsStringJsonFormatter
         ProtoAdapter.FIXED64,
-        ProtoAdapter.UINT64 -> UnsignedLongAsStringJsonFormatter
+        ProtoAdapter.UINT64,
+        ProtoAdapter.UINT64_VALUE -> UnsignedLongAsStringJsonFormatter
         else -> null
       }
     }
@@ -209,9 +212,10 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   /** Encodes an unsigned value with quotes, like `"123"`. */
   private object UnsignedLongAsStringJsonFormatter : JsonFormatter<Long> {
     override fun toStringOrNumber(value: Long) =
-      UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
+        UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
+
     override fun fromString(value: String) =
-      UnsignedLongAsNumberJsonFormatter.fromString(value)
+        UnsignedLongAsNumberJsonFormatter.fromString(value)
   }
 
   /** Encodes an signed value with quotes, like `"-123"`. */

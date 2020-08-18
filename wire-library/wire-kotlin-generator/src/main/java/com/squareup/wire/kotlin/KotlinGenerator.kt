@@ -1319,6 +1319,33 @@ class KotlinGenerator private constructor(
       this == ProtoType.STRUCT_LIST -> {
         CodeBlock.of("%T${adapterFieldDelimiterName}STRUCT_LIST", ProtoAdapter::class)
       }
+      this == ProtoType.DOUBLE_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}DOUBLE_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.FLOAT_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}FLOAT_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.INT64_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}INT64_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.UINT64_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}UINT64_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.INT32_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}INT32_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.UINT32_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}UINT32_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.BOOL_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}BOOL_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.STRING_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}STRING_VALUE", ProtoAdapter::class)
+      }
+      this == ProtoType.BYTES_VALUE -> {
+        CodeBlock.of("%T${adapterFieldDelimiterName}BYTES_VALUE", ProtoAdapter::class)
+      }
       isMap -> {
         throw IllegalArgumentException("Can't create single adapter for map type $this")
       }
@@ -1337,6 +1364,15 @@ class KotlinGenerator private constructor(
     this == ProtoType.STRUCT_VALUE -> ProtoAdapter::class.java.name + "#STRUCT_VALUE"
     this == ProtoType.STRUCT_NULL -> ProtoAdapter::class.java.name + "#STRUCT_NULL"
     this == ProtoType.STRUCT_LIST -> ProtoAdapter::class.java.name + "#STRUCT_LIST"
+    this == ProtoType.DOUBLE_VALUE -> ProtoAdapter::class.java.name + "#DOUBLE_VALUE"
+    this == ProtoType.FLOAT_VALUE -> ProtoAdapter::class.java.name + "#FLOAT_VALUE"
+    this == ProtoType.INT64_VALUE -> ProtoAdapter::class.java.name + "#INT64_VALUE"
+    this == ProtoType.UINT64_VALUE -> ProtoAdapter::class.java.name + "#UINT64_VALUE"
+    this == ProtoType.INT32_VALUE -> ProtoAdapter::class.java.name + "#INT32_VALUE"
+    this == ProtoType.UINT32_VALUE -> ProtoAdapter::class.java.name + "#UINT32_VALUE"
+    this == ProtoType.BOOL_VALUE -> ProtoAdapter::class.java.name + "#BOOL_VALUE"
+    this == ProtoType.STRING_VALUE -> ProtoAdapter::class.java.name + "#STRING_VALUE"
+    this == ProtoType.BYTES_VALUE -> ProtoAdapter::class.java.name + "#BYTES_VALUE"
     else -> (typeName as ClassName).reflectionName() + "#ADAPTER"
   }
 
@@ -1688,6 +1724,15 @@ class KotlinGenerator private constructor(
         ProtoType.STRUCT_NULL to ClassName("kotlin", "Nothing").copy(nullable = true),
         ProtoType.STRUCT_LIST to ClassName("kotlin.collections", "List")
             .parameterizedBy(STAR).copy(nullable = true),
+        ProtoType.DOUBLE_VALUE to DOUBLE.copy(nullable = true),
+        ProtoType.FLOAT_VALUE to FLOAT.copy(nullable = true),
+        ProtoType.INT64_VALUE to LONG.copy(nullable = true),
+        ProtoType.UINT64_VALUE to LONG.copy(nullable = true),
+        ProtoType.INT32_VALUE to INT.copy(nullable = true),
+        ProtoType.UINT32_VALUE to INT.copy(nullable = true),
+        ProtoType.BOOL_VALUE to BOOLEAN.copy(nullable = true),
+        ProtoType.STRING_VALUE to String::class.asClassName().copy(nullable = true),
+        ProtoType.BYTES_VALUE to ByteString::class.asClassName().copy(nullable = true),
         FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
         MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
         ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
