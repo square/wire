@@ -46,8 +46,12 @@ extension Redactable {
         }
 
         if fields.count > 0 {
+            var typeName = String(describing: mirror.subjectType)
+            if typeName.hasPrefix("_") {
+                typeName = String(typeName.dropFirst(1))
+            }
             let allFields = fields.joined(separator: ", ")
-            return "\(mirror.subjectType)(\(allFields))"
+            return "\(typeName)(\(allFields))"
         } else {
             return "\(self)"
         }
