@@ -32,9 +32,10 @@ class ProtoAdapterTypeUrlTest {
           assertThat(protoAdapter.typeUrl)
               .isEqualTo("type.googleapis.com/google.protobuf.NullValue")
         }
-        protoAdapter.type.isPrimitive ||
-            protoAdapter.type == String::class ||
-            protoAdapter.type == ByteString::class -> {
+        protoAdapter.syntax === Syntax.PROTO_2 &&
+            (protoAdapter.type.isPrimitive ||
+                protoAdapter.type == String::class ||
+                protoAdapter.type == ByteString::class) -> {
           // Scalar types don't have a type URL.
           assertThat(protoAdapter.typeUrl).isNull()
         }

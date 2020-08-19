@@ -256,6 +256,15 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmField actual val STRUCT_LIST: ProtoAdapter<List<*>?> = commonStructList()
     @JvmField actual val STRUCT_NULL: ProtoAdapter<Nothing?> = commonStructNull()
     @JvmField actual val STRUCT_VALUE: ProtoAdapter<Any?> = commonStructValue()
+    @JvmField actual val DOUBLE_VALUE: ProtoAdapter<Double?> = commonWrapper(DOUBLE, "type.googleapis.com/google.protobuf.DoubleValue")
+    @JvmField actual val FLOAT_VALUE: ProtoAdapter<Float?> = commonWrapper(FLOAT, "type.googleapis.com/google.protobuf.FloatValue")
+    @JvmField actual val INT64_VALUE: ProtoAdapter<Long?> = commonWrapper(INT64, "type.googleapis.com/google.protobuf.Int64Value")
+    @JvmField actual val UINT64_VALUE: ProtoAdapter<Long?> = commonWrapper(UINT64, "type.googleapis.com/google.protobuf.UInt64Value")
+    @JvmField actual val INT32_VALUE: ProtoAdapter<Int?> = commonWrapper(INT32, "type.googleapis.com/google.protobuf.Int32Value")
+    @JvmField actual val UINT32_VALUE: ProtoAdapter<Int?> = commonWrapper(UINT32, "type.googleapis.com/google.protobuf.UInt32Value")
+    @JvmField actual val BOOL_VALUE: ProtoAdapter<Boolean?> = commonWrapper(BOOL, "type.googleapis.com/google.protobuf.BoolValue")
+    @JvmField actual val STRING_VALUE: ProtoAdapter<String?> = commonWrapper(STRING, "type.googleapis.com/google.protobuf.StringValue")
+    @JvmField actual val BYTES_VALUE: ProtoAdapter<ByteString?> = commonWrapper(BYTES, "type.googleapis.com/google.protobuf.BytesValue")
     @JvmField actual val DURATION: ProtoAdapter<Duration> = try {
       commonDuration()
     } catch (_: NoClassDefFoundError) {

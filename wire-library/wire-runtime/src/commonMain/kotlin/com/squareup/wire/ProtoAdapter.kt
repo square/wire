@@ -26,6 +26,8 @@ import com.squareup.wire.ProtoWriter.Companion.tagSize
 import com.squareup.wire.ProtoWriter.Companion.varint32Size
 import com.squareup.wire.ProtoWriter.Companion.varint64Size
 import com.squareup.wire.internal.Throws
+import com.squareup.wire.internal.missingRequiredFields
+import com.squareup.wire.internal.redactElements
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -191,6 +193,15 @@ expect abstract class ProtoAdapter<E>(
     @JvmField val STRUCT_LIST: ProtoAdapter<List<*>?>
     @JvmField val STRUCT_NULL: ProtoAdapter<Nothing?>
     @JvmField val STRUCT_VALUE: ProtoAdapter<Any?>
+    @JvmField val DOUBLE_VALUE: ProtoAdapter<Double?>
+    @JvmField val FLOAT_VALUE: ProtoAdapter<Float?>
+    @JvmField val INT64_VALUE: ProtoAdapter<Long?>
+    @JvmField val UINT64_VALUE: ProtoAdapter<Long?>
+    @JvmField val INT32_VALUE: ProtoAdapter<Int?>
+    @JvmField val UINT32_VALUE: ProtoAdapter<Int?>
+    @JvmField val BOOL_VALUE: ProtoAdapter<Boolean?>
+    @JvmField val STRING_VALUE: ProtoAdapter<String?>
+    @JvmField val BYTES_VALUE: ProtoAdapter<ByteString?>
   }
 }
 
@@ -845,9 +856,8 @@ internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
 
   override fun encode(writer: ProtoWriter, value: Unit) = Unit
 
-  override fun decode(reader: ProtoReader): Unit {
+  override fun decode(reader: ProtoReader) {
     reader.forEachTag { tag -> reader.readUnknownField(tag) }
-    return Unit
   }
 
   override fun redact(value: Unit): Unit = value
@@ -1048,6 +1058,43 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
       is Map<*, *> -> STRUCT_MAP.redact(value as Map<String, *>)
       is List<*> -> STRUCT_LIST.redact(value)
       else -> throw IllegalArgumentException("unexpected struct value: $value")
+    }
+  }
+}
+
+internal fun <T : Any> commonWrapper(delegate: ProtoAdapter<T>, typeUrl: String): ProtoAdapter<T?> {
+  return object : ProtoAdapter<T?>(
+      LENGTH_DELIMITED,
+      delegate.type,
+      typeUrl,
+      Syntax.PROTO_3,
+      null
+  ) {
+    override fun encodedSize(value: T?): Int {
+      if (value == null) return 0
+      return delegate.encodedSizeWithTag(1, value)
+    }
+
+    override fun encode(writer: ProtoWriter, value: T?) {
+      if (value != null) {
+        delegate.encodeWithTag(writer, 1, value)
+      }
+    }
+
+    override fun decode(reader: ProtoReader): T? {
+      var result: T? = null
+      reader.forEachTag { tag ->
+        when (tag) {
+          1 -> result = delegate.decode(reader)
+          else -> reader.readUnknownField(tag)
+        }
+      }
+      return result
+    }
+
+    override fun redact(value: T?): T? {
+      if (value == null) return null
+      return delegate.redact(value)
     }
   }
 }

@@ -33,6 +33,7 @@ import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import squareup.proto3.All64
 import squareup.proto3.AllStructs
+import squareup.proto3.AllWrappers
 import squareup.proto3.BuyOneGetOnePromotion
 import squareup.proto3.CamelCase
 import squareup.proto3.CamelCase.NestedCamelCase
@@ -468,8 +469,22 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
   }
 
+  @Ignore("We are missing proper map value adapters. Blocked by #279.")
+  @Test fun wrappers() {
+    val value = allWrappersBuilder().build()
+
+    assertJsonEquals(ALL_WRAPPERS_JSON, jsonLibrary.toJson(value, AllWrappers::class.java))
+
+    val parsed = jsonLibrary.fromJson(ALL_WRAPPERS_JSON, AllWrappers::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, AllWrappers::class.java),
+        jsonLibrary.toJson(value, AllWrappers::class.java))
+  }
+
   companion object {
-    // Return a two-element list with a given repeated value
+    // Return a two-element list with a given repeated value.
     private fun <T> list(x: T): List<T> = listOf(x, x)
 
     private fun allTypesProto2IdentityBuilder(): AllTypesProto2.Builder {
@@ -723,6 +738,37 @@ class WireJsonTest {
           .oneof_int32(0)
     }
 
+    private fun allWrappersBuilder(): AllWrappers.Builder {
+      return AllWrappers.Builder()
+          .double_value(33.0)
+          .float_value(806f)
+          .int64_value(Long.MIN_VALUE)
+          .uint64_value(Long.MIN_VALUE)
+          .int32_value(Int.MIN_VALUE)
+          .uint32_value(Int.MIN_VALUE)
+          .bool_value(true)
+          .string_value("Bo knows wrappers")
+          .bytes_value(ByteString.of(123, 125))
+          .rep_double_value(list((-33.0)))
+          .rep_float_value(list((-806f)))
+          .rep_int64_value(list(Long.MAX_VALUE))
+          .rep_uint64_value(list(Long.MAX_VALUE))
+          .rep_int32_value(list(Int.MAX_VALUE))
+          .rep_uint32_value(list(Int.MAX_VALUE))
+          .rep_bool_value(list(true))
+          .rep_string_value(list("Bo knows wrappers"))
+          .rep_bytes_value(list(ByteString.of(123, 125)))
+          .map_int32_double_value(mapOf(23 to 33.0))
+          .map_int32_float_value(mapOf(23 to 806f))
+          .map_int32_int64_value(mapOf(23 to Long.MIN_VALUE))
+          .map_int32_uint64_value(mapOf(23 to Long.MIN_VALUE))
+          .map_int32_int32_value(mapOf(23 to Int.MIN_VALUE))
+          .map_int32_uint32_value(mapOf(23 to Int.MIN_VALUE))
+          .map_int32_bool_value(mapOf(23 to true))
+          .map_int32_string_value(mapOf(23 to "Bo knows wrappers"))
+          .map_int32_bytes_value(mapOf(23 to ByteString.of(123, 125)))
+    }
+
     private val ALL_TYPES_PROTO2_JSON = loadJson("all_types_proto2.json")
 
     private val ALL_TYPES_IDENTITY_PROTO2_JSON = loadJson("all_types_identity_proto2.json")
@@ -754,6 +800,8 @@ class WireJsonTest {
     private val ALL_64_JSON_MIN_VALUE = loadJson("all_64_min_proto3.json")
 
     private val ALL_64_JSON_MAX_VALUE = loadJson("all_64_max_proto3.json")
+
+    private val ALL_WRAPPERS_JSON = loadJson("all_wrappers_proto3.json")
 
     private val moshi = object : JsonLibrary {
       private val moshi = Moshi.Builder()

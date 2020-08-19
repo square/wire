@@ -119,6 +119,15 @@ class ProtoType {
     @JvmField val STRUCT_VALUE = ProtoType(false, "google.protobuf.Value")
     @JvmField val STRUCT_NULL = ProtoType(false, "google.protobuf.NullValue")
     @JvmField val STRUCT_LIST = ProtoType(false, "google.protobuf.ListValue")
+    @JvmField val DOUBLE_VALUE = ProtoType(false, "google.protobuf.DoubleValue")
+    @JvmField val FLOAT_VALUE = ProtoType(false, "google.protobuf.FloatValue")
+    @JvmField val INT64_VALUE = ProtoType(false, "google.protobuf.Int64Value")
+    @JvmField val UINT64_VALUE = ProtoType(false, "google.protobuf.UInt64Value")
+    @JvmField val INT32_VALUE = ProtoType(false, "google.protobuf.Int32Value")
+    @JvmField val UINT32_VALUE = ProtoType(false, "google.protobuf.UInt32Value")
+    @JvmField val BOOL_VALUE = ProtoType(false, "google.protobuf.BoolValue")
+    @JvmField val STRING_VALUE = ProtoType(false, "google.protobuf.StringValue")
+    @JvmField val BYTES_VALUE = ProtoType(false, "google.protobuf.BytesValue")
 
     private val SCALAR_TYPES: Map<String, ProtoType> = listOf(
         BOOL,

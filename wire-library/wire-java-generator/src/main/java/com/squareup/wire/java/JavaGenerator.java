@@ -151,6 +151,15 @@ public final class JavaGenerator {
           .put(ProtoType.STRUCT_LIST, ParameterizedTypeName.get(
               ClassName.get("java.util", "List"),
               WildcardTypeName.subtypeOf(Object.class)))
+          .put(ProtoType.DOUBLE_VALUE, TypeName.DOUBLE)
+          .put(ProtoType.FLOAT_VALUE, TypeName.FLOAT)
+          .put(ProtoType.INT64_VALUE, TypeName.LONG)
+          .put(ProtoType.UINT64_VALUE, TypeName.LONG)
+          .put(ProtoType.INT32_VALUE, TypeName.INT)
+          .put(ProtoType.UINT32_VALUE, TypeName.INT)
+          .put(ProtoType.BOOL_VALUE, TypeName.BOOLEAN)
+          .put(ProtoType.STRING_VALUE, ClassName.get(String.class))
+          .put(ProtoType.BYTES_VALUE, ClassName.get(ByteString.class))
           .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
           .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
           .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
@@ -379,6 +388,24 @@ public final class JavaGenerator {
       result.add("$T.$L", ADAPTER, "STRUCT_NULL");
     } else if (type.equals(ProtoType.STRUCT_LIST)) {
       result.add("$T.$L", ADAPTER, "STRUCT_LIST");
+    } else if (type.equals(ProtoType.DOUBLE_VALUE)) {
+      result.add("$T.$L", ADAPTER, "DOUBLE_VALUE");
+    } else if (type.equals(ProtoType.FLOAT_VALUE)) {
+      result.add("$T.$L", ADAPTER, "FLOAT_VALUE");
+    } else if (type.equals(ProtoType.INT64_VALUE)) {
+      result.add("$T.$L", ADAPTER, "INT64_VALUE");
+    } else if (type.equals(ProtoType.UINT64_VALUE)) {
+      result.add("$T.$L", ADAPTER, "UINT64_VALUE");
+    } else if (type.equals(ProtoType.INT32_VALUE)) {
+      result.add("$T.$L", ADAPTER, "INT32_VALUE");
+    } else if (type.equals(ProtoType.UINT32_VALUE)) {
+      result.add("$T.$L", ADAPTER, "UINT32_VALUE");
+    } else if (type.equals(ProtoType.BOOL_VALUE)) {
+      result.add("$T.$L", ADAPTER, "BOOL_VALUE");
+    } else if (type.equals(ProtoType.STRING_VALUE)) {
+      result.add("$T.$L", ADAPTER, "STRING_VALUE");
+    } else if (type.equals(ProtoType.BYTES_VALUE)) {
+      result.add("$T.$L", ADAPTER, "BYTES_VALUE");
     } else if (type.isMap()) {
       throw new IllegalArgumentException("Cannot create single adapter for map type " + type);
     } else {
@@ -1236,6 +1263,7 @@ public final class JavaGenerator {
       case REQUIRED:
         return messageType.box();
       default:
+        if (isWrapper(field.getType())) return messageType.box();
         return messageType;
     }
   }
@@ -1323,6 +1351,15 @@ public final class JavaGenerator {
     if (type.equals(ProtoType.STRUCT_VALUE)) return ProtoAdapter.class.getName() + "#STRUCT_VALUE";
     if (type.equals(ProtoType.STRUCT_NULL)) return ProtoAdapter.class.getName() + "#STRUCT_NULL";
     if (type.equals(ProtoType.STRUCT_LIST)) return ProtoAdapter.class.getName() + "#STRUCT_LIST";
+    if (type.equals(ProtoType.DOUBLE_VALUE)) return ProtoAdapter.class.getName() + "#DOUBLE_VALUE";
+    if (type.equals(ProtoType.FLOAT_VALUE)) return ProtoAdapter.class.getName() + "#FLOAT_VALUE";
+    if (type.equals(ProtoType.INT64_VALUE)) return ProtoAdapter.class.getName() + "#INT64_VALUE";
+    if (type.equals(ProtoType.UINT64_VALUE)) return ProtoAdapter.class.getName() + "#UINT64_VALUE";
+    if (type.equals(ProtoType.INT32_VALUE)) return ProtoAdapter.class.getName() + "#INT32_VALUE";
+    if (type.equals(ProtoType.UINT32_VALUE)) return ProtoAdapter.class.getName() + "#UINT32_VALUE";
+    if (type.equals(ProtoType.BOOL_VALUE)) return ProtoAdapter.class.getName() + "#BOOL_VALUE";
+    if (type.equals(ProtoType.STRING_VALUE)) return ProtoAdapter.class.getName() + "#STRING_VALUE";
+    if (type.equals(ProtoType.BYTES_VALUE)) return ProtoAdapter.class.getName() + "#BYTES_VALUE";
 
     AdapterConstant adapterConstant = profile.getAdapter(type);
     if (adapterConstant != null) {
@@ -1473,6 +1510,18 @@ public final class JavaGenerator {
         || protoType.equals(ProtoType.STRUCT_LIST)
         || protoType.equals(ProtoType.STRUCT_VALUE)
         || protoType.equals(ProtoType.STRUCT_NULL);
+  }
+
+  private boolean isWrapper(ProtoType protoType) {
+    return protoType.equals(ProtoType.DOUBLE_VALUE)
+        || protoType.equals(ProtoType.FLOAT_VALUE)
+        || protoType.equals(ProtoType.INT64_VALUE)
+        || protoType.equals(ProtoType.UINT64_VALUE)
+        || protoType.equals(ProtoType.INT32_VALUE)
+        || protoType.equals(ProtoType.UINT32_VALUE)
+        || protoType.equals(ProtoType.BOOL_VALUE)
+        || protoType.equals(ProtoType.STRING_VALUE)
+        || protoType.equals(ProtoType.BYTES_VALUE);
   }
 
   // Example:

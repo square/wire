@@ -450,6 +450,7 @@ task generateSharedJsonCompactJavaTests(type: JavaExec) {
           'all_types_proto2.proto',
           'all_types_proto3.proto',
           'all_structs.proto',
+          'all_wrappers.proto',
           'camel_case.proto',
           'pizza.proto',
   ]
@@ -470,6 +471,7 @@ task generateSharedJsonKotlinTests(type: JavaExec) {
           'all_types_proto2.proto',
           'all_types_proto3.proto',
           'all_structs.proto',
+          'all_wrappers.proto',
           'camel_case.proto',
           'pizza.proto',
   ]
