@@ -45,17 +45,25 @@ public struct OneOfMessage {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension OneOfMessage.Choice : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension OneOfMessage.Choice : Hashable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension OneOfMessage : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension OneOfMessage : Hashable {
 }
+#endif
 
 extension OneOfMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -83,6 +91,7 @@ extension OneOfMessage : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension OneOfMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: OneOfMessage.CodingKeys.self)
@@ -118,3 +127,4 @@ extension OneOfMessage : Codable {
 
     }
 }
+#endif

@@ -71,11 +71,15 @@ public struct FooBar {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension FooBar.Nested : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension FooBar.Nested : Hashable {
 }
+#endif
 
 extension FooBar.Nested : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -99,6 +103,7 @@ extension FooBar.Nested : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension FooBar.Nested : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -106,12 +111,17 @@ extension FooBar.Nested : Codable {
 
     }
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension FooBar.More : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension FooBar.More : Hashable {
 }
+#endif
 
 extension FooBar.More : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -135,6 +145,7 @@ extension FooBar.More : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension FooBar.More : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -142,12 +153,17 @@ extension FooBar.More : Codable {
 
     }
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension FooBar : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension FooBar : Hashable {
 }
+#endif
 
 extension FooBar : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -203,6 +219,7 @@ extension FooBar : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension FooBar : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -218,7 +235,9 @@ extension FooBar : Codable {
 
     }
 }
+#endif
 
+#if !WIRE_REMOVE_REDACTABLE
 extension FooBar : Redactable {
     public enum RedactedKeys : String, RedactedKey {
 
@@ -226,3 +245,4 @@ extension FooBar : Redactable {
 
     }
 }
+#endif

@@ -17,11 +17,15 @@ public struct VeryLongProtoNameCausingBrokenLineBreaks {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension VeryLongProtoNameCausingBrokenLineBreaks : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension VeryLongProtoNameCausingBrokenLineBreaks : Hashable {
 }
+#endif
 
 extension VeryLongProtoNameCausingBrokenLineBreaks : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -45,6 +49,7 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension VeryLongProtoNameCausingBrokenLineBreaks : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -52,3 +57,4 @@ extension VeryLongProtoNameCausingBrokenLineBreaks : Codable {
 
     }
 }
+#endif

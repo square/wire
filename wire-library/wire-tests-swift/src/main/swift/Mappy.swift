@@ -14,11 +14,15 @@ public struct Mappy {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Mappy : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Mappy : Hashable {
 }
+#endif
 
 extension Mappy : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -42,6 +46,7 @@ extension Mappy : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Mappy : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -49,3 +54,4 @@ extension Mappy : Codable {
 
     }
 }
+#endif

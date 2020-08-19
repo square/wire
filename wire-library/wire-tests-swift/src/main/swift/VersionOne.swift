@@ -22,11 +22,15 @@ public struct VersionOne {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension VersionOne : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension VersionOne : Hashable {
 }
+#endif
 
 extension VersionOne : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -58,6 +62,7 @@ extension VersionOne : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension VersionOne : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -67,3 +72,4 @@ extension VersionOne : Codable {
 
     }
 }
+#endif

@@ -76,7 +76,8 @@ class FileSpec private constructor(builder: FileSpec.Builder) {
 
     codeWriter.pushModule(moduleName)
 
-    val allImports = moduleImports + codeWriter.importedTypes.map { ImportSpec(it.value.moduleName) }
+    val importedTypeImports = codeWriter.importedTypes.map { ImportSpec.builder(it.value.moduleName).build() }
+    val allImports = moduleImports + importedTypeImports
     val imports = allImports.filter { it.name != "Swift" }
 
     if (imports.isNotEmpty()) {
@@ -89,14 +90,7 @@ class FileSpec private constructor(builder: FileSpec.Builder) {
 
     members.forEachIndexed { index, member ->
       if (index > 0) codeWriter.emit("\n")
-      when (member) {
-        is TypeSpec -> member.emit(codeWriter)
-        is FunctionSpec -> member.emit(codeWriter, null, setOf(Modifier.PUBLIC))
-        is PropertySpec -> member.emit(codeWriter, setOf(Modifier.PUBLIC))
-        is TypeAliasSpec -> member.emit(codeWriter)
-        is ExtensionSpec -> member.emit(codeWriter)
-        else -> throw AssertionError()
-      }
+      member.emit(codeWriter)
     }
 
     codeWriter.popModule()
@@ -129,7 +123,7 @@ class FileSpec private constructor(builder: FileSpec.Builder) {
     internal val comment = CodeBlock.builder()
     internal val moduleImports = sortedSetOf<ImportSpec>()
     internal var indent = DEFAULT_INDENT
-    internal val members = mutableListOf<Any>()
+    internal val members = mutableListOf<FileMemberSpec>()
 
     init {
       require(name.isName) { "not a valid file name: $name" }
@@ -139,31 +133,43 @@ class FileSpec private constructor(builder: FileSpec.Builder) {
       comment.add(format, *args)
     }
 
+    fun addMember(memberSpec: FileMemberSpec) = apply {
+      members += memberSpec
+    }
+
     fun addType(typeSpec: TypeSpec) = apply {
-      members += typeSpec
+      addMember(FileMemberSpec.builder(typeSpec).build())
     }
 
     fun addFunction(functionSpec: FunctionSpec) = apply {
       require(!functionSpec.isConstructor && !functionSpec.isAccessor) {
         "cannot add ${functionSpec.name} to file $name"
       }
-      members += functionSpec
+      addMember(FileMemberSpec.builder(functionSpec).build())
     }
 
     fun addProperty(propertySpec: PropertySpec) = apply {
-      members += propertySpec
+      addMember(FileMemberSpec.builder(propertySpec).build())
     }
 
     fun addTypeAlias(typeAliasSpec: TypeAliasSpec) = apply {
-      members += typeAliasSpec
+      addMember(FileMemberSpec.builder(typeAliasSpec).build())
     }
 
     fun addExtension(extensionSpec: ExtensionSpec) = apply {
-      members += extensionSpec
+      addMember(FileMemberSpec.builder(extensionSpec).build())
+    }
+
+    fun addImport(importSpec: ImportSpec) = apply {
+      moduleImports += importSpec
     }
 
     fun addImport(moduleName: String, vararg attributes: AttributeSpec) = apply {
-      moduleImports += ImportSpec(moduleName, attributes.toList())
+      addImport(
+         ImportSpec.builder(moduleName)
+            .apply { attributes.forEach { addAttribute(it) } }
+            .build()
+      )
     }
 
     fun indent(indent: String) = apply {

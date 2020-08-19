@@ -41,8 +41,14 @@ class FunctionSpec private constructor(
   internal fun emit(
     codeWriter: CodeWriter,
     enclosingName: String?,
-    implicitModifiers: Set<Modifier>
+    implicitModifiers: Set<Modifier>,
+    conciseGetter: Boolean = false
   ) {
+    if (name == GETTER && conciseGetter && kdoc.isEmpty() && attributes.isEmpty() && modifiers.isEmpty()) {
+      codeWriter.emitCode(body)
+      return
+    }
+
     codeWriter.emitKdoc(kdoc)
     codeWriter.emitAttributes(attributes)
     codeWriter.emitModifiers(modifiers, implicitModifiers)

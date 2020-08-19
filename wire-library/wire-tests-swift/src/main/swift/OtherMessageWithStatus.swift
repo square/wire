@@ -18,11 +18,15 @@ public struct OtherMessageWithStatus {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension OtherMessageWithStatus : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension OtherMessageWithStatus : Hashable {
 }
+#endif
 
 extension OtherMessageWithStatus : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -41,5 +45,7 @@ extension OtherMessageWithStatus : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension OtherMessageWithStatus : Codable {
 }
+#endif

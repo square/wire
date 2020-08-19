@@ -24,6 +24,7 @@ import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.EnumerationCaseSpec
 import io.outfoxx.swiftpoet.ExtensionSpec
 import io.outfoxx.swiftpoet.FLOAT
+import io.outfoxx.swiftpoet.FileMemberSpec
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.INT32
@@ -103,20 +104,20 @@ class SwiftGenerator private constructor(
     }
 
   fun generateTypeTo(type: Type, builder: FileSpec.Builder) {
-    val extensions = mutableListOf<ExtensionSpec>()
-    generateType(type, extensions).forEach {
+    val fileMembers = mutableListOf<FileMemberSpec>()
+    generateType(type, fileMembers).forEach {
       builder.addType(it)
     }
 
-    for (extension in extensions) {
-      builder.addExtension(extension)
+    for (extension in fileMembers) {
+      builder.addMember(extension)
     }
   }
 
-  private fun generateType(type: Type, extensions: MutableList<ExtensionSpec>) = when (type) {
-    is MessageType -> generateMessage(type, extensions)
-    is EnumType -> listOf(generateEnum(type, extensions))
-    is EnclosingType -> listOf(generateEnclosing(type, extensions))
+  private fun generateType(type: Type, fileMembers: MutableList<FileMemberSpec>) = when (type) {
+    is MessageType -> generateMessage(type, fileMembers)
+    is EnumType -> listOf(generateEnum(type, fileMembers))
+    is EnclosingType -> listOf(generateEnclosing(type, fileMembers))
     else -> error("Unknown type $type")
   }
 
@@ -143,7 +144,10 @@ class SwiftGenerator private constructor(
   private val MessageType.isHeapAllocated get() = fields.size + oneOfs.size >= 16
 
   @OptIn(ExperimentalStdlibApi::class) // TODO move to build flag
-  private fun generateMessage(type: MessageType, extensions: MutableList<ExtensionSpec>): List<TypeSpec> {
+  private fun generateMessage(
+    type: MessageType,
+    fileMembers: MutableList<FileMemberSpec>
+  ): List<TypeSpec> {
     val structType = type.typeName
     val oneOfEnumNames = type.oneOfs.associateWith { structType.nestedType(it.name.capitalize(US)) }
 
@@ -193,18 +197,29 @@ class SwiftGenerator private constructor(
             generateMessageConstructor(type, oneOfEnumNames)
           }
 
-          generateMessageOneOfs(type, oneOfEnumNames, extensions)
+          generateMessageOneOfs(type, oneOfEnumNames, fileMembers)
 
           type.nestedTypes.forEach { nestedType ->
-            generateType(nestedType, extensions).forEach {
+            generateType(nestedType, fileMembers).forEach {
               addType(it)
             }
           }
         }
         .build()
 
-    extensions += ExtensionSpec.builder(structType).addSuperType(equatable).build()
-    extensions += ExtensionSpec.builder(structType).addSuperType(hashable).build()
+    val structEquatableExtension = ExtensionSpec.builder(structType)
+        .addSuperType(equatable)
+        .build()
+    fileMembers += FileMemberSpec.builder(structEquatableExtension)
+        .addGuard("!$FLAG_REMOVE_EQUATABLE")
+        .build()
+
+    val structHashableExtension = ExtensionSpec.builder(structType)
+        .addSuperType(hashable)
+        .build()
+    fileMembers += FileMemberSpec.builder(structHashableExtension)
+        .addGuard("!$FLAG_REMOVE_HASHABLE")
+        .build()
 
     val redactionExtension = if (type.fields.any { it.isRedacted }) {
       ExtensionSpec.builder(structType)
@@ -234,8 +249,8 @@ class SwiftGenerator private constructor(
           }
           .build()
 
-      extensions += ExtensionSpec.builder(structType)
-          .addSuperType(type.codeableType)
+      val structProtoCodableExtension = ExtensionSpec.builder(structType)
+          .addSuperType(type.protoCodableType)
           .addFunction(FunctionSpec.constructorBuilder()
               .addModifiers(PUBLIC)
               .addParameter("from", "reader", protoReader)
@@ -249,15 +264,38 @@ class SwiftGenerator private constructor(
               .addStatement("try %N.encode(to: writer)", storageName)
               .build())
           .build()
-      extensions += ExtensionSpec.builder(storageType)
+      fileMembers += FileMemberSpec.builder(structProtoCodableExtension).build()
+
+      val storageProtoCodableExtension = ExtensionSpec.builder(storageType)
           .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
           .build()
+      fileMembers += FileMemberSpec.builder(storageProtoCodableExtension).build()
 
-      extensions += ExtensionSpec.builder(structType).addSuperType(codable).build()
-      extensions += messageCodableExtension(type, storageType)
+      val structCodableExtension = ExtensionSpec.builder(structType)
+          .addSuperType(codable)
+          .build()
+      fileMembers += FileMemberSpec.builder(structCodableExtension)
+          .addGuard("!$FLAG_REMOVE_CODABLE")
+          .build()
 
-      extensions += ExtensionSpec.builder(storageType).addSuperType(equatable).build()
-      extensions += ExtensionSpec.builder(storageType).addSuperType(hashable).build()
+      val storageCodableExtension = messageCodableExtension(type, storageType)
+      fileMembers += FileMemberSpec.builder(storageCodableExtension)
+          .addGuard("!$FLAG_REMOVE_CODABLE")
+          .build()
+
+      val storageEquatableExtension = ExtensionSpec.builder(storageType)
+          .addSuperType(equatable)
+          .build()
+      fileMembers += FileMemberSpec.builder(storageEquatableExtension)
+          .addGuard("!$FLAG_REMOVE_EQUATABLE")
+          .build()
+
+      val storageHashableExtension = ExtensionSpec.builder(storageType)
+          .addSuperType(hashable)
+          .build()
+      fileMembers += FileMemberSpec.builder(storageHashableExtension)
+          .addGuard("!$FLAG_REMOVE_HASHABLE")
+          .build()
 
       if (redactionExtension != null) {
         redactionExtension.addProperty(PropertySpec.varBuilder("description", STRING)
@@ -267,22 +305,31 @@ class SwiftGenerator private constructor(
                 .build())
             .build())
 
-        extensions += ExtensionSpec.builder(storageType)
+        val storageRedactableExtension = ExtensionSpec.builder(storageType)
             .addSuperType(redactable)
-            .addTypeAlias(TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
-                .build())
+            .addTypeAlias(
+                TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
+                    .build())
+            .build()
+        fileMembers += FileMemberSpec.builder(storageRedactableExtension)
+            .addGuard("!$FLAG_REMOVE_REDACTABLE")
             .build()
       }
     } else {
-      extensions += ExtensionSpec.builder(structType)
+      val protoCodableExtension = ExtensionSpec.builder(structType)
           .messageProtoCodableExtension(type, structType, oneOfEnumNames, propertyNames)
           .build()
+      fileMembers += FileMemberSpec.builder(protoCodableExtension).build()
 
-      extensions += messageCodableExtension(type, structType)
+      fileMembers += FileMemberSpec.builder(messageCodableExtension(type, structType))
+          .addGuard("!$FLAG_REMOVE_CODABLE")
+          .build()
     }
 
     if (redactionExtension != null) {
-      extensions += redactionExtension.build()
+      fileMembers += FileMemberSpec.builder(redactionExtension.build())
+          .addGuard("!$FLAG_REMOVE_REDACTABLE")
+          .build()
     }
 
     return typeSpecs
@@ -294,7 +341,7 @@ class SwiftGenerator private constructor(
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
     propertyNames: Collection<String>
   ): ExtensionSpec.Builder = apply {
-    addSuperType(type.codeableType)
+    addSuperType(type.protoCodableType)
 
     val reader = if ("reader" in propertyNames) "_reader" else "reader"
     val token = if ("token" in propertyNames) "_token" else "token"
@@ -428,7 +475,7 @@ class SwiftGenerator private constructor(
         .build())
   }
 
-  private val MessageType.codeableType: DeclaredTypeName
+  private val MessageType.protoCodableType: DeclaredTypeName
     get() = when (syntax) {
       PROTO_2 -> proto2Codable
       PROTO_3 -> proto3Codable
@@ -673,7 +720,7 @@ class SwiftGenerator private constructor(
   private fun TypeSpec.Builder.generateMessageOneOfs(
     type: MessageType,
     oneOfEnumNames: Map<OneOf, DeclaredTypeName>,
-    extensions: MutableList<ExtensionSpec>
+    fileMembers: MutableList<FileMemberSpec>
   ) {
     type.oneOfs.forEach { oneOf ->
       val enumName = oneOfEnumNames.getValue(oneOf)
@@ -712,15 +759,22 @@ class SwiftGenerator private constructor(
               .build())
           .build())
 
-      extensions += ExtensionSpec.builder(enumName)
+      val equatableExtension = ExtensionSpec.builder(enumName)
           .addSuperType(equatable)
           .build()
-      extensions += ExtensionSpec.builder(enumName)
+      fileMembers += FileMemberSpec.builder(equatableExtension)
+          .addGuard("!$FLAG_REMOVE_EQUATABLE")
+          .build()
+
+      val hashableExtension = ExtensionSpec.builder(enumName)
           .addSuperType(hashable)
+          .build()
+      fileMembers += FileMemberSpec.builder(hashableExtension)
+          .addGuard("!$FLAG_REMOVE_HASHABLE")
           .build()
 
       if (oneOf.fields.any { it.isRedacted }) {
-        extensions += ExtensionSpec.builder(enumName)
+        val redactableExtension = ExtensionSpec.builder(enumName)
             .addSuperType(redactable)
             .addType(TypeSpec.enumBuilder("RedactedKeys")
                 .addModifiers(PUBLIC)
@@ -734,6 +788,9 @@ class SwiftGenerator private constructor(
                   }
                 }
                 .build())
+            .build()
+        fileMembers += FileMemberSpec.builder(redactableExtension)
+            .addGuard("!$FLAG_REMOVE_REDACTABLE")
             .build()
       }
     }
@@ -761,7 +818,10 @@ class SwiftGenerator private constructor(
     return false
   }
 
-  private fun generateEnum(type: EnumType, extensions: MutableList<ExtensionSpec>): TypeSpec {
+  private fun generateEnum(
+    type: EnumType,
+    fileMembers: MutableList<FileMemberSpec>
+  ): TypeSpec {
     val enumName = type.typeName
     return TypeSpec.enumBuilder(enumName)
         .addModifiers(PUBLIC)
@@ -796,7 +856,7 @@ class SwiftGenerator private constructor(
                 .build())
           }
           type.nestedTypes.forEach { nestedType ->
-            generateType(nestedType, extensions).forEach {
+            generateType(nestedType, fileMembers).forEach {
               addType(it)
             }
           }
@@ -804,7 +864,10 @@ class SwiftGenerator private constructor(
         .build()
   }
 
-  private fun generateEnclosing(type: EnclosingType, extensions: MutableList<ExtensionSpec>): TypeSpec {
+  private fun generateEnclosing(
+    type: EnclosingType,
+    fileMembers: MutableList<FileMemberSpec>
+  ): TypeSpec {
     return TypeSpec.enumBuilder(type.typeName)
         .addModifiers(PUBLIC)
         .addKdoc("%N\n",
@@ -812,7 +875,7 @@ class SwiftGenerator private constructor(
                 "is not an actual message.")
         .apply {
           type.nestedTypes.forEach { nestedType ->
-            generateType(nestedType, extensions).forEach {
+            generateType(nestedType, fileMembers).forEach {
               addType(it)
             }
           }
@@ -842,6 +905,11 @@ class SwiftGenerator private constructor(
 //        Options.MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
 //        Options.ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
     )
+
+    private const val FLAG_REMOVE_CODABLE = "WIRE_REMOVE_CODABLE"
+    private const val FLAG_REMOVE_EQUATABLE = "WIRE_REMOVE_EQUATABLE"
+    private const val FLAG_REMOVE_HASHABLE = "WIRE_REMOVE_HASHABLE"
+    private const val FLAG_REMOVE_REDACTABLE = "WIRE_REMOVE_REDACTABLE"
 
     @JvmStatic @JvmName("get")
     operator fun invoke(

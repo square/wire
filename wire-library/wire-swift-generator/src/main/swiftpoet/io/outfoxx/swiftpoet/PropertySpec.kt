@@ -62,7 +62,7 @@ class PropertySpec private constructor(
       codeWriter.emit(" {\n")
       if (getter != null) {
         codeWriter.emitCode("%>")
-        getter.emit(codeWriter, null, implicitModifiers)
+        getter.emit(codeWriter, null, implicitModifiers, setter == null)
         codeWriter.emitCode("%<")
       }
       if (setter != null) {
