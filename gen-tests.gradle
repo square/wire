@@ -336,6 +336,53 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
   ]
 }
 
+// SWIFT
+
+task generateSwiftTests(type: JavaExec) {
+  def swiftOut = 'wire-library/wire-tests-swift/src/main/swift'
+  doFirst {
+    def outFile = file(swiftOut)
+    outFile.deleteDir()
+    outFile.mkdir()
+  }
+
+  group = 'Generate Tests'
+  description = 'Generates Swift classes from the test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
+      "--swift_out=$swiftOut",
+      'all_types.proto',
+      'custom_options.proto',
+      'deprecated.proto',
+      'deprecated_enum.proto',
+//      'edge_cases.proto',
+      'external_message.proto',
+      'foreign.proto',
+      'form.proto',
+//      'google/protobuf/any.proto',
+//      'google/protobuf/descriptor.proto',
+//      'keyword.proto',
+      'map.proto',
+      'no_fields.proto',
+      'one_of.proto',
+      'option_redacted.proto',
+      'optional_enum.proto',
+      'packed_encoding.proto',
+      'percents_in_kdoc.proto',
+      'person.proto',
+      'redacted_one_of.proto',
+//      'redacted_test.proto',
+      'resursive_map.proto',
+      'same_name_enum.proto',
+//      'simple_message.proto',
+      'to_string.proto',
+      'unknown_fields.proto',
+//      'uses_any.proto',
+  ]
+}
+
 // GRPC
 
 def GRPC_PROTOS = Files.find(
@@ -486,8 +533,9 @@ task generateSharedJson(dependsOn: [generateSharedJsonCompactJavaTests,
 task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generateNoOptionsTests,
     generateGsonTests, generateIncludesExcludesTests, generateAndroidTests,
     generateAndroidCompactTests, generateKotlinTests, generateKotlinServicesTests,
-    generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateGrpcTests,
-    generateMoshiTests, generateProto3KotlinTests, generateProto3JavaTests, generateSharedJson]) {
+    generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateSwiftTests,
+    generateGrpcTests, generateMoshiTests, generateProto3KotlinTests, generateProto3JavaTests,
+    generateSharedJson]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
 }

@@ -8,6 +8,11 @@ include ':wire-moshi-adapter'
 include ':wire-runtime:japicmp'
 include ':wire-runtime'
 include ':wire-schema'
+include ':wire-swift-generator'
 include ':wire-test-utils'
 include ':wire-tests'
 
+if (startParameter.projectProperties.get("swift") != "false") {
+  include ':wire-runtime-swift'
+  include ':wire-tests-swift'
+}

@@ -1,0 +1,11 @@
+apply plugin: 'swift-library'
+apply plugin: 'xcode'
+apply plugin: 'xctest'
+
+library {
+  dependencies {
+    api project(':wire-runtime-swift')
+  }
+
+  module.set('WireTests')
+}
