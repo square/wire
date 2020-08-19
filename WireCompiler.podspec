@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
 
   s.prepare_command = <<-CMD
     ./gradlew -p wire-library :wire-compiler:assemble
-    cp ./wire-library/wire-compiler/build/libs/wire-compiler-*-SNAPSHOT-jar-with-dependencies.jar ./compiler.jar
+    cp ./wire-library/wire-compiler/build/libs/wire-compiler-*-jar-with-dependencies.jar ./compiler.jar
   CMD
 
   s.preserve_paths = 'compiler.jar'
