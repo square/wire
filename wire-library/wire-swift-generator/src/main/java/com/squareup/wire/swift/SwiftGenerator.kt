@@ -644,6 +644,13 @@ class SwiftGenerator private constructor(
       val enumName = oneOfEnumNames.getValue(oneOf)
 
       addProperty(PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
+          .getter(FunctionSpec.getterBuilder()
+              .addStatement("%N.%N", storageName, oneOf.name)
+              .build())
+          .setter(FunctionSpec.setterBuilder()
+              .addStatement("copyStorage()")
+              .addStatement("%N.%N = newValue", storageName, oneOf.name)
+              .build())
           .apply {
             if (oneOf.documentation.isNotBlank()) {
               addKdoc("%N\n", oneOf.documentation.sanitizeDoc())
