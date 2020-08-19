@@ -20,8 +20,17 @@ public struct OneOfMessage {
 
     public enum Choice {
 
+        /**
+         * What foo.
+         */
         case foo(Int32)
+        /**
+         * Such bar.
+         */
         case bar(String)
+        /**
+         * Nice baz.
+         */
         case baz(String)
 
         fileprivate func encode(to writer: ProtoWriter) throws {

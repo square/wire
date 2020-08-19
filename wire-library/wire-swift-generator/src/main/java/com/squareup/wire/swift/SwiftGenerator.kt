@@ -21,6 +21,7 @@ import io.outfoxx.swiftpoet.DATA
 import io.outfoxx.swiftpoet.DICTIONARY
 import io.outfoxx.swiftpoet.DOUBLE
 import io.outfoxx.swiftpoet.DeclaredTypeName
+import io.outfoxx.swiftpoet.EnumerationCaseSpec
 import io.outfoxx.swiftpoet.ExtensionSpec
 import io.outfoxx.swiftpoet.FLOAT
 import io.outfoxx.swiftpoet.FileSpec
@@ -31,6 +32,7 @@ import io.outfoxx.swiftpoet.Modifier.FILEPRIVATE
 import io.outfoxx.swiftpoet.Modifier.MUTATING
 import io.outfoxx.swiftpoet.Modifier.PRIVATE
 import io.outfoxx.swiftpoet.Modifier.PUBLIC
+import io.outfoxx.swiftpoet.Modifier.STATIC
 import io.outfoxx.swiftpoet.OPTIONAL
 import io.outfoxx.swiftpoet.ParameterSpec
 import io.outfoxx.swiftpoet.ParameterizedTypeName
@@ -64,6 +66,8 @@ class SwiftGenerator private constructor(
   private val codingKey = DeclaredTypeName.typeName("Swift.CodingKey")
   private val encoder = DeclaredTypeName.typeName("Swift.Encoder")
   private val decoder = DeclaredTypeName.typeName("Swift.Decoder")
+
+  private val deprecated = AttributeSpec.builder("available").addArguments("*", "deprecated").build()
 
   private val ProtoType.typeName
     get() = nameToTypeName.getValue(this)
@@ -582,11 +586,7 @@ class SwiftGenerator private constructor(
         property.addKdoc("%L\n", field.documentation.sanitizeDoc())
       }
       if (!forStorageType && field.isDeprecated) {
-        property.addAttribute(
-            AttributeSpec.builder("available")
-                .addArguments("*", "deprecated")
-                .build()
-        )
+        property.addAttribute(deprecated)
       }
       if (field.typeName.needsJsonString()) {
         property.addAttribute("JSONString")
@@ -679,9 +679,15 @@ class SwiftGenerator private constructor(
           .addModifiers(PUBLIC)
           .apply {
             oneOf.fields.forEach { oneOfField ->
-              // TODO SwiftPoet needs to support attributing an enum case.
-              // TODO SwiftPoet needs to support documenting an enum case.
-              addEnumCase(oneOfField.name, oneOfField.typeName.makeNonOptional())
+              addEnumCase(EnumerationCaseSpec.builder(oneOfField.name, oneOfField.typeName.makeNonOptional())
+                  .apply {
+                    if (oneOfField.documentation.isNotBlank()) {
+                      addKdoc("%L\n", oneOfField.documentation.sanitizeDoc())
+                    }
+                    if (oneOfField.isDeprecated) {
+                      addAttribute(deprecated)
+                    }                  }
+                  .build())
             }
           }
           .addFunction(FunctionSpec.builder("encode")
@@ -762,9 +768,27 @@ class SwiftGenerator private constructor(
             addKdoc("%L\n", type.documentation.sanitizeDoc())
           }
           type.constants.forEach { constant ->
-            // TODO SwiftPoet needs to support attributing an enum case.
-            // TODO SwiftPoet needs to support documenting an enum case.
-            addEnumCase(constant.name, constant.tag.toString())
+            addEnumCase(EnumerationCaseSpec.builder(constant.name, constant.tag)
+                .apply {
+                  if (constant.documentation.isNotBlank()) {
+                    addKdoc("%L\n", constant.documentation.sanitizeDoc())
+                  }
+                  if (constant.isDeprecated) {
+                    addAttribute(deprecated)
+                  }
+                }
+                .build())
+          }
+          // Swift won't synthesize CaseIterable conformance if any constants contain an availability
+          // attribute. https://bugs.swift.org/browse/SR-7151
+          if (type.constants.any { it.isDeprecated }) {
+            addProperty(PropertySpec.varBuilder("allCases", ARRAY.parameterizedBy(enumName))
+                .addModifiers(PUBLIC, STATIC)
+                .getter(FunctionSpec.getterBuilder()
+                    .addStatement("return [%L]", type.constants.map { CodeBlock.of(".%N", it.name) }
+                        .joinToCode(",%W"))
+                    .build())
+                .build())
           }
           type.nestedTypes.forEach { nestedType ->
             generateType(nestedType, extensions).forEach {

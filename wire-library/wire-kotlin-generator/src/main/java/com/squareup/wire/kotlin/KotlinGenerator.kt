@@ -1445,7 +1445,7 @@ class KotlinGenerator private constructor(
             if (constant.documentation.isNotBlank()) {
               addKdoc("%L\n", constant.documentation.sanitizeKdoc())
             }
-            if (constant.options.get(ENUM_DEPRECATED) == "true") {
+            if (constant.isDeprecated) {
               addAnnotation(AnnotationSpec.builder(Deprecated::class)
                   .addMember("message = %S", "${constant.name} is deprecated")
                   .build())
@@ -1756,8 +1756,6 @@ class KotlinGenerator private constructor(
     )
     private val MESSAGE = Message::class.asClassName()
     private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
-
-    private val ENUM_DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated")
 
     @JvmStatic @JvmName("get")
     operator fun invoke(

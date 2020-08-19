@@ -2,9 +2,17 @@
 // Source: squareup.protos.kotlin.DeprecatedEnum in deprecated_enum.proto
 public enum DeprecatedEnum : UInt32, CaseIterable, Codable {
 
+    @available(*, deprecated)
     case DISABLED = 1
+    @available(*, deprecated)
     case ENABLED = 2
     case ON = 3
     case OFF = 4
+
+    public static var allCases: [DeprecatedEnum] {
+        get {
+            return [.DISABLED, .ENABLED, .ON, .OFF]
+        }
+    }
 
 }

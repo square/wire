@@ -84,7 +84,6 @@ import okio.ByteString;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.squareup.wire.internal._PlatformKt.camelCase;
 import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
-import static com.squareup.wire.schema.Options.ENUM_VALUE_OPTIONS;
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
 import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
 import static javax.lang.model.element.Modifier.ABSTRACT;
@@ -102,10 +101,6 @@ import static javax.lang.model.element.Modifier.STATIC;
  * java.lang.String}, or {@code com.squareup.protos.person.Person}).
  */
 public final class JavaGenerator {
-  static final ProtoMember FIELD_DEPRECATED = ProtoMember.get(FIELD_OPTIONS, "deprecated");
-  static final ProtoMember ENUM_DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated");
-  static final ProtoMember PACKED = ProtoMember.get(FIELD_OPTIONS, "packed");
-
   static final ClassName BYTE_STRING = ClassName.get(ByteString.class);
   static final ClassName STRING = ClassName.get(String.class);
   static final ClassName LIST = ClassName.get(List.class);
@@ -581,7 +576,7 @@ public final class JavaGenerator {
         constantBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.getDocumentation()));
       }
 
-      if ("true".equals(constant.getOptions().get(ENUM_DEPRECATED))) {
+      if (constant.isDeprecated()) {
         constantBuilder.addAnnotation(Deprecated.class);
       }
 
@@ -857,7 +852,7 @@ public final class JavaGenerator {
       if (!constant.getDocumentation().isEmpty()) {
         fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.getDocumentation()));
       }
-      if ("true".equals(constant.getOptions().get(ENUM_DEPRECATED))) {
+      if (constant.isDeprecated()) {
         fieldBuilder.addAnnotation(Deprecated.class);
       }
       builder.addField(fieldBuilder.build());
