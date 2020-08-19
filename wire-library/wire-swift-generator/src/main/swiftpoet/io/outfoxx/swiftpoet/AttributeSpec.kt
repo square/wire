@@ -17,11 +17,12 @@
 package io.outfoxx.swiftpoet
 
 class AttributeSpec internal constructor(builder: Builder) {
-  internal val name = builder.name
+  internal val identifier = builder.identifier
   internal val arguments = builder.arguments
 
   internal fun emit(out: CodeWriter): CodeWriter {
-    out.emit("@$name")
+    out.emit("@")
+    out.emitCode(identifier)
     if (arguments.isNotEmpty()) {
       out.emit("(")
       out.emit(arguments.joinToString())
@@ -30,7 +31,7 @@ class AttributeSpec internal constructor(builder: Builder) {
     return out
   }
 
-  class Builder internal constructor(val name: String) {
+  class Builder internal constructor(val identifier: CodeBlock) {
     internal val arguments = mutableListOf<String>()
 
     fun addArgument(code: String): Builder = apply {
@@ -52,7 +53,11 @@ class AttributeSpec internal constructor(builder: Builder) {
 
   companion object {
     fun builder(name: String): Builder {
-      return Builder(name)
+      return Builder(CodeBlock.of("%L", name))
+    }
+
+    fun builder(typeName: DeclaredTypeName): Builder {
+      return Builder(CodeBlock.of("%T", typeName))
     }
 
     fun available(vararg platforms: Pair<String, String>): AttributeSpec {
