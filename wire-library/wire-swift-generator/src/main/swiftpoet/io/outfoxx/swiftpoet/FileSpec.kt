@@ -60,6 +60,7 @@ class FileSpec private constructor(builder: FileSpec.Builder) {
     require(Files.notExists(directory) || Files.isDirectory(directory)) {
       "path $directory exists but is not a directory."
     }
+    Files.createDirectories(directory)
     val outputPath = directory.resolve("$name.swift")
     OutputStreamWriter(Files.newOutputStream(outputPath), UTF_8).use { writer -> writeTo(writer) }
   }

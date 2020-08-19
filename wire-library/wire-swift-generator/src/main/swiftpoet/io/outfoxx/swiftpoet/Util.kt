@@ -209,6 +209,8 @@ private val KEYWORDS = setOf(
    "throw",
    "throws",
    "true",
-   "try"
+   "try",
 
+   "Type",
+   "Self"
 )

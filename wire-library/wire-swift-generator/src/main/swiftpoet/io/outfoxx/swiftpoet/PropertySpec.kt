@@ -164,20 +164,17 @@ class PropertySpec private constructor(
 
   companion object {
     @JvmStatic fun builder(name: String, type: TypeName, vararg modifiers: Modifier): Builder {
-      require(name.isName) { "not a valid name: $name" }
       return Builder(name, type)
           .addModifiers(*modifiers)
     }
 
     @JvmStatic fun varBuilder(name: String, type: TypeName, vararg modifiers: Modifier): Builder {
-      require(name.isName) { "not a valid name: $name" }
       return Builder(name, type)
           .mutable(true)
           .addModifiers(*modifiers)
     }
 
     @JvmStatic fun abstractBuilder(name: String, type: TypeName, vararg modifiers: Modifier): Builder {
-      require(name.isName) { "not a valid name: $name" }
       return Builder(name, type)
          .mutable(true)
          .addModifiers(*modifiers)

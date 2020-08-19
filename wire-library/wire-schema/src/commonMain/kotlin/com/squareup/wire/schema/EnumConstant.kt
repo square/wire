@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.schema.Options.Companion.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.internal.parser.EnumConstantElement
 
 data class EnumConstant(
@@ -24,6 +25,9 @@ data class EnumConstant(
   val documentation: String,
   val options: Options
 ) {
+  val isDeprecated: Boolean
+    get() = "true" == options.get(DEPRECATED)
+
   internal fun toElement() =
     EnumConstantElement(location, name, tag, documentation, options.elements)
 
@@ -41,11 +45,13 @@ data class EnumConstant(
       EnumConstant(location, name, tag, documentation, options.retainLinked())
 
   companion object {
+    private val DEPRECATED = ProtoMember.get(ENUM_VALUE_OPTIONS, "deprecated")
+
     internal fun fromElements(elements: List<EnumConstantElement>) =
       elements.map {
         EnumConstant(
             it.location, it.name, it.tag, it.documentation,
-            Options(Options.ENUM_VALUE_OPTIONS, it.options)
+            Options(ENUM_VALUE_OPTIONS, it.options)
         )
       }
 

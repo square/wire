@@ -48,6 +48,9 @@ public struct Person {
 
         case MOBILE = 0
         case HOME = 1
+        /**
+         * Could be phone or fax.
+         */
         case WORK = 2
 
     }

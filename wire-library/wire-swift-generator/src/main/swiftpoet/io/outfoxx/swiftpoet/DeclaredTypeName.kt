@@ -43,12 +43,6 @@ class DeclaredTypeName internal constructor(
 
   val compoundName get() = simpleNames.joinToString("") { it.capitalize() }
 
-  init {
-    for (i in 1 until names.size) {
-      require(names[i].isName) { "part ${names[i]} is keyword" }
-    }
-  }
-
   /**
    * Returns the enclosing type, like [Map] for `Map.Entry`. Returns null if this type
    * is not nested in another type.
