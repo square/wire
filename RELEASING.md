@@ -96,7 +96,7 @@ Cutting a Release
 
     ```
     git commit -am "Prepare for release $RELEASE_VERSION."
-    git tag -a parent-$RELEASE_VERSION -m "Version $RELEASE_VERSION"
+    git tag -a $RELEASE_VERSION -m "Version $RELEASE_VERSION"
     sed -i "" \
       "s/VERSION_NAME=.*/VERSION_NAME=$NEXT_VERSION/g" \
       `find . -name "gradle.properties"`
