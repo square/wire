@@ -164,8 +164,7 @@ class SwiftGenerator private constructor(
 
           if (type.isHeapAllocated) {
             addProperty(PropertySpec.varBuilder(storageName, storageType, PRIVATE)
-                // TODO https://github.com/outfoxx/swiftpoet/issues/14
-                .addAttribute(heap.simpleName)
+                .addAttribute(AttributeSpec.builder(heap).build())
                 .build())
             generateMessageStoragePropertyDelegates(type, storageName, oneOfEnumNames)
             addFunction(FunctionSpec.constructorBuilder()
@@ -592,8 +591,7 @@ class SwiftGenerator private constructor(
         property.addAttribute("JSONString")
       }
       if (isIndirect(type, field)) {
-        // TODO https://github.com/outfoxx/swiftpoet/issues/14
-        property.addAttribute(indirect.simpleName)
+        property.addAttribute(AttributeSpec.builder(indirect).build())
       }
       addProperty(property.build())
     }
