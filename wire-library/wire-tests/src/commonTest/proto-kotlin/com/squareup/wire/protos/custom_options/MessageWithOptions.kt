@@ -19,6 +19,8 @@ import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+@MyMessageOptionTwo(91011.0f)
+@MyMessageOptionFour(FooBar.FooBarBazEnum.FOO)
 class MessageWithOptions(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageWithOptions, Nothing>(ADAPTER, unknownFields) {

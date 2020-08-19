@@ -32,21 +32,26 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 class FooBar(
+  @MyFieldOptionOne(17)
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val foo: Int? = null,
+  @MyFieldOptionTwo(33.5f)
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val bar: String? = null,
+  @MyFieldOptionThree(FooBarBazEnum.BAR)
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}Nested#ADAPTER"
   )
   val baz: Nested? = null,
+  @MyFieldOptionOne(18)
+  @MyFieldOptionTwo(34.5f)
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
@@ -70,6 +75,7 @@ class FooBar(
   rep: List<FooBarBazEnum> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FooBar, Nothing>(ADAPTER, unknownFields) {
+  @MyFieldOptionTwo(99.9f)
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",

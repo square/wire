@@ -15,6 +15,13 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.protos.custom_options.FooBar
+import com.squareup.wire.protos.custom_options.MessageWithOptions
+import com.squareup.wire.protos.custom_options.MyFieldOptionOne
+import com.squareup.wire.protos.custom_options.MyFieldOptionThree
+import com.squareup.wire.protos.custom_options.MyFieldOptionTwo
+import com.squareup.wire.protos.custom_options.MyMessageOptionFour
+import com.squareup.wire.protos.custom_options.MyMessageOptionTwo
 import com.squareup.wire.protos.person.Person
 import com.squareup.wire.protos.person.Person.PhoneNumber
 import com.squareup.wire.protos.person.Person.PhoneType
@@ -45,5 +52,31 @@ class WireKotlinTest {
     // Round-trip these instances through the builder and ensure the lists are the same instances.
     assertThat(personWithPhone.newBuilder().build().phone).isSameAs(personWithPhone.phone)
     assertThat(personNoPhone.newBuilder().build().phone).isSameAs(personNoPhone.phone)
+  }
+
+  @Test fun optionsOnMessageType() {
+    val myMessageOptionTwo = MessageWithOptions::class.annotations
+        .filterIsInstance<MyMessageOptionTwo>()
+        .first()
+    assertThat(myMessageOptionTwo.value).isEqualTo(91011.0f)
+    val myMessageOptionFour = MessageWithOptions::class.annotations
+        .filterIsInstance<MyMessageOptionFour>()
+        .first()
+    assertThat(myMessageOptionFour.value).isEqualTo(FooBar.FooBarBazEnum.FOO)
+  }
+
+  @Test fun optionsOnField() {
+    val myFieldOptionOne = FooBar::class.members.first { it.name == "foo" }.annotations
+        .filterIsInstance<MyFieldOptionOne>()
+        .first()
+    assertThat(myFieldOptionOne.value).isEqualTo(17)
+    val myFieldOptionTwo = FooBar::class.members.first { it.name == "bar" }.annotations
+        .filterIsInstance<MyFieldOptionTwo>()
+        .first()
+    assertThat(myFieldOptionTwo.value).isEqualTo(33.5f)
+    val myFieldOptionThree = FooBar::class.members.first { it.name == "baz" }.annotations
+        .filterIsInstance<MyFieldOptionThree>()
+        .first()
+    assertThat(myFieldOptionThree.value).isEqualTo(FooBar.FooBarBazEnum.BAR)
   }
 }

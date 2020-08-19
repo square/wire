@@ -65,7 +65,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.math.BigInteger;
 import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +85,12 @@ import static com.squareup.wire.internal._PlatformKt.camelCase;
 import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
 import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
 import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
+import static com.squareup.wire.schema.internal.JvmLanguages.annotationTargetType;
+import static com.squareup.wire.schema.internal.JvmLanguages.builtInAdapterString;
+import static com.squareup.wire.schema.internal.JvmLanguages.eligibleAsAnnotationMember;
+import static com.squareup.wire.schema.internal.JvmLanguages.javaPackage;
+import static com.squareup.wire.schema.internal.JvmLanguages.optionValueToInt;
+import static com.squareup.wire.schema.internal.JvmLanguages.optionValueToLong;
 import static javax.lang.model.element.Modifier.ABSTRACT;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -423,19 +428,6 @@ public final class JavaGenerator {
       result.add(".asRepeated()");
     }
     return result.build();
-  }
-
-  private static String javaPackage(ProtoFile protoFile) {
-    String wirePackage = protoFile.wirePackage();
-    if (wirePackage != null) {
-      return wirePackage;
-    } else if (protoFile.javaPackage() != null) {
-      return protoFile.javaPackage();
-    } else if (protoFile.getPackageName() != null) {
-      return protoFile.getPackageName();
-    } else {
-      return "";
-    }
   }
 
   public boolean isEnum(ProtoType type) {
@@ -1344,25 +1336,10 @@ public final class JavaGenerator {
   }
 
   private String adapterString(ProtoType type) {
-    if (type.isScalar()) {
-      return ProtoAdapter.class.getName() + '#' + type.toString().toUpperCase(Locale.US);
+    String builtInAdapterString = builtInAdapterString(type);
+    if (builtInAdapterString != null) {
+      return builtInAdapterString;
     }
-    if (type.equals(ProtoType.DURATION)) return ProtoAdapter.class.getName() + "#DURATION";
-    if (type.equals(ProtoType.TIMESTAMP)) return ProtoAdapter.class.getName() + "#INSTANT";
-    if (type.equals(ProtoType.EMPTY)) return ProtoAdapter.class.getName() + "#EMPTY";
-    if (type.equals(ProtoType.STRUCT_MAP)) return ProtoAdapter.class.getName() + "#STRUCT_MAP";
-    if (type.equals(ProtoType.STRUCT_VALUE)) return ProtoAdapter.class.getName() + "#STRUCT_VALUE";
-    if (type.equals(ProtoType.STRUCT_NULL)) return ProtoAdapter.class.getName() + "#STRUCT_NULL";
-    if (type.equals(ProtoType.STRUCT_LIST)) return ProtoAdapter.class.getName() + "#STRUCT_LIST";
-    if (type.equals(ProtoType.DOUBLE_VALUE)) return ProtoAdapter.class.getName() + "#DOUBLE_VALUE";
-    if (type.equals(ProtoType.FLOAT_VALUE)) return ProtoAdapter.class.getName() + "#FLOAT_VALUE";
-    if (type.equals(ProtoType.INT64_VALUE)) return ProtoAdapter.class.getName() + "#INT64_VALUE";
-    if (type.equals(ProtoType.UINT64_VALUE)) return ProtoAdapter.class.getName() + "#UINT64_VALUE";
-    if (type.equals(ProtoType.INT32_VALUE)) return ProtoAdapter.class.getName() + "#INT32_VALUE";
-    if (type.equals(ProtoType.UINT32_VALUE)) return ProtoAdapter.class.getName() + "#UINT32_VALUE";
-    if (type.equals(ProtoType.BOOL_VALUE)) return ProtoAdapter.class.getName() + "#BOOL_VALUE";
-    if (type.equals(ProtoType.STRING_VALUE)) return ProtoAdapter.class.getName() + "#STRING_VALUE";
-    if (type.equals(ProtoType.BYTES_VALUE)) return ProtoAdapter.class.getName() + "#BYTES_VALUE";
 
     AdapterConstant adapterConstant = profile.getAdapter(type);
     if (adapterConstant != null) {
@@ -1934,10 +1911,10 @@ public final class JavaGenerator {
       return CodeBlock.of("$L", value != null ? value : false);
 
     } else if (javaType.equals(TypeName.INT)) {
-      return CodeBlock.of("$L", valueToInt(value));
+      return CodeBlock.of("$L", optionValueToInt(value));
 
     } else if (javaType.equals(TypeName.LONG)) {
-      return CodeBlock.of("$LL", Long.toString(valueToLong(value)));
+      return CodeBlock.of("$LL", optionValueToLong(value));
 
     } else if (javaType.equals(TypeName.FLOAT)) {
       return CodeBlock.of("$Lf", value != null ? String.valueOf(value) : 0f);
@@ -2049,33 +2026,6 @@ public final class JavaGenerator {
     return builder.build();
   }
 
-  private static @Nullable ElementType annotationTargetType(Extend extend) {
-    if (extend.getType().equals(MESSAGE_OPTIONS)) {
-      return ElementType.TYPE;
-    } else if (extend.getType().equals(FIELD_OPTIONS)) {
-      return ElementType.FIELD;
-    } else {
-      return null;
-    }
-  }
-
-  private static boolean eligibleAsAnnotationMember(Schema schema, Field field) {
-    ProtoType type = field.getType();
-    if (!type.isScalar() && !(schema.getType(type) instanceof EnumType)) {
-      return false;
-    }
-
-    if (field.getPackageName().equals("google.protobuf")) {
-      return false; // Don't emit annotations for packed, etc.
-    }
-
-    if (field.getName().equals("redacted")) {
-      return false; // Redacted is built-in.
-    }
-
-    return true;
-  }
-
   private List<AnnotationSpec> optionAnnotations(Options options) {
     List<AnnotationSpec> result = new ArrayList<>();
     for (Map.Entry<ProtoMember, Object> entry : options.getMap().entrySet()) {
@@ -2100,31 +2050,5 @@ public final class JavaGenerator {
     return AnnotationSpec.builder(type)
         .addMember("value", fieldValue)
         .build();
-  }
-
-  static int valueToInt(@Nullable Object value) {
-    if (value == null) return 0;
-
-    String string = String.valueOf(value);
-    if (string.startsWith("0x") || string.startsWith("0X")) {
-      return Integer.valueOf(string.substring("0x".length()), 16); // Hexadecimal.
-    } else if (string.startsWith("0") && !string.equals("0")) {
-      throw new IllegalStateException("Octal literal unsupported: " + value); // Octal.
-    } else {
-      return new BigInteger(string).intValue(); // Decimal.
-    }
-  }
-
-  static long valueToLong(@Nullable Object value) {
-    if (value == null) return 0L;
-
-    String string = String.valueOf(value);
-    if (string.startsWith("0x") || string.startsWith("0X")) {
-      return Long.valueOf(string.substring("0x".length()), 16); // Hexadecimal.
-    } else if (string.startsWith("0") && !string.equals("0")) {
-      throw new IllegalStateException("Octal literal unsupported: " + value); // Octal.
-    } else {
-      return new BigInteger(string).longValue(); // Decimal.
-    }
   }
 }

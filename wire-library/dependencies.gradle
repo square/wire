@@ -77,6 +77,7 @@ ext.deps = [
       'android': "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
     ],
     'serialization': 'org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0',
+    'reflect': "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}",
   ],
   'kaml': 'com.charleskorn.kaml:kaml:0.18.1',
   'misk': "com.squareup.misk:misk:0.11.0",

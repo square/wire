@@ -73,6 +73,7 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Field.EncodeMode
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
+import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
 import com.squareup.wire.schema.Options.Companion.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
@@ -84,12 +85,16 @@ import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import com.squareup.wire.schema.Type
+import com.squareup.wire.schema.internal.builtInAdapterString
+import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
+import com.squareup.wire.schema.internal.javaPackage
+import com.squareup.wire.schema.internal.optionValueToInt
+import com.squareup.wire.schema.internal.optionValueToLong
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
-import java.math.BigInteger
 import java.util.Locale
 
 class KotlinGenerator private constructor(
@@ -398,6 +403,9 @@ class KotlinGenerator private constructor(
         .apply {
           if (type.documentation.isNotBlank()) {
             addKdoc("%L\n", type.documentation.sanitizeKdoc())
+          }
+          for (annotation in optionAnnotations(type.options)) {
+            addAnnotation(annotation)
           }
         }
         .superclass(if (javaInterOp) {
@@ -783,6 +791,9 @@ class KotlinGenerator private constructor(
                   .addMember("message = %S", "$fieldName is deprecated")
                   .build())
             }
+            for (annotation in optionAnnotations(field.options)) {
+              addAnnotation(annotation)
+            }
             addAnnotation(wireFieldAnnotation(message, field))
             if (javaInterOp) {
               addAnnotation(JvmField::class)
@@ -968,38 +979,16 @@ class KotlinGenerator private constructor(
     add("\n)")
   }
 
-  private fun Any.toIntFieldInitializer(): CodeBlock = when (val int = valueToInt()) {
+  private fun Any.toIntFieldInitializer(): CodeBlock = when (val int = optionValueToInt(this)) {
     Int.MIN_VALUE -> CodeBlock.of("%T.MIN_VALUE", INT)
     Int.MAX_VALUE -> CodeBlock.of("%T.MAX_VALUE", INT)
     else -> CodeBlock.of("%L", int)
   }
 
-  private fun Any.valueToInt(): Int {
-    val string = toString()
-    return when {
-      string.startsWith("0x") || string.startsWith("0X") ->
-        string.substring("0x".length).toInt(radix = 16) // Hexadecimal.
-      string.startsWith("0") && string != "0" ->
-        throw IllegalStateException("Octal literal unsupported $this")
-      else -> BigInteger(string).toInt()
-    }
-  }
-
-  private fun Any.toLongFieldInitializer(): CodeBlock = when (val long = valueToLong()) {
+  private fun Any.toLongFieldInitializer(): CodeBlock = when (val long = optionValueToLong(this)) {
     Long.MIN_VALUE -> CodeBlock.of("%T.MIN_VALUE", LONG)
     Long.MAX_VALUE -> CodeBlock.of("%T.MAX_VALUE", LONG)
     else -> CodeBlock.of("%LL", long)
-  }
-
-  private fun Any.valueToLong(): Long {
-    val string = toString()
-    return when {
-      string.startsWith("0x") || string.startsWith("0X") ->
-        string.substring("0x".length).toLong(radix = 16) // Hexadecimal.
-      string.startsWith("0") && string != "0" ->
-        throw IllegalStateException("Octal literal unsupported $this")
-      else -> BigInteger(string).toLong()
-    }
   }
 
   /**
@@ -1355,25 +1344,11 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun ProtoType.adapterString() = when {
-    isScalar -> ProtoAdapter::class.java.name + '#' + simpleName.toUpperCase(Locale.US)
-    this == ProtoType.DURATION -> ProtoAdapter::class.java.name + "#DURATION"
-    this == ProtoType.TIMESTAMP -> ProtoAdapter::class.java.name + "#INSTANT"
-    this == ProtoType.EMPTY -> ProtoAdapter::class.java.name + "#EMPTY"
-    this == ProtoType.STRUCT_MAP -> ProtoAdapter::class.java.name + "#STRUCT_MAP"
-    this == ProtoType.STRUCT_VALUE -> ProtoAdapter::class.java.name + "#STRUCT_VALUE"
-    this == ProtoType.STRUCT_NULL -> ProtoAdapter::class.java.name + "#STRUCT_NULL"
-    this == ProtoType.STRUCT_LIST -> ProtoAdapter::class.java.name + "#STRUCT_LIST"
-    this == ProtoType.DOUBLE_VALUE -> ProtoAdapter::class.java.name + "#DOUBLE_VALUE"
-    this == ProtoType.FLOAT_VALUE -> ProtoAdapter::class.java.name + "#FLOAT_VALUE"
-    this == ProtoType.INT64_VALUE -> ProtoAdapter::class.java.name + "#INT64_VALUE"
-    this == ProtoType.UINT64_VALUE -> ProtoAdapter::class.java.name + "#UINT64_VALUE"
-    this == ProtoType.INT32_VALUE -> ProtoAdapter::class.java.name + "#INT32_VALUE"
-    this == ProtoType.UINT32_VALUE -> ProtoAdapter::class.java.name + "#UINT32_VALUE"
-    this == ProtoType.BOOL_VALUE -> ProtoAdapter::class.java.name + "#BOOL_VALUE"
-    this == ProtoType.STRING_VALUE -> ProtoAdapter::class.java.name + "#STRING_VALUE"
-    this == ProtoType.BYTES_VALUE -> ProtoAdapter::class.java.name + "#BYTES_VALUE"
-    else -> (typeName as ClassName).reflectionName() + "#ADAPTER"
+  private fun ProtoType.adapterString(): String {
+    val builtInAdapterString = builtInAdapterString(this)
+    if (builtInAdapterString != null) return builtInAdapterString
+
+    return (typeName as ClassName).reflectionName() + "#ADAPTER"
   }
 
   /**
@@ -1565,7 +1540,7 @@ class KotlinGenerator private constructor(
     require(field in extend.fields)
     val annotationTarget = extend.annotationTarget ?: return null
 
-    if (!eligibleAsAnnotationMember(schema, field.type!!)) return null
+    if (!eligibleAsAnnotationMember(schema, field)) return null
     val returnType = field.type!!.typeName
 
     val kotlinType = generatedTypeName(field)
@@ -1697,6 +1672,31 @@ class KotlinGenerator private constructor(
       }
     }
 
+  private fun optionAnnotations(options: Options): List<AnnotationSpec> {
+    val result = mutableListOf<AnnotationSpec>()
+    for ((key, value) in options.map) {
+      val annotationSpec = extensionFieldAnnotation(key, value!!)
+      if (annotationSpec != null) {
+        result.add(annotationSpec)
+      }
+    }
+    return result
+  }
+
+  private fun extensionFieldAnnotation(protoMember: ProtoMember, value: Any): AnnotationSpec? {
+    val field: Field = schema.getField(protoMember) ?: return null
+    if (!eligibleAsAnnotationMember(schema, field)) return null
+
+    val protoFile: ProtoFile = schema.protoFile(field.location.path) ?: return null
+    val simpleName = camelCase(field.name, true)
+    val type = ClassName(javaPackage(protoFile), simpleName)
+    val fieldValue = defaultFieldInitializer(field.type!!, value)
+
+    return AnnotationSpec.builder(type)
+        .addMember(fieldValue)
+        .build()
+  }
+
   companion object {
     private val BUILT_IN_TYPES = mapOf(
         ProtoType.BOOL to BOOLEAN,
@@ -1778,7 +1778,7 @@ class KotlinGenerator private constructor(
       }
 
       for (protoFile in schema.protoFiles) {
-        val kotlinPackage = protoFile.kotlinPackage()
+        val kotlinPackage = javaPackage(protoFile)
         putAll(kotlinPackage, null, protoFile.types)
 
         for (service in protoFile.services) {
@@ -1789,7 +1789,7 @@ class KotlinGenerator private constructor(
         for (extend in protoFile.extendList) {
           if (extend.annotationTarget == null) continue
           for (field in extend.fields) {
-            if (!eligibleAsAnnotationMember(schema, field.type!!)) continue
+            if (!eligibleAsAnnotationMember(schema, field)) continue
             val protoMember = field.member
             val simpleName = camelCase(protoMember.simpleName, upperCamel = true)
             val className = ClassName(kotlinPackage, simpleName)
@@ -1818,9 +1818,6 @@ class KotlinGenerator private constructor(
         else -> null
       }
 
-    private fun eligibleAsAnnotationMember(schema: Schema, type: ProtoType): Boolean =
-        type.isScalar || schema.getType(type) is EnumType
-
     internal fun String.sanitizeKdoc(): String {
       return this
           // Remove trailing whitespace on each line.
@@ -1832,4 +1829,3 @@ class KotlinGenerator private constructor(
   }
 }
 
-private fun ProtoFile.kotlinPackage() = wirePackage() ?: javaPackage() ?: packageName ?: ""
