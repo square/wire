@@ -14,11 +14,15 @@ public struct Thing {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Thing : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Thing : Hashable {
 }
+#endif
 
 extension Thing : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -42,6 +46,7 @@ extension Thing : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Thing : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -49,3 +54,4 @@ extension Thing : Codable {
 
     }
 }
+#endif

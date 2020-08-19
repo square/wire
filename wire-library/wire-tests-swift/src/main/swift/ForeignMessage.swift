@@ -14,11 +14,15 @@ public struct ForeignMessage {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension ForeignMessage : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension ForeignMessage : Hashable {
 }
+#endif
 
 extension ForeignMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -42,6 +46,7 @@ extension ForeignMessage : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension ForeignMessage : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -49,3 +54,4 @@ extension ForeignMessage : Codable {
 
     }
 }
+#endif

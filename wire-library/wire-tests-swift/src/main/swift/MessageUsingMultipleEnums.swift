@@ -19,11 +19,15 @@ public struct MessageUsingMultipleEnums {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension MessageUsingMultipleEnums : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension MessageUsingMultipleEnums : Hashable {
 }
+#endif
 
 extension MessageUsingMultipleEnums : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -51,6 +55,7 @@ extension MessageUsingMultipleEnums : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension MessageUsingMultipleEnums : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -59,3 +64,4 @@ extension MessageUsingMultipleEnums : Codable {
 
     }
 }
+#endif

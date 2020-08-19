@@ -10,9 +10,7 @@ public enum DeprecatedEnum : UInt32, CaseIterable, Codable {
     case OFF = 4
 
     public static var allCases: [DeprecatedEnum] {
-        get {
-            return [.DISABLED, .ENABLED, .ON, .OFF]
-        }
+        return [.DISABLED, .ENABLED, .ON, .OFF]
     }
 
 }

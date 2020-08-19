@@ -12,11 +12,15 @@ public struct NoFields {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension NoFields : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension NoFields : Hashable {
 }
+#endif
 
 extension NoFields : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -35,5 +39,7 @@ extension NoFields : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension NoFields : Codable {
 }
+#endif

@@ -21,11 +21,15 @@ public struct OptionalEnumUser {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension OptionalEnumUser : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension OptionalEnumUser : Hashable {
 }
+#endif
 
 extension OptionalEnumUser : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -49,6 +53,7 @@ extension OptionalEnumUser : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension OptionalEnumUser : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -56,3 +61,4 @@ extension OptionalEnumUser : Codable {
 
     }
 }
+#endif

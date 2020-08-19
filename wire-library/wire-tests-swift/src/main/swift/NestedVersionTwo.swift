@@ -32,11 +32,15 @@ public struct NestedVersionTwo {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension NestedVersionTwo : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension NestedVersionTwo : Hashable {
 }
+#endif
 
 extension NestedVersionTwo : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -80,6 +84,7 @@ extension NestedVersionTwo : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension NestedVersionTwo : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -92,3 +97,4 @@ extension NestedVersionTwo : Codable {
 
     }
 }
+#endif

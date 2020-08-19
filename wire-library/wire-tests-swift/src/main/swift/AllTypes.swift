@@ -1885,11 +1885,15 @@ private struct _AllTypes {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension AllTypes.NestedMessage : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension AllTypes.NestedMessage : Hashable {
 }
+#endif
 
 extension AllTypes.NestedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -1913,6 +1917,7 @@ extension AllTypes.NestedMessage : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension AllTypes.NestedMessage : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -1920,12 +1925,17 @@ extension AllTypes.NestedMessage : Codable {
 
     }
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension AllTypes : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension AllTypes : Hashable {
 }
+#endif
 
 extension AllTypes : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -2487,9 +2497,12 @@ extension _AllTypes : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension AllTypes : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_CODABLE
 extension _AllTypes : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -2629,9 +2642,14 @@ extension _AllTypes : Codable {
 
     }
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension _AllTypes : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension _AllTypes : Hashable {
 }
+#endif

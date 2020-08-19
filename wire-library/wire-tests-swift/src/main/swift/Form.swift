@@ -156,17 +156,25 @@ public struct Form {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.Choice : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.Choice : Hashable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.ButtonElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.ButtonElement : Hashable {
 }
+#endif
 
 extension Form.ButtonElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -185,14 +193,20 @@ extension Form.ButtonElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.ButtonElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.LocalImageElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.LocalImageElement : Hashable {
 }
+#endif
 
 extension Form.LocalImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -211,14 +225,20 @@ extension Form.LocalImageElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.LocalImageElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.RemoteImageElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.RemoteImageElement : Hashable {
 }
+#endif
 
 extension Form.RemoteImageElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -237,14 +257,20 @@ extension Form.RemoteImageElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.RemoteImageElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.MoneyElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.MoneyElement : Hashable {
 }
+#endif
 
 extension Form.MoneyElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -263,14 +289,20 @@ extension Form.MoneyElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.MoneyElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.SpacerElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.SpacerElement : Hashable {
 }
+#endif
 
 extension Form.SpacerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -289,14 +321,20 @@ extension Form.SpacerElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.SpacerElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.TextElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.TextElement : Hashable {
 }
+#endif
 
 extension Form.TextElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -315,14 +353,20 @@ extension Form.TextElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.TextElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.CustomizedCardElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.CustomizedCardElement : Hashable {
 }
+#endif
 
 extension Form.CustomizedCardElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -341,14 +385,20 @@ extension Form.CustomizedCardElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.CustomizedCardElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.AddressElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.AddressElement : Hashable {
 }
+#endif
 
 extension Form.AddressElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -367,14 +417,20 @@ extension Form.AddressElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.AddressElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.TextInputElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.TextInputElement : Hashable {
 }
+#endif
 
 extension Form.TextInputElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -393,14 +449,20 @@ extension Form.TextInputElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.TextInputElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.OptionPickerElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.OptionPickerElement : Hashable {
 }
+#endif
 
 extension Form.OptionPickerElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -419,14 +481,20 @@ extension Form.OptionPickerElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.OptionPickerElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.DetailRowElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.DetailRowElement : Hashable {
 }
+#endif
 
 extension Form.DetailRowElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -445,14 +513,20 @@ extension Form.DetailRowElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.DetailRowElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form.CurrencyConversionFlagsElement : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form.CurrencyConversionFlagsElement : Hashable {
 }
+#endif
 
 extension Form.CurrencyConversionFlagsElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -471,14 +545,20 @@ extension Form.CurrencyConversionFlagsElement : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form.CurrencyConversionFlagsElement : Codable {
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Form : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Form : Hashable {
 }
+#endif
 
 extension Form : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -515,6 +595,7 @@ extension Form : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Form : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Form.CodingKeys.self)
@@ -595,3 +676,4 @@ extension Form : Codable {
 
     }
 }
+#endif

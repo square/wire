@@ -14,11 +14,15 @@ public struct ExternalMessage {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension ExternalMessage : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension ExternalMessage : Hashable {
 }
+#endif
 
 extension ExternalMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -42,6 +46,7 @@ extension ExternalMessage : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension ExternalMessage : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -49,3 +54,4 @@ extension ExternalMessage : Codable {
 
     }
 }
+#endif

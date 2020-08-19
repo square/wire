@@ -37,11 +37,15 @@ public struct ModelEvaluation {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension ModelEvaluation : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension ModelEvaluation : Hashable {
 }
+#endif
 
 extension ModelEvaluation : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -73,6 +77,7 @@ extension ModelEvaluation : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension ModelEvaluation : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -82,3 +87,4 @@ extension ModelEvaluation : Codable {
 
     }
 }
+#endif

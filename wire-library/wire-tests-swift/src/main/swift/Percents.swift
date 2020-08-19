@@ -17,11 +17,15 @@ public struct Percents {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Percents : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Percents : Hashable {
 }
+#endif
 
 extension Percents : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -45,6 +49,7 @@ extension Percents : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Percents : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -52,3 +57,4 @@ extension Percents : Codable {
 
     }
 }
+#endif

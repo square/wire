@@ -15,11 +15,15 @@ public struct DeprecatedProto {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension DeprecatedProto : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension DeprecatedProto : Hashable {
 }
+#endif
 
 extension DeprecatedProto : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -43,6 +47,7 @@ extension DeprecatedProto : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension DeprecatedProto : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -50,3 +55,4 @@ extension DeprecatedProto : Codable {
 
     }
 }
+#endif

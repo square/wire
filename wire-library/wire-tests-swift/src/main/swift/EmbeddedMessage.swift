@@ -16,11 +16,15 @@ public struct EmbeddedMessage {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension EmbeddedMessage : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension EmbeddedMessage : Hashable {
 }
+#endif
 
 extension EmbeddedMessage : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -48,6 +52,7 @@ extension EmbeddedMessage : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension EmbeddedMessage : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -56,3 +61,4 @@ extension EmbeddedMessage : Codable {
 
     }
 }
+#endif

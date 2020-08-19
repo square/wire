@@ -28,12 +28,17 @@ public struct RedactedOneOf {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension RedactedOneOf.A : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension RedactedOneOf.A : Hashable {
 }
+#endif
 
+#if !WIRE_REMOVE_REDACTABLE
 extension RedactedOneOf.A : Redactable {
     public enum RedactedKeys : String, RedactedKey {
 
@@ -41,12 +46,17 @@ extension RedactedOneOf.A : Redactable {
 
     }
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension RedactedOneOf : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension RedactedOneOf : Hashable {
 }
+#endif
 
 extension RedactedOneOf : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -73,6 +83,7 @@ extension RedactedOneOf : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension RedactedOneOf : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: RedactedOneOf.CodingKeys.self)
@@ -103,3 +114,4 @@ extension RedactedOneOf : Codable {
 
     }
 }
+#endif

@@ -12,11 +12,15 @@ public struct MessageWithOptions {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension MessageWithOptions : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension MessageWithOptions : Hashable {
 }
+#endif
 
 extension MessageWithOptions : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -35,5 +39,7 @@ extension MessageWithOptions : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension MessageWithOptions : Codable {
 }
+#endif

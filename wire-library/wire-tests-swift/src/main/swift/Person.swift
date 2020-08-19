@@ -76,11 +76,15 @@ public struct Person {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Person.PhoneNumber : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Person.PhoneNumber : Hashable {
 }
+#endif
 
 extension Person.PhoneNumber : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -108,6 +112,7 @@ extension Person.PhoneNumber : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Person.PhoneNumber : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -116,12 +121,17 @@ extension Person.PhoneNumber : Codable {
 
     }
 }
+#endif
 
+#if !WIRE_REMOVE_EQUATABLE
 extension Person : Equatable {
 }
+#endif
 
+#if !WIRE_REMOVE_HASHABLE
 extension Person : Hashable {
 }
+#endif
 
 extension Person : Proto2Codable {
     public init(from reader: ProtoReader) throws {
@@ -161,6 +171,7 @@ extension Person : Proto2Codable {
     }
 }
 
+#if !WIRE_REMOVE_CODABLE
 extension Person : Codable {
     public enum CodingKeys : String, CodingKey {
 
@@ -172,3 +183,4 @@ extension Person : Codable {
 
     }
 }
+#endif
