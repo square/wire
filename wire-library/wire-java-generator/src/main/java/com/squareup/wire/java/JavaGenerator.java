@@ -53,6 +53,7 @@ import com.squareup.wire.schema.Extend;
 import com.squareup.wire.schema.Field;
 import com.squareup.wire.schema.MessageType;
 import com.squareup.wire.schema.OneOf;
+import com.squareup.wire.schema.Options;
 import com.squareup.wire.schema.ProtoFile;
 import com.squareup.wire.schema.ProtoMember;
 import com.squareup.wire.schema.ProtoType;
@@ -295,7 +296,7 @@ public final class JavaGenerator {
         if (annotationTargetType(extend) == null) continue;
 
         for (Field field : extend.getFields()) {
-          if (!eligibleAsAnnotationMember(schema, field.getType())) continue;
+          if (!eligibleAsAnnotationMember(schema, field)) continue;
 
           ProtoMember protoMember = field.getMember();
           String simpleName = camelCase(protoMember.getSimpleName(), true);
@@ -644,6 +645,10 @@ public final class JavaGenerator {
       builder.addJavadoc("$L\n", sanitizeJavadoc(type.getDocumentation()));
     }
 
+    for (AnnotationSpec annotation : optionAnnotations(type.getOptions())) {
+      builder.addAnnotation(annotation);
+    }
+
     ClassName messageType = emitAndroid ? ANDROID_MESSAGE : MESSAGE;
     builder.superclass(messageOf(messageType, javaType, builderJavaType));
 
@@ -682,10 +687,13 @@ public final class JavaGenerator {
 
       String fieldName = nameAllocator.get(field);
       FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldJavaType, fieldName, PUBLIC, FINAL);
-      fieldBuilder.addAnnotation(wireFieldAnnotation(nameAllocator, field));
       if (!field.getDocumentation().isEmpty()) {
         fieldBuilder.addJavadoc("$L\n", sanitizeJavadoc(field.getDocumentation()));
       }
+      for (AnnotationSpec annotation : optionAnnotations(field.getOptions())) {
+        fieldBuilder.addAnnotation(annotation);
+      }
+      fieldBuilder.addAnnotation(wireFieldAnnotation(nameAllocator, field));
       if (field.isExtension()) {
         fieldBuilder.addJavadoc("Extension source: $L\n", field.getLocation().withPathOnly());
       }
@@ -2020,7 +2028,7 @@ public final class JavaGenerator {
     ElementType elementType = annotationTargetType(extend);
     if (elementType == null) return null;
 
-    if (!eligibleAsAnnotationMember(schema, field.getType())) return null;
+    if (!eligibleAsAnnotationMember(schema, field)) return null;
     TypeName returnType = typeName(field.getType());
 
     ClassName javaType = generatedTypeName(field);
@@ -2056,8 +2064,47 @@ public final class JavaGenerator {
     }
   }
 
-  private static boolean eligibleAsAnnotationMember(Schema schema, ProtoType type) {
-    return type.isScalar() || schema.getType(type) instanceof EnumType;
+  private static boolean eligibleAsAnnotationMember(Schema schema, Field field) {
+    ProtoType type = field.getType();
+    if (!type.isScalar() && !(schema.getType(type) instanceof EnumType)) {
+      return false;
+    }
+
+    if (field.getPackageName().equals("google.protobuf")) {
+      return false; // Don't emit annotations for packed, etc.
+    }
+
+    if (field.getName().equals("redacted")) {
+      return false; // Redacted is built-in.
+    }
+
+    return true;
+  }
+
+  private List<AnnotationSpec> optionAnnotations(Options options) {
+    List<AnnotationSpec> result = new ArrayList<>();
+    for (Map.Entry<ProtoMember, Object> entry : options.getMap().entrySet()) {
+      AnnotationSpec annotationSpec = extensionFieldAnnotation(entry.getKey(), entry.getValue());
+      if (annotationSpec != null) {
+        result.add(annotationSpec);
+      }
+    }
+    return result;
+  }
+
+  private @Nullable AnnotationSpec extensionFieldAnnotation(ProtoMember protoMember, Object value) {
+    Field field = schema.getField(protoMember);
+    if (field == null) return null;
+    if (!eligibleAsAnnotationMember(schema, field)) return null;
+
+    ProtoFile protoFile = schema.protoFile(field.getLocation().getPath());
+    String simpleName = camelCase(field.getName(), true);
+    ClassName type = ClassName.get(javaPackage(protoFile), simpleName);
+    CodeBlock fieldValue = fieldInitializer(field.getType(), value);
+
+    return AnnotationSpec.builder(type)
+        .addMember("value", fieldValue)
+        .build();
   }
 
   static int valueToInt(@Nullable Object value) {

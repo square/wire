@@ -42,30 +42,36 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   public static final FooBarBazEnum DEFAULT_EXT = FooBarBazEnum.FOO;
 
+  @MyFieldOptionOne(17)
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer foo;
 
+  @MyFieldOptionTwo(33.5f)
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String bar;
 
+  @MyFieldOptionThree(FooBarBazEnum.BAR)
   @WireField(
       tag = 3,
       adapter = "com.squareup.wire.protos.custom_options.FooBar$Nested#ADAPTER"
   )
   public final Nested baz;
 
+  @MyFieldOptionOne(18)
+  @MyFieldOptionTwo(34.5f)
   @WireField(
       tag = 4,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long qux;
 
+  @MyFieldOptionTwo(99.9f)
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",

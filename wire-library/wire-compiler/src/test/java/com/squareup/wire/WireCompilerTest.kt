@@ -200,8 +200,7 @@ class WireCompilerTest {
         "com/squareup/wire/protos/custom_options/MyFieldOptionTwo.java",
         "com/squareup/wire/protos/custom_options/MyFieldOptionThree.java",
         "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.java",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.java",
-        "com/squareup/wire/protos/redacted/Redacted.java")
+        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.java")
     assertJavaOutputs(outputs)
   }
 
@@ -223,7 +222,6 @@ class WireCompilerTest {
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/redacted/NotRedacted.java",
-        "com/squareup/wire/protos/redacted/Redacted.java",
         "com/squareup/wire/protos/redacted/RedactedChild.java",
         "com/squareup/wire/protos/redacted/RedactedCycleA.java",
         "com/squareup/wire/protos/redacted/RedactedCycleB.java",

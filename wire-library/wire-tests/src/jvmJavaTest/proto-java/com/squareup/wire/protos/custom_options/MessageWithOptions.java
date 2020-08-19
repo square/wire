@@ -15,6 +15,8 @@ import java.lang.String;
 import java.lang.StringBuilder;
 import okio.ByteString;
 
+@MyMessageOptionTwo(91011.0f)
+@MyMessageOptionFour(FooBar.FooBarBazEnum.FOO)
 public final class MessageWithOptions extends Message<MessageWithOptions, MessageWithOptions.Builder> {
   public static final ProtoAdapter<MessageWithOptions> ADAPTER = new ProtoAdapter_MessageWithOptions();
 
