@@ -91,6 +91,8 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       jsonKotlinTestImplementation deps.kotlin.test.junit
       jsonKotlinTestImplementation deps.assertj
       jsonKotlinTestImplementation deps.jimfs
+
+      jvmJavaTestImplementation deps.kotlin.reflect
     }
   }
 

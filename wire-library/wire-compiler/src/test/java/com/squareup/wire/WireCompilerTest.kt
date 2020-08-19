@@ -489,8 +489,7 @@ class WireCompilerTest {
         "com/squareup/wire/protos/custom_options/MyFieldOptionTwo.kt",
         "com/squareup/wire/protos/custom_options/MyFieldOptionThree.kt",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.kt",
-        "com/squareup/wire/protos/custom_options/FooBar.kt",
-        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt"
+        "com/squareup/wire/protos/custom_options/FooBar.kt"
     )
     assertKotlinOutputs(outputs)
   }
@@ -502,7 +501,6 @@ class WireCompilerTest {
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/kotlin/redacted/NotRedacted.kt",
-        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedFields.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedChild.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedCycleA.kt",
@@ -520,7 +518,6 @@ class WireCompilerTest {
     compileToKotlin(sources)
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt"
     )
     assertKotlinOutputs(outputs)
@@ -532,7 +529,6 @@ class WireCompilerTest {
     compileToKotlin(sources, "--java_interop")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/kotlin/redacted/Redacted.kt",
         "com/squareup/wire/protos/kotlin/redacted/RedactedOneOf.kt"
     )
     assertKotlinOutputs(outputs, ".java.interop")
