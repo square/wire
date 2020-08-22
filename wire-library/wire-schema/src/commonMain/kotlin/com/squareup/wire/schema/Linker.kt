@@ -28,7 +28,8 @@ class Linker {
   private val protoTypeNames: MutableMap<String, Type>
   private val errors: MutableList<String>
   private val contextStack: List<Any>
-  private val requestedTypes: MutableSet<ProtoType?>
+  private val requestedTypes: MutableSet<ProtoType>
+  private val requestedFields: MutableSet<Field>
 
   internal constructor(loader: Loader) {
     this.loader = loader
@@ -38,6 +39,7 @@ class Linker {
     contextStack = emptyList()
     errors = mutableListOf()
     requestedTypes = mutableSetOf()
+    requestedFields = mutableSetOf()
   }
 
   private constructor(enclosing: Linker, additionalContext: Any) {
@@ -48,6 +50,7 @@ class Linker {
     contextStack = enclosing.contextStack + additionalContext
     errors = enclosing.errors
     requestedTypes = enclosing.requestedTypes
+    requestedFields = enclosing.requestedFields
   }
 
   /** Returns a linker for [path], loading the file if necessary. */
@@ -132,8 +135,12 @@ class Linker {
           .any { type ->
             requestedTypes.contains(type.type)
           }
-      if (anyTypeIsUsed) {
-        result.add(fileLinker.protoFile.retainLinked(requestedTypes as Set<ProtoType>))
+      val anyFieldIsUsed = fileLinker.protoFile.extendList
+          .any {
+            extend -> extend.fields.any { it in requestedFields }
+          }
+      if (anyTypeIsUsed || anyFieldIsUsed) {
+        result.add(fileLinker.protoFile.retainLinked(requestedTypes.toSet(), requestedFields))
       }
     }
 
@@ -303,6 +310,11 @@ class Linker {
     val fileLinker = getFileLinker(result.location.path)
     fileLinker.requireMembersLinked(result)
     return result
+  }
+
+  /** Mark a field as used in an option so its file is retained in the schema. */
+  fun request(field: Field) {
+    requestedFields.add(field)
   }
 
   /** Returns the field named [field] on the message type of [self]. */

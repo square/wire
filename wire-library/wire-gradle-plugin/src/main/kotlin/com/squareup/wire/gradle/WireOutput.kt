@@ -57,6 +57,8 @@ open class JavaOutput @Inject constructor() : WireOutput() {
   var android: Boolean = false
   var androidAnnotations: Boolean = false
   var compact: Boolean = false
+  var emitDeclaredOptions: Boolean = true
+  var emitAppliedOptions: Boolean = false
 
   override fun toTarget(): JavaTarget {
     return JavaTarget(
@@ -66,7 +68,9 @@ open class JavaOutput @Inject constructor() : WireOutput() {
         outDirectory = out!!,
         android = android,
         androidAnnotations = androidAnnotations,
-        compact = compact
+        compact = compact,
+        emitDeclaredOptions = emitDeclaredOptions,
+        emitAppliedOptions = emitAppliedOptions
     )
   }
 

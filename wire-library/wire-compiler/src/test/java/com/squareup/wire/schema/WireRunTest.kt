@@ -805,6 +805,75 @@ class WireRunTest {
     }
   }
 
+  @Test
+  fun emitDeclaredOptions() {
+    writeDocumentationProto()
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("docs/src/main/proto")),
+        targets = listOf(JavaTarget(
+            outDirectory = "generated/java",
+            emitDeclaredOptions = true
+        ))
+    )
+    wireRun.execute(fs, logger)
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/java/squareup/options/DocumentationUrl.java")
+    assertThat(fs.get("generated/java/squareup/options/DocumentationUrl.java"))
+        .contains("public @interface DocumentationUrl")
+  }
+
+  @Test
+  fun skipDeclaredOptions() {
+    writeDocumentationProto()
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("docs/src/main/proto")),
+        targets = listOf(JavaTarget(
+            outDirectory = "generated/java",
+            emitDeclaredOptions = false
+        ))
+    )
+    wireRun.execute(fs, logger)
+    assertThat(fs.find("generated")).isEmpty()
+  }
+
+  @Test
+  fun emitAppliedOptions() {
+    writeDocumentationProto()
+    writeOctagonProto()
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("polygons/src/main/proto")),
+        protoPath = listOf(Location.get("docs/src/main/proto")),
+        targets = listOf(JavaTarget(
+            outDirectory = "generated/java",
+            emitAppliedOptions = true
+        ))
+    )
+    wireRun.execute(fs, logger)
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/java/squareup/polygons/Octagon.java")
+    assertThat(fs.get("generated/java/squareup/polygons/Octagon.java"))
+        .contains("@DocumentationUrl(\"https://en.wikipedia.org/wiki/Octagon\")")
+  }
+
+  @Test
+  fun skipAppliedOptions() {
+    writeDocumentationProto()
+    writeOctagonProto()
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("polygons/src/main/proto")),
+        protoPath = listOf(Location.get("docs/src/main/proto")),
+        targets = listOf(JavaTarget(
+            outDirectory = "generated/java",
+            emitAppliedOptions = false
+        ))
+    )
+    wireRun.execute(fs, logger)
+    assertThat(fs.find("generated")).containsExactly(
+        "generated/java/squareup/polygons/Octagon.java")
+    assertThat(fs.get("generated/java/squareup/polygons/Octagon.java"))
+        .doesNotContain("@DocumentationUrl")
+  }
+
   private fun writeOrangeProto() {
     fs.add("colors/src/main/proto/squareup/colors/orange.proto", """
           |syntax = "proto2";
@@ -877,6 +946,31 @@ class WireRunTest {
         |message Rhombus {
         |  optional double length = 1;
         |  optional double acute_angle = 2;
+        |}
+        """.trimMargin())
+  }
+
+  private fun writeDocumentationProto() {
+    fs.add("docs/src/main/proto/squareup/options/documentation.proto", """
+        |syntax = "proto2";
+        |package squareup.options;
+        |import "google/protobuf/descriptor.proto";
+        |
+        |extend google.protobuf.MessageOptions {
+        |  optional string documentation_url = 22200;
+        |}
+        """.trimMargin())
+  }
+
+  private fun writeOctagonProto() {
+    fs.add("polygons/src/main/proto/squareup/polygons/octagon.proto", """
+        |syntax = "proto2";
+        |package squareup.polygons;
+        |import "squareup/options/documentation.proto";
+        |
+        |message Octagon {
+        |  option (documentation_url) = "https://en.wikipedia.org/wiki/Octagon";
+        |  optional bool stop = 1;
         |}
         """.trimMargin())
   }

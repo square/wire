@@ -66,8 +66,8 @@ fun eligibleAsAnnotationMember(schema: Schema, field: Field): Boolean {
     return false
   }
 
-  if (field.packageName == "google.protobuf") {
-    return false // Don't emit annotations for packed, etc.
+  if (field.packageName == "google.protobuf" || field.packageName == "wire") {
+    return false // Don't emit annotations for packed, since, etc.
   }
 
   if (field.name == "redacted") {

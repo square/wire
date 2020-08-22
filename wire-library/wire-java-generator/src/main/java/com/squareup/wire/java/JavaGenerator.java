@@ -246,10 +246,13 @@ public final class JavaGenerator {
   private final boolean emitAndroid;
   private final boolean emitAndroidAnnotations;
   private final boolean emitCompact;
+  private final boolean emitDeclaredOptions;
+  private final boolean emitAppliedOptions;
 
   private JavaGenerator(Schema schema, Map<ProtoType, TypeName> typeToJavaName,
       Map<ProtoMember, TypeName> memberToJavaName, Profile profile, boolean emitAndroid,
-      boolean emitAndroidAnnotations, boolean emitCompact) {
+      boolean emitAndroidAnnotations, boolean emitCompact, boolean emitDeclaredOptions,
+      boolean emitAppliedOptions) {
     this.schema = schema;
     this.typeToJavaName = ImmutableMap.copyOf(typeToJavaName);
     this.memberToJavaName = ImmutableMap.copyOf(memberToJavaName);
@@ -257,26 +260,33 @@ public final class JavaGenerator {
     this.emitAndroid = emitAndroid;
     this.emitAndroidAnnotations = emitAndroidAnnotations || emitAndroid;
     this.emitCompact = emitCompact;
+    this.emitDeclaredOptions = emitDeclaredOptions;
+    this.emitAppliedOptions = emitAppliedOptions;
   }
 
   public JavaGenerator withAndroid(boolean emitAndroid) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact);
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
   }
 
   public JavaGenerator withAndroidAnnotations(boolean emitAndroidAnnotations) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact);
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
   }
 
   public JavaGenerator withCompact(boolean emitCompact) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact);
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
   }
 
   public JavaGenerator withProfile(Profile profile) {
     return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
-        emitAndroidAnnotations, emitCompact);
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
+  }
+
+  public JavaGenerator withOptions(boolean emitDeclaredOptions, boolean emitAppliedOptions) {
+    return new JavaGenerator(schema, typeToJavaName, memberToJavaName, profile, emitAndroid,
+        emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions);
   }
 
   public static JavaGenerator get(Schema schema) {
@@ -308,8 +318,9 @@ public final class JavaGenerator {
 
     nameToJavaName.putAll(BUILT_IN_TYPES_MAP);
 
-    return new JavaGenerator(
-        schema, nameToJavaName, memberToJavaName, new Profile(), false, false, false);
+    return new JavaGenerator(schema, nameToJavaName, memberToJavaName, new Profile(),
+        false /* emitAndroid */, false /* emitAndroidAnnotations */, false /* emitCompact */,
+        false /* emitDeclaredOptions */, false /* emitAppliedOptions */);
   }
 
   private static void putAll(Map<ProtoType, TypeName> wireToJava, String javaPackage,
@@ -1994,8 +2005,10 @@ public final class JavaGenerator {
   // public @interface MyFieldOption {
   //   String value();
   // }
-  public @Nullable TypeSpec generateExtendField(Extend extend, Field field) {
+  public @Nullable TypeSpec generateOptionType(Extend extend, Field field) {
     checkArgument(extend.getFields().contains(field));
+
+    if (!emitDeclaredOptions) return null;
 
     ElementType elementType = annotationTargetType(extend);
     if (elementType == null) return null;
@@ -2029,7 +2042,7 @@ public final class JavaGenerator {
   private List<AnnotationSpec> optionAnnotations(Options options) {
     List<AnnotationSpec> result = new ArrayList<>();
     for (Map.Entry<ProtoMember, Object> entry : options.getMap().entrySet()) {
-      AnnotationSpec annotationSpec = extensionFieldAnnotation(entry.getKey(), entry.getValue());
+      AnnotationSpec annotationSpec = optionAnnotation(entry.getKey(), entry.getValue());
       if (annotationSpec != null) {
         result.add(annotationSpec);
       }
@@ -2037,7 +2050,9 @@ public final class JavaGenerator {
     return result;
   }
 
-  private @Nullable AnnotationSpec extensionFieldAnnotation(ProtoMember protoMember, Object value) {
+  private @Nullable AnnotationSpec optionAnnotation(ProtoMember protoMember, Object value) {
+    if (!emitAppliedOptions) return null;
+
     Field field = schema.getField(protoMember);
     if (field == null) return null;
     if (!eligibleAsAnnotationMember(schema, field)) return null;

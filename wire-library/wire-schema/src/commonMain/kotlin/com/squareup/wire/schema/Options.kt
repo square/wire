@@ -126,6 +126,7 @@ class Options(
       }
       field = extensionsForType[path[0]]
     }
+    linker.request(field!!)
 
     val result = mutableMapOf<ProtoMember, Any>()
     var last = result
@@ -142,6 +143,7 @@ class Options(
 
       last = nested
       field = linker.dereference(field, path[i]) ?: return null // Unable to dereference segment.
+      linker.request(field)
     }
 
     last[get(lastProtoType!!, field!!)] = canonicalizeValue(linker, field, option.value)
