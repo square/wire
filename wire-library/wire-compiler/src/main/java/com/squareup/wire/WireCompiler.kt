@@ -126,7 +126,9 @@ class WireCompiler internal constructor(
       targets += KotlinTarget(
           outDirectory = kotlinOut,
           android = emitAndroid,
-          javaInterop = javaInterop
+          javaInterop = javaInterop,
+          emitDeclaredOptions = emitDeclaredOptions,
+          emitAppliedOptions = emitAppliedOptions
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(

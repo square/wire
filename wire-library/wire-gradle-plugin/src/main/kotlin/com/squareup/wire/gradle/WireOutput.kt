@@ -105,6 +105,8 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var exclusive: Boolean = true
   var android: Boolean = false
   var javaInterop: Boolean = false
+  var emitDeclaredOptions: Boolean = true
+  var emitAppliedOptions: Boolean = false
   var rpcCallStyle: String = "suspending"
   var rpcRole: String = "client"
   var singleMethodServices: Boolean = false
@@ -126,6 +128,8 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         outDirectory = out!!,
         android = android,
         javaInterop = javaInterop,
+        emitDeclaredOptions = emitDeclaredOptions,
+        emitAppliedOptions = emitAppliedOptions,
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole,
         singleMethodServices = singleMethodServices

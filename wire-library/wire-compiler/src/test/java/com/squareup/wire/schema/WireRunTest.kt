@@ -786,16 +786,27 @@ class WireRunTest {
     writeDocumentationProto()
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("docs/src/main/proto")),
-        targets = listOf(JavaTarget(
-            outDirectory = "generated/java",
-            emitDeclaredOptions = true
-        ))
+        targets = listOf(
+            JavaTarget(
+                outDirectory = "generated/java",
+                emitDeclaredOptions = true,
+                exclusive = false
+            ),
+            KotlinTarget(
+                outDirectory = "generated/kt",
+                emitDeclaredOptions = true,
+                exclusive = false
+            )
+        )
     )
     wireRun.execute(fs, logger)
     assertThat(fs.find("generated")).containsExactly(
-        "generated/java/squareup/options/DocumentationUrl.java")
+        "generated/java/squareup/options/DocumentationUrl.java",
+        "generated/kt/squareup/options/DocumentationUrl.kt")
     assertThat(fs.get("generated/java/squareup/options/DocumentationUrl.java"))
         .contains("public @interface DocumentationUrl")
+    assertThat(fs.get("generated/kt/squareup/options/DocumentationUrl.kt"))
+        .contains("annotation class DocumentationUrl")
   }
 
   @Test
@@ -803,10 +814,17 @@ class WireRunTest {
     writeDocumentationProto()
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("docs/src/main/proto")),
-        targets = listOf(JavaTarget(
-            outDirectory = "generated/java",
-            emitDeclaredOptions = false
-        ))
+        targets = listOf(
+            JavaTarget(
+                outDirectory = "generated/java",
+                emitDeclaredOptions = false,
+                exclusive = false
+            ),
+            KotlinTarget(
+                outDirectory = "generated/kt",
+                emitDeclaredOptions = false,
+                exclusive = false
+            ))
     )
     wireRun.execute(fs, logger)
     assertThat(fs.find("generated")).isEmpty()
@@ -819,15 +837,26 @@ class WireRunTest {
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("polygons/src/main/proto")),
         protoPath = listOf(Location.get("docs/src/main/proto")),
-        targets = listOf(JavaTarget(
-            outDirectory = "generated/java",
-            emitAppliedOptions = true
-        ))
+        targets = listOf(
+            JavaTarget(
+                outDirectory = "generated/java",
+                emitAppliedOptions = true,
+                exclusive = false
+            ),
+            KotlinTarget(
+                outDirectory = "generated/kt",
+                emitAppliedOptions = true,
+                exclusive = false
+            )
+        )
     )
     wireRun.execute(fs, logger)
     assertThat(fs.find("generated")).containsExactly(
-        "generated/java/squareup/polygons/Octagon.java")
+        "generated/java/squareup/polygons/Octagon.java",
+        "generated/kt/squareup/polygons/Octagon.kt")
     assertThat(fs.get("generated/java/squareup/polygons/Octagon.java"))
+        .contains("@DocumentationUrl(\"https://en.wikipedia.org/wiki/Octagon\")")
+    assertThat(fs.get("generated/kt/squareup/polygons/Octagon.kt"))
         .contains("@DocumentationUrl(\"https://en.wikipedia.org/wiki/Octagon\")")
   }
 
@@ -838,15 +867,26 @@ class WireRunTest {
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("polygons/src/main/proto")),
         protoPath = listOf(Location.get("docs/src/main/proto")),
-        targets = listOf(JavaTarget(
-            outDirectory = "generated/java",
-            emitAppliedOptions = false
-        ))
+        targets = listOf(
+            JavaTarget(
+                outDirectory = "generated/java",
+                emitAppliedOptions = false,
+                exclusive = false
+            ),
+            KotlinTarget(
+                outDirectory = "generated/kt",
+                emitAppliedOptions = false,
+                exclusive = false
+            )
+        )
     )
     wireRun.execute(fs, logger)
     assertThat(fs.find("generated")).containsExactly(
-        "generated/java/squareup/polygons/Octagon.java")
+        "generated/java/squareup/polygons/Octagon.java",
+        "generated/kt/squareup/polygons/Octagon.kt")
     assertThat(fs.get("generated/java/squareup/polygons/Octagon.java"))
+        .doesNotContain("@DocumentationUrl")
+    assertThat(fs.get("generated/kt/squareup/polygons/Octagon.kt"))
         .doesNotContain("@DocumentationUrl")
   }
 

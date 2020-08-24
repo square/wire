@@ -214,6 +214,7 @@ task generateKotlinTests(type: JavaExec) {
   args = [
       '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
       '--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin',
+      '--emit_applied_options',
       'all_types.proto',
       'custom_options.proto',
       'deprecated.proto',
