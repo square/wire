@@ -416,7 +416,7 @@ class WireRunTest {
   }
 
   @Test
-  fun proto3Skipped() {
+  fun proto3ReadAlways() {
     writeBlueProto()
     fs.add("colors/src/main/proto/squareup/colors/red.proto", """
           |syntax = "proto3";
@@ -431,30 +431,6 @@ class WireRunTest {
         sourcePath = listOf(Location.get("colors/src/main/proto")),
         protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(KotlinTarget(outDirectory = "generated/kt"))
-    )
-    wireRun.execute(fs, logger)
-
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
-        "generated/kt/squareup/colors/Blue.kt")
-  }
-
-  @Test
-  fun proto3ReadIfPreviewIsTurnedOn() {
-    writeBlueProto()
-    fs.add("colors/src/main/proto/squareup/colors/red.proto", """
-          |syntax = "proto3";
-          |package squareup.colors;
-          |message Red {
-          |  string oval = 1;
-          |}
-          """.trimMargin())
-    writeTriangleProto()
-
-    val wireRun = WireRun(
-        sourcePath = listOf(Location.get("colors/src/main/proto")),
-        protoPath = listOf(Location.get("polygons/src/main/proto")),
-        targets = listOf(KotlinTarget(outDirectory = "generated/kt")),
-        proto3Preview = true
     )
     wireRun.execute(fs, logger)
 
@@ -659,13 +635,13 @@ class WireRunTest {
       |""".trimMargin())
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("protos")),
+        targets = listOf(JavaTarget(outDirectory = "gen")),
         modules = mapOf(
             "a" to Module(pruningRules = PruningRules.Builder()
                 .prune("B")
                 .build()),
             "b" to Module(dependencies = setOf("a"))
-        ),
-        targets = listOf(JavaTarget(outDirectory = "gen"))
+        )
     )
     wireRun.execute(fs, logger)
 
@@ -698,6 +674,7 @@ class WireRunTest {
       |""".trimMargin())
     val wireRun = WireRun(
         sourcePath = listOf(Location.get("protos")),
+        targets = listOf(JavaTarget(outDirectory = "gen")),
         modules = mapOf(
             "a" to Module(
                 pruningRules = PruningRules.Builder()
@@ -707,8 +684,7 @@ class WireRunTest {
             "b" to Module(
                 dependencies = setOf("a")
             )
-        ),
-        targets = listOf(JavaTarget(outDirectory = "gen"))
+        )
     )
     wireRun.execute(fs, logger)
 

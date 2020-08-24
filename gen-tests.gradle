@@ -251,7 +251,6 @@ task generateProto3KotlinTests(type: JavaExec) {
   args = [
           '--proto_path=wire-library/wire-tests/src/commonTest/proto3/kotlin',
           '--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin',
-          '--proto3-preview=UNSUPPORTED',
           'all_types.proto',
           'person.proto',
   ]
@@ -267,7 +266,6 @@ task generateProto3JavaTests(type: JavaExec) {
   args = [
           '--proto_path=wire-library/wire-tests/src/commonTest/proto3/java',
           '--java_out=wire-library/wire-tests/src/jvmJavaTest/proto-java',
-          '--proto3-preview=UNSUPPORTED',
           'all_types.proto',
           'person.proto',
   ]
@@ -492,7 +490,6 @@ task generateSharedJsonCompactJavaTests(type: JavaExec) {
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2',
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3',
           '--java_out=wire-library/wire-tests/src/jvmJsonJavaTest/proto-java',
-          '--proto3-preview=UNSUPPORTED',
           '--compact',
           'all64.proto',
           'all_types_proto2.proto',
@@ -513,7 +510,6 @@ task generateSharedJsonKotlinTests(type: JavaExec) {
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2',
           '--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3',
           '--kotlin_out=wire-library/wire-tests/src/jvmJsonKotlinTest/proto-kotlin',
-          '--proto3-preview=UNSUPPORTED',
           '--java_interop',
           'all64.proto',
           'all_types_proto2.proto',

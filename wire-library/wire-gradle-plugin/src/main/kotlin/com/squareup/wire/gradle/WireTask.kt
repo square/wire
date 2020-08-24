@@ -68,10 +68,6 @@ open class WireTask : SourceTask() {
   @Input
   lateinit var targets: List<Target>
 
-  @Input
-  @Optional
-  var proto3Preview: String? = null
-
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -112,8 +108,7 @@ open class WireTask : SourceTask() {
         sinceVersion = sinceVersion,
         untilVersion = untilVersion,
         onlyVersion = onlyVersion,
-        targets = targets,
-        proto3Preview = (proto3Preview == "UNSUPPORTED")
+        targets = targets
     )
     wireRun.execute()
   }
