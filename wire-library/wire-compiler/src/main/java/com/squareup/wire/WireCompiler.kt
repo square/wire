@@ -105,8 +105,7 @@ class WireCompiler internal constructor(
   val emitCompact: Boolean,
   val emitDeclaredOptions: Boolean,
   val emitAppliedOptions: Boolean,
-  val javaInterop: Boolean,
-  val proto3Preview: String?
+  val javaInterop: Boolean
 ) {
 
   @Throws(IOException::class)
@@ -157,8 +156,7 @@ class WireCompiler internal constructor(
           treeShakingRoots = treeShakingRoots,
           treeShakingRubbish = treeShakingRubbish,
           targets = targets,
-          modules = modules,
-          proto3Preview = proto3Preview == "UNSUPPORTED"
+          modules = modules
       )
 
       wireRun.execute(fs, log)
@@ -218,7 +216,6 @@ class WireCompiler internal constructor(
     private const val SKIP_DECLARED_OPTIONS = "--skip_declared_options"
     private const val EMIT_APPLIED_OPTIONS = "--emit_applied_options"
     private const val JAVA_INTEROP = "--java_interop"
-    private const val PROTO3_PREVIEW = "--proto3-preview="
 
     @Throws(IOException::class)
     @JvmStatic fun main(args: Array<String>) {
@@ -257,7 +254,6 @@ class WireCompiler internal constructor(
       var emitDeclaredOptions = true
       var emitAppliedOptions = false
       var javaInterop = false
-      var proto3Preview: String? = null
 
       for (arg in args) {
         when {
@@ -306,10 +302,6 @@ class WireCompiler internal constructor(
             modules = parseManifestModules(yaml)
           }
 
-          arg.startsWith(PROTO3_PREVIEW) -> {
-            proto3Preview = arg.substring(PROTO3_PREVIEW.length)
-          }
-
           arg == QUIET_FLAG -> quiet = true
           arg == DRY_RUN_FLAG -> dryRun = true
           arg == NAMED_FILES_ONLY -> namedFilesOnly = true
@@ -338,7 +330,7 @@ class WireCompiler internal constructor(
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, swiftOut,
           sourceFileNames, treeShakingRoots, treeShakingRubbish, modules, dryRun, namedFilesOnly,
           emitAndroid, emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions,
-          javaInterop, proto3Preview)
+          javaInterop)
     }
   }
 }

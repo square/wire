@@ -104,11 +104,6 @@ open class WireExtension(project: Project) {
   @get:Input
   val outputs = mutableListOf<WireOutput>()
 
-  /** Not supported, do not use. */
-  @get:Input
-  @get:Optional
-  var proto3Preview: String? = null
-
   @InputFiles
   @Optional
   fun getSourcePaths() = sourcePaths.toSet()

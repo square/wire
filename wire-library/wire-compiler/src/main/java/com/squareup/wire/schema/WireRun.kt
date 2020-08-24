@@ -180,10 +180,7 @@ data class WireRun(
    * If desired, multiple modules can be specified along with dependencies between them. Types
    * which appear in dependencies will not be re-generated.
    */
-  val modules: Map<String, Module> = emptyMap(),
-
-  /** True to build proto3 artifacts. This is unsupported and does not work. */
-  val proto3Preview: Boolean = false
+  val modules: Map<String, Module> = emptyMap()
 ) {
   data class Module(
     val dependencies: Set<String> = emptySet(),
@@ -253,10 +250,6 @@ data class WireRun(
 
       // Call each target.
       for (protoFile in partition.schema.protoFiles) {
-        if (protoFile.syntax == Syntax.PROTO_3 && !proto3Preview) {
-          skippedForSyntax += protoFile.location
-          continue
-        }
         if (protoFile.location.path !in sourceLocationPaths &&
             protoFile.location.path !in moveTargetPaths) {
           continue

@@ -10,8 +10,6 @@ protobuf {
 }
 
 wire {
-  proto3Preview = 'UNSUPPORTED'
-
   sourcePath {
     srcDir 'src/main/proto'
   }
