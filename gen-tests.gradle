@@ -48,6 +48,7 @@ task generateJavaTests(type: JavaExec) {
   args = [
       '--proto_path=wire-library/wire-tests/src/commonTest/proto/java',
       '--java_out=wire-library/wire-tests/src/jvmJavaTest/proto-java',
+      '--emit_applied_options',
       'google/protobuf/any.proto',
       'google/protobuf/descriptor.proto',
       '--excludes=squareup.options.*',

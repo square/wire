@@ -107,14 +107,12 @@ data class ProtoFile(
   }
 
   /** Return a copy of this file with only the marked types. */
-  fun retainLinked(linkedTypes: Set<ProtoType>): ProtoFile {
+  fun retainLinked(linkedTypes: Set<ProtoType>, linkedFields: Set<Field>): ProtoFile {
     val retainedTypes = types.mapNotNull { it.retainLinked(linkedTypes) }
+    val retainedExtends = extendList.mapNotNull { it.retainLinked(linkedFields) }
 
     // Other .proto files can't link to our services so strip them unconditionally.
     val retainedServices = emptyList<Service>()
-
-    // Strip the extends. They've already been applied to their target types.
-    val retainedExtends = emptyList<Extend>()
 
     val retainedOptions = options.retainLinked()
 

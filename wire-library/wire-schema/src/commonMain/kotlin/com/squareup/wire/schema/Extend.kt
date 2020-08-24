@@ -17,7 +17,6 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.schema.Field.Companion.retainAll
 import com.squareup.wire.schema.internal.parser.ExtendElement
-import com.squareup.wire.schema.internal.parser.OptionElement
 import kotlin.jvm.JvmStatic
 
 data class Extend(
@@ -60,6 +59,14 @@ data class Extend(
 
   fun retainAll(schema: Schema, markSet: MarkSet): Extend? {
     val retainedFields = retainAll(schema, markSet, type!!, fields)
+    if (retainedFields.isEmpty()) return null
+    val result = Extend(location, documentation, name, retainedFields)
+    result.type = type
+    return result
+  }
+
+  fun retainLinked(linkedFields: Set<Field>): Extend? {
+    val retainedFields = fields.filter { it in linkedFields }
     if (retainedFields.isEmpty()) return null
     val result = Extend(location, documentation, name, retainedFields)
     result.type = type

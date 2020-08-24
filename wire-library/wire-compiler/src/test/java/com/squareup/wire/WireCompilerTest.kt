@@ -191,7 +191,7 @@ class WireCompilerTest {
   @Test
   fun testCustomOptions() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToJava(sources, "--named_files_only")
+    compileToJava(sources, "--named_files_only", "--emit_applied_options")
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/custom_options/FooBar.java",

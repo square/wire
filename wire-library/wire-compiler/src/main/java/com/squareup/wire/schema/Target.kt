@@ -167,7 +167,13 @@ data class JavaTarget(
    * True to emit code that uses reflection for reading, writing, and toString methods which are
    * normally implemented with generated code.
    */
-  val compact: Boolean = false
+  val compact: Boolean = false,
+
+  /** True to emit types for options declared on messages, fields, etc. */
+  val emitDeclaredOptions: Boolean = true,
+
+  /** True to emit annotations for options applied on messages, fields, etc. */
+  val emitAppliedOptions: Boolean = false
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -194,6 +200,7 @@ data class JavaTarget(
         .withAndroid(android)
         .withAndroidAnnotations(androidAnnotations)
         .withCompact(compact)
+        .withOptions(emitDeclaredOptions, emitAppliedOptions)
 
     return object : SchemaHandler {
       override fun handle(type: Type): Path? {
@@ -208,7 +215,7 @@ data class JavaTarget(
       }
 
       override fun handle(extend: Extend, field: Field): Path? {
-        val typeSpec = javaGenerator.generateExtendField(extend, field) ?: return null
+        val typeSpec = javaGenerator.generateOptionType(extend, field) ?: return null
         val javaTypeName = javaGenerator.generatedTypeName(field)
         return write(javaTypeName, typeSpec, field.qualifiedName, field.location)
       }
