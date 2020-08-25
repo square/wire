@@ -261,6 +261,12 @@ data class KotlinTarget(
   /** True for emitted types to implement APIs for easier migration from the Java target. */
   val javaInterop: Boolean = false,
 
+  /** True to emit types for options declared on messages, fields, etc. */
+  val emitDeclaredOptions: Boolean = true,
+
+  /** True to emit annotations for options applied on messages, fields, etc. */
+  val emitAppliedOptions: Boolean = false,
+
   /** Blocking or suspending. */
   val rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
 
@@ -292,6 +298,8 @@ data class KotlinTarget(
         schema = schema,
         emitAndroid = android,
         javaInterop = javaInterop,
+        emitDeclaredOptions = emitDeclaredOptions,
+        emitAppliedOptions = emitAppliedOptions,
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole
     )
@@ -324,7 +332,7 @@ data class KotlinTarget(
       }
 
       override fun handle(extend: Extend, field: Field): Path? {
-        val typeSpec = kotlinGenerator.generateExtendField(extend, field) ?: return null
+        val typeSpec = kotlinGenerator.generateOptionType(extend, field) ?: return null
         val name = kotlinGenerator.generatedTypeName(field)
         return write(name, typeSpec, field.qualifiedName, field.location)
       }

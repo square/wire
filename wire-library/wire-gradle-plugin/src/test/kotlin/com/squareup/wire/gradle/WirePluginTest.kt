@@ -848,6 +848,21 @@ class WirePluginTest {
     assertThat(octagon).contains("""@DocumentationUrl("https://en.wikipedia.org/wiki/Octagon")""")
   }
 
+  @Test
+  fun emitKotlinOptions() {
+    val fixtureRoot = File("src/test/projects/emit-kotlin-options")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output).contains("Writing squareup.options.DocumentationUrl")
+
+    val generatedProto = File(
+        fixtureRoot, "build/generated/source/wire/squareup/polygons/Octagon.kt")
+    val octagon = generatedProto.readText()
+    assertThat(octagon).contains("""@DocumentationUrl("https://en.wikipedia.org/wiki/Octagon")""")
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult

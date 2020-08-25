@@ -75,7 +75,6 @@ import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
 import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
-import com.squareup.wire.schema.Options.Companion.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
@@ -103,6 +102,8 @@ class KotlinGenerator private constructor(
   private val memberToKotlinName: Map<ProtoMember, TypeName>,
   private val emitAndroid: Boolean,
   private val javaInterOp: Boolean,
+  private val emitDeclaredOptions: Boolean,
+  private val emitAppliedOptions: Boolean,
   private val rpcCallStyle: RpcCallStyle,
   private val rpcRole: RpcRole
 ) {
@@ -1533,12 +1534,14 @@ class KotlinGenerator private constructor(
    * annotation class MyFieldOption(val value: String)
    * ```
    */
-  fun generateExtendField(
+  fun generateOptionType(
     extend: Extend,
     field: Field
   ): TypeSpec? {
     require(field in extend.fields)
     val annotationTarget = extend.annotationTarget ?: return null
+
+    if (!emitDeclaredOptions) return null
 
     if (!eligibleAsAnnotationMember(schema, field)) return null
     val returnType = field.type!!.typeName
@@ -1675,7 +1678,7 @@ class KotlinGenerator private constructor(
   private fun optionAnnotations(options: Options): List<AnnotationSpec> {
     val result = mutableListOf<AnnotationSpec>()
     for ((key, value) in options.map) {
-      val annotationSpec = extensionFieldAnnotation(key, value!!)
+      val annotationSpec = optionAnnotation(key, value!!)
       if (annotationSpec != null) {
         result.add(annotationSpec)
       }
@@ -1683,7 +1686,9 @@ class KotlinGenerator private constructor(
     return result
   }
 
-  private fun extensionFieldAnnotation(protoMember: ProtoMember, value: Any): AnnotationSpec? {
+  private fun optionAnnotation(protoMember: ProtoMember, value: Any): AnnotationSpec? {
+    if (!emitAppliedOptions) return null
+
     val field: Field = schema.getField(protoMember) ?: return null
     if (!eligibleAsAnnotationMember(schema, field)) return null
 
@@ -1762,6 +1767,8 @@ class KotlinGenerator private constructor(
       schema: Schema,
       emitAndroid: Boolean = false,
       javaInterop: Boolean = false,
+      emitDeclaredOptions: Boolean = true,
+      emitAppliedOptions: Boolean = false,
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT
     ): KotlinGenerator {
@@ -1806,6 +1813,8 @@ class KotlinGenerator private constructor(
           memberToKotlinName = memberToKotlinName,
           emitAndroid = emitAndroid,
           javaInterOp = javaInterop,
+          emitDeclaredOptions = emitDeclaredOptions,
+          emitAppliedOptions = emitAppliedOptions,
           rpcCallStyle = rpcCallStyle,
           rpcRole = rpcRole
       )
