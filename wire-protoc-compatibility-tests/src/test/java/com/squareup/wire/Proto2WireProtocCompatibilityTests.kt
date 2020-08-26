@@ -25,9 +25,32 @@ import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extOptBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extPackBool
 import squareup.proto2.kotlin.alltypes.AllTypesOuterClass.extRepBool
 import squareup.proto2.kotlin.extensions.WireMessageOuterClass
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extOptProto2Enum
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extOptProto2Message
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extOptProto3Enum
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extOptProto3Message
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto2Enum
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto2Message
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto3Enum
+import squareup.proto2.kotlin.interop.InteropMessageOuterClass.extRepProto3Message
+import squareup.proto2.kotlin.interop.type.InteropTypes.EnumProto2
+import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
 import squareup.proto2.wire.extensions.WireMessage
+import squareup.proto3.kotlin.interop.type.InteropTypes.EnumProto3
+import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
 import com.squareup.wire.proto2.kotlin.simple.SimpleMessage as SimpleMessageK
+import squareup.proto2.java.interop.InteropMessage as InteropMessageJ
+import squareup.proto2.java.interop.type.EnumProto2 as EnumProto2J
+import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
 import squareup.proto2.kotlin.alltypes.AllTypes as AllTypesK
+import squareup.proto2.kotlin.interop.InteropMessage as InteropMessageK
+import squareup.proto2.kotlin.interop.type.EnumProto2 as EnumProto2K
+import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
+import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
+import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
+import squareup.proto3.kotlin.interop.type.EnumProto3 as EnumProto3K
+import squareup.proto3.kotlin.interop.type.MessageProto3 as MessageProto3K
 
 class Proto2WireProtocCompatibilityTests {
   @Test fun simpleMessage() {
@@ -87,11 +110,36 @@ class Proto2WireProtocCompatibilityTests {
     assertThat(WireMessage()).isNotNull()
   }
 
+  @Test fun serializeProto2Proto3Interop() {
+    val byteArrayWireJ = InteropMessageJ.ADAPTER.encode(interopWireJ)
+    val byteArrayWireK = InteropMessageK.ADAPTER.encode(interopWireK)
+    val byteArrayProtoc = interopProtoc.toByteArray()
+
+    // Note: we don't test equality between protoc byte arrays and ours because extensions are not
+    // at the same location in the array.
+    assertThat(byteArrayWireK).isEqualTo(byteArrayWireJ)
+    assertThat(InteropMessageJ.ADAPTER.decode(byteArrayProtoc)).isEqualTo(interopWireJ)
+    assertThat(InteropMessageK.ADAPTER.decode(byteArrayProtoc)).isEqualTo(interopWireK)
+    assertThat(InteropMessageOuterClass.InteropMessage.parseFrom(byteArrayWireK, interopRegistry))
+        .isEqualTo(interopProtoc)
+  }
+
   companion object {
     private val allTypesRegistry = ExtensionRegistry.newInstance().apply {
       add(extOptBool)
       add(extRepBool)
       add(extPackBool)
+    }
+
+    private val interopRegistry = ExtensionRegistry.newInstance().apply {
+      add(extOptProto2Enum)
+      add(extOptProto2Message)
+      add(extOptProto3Enum)
+      add(extOptProto3Message)
+      add(extRepProto2Enum)
+      add(extRepProto2Message)
+      add(extRepProto3Enum)
+      add(extRepProto3Message)
     }
 
     private val defaultAllTypesWire = AllTypesK(
@@ -363,6 +411,97 @@ class Proto2WireProtocCompatibilityTests {
         .setExtension(extOptBool, false)
         .setExtension(extRepBool, list(false))
         .setExtension(extPackBool, list(false))
+        .build()
+
+    private val interopProtoc = InteropMessageOuterClass.InteropMessage.newBuilder()
+        .setOptProto2Enum(EnumProto2.UNKNOWN)
+        .setOptProto2Message(MessageProto2.newBuilder().setA(33).setB("Grant").build())
+        .setOptProto3Enum(EnumProto3.A)
+        .setOptProto3Message(MessageProto3.newBuilder().setA(806).build())
+        .setReqProto2Enum(EnumProto2.A)
+        .setReqProto2Message(MessageProto2.newBuilder().setA(1).setB("Penny").build())
+        .setReqProto3Enum(EnumProto3.UNKNOWN)
+        .setReqProto3Message(MessageProto3.newBuilder().setA(-1).build())
+        .addAllRepProto2Enum(list(EnumProto2.A))
+        .addAllRepProto2Message(list(MessageProto2.newBuilder().setA(7).setB("Pete").build()))
+        .addAllRepProto3Enum(list(EnumProto3.UNKNOWN))
+        .addAllRepProto3Message(list(MessageProto3.newBuilder().setA(0).build()))
+        .addAllPackProto2Enum(list(EnumProto2.A))
+        .addAllPackProto3Enum(list(EnumProto3.A))
+        .putMapStringProto2Enum("a", EnumProto2.UNKNOWN)
+        .putMapStringProto2Message("b", MessageProto2.newBuilder().setA(21).setB("Jimmy").build())
+        .putMapStringProto3Enum("c", EnumProto3.A)
+        .putMapStringProto3Message("d", MessageProto3.newBuilder().setA(33333).build())
+        .setOneofProto3Enum(EnumProto3.A)
+        .setExtension(extOptProto2Enum, EnumProto2.A)
+        .setExtension(extOptProto2Message, MessageProto2.newBuilder().setA(8).setB("Kobe").build())
+        .setExtension(extOptProto3Enum, EnumProto3.A)
+        .setExtension(extOptProto3Message, MessageProto3.newBuilder().setA(24).build())
+        .setExtension(extRepProto2Enum, list(EnumProto2.A))
+        .setExtension(extRepProto2Message,
+            list(MessageProto2.newBuilder().setA(3).setB("Dwyane").build()))
+        .setExtension(extRepProto3Enum, list(EnumProto3.A))
+        .setExtension(extRepProto3Message, list(MessageProto3.newBuilder().setA(1).build()))
+        .build()
+
+    private val interopWireK = InteropMessageK(
+        opt_proto2_enum = EnumProto2K.UNKNOWN,
+        opt_proto2_message = MessageProto2K(33, "Grant"),
+        opt_proto3_enum = EnumProto3K.A,
+        opt_proto3_message = MessageProto3K(806),
+        req_proto2_enum = EnumProto2K.A,
+        req_proto2_message = MessageProto2K(1, "Penny"),
+        req_proto3_enum = EnumProto3K.UNKNOWN,
+        req_proto3_message = MessageProto3K(-1),
+        rep_proto2_enum = list(EnumProto2K.A),
+        rep_proto2_message = list(MessageProto2K(7, "Pete")),
+        rep_proto3_enum = list(EnumProto3K.UNKNOWN),
+        rep_proto3_message = list(MessageProto3K(0)),
+        pack_proto2_enum = list(EnumProto2K.A),
+        pack_proto3_enum = list(EnumProto3K.A),
+        map_string_proto2_enum = mapOf("a" to EnumProto2K.UNKNOWN),
+        map_string_proto2_message = mapOf("b" to MessageProto2K(21, "Jimmy")),
+        map_string_proto3_enum = mapOf("c" to EnumProto3K.A),
+        map_string_proto3_message = mapOf("d" to MessageProto3K(33333)),
+        ext_opt_proto2_enum = EnumProto2K.A,
+        ext_opt_proto2_message = MessageProto2K(8, "Kobe"),
+        ext_opt_proto3_enum = EnumProto3K.A,
+        ext_opt_proto3_message = MessageProto3K(24),
+        ext_rep_proto2_enum = list(EnumProto2K.A),
+        ext_rep_proto2_message = list(MessageProto2K(3, "Dwyane")),
+        ext_rep_proto3_enum = list(EnumProto3K.A),
+        ext_rep_proto3_message = list(MessageProto3K(1)),
+        oneof_proto3_enum = EnumProto3K.A
+    )
+
+    private val interopWireJ = InteropMessageJ.Builder()
+        .opt_proto2_enum(EnumProto2J.UNKNOWN)
+        .opt_proto2_message(MessageProto2J(33, "Grant"))
+        .opt_proto3_enum(EnumProto3J.A)
+        .opt_proto3_message(MessageProto3J.Builder().a(806).build())
+        .req_proto2_enum(EnumProto2J.A)
+        .req_proto2_message(MessageProto2J(1, "Penny"))
+        .req_proto3_enum(EnumProto3J.UNKNOWN)
+        .req_proto3_message(MessageProto3J.Builder().a(-1).build())
+        .rep_proto2_enum(list(EnumProto2J.A))
+        .rep_proto2_message(list(MessageProto2J(7, "Pete")))
+        .rep_proto3_enum(list(EnumProto3J.UNKNOWN))
+        .rep_proto3_message(list(MessageProto3J.Builder().a(0).build()))
+        .pack_proto2_enum(list(EnumProto2J.A))
+        .pack_proto3_enum(list(EnumProto3J.A))
+        .map_string_proto2_enum(mapOf("a" to EnumProto2J.UNKNOWN))
+        .map_string_proto2_message(mapOf("b" to MessageProto2J(21, "Jimmy")))
+        .map_string_proto3_enum(mapOf("c" to EnumProto3J.A))
+        .map_string_proto3_message(mapOf("d" to MessageProto3J.Builder().a(33333).build()))
+        .ext_opt_proto2_enum(EnumProto2J.A)
+        .ext_opt_proto2_message(MessageProto2J(8, "Kobe"))
+        .ext_opt_proto3_enum(EnumProto3J.A)
+        .ext_opt_proto3_message(MessageProto3J.Builder().a(24).build())
+        .ext_rep_proto2_enum(list(EnumProto2J.A))
+        .ext_rep_proto2_message(list(MessageProto2J(3, "Dwyane")))
+        .ext_rep_proto3_enum(list(EnumProto3J.A))
+        .ext_rep_proto3_message(list(MessageProto3J.Builder().a(1).build()))
+        .oneof_proto3_enum(EnumProto3J.A)
         .build()
 
     private fun <T : Any> list(t: T): List<T> {
