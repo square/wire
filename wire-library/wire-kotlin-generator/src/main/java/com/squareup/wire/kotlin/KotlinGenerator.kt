@@ -1054,7 +1054,7 @@ class KotlinGenerator private constructor(
     // is the same as its enclosing type.
     return PropertySpec.builder("${name}Adapter", adapterType, PRIVATE)
         .delegate(
-            "%M { %T.newMapAdapter(%L, %L) }",
+            "%M·{ %T.newMapAdapter(%L, %L) }",
             MemberName("kotlin", "lazy"),
             ProtoAdapter::class,
             keyType.getAdapterName(),
