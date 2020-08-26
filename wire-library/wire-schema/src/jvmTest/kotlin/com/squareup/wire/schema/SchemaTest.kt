@@ -2333,4 +2333,33 @@ class SchemaTest {
       """.trimMargin())
     }
   }
+
+  @Test
+  fun cannotUseProto2EnumsInProto3Message() {
+    try {
+      RepoBuilder()
+          .add("proto2.proto", """
+            |syntax = "proto2";
+            |enum Bit {
+            |  ZERO = 0;
+            |  ONE = 1;
+            |}
+          """.trimMargin())
+          .add("proto3.proto", """
+            |syntax = "proto3";
+            |import "proto2.proto";
+            |message Joint {
+            |  Bit bit = 1;
+            |}
+          """.trimMargin())
+          .schema()
+      fail()
+    } catch (exception: SchemaException) {
+      assertThat(exception).hasMessage("""
+        |Proto2 enums cannot be referenced in a proto3 message
+        |  for field bit (/source/proto3.proto:4:3)
+        |  in message Joint (/source/proto3.proto:3:1)
+      """.trimMargin())
+    }
+  }
 }

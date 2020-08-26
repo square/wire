@@ -15,10 +15,10 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.internal.camelCase
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.Syntax.PROTO_3
+import com.squareup.wire.internal.camelCase
 
 /** A set of rules which defines schema requirements for a specific [Syntax]. */
 interface SyntaxRules {
@@ -34,6 +34,7 @@ interface SyntaxRules {
   ): Field.EncodeMode
 
   fun jsonName(name: String): String
+  fun allowTypeReference(type: Type): Boolean
 
   companion object {
     fun get(syntax: Syntax?): SyntaxRules {
@@ -71,6 +72,7 @@ interface SyntaxRules {
       }
 
       override fun jsonName(name: String): String = name
+      override fun allowTypeReference(type: Type) = true
     }
 
     internal val PROTO_3_SYNTAX_RULES = object : SyntaxRules {
@@ -107,6 +109,12 @@ interface SyntaxRules {
       }
 
       override fun jsonName(name: String): String = camelCase(name, upperCamel = false)
+      override fun allowTypeReference(type: Type): Boolean {
+        if (type is EnumType) {
+          return type.syntax != PROTO_2
+        }
+        return true
+      }
     }
   }
 }
