@@ -33,20 +33,32 @@ import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import squareup.proto3.kotlin.extensions.WireMessageOuterClass
+import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
 import squareup.proto3.kotlin.alltypes.All64OuterClass
 import squareup.proto3.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto3.kotlin.alltypes.AllWrappersOuterClass
 import squareup.proto3.kotlin.alltypes.CamelCaseOuterClass
+import squareup.proto3.kotlin.extensions.WireMessageOuterClass
+import squareup.proto3.kotlin.interop.InteropMessageOuterClass
+import squareup.proto3.kotlin.interop.type.InteropTypes.EnumProto3
+import squareup.proto3.kotlin.interop.type.InteropTypes.MessageProto3
 import squareup.proto3.kotlin.pizza.PizzaOuterClass
 import squareup.proto3.wire.extensions.WireMessage
 import java.io.File
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtension as RequiredExtensionK
 import com.squareup.wire.proto3.kotlin.requiredextension.RequiredExtensionMessage as RequiredExtensionMessageK
+import squareup.proto2.java.interop.type.MessageProto2 as MessageProto2J
+import squareup.proto2.kotlin.interop.type.MessageProto2 as MessageProto2K
 import squareup.proto3.java.alltypes.AllTypes as AllTypesJ
 import squareup.proto3.java.alltypes.AllWrappers as AllWrappersJ
+import squareup.proto3.java.interop.InteropMessage as InteropMessageJ
+import squareup.proto3.java.interop.type.EnumProto3 as EnumProto3J
+import squareup.proto3.java.interop.type.MessageProto3 as MessageProto3J
 import squareup.proto3.kotlin.alltypes.AllTypes as AllTypesK
 import squareup.proto3.kotlin.alltypes.AllWrappers as AllWrappersK
+import squareup.proto3.kotlin.interop.InteropMessage as InteropMessageK
+import squareup.proto3.kotlin.interop.type.EnumProto3 as EnumProto3K
+import squareup.proto3.kotlin.interop.type.MessageProto3 as MessageProto3K
 import squareup.proto3.kotlin.pizza.PizzaDelivery as PizzaDeliveryK
 
 class Proto3WireProtocCompatibilityTests {
@@ -324,6 +336,20 @@ class Proto3WireProtocCompatibilityTests {
     assertThat(AllWrappersJ.ADAPTER.decode(protocBytes)).isEqualTo(defaultAllWrappersWireJava)
     assertThat(AllWrappersK.ADAPTER.encode(defaultAllWrappersWireKotlin)).isEqualTo(protocBytes)
     assertThat(AllWrappersK.ADAPTER.decode(protocBytes)).isEqualTo(defaultAllWrappersWireKotlin)
+  }
+
+  @Test fun interopTests() {
+    val byteArrayWireJ = InteropMessageJ.ADAPTER.encode(interopWireJ)
+    val byteArrayWireK = InteropMessageK.ADAPTER.encode(interopWireK)
+    val byteArrayProtoc = interopProtoc.toByteArray()
+
+    assertThat(byteArrayWireK).isEqualTo(byteArrayWireJ)
+    assertThat(InteropMessageJ.ADAPTER.encode(interopWireJ)).isEqualTo(byteArrayProtoc)
+    assertThat(InteropMessageJ.ADAPTER.decode(byteArrayProtoc)).isEqualTo(interopWireJ)
+    assertThat(InteropMessageK.ADAPTER.encode(interopWireK)).isEqualTo(byteArrayProtoc)
+    assertThat(InteropMessageK.ADAPTER.decode(byteArrayProtoc)).isEqualTo(interopWireK)
+    assertThat(InteropMessageOuterClass.InteropMessage.parseFrom(byteArrayWireK))
+        .isEqualTo(interopProtoc)
   }
 
   @Test fun wrappersProtocJson() {
@@ -827,6 +853,48 @@ class Proto3WireProtocCompatibilityTests {
         .putMapStringMessage("", AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().build())
         .putMapStringEnum("", AllTypesOuterClass.AllTypes.NestedEnum.UNKNOWN)
         .setOneofInt32(0)
+        .build()
+
+    private val interopProtoc = InteropMessageOuterClass.InteropMessage.newBuilder()
+        .setProto2Message(MessageProto2.newBuilder().setA(23).setB("MJ").build())
+        .setProto3Enum(EnumProto3.A)
+        .setProto3Message(MessageProto3.newBuilder().setA(45).setB("MJ").build())
+        .addAllRepProto2Message(list(MessageProto2.newBuilder().setA(1).setB("1").build()))
+        .addAllRepProto3Enum(list(EnumProto3.UNKNOWN))
+        .addAllRepProto3Message(list(MessageProto3.newBuilder().setA(2).build()))
+        .addAllPackProto3Enum(list(EnumProto3.A))
+        .putMapStringProto2Message("one", MessageProto2.newBuilder().setA(23).setB("MJ").build())
+        .putMapStringProto3Enum("two", EnumProto3.A)
+        .putMapStringProto3Message("three", MessageProto3.newBuilder().setB("three").build())
+        .setOneofProto3Message(MessageProto3.newBuilder().build())
+        .build()
+
+    private val interopWireK = InteropMessageK(
+        proto2_message = MessageProto2K(23, "MJ"),
+        proto3_enum = EnumProto3K.A,
+        proto3_message = MessageProto3K(45, "MJ"),
+        rep_proto2_message = list(MessageProto2K(1, "1")),
+        rep_proto3_enum = list(EnumProto3K.UNKNOWN),
+        rep_proto3_message = list(MessageProto3K(2)),
+        pack_proto3_enum = list(EnumProto3K.A),
+        map_string_proto2_message = mapOf("one" to MessageProto2K(23, "MJ")),
+        map_string_proto3_enum = mapOf("two" to EnumProto3K.A),
+        map_string_proto3_message = mapOf("three" to MessageProto3K(b = "three")),
+        oneof_proto3_message = MessageProto3K()
+    )
+
+    private val interopWireJ = InteropMessageJ.Builder()
+        .proto2_message(MessageProto2J(23, "MJ"))
+        .proto3_enum(EnumProto3J.A)
+        .proto3_message(MessageProto3J(45, "MJ"))
+        .rep_proto2_message(list(MessageProto2J(1, "1")))
+        .rep_proto3_enum(list(EnumProto3J.UNKNOWN))
+        .rep_proto3_message(list(MessageProto3J.Builder().a(2).build()))
+        .pack_proto3_enum(list(EnumProto3J.A))
+        .map_string_proto2_message(mapOf("one" to MessageProto2J(23, "MJ")))
+        .map_string_proto3_enum(mapOf("two" to EnumProto3J.A))
+        .map_string_proto3_message(mapOf("three" to MessageProto3J.Builder().b("three").build()))
+        .oneof_proto3_message(MessageProto3J.Builder().build())
         .build()
 
     private fun <T : kotlin.Any> list(t: T): List<T> {

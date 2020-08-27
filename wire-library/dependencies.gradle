@@ -12,9 +12,8 @@ ext.versions = [
   'okio': '2.5.0',
   'okhttp': '4.2.2',
   'moshi': '1.9.2',
-  'protobuf': '3.11.4',
+  'protobuf': '3.0.0',
   'protobufGradlePlugin': '0.8.10',
-  'protoc': '3.0.0',
   'junit': '4.12',
   'assertj': '3.11.0',
   'jimfs': '1.0',
@@ -92,8 +91,8 @@ ext.deps = [
   ],
   'protobuf': [
     'gradlePlugin': "com.google.protobuf:protobuf-gradle-plugin:${versions.protobufGradlePlugin}",
-    'java': "com.google.protobuf:protobuf-java:${versions.protoc}",
-    'javaUtil': "com.google.protobuf:protobuf-java-util:${versions.protoc}",
-    'protoc': "com.google.protobuf:protoc:${versions.protoc}",
+    'java': "com.google.protobuf:protobuf-java:${versions.protobuf}",
+    'javaUtil': "com.google.protobuf:protobuf-java-util:${versions.protobuf}",
+    'protoc': "com.google.protobuf:protoc:${versions.protobuf}",
   ],
 ]

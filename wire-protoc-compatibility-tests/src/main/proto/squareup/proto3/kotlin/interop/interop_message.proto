@@ -1,0 +1,43 @@
+/*
+ * Copyright 2020 Square Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+
+package squareup.proto3.kotlin.interop;
+
+import "squareup/proto2/kotlin/interop/type/interop_types.proto";
+import "squareup/proto3/kotlin/interop/type/interop_types.proto";
+
+message InteropMessage {
+  squareup.proto2.kotlin.interop.type.MessageProto2 proto2_message = 2;
+  type.EnumProto3 proto3_enum = 3;
+  type.MessageProto3 proto3_message = 4;
+
+  repeated squareup.proto2.kotlin.interop.type.MessageProto2 rep_proto2_message = 202 [packed = false];
+  repeated type.EnumProto3 rep_proto3_enum = 203 [packed = false];
+  repeated type.MessageProto3 rep_proto3_message = 204 [packed = false];
+
+  repeated type.EnumProto3 pack_proto3_enum = 303 [packed = true];
+
+  map<string, squareup.proto2.kotlin.interop.type.MessageProto2> map_string_proto2_message = 502;
+  map<string, type.EnumProto3> map_string_proto3_enum = 503;
+  map<string, type.MessageProto3> map_string_proto3_message = 504;
+
+  oneof choice {
+    squareup.proto2.kotlin.interop.type.MessageProto2 oneof_proto2_message = 602;
+    type.EnumProto3 oneof_proto3_enum = 603;
+    type.MessageProto3 oneof_proto3_message = 604;
+  }
+}
