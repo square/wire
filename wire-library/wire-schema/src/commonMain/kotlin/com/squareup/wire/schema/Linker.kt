@@ -136,8 +136,8 @@ class Linker {
             requestedTypes.contains(type.type)
           }
       val anyFieldIsUsed = fileLinker.protoFile.extendList
-          .any {
-            extend -> extend.fields.any { it in requestedFields }
+          .any { extend ->
+            extend.fields.any { it in requestedFields }
           }
       if (anyTypeIsUsed || anyFieldIsUsed) {
         result.add(fileLinker.protoFile.retainLinked(requestedTypes.toSet(), requestedFields))
@@ -340,7 +340,10 @@ class Linker {
     return null // Unable to traverse this field path.
   }
 
-  /** Validate that the tags of [fields] are unique and in range. */
+  /**
+   * Validate that the tags of [fields] are unique and in range, that proto3 message cannot
+   * reference proto2 enums.
+   */
   fun validateFields(
     fields: Iterable<Field>,
     reserveds: List<Reserved>,
@@ -370,6 +373,11 @@ class Linker {
       // We allow JSON collisions for extensions.
       if (!field.isExtension) {
         jsonNameToField.getOrPut(syntaxRules.jsonName(field.name), { mutableSetOf() }).add(field)
+      }
+
+      val type = get(field.type!!)
+      if (type != null && !syntaxRules.allowTypeReference(type)) {
+        withContext(field).addError("Proto2 enums cannot be referenced in a proto3 message")
       }
     }
 
