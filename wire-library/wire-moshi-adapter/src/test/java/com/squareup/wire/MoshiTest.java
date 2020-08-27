@@ -119,8 +119,10 @@ public class MoshiTest {
     String json = adapter.toJson(keyword);
     JsonUtils.assertJsonEquals(json,
         "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[]}");
-    KeywordKotlin parseKeyword = adapter.fromJson(json);
-    assertThat(parseKeyword).isEqualTo(keyword);
+    assertThat(adapter.fromJson(json)).isEqualTo(keyword);
+
+    String generatedNamedJson = "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[]}";
+    assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(keyword);
   }
 
   @Test public void usedKeywordsInJava() throws IOException {
@@ -130,7 +132,10 @@ public class MoshiTest {
     String json = adapter.toJson(keyword);
     JsonUtils.assertJsonEquals(json,
         "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[]}");
-    KeywordJava parseKeyword = adapter.fromJson(json);
-    assertThat(parseKeyword).isEqualTo(keyword);
+    assertThat(adapter.fromJson(json)).isEqualTo(keyword);
+
+    String generatedNamedJson = "{\"final_\":\"final\", \"public_\":true, \"package_\":{}, "
+        + "\"return_\":[]}";
+    assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(keyword);
   }
 }

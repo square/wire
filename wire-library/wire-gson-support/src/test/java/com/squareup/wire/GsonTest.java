@@ -71,6 +71,9 @@ public class GsonTest {
     assertJsonEquals(json, "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[]}");
     KeywordKotlin parseKeyword = gson.fromJson(json, KeywordKotlin.class);
     assertThat(parseKeyword).isEqualTo(keyword);
+
+    String generatedNamedJson = "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[]}";
+    assertThat(gson.fromJson(generatedNamedJson, KeywordKotlin.class)).isEqualTo(keyword);
   }
 
   @Test public void usedKeywordsInJava() {
@@ -79,5 +82,10 @@ public class GsonTest {
     assertJsonEquals(json, "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[]}");
     KeywordJava parseKeyword = gson.fromJson(json, KeywordJava.class);
     assertThat(parseKeyword).isEqualTo(keyword);
+
+
+    String generatedNamedJson = "{\"final_\":\"final\", \"public_\":true, \"package_\":{}, "
+        + "\"return_\":[]}";
+    assertThat(gson.fromJson(generatedNamedJson, KeywordJava.class)).isEqualTo(keyword);
   }
 }

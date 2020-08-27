@@ -49,12 +49,19 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
    * When reading JSON these are alternate names for each field. If null the field has no alternate
    * name.
    *
-   * In proto3 fields declared in snake_case like `customer_id` are written in camelCase like
-   * `customerId`, but can be read in either form. The alternate name will be absent if the snake
-   * and camel cases are the same, such as in single-word identifiers.
+   * For reserved keywords in Kotlin or Java, a field like `public` are written as so although the
+   * generated field name is `public_`. We wanna read in either form. As well, in proto3 fields
+   * declared in snake_case like `customer_id` are written in camelCase like `customerId`, but can
+   * be read in either form. We can use exclusive logic between the two cases because there's no
+   * keyword defined in scake_case. The alternate name will be absent if the field name isn't a
+   * keyword or if the snake and camel cases are the same, such as in single-word identifiers.
    */
   val jsonAlternateNames: List<String?> = fieldBindingsArray.map {
-    if (it.jsonName != it.declaredName) it.declaredName else null
+    when {
+      it.jsonName != it.declaredName -> it.declaredName
+      it.jsonName != it.name -> it.name
+      else -> null
+    }
   }
 
   fun newBuilder(): B = builderType.newInstance()
