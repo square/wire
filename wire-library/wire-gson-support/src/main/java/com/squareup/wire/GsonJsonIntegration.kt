@@ -21,7 +21,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import com.squareup.wire.internal.FieldBinding.JsonFormatter
+import com.squareup.wire.internal.JsonFormatter
 import com.squareup.wire.internal.JsonIntegration
 import java.lang.reflect.Type
 
@@ -36,12 +36,9 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
 
   override fun mapAdapter(
     framework: Gson,
-    keyType: Type,
-    valueType: Type
-  ): TypeAdapter<Any?> {
-    val mapType = TypeToken.getParameterized(Map::class.java, keyType, valueType)
-    return framework.getAdapter(mapType) as TypeAdapter<Any?>
-  }
+    keyFormatter: JsonFormatter<*>,
+    valueAdapter: TypeAdapter<Any?>
+  ): TypeAdapter<Any?> = MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as TypeAdapter<Any?>
 
   fun <T> TypeAdapter<T>.serializeNulls(): TypeAdapter<T> {
     val delegate = this
@@ -111,6 +108,34 @@ internal object GsonJsonIntegration : JsonIntegration<Gson, TypeAdapter<Any?>>()
         single.write(writer, v)
       }
       writer.endArray()
+    }
+  }
+
+  /** Adapt a list of values by delegating to an adapter for a single value. */
+  private class MapJsonAdapter<K : Any, V>(
+    private val keyFormatter: JsonFormatter<K>,
+    private val valueAdapter: TypeAdapter<V>
+  ) : TypeAdapter<Map<K, V>>() {
+    override fun read(reader: JsonReader): Map<K, V> {
+      val result = mutableMapOf<K, V>()
+      reader.beginObject()
+      while (reader.hasNext()) {
+        val name = reader.nextName()
+        val key = keyFormatter.fromString(name) as K
+        val value = valueAdapter.read(reader)!!
+        result[key] = value
+      }
+      reader.endObject()
+      return result
+    }
+
+    override fun write(writer: JsonWriter, value: Map<K, V>?) {
+      writer.beginObject()
+      for ((k, v) in value!!) {
+        writer.name(keyFormatter.toStringOrNumber(k).toString())
+        valueAdapter.write(writer, v)
+      }
+      writer.endObject()
     }
   }
 }

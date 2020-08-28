@@ -20,8 +20,7 @@ import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
-import com.squareup.wire.internal.FieldBinding.JsonFormatter
+import com.squareup.wire.internal.JsonFormatter
 import com.squareup.wire.internal.JsonIntegration
 import java.lang.reflect.Type
 
@@ -36,12 +35,9 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
 
   override fun mapAdapter(
     framework: Moshi,
-    keyType: Type,
-    valueType: Type
-  ): JsonAdapter<Any?> {
-    val mapType = Types.newParameterizedType(Map::class.java, keyType, valueType)
-    return framework.adapter(mapType)
-  }
+    keyFormatter: JsonFormatter<*>,
+    valueAdapter: JsonAdapter<Any?>
+  ): JsonAdapter<Any?> = MapJsonAdapter(keyFormatter, valueAdapter).nullSafe() as JsonAdapter<Any?>
 
   override fun structAdapter(framework: Moshi): JsonAdapter<Any?> =
       framework.adapter<Any?>(Object::class.java).serializeNulls().nullSafe()
@@ -97,6 +93,34 @@ internal object MoshiJsonIntegration : JsonIntegration<Moshi, JsonAdapter<Any?>>
         single.toJson(writer, v)
       }
       writer.endArray()
+    }
+  }
+
+  /** Adapt a list of values by delegating to an adapter for a single value. */
+  private class MapJsonAdapter<K : Any, V>(
+    private val keyFormatter: JsonFormatter<K>,
+    private val valueAdapter: JsonAdapter<V>
+  ) : JsonAdapter<Map<K, V>>() {
+    override fun fromJson(reader: JsonReader): Map<K, V>? {
+      val result = mutableMapOf<K, V>()
+      reader.beginObject()
+      while (reader.hasNext()) {
+        val name = reader.nextName()
+        val key = keyFormatter.fromString(name) as K
+        val value = valueAdapter.fromJson(reader)!!
+        result[key] = value
+      }
+      reader.endObject()
+      return result
+    }
+
+    override fun toJson(writer: JsonWriter, value: Map<K, V>?) {
+      writer.beginObject()
+      for ((k, v) in value!!) {
+        writer.name(keyFormatter.toStringOrNumber(k).toString())
+        valueAdapter.toJson(writer, v)
+      }
+      writer.endObject()
     }
   }
 }
