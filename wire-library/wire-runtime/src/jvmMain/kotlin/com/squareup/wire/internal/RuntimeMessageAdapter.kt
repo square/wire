@@ -53,7 +53,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
    * generated field name is `public_`. We wanna read in either form. As well, in proto3 fields
    * declared in snake_case like `customer_id` are written in camelCase like `customerId`, but can
    * be read in either form. We can use exclusive logic between the two cases because there's no
-   * keyword defined in scake_case. The alternate name will be absent if the field name isn't a
+   * keyword defined in snake_case. The alternate name will be absent if the field name isn't a
    * keyword or if the snake and camel cases are the same, such as in single-word identifiers.
    */
   val jsonAlternateNames: List<String?> = fieldBindingsArray.map {
