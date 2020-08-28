@@ -39,6 +39,7 @@ import squareup.proto3.CamelCase
 import squareup.proto3.CamelCase.NestedCamelCase
 import squareup.proto3.FreeDrinkPromotion
 import squareup.proto3.FreeGarlicBreadPromotion
+import squareup.proto3.MapTypes
 import squareup.proto3.Pizza
 import squareup.proto3.PizzaDelivery
 import java.io.File
@@ -483,6 +484,61 @@ class WireJsonTest {
         jsonLibrary.toJson(value, AllWrappers::class.java))
   }
 
+  @Test fun mapTypes() {
+    val value = MapTypes.Builder()
+        .map_string_string(mapOf("a" to "A", "b" to "B"))
+        .map_int32_int32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .map_sint32_sint32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .map_sfixed32_sfixed32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .map_fixed32_fixed32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .map_uint32_uint32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .map_int64_int64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+        ))
+        .map_sfixed64_sfixed64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+        ))
+        .map_sint64_sint64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+        ))
+        .map_fixed64_fixed64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+        ))
+        .map_uint64_uint64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+        ))
+        .build()
+
+    assertJsonEquals(MAP_TYPES_JSON, jsonLibrary.toJson(value, MapTypes::class.java))
+
+    val parsed = jsonLibrary.fromJson(MAP_TYPES_JSON, MapTypes::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, MapTypes::class.java),
+        jsonLibrary.toJson(value, MapTypes::class.java))
+  }
+
   companion object {
     // Return a two-element list with a given repeated value.
     private fun <T> list(x: T): List<T> = listOf(x, x)
@@ -802,6 +858,8 @@ class WireJsonTest {
     private val ALL_64_JSON_MAX_VALUE = loadJson("all_64_max_proto3.json")
 
     private val ALL_WRAPPERS_JSON = loadJson("all_wrappers_proto3.json")
+
+    private val MAP_TYPES_JSON = loadJson("map_types_proto3.json")
 
     private val moshi = object : JsonLibrary {
       private val moshi = Moshi.Builder()

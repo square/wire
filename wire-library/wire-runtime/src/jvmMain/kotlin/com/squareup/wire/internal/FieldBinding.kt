@@ -15,18 +15,11 @@
  */
 package com.squareup.wire.internal
 
-import com.squareup.wire.EnumAdapter
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
-import com.squareup.wire.Syntax
-import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import okio.ByteString
-import okio.ByteString.Companion.decodeBase64
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-import java.math.BigDecimal
-import java.math.BigInteger
 
 /**
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
@@ -143,96 +136,4 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   operator fun get(message: M): Any? = messageField.get(message)
 
   internal fun getFromBuilder(builder: B): Any? = builderField.get(builder)
-
-  fun jsonStringAdapter(syntax: Syntax): JsonFormatter<*>? {
-    val adapter = singleAdapter()
-
-    when (adapter) {
-      ProtoAdapter.BYTES,
-      ProtoAdapter.BYTES_VALUE -> return ByteStringJsonFormatter
-      ProtoAdapter.DURATION -> return DurationJsonFormatter
-      ProtoAdapter.INSTANT -> return InstantJsonFormatter
-      is EnumAdapter<*> -> return EnumJsonFormatter(adapter)
-    }
-
-    if (syntax === PROTO_2) {
-      return when (adapter) {
-        ProtoAdapter.UINT64, ProtoAdapter.UINT64_VALUE -> UnsignedLongAsNumberJsonFormatter
-        else -> null
-      }
-    } else {
-      return when (adapter) {
-        ProtoAdapter.INT64,
-        ProtoAdapter.SFIXED64,
-        ProtoAdapter.SINT64,
-        ProtoAdapter.INT64_VALUE -> LongAsStringJsonFormatter
-        ProtoAdapter.FIXED64,
-        ProtoAdapter.UINT64,
-        ProtoAdapter.UINT64_VALUE -> UnsignedLongAsStringJsonFormatter
-        else -> null
-      }
-    }
-  }
-
-  /** Transforms a scalar value to and from JSON. */
-  interface JsonFormatter<W : Any> {
-    /** The source of [value] may have been a string or numeric literal. */
-    fun fromString(value: String): W?
-
-    /** Returns either a String or a Number. */
-    fun toStringOrNumber(value: W): Any
-  }
-
-  /** Encodes a unsigned value without quotes, like `123`. */
-  private object UnsignedLongAsNumberJsonFormatter : JsonFormatter<Long> {
-    // 2^64, used to convert sint64 values >= 2^63 to unsigned decimal form
-    private val power64 = BigInteger("18446744073709551616")
-    private val maxLong = BigInteger.valueOf(Long.MAX_VALUE)
-
-    override fun fromString(value: String): Long {
-      val bigInteger = try {
-        BigInteger(value)
-      } catch (e: Exception) {
-        BigDecimal(value).toBigInteger() // Handle extra trailing values like 5.0.
-      }
-      return when {
-        bigInteger > maxLong -> bigInteger.subtract(power64).toLong()
-        else -> bigInteger.toLong()
-      }
-    }
-
-    override fun toStringOrNumber(value: Long): Any {
-      return when {
-        value < 0L -> power64.add(BigInteger.valueOf(value))
-        else -> value
-      }
-    }
-  }
-
-  /** Encodes an unsigned value with quotes, like `"123"`. */
-  private object UnsignedLongAsStringJsonFormatter : JsonFormatter<Long> {
-    override fun toStringOrNumber(value: Long) =
-        UnsignedLongAsNumberJsonFormatter.toStringOrNumber(value).toString()
-
-    override fun fromString(value: String) =
-        UnsignedLongAsNumberJsonFormatter.fromString(value)
-  }
-
-  /** Encodes an signed value with quotes, like `"-123"`. */
-  private object LongAsStringJsonFormatter : JsonFormatter<Long> {
-    override fun toStringOrNumber(value: Long) = value.toString()
-    override fun fromString(value: String): Long {
-      return try {
-        value.toLong()
-      } catch (e: Exception) {
-        BigDecimal(value).longValueExact() // Handle extra trailing values like 5.0.
-      }
-    }
-  }
-
-  /** Encodes a byte string as base64. */
-  private object ByteStringJsonFormatter : JsonFormatter<ByteString> {
-    override fun toStringOrNumber(value: ByteString) = value.base64()
-    override fun fromString(value: String) = value.decodeBase64()
-  }
 }

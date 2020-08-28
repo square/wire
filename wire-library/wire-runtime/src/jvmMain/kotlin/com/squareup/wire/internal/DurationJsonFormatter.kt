@@ -16,7 +16,6 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.Duration
-import com.squareup.wire.internal.FieldBinding.JsonFormatter
 
 /**
  * Encode a duration as a JSON string like "1.200s". From the spec:

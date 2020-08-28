@@ -17,7 +17,6 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.WireEnum
-import com.squareup.wire.internal.FieldBinding.JsonFormatter
 
 /** Encodes enums using their names. Decodes using either their names or their tags. */
 class EnumJsonFormatter<E : WireEnum>(adapter: EnumAdapter<E>) : JsonFormatter<E> {

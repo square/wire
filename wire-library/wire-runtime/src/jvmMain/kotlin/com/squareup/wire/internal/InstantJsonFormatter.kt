@@ -16,7 +16,6 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.Instant
-import com.squareup.wire.internal.FieldBinding.JsonFormatter
 import java.time.format.DateTimeFormatter.ISO_INSTANT
 import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
