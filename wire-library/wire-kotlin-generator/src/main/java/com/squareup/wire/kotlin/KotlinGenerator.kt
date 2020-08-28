@@ -945,7 +945,7 @@ class KotlinGenerator private constructor(
       typeName == INT -> defaultValue.toIntFieldInitializer()
       typeName == LONG -> defaultValue.toLongFieldInitializer()
       typeName == FLOAT -> CodeBlock.of("%Lf", defaultValue.toString())
-      typeName == DOUBLE -> CodeBlock.of("%L", defaultValue.toString())
+      typeName == DOUBLE -> CodeBlock.of("%L", defaultValue.toString().toDouble())
       typeName == STRING -> CodeBlock.of("%S", defaultValue)
       typeName == ByteString::class.asTypeName() -> CodeBlock.of("%S.%M()!!",
           defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),

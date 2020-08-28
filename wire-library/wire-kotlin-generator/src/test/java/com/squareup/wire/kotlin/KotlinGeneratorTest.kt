@@ -62,12 +62,28 @@ class KotlinGeneratorTest {
         |  optional int32 b = 2 [default = 0x20 ];
         |  optional int64 c = 3 [default = 11 ];
         |  optional int64 d = 4 [default = 0x21 ];
+        |  optional float e = 5 [default = 806 ];
+        |  optional double f = 6 [default = -0];
+        |  optional double g = 7 [default = 0.0];
+        |  optional double h = 8 [default = -1.0];
+        |  optional double i = 9 [default = 1e10];
+        |  optional double j = 10 [default = -1e-2];
+        |  optional double k = 11 [default = -1.23e45];
+        |  optional double l = 12 [default = 255];
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Message")
     assertTrue(code.contains("const val DEFAULT_A: Int = 10"))
     assertTrue(code.contains("const val DEFAULT_B: Int = 32"))
     assertTrue(code.contains("const val DEFAULT_C: Long = 11L"))
     assertTrue(code.contains("const val DEFAULT_D: Long = 33L"))
+    assertTrue(code.contains("const val DEFAULT_E: Float = 806f"))
+    assertTrue(code.contains("const val DEFAULT_F: Double = -0.0"))
+    assertTrue(code.contains("const val DEFAULT_G: Double = 0.0"))
+    assertTrue(code.contains("const val DEFAULT_H: Double = -1.0"))
+    assertTrue(code.contains("const val DEFAULT_I: Double = 1.0E10"))
+    assertTrue(code.contains("const val DEFAULT_J: Double = -0.01"))
+    assertTrue(code.contains("const val DEFAULT_K: Double = -1.23E45"))
+    assertTrue(code.contains("const val DEFAULT_L: Double = 255.0"))
   }
 
   @Test fun nameAllocatorIsUsed() {
