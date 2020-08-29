@@ -173,6 +173,7 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
+   * This is a superb option! Apply it to your greatest fields.
    * Extension source: custom_options.proto
    */
   @WireField(
@@ -544,6 +545,9 @@ public final class FieldOptions extends Message<FieldOptions, FieldOptions.Build
       return this;
     }
 
+    /**
+     * This is a superb option! Apply it to your greatest fields.
+     */
     public Builder my_field_option_one(Integer my_field_option_one) {
       this.my_field_option_one = my_field_option_one;
       return this;

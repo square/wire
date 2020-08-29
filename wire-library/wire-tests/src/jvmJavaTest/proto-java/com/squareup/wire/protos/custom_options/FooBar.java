@@ -12,6 +12,7 @@ import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
+import com.squareup.wire.protos.foreign.ForeignEnumValueOption;
 import java.io.IOException;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -521,15 +522,20 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
   }
 
+  @EnumOption(true)
   public enum FooBarBazEnum implements WireEnum {
+    @EnumValueOption(17)
     FOO(1, 17, new More.Builder()
         .serial(Arrays.asList(
             99,
             199))
         .build(), null),
 
+    @ForeignEnumValueOption(true)
     BAR(2, null, null, true),
 
+    @EnumValueOption(18)
+    @ForeignEnumValueOption(false)
     BAZ(3, 18, null, false);
 
     public static final ProtoAdapter<FooBarBazEnum> ADAPTER = new ProtoAdapter_FooBarBazEnum();

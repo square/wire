@@ -57,6 +57,7 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
+   * This is a nice option! Apply it to your friendly enum constants.
    * Extension source: custom_options.proto
    */
   @WireField(
@@ -202,6 +203,9 @@ public final class EnumValueOptions extends Message<EnumValueOptions, EnumValueO
       return this;
     }
 
+    /**
+     * This is a nice option! Apply it to your friendly enum constants.
+     */
     public Builder enum_value_option(Integer enum_value_option) {
       this.enum_value_option = enum_value_option;
       return this;

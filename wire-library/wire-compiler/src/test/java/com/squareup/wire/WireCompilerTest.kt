@@ -103,6 +103,7 @@ class WireCompilerTest {
         "com/squareup/wire/protos/simple/SimpleMessage.java",
         "com/squareup/wire/protos/simple/ExternalMessage.java",
         "com/squareup/wire/protos/foreign/ForeignEnum.java",
+        "com/squareup/wire/protos/foreign/ForeignEnumValueOption.java",
         "com/squareup/wire/protos/foreign/ForeignMessage.java")
     assertJavaOutputs(outputs)
   }
@@ -194,6 +195,8 @@ class WireCompilerTest {
     compileToJava(sources, "--named_files_only", "--emit_applied_options")
 
     val outputs = arrayOf(
+        "com/squareup/wire/protos/custom_options/EnumOption.java",
+        "com/squareup/wire/protos/custom_options/EnumValueOption.java",
         "com/squareup/wire/protos/custom_options/FooBar.java",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
         "com/squareup/wire/protos/custom_options/MyFieldOptionOne.java",
@@ -483,6 +486,8 @@ class WireCompilerTest {
     compileToKotlin(sources, "--named_files_only", "--emit_applied_options")
 
     val outputs = arrayOf(
+        "com/squareup/wire/protos/custom_options/EnumOption.kt",
+        "com/squareup/wire/protos/custom_options/EnumValueOption.kt",
         "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.kt",
         "com/squareup/wire/protos/custom_options/MyMessageOptionFour.kt",
         "com/squareup/wire/protos/custom_options/MyFieldOptionOne.kt",

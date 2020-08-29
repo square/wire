@@ -14,6 +14,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
+import com.squareup.wire.protos.kotlin.foreign.ForeignEnumValueOption
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -429,12 +430,14 @@ class FooBar(
     }
   }
 
+  @EnumOption(true)
   enum class FooBarBazEnum(
     override val value: Int,
     val enum_value_option: Int?,
     val complex_enum_value_option: More?,
     val foreign_enum_value_option: Boolean?
   ) : WireEnum {
+    @EnumValueOption(17)
     FOO(1, 17, More(
       serial = listOf(
         99,
@@ -442,8 +445,11 @@ class FooBar(
       )
     ), null),
 
+    @ForeignEnumValueOption(true)
     BAR(2, null, null, true),
 
+    @EnumValueOption(18)
+    @ForeignEnumValueOption(false)
     BAZ(3, 18, null, false);
 
     companion object {

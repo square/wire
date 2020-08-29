@@ -130,6 +130,7 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
+   * This is a fantastic option! Apply it to your favorite messages.
    * Extension source: custom_options.proto
    */
   @WireField(
@@ -429,6 +430,9 @@ public final class MessageOptions extends Message<MessageOptions, MessageOptions
       return this;
     }
 
+    /**
+     * This is a fantastic option! Apply it to your favorite messages.
+     */
     public Builder my_message_option_one(FooBar my_message_option_one) {
       this.my_message_option_one = my_message_option_one;
       return this;

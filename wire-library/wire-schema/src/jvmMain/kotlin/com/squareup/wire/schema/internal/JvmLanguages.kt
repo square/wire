@@ -79,8 +79,8 @@ fun eligibleAsAnnotationMember(schema: Schema, field: Field): Boolean {
 
 fun annotationTargetType(extend: Extend): ElementType? {
   return when (extend.type!!) {
-    Options.MESSAGE_OPTIONS -> ElementType.TYPE
-    Options.FIELD_OPTIONS -> ElementType.FIELD
+    Options.MESSAGE_OPTIONS, Options.ENUM_OPTIONS -> ElementType.TYPE
+    Options.FIELD_OPTIONS, Options.ENUM_VALUE_OPTIONS -> ElementType.FIELD
     else -> null
   }
 }
