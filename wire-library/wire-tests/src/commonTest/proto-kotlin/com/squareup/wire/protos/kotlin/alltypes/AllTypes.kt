@@ -1683,7 +1683,7 @@ class AllTypes(
 
     const val DEFAULT_DEFAULT_FLOAT: Float = 123.456e7f
 
-    const val DEFAULT_DEFAULT_DOUBLE: Double = 123.456e78
+    const val DEFAULT_DEFAULT_DOUBLE: Double = 1.23456E80
 
     const val DEFAULT_DEFAULT_STRING: String =
         "çok\u0007\b\u000c\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
