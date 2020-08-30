@@ -8,6 +8,9 @@ import kotlin.annotation.AnnotationTarget
 import kotlin.annotation.Retention
 import kotlin.annotation.Target
 
+/**
+ * This is a nice option! Apply it to your friendly enum constants.
+ */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
 annotation class EnumValueOption(

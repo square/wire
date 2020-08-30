@@ -84,6 +84,16 @@ extend google.protobuf.EnumOptions {
   optional bool enum_option = 71000;
 }
 
+extend google.protobuf.ServiceOptions {
+  /** This is a fluffy option! Apply it to your softest service types. */
+  optional int32 service_option_one = 80000;
+}
+
+extend google.protobuf.MethodOptions {
+  /** This is a shiny option! Apply it to your brightest methods. */
+  optional int32 method_option_one = 90000;
+}
+
 extend FooBar {
   optional FooBar.FooBarBazEnum ext = 101;
   repeated FooBar.FooBarBazEnum rep = 102;
@@ -116,3 +126,10 @@ message MessageWithOptions {
   };
 }
 
+service ServiceWithOptions {
+  option (service_option_one) = 456;
+
+  rpc MethodWithOptions(FooBar) returns (FooBar) {
+    option (method_option_one) = 789;
+  }
+}
