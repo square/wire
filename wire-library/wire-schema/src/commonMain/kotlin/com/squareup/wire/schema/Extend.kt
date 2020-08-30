@@ -53,7 +53,7 @@ data class Extend(
     linker.validateImport(location, type!!)
 
     if (!syntaxRules.canExtend(ProtoType.get(name))) {
-      linker.addError("extensions are not allowed [proto3]")
+      linker.errors += "extensions are not allowed [proto3]"
     }
   }
 

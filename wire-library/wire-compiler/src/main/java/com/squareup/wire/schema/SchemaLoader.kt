@@ -36,7 +36,7 @@ class SchemaLoader(
   private val closer = Closer.create()
 
   /** Errors accumulated by this load. */
-  private val errors = mutableListOf<String>()
+  private val errors = ErrorCollector()
 
   /** Paths accumulated that we failed to load. */
   private val missingImports = TreeSet<String>()
@@ -67,14 +67,9 @@ class SchemaLoader(
   @Throws(IOException::class)
   fun loadSchema(): Schema {
     sourcePathFiles = loadSourcePathFiles()
-    val result = try {
-      Schema.fromFiles(sourcePathFiles, this)
-    } catch (e: Exception) {
-      // TODO(jwilson): collect a single set of errors in loader and linker.
-      reportLoadingErrors()
-      throw e
-    }
-    reportLoadingErrors()
+    val linker = Linker(this, errors)
+    val result = linker.link(sourcePathFiles)
+    errors.throwIfNonEmpty()
     return result
   }
 
@@ -96,7 +91,7 @@ class SchemaLoader(
       errors += "no sources"
     }
 
-    checkForErrors()
+    errors.throwIfNonEmpty()
 
     return result
   }
@@ -166,11 +161,7 @@ class SchemaLoader(
           |  ${protoPathRoots!!.joinToString(separator = "\n  ")}
           """.trimMargin()
     }
-    checkForErrors()
-  }
-
-  private fun checkForErrors() {
-    require(errors.isEmpty()) { errors.joinToString(separator = "\n") }
+    errors.throwIfNonEmpty()
   }
 
   override fun close() {
@@ -215,13 +206,13 @@ class SchemaLoader(
 
         val requiredImport = resolvedType.location.path
         if (!profileFile.imports.contains(requiredImport)) {
-          errors.add(String.format("%s needs to import %s (%s)",
-              typeConfig.location.path, requiredImport, typeConfig.location))
+          errors += "${typeConfig.location.path} needs to import $requiredImport " +
+              "(${typeConfig.location})"
         }
       }
     }
 
-    checkForErrors()
+    errors.throwIfNonEmpty()
   }
 
   /** Returns the type to import for `type`.  */

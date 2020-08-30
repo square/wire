@@ -106,10 +106,10 @@ class Options(
             val extensionFields = type.extensionFields.filter { it.name == option.name }
             if (extensionFields.size > 1) {
               if (validate){
-                linker.addError("""
+                linker.errors += """
                    |ambiguous options ${option.name} defined in
                    |  ${extensionFields.map { "- ${it.location}" }.joinToString("\n  ")}
-                   """.trimMargin())
+                   """.trimMargin()
                 return null
               }
             } else {
@@ -120,7 +120,7 @@ class Options(
       }
       if (path == null) {
         if (validate) {
-          linker.addError("unable to resolve option ${option.name}")
+          linker.errors += "unable to resolve option ${option.name}"
         }
         return null // Unable to find the root of this field path.
       }
@@ -163,7 +163,7 @@ class Options(
         val result = mutableMapOf<ProtoMember, Any>()
         val field = linker.dereference(context, value.name)
         if (field == null) {
-          linker.addError("unable to resolve option ${value.name} on ${context.type}")
+          linker.errors += "unable to resolve option ${value.name} on ${context.type}"
         } else {
           val protoMember = get(context.type!!, field)
           result[protoMember] = canonicalizeValue(linker, field, value.value)
@@ -177,7 +177,7 @@ class Options(
           val name = entry.key as String
           val field = linker.dereference(context, name)
           if (field == null) {
-            linker.addError("unable to resolve option $name on ${context.type}")
+            linker.errors += "unable to resolve option $name on ${context.type}"
           } else {
             val protoMember = get(context.type!!, field)
             result[protoMember] = canonicalizeValue(linker, field, entry.value!!)
@@ -223,7 +223,7 @@ class Options(
       }
 
       else -> {
-        linker.addError("conflicting options: $a, $b")
+        linker.errors += "conflicting options: $a, $b"
         a // Just return any placeholder.
       }
     }

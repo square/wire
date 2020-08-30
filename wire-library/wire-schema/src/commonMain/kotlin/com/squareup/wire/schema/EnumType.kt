@@ -66,7 +66,7 @@ data class EnumType(
 
   private fun validateZeroValueAtFirstPosition(linker: Linker) {
     if (constants.isEmpty() || constants.first().tag != 0) {
-      linker.addError("missing a zero value at the first element [proto3]")
+      linker.errors += "missing a zero value at the first element [proto3]"
     }
   }
 
@@ -86,7 +86,7 @@ data class EnumType(
             append("\n  ${index + 1}. ${it.name} (${it.location})")
           }
         }
-        linker.addError(error)
+        linker.errors += error
       }
     }
   }

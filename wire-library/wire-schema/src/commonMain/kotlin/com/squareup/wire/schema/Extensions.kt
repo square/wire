@@ -43,7 +43,7 @@ data class Extensions(
       }
     }
     if (outOfRangeTags.isNotEmpty()) {
-      linker.addError("tags are out of range: ${outOfRangeTags.joinToString(separator = ", ")}")
+      linker.errors += "tags are out of range: ${outOfRangeTags.joinToString(separator = ", ")}"
     }
   }
 

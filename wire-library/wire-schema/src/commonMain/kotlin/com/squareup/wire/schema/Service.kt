@@ -84,7 +84,7 @@ data class Service(
             append("\n  ${index + 1}. ${rpc.name} (${rpc.location})")
           }
         }
-        linker.addError(error)
+        linker.errors += error
       }
     }
   }

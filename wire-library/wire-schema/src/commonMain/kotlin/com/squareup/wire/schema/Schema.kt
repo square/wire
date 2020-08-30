@@ -121,13 +121,6 @@ class Schema internal constructor(protoFiles: Iterable<ProtoFile>) {
   }
 
   companion object {
-    @JvmOverloads
-    fun fromFiles(
-      sourceProtoFiles: Iterable<ProtoFile>,
-      pathFilesLoader: Loader = CoreLoader
-    ): Schema {
-      return Linker(pathFilesLoader).link(sourceProtoFiles)
-    }
 
     private fun buildTypesIndex(
       protoFiles: Iterable<ProtoFile>,
