@@ -35,7 +35,7 @@ private data class ManifestModule(
 private val serializer = MapSerializer(String.serializer(), ManifestModule.serializer())
 
 internal fun parseManifestModules(yaml: String): Map<String, WireRun.Module> {
-  val modules = Yaml.default.parse(serializer, yaml)
+  val modules = Yaml.default.decodeFromString(serializer, yaml)
   return modules.mapValues { (_, module) ->
     WireRun.Module(
         dependencies = module.dependencies,
