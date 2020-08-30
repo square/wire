@@ -529,6 +529,10 @@ public final class JavaGenerator {
       builder.addJavadoc("$L\n", sanitizeJavadoc(type.getDocumentation()));
     }
 
+    for (AnnotationSpec annotation : optionAnnotations(type.getOptions())) {
+      builder.addAnnotation(annotation);
+    }
+
     // Output Private tag field
     builder.addField(TypeName.INT, value, PRIVATE, FINAL);
 
@@ -577,6 +581,10 @@ public final class JavaGenerator {
       TypeSpec.Builder constantBuilder = TypeSpec.anonymousClassBuilder(enumArgsFormat, enumArgs);
       if (!constant.getDocumentation().isEmpty()) {
         constantBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.getDocumentation()));
+      }
+
+      for (AnnotationSpec annotation : optionAnnotations(constant.getOptions())) {
+        constantBuilder.addAnnotation(annotation);
       }
 
       if (constant.isDeprecated()) {

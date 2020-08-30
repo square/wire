@@ -63,6 +63,7 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
+   * This is a reasonable option! Apply it to your available enum types.
    * Extension source: custom_options.proto
    */
   @WireField(
@@ -175,6 +176,9 @@ public final class EnumOptions extends Message<EnumOptions, EnumOptions.Builder>
       return this;
     }
 
+    /**
+     * This is a reasonable option! Apply it to your available enum types.
+     */
     public Builder enum_option(Boolean enum_option) {
       this.enum_option = enum_option;
       return this;

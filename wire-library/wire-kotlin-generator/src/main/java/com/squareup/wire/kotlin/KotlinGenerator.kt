@@ -75,6 +75,7 @@ import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
 import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
+import com.squareup.wire.schema.Options.Companion.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
@@ -1381,6 +1382,9 @@ class KotlinGenerator private constructor(
           if (message.documentation.isNotBlank()) {
             addKdoc("%L\n", message.documentation.sanitizeKdoc())
           }
+          for (annotation in optionAnnotations(message.options)) {
+            addAnnotation(annotation)
+          }
         }
         .addSuperinterface(WireEnum::class)
         .addProperty(PropertySpec.builder(valueName, Int::class)
@@ -1420,6 +1424,9 @@ class KotlinGenerator private constructor(
             }
             if (constant.documentation.isNotBlank()) {
               addKdoc("%L\n", constant.documentation.sanitizeKdoc())
+            }
+            for (annotation in optionAnnotations(constant.options)) {
+              addAnnotation(annotation)
             }
             if (constant.isDeprecated) {
               addAnnotation(AnnotationSpec.builder(Deprecated::class)
@@ -1822,8 +1829,8 @@ class KotlinGenerator private constructor(
 
     private val Extend.annotationTarget: AnnotationTarget?
       get() = when (type) {
-        MESSAGE_OPTIONS -> AnnotationTarget.CLASS
-        FIELD_OPTIONS -> AnnotationTarget.PROPERTY
+        MESSAGE_OPTIONS, ENUM_OPTIONS -> AnnotationTarget.CLASS
+        FIELD_OPTIONS, ENUM_VALUE_OPTIONS -> AnnotationTarget.PROPERTY
         else -> null
       }
 
