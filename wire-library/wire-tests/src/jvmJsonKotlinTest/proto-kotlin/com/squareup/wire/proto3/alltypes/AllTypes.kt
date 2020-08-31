@@ -1111,7 +1111,7 @@ class AllTypes(
       return this
     }
 
-    fun nested_message(nested_message: NestedMessage): Builder {
+    fun nested_message(nested_message: NestedMessage?): Builder {
       this.nested_message = nested_message
       return this
     }

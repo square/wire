@@ -2535,7 +2535,7 @@ class AllTypes(
       return this
     }
 
-    fun req_nested_message(req_nested_message: NestedMessage): Builder {
+    fun req_nested_message(req_nested_message: NestedMessage?): Builder {
       this.req_nested_message = req_nested_message
       return this
     }

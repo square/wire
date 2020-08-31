@@ -552,47 +552,47 @@ class AllWrappers(
     @JvmField
     var map_int32_bytes_value: Map<Int, ByteString?> = emptyMap()
 
-    fun double_value(double_value: Double): Builder {
+    fun double_value(double_value: Double?): Builder {
       this.double_value = double_value
       return this
     }
 
-    fun float_value(float_value: Float): Builder {
+    fun float_value(float_value: Float?): Builder {
       this.float_value = float_value
       return this
     }
 
-    fun int64_value(int64_value: Long): Builder {
+    fun int64_value(int64_value: Long?): Builder {
       this.int64_value = int64_value
       return this
     }
 
-    fun uint64_value(uint64_value: Long): Builder {
+    fun uint64_value(uint64_value: Long?): Builder {
       this.uint64_value = uint64_value
       return this
     }
 
-    fun int32_value(int32_value: Int): Builder {
+    fun int32_value(int32_value: Int?): Builder {
       this.int32_value = int32_value
       return this
     }
 
-    fun uint32_value(uint32_value: Int): Builder {
+    fun uint32_value(uint32_value: Int?): Builder {
       this.uint32_value = uint32_value
       return this
     }
 
-    fun bool_value(bool_value: Boolean): Builder {
+    fun bool_value(bool_value: Boolean?): Builder {
       this.bool_value = bool_value
       return this
     }
 
-    fun string_value(string_value: String): Builder {
+    fun string_value(string_value: String?): Builder {
       this.string_value = string_value
       return this
     }
 
-    fun bytes_value(bytes_value: ByteString): Builder {
+    fun bytes_value(bytes_value: ByteString?): Builder {
       this.bytes_value = bytes_value
       return this
     }
