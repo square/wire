@@ -105,6 +105,7 @@ class MessageOptions(
   val map_entry: Boolean? = null,
   uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**
+   * This is a fantastic option! Apply it to your favorite messages.
    * Extension source: custom_options.proto
    */
   @field:WireField(

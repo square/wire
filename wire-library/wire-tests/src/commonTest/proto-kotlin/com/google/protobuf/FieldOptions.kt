@@ -129,6 +129,7 @@ class FieldOptions(
   val weak: Boolean? = null,
   uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**
+   * This is a superb option! Apply it to your greatest fields.
    * Extension source: custom_options.proto
    */
   @field:WireField(

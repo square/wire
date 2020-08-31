@@ -53,6 +53,7 @@ message FooBar {
 }
 
 extend google.protobuf.MessageOptions {
+  /** This is a fantastic option! Apply it to your favorite messages. */
   optional FooBar my_message_option_one = 50001;
   optional float my_message_option_two = 50002;
   optional FooBar my_message_option_three = 50003;
@@ -62,6 +63,7 @@ extend google.protobuf.MessageOptions {
 }
 
 extend google.protobuf.FieldOptions {
+  /** This is a superb option! Apply it to your greatest fields. */
   optional int32 my_field_option_one = 60001;
   optional float my_field_option_two = 60002;
   optional FooBar.FooBarBazEnum my_field_option_three = 60003;
@@ -69,12 +71,24 @@ extend google.protobuf.FieldOptions {
 }
 
 extend google.protobuf.EnumValueOptions {
+  /** This is a nice option! Apply it to your friendly enum constants. */
   optional int32 enum_value_option = 70000;
   optional FooBar.More complex_enum_value_option = 70001;
 }
 
 extend google.protobuf.EnumOptions {
+  /** This is a reasonable option! Apply it to your available enum types. */
   optional bool enum_option = 71000;
+}
+
+extend google.protobuf.ServiceOptions {
+  /** This is a fluffy option! Apply it to your softest service types. */
+  optional int32 service_option_one = 80000;
+}
+
+extend google.protobuf.MethodOptions {
+  /** This is a shiny option! Apply it to your brightest methods. */
+  optional int32 method_option_one = 90000;
 }
 
 extend FooBar {
@@ -109,3 +123,10 @@ message MessageWithOptions {
   };
 }
 
+service ServiceWithOptions {
+  option (service_option_one) = 456;
+
+  rpc MethodWithOptions(FooBar) returns (FooBar) {
+    option (method_option_one) = 789;
+  }
+}

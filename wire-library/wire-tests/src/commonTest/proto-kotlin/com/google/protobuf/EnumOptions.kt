@@ -48,6 +48,7 @@ class EnumOptions(
   val deprecated: Boolean? = null,
   uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**
+   * This is a reasonable option! Apply it to your available enum types.
    * Extension source: custom_options.proto
    */
   @field:WireField(

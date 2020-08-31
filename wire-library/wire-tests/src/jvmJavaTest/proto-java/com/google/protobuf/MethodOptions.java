@@ -14,6 +14,7 @@ import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
 import java.lang.Boolean;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -29,6 +30,8 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   public static final Boolean DEFAULT_DEPRECATED = false;
 
   public static final IdempotencyLevel DEFAULT_IDEMPOTENCY_LEVEL = IdempotencyLevel.IDEMPOTENCY_UNKNOWN;
+
+  public static final Integer DEFAULT_METHOD_OPTION_ONE = 0;
 
   public static final Boolean DEFAULT_HIDE = false;
 
@@ -65,6 +68,16 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   public final List<UninterpretedOption> uninterpreted_option;
 
   /**
+   * This is a shiny option! Apply it to your brightest methods.
+   * Extension source: custom_options.proto
+   */
+  @WireField(
+      tag = 90000,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  public final Integer method_option_one;
+
+  /**
    * Extension source: options.proto
    */
   @WireField(
@@ -74,16 +87,18 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
   public final Boolean hide;
 
   public MethodOptions(Boolean deprecated, IdempotencyLevel idempotency_level,
-      List<UninterpretedOption> uninterpreted_option, Boolean hide) {
-    this(deprecated, idempotency_level, uninterpreted_option, hide, ByteString.EMPTY);
+      List<UninterpretedOption> uninterpreted_option, Integer method_option_one, Boolean hide) {
+    this(deprecated, idempotency_level, uninterpreted_option, method_option_one, hide, ByteString.EMPTY);
   }
 
   public MethodOptions(Boolean deprecated, IdempotencyLevel idempotency_level,
-      List<UninterpretedOption> uninterpreted_option, Boolean hide, ByteString unknownFields) {
+      List<UninterpretedOption> uninterpreted_option, Integer method_option_one, Boolean hide,
+      ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.deprecated = deprecated;
     this.idempotency_level = idempotency_level;
     this.uninterpreted_option = Internal.immutableCopyOf("uninterpreted_option", uninterpreted_option);
+    this.method_option_one = method_option_one;
     this.hide = hide;
   }
 
@@ -93,6 +108,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     builder.deprecated = deprecated;
     builder.idempotency_level = idempotency_level;
     builder.uninterpreted_option = Internal.copyOf(uninterpreted_option);
+    builder.method_option_one = method_option_one;
     builder.hide = hide;
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -107,6 +123,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
         && Internal.equals(deprecated, o.deprecated)
         && Internal.equals(idempotency_level, o.idempotency_level)
         && uninterpreted_option.equals(o.uninterpreted_option)
+        && Internal.equals(method_option_one, o.method_option_one)
         && Internal.equals(hide, o.hide);
   }
 
@@ -118,6 +135,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
       result = result * 37 + (deprecated != null ? deprecated.hashCode() : 0);
       result = result * 37 + (idempotency_level != null ? idempotency_level.hashCode() : 0);
       result = result * 37 + uninterpreted_option.hashCode();
+      result = result * 37 + (method_option_one != null ? method_option_one.hashCode() : 0);
       result = result * 37 + (hide != null ? hide.hashCode() : 0);
       super.hashCode = result;
     }
@@ -130,6 +148,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     if (deprecated != null) builder.append(", deprecated=").append(deprecated);
     if (idempotency_level != null) builder.append(", idempotency_level=").append(idempotency_level);
     if (!uninterpreted_option.isEmpty()) builder.append(", uninterpreted_option=").append(uninterpreted_option);
+    if (method_option_one != null) builder.append(", method_option_one=").append(method_option_one);
     if (hide != null) builder.append(", hide=").append(hide);
     return builder.replace(0, 2, "MethodOptions{").append('}').toString();
   }
@@ -140,6 +159,8 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
     public IdempotencyLevel idempotency_level;
 
     public List<UninterpretedOption> uninterpreted_option;
+
+    public Integer method_option_one;
 
     public Boolean hide;
 
@@ -176,6 +197,14 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
       return this;
     }
 
+    /**
+     * This is a shiny option! Apply it to your brightest methods.
+     */
+    public Builder method_option_one(Integer method_option_one) {
+      this.method_option_one = method_option_one;
+      return this;
+    }
+
     public Builder hide(Boolean hide) {
       this.hide = hide;
       return this;
@@ -183,7 +212,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
 
     @Override
     public MethodOptions build() {
-      return new MethodOptions(deprecated, idempotency_level, uninterpreted_option, hide, super.buildUnknownFields());
+      return new MethodOptions(deprecated, idempotency_level, uninterpreted_option, method_option_one, hide, super.buildUnknownFields());
     }
   }
 
@@ -253,6 +282,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
       result += ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated);
       result += IdempotencyLevel.ADAPTER.encodedSizeWithTag(34, value.idempotency_level);
       result += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999, value.uninterpreted_option);
+      result += ProtoAdapter.INT32.encodedSizeWithTag(90000, value.method_option_one);
       result += ProtoAdapter.BOOL.encodedSizeWithTag(56001, value.hide);
       result += value.unknownFields().size();
       return result;
@@ -263,6 +293,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
       ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated);
       IdempotencyLevel.ADAPTER.encodeWithTag(writer, 34, value.idempotency_level);
       UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999, value.uninterpreted_option);
+      ProtoAdapter.INT32.encodeWithTag(writer, 90000, value.method_option_one);
       ProtoAdapter.BOOL.encodeWithTag(writer, 56001, value.hide);
       writer.writeBytes(value.unknownFields());
     }
@@ -284,6 +315,7 @@ public final class MethodOptions extends Message<MethodOptions, MethodOptions.Bu
           }
           case 999: builder.uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader)); break;
           case 56001: builder.hide(ProtoAdapter.BOOL.decode(reader)); break;
+          case 90000: builder.method_option_one(ProtoAdapter.INT32.decode(reader)); break;
           default: {
             reader.readUnknownField(tag);
           }

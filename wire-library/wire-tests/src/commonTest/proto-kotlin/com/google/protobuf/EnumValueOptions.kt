@@ -40,6 +40,7 @@ class EnumValueOptions(
   val deprecated: Boolean? = null,
   uninterpreted_option: List<UninterpretedOption> = emptyList(),
   /**
+   * This is a nice option! Apply it to your friendly enum constants.
    * Extension source: custom_options.proto
    */
   @field:WireField(

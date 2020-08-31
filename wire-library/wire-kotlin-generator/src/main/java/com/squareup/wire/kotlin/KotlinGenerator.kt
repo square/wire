@@ -79,6 +79,8 @@ import com.squareup.wire.schema.Options.Companion.ENUM_OPTIONS
 import com.squareup.wire.schema.Options.Companion.ENUM_VALUE_OPTIONS
 import com.squareup.wire.schema.Options.Companion.FIELD_OPTIONS
 import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
+import com.squareup.wire.schema.Options.Companion.METHOD_OPTIONS
+import com.squareup.wire.schema.Options.Companion.SERVICE_OPTIONS
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
@@ -226,6 +228,11 @@ class KotlinGenerator private constructor(
           if (service.documentation.isNotBlank()) {
             addKdoc("%L\n", service.documentation.sanitizeKdoc())
           }
+          if (!isImplementation) {
+            for (annotation in optionAnnotations(service.options)) {
+              addAnnotation(annotation)
+            }
+          }
         }
 
     val rpcs = if (onlyRpc == null) service.rpcs else listOf(onlyRpc)
@@ -249,6 +256,11 @@ class KotlinGenerator private constructor(
         .apply {
           if (rpc.documentation.isNotBlank()) {
             addKdoc("%L\n", rpc.documentation.sanitizeKdoc())
+          }
+          if (!isImplementation) {
+            for (annotation in optionAnnotations(rpc.options)) {
+              addAnnotation(annotation)
+            }
           }
         }
 
@@ -1836,8 +1848,9 @@ class KotlinGenerator private constructor(
 
     private val Extend.annotationTarget: AnnotationTarget?
       get() = when (type) {
-        MESSAGE_OPTIONS, ENUM_OPTIONS -> AnnotationTarget.CLASS
+        MESSAGE_OPTIONS, ENUM_OPTIONS, SERVICE_OPTIONS -> AnnotationTarget.CLASS
         FIELD_OPTIONS, ENUM_VALUE_OPTIONS -> AnnotationTarget.PROPERTY
+        METHOD_OPTIONS -> AnnotationTarget.FUNCTION
         else -> null
       }
 

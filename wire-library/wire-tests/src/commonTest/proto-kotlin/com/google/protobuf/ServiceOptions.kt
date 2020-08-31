@@ -42,6 +42,15 @@ class ServiceOptions(
   )
   val deprecated: Boolean? = null,
   uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  /**
+   * This is a fluffy option! Apply it to your softest service types.
+   * Extension source: custom_options.proto
+   */
+  @field:WireField(
+    tag = 80000,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val service_option_one: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<ServiceOptions, Nothing>(ADAPTER, unknownFields) {
   /**
@@ -67,6 +76,7 @@ class ServiceOptions(
     if (unknownFields != other.unknownFields) return false
     if (deprecated != other.deprecated) return false
     if (uninterpreted_option != other.uninterpreted_option) return false
+    if (service_option_one != other.service_option_one) return false
     return true
   }
 
@@ -76,6 +86,7 @@ class ServiceOptions(
       result = unknownFields.hashCode()
       result = result * 37 + deprecated.hashCode()
       result = result * 37 + uninterpreted_option.hashCode()
+      result = result * 37 + service_option_one.hashCode()
       super.hashCode = result
     }
     return result
@@ -86,14 +97,17 @@ class ServiceOptions(
     if (deprecated != null) result += """deprecated=$deprecated"""
     if (uninterpreted_option.isNotEmpty()) result +=
         """uninterpreted_option=$uninterpreted_option"""
+    if (service_option_one != null) result += """service_option_one=$service_option_one"""
     return result.joinToString(prefix = "ServiceOptions{", separator = ", ", postfix = "}")
   }
 
   fun copy(
     deprecated: Boolean? = this.deprecated,
     uninterpreted_option: List<UninterpretedOption> = this.uninterpreted_option,
+    service_option_one: Int? = this.service_option_one,
     unknownFields: ByteString = this.unknownFields
-  ): ServiceOptions = ServiceOptions(deprecated, uninterpreted_option, unknownFields)
+  ): ServiceOptions = ServiceOptions(deprecated, uninterpreted_option, service_option_one,
+      unknownFields)
 
   companion object {
     const val DEFAULT_DEPRECATED: Boolean = false
@@ -111,6 +125,7 @@ class ServiceOptions(
         size += ProtoAdapter.BOOL.encodedSizeWithTag(33, value.deprecated)
         size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
             value.uninterpreted_option)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(80000, value.service_option_one)
         return size
       }
 
@@ -118,22 +133,26 @@ class ServiceOptions(
         ProtoAdapter.BOOL.encodeWithTag(writer, 33, value.deprecated)
         UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999,
             value.uninterpreted_option)
+        ProtoAdapter.INT32.encodeWithTag(writer, 80000, value.service_option_one)
         writer.writeBytes(value.unknownFields)
       }
 
       override fun decode(reader: ProtoReader): ServiceOptions {
         var deprecated: Boolean? = null
         val uninterpreted_option = mutableListOf<UninterpretedOption>()
+        var service_option_one: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             33 -> deprecated = ProtoAdapter.BOOL.decode(reader)
             999 -> uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader))
+            80000 -> service_option_one = ProtoAdapter.INT32.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
         return ServiceOptions(
           deprecated = deprecated,
           uninterpreted_option = uninterpreted_option,
+          service_option_one = service_option_one,
           unknownFields = unknownFields
         )
       }

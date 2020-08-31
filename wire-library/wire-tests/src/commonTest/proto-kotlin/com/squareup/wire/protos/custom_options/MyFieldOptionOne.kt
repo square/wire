@@ -8,6 +8,9 @@ import kotlin.annotation.AnnotationTarget
 import kotlin.annotation.Retention
 import kotlin.annotation.Target
 
+/**
+ * This is a superb option! Apply it to your greatest fields.
+ */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
 annotation class MyFieldOptionOne(

@@ -198,12 +198,14 @@ class WireCompilerTest {
         "com/squareup/wire/protos/custom_options/EnumOption.java",
         "com/squareup/wire/protos/custom_options/EnumValueOption.java",
         "com/squareup/wire/protos/custom_options/FooBar.java",
+        "com/squareup/wire/protos/custom_options/MethodOptionOne.java",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
         "com/squareup/wire/protos/custom_options/MyFieldOptionOne.java",
         "com/squareup/wire/protos/custom_options/MyFieldOptionTwo.java",
         "com/squareup/wire/protos/custom_options/MyFieldOptionThree.java",
         "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.java",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.java")
+        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.java",
+        "com/squareup/wire/protos/custom_options/ServiceOptionOne.java")
     assertJavaOutputs(outputs)
   }
 
@@ -488,13 +490,17 @@ class WireCompilerTest {
     val outputs = arrayOf(
         "com/squareup/wire/protos/custom_options/EnumOption.kt",
         "com/squareup/wire/protos/custom_options/EnumValueOption.kt",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.kt",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.kt",
+        "com/squareup/wire/protos/custom_options/FooBar.kt",
+        "com/squareup/wire/protos/custom_options/GrpcServiceWithOptionsClient.kt",
+        "com/squareup/wire/protos/custom_options/MessageWithOptions.kt",
+        "com/squareup/wire/protos/custom_options/MethodOptionOne.kt",
         "com/squareup/wire/protos/custom_options/MyFieldOptionOne.kt",
         "com/squareup/wire/protos/custom_options/MyFieldOptionTwo.kt",
         "com/squareup/wire/protos/custom_options/MyFieldOptionThree.kt",
-        "com/squareup/wire/protos/custom_options/MessageWithOptions.kt",
-        "com/squareup/wire/protos/custom_options/FooBar.kt"
+        "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.kt",
+        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.kt",
+        "com/squareup/wire/protos/custom_options/ServiceOptionOne.kt",
+        "com/squareup/wire/protos/custom_options/ServiceWithOptionsClient.kt"
     )
     assertKotlinOutputs(outputs)
   }

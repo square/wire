@@ -51,6 +51,15 @@ class MethodOptions(
   )
   val idempotency_level: IdempotencyLevel? = null,
   uninterpreted_option: List<UninterpretedOption> = emptyList(),
+  /**
+   * This is a shiny option! Apply it to your brightest methods.
+   * Extension source: custom_options.proto
+   */
+  @field:WireField(
+    tag = 90000,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+  )
+  val method_option_one: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MethodOptions, Nothing>(ADAPTER, unknownFields) {
   /**
@@ -77,6 +86,7 @@ class MethodOptions(
     if (deprecated != other.deprecated) return false
     if (idempotency_level != other.idempotency_level) return false
     if (uninterpreted_option != other.uninterpreted_option) return false
+    if (method_option_one != other.method_option_one) return false
     return true
   }
 
@@ -87,6 +97,7 @@ class MethodOptions(
       result = result * 37 + deprecated.hashCode()
       result = result * 37 + idempotency_level.hashCode()
       result = result * 37 + uninterpreted_option.hashCode()
+      result = result * 37 + method_option_one.hashCode()
       super.hashCode = result
     }
     return result
@@ -98,6 +109,7 @@ class MethodOptions(
     if (idempotency_level != null) result += """idempotency_level=$idempotency_level"""
     if (uninterpreted_option.isNotEmpty()) result +=
         """uninterpreted_option=$uninterpreted_option"""
+    if (method_option_one != null) result += """method_option_one=$method_option_one"""
     return result.joinToString(prefix = "MethodOptions{", separator = ", ", postfix = "}")
   }
 
@@ -105,9 +117,10 @@ class MethodOptions(
     deprecated: Boolean? = this.deprecated,
     idempotency_level: IdempotencyLevel? = this.idempotency_level,
     uninterpreted_option: List<UninterpretedOption> = this.uninterpreted_option,
+    method_option_one: Int? = this.method_option_one,
     unknownFields: ByteString = this.unknownFields
   ): MethodOptions = MethodOptions(deprecated, idempotency_level, uninterpreted_option,
-      unknownFields)
+      method_option_one, unknownFields)
 
   companion object {
     const val DEFAULT_DEPRECATED: Boolean = false
@@ -129,6 +142,7 @@ class MethodOptions(
         size += IdempotencyLevel.ADAPTER.encodedSizeWithTag(34, value.idempotency_level)
         size += UninterpretedOption.ADAPTER.asRepeated().encodedSizeWithTag(999,
             value.uninterpreted_option)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(90000, value.method_option_one)
         return size
       }
 
@@ -137,6 +151,7 @@ class MethodOptions(
         IdempotencyLevel.ADAPTER.encodeWithTag(writer, 34, value.idempotency_level)
         UninterpretedOption.ADAPTER.asRepeated().encodeWithTag(writer, 999,
             value.uninterpreted_option)
+        ProtoAdapter.INT32.encodeWithTag(writer, 90000, value.method_option_one)
         writer.writeBytes(value.unknownFields)
       }
 
@@ -144,6 +159,7 @@ class MethodOptions(
         var deprecated: Boolean? = null
         var idempotency_level: IdempotencyLevel? = null
         val uninterpreted_option = mutableListOf<UninterpretedOption>()
+        var method_option_one: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             33 -> deprecated = ProtoAdapter.BOOL.decode(reader)
@@ -153,6 +169,7 @@ class MethodOptions(
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
             999 -> uninterpreted_option.add(UninterpretedOption.ADAPTER.decode(reader))
+            90000 -> method_option_one = ProtoAdapter.INT32.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -160,6 +177,7 @@ class MethodOptions(
           deprecated = deprecated,
           idempotency_level = idempotency_level,
           uninterpreted_option = uninterpreted_option,
+          method_option_one = method_option_one,
           unknownFields = unknownFields
         )
       }
