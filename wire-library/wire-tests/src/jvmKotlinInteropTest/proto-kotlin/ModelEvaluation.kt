@@ -14,6 +14,7 @@ import kotlin.Any
 import kotlin.Boolean
 import kotlin.Double
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.collections.Map
 import kotlin.hashCode
@@ -191,5 +192,7 @@ class ModelEvaluation(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

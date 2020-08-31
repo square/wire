@@ -17,6 +17,7 @@ import com.squareup.wire.internal.redactElements
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
+import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.List
@@ -710,5 +711,7 @@ class AllStructs(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

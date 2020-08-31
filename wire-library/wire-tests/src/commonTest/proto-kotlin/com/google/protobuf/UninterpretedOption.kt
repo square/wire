@@ -211,6 +211,8 @@ class UninterpretedOption(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   /**
@@ -318,6 +320,8 @@ class UninterpretedOption(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 }

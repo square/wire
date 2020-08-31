@@ -2444,6 +2444,8 @@ class AllTypes(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   enum class NestedEnum(
@@ -2551,6 +2553,8 @@ class AllTypes(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 }

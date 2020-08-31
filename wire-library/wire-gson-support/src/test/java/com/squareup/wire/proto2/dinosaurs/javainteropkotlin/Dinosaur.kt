@@ -17,6 +17,7 @@ import kotlin.Any
 import kotlin.Boolean
 import kotlin.Double
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.collections.List
 import kotlin.hashCode
@@ -241,5 +242,7 @@ class Dinosaur(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

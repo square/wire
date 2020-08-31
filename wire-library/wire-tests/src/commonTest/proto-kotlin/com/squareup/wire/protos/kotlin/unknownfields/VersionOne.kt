@@ -15,6 +15,7 @@ import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.hashCode
@@ -135,5 +136,7 @@ class VersionOne(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

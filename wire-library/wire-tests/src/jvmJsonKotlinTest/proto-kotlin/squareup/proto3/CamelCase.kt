@@ -16,6 +16,7 @@ import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
@@ -219,6 +220,8 @@ class CamelCase(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   class NestedCamelCase(
@@ -320,6 +323,8 @@ class CamelCase(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 }

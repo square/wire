@@ -20,6 +20,7 @@ import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.collections.List
 import kotlin.hashCode
@@ -263,6 +264,8 @@ class Person(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   /**
@@ -443,6 +446,8 @@ class Person(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 }

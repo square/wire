@@ -19,6 +19,7 @@ import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.List
@@ -273,6 +274,8 @@ class DescriptorProto(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   class ExtensionRange(
@@ -391,6 +394,8 @@ class DescriptorProto(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 
@@ -500,6 +505,8 @@ class DescriptorProto(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 }

@@ -14,6 +14,7 @@ import com.squareup.wire.WireEnum
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
@@ -78,6 +79,8 @@ class OtherMessageWithStatus(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   enum class Status(

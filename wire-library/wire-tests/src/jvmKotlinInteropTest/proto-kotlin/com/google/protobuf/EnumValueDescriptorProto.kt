@@ -13,6 +13,7 @@ import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.hashCode
 import kotlin.jvm.JvmField
@@ -172,5 +173,7 @@ class EnumValueDescriptorProto(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

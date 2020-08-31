@@ -16,6 +16,7 @@ import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.UnsupportedOperationException
@@ -102,5 +103,7 @@ class RedactedRequired(
       override fun redact(value: RedactedRequired): RedactedRequired = throw
           UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }
