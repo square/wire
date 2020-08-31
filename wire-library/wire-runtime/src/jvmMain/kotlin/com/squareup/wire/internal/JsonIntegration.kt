@@ -177,11 +177,14 @@ abstract class JsonIntegration<F, A> {
   private object UnsignedIntAsNumberJsonFormatter : JsonFormatter<Int> {
     // 2^32, used to convert sint32 values >= 2^31 to unsigned decimal form
     private const val power32 = 1L shl 32
+    private const val maxInt = Int.MAX_VALUE.toLong()
 
     override fun fromString(value: String): Int {
-      val doubleValue = value.toDouble()
-      return if (doubleValue < 0.0) doubleValue.toInt()
-      else doubleValue.toUInt().toInt()
+      val longValue = value.toDouble().toLong() // Handle extra trailing values like 5.0.
+      return when {
+        longValue >= maxInt -> (longValue - power32).toInt()
+        else -> longValue.toInt()
+      }
     }
 
     override fun toStringOrNumber(value: Int): Any {
