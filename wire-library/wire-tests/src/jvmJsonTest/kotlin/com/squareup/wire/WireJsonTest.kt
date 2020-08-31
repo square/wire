@@ -643,7 +643,6 @@ class WireJsonTest {
         .map_int32_sfixed32(mapOf(Int.MIN_VALUE to Int.MIN_VALUE + 1))
         .build()
 
-    println(jsonLibrary.toJson(value, All32::class.java))
     assertJsonEquals(ALL_32_JSON_MIN_VALUE, jsonLibrary.toJson(value, All32::class.java))
 
     val parsed = jsonLibrary.fromJson(ALL_32_JSON_MIN_VALUE, All32::class.java)
