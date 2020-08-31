@@ -50,7 +50,7 @@ data class Extend(
 
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
     val linker = linker.withContext(this)
-    linker.validateImport(location, type!!)
+    linker.validateImportForType(location, type!!)
 
     if (!syntaxRules.canExtend(ProtoType.get(name))) {
       linker.errors += "extensions are not allowed [proto3]"

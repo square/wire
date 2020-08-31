@@ -44,13 +44,13 @@ data class Rpc(
 
   fun linkOptions(linker: Linker, validate: Boolean) {
     val linker = linker.withContext(this)
-    options.link(linker, validate)
+    options.link(linker, location, validate)
   }
 
   fun validate(linker: Linker) {
     val linker = linker.withContext(this)
-    linker.validateImport(location, requestType!!)
-    linker.validateImport(location, responseType!!)
+    linker.validateImportForType(location, requestType!!)
+    linker.validateImportForType(location, responseType!!)
   }
 
   fun retainAll(schema: Schema, markSet: MarkSet): Rpc? {

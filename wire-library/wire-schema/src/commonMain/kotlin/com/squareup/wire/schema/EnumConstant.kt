@@ -33,7 +33,7 @@ data class EnumConstant(
 
   internal fun linkOptions(linker: Linker, validate: Boolean) {
     val linker = linker.withContext(this)
-    options.link(linker, validate)
+    options.link(linker, location, validate)
   }
 
   internal fun retainAll(

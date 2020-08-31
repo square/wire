@@ -150,7 +150,7 @@ data class ProtoFile(
   }
 
   fun linkOptions(linker: Linker, validate: Boolean) {
-    options.link(linker, validate)
+    options.link(linker, location, validate)
     javaPackage = options.get(JAVA_PACKAGE)
   }
 

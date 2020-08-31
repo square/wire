@@ -60,12 +60,12 @@ class Options(
     }
   }
 
-  fun link(linker: Linker, validate: Boolean) {
+  fun link(linker: Linker, location: Location, validate: Boolean) {
     var entries: List<LinkedOptionEntry> = emptyList()
 
     for (option in optionElements) {
       val canonicalOption: List<LinkedOptionEntry> =
-          canonicalizeOption(linker, optionType, option, validate)
+          canonicalizeOption(linker, optionType, option, validate, location)
               ?: continue
 
       entries = union(linker, entries, canonicalOption)
@@ -77,7 +77,8 @@ class Options(
     linker: Linker,
     extensionType: ProtoType,
     option: OptionElement,
-    validate: Boolean
+    validate: Boolean,
+    location: Location
   ): List<LinkedOptionEntry>? {
     val type = linker.getForOptions(extensionType) as? MessageType
         ?: return null // No known extensions for the given extension type.
@@ -125,6 +126,9 @@ class Options(
         return null // Unable to find the root of this field path.
       }
       field = extensionsForType[path[0]]
+      if (validate) {
+        linker.withContext(field!!).validateImportForPath(location, field.location.path)
+      }
     }
     linker.request(field!!)
 
