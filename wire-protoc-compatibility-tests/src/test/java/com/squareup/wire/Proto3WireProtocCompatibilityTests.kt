@@ -731,18 +731,18 @@ class Proto3WireProtocCompatibilityTests {
         .addAllRepDoubleValue(list((-33.0).toDoubleValue()))
         .addAllRepFloatValue(list((-806f).toFloatValue()))
         .addAllRepInt64Value(list(Long.MAX_VALUE.toInt64Value()))
-        .addAllRepUint64Value(list(Long.MAX_VALUE.toUInt64Value()))
+        .addAllRepUint64Value(list((-1L).toUInt64Value()))
         .addAllRepInt32Value(list(Int.MAX_VALUE.toInt32Value()))
-        .addAllRepUint32Value(list(Int.MAX_VALUE.toUInt32Value()))
+        .addAllRepUint32Value(list((-1).toUInt32Value()))
         .addAllRepBoolValue(list(true.toBoolValue()))
         .addAllRepStringValue(list("Bo knows wrappers".toStringValue()))
         .addAllRepBytesValue(list(ByteString.of(123, 125).toBytesValue()))
         .putAllMapInt32DoubleValue(mapOf(23 to 33.0.toDoubleValue()))
         .putAllMapInt32FloatValue(mapOf(23 to 806f.toFloatValue()))
         .putAllMapInt32Int64Value(mapOf(23 to Long.MIN_VALUE.toInt64Value()))
-        .putAllMapInt32Uint64Value(mapOf(23 to Long.MIN_VALUE.toUInt64Value()))
+        .putAllMapInt32Uint64Value(mapOf(23 to (-1L).toUInt64Value()))
         .putAllMapInt32Int32Value(mapOf(23 to Int.MIN_VALUE.toInt32Value()))
-        .putAllMapInt32Uint32Value(mapOf(23 to Int.MIN_VALUE.toUInt32Value()))
+        .putAllMapInt32Uint32Value(mapOf(23 to (-1).toUInt32Value()))
         .putAllMapInt32BoolValue(mapOf(23 to true.toBoolValue()))
         .putAllMapInt32StringValue(mapOf(23 to "Bo knows wrappers".toStringValue()))
         .putAllMapInt32BytesValue(mapOf(23 to ByteString.of(123, 125).toBytesValue()))
@@ -761,18 +761,18 @@ class Proto3WireProtocCompatibilityTests {
         rep_double_value = list((-33.0)),
         rep_float_value = list((-806f)),
         rep_int64_value = list(Long.MAX_VALUE),
-        rep_uint64_value = list(Long.MAX_VALUE),
+        rep_uint64_value = list(-1L),
         rep_int32_value = list(Int.MAX_VALUE),
-        rep_uint32_value = list(Int.MAX_VALUE),
+        rep_uint32_value = list(-1),
         rep_bool_value = list(true),
         rep_string_value = list("Bo knows wrappers"),
         rep_bytes_value = list(ByteString.of(123, 125)),
         map_int32_double_value = mapOf(23 to 33.0),
         map_int32_float_value = mapOf(23 to 806f),
         map_int32_int64_value = mapOf(23 to Long.MIN_VALUE),
-        map_int32_uint64_value = mapOf(23 to Long.MIN_VALUE),
+        map_int32_uint64_value = mapOf(23 to -1L),
         map_int32_int32_value = mapOf(23 to Int.MIN_VALUE),
-        map_int32_uint32_value = mapOf(23 to Int.MIN_VALUE),
+        map_int32_uint32_value = mapOf(23 to -1),
         map_int32_bool_value = mapOf(23 to true),
         map_int32_string_value = mapOf(23 to "Bo knows wrappers"),
         map_int32_bytes_value = mapOf(23 to ByteString.of(123, 125))
@@ -791,18 +791,18 @@ class Proto3WireProtocCompatibilityTests {
         .rep_double_value(list((-33.0)))
         .rep_float_value(list((-806f)))
         .rep_int64_value(list(Long.MAX_VALUE))
-        .rep_uint64_value(list(Long.MAX_VALUE))
+        .rep_uint64_value(list(-1L))
         .rep_int32_value(list(Int.MAX_VALUE))
-        .rep_uint32_value(list(Int.MAX_VALUE))
+        .rep_uint32_value(list(-1))
         .rep_bool_value(list(true))
         .rep_string_value(list("Bo knows wrappers"))
         .rep_bytes_value(list(ByteString.of(123, 125)))
         .map_int32_double_value(mapOf(23 to 33.0))
         .map_int32_float_value(mapOf(23 to 806f))
         .map_int32_int64_value(mapOf(23 to Long.MIN_VALUE))
-        .map_int32_uint64_value(mapOf(23 to Long.MIN_VALUE))
+        .map_int32_uint64_value(mapOf(23 to -1L))
         .map_int32_int32_value(mapOf(23 to Int.MIN_VALUE))
-        .map_int32_uint32_value(mapOf(23 to Int.MIN_VALUE))
+        .map_int32_uint32_value(mapOf(23 to -1))
         .map_int32_bool_value(mapOf(23 to true))
         .map_int32_string_value(mapOf(23 to "Bo knows wrappers"))
         .map_int32_bytes_value(mapOf(23 to ByteString.of(123, 125)))

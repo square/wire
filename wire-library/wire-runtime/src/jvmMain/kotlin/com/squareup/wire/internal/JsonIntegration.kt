@@ -96,7 +96,8 @@ abstract class JsonIntegration<F, A> {
     } else {
       return when (protoAdapter) {
         ProtoAdapter.UINT32,
-        ProtoAdapter.FIXED32 -> UnsignedIntAsNumberJsonFormatter
+        ProtoAdapter.FIXED32,
+        ProtoAdapter.UINT32_VALUE -> UnsignedIntAsNumberJsonFormatter
         ProtoAdapter.INT64,
         ProtoAdapter.SFIXED64,
         ProtoAdapter.SINT64,

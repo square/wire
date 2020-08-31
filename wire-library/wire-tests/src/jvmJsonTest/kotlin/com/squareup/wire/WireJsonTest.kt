@@ -26,7 +26,6 @@ import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -514,7 +513,6 @@ class WireJsonTest {
     assertThat(parsed.toString()).isEqualTo(value.toString())
   }
 
-  @Ignore("We are missing proper map value adapters. Blocked by #279.")
   @Test fun wrappers() {
     val value = allWrappersBuilder().build()
 
@@ -922,18 +920,18 @@ class WireJsonTest {
           .rep_double_value(list((-33.0)))
           .rep_float_value(list((-806f)))
           .rep_int64_value(list(Long.MAX_VALUE))
-          .rep_uint64_value(list(Long.MAX_VALUE))
+          .rep_uint64_value(list(-1L))
           .rep_int32_value(list(Int.MAX_VALUE))
-          .rep_uint32_value(list(Int.MAX_VALUE))
+          .rep_uint32_value(list(-1))
           .rep_bool_value(list(true))
           .rep_string_value(list("Bo knows wrappers"))
           .rep_bytes_value(list(ByteString.of(123, 125)))
           .map_int32_double_value(mapOf(23 to 33.0))
           .map_int32_float_value(mapOf(23 to 806f))
           .map_int32_int64_value(mapOf(23 to Long.MIN_VALUE))
-          .map_int32_uint64_value(mapOf(23 to Long.MIN_VALUE))
+          .map_int32_uint64_value(mapOf(23 to -1L))
           .map_int32_int32_value(mapOf(23 to Int.MIN_VALUE))
-          .map_int32_uint32_value(mapOf(23 to Int.MIN_VALUE))
+          .map_int32_uint32_value(mapOf(23 to -1))
           .map_int32_bool_value(mapOf(23 to true))
           .map_int32_string_value(mapOf(23 to "Bo knows wrappers"))
           .map_int32_bytes_value(mapOf(23 to ByteString.of(123, 125)))
