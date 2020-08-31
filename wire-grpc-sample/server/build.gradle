@@ -22,7 +22,6 @@ wire {
 
 dependencies {
   implementation project(path: ':wire-grpc-sample:protos', configuration: 'default')
-  implementation deps.kotlin.stdlib.jdk8
   implementation deps.wire.runtime
   implementation deps.misk
 }

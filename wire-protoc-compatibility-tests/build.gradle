@@ -48,7 +48,6 @@ sourceSets {
 
 dependencies {
   protobuf deps.wire.schema
-  implementation deps.kotlin.stdlib.jdk8
   implementation deps.okio.jvm
   implementation deps.protobuf.java
   implementation deps.wire.runtime

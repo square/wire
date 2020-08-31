@@ -55,12 +55,6 @@ ext.deps = [
   'kotlinpoet': "com.squareup:kotlinpoet:${versions.kotlinpoet}",
   'okhttp': "com.squareup.okhttp3:okhttp:${versions.okhttp}",
   'kotlin': [
-    'stdlib': [
-      'common': "org.jetbrains.kotlin:kotlin-stdlib-common",
-      'jdk6': "org.jetbrains.kotlin:kotlin-stdlib",
-      'jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
-      'js': "org.jetbrains.kotlin:kotlin-stdlib-js",
-    ],
     'test': [
       'common': "org.jetbrains.kotlin:kotlin-test-common",
       'annotations': "org.jetbrains.kotlin:kotlin-test-annotations-common",

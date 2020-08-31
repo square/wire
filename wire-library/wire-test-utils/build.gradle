@@ -8,7 +8,6 @@ jar {
 }
 
 dependencies {
-  api deps.kotlin.stdlib.jdk8
   api deps.moshi
   api project(':wire-runtime')
   api project(':wire-schema')

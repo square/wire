@@ -13,7 +13,6 @@ gradlePlugin {
 dependencies {
   implementation project(':wire-compiler')
   implementation project(':wire-kotlin-generator')
-  implementation deps.kotlin.stdlib.jdk8
 
   compileOnly gradleApi()
   implementation deps.plugins.kotlin

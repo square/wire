@@ -11,7 +11,6 @@ dependencies {
   api project(':wire-schema')
   implementation project(':wire-runtime')
   implementation project(':wire-grpc-client')
-  api deps.kotlin.stdlib.jdk8
   implementation deps.okio.jvm
   api deps.kotlinpoet
   implementation deps.guava
