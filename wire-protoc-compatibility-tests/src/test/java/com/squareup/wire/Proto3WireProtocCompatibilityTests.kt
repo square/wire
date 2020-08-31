@@ -34,6 +34,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 import squareup.proto2.kotlin.interop.type.InteropTypes.MessageProto2
+import squareup.proto3.kotlin.MapTypesOuterClass
+import squareup.proto3.kotlin.alltypes.All32OuterClass
 import squareup.proto3.kotlin.alltypes.All64OuterClass
 import squareup.proto3.kotlin.alltypes.AllTypesOuterClass
 import squareup.proto3.kotlin.alltypes.AllWrappersOuterClass
@@ -221,11 +223,11 @@ class Proto3WireProtocCompatibilityTests {
         .setMySint64(Long.MAX_VALUE)
         .setMyFixed64(Long.MAX_VALUE)
         .setMySfixed64(Long.MAX_VALUE)
-        .addAllRepInt64(list(Long.MAX_VALUE))
-        .addAllRepUint64(list(Long.MAX_VALUE))
-        .addAllRepSint64(list(Long.MAX_VALUE))
-        .addAllRepFixed64(list(Long.MAX_VALUE))
-        .addAllRepSfixed64(list(Long.MAX_VALUE))
+        .addAllRepInt64(list(-1L))
+        .addAllRepUint64(list(-1L))
+        .addAllRepSint64(list(-1L))
+        .addAllRepFixed64(list(-1L))
+        .addAllRepSfixed64(list(-1L))
         .addAllPackInt64(list(Long.MAX_VALUE))
         .addAllPackUint64(list(Long.MAX_VALUE))
         .addAllPackSint64(list(Long.MAX_VALUE))
@@ -233,9 +235,9 @@ class Proto3WireProtocCompatibilityTests {
         .addAllPackSfixed64(list(Long.MAX_VALUE))
         .setOneofInt64(Long.MAX_VALUE)
         .putMapInt64Int64(Long.MAX_VALUE, Long.MAX_VALUE)
-        .putMapInt64Uint64(Long.MAX_VALUE, Long.MAX_VALUE)
+        .putMapInt64Uint64(Long.MAX_VALUE, -1L)
         .putMapInt64Sint64(Long.MAX_VALUE, Long.MAX_VALUE)
-        .putMapInt64Fixed64(Long.MAX_VALUE, Long.MAX_VALUE)
+        .putMapInt64Fixed64(Long.MAX_VALUE, -1L)
         .putMapInt64Sfixed64(Long.MAX_VALUE, Long.MAX_VALUE)
         .build()
 
@@ -256,11 +258,11 @@ class Proto3WireProtocCompatibilityTests {
         .setMySint64(Long.MIN_VALUE)
         .setMyFixed64(Long.MIN_VALUE)
         .setMySfixed64(Long.MIN_VALUE)
-        .addAllRepInt64(list(Long.MIN_VALUE))
-        .addAllRepUint64(list(Long.MIN_VALUE))
-        .addAllRepSint64(list(Long.MIN_VALUE))
-        .addAllRepFixed64(list(Long.MIN_VALUE))
-        .addAllRepSfixed64(list(Long.MIN_VALUE))
+        .addAllRepInt64(list(0L))
+        .addAllRepUint64(list(0L))
+        .addAllRepSint64(list(0L))
+        .addAllRepFixed64(list(0L))
+        .addAllRepSfixed64(list(0L))
         .addAllPackInt64(list(Long.MIN_VALUE))
         .addAllPackUint64(list(Long.MIN_VALUE))
         .addAllPackSint64(list(Long.MIN_VALUE))
@@ -268,9 +270,9 @@ class Proto3WireProtocCompatibilityTests {
         .addAllPackSfixed64(list(Long.MIN_VALUE))
         .setOneofInt64(Long.MIN_VALUE)
         .putMapInt64Int64(Long.MIN_VALUE, Long.MIN_VALUE)
-        .putMapInt64Uint64(Long.MIN_VALUE, Long.MIN_VALUE)
+        .putMapInt64Uint64(Long.MIN_VALUE, 0L)
         .putMapInt64Sint64(Long.MIN_VALUE, Long.MIN_VALUE)
-        .putMapInt64Fixed64(Long.MIN_VALUE, Long.MIN_VALUE)
+        .putMapInt64Fixed64(Long.MIN_VALUE, 0L)
         .putMapInt64Sfixed64(Long.MIN_VALUE, Long.MIN_VALUE)
         .build()
 
@@ -387,7 +389,7 @@ class Proto3WireProtocCompatibilityTests {
     assertJsonEquals("{\"myDouble\": -0.0}", protocJson)
   }
 
-  @Test fun cannotPassNullToIdentityString(){
+  @Test fun cannotPassNullToIdentityString() {
     try {
       AllTypesJ.Builder().string(null).build()
       fail()
@@ -396,7 +398,7 @@ class Proto3WireProtocCompatibilityTests {
     }
   }
 
-  @Test fun cannotPassNullToIdentityBytes(){
+  @Test fun cannotPassNullToIdentityBytes() {
     try {
       AllTypesJ.Builder().bytes(null).build()
       fail()
@@ -405,7 +407,7 @@ class Proto3WireProtocCompatibilityTests {
     }
   }
 
-  @Test fun cannotPassNullToIdentityEnum(){
+  @Test fun cannotPassNullToIdentityEnum() {
     try {
       AllTypesJ.Builder().nested_enum(null).build()
       fail()
@@ -417,6 +419,131 @@ class Proto3WireProtocCompatibilityTests {
   @Test fun protocDontThrowUpOnWireExtensions() {
     assertThat(WireMessageOuterClass.WireMessage.newBuilder().build()).isNotNull()
     assertThat(WireMessage()).isNotNull()
+  }
+
+  @Test fun validateMapTypesJson() {
+    val value = MapTypesOuterClass.MapTypes.newBuilder()
+        .putAllMapStringString(mapOf("a" to "A", "b" to "B"))
+        .putAllMapInt32Int32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .putAllMapSint32Sint32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .putAllMapSfixed32Sfixed32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .putAllMapFixed32Fixed32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .putAllMapUint32Uint32(mapOf(
+            Int.MIN_VALUE to Int.MIN_VALUE + 1,
+            Int.MAX_VALUE to Int.MAX_VALUE - 1
+        ))
+        .putAllMapInt64Int64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
+        ))
+        .putAllMapSfixed64Sfixed64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
+        ))
+        .putAllMapSint64Sint64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
+        ))
+        .putAllMapFixed64Fixed64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
+        ))
+        .putAllMapUint64Uint64(mapOf(
+            Long.MIN_VALUE to Long.MIN_VALUE + 1L,
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
+        ))
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(value), MAP_TYPES_JSON)
+
+    val jsonParser = JsonFormat.parser()
+    val parsed = MapTypesOuterClass.MapTypes.newBuilder()
+        .apply { jsonParser.merge(MAP_TYPES_JSON, this) }
+        .build()
+    assertThat(parsed).isEqualTo(value)
+  }
+
+  @Test fun validateAll32MinJson() {
+    val value = All32OuterClass.All32.newBuilder()
+        .setMyInt32(Int.MIN_VALUE)
+        .setMyUint32(Int.MIN_VALUE)
+        .setMySint32(Int.MIN_VALUE)
+        .setMyFixed32(Int.MIN_VALUE)
+        .setMySfixed32(Int.MIN_VALUE)
+        .addAllRepInt32(list(0))
+        .addAllRepUint32(list(0))
+        .addAllRepSint32(list(0))
+        .addAllRepFixed32(list(0))
+        .addAllRepSfixed32(list(0))
+        .addAllPackInt32(list(Int.MIN_VALUE))
+        .addAllPackUint32(list(Int.MIN_VALUE))
+        .addAllPackSint32(list(Int.MIN_VALUE))
+        .addAllPackFixed32(list(Int.MIN_VALUE))
+        .addAllPackSfixed32(list(Int.MIN_VALUE))
+        .setOneofInt32(Int.MIN_VALUE)
+        .putMapInt32Int32(Int.MIN_VALUE, Int.MIN_VALUE + 1)
+        .putMapInt32Uint32(Int.MIN_VALUE, 0)
+        .putMapInt32Sint32(Int.MIN_VALUE, Int.MIN_VALUE + 1)
+        .putMapInt32Fixed32(Int.MIN_VALUE, 0)
+        .putMapInt32Sfixed32(Int.MIN_VALUE, Int.MIN_VALUE + 1)
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(value), ALL_32_JSON_MIN_VALUE)
+
+    val jsonParser = JsonFormat.parser()
+    val parsed = All32OuterClass.All32.newBuilder()
+        .apply { jsonParser.merge(ALL_32_JSON_MIN_VALUE, this) }
+        .build()
+    assertThat(parsed).isEqualTo(value)
+  }
+
+  @Test fun validateAll32MaxJson() {
+    val value = All32OuterClass.All32.newBuilder()
+        .setMyInt32(Int.MAX_VALUE)
+        .setMyUint32(Int.MAX_VALUE)
+        .setMySint32(Int.MAX_VALUE)
+        .setMyFixed32(Int.MAX_VALUE)
+        .setMySfixed32(Int.MAX_VALUE)
+        .addAllRepInt32(list(-1))
+        .addAllRepUint32(list(-1))
+        .addAllRepSint32(list(-1))
+        .addAllRepFixed32(list(-1))
+        .addAllRepSfixed32(list(-1))
+        .addAllPackInt32(list(Int.MAX_VALUE))
+        .addAllPackUint32(list(Int.MAX_VALUE))
+        .addAllPackSint32(list(Int.MAX_VALUE))
+        .addAllPackFixed32(list(Int.MAX_VALUE))
+        .addAllPackSfixed32(list(Int.MAX_VALUE))
+        .setOneofInt32(Int.MAX_VALUE)
+        .putMapInt32Int32(Int.MAX_VALUE, Int.MAX_VALUE - 1)
+        .putMapInt32Uint32(Int.MAX_VALUE, -1)
+        .putMapInt32Sint32(Int.MAX_VALUE, Int.MAX_VALUE - 1)
+        .putMapInt32Fixed32(Int.MAX_VALUE, -1)
+        .putMapInt32Sfixed32(Int.MAX_VALUE, Int.MAX_VALUE - 1)
+        .build()
+
+    val jsonPrinter = JsonFormat.printer()
+    assertJsonEquals(jsonPrinter.print(value), ALL_32_JSON_MAX_VALUE)
+
+    val jsonParser = JsonFormat.parser()
+    val parsed = All32OuterClass.All32.newBuilder()
+        .apply { jsonParser.merge(ALL_32_JSON_MAX_VALUE, this) }
+        .build()
+    assertThat(parsed).isEqualTo(value)
   }
 
   companion object {
@@ -694,9 +821,16 @@ class Proto3WireProtocCompatibilityTests {
     private val PIZZA_DELIVERY_JSON = loadJson("pizza_delivery_proto3.json")
 
     /** This is used to confirmed identity values are emitted in lists and maps. */
-    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON = loadJson("all_types_explicit_identity_proto3.json")
+    private val EXPLICIT_IDENTITY_ALL_TYPES_JSON =
+        loadJson("all_types_explicit_identity_proto3.json")
 
     private val ALL_WRAPPERS_JSON = loadJson("all_wrappers_proto3.json")
+
+    private val MAP_TYPES_JSON = loadJson("map_types_proto3.json")
+
+    private val ALL_32_JSON_MIN_VALUE = loadJson("all_32_min_proto3.json")
+
+    private val ALL_32_JSON_MAX_VALUE = loadJson("all_32_max_proto3.json")
 
     private val explicitIdentityAllTypesWireKotlin = AllTypesK(
         my_int32 = 0,

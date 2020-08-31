@@ -31,6 +31,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import squareup.proto3.All32
 import squareup.proto3.All64
 import squareup.proto3.AllStructs
 import squareup.proto3.AllWrappers
@@ -73,7 +74,8 @@ class WireJsonTest {
 
   @Test fun allTypesIdentitySerializeTest() {
     val value = allTypesProto2IdentityBuilder().build()
-    assertJsonEquals(ALL_TYPES_IDENTITY_PROTO2_JSON, jsonLibrary.toJson(value, AllTypesProto2::class.java))
+    assertJsonEquals(ALL_TYPES_IDENTITY_PROTO2_JSON,
+        jsonLibrary.toJson(value, AllTypesProto2::class.java))
   }
 
   @Test fun allTypesIdentityDeserializeTest() {
@@ -317,11 +319,11 @@ class WireJsonTest {
         .my_sint64(Long.MAX_VALUE)
         .my_fixed64(Long.MAX_VALUE)
         .my_sfixed64(Long.MAX_VALUE)
-        .rep_int64(list(Long.MAX_VALUE))
-        .rep_uint64(list(Long.MAX_VALUE))
-        .rep_sint64(list(Long.MAX_VALUE))
-        .rep_fixed64(list(Long.MAX_VALUE))
-        .rep_sfixed64(list(Long.MAX_VALUE))
+        .rep_int64(list(-1L))
+        .rep_uint64(list(-1L))
+        .rep_sint64(list(-1L))
+        .rep_fixed64(list(-1L))
+        .rep_sfixed64(list(-1L))
         .pack_int64(list(Long.MAX_VALUE))
         .pack_uint64(list(Long.MAX_VALUE))
         .pack_sint64(list(Long.MAX_VALUE))
@@ -329,9 +331,9 @@ class WireJsonTest {
         .pack_sfixed64(list(Long.MAX_VALUE))
         .oneof_int64(Long.MAX_VALUE)
         .map_int64_int64(mapOf(Long.MAX_VALUE to Long.MAX_VALUE))
-        .map_int64_uint64(mapOf(Long.MAX_VALUE to Long.MAX_VALUE))
+        .map_int64_uint64(mapOf(Long.MAX_VALUE to -1L))
         .map_int64_sint64(mapOf(Long.MAX_VALUE to Long.MAX_VALUE))
-        .map_int64_fixed64(mapOf(Long.MAX_VALUE to Long.MAX_VALUE))
+        .map_int64_fixed64(mapOf(Long.MAX_VALUE to -1L))
         .map_int64_sfixed64(mapOf(Long.MAX_VALUE to Long.MAX_VALUE))
         .build()
 
@@ -352,11 +354,11 @@ class WireJsonTest {
         .my_sint64(Long.MIN_VALUE)
         .my_fixed64(Long.MIN_VALUE)
         .my_sfixed64(Long.MIN_VALUE)
-        .rep_int64(list(Long.MIN_VALUE))
-        .rep_uint64(list(Long.MIN_VALUE))
-        .rep_sint64(list(Long.MIN_VALUE))
-        .rep_fixed64(list(Long.MIN_VALUE))
-        .rep_sfixed64(list(Long.MIN_VALUE))
+        .rep_int64(list(0L))
+        .rep_uint64(list(0L))
+        .rep_sint64(list(0L))
+        .rep_fixed64(list(0L))
+        .rep_sfixed64(list(0L))
         .pack_int64(list(Long.MIN_VALUE))
         .pack_uint64(list(Long.MIN_VALUE))
         .pack_sint64(list(Long.MIN_VALUE))
@@ -364,9 +366,9 @@ class WireJsonTest {
         .pack_sfixed64(list(Long.MIN_VALUE))
         .oneof_int64(Long.MIN_VALUE)
         .map_int64_int64(mapOf(Long.MIN_VALUE to Long.MIN_VALUE))
-        .map_int64_uint64(mapOf(Long.MIN_VALUE to Long.MIN_VALUE))
+        .map_int64_uint64(mapOf(Long.MIN_VALUE to 0L))
         .map_int64_sint64(mapOf(Long.MIN_VALUE to Long.MIN_VALUE))
-        .map_int64_fixed64(mapOf(Long.MIN_VALUE to Long.MIN_VALUE))
+        .map_int64_fixed64(mapOf(Long.MIN_VALUE to 0L))
         .map_int64_sfixed64(mapOf(Long.MIN_VALUE to Long.MIN_VALUE))
         .build()
 
@@ -421,6 +423,38 @@ class WireJsonTest {
     val unsignedJson = jsonLibrary.toJson(unsigned, All64::class.java)
     assertThat(unsignedJson).contains(""""myUint64":"123"""")
     assertThat(unsignedJson).contains(""""repUint64":["456"]""")
+  }
+
+  @Test fun `int32s are encoded as unsigned decoded with either`() {
+    val signed = All32.Builder().my_sint32(Int.MIN_VALUE).rep_sint32(listOf(Int.MIN_VALUE)).build()
+    assertThat(jsonLibrary.fromJson("""{"mySint32":"-2147483648", "repSint32": ["-2147483648"]}""",
+        All32::class.java)).isEqualTo(signed)
+    assertThat(jsonLibrary.fromJson("""{"mySint32":-2147483648, "repSint32": [-2147483648]}""",
+        All32::class.java)).isEqualTo(signed)
+    assertThat(jsonLibrary.fromJson("""{"mySint32":-2147483648.0, "repSint32": [-2147483648.0]}""",
+        All32::class.java)).isEqualTo(signed)
+
+    val signedJson = jsonLibrary.toJson(signed, All32::class.java)
+    assertThat(signedJson).contains(""""mySint32":-2147483648""")
+    assertThat(signedJson).contains(""""repSint32":[-2147483648]""")
+
+    val unsigned =
+        All32.Builder().my_uint32(Int.MIN_VALUE).rep_uint32(listOf(Int.MIN_VALUE)).build()
+    assertThat(jsonLibrary.fromJson("""{"myUint32":-2147483648, "repUint32": [-2147483648]}""",
+        All32::class.java)).isEqualTo(unsigned)
+    assertThat(jsonLibrary.fromJson("""{"myUint32":-2147483648.0, "repUint32": [-2147483648.0]}""",
+        All32::class.java)).isEqualTo(unsigned)
+    assertThat(jsonLibrary.fromJson("""{"myUint32":2147483648.0, "repUint32": [-2147483648.0]}""",
+        All32::class.java)).isEqualTo(unsigned)
+    assertThat(jsonLibrary.fromJson("""{"myUint32":2.147483648E9, "repUint32": [2.147483648E9]}""",
+        All32::class.java)).isEqualTo(unsigned)
+    assertThat(
+        jsonLibrary.fromJson("""{"myUint32":-2.147483648E9, "repUint32": [-2.147483648E9]}""",
+            All32::class.java)).isEqualTo(unsigned)
+
+    val unsignedJson = jsonLibrary.toJson(unsigned, All32::class.java)
+    assertThat(unsignedJson).contains(""""myUint32":2147483648""")
+    assertThat(unsignedJson).contains(""""repUint32":[2147483648]""")
   }
 
   @Test fun serializeAllTypesProto3() {
@@ -519,23 +553,23 @@ class WireJsonTest {
         ))
         .map_int64_int64(mapOf(
             Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
         ))
         .map_sfixed64_sfixed64(mapOf(
             Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
         ))
         .map_sint64_sint64(mapOf(
             Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
         ))
         .map_fixed64_fixed64(mapOf(
             Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
         ))
         .map_uint64_uint64(mapOf(
             Long.MIN_VALUE to Long.MIN_VALUE + 1L,
-            Long.MAX_VALUE to  Long.MAX_VALUE - 1L
+            Long.MAX_VALUE to Long.MAX_VALUE - 1L
         ))
         .build()
 
@@ -547,6 +581,77 @@ class WireJsonTest {
     assertJsonEquals(
         jsonLibrary.toJson(parsed, MapTypes::class.java),
         jsonLibrary.toJson(value, MapTypes::class.java))
+  }
+
+  @Test fun all32MaxValue() {
+    val value = All32.Builder()
+        .my_int32(Int.MAX_VALUE)
+        .my_uint32(Int.MAX_VALUE)
+        .my_sint32(Int.MAX_VALUE)
+        .my_fixed32(Int.MAX_VALUE)
+        .my_sfixed32(Int.MAX_VALUE)
+        .rep_int32(list(-1))
+        .rep_uint32(list(-1))
+        .rep_sint32(list(-1))
+        .rep_fixed32(list(-1))
+        .rep_sfixed32(list(-1))
+        .pack_int32(list(Int.MAX_VALUE))
+        .pack_uint32(list(Int.MAX_VALUE))
+        .pack_sint32(list(Int.MAX_VALUE))
+        .pack_fixed32(list(Int.MAX_VALUE))
+        .pack_sfixed32(list(Int.MAX_VALUE))
+        .oneof_int32(Int.MAX_VALUE)
+        .map_int32_int32(mapOf(Int.MAX_VALUE to Int.MAX_VALUE - 1))
+        .map_int32_uint32(mapOf(Int.MAX_VALUE to -1))
+        .map_int32_sint32(mapOf(Int.MAX_VALUE to Int.MAX_VALUE - 1))
+        .map_int32_fixed32(mapOf(Int.MAX_VALUE to -1))
+        .map_int32_sfixed32(mapOf(Int.MAX_VALUE to Int.MAX_VALUE - 1))
+        .build()
+
+    assertJsonEquals(ALL_32_JSON_MAX_VALUE, jsonLibrary.toJson(value, All32::class.java))
+
+    val parsed = jsonLibrary.fromJson(ALL_32_JSON_MAX_VALUE, All32::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, All32::class.java),
+        jsonLibrary.toJson(value, All32::class.java))
+  }
+
+  @Test fun all32MinValue() {
+    val value = All32.Builder()
+        .my_int32(Int.MIN_VALUE)
+        .my_uint32(Int.MIN_VALUE)
+        .my_sint32(Int.MIN_VALUE)
+        .my_fixed32(Int.MIN_VALUE)
+        .my_sfixed32(Int.MIN_VALUE)
+        .rep_int32(list(0))
+        .rep_uint32(list(0))
+        .rep_sint32(list(0))
+        .rep_fixed32(list(0))
+        .rep_sfixed32(list(0))
+        .pack_int32(list(Int.MIN_VALUE))
+        .pack_uint32(list(Int.MIN_VALUE))
+        .pack_sint32(list(Int.MIN_VALUE))
+        .pack_fixed32(list(Int.MIN_VALUE))
+        .pack_sfixed32(list(Int.MIN_VALUE))
+        .oneof_int32(Int.MIN_VALUE)
+        .map_int32_int32(mapOf(Int.MIN_VALUE to Int.MIN_VALUE + 1))
+        .map_int32_uint32(mapOf(Int.MIN_VALUE to 0))
+        .map_int32_sint32(mapOf(Int.MIN_VALUE to Int.MIN_VALUE + 1))
+        .map_int32_fixed32(mapOf(Int.MIN_VALUE to 0))
+        .map_int32_sfixed32(mapOf(Int.MIN_VALUE to Int.MIN_VALUE + 1))
+        .build()
+
+    println(jsonLibrary.toJson(value, All32::class.java))
+    assertJsonEquals(ALL_32_JSON_MIN_VALUE, jsonLibrary.toJson(value, All32::class.java))
+
+    val parsed = jsonLibrary.fromJson(ALL_32_JSON_MIN_VALUE, All32::class.java)
+    assertThat(parsed).isEqualTo(value)
+    assertThat(parsed.toString()).isEqualTo(value.toString())
+    assertJsonEquals(
+        jsonLibrary.toJson(parsed, All32::class.java),
+        jsonLibrary.toJson(value, All32::class.java))
   }
 
   companion object {
@@ -866,6 +971,10 @@ class WireJsonTest {
     private val ALL_64_JSON_MIN_VALUE = loadJson("all_64_min_proto3.json")
 
     private val ALL_64_JSON_MAX_VALUE = loadJson("all_64_max_proto3.json")
+
+    private val ALL_32_JSON_MIN_VALUE = loadJson("all_32_min_proto3.json")
+
+    private val ALL_32_JSON_MAX_VALUE = loadJson("all_32_max_proto3.json")
 
     private val ALL_WRAPPERS_JSON = loadJson("all_wrappers_proto3.json")
 
