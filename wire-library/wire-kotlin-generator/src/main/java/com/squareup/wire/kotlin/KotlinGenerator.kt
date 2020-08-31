@@ -1624,13 +1624,20 @@ class KotlinGenerator private constructor(
     return CodeBlock.of("%T.%L", type.typeName, enumConstant.name)
   }
 
-  private fun Field.typeNameForBuilderSetter(baseClass: TypeName = type!!.asTypeName()): TypeName {
+  private fun Field.typeNameForBuilderSetter(): TypeName {
+    val type = type!!
+    val baseClass = type.asTypeName()
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
       EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
       EncodeMode.MAP -> baseClass.copy(nullable = false)
       EncodeMode.NULL_IF_ABSENT -> baseClass.copy(nullable = true)
-      else -> baseClass.copy(nullable = false)
+      else -> {
+        when {
+          type.isMessage -> baseClass.copy(nullable = true)
+          else -> baseClass.copy(nullable = false)
+        }
+      }
     }
   }
 
