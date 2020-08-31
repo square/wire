@@ -413,12 +413,12 @@ class AllStructs(
     @JvmField
     var oneof_list: List<*>? = null
 
-    fun struct(struct: Map<String, *>): Builder {
+    fun struct(struct: Map<String, *>?): Builder {
       this.struct = struct
       return this
     }
 
-    fun list(list: List<*>): Builder {
+    fun list(list: List<*>?): Builder {
       this.list = list
       return this
     }
@@ -428,32 +428,32 @@ class AllStructs(
       return this
     }
 
-    fun value_a(value_a: Any): Builder {
+    fun value_a(value_a: Any?): Builder {
       this.value_a = value_a
       return this
     }
 
-    fun value_b(value_b: Any): Builder {
+    fun value_b(value_b: Any?): Builder {
       this.value_b = value_b
       return this
     }
 
-    fun value_c(value_c: Any): Builder {
+    fun value_c(value_c: Any?): Builder {
       this.value_c = value_c
       return this
     }
 
-    fun value_d(value_d: Any): Builder {
+    fun value_d(value_d: Any?): Builder {
       this.value_d = value_d
       return this
     }
 
-    fun value_e(value_e: Any): Builder {
+    fun value_e(value_e: Any?): Builder {
       this.value_e = value_e
       return this
     }
 
-    fun value_f(value_f: Any): Builder {
+    fun value_f(value_f: Any?): Builder {
       this.value_f = value_f
       return this
     }

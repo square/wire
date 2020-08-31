@@ -129,7 +129,7 @@ class CamelCase(
     @JvmField
     var map_int32_Int32: Map<Int, Int> = emptyMap()
 
-    fun nested__message(nested__message: NestedCamelCase): Builder {
+    fun nested__message(nested__message: NestedCamelCase?): Builder {
       this.nested__message = nested__message
       return this
     }

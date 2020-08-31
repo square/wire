@@ -193,22 +193,22 @@ class PizzaDelivery(
       return this
     }
 
-    fun promotion(promotion: AnyMessage): Builder {
+    fun promotion(promotion: AnyMessage?): Builder {
       this.promotion = promotion
       return this
     }
 
-    fun delivered_within_or_free(delivered_within_or_free: Duration): Builder {
+    fun delivered_within_or_free(delivered_within_or_free: Duration?): Builder {
       this.delivered_within_or_free = delivered_within_or_free
       return this
     }
 
-    fun loyalty(loyalty: Map<String, *>): Builder {
+    fun loyalty(loyalty: Map<String, *>?): Builder {
       this.loyalty = loyalty
       return this
     }
 
-    fun ordered_at(ordered_at: Instant): Builder {
+    fun ordered_at(ordered_at: Instant?): Builder {
       this.ordered_at = ordered_at
       return this
     }
