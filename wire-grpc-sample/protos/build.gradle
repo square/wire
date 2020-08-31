@@ -9,6 +9,5 @@ wire {
 }
 
 dependencies {
-  api deps.kotlin.stdlib.jdk8
   api deps.wire.runtime
 }

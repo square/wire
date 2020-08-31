@@ -34,7 +34,6 @@ wire {
 dependencies {
   implementation project(':wire-grpc-sample:protos')
   implementation deps.kotlin.coroutines.android
-  implementation deps.kotlin.stdlib.jdk8
   implementation deps.androidx.appcompat
   implementation deps.androidx.ktx
   implementation deps.wire.grpcClient

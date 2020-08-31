@@ -48,7 +48,6 @@ sourceSets {
 
 dependencies {
   protobuf deps.wire.schema
-  implementation deps.kotlin.stdlib.jdk8
   implementation deps.okio.jvm
   implementation deps.protobuf.java
   implementation deps.wire.runtime
@@ -62,14 +61,5 @@ test {
   testLogging {
     events "passed", "skipped", "failed"
     exceptionFormat "full"
-  }
-}
-
-// Workaround the Gradle bug resolving multiplatform dependencies.
-// https://youtrack.jetbrains.com/issue/KT-32239
-configurations.all { configuration ->
-  if (name.contains('kapt') || name.contains("wire") || name.contains("proto")) {
-    attributes.attribute(Usage.USAGE_ATTRIBUTE,
-            project.objects.named(Usage.class, Usage.JAVA_RUNTIME))
   }
 }

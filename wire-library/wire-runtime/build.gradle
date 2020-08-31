@@ -32,7 +32,6 @@ kotlin {
     }
     commonMain {
       dependencies {
-        api deps.kotlin.stdlib.common
         api deps.okio.multiplatform
       }
     }
@@ -44,7 +43,6 @@ kotlin {
     }
     jvmMain {
       dependencies {
-        api deps.kotlin.stdlib.jdk6
         compileOnly deps.android
       }
     }
@@ -52,11 +50,6 @@ kotlin {
       dependencies {
         implementation deps.assertj
         implementation deps.kotlin.test.junit
-      }
-    }
-    jsMain {
-      dependencies {
-        api deps.kotlin.stdlib.js
       }
     }
     jsTest {

@@ -59,7 +59,6 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api deps.kotlin.stdlib.common
         api project(':wire-runtime')
         api project(':wire-grpc-client')
       }
@@ -71,11 +70,6 @@ kotlin {
         implementation deps.kotlin.test.annotations
       }
     }
-    jvmMain {
-      dependencies {
-        api deps.kotlin.stdlib.jdk6
-      }
-    }
     jvmTest {
       kotlin.srcDirs += 'src/jvmTest/proto-kotlin'
       kotlin.srcDirs += 'src/jvmTest/proto-java'
@@ -84,11 +78,6 @@ kotlin {
         implementation deps.assertj
         implementation deps.kotlin.test.junit
         implementation deps.jimfs
-      }
-    }
-    jsMain {
-      dependencies {
-        api deps.kotlin.stdlib.js
       }
     }
     jsTest {
