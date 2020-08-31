@@ -119,7 +119,7 @@ abstract class JsonIntegration<F, A> {
       ProtoAdapter.SFIXED64,
       ProtoAdapter.SINT64 -> LongAsStringJsonFormatter
       ProtoAdapter.FIXED64,
-      ProtoAdapter.UINT64  -> UnsignedLongAsStringJsonFormatter
+      ProtoAdapter.UINT64 -> UnsignedLongAsStringJsonFormatter
       else -> error("Unexpected map key type: ${protoAdapter.type}")
     }
   }
