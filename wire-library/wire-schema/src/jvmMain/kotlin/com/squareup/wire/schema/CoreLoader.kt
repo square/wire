@@ -71,4 +71,6 @@ actual object CoreLoader : Loader {
         path == WRAPPERS_PROTO ||
         path == WIRE_EXTENSIONS_PROTO
   }
+
+  override fun withErrors(errors: ErrorCollector) = this
 }

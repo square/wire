@@ -24,35 +24,53 @@ import java.io.Closeable
 import java.io.IOException
 import java.nio.file.FileSystem
 import java.util.ArrayDeque
-import java.util.TreeSet
 
 /**
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
  * loaded from where so that we can use that information later when deciding what to generate.
  */
-class SchemaLoader(
+class SchemaLoader : Closeable, Loader, ProfileLoader {
   private val fileSystem: FileSystem
-) : Closeable, Loader, ProfileLoader {
-  private val closer = Closer.create()
+
+  private val closer: Closer
 
   /** Errors accumulated by this load. */
-  private val errors = ErrorCollector()
-
-  /** Paths accumulated that we failed to load. */
-  private val missingImports = TreeSet<String>()
+  private val errors: ErrorCollector
 
   /** Source path roots that need to be closed */
-  private var sourcePathRoots: List<Root>? = null
+  private var sourcePathRoots: List<Root>?
 
   /** Proto path roots that need to be closed */
-  private var protoPathRoots: List<Root>? = null
+  private var protoPathRoots: List<Root>?
 
   /** Subset of the schema that was loaded from the source path. */
-  lateinit var sourcePathFiles: List<ProtoFile>
+  var sourcePathFiles: List<ProtoFile>
     private set
 
   /** Keys are a [Location.base]; values are the roots that those locations loaded from. */
-  private val baseToRoots = mutableMapOf<String, List<Root>>()
+  private val baseToRoots: MutableMap<String, List<Root>>
+
+  constructor(fileSystem: FileSystem) {
+    this.fileSystem = fileSystem
+    this.closer = Closer.create()
+    this.errors = ErrorCollector()
+    this.sourcePathRoots = null
+    this.protoPathRoots = null
+    this.sourcePathFiles = listOf()
+    this.baseToRoots = mutableMapOf()
+  }
+
+  private constructor(enclosing: SchemaLoader, errors: ErrorCollector) {
+    this.fileSystem = enclosing.fileSystem
+    this.closer = enclosing.closer
+    this.errors = errors
+    this.sourcePathRoots = enclosing.sourcePathRoots
+    this.protoPathRoots = enclosing.protoPathRoots
+    this.sourcePathFiles = enclosing.sourcePathFiles
+    this.baseToRoots = enclosing.baseToRoots
+  }
+
+  override fun withErrors(errors: ErrorCollector) = SchemaLoader(this, errors)
 
   /** Initialize the [WireRun.sourcePath] and [WireRun.protoPath] from which files are loaded. */
   fun initRoots(
@@ -116,7 +134,11 @@ class SchemaLoader(
       return CoreLoader.load(path)
     }
 
-    missingImports += path
+    errors += """
+          |unable to find $path
+          |  searching ${protoPathRoots!!.size} proto paths:
+          |    ${protoPathRoots!!.joinToString(separator = "\n    ")}
+          """.trimMargin()
     return ProtoFile.get(ProtoFileElement.empty(path))
   }
 
@@ -153,14 +175,6 @@ class SchemaLoader(
   }
 
   internal fun reportLoadingErrors() {
-    if (missingImports.isNotEmpty()) {
-      errors += """
-          |unable to resolve ${missingImports.size} imports:
-          |  ${missingImports.joinToString(separator = "\n  ")}
-          |searching ${protoPathRoots!!.size} proto paths:
-          |  ${protoPathRoots!!.joinToString(separator = "\n  ")}
-          """.trimMargin()
-    }
     errors.throwIfNonEmpty()
   }
 
@@ -228,7 +242,7 @@ class SchemaLoader(
    * "java.wire") in the same directory, and in all parent directories up to the base.
    */
   internal fun locationsToCheck(name: String, input: List<Location>): Set<Location> {
-    val queue = ArrayDeque<Location>(input)
+    val queue = ArrayDeque(input)
 
     val result = mutableSetOf<Location>()
     while (true) {

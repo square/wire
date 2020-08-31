@@ -60,7 +60,7 @@ class Linker {
     val existing = fileLinkers[path]
     if (existing != null) return existing
 
-    val protoFile = loader.load(path)
+    val protoFile = loader.withErrors(errors).load(path)
     val result = FileLinker(protoFile, withContext(protoFile))
     fileLinkers[path] = result
     fileOptionsQueue += result
