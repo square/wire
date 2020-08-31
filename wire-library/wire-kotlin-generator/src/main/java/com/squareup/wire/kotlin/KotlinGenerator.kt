@@ -452,7 +452,9 @@ class KotlinGenerator private constructor(
           .filter { oneOf -> oneOf.fields.size >= 2 }
           .forEach { oneOf ->
             val countNonNull = MemberName("com.squareup.wire.internal", "countNonNull")
-            val fieldNames = oneOf.fields.joinToString(", ", transform = nameAllocator::get)
+            // FIXME(egor): Revert back to function reference once KotlinPoet compiled with Kotlin
+            // 1.4 is released. See https://youtrack.jetbrains.com/issue/KT-37435.
+            val fieldNames = oneOf.fields.joinToString(", ") { field -> nameAllocator[field] }
             beginControlFlow("require(%M(%L) <= 1)", countNonNull, fieldNames)
             addStatement("%S", "At most one of $fieldNames may be non-null")
             endControlFlow()

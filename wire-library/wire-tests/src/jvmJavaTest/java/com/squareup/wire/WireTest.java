@@ -343,7 +343,7 @@ public class WireTest {
     try {
       builder.build();
       fail();
-    } catch (IllegalArgumentException expected) {
+    } catch (NullPointerException expected) {
       assertThat(expected).hasMessage("Parameter specified as non-null is null: "
           + "method com.squareup.wire.internal.Internal__InternalKt.immutableCopyOf, parameter list"
       );

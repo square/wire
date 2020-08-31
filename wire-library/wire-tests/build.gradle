@@ -2,7 +2,6 @@ apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 kotlin {
   jvm {
-    withJava()
     compilations.create('kotlinInteropTest') {
       defaultSourceSet {
         kotlin.srcDirs += 'src/jvmKotlinInteropTest/proto-kotlin'
@@ -34,6 +33,9 @@ kotlin {
       }
       jvmTest.dependsOn jvmKotlinAndroidTest
     }
+    // FIXME(egor): withJava() has to be declared after all custom compilations.
+    // See https://youtrack.jetbrains.com/issue/KT-41506.
+    withJava()
   }
   if (kmpJsEnabled) {
     js {
