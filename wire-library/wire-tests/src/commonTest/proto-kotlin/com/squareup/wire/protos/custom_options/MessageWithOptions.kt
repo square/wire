@@ -14,6 +14,7 @@ import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Int
+import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.jvm.JvmField
@@ -73,5 +74,7 @@ class MessageWithOptions(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

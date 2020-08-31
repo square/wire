@@ -20,6 +20,7 @@ import kotlin.Any
 import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.collections.List
 import kotlin.hashCode
@@ -895,6 +896,8 @@ class FileOptions(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   /**

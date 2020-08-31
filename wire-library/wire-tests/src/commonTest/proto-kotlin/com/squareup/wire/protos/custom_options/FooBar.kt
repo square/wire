@@ -257,6 +257,8 @@ class FooBar(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   class Nested(
@@ -342,6 +344,8 @@ class FooBar(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 
@@ -427,6 +431,8 @@ class FooBar(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 

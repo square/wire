@@ -23,6 +23,7 @@ import kotlin.Deprecated
 import kotlin.DeprecationLevel
 import kotlin.Double
 import kotlin.Int
+import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.collections.List
@@ -337,6 +338,8 @@ class SimpleMessage(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 
   class NestedMessage(
@@ -421,6 +424,8 @@ class SimpleMessage(
           unknownFields = ByteString.EMPTY
         )
       }
+
+      private const val serialVersionUID: Long = 0L
     }
   }
 

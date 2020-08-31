@@ -27,6 +27,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.INT
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.ABSTRACT
+import com.squareup.kotlinpoet.KModifier.CONST
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.KModifier.PUBLIC
@@ -437,6 +438,10 @@ class KotlinGenerator private constructor(
     if (type.oneOfs.isNotEmpty()) {
       classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
     }
+
+    companionBuilder.addProperty(PropertySpec.builder("serialVersionUID", LONG, PRIVATE, CONST)
+        .initializer("0L")
+        .build())
 
     classBuilder.addType(companionBuilder.build())
 
@@ -929,7 +934,7 @@ class KotlinGenerator private constructor(
           PropertySpec.builder(fieldName, fieldType)
               .apply {
                 if (field.type!!.isScalar && field.type != ProtoType.BYTES) {
-                  addModifiers(KModifier.CONST)
+                  addModifiers(CONST)
                 } else {
                   jvmField()
                 }

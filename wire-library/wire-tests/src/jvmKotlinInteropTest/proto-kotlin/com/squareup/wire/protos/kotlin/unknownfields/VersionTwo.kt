@@ -304,5 +304,7 @@ class VersionTwo(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

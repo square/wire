@@ -980,5 +980,7 @@ class AllWrappers(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

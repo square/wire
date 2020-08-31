@@ -15,6 +15,7 @@ import com.squareup.wire.internal.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.collections.List
 import kotlin.jvm.JvmField
@@ -120,5 +121,7 @@ class Pizza(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }

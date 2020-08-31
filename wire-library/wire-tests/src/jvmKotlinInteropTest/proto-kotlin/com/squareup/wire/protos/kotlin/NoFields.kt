@@ -11,6 +11,7 @@ import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
+import kotlin.Long
 import kotlin.String
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -72,5 +73,7 @@ class NoFields(
         unknownFields = ByteString.EMPTY
       )
     }
+
+    private const val serialVersionUID: Long = 0L
   }
 }
