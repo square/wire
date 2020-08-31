@@ -16,84 +16,95 @@ import java.util.Map;
 import okio.ByteString;
 
 public final class MapTypes extends Message<MapTypes, MapTypes.Builder> {
-  public static final ProtoAdapter<MapTypes> ADAPTER = ProtoAdapter.newMessageAdapter(MapTypes.class, "type.googleapis.com/squareup.proto3.MapTypes", Syntax.PROTO_2);
+  public static final ProtoAdapter<MapTypes> ADAPTER = ProtoAdapter.newMessageAdapter(MapTypes.class, "type.googleapis.com/squareup.proto3.MapTypes", Syntax.PROTO_3);
 
   private static final long serialVersionUID = 0L;
 
   @WireField(
       tag = 1,
       keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      jsonName = "mapStringString"
   )
   public final Map<String, String> map_string_string;
 
   @WireField(
       tag = 2,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      jsonName = "mapInt32Int32"
   )
   public final Map<Integer, Integer> map_int32_int32;
 
   @WireField(
       tag = 3,
       keyAdapter = "com.squareup.wire.ProtoAdapter#SINT32",
-      adapter = "com.squareup.wire.ProtoAdapter#SINT32"
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      jsonName = "mapSint32Sint32"
   )
   public final Map<Integer, Integer> map_sint32_sint32;
 
   @WireField(
       tag = 4,
       keyAdapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      jsonName = "mapSfixed32Sfixed32"
   )
   public final Map<Integer, Integer> map_sfixed32_sfixed32;
 
   @WireField(
       tag = 5,
       keyAdapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      jsonName = "mapFixed32Fixed32"
   )
   public final Map<Integer, Integer> map_fixed32_fixed32;
 
   @WireField(
       tag = 6,
       keyAdapter = "com.squareup.wire.ProtoAdapter#UINT32",
-      adapter = "com.squareup.wire.ProtoAdapter#UINT32"
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      jsonName = "mapUint32Uint32"
   )
   public final Map<Integer, Integer> map_uint32_uint32;
 
   @WireField(
       tag = 7,
       keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
-      adapter = "com.squareup.wire.ProtoAdapter#INT64"
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      jsonName = "mapInt64Int64"
   )
   public final Map<Long, Long> map_int64_int64;
 
   @WireField(
       tag = 8,
       keyAdapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      jsonName = "mapSfixed64Sfixed64"
   )
   public final Map<Long, Long> map_sfixed64_sfixed64;
 
   @WireField(
       tag = 9,
       keyAdapter = "com.squareup.wire.ProtoAdapter#SINT64",
-      adapter = "com.squareup.wire.ProtoAdapter#SINT64"
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      jsonName = "mapSint64Sint64"
   )
   public final Map<Long, Long> map_sint64_sint64;
 
   @WireField(
       tag = 10,
       keyAdapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-      adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      jsonName = "mapFixed64Fixed64"
   )
   public final Map<Long, Long> map_fixed64_fixed64;
 
   @WireField(
       tag = 11,
       keyAdapter = "com.squareup.wire.ProtoAdapter#UINT64",
-      adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      jsonName = "mapUint64Uint64"
   )
   public final Map<Long, Long> map_uint64_uint64;
 

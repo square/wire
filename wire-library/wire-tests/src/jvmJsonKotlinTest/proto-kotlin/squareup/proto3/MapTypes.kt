@@ -7,7 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
-import com.squareup.wire.Syntax.PROTO_2
+import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.immutableCopyOf
 import kotlin.Any
@@ -37,7 +37,8 @@ class MapTypes(
   @field:WireField(
     tag = 1,
     keyAdapter = "com.squareup.wire.ProtoAdapter#STRING",
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    jsonName = "mapStringString"
   )
   @JvmField
   val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
@@ -46,7 +47,8 @@ class MapTypes(
   @field:WireField(
     tag = 2,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    jsonName = "mapInt32Int32"
   )
   @JvmField
   val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
@@ -54,7 +56,8 @@ class MapTypes(
   @field:WireField(
     tag = 3,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SINT32",
-    adapter = "com.squareup.wire.ProtoAdapter#SINT32"
+    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    jsonName = "mapSint32Sint32"
   )
   @JvmField
   val map_sint32_sint32: Map<Int, Int> = immutableCopyOf("map_sint32_sint32", map_sint32_sint32)
@@ -62,7 +65,8 @@ class MapTypes(
   @field:WireField(
     tag = 4,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+    jsonName = "mapSfixed32Sfixed32"
   )
   @JvmField
   val map_sfixed32_sfixed32: Map<Int, Int> = immutableCopyOf("map_sfixed32_sfixed32",
@@ -71,7 +75,8 @@ class MapTypes(
   @field:WireField(
     tag = 5,
     keyAdapter = "com.squareup.wire.ProtoAdapter#FIXED32",
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    jsonName = "mapFixed32Fixed32"
   )
   @JvmField
   val map_fixed32_fixed32: Map<Int, Int> = immutableCopyOf("map_fixed32_fixed32",
@@ -80,7 +85,8 @@ class MapTypes(
   @field:WireField(
     tag = 6,
     keyAdapter = "com.squareup.wire.ProtoAdapter#UINT32",
-    adapter = "com.squareup.wire.ProtoAdapter#UINT32"
+    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+    jsonName = "mapUint32Uint32"
   )
   @JvmField
   val map_uint32_uint32: Map<Int, Int> = immutableCopyOf("map_uint32_uint32", map_uint32_uint32)
@@ -88,7 +94,8 @@ class MapTypes(
   @field:WireField(
     tag = 7,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT64",
-    adapter = "com.squareup.wire.ProtoAdapter#INT64"
+    adapter = "com.squareup.wire.ProtoAdapter#INT64",
+    jsonName = "mapInt64Int64"
   )
   @JvmField
   val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
@@ -96,7 +103,8 @@ class MapTypes(
   @field:WireField(
     tag = 8,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+    jsonName = "mapSfixed64Sfixed64"
   )
   @JvmField
   val map_sfixed64_sfixed64: Map<Long, Long> = immutableCopyOf("map_sfixed64_sfixed64",
@@ -105,7 +113,8 @@ class MapTypes(
   @field:WireField(
     tag = 9,
     keyAdapter = "com.squareup.wire.ProtoAdapter#SINT64",
-    adapter = "com.squareup.wire.ProtoAdapter#SINT64"
+    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    jsonName = "mapSint64Sint64"
   )
   @JvmField
   val map_sint64_sint64: Map<Long, Long> = immutableCopyOf("map_sint64_sint64", map_sint64_sint64)
@@ -113,7 +122,8 @@ class MapTypes(
   @field:WireField(
     tag = 10,
     keyAdapter = "com.squareup.wire.ProtoAdapter#FIXED64",
-    adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    jsonName = "mapFixed64Fixed64"
   )
   @JvmField
   val map_fixed64_fixed64: Map<Long, Long> = immutableCopyOf("map_fixed64_fixed64",
@@ -122,7 +132,8 @@ class MapTypes(
   @field:WireField(
     tag = 11,
     keyAdapter = "com.squareup.wire.ProtoAdapter#UINT64",
-    adapter = "com.squareup.wire.ProtoAdapter#UINT64"
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    jsonName = "mapUint64Uint64"
   )
   @JvmField
   val map_uint64_uint64: Map<Long, Long> = immutableCopyOf("map_uint64_uint64", map_uint64_uint64)
@@ -329,7 +340,7 @@ class MapTypes(
       FieldEncoding.LENGTH_DELIMITED, 
       MapTypes::class, 
       "type.googleapis.com/squareup.proto3.MapTypes", 
-      PROTO_2, 
+      PROTO_3, 
       null
     ) {
       private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {

@@ -95,6 +95,8 @@ abstract class JsonIntegration<F, A> {
       }
     } else {
       return when (protoAdapter) {
+        ProtoAdapter.UINT32,
+        ProtoAdapter.FIXED32 -> UnsignedIntAsNumberJsonFormatter
         ProtoAdapter.INT64,
         ProtoAdapter.SFIXED64,
         ProtoAdapter.SINT64,
@@ -167,6 +169,28 @@ abstract class JsonIntegration<F, A> {
         value.toLong()
       } catch (e: Exception) {
         BigDecimal(value).longValueExact() // Handle extra trailing values like 5.0.
+      }
+    }
+  }
+
+  /** Encodes a unsigned value without quotes, like `123`. */
+  private object UnsignedIntAsNumberJsonFormatter : JsonFormatter<Int> {
+    // 2^32, used to convert sint32 values >= 2^31 to unsigned decimal form
+    private const val power32 = 1L shl 32
+    private const val maxInt = Int.MAX_VALUE.toLong()
+
+    override fun fromString(value: String): Int {
+      val longValue = value.toDouble().toLong() // Handle extra trailing values like 5.0.
+      return when {
+        longValue >= maxInt -> (longValue - power32).toInt()
+        else -> longValue.toInt()
+      }
+    }
+
+    override fun toStringOrNumber(value: Int): Any {
+      return when {
+        value < 0 -> value + power32
+        else -> value
       }
     }
   }

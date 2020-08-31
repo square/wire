@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-syntax = "proto3";
-
-package squareup.proto3;
+package squareup.proto3.kotlin;
 
 message MapTypes {
   map<string, string> map_string_string = 1;
