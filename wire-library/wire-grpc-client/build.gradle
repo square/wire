@@ -29,7 +29,7 @@ kotlin {
       dependencies {
         api project(':wire-runtime')
         api deps.okio.multiplatform
-        api deps.kotlin.coroutines.core.common
+        api deps.kotlin.coroutines.core
       }
     }
     jvmMain {
