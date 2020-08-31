@@ -63,12 +63,3 @@ test {
     exceptionFormat "full"
   }
 }
-
-// Workaround the Gradle bug resolving multiplatform dependencies.
-// https://youtrack.jetbrains.com/issue/KT-32239
-configurations.all { configuration ->
-  if (name.contains('kapt') || name.contains("wire") || name.contains("proto")) {
-    attributes.attribute(Usage.USAGE_ATTRIBUTE,
-            project.objects.named(Usage.class, Usage.JAVA_RUNTIME))
-  }
-}
