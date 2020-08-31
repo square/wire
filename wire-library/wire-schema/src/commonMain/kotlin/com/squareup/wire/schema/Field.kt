@@ -118,23 +118,23 @@ data class Field(
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
     val linker = linker.withContext(this)
     if (isPacked && !isPackable(linker, type!!)) {
-      linker.addError("packed=true not permitted on $type")
+      linker.errors += "packed=true not permitted on $type"
     }
     if (isExtension) {
       if (isRequired) {
-        linker.addError("extension fields cannot be required")
+        linker.errors += "extension fields cannot be required"
       }
       if (type!!.isMap) {
-        linker.addError("extension fields cannot be a map")
+        linker.errors += "extension fields cannot be a map"
       }
     }
     if (default != null && !syntaxRules.allowUserDefinedDefaultValue()) {
-      linker.addError("user-defined default values are not permitted [proto3]")
+      linker.errors += "user-defined default values are not permitted [proto3]"
     }
     if (type!!.isMap) {
       val valueType = linker.get(type!!.valueType!!)
       if (valueType is EnumType && valueType.constants[0].tag != 0) {
-        linker.addError("enum value in map must define 0 as the first value")
+        linker.errors += "enum value in map must define 0 as the first value"
       }
     }
     linker.validateImport(location, type!!)

@@ -30,7 +30,7 @@ import kotlin.text.Charsets.UTF_32BE
 import kotlin.text.Charsets.UTF_32LE
 import kotlin.text.Charsets.UTF_8
 
-class NewSchemaLoaderTest {
+class SchemaLoaderTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
 
   @Test
@@ -114,7 +114,7 @@ class NewSchemaLoaderTest {
 
   @Test
   fun noSourcesFound() {
-    val exception = assertFailsWith<IllegalArgumentException> {
+    val exception = assertFailsWith<SchemaException> {
       SchemaLoader(fs).use { loader ->
         loader.initRoots(sourcePath = listOf())
         loader.loadSourcePathFiles()
@@ -151,7 +151,7 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin())
 
-    val exception = assertFailsWith<IllegalArgumentException> {
+    val exception = assertFailsWith<SchemaException> {
       SchemaLoader(fs).use { loader ->
         loader.initRoots(
             sourcePath = listOf(Location.get("colors/src/main/proto/squareup/shapes/blue.proto"))
@@ -312,7 +312,7 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin())
 
-    val exception = assertFailsWith<IllegalArgumentException> {
+    val exception = assertFailsWith<SchemaException> {
       SchemaLoader(fs).use { loader ->
         loader.initRoots(
             sourcePath = listOf(
@@ -362,7 +362,7 @@ class NewSchemaLoaderTest {
         |}
         """.trimMargin())
 
-    val exception = assertFailsWith<IllegalArgumentException> {
+    val exception = assertFailsWith<SchemaException> {
       SchemaLoader(fs).use { loader ->
         loader.initRoots(
             sourcePath = listOf(

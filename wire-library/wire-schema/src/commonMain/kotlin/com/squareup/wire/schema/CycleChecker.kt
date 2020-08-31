@@ -29,7 +29,7 @@ import com.squareup.wire.schema.internal.DagChecker
  */
 internal class CycleChecker(
   private val fileLinkers: Map<String, FileLinker>,
-  private val linker: Linker
+  private val errors: ErrorCollector
 ) {
   private val goPackageOption = ProtoMember.get("google.protobuf.FileOptions#go_package")
 
@@ -52,7 +52,7 @@ internal class CycleChecker(
     val cycles = dagChecker.check()
 
     for (cycle in cycles) {
-      linker.addError(importCycleMessageError(cycle))
+      errors += importCycleMessageError(cycle)
     }
   }
 
@@ -105,7 +105,7 @@ internal class CycleChecker(
     val cycles = dagChecker.check()
 
     for (cycle in cycles) {
-      linker.addError(packagesCycleMessageError(cycle))
+      errors += packagesCycleMessageError(cycle)
     }
   }
 
