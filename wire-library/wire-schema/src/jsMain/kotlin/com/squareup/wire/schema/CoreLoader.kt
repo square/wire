@@ -19,4 +19,6 @@ actual object CoreLoader : Loader {
   override fun load(path: String): ProtoFile {
     TODO("Not yet implemented in JS")
   }
+
+  override fun withErrors(errors: ErrorCollector) = this
 }

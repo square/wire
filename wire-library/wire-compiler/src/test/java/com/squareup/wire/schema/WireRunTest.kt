@@ -890,6 +890,33 @@ class WireRunTest {
         .doesNotContain("@DocumentationUrl")
   }
 
+  @Test
+  fun importNotFoundIncludesReferencingFile() {
+    writeBlueProto()
+    writeSquareProto()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("colors/src/main/proto")),
+        protoPath = listOf(Location.get("polygons/src/main/proto")),
+        targets = listOf(NullTarget())
+    )
+
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+          |unable to find squareup/polygons/triangle.proto
+          |  searching 1 proto paths:
+          |    polygons/src/main/proto
+          |  for file colors/src/main/proto/squareup/colors/blue.proto
+          |unable to resolve squareup.polygons.Triangle
+          |  for field triangle (colors/src/main/proto/squareup/colors/blue.proto:7:3)
+          |  in message squareup.colors.Blue (colors/src/main/proto/squareup/colors/blue.proto:5:1)
+          """.trimMargin())
+    }
+  }
+
   private fun writeOrangeProto() {
     fs.add("colors/src/main/proto/squareup/colors/orange.proto", """
           |syntax = "proto2";

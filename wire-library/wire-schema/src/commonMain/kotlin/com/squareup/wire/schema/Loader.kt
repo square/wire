@@ -18,4 +18,7 @@ package com.squareup.wire.schema
 /** Loads other files as needed by their import path. */
 interface Loader {
   fun load(path: String): ProtoFile
+
+  /** Returns a new loader that reports failures to [errors]. */
+  fun withErrors(errors: ErrorCollector): Loader
 }

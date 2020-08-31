@@ -330,12 +330,14 @@ class SchemaLoaderTest {
       }
     }
     assertThat(exception).hasMessage("""
-        |unable to resolve 2 imports:
-        |  squareup/curves/circle.proto
-        |  squareup/polygons/rectangle.proto
-        |searching 2 proto paths:
-        |  polygons/src/main/proto
-        |  lib/curves.zip
+        |unable to find squareup/curves/circle.proto
+        |  searching 2 proto paths:
+        |    polygons/src/main/proto
+        |    lib/curves.zip
+        |unable to find squareup/polygons/rectangle.proto
+        |  searching 2 proto paths:
+        |    polygons/src/main/proto
+        |    lib/curves.zip
         """.trimMargin())
   }
 
