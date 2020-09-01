@@ -87,13 +87,13 @@ extension RedactedOneOf : Proto2Codable {
 extension RedactedOneOf : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: RedactedOneOf.CodingKeys.self)
-        if (container.contains(.b)) {
+        if container.contains(.b) {
             let b = try container.decode(Int32.self, forKey: .b)
             self.a = .b(b)
-        } else if (container.contains(.c)) {
+        } else if container.contains(.c) {
             let c = try container.decode(String.self, forKey: .c)
             self.a = .c(c)
-        } else {
+        } else  {
             self.a = nil
         }
     }

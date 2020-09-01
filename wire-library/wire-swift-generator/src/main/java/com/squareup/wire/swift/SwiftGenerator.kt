@@ -163,7 +163,7 @@ class SwiftGenerator private constructor(
         .addModifiers(PUBLIC)
         .apply {
           if (type.documentation.isNotBlank()) {
-            addKdoc("%L\n", type.documentation.sanitizeDoc())
+            addDoc("%L\n", type.documentation.sanitizeDoc())
           }
 
           if (type.isHeapAllocated) {
@@ -188,9 +188,9 @@ class SwiftGenerator private constructor(
                 .build())
             addFunction(FunctionSpec.builder("copyStorage")
                 .addModifiers(PRIVATE, MUTATING)
-                .beginControlFlow("if !isKnownUniquelyReferenced(&_%N)", storageName)
+                .beginControlFlow("if", "!isKnownUniquelyReferenced(&_%N)", storageName)
                 .addStatement("_%1N = %2T(value: %1N)", storageName, heap)
-                .endControlFlow()
+                .endControlFlow("if")
                 .build())
           } else {
             generateMessageProperties(type, oneOfEnumNames)
@@ -307,7 +307,7 @@ class SwiftGenerator private constructor(
 
         val storageRedactableExtension = ExtensionSpec.builder(storageType)
             .addSuperType(redactable)
-            .addTypeAlias(
+            .addType(
                 TypeAliasSpec.builder("RedactedKeys", structType.nestedType("RedactedKeys"))
                     .build())
             .build()
@@ -374,48 +374,45 @@ class SwiftGenerator private constructor(
           }
 
           addStatement("let $token = try $reader.beginMessage()")
-          beginControlFlow("while let $tag = try $reader.nextTag(token: $token)")
-          addCode(CodeBlock.builder()
-              .add("switch $tag {\n")
-              .apply {
-                type.fields.forEach { field ->
-                  add("case %L: ", field.tag)
-                  if (field.isMap) {
-                    add("try $reader.decode(into: &%N", field.name)
-                    field.keyType.encoding?.let { keyEncoding ->
-                      add(", keyEncoding: .%N", keyEncoding)
-                    }
-                    field.valueType.encoding?.let { valueEncoding ->
-                      add(", valueEncoding: .%N", valueEncoding)
-                    }
-                  } else {
-                    if (field.isRepeated) {
-                      add("try $reader.decode(into: &%N", field.name)
-                    } else {
-                      add(
-                          "%N = try $reader.decode(%T.self", field.name,
-                          field.typeName.makeNonOptional()
-                      )
-                    }
-                    field.type!!.encoding?.let { encoding ->
-                      add(", encoding: .%N", encoding)
-                    }
-                  }
-                  add(")\n")
-                }
-                type.oneOfs.forEach { oneOf ->
-                  oneOf.fields.forEach { field ->
-                    add(
-                        "case %L: %N = .%N(try $reader.decode(%T.self))\n", field.tag,
-                        oneOf.name, field.name, field.typeName.makeNonOptional()
-                    )
-                  }
-                }
+          beginControlFlow("while", "let $tag = try $reader.nextTag(token: $token)")
+          beginControlFlow("switch", tag)
+          type.fields.forEach { field ->
+            val decoder = CodeBlock.Builder()
+            if (field.isMap) {
+              decoder.add("try $reader.decode(into: &%N", field.name)
+              field.keyType.encoding?.let { keyEncoding ->
+                decoder.add(", keyEncoding: .%N", keyEncoding)
               }
-              .add("default: try $reader.readUnknownField(tag: $tag)\n")
-              .add("}\n")
-              .build())
-          endControlFlow()
+              field.valueType.encoding?.let { valueEncoding ->
+                decoder.add(", valueEncoding: .%N", valueEncoding)
+              }
+            } else {
+              if (field.isRepeated) {
+                decoder.add("try $reader.decode(into: &%N", field.name)
+              } else {
+                decoder.add(
+                    "%N = try $reader.decode(%T.self", field.name,
+                    field.typeName.makeNonOptional()
+                )
+              }
+              field.type!!.encoding?.let { encoding ->
+                decoder.add(", encoding: .%N", encoding)
+              }
+            }
+            decoder.add(")")
+            addStatement("case %L: %L", field.tag, decoder.build())
+          }
+          type.oneOfs.forEach { oneOf ->
+            oneOf.fields.forEach { field ->
+              addStatement(
+                  "case %L: %N = .%N(try $reader.decode(%T.self))", field.tag,
+                  oneOf.name, field.name, field.typeName.makeNonOptional()
+              )
+            }
+          }
+          addStatement("default: try $reader.readUnknownField(tag: $tag)")
+          endControlFlow("switch")
+          endControlFlow("while")
           addStatement("self.unknownFields = try $reader.endMessage(token: $token)")
 
           // Check required and bind members.
@@ -466,9 +463,9 @@ class SwiftGenerator private constructor(
             }
           }
           type.oneOfs.forEach { oneOf ->
-            beginControlFlow("if let %1N = self.%1N", oneOf.name)
+            beginControlFlow("if", "let %1N = self.%1N", oneOf.name)
             addStatement("try %N.encode(to: $writer)", oneOf.name)
-            endControlFlow()
+            endControlFlow("if")
           }
         }
         .addStatement("try $writer.writeUnknownFields(unknownFields)")
@@ -523,9 +520,9 @@ class SwiftGenerator private constructor(
                   type.oneOfs.forEach { oneOf ->
                     oneOf.fields.forEachIndexed { index, field ->
                       if (index == 0) {
-                        beginControlFlow("if (container.contains(.%N))", field.name)
+                        beginControlFlow("if", "container.contains(.%N)", field.name)
                       } else {
-                        nextControlFlow("else if (container.contains(.%N))", field.name)
+                        nextControlFlow("else if", "container.contains(.%N)", field.name)
                       }
                       addStatement(
                           "let %1N = try container.decode(%2T.self, forKey: .%1N)", field.name,
@@ -533,9 +530,9 @@ class SwiftGenerator private constructor(
                       )
                       addStatement("self.%1N = .%2N(%2N)", oneOf.name, field.name)
                     }
-                    nextControlFlow("else")
+                    nextControlFlow("else", "")
                     addStatement("self.%N = nil", oneOf.name)
-                    endControlFlow()
+                    endControlFlow("if")
                   }
                 }
                 .build())
@@ -549,14 +546,14 @@ class SwiftGenerator private constructor(
                     addStatement("try container.encode(self.%1N, forKey: .%1N)", field.name)
                   }
                   type.oneOfs.forEach { oneOf ->
-                    addCode("switch self.%N {\n", oneOf.name)
+                    beginControlFlow("switch", "self.%N", oneOf.name)
                     oneOf.fields.forEach { field ->
                       addStatement(
                           "case .%1N(let %1N): try container.encode(%1N, forKey: .%1N)", field.name
                       )
                     }
                     addStatement("case %T.none: break", OPTIONAL)
-                    addCode("}\n")
+                    endControlFlow("switch")
                   }
                 }
                 .build())
@@ -629,7 +626,7 @@ class SwiftGenerator private constructor(
     type.fields.forEach { field ->
       val property = PropertySpec.varBuilder(field.name, field.typeName, PUBLIC)
       if (!forStorageType && field.documentation.isNotBlank()) {
-        property.addKdoc("%L\n", field.documentation.sanitizeDoc())
+        property.addDoc("%L\n", field.documentation.sanitizeDoc())
       }
       if (!forStorageType && field.isDeprecated) {
         property.addAttribute(deprecated)
@@ -649,7 +646,7 @@ class SwiftGenerator private constructor(
       addProperty(PropertySpec.varBuilder(oneOf.name, enumName.makeOptional(), PUBLIC)
           .apply {
             if (oneOf.documentation.isNotBlank()) {
-              addKdoc("%N\n", oneOf.documentation.sanitizeDoc())
+              addDoc("%N\n", oneOf.documentation.sanitizeDoc())
             }
           }
           .build())
@@ -675,7 +672,7 @@ class SwiftGenerator private constructor(
               .addStatement("%N.%N = newValue", storageName, field.name)
               .build())
       if (field.documentation.isNotBlank()) {
-        property.addKdoc("%L\n", field.documentation.sanitizeDoc())
+        property.addDoc("%L\n", field.documentation.sanitizeDoc())
       }
       if (field.isDeprecated) {
         property.addAttribute(
@@ -700,7 +697,7 @@ class SwiftGenerator private constructor(
               .build())
           .apply {
             if (oneOf.documentation.isNotBlank()) {
-              addKdoc("%N\n", oneOf.documentation.sanitizeDoc())
+              addDoc("%N\n", oneOf.documentation.sanitizeDoc())
             }
           }
           .build())
@@ -734,7 +731,7 @@ class SwiftGenerator private constructor(
               addEnumCase(EnumerationCaseSpec.builder(oneOfField.name, oneOfField.typeName.makeNonOptional())
                   .apply {
                     if (oneOfField.documentation.isNotBlank()) {
-                      addKdoc("%L\n", oneOfField.documentation.sanitizeDoc())
+                      addDoc("%L\n", oneOfField.documentation.sanitizeDoc())
                     }
                     if (oneOfField.isDeprecated) {
                       addAttribute(deprecated)
@@ -746,7 +743,7 @@ class SwiftGenerator private constructor(
               .addParameter("to", writer, protoWriter)
               .addModifiers(FILEPRIVATE)
               .throws(true)
-              .addCode("switch self {\n")
+              .beginControlFlow("switch", "self")
               .apply {
                 oneOf.fields.forEach { field ->
                   addStatement(
@@ -755,7 +752,7 @@ class SwiftGenerator private constructor(
                   )
                 }
               }
-              .addCode("}\n")
+              .endControlFlow("switch")
               .build())
           .build())
 
@@ -830,13 +827,13 @@ class SwiftGenerator private constructor(
         .addSuperType(codable)
         .apply {
           if (type.documentation.isNotBlank()) {
-            addKdoc("%L\n", type.documentation.sanitizeDoc())
+            addDoc("%L\n", type.documentation.sanitizeDoc())
           }
           type.constants.forEach { constant ->
             addEnumCase(EnumerationCaseSpec.builder(constant.name, constant.tag)
                 .apply {
                   if (constant.documentation.isNotBlank()) {
-                    addKdoc("%L\n", constant.documentation.sanitizeDoc())
+                    addDoc("%L\n", constant.documentation.sanitizeDoc())
                   }
                   if (constant.isDeprecated) {
                     addAttribute(deprecated)
@@ -870,7 +867,7 @@ class SwiftGenerator private constructor(
   ): TypeSpec {
     return TypeSpec.enumBuilder(type.typeName)
         .addModifiers(PUBLIC)
-        .addKdoc("%N\n",
+        .addDoc("%N\n",
             "*Note:* This type only exists to maintain class structure for its nested types and " +
                 "is not an actual message.")
         .apply {

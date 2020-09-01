@@ -7,15 +7,7 @@ jar {
   }
 }
 
-sourceSets {
-  main {
-    java {
-      srcDirs += ['src/main/swiftpoet']
-    }
-  }
-}
-
 dependencies {
-  // TODO api 'io.outfoxx:swiftpoet:0.4.0'
+  api deps.swiftpoet
   api project(':wire-schema')
 }
