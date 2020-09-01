@@ -14,7 +14,6 @@ import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import com.squareup.wire.protos.foreign.ForeignEnum;
 import java.io.IOException;
-import java.lang.Boolean;
 import java.lang.Deprecated;
 import java.lang.Double;
 import java.lang.Integer;
@@ -526,24 +525,21 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
   }
 
   public enum NestedEnum implements WireEnum {
-    FOO(1, null),
+    FOO(1),
 
-    BAR(2, null),
+    BAR(2),
 
-    BAZ(3, null),
+    BAZ(3),
 
     @Deprecated
-    BUZ(3, true);
+    BUZ(3);
 
     public static final ProtoAdapter<NestedEnum> ADAPTER = new ProtoAdapter_NestedEnum();
 
     private final int value;
 
-    public final Boolean deprecated;
-
-    NestedEnum(int value, Boolean deprecated) {
+    NestedEnum(int value) {
       this.value = value;
-      this.deprecated = deprecated;
     }
 
     /**

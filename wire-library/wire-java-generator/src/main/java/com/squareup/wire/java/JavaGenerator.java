@@ -17,11 +17,9 @@ package com.squareup.wire.java;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 import com.squareup.javapoet.AnnotationSpec;
@@ -536,27 +534,11 @@ public final class JavaGenerator {
     // Output Private tag field
     builder.addField(TypeName.INT, value, PRIVATE, FINAL);
 
-    MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
-    constructorBuilder.addStatement("this.$1N = $1N", value);
-    constructorBuilder.addParameter(TypeName.INT, value);
-
-    // Enum constant options, each of which requires a constructor parameter and a field.
-    Set<ProtoMember> allOptionFieldsBuilder = new LinkedHashSet<>();
-    for (EnumConstant constant : type.getConstants()) {
-      for (ProtoMember protoMember : constant.getOptions().getMap().keySet()) {
-        Field optionField = schema.getField(protoMember);
-        if (allOptionFieldsBuilder.add(protoMember)) {
-          TypeName optionJavaType = typeName(optionField.getType()).box();
-          builder.addField(optionJavaType, optionField.getName(), PUBLIC, FINAL);
-          constructorBuilder.addParameter(optionJavaType, optionField.getName());
-          constructorBuilder.addStatement(
-              "this.$L = $L", optionField.getName(), optionField.getName());
-        }
-      }
-    }
-    ImmutableList<ProtoMember> allOptionMembers = ImmutableList.copyOf(allOptionFieldsBuilder);
-    String enumArgsFormat = "$L" + Strings.repeat(", $L", allOptionMembers.size());
-    builder.addMethod(constructorBuilder.build());
+    // Enum constructor takes the constant tag.
+    builder.addMethod(MethodSpec.constructorBuilder()
+        .addStatement("this.$1N = $1N", value)
+        .addParameter(TypeName.INT, value)
+        .build());
 
     MethodSpec.Builder fromValueBuilder = MethodSpec.methodBuilder("fromValue")
         .addJavadoc("Return the constant for {@code $N} or null.\n", value)
@@ -567,18 +549,7 @@ public final class JavaGenerator {
 
     Set<Integer> seenTags = new LinkedHashSet<>();
     for (EnumConstant constant : type.getConstants()) {
-      Object[] enumArgs = new Object[allOptionMembers.size() + 1];
-      enumArgs[0] = constant.getTag();
-      for (int i = 0; i < allOptionMembers.size(); i++) {
-        ProtoMember protoMember = allOptionMembers.get(i);
-        Field field = schema.getField(protoMember);
-        Object fieldValue = constant.getOptions().getMap().get(protoMember);
-        enumArgs[i + 1] = fieldValue != null
-            ? fieldInitializer(field.getType(), fieldValue)
-            : null;
-      }
-
-      TypeSpec.Builder constantBuilder = TypeSpec.anonymousClassBuilder(enumArgsFormat, enumArgs);
+      TypeSpec.Builder constantBuilder = TypeSpec.anonymousClassBuilder("$L", constant.getTag());
       if (!constant.getDocumentation().isEmpty()) {
         constantBuilder.addJavadoc("$L\n", sanitizeJavadoc(constant.getDocumentation()));
       }
