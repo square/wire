@@ -103,7 +103,7 @@ data class Field(
 
   fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
     val linker = linker.withContext(this)
-    options.link(linker, validate)
+    options.link(linker, location, validate)
     deprecated = options.get(DEPRECATED)
     val packed = options.get(PACKED)
         ?: if (syntaxRules.isPackedByDefault(type!!, label)) PACKED_OPTION_ELEMENT.value else null
@@ -137,7 +137,7 @@ data class Field(
         linker.errors += "enum value in map must define 0 as the first value"
       }
     }
-    linker.validateImport(location, type!!)
+    linker.validateImportForType(location, type!!)
   }
 
   fun retainAll(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Field? {

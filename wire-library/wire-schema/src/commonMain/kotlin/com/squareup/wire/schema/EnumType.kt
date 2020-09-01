@@ -46,7 +46,7 @@ data class EnumType(
 
   override fun linkOptions(linker: Linker, syntaxRules: SyntaxRules, validate: Boolean) {
     val linker = linker.withContext(this)
-    options.link(linker, validate = validate)
+    options.link(linker, location, validate = validate)
     for (constant in constants) {
       constant.linkOptions(linker, validate)
     }

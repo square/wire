@@ -56,7 +56,7 @@ data class Service(
     for (rpc in rpcs) {
       rpc.linkOptions(linker, validate)
     }
-    options.link(linker, validate)
+    options.link(linker, location, validate)
   }
 
   fun validate(linker: Linker) {

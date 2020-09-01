@@ -444,7 +444,7 @@ class Linker {
     }
   }
 
-  fun validateImport(
+  fun validateImportForType(
     location: Location,
     type: ProtoType
   ) {
@@ -457,6 +457,17 @@ class Linker {
 
     val path = location.path
     val requiredImport = get(type)!!.location.path
+    val fileLinker = getFileLinker(path)
+    if (path != requiredImport && !fileLinker.effectiveImports().contains(requiredImport)) {
+      errors += "$path needs to import $requiredImport"
+    }
+  }
+
+  fun validateImportForPath(
+    location: Location,
+    requiredImport: String
+  ) {
+    val path = location.path
     val fileLinker = getFileLinker(path)
     if (path != requiredImport && !fileLinker.effectiveImports().contains(requiredImport)) {
       errors += "$path needs to import $requiredImport"

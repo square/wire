@@ -126,7 +126,7 @@ data class MessageType(
     for (oneOf in oneOfs) {
       oneOf.linkOptions(linker, syntaxRules, validate)
     }
-    options.link(linker, validate)
+    options.link(linker, location, validate)
   }
 
   override fun validate(linker: Linker, syntaxRules: SyntaxRules) {

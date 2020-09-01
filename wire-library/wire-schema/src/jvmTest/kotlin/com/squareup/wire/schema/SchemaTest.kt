@@ -1932,6 +1932,37 @@ class SchemaTest {
   }
 
   @Test
+  fun unimportedOptionShouldBeUnresolved() {
+    try {
+      RepoBuilder()
+          .add("cashapp/pii.proto", """
+              |package cashapp;
+              |import 'google/protobuf/descriptor.proto';
+              |extend google.protobuf.FieldOptions {
+              |  optional bool friday = 60004;
+              |}
+              |""".trimMargin()
+          )
+          .add("message.proto", """
+              |message Message {
+              |  optional string name = 1 [(cashapp.friday) = true];
+              |}
+              """.trimMargin()
+          )
+          .schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |message.proto needs to import cashapp/pii.proto
+            |  for field friday (/source/cashapp/pii.proto:4:3)
+            |  in field name (/source/message.proto:2:3)
+            |  in message Message (/source/message.proto:1:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
   fun unresolvedEnumValueOption() {
     try {
       RepoBuilder()
