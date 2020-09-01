@@ -14,7 +14,6 @@ import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import com.squareup.wire.protos.foreign.ForeignEnumValueOption;
 import java.io.IOException;
-import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Float;
 import java.lang.Integer;
@@ -23,7 +22,6 @@ import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.StringBuilder;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
@@ -525,35 +523,21 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
   @EnumOption(true)
   public enum FooBarBazEnum implements WireEnum {
     @EnumValueOption(17)
-    FOO(1, 17, new More.Builder()
-        .serial(Arrays.asList(
-            99,
-            199))
-        .build(), null),
+    FOO(1),
 
     @ForeignEnumValueOption(true)
-    BAR(2, null, null, true),
+    BAR(2),
 
     @EnumValueOption(18)
     @ForeignEnumValueOption(false)
-    BAZ(3, 18, null, false);
+    BAZ(3);
 
     public static final ProtoAdapter<FooBarBazEnum> ADAPTER = new ProtoAdapter_FooBarBazEnum();
 
     private final int value;
 
-    public final Integer enum_value_option;
-
-    public final More complex_enum_value_option;
-
-    public final Boolean foreign_enum_value_option;
-
-    FooBarBazEnum(int value, Integer enum_value_option, More complex_enum_value_option,
-        Boolean foreign_enum_value_option) {
+    FooBarBazEnum(int value) {
       this.value = value;
-      this.enum_value_option = enum_value_option;
-      this.complex_enum_value_option = complex_enum_value_option;
-      this.foreign_enum_value_option = foreign_enum_value_option;
     }
 
     /**
