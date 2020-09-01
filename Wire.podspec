@@ -14,13 +14,6 @@ Pod::Spec.new do |s|
 
   s.source_files  = 'wire-library/wire-runtime-swift/src/main/swift/*.swift'
 
-  # Generate .swift files from .protos for use by tests.
-  # We do this as a prepare command so that the generated files get included
-  # in the test source files.
-  s.prepare_command = <<-CMD
-    ./gradlew -p wire-library :wire-runtime-swift:generateTestProtos
-  CMD
-
   s.test_spec do |test_spec|
     test_spec.ios.deployment_target  = '11.0'
     test_spec.osx.deployment_target  = '10.15'
