@@ -95,16 +95,16 @@ extension OneOfMessage : Proto2Codable {
 extension OneOfMessage : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: OneOfMessage.CodingKeys.self)
-        if (container.contains(.foo)) {
+        if container.contains(.foo) {
             let foo = try container.decode(Int32.self, forKey: .foo)
             self.choice = .foo(foo)
-        } else if (container.contains(.bar)) {
+        } else if container.contains(.bar) {
             let bar = try container.decode(String.self, forKey: .bar)
             self.choice = .bar(bar)
-        } else if (container.contains(.baz)) {
+        } else if container.contains(.baz) {
             let baz = try container.decode(String.self, forKey: .baz)
             self.choice = .baz(baz)
-        } else {
+        } else  {
             self.choice = nil
         }
     }

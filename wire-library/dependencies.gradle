@@ -53,6 +53,7 @@ ext.deps = [
   'gson': "com.google.code.gson:gson:${versions.gson}",
   'javapoet': "com.squareup:javapoet:${versions.javapoet}",
   'kotlinpoet': "com.squareup:kotlinpoet:${versions.kotlinpoet}",
+  'swiftpoet': 'io.outfoxx:swiftpoet:1.0.0',
   'okhttp': "com.squareup.okhttp3:okhttp:${versions.okhttp}",
   'kotlin': [
     'test': [

@@ -599,43 +599,43 @@ extension Form : Proto2Codable {
 extension Form : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Form.CodingKeys.self)
-        if (container.contains(.button_element)) {
+        if container.contains(.button_element) {
             let button_element = try container.decode(Form.ButtonElement.self, forKey: .button_element)
             self.choice = .button_element(button_element)
-        } else if (container.contains(.local_image_element)) {
+        } else if container.contains(.local_image_element) {
             let local_image_element = try container.decode(Form.LocalImageElement.self, forKey: .local_image_element)
             self.choice = .local_image_element(local_image_element)
-        } else if (container.contains(.remote_image_element)) {
+        } else if container.contains(.remote_image_element) {
             let remote_image_element = try container.decode(Form.RemoteImageElement.self, forKey: .remote_image_element)
             self.choice = .remote_image_element(remote_image_element)
-        } else if (container.contains(.money_element)) {
+        } else if container.contains(.money_element) {
             let money_element = try container.decode(Form.MoneyElement.self, forKey: .money_element)
             self.choice = .money_element(money_element)
-        } else if (container.contains(.spacer_element)) {
+        } else if container.contains(.spacer_element) {
             let spacer_element = try container.decode(Form.SpacerElement.self, forKey: .spacer_element)
             self.choice = .spacer_element(spacer_element)
-        } else if (container.contains(.text_element)) {
+        } else if container.contains(.text_element) {
             let text_element = try container.decode(Form.TextElement.self, forKey: .text_element)
             self.choice = .text_element(text_element)
-        } else if (container.contains(.customized_card_element)) {
+        } else if container.contains(.customized_card_element) {
             let customized_card_element = try container.decode(Form.CustomizedCardElement.self, forKey: .customized_card_element)
             self.choice = .customized_card_element(customized_card_element)
-        } else if (container.contains(.address_element)) {
+        } else if container.contains(.address_element) {
             let address_element = try container.decode(Form.AddressElement.self, forKey: .address_element)
             self.choice = .address_element(address_element)
-        } else if (container.contains(.text_input_element)) {
+        } else if container.contains(.text_input_element) {
             let text_input_element = try container.decode(Form.TextInputElement.self, forKey: .text_input_element)
             self.choice = .text_input_element(text_input_element)
-        } else if (container.contains(.option_picker_element)) {
+        } else if container.contains(.option_picker_element) {
             let option_picker_element = try container.decode(Form.OptionPickerElement.self, forKey: .option_picker_element)
             self.choice = .option_picker_element(option_picker_element)
-        } else if (container.contains(.detail_row_element)) {
+        } else if container.contains(.detail_row_element) {
             let detail_row_element = try container.decode(Form.DetailRowElement.self, forKey: .detail_row_element)
             self.choice = .detail_row_element(detail_row_element)
-        } else if (container.contains(.currency_conversion_flags_element)) {
+        } else if container.contains(.currency_conversion_flags_element) {
             let currency_conversion_flags_element = try container.decode(Form.CurrencyConversionFlagsElement.self, forKey: .currency_conversion_flags_element)
             self.choice = .currency_conversion_flags_element(currency_conversion_flags_element)
-        } else {
+        } else  {
             self.choice = nil
         }
     }
