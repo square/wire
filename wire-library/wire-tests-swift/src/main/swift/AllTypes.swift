@@ -1436,7 +1436,7 @@ public struct AllTypes {
 
 }
 
-private struct _AllTypes {
+fileprivate struct _AllTypes {
 
     public var opt_int32: Int32?
     public var opt_uint32: UInt32?
