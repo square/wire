@@ -242,7 +242,7 @@ class SwiftGenerator private constructor(
 
     if (type.isHeapAllocated) {
       typeSpecs += TypeSpec.structBuilder(storageType)
-          .addModifiers(PRIVATE)
+          .addModifiers(FILEPRIVATE)
           .apply {
             generateMessageProperties(type, oneOfEnumNames, forStorageType = true)
             generateMessageConstructor(type, oneOfEnumNames, includeDefaults = false)
