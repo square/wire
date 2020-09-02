@@ -51,6 +51,8 @@ dependencies {
   implementation deps.okio.jvm
   implementation deps.protobuf.java
   implementation deps.wire.runtime
+  testImplementation deps.wire.gsonSupport
+  testImplementation deps.wire.moshiAdapter
   testImplementation deps.assertj
   testImplementation deps.junit
   testImplementation deps.protobuf.javaUtil
