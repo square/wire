@@ -1863,10 +1863,50 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-            |multiple fields share same JSON camel-case name 'myName':
+            |multiple fields share same JSON name 'myName':
             |  1. myName (/source/dinosaur.proto:4:3)
             |  2. my_name (/source/dinosaur.proto:5:3)
             |  for message Dinosaur (/source/dinosaur.proto:3:1)
+            """.trimMargin()
+      )
+    }
+  }
+
+  @Test
+  fun noConflictWhenJsonNameResolvesItInProto3() {
+    // Both fields' camel-cased name would conflict but since `json_name` takes precedence, there
+    // shouldn't be any conflict here.
+    val schema = RepoBuilder()
+        .add("dinosaur.proto", """
+              |syntax = "proto3";
+              |
+              |message Dinosaur {
+              |  string myName = 1 [json_name = "one"];
+              |  string my_name = 2 [json_name = "two"];
+              |}
+              |""".trimMargin()
+        ).schema()
+    assertThat(schema).isNotNull()
+  }
+
+  @Test
+  fun forbidConflictingJsonNames() {
+    try {
+      RepoBuilder()
+          .add("dinosaur.proto", """
+              |message Dinosaur {
+              |  optional string myName = 1 [json_name = "JsonName"];
+              |  optional string my_name = 2 [json_name = "JsonName"];
+              |}
+              |""".trimMargin()
+          ).schema()
+      fail()
+    } catch (expected: SchemaException) {
+      assertThat(expected).hasMessage("""
+            |multiple fields share same JSON name 'JsonName':
+            |  1. myName (/source/dinosaur.proto:2:3)
+            |  2. my_name (/source/dinosaur.proto:3:3)
+            |  for message Dinosaur (/source/dinosaur.proto:1:1)
             """.trimMargin()
       )
     }

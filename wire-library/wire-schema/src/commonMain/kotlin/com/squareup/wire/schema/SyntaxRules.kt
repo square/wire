@@ -33,7 +33,7 @@ interface SyntaxRules {
     isOneOf: Boolean
   ): Field.EncodeMode
 
-  fun jsonName(name: String): String
+  fun jsonName(name: String, declaredJsonName: String?): String
   fun allowTypeReference(type: Type): Boolean
 
   companion object {
@@ -71,7 +71,9 @@ interface SyntaxRules {
         }
       }
 
-      override fun jsonName(name: String): String = name
+      override fun jsonName(name: String, declaredJsonName: String?): String {
+        return declaredJsonName ?: name
+      }
       override fun allowTypeReference(type: Type) = true
     }
 
@@ -108,7 +110,9 @@ interface SyntaxRules {
         return Field.EncodeMode.OMIT_IDENTITY
       }
 
-      override fun jsonName(name: String): String = camelCase(name, upperCamel = false)
+      override fun jsonName(name: String, declaredJsonName: String?): String {
+        return declaredJsonName ?: camelCase(name, upperCamel = false)
+      }
       override fun allowTypeReference(type: Type): Boolean {
         if (type is EnumType) {
           return type.syntax != PROTO_2

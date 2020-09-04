@@ -241,7 +241,7 @@ class ProtoParserTest {
     }
   }
 
-  /** It looks like an option, but 'default' is special. It's missing from descriptor.proto!  */
+  /** It looks like an option, but 'default' is special. It's not defined as an option. */
   @Test
   fun defaultFieldOptionIsSpecial() {
     val proto = """
@@ -265,6 +265,38 @@ class ProtoParserTest {
                         defaultValue = "b",
                         options = listOf(OptionElement.create("faulted", Kind.STRING, "c")),
                         tag = 1
+                    )
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  /** It looks like an option, but 'json_name' is special. It's not defined as an option. */
+  @Test
+  fun jsonNameOptionIsSpecial() {
+    val proto = """
+        |message Message {
+        |  required string a = 1 [json_name = "b", faulted = "c"];
+        |}
+        |""".trimMargin()
+
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
+            MessageElement(
+                location = location.at(1, 1),
+                name = "Message",
+                fields = listOf(
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "a",
+                        jsonName = "b",
+                        tag = 1,
+                        options = listOf(OptionElement.create("faulted", Kind.STRING, "c"))
                     )
                 )
             )

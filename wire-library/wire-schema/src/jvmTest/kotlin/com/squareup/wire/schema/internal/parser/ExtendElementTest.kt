@@ -108,6 +108,30 @@ class ExtendElementTest {
   }
 
   @Test
+  fun jsonNameToSchema() {
+    val extend = ExtendElement(
+        location = location,
+        name = "Name",
+        fields = listOf(
+            FieldElement(
+                location = location,
+                label = REQUIRED,
+                type = "string",
+                name = "name",
+                jsonName = "my_json",
+                tag = 1
+            )
+        )
+    )
+    val expected = """
+        |extend Name {
+        |  required string name = 1 [json_name = "my_json"];
+        |}
+        |""".trimMargin()
+    assertThat(extend.toSchema()).isEqualTo(expected)
+  }
+
+  @Test
   fun defaultIsSetInProto2File() {
     val extend = ExtendElement(
         location = location,
