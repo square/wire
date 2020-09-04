@@ -19,20 +19,26 @@ import com.google.protobuf.Duration
 import org.junit.Test
 import squareup.proto2.java.interop.InteropCamelCase as InteropCamelCaseJ2
 import squareup.proto2.java.interop.InteropDuration as InteropDurationJ2
+import squareup.proto2.java.interop.InteropJsonName as InteropJsonNameJ2
 import squareup.proto2.java.interop.InteropTest.InteropCamelCase as InteropCamelCaseP2
+import squareup.proto2.java.interop.InteropTest.InteropJsonName as InteropJsonNameP2
 import squareup.proto2.java.interop.InteropTest.InteropUint64 as InteropUint64P2
 import squareup.proto2.java.interop.InteropUint64 as InteropUint64J2
 import squareup.proto2.kotlin.interop.InteropCamelCase as InteropCamelCaseK2
 import squareup.proto2.kotlin.interop.InteropDuration as InteropDurationK2
+import squareup.proto2.kotlin.interop.InteropJsonName as InteropJsonNameK2
 import squareup.proto2.kotlin.interop.InteropUint64 as InteropUint64K2
 import squareup.proto3.java.interop.InteropCamelCase as InteropCamelCaseJ3
 import squareup.proto3.java.interop.InteropDuration as InteropDurationJ3
+import squareup.proto3.java.interop.InteropJsonName as InteropJsonNameJ3
 import squareup.proto3.java.interop.InteropTest.InteropCamelCase as InteropCamelCaseP3
 import squareup.proto3.java.interop.InteropTest.InteropDuration as InteropDurationP3
+import squareup.proto3.java.interop.InteropTest.InteropJsonName as InteropJsonNameP3
 import squareup.proto3.java.interop.InteropTest.InteropUint64 as InteropUint64P3
 import squareup.proto3.java.interop.InteropUint64 as InteropUint64J3
 import squareup.proto3.kotlin.interop.InteropCamelCase as InteropCamelCaseK3
 import squareup.proto3.kotlin.interop.InteropDuration as InteropDurationK3
+import squareup.proto3.kotlin.interop.InteropJsonName as InteropJsonNameK3
 import squareup.proto3.kotlin.interop.InteropUint64 as InteropUint64K3
 
 class InteropTest {
@@ -154,6 +160,40 @@ class InteropTest {
 
     checker.check(InteropCamelCaseK2("1", "2", "3", "4"))
     checker.check(InteropCamelCaseJ2("1", "2", "3", "4"))
+  }
+
+  @Test fun `json names`() {
+    val checked = InteropChecker(
+        protocMessage = InteropJsonNameP3.newBuilder()
+            .setA("1")
+            .setPublic("2")
+            .setCamelCase("3")
+            .build(),
+        canonicalJson = """{"one":"1","two":"2","three":"3"}""",
+        alternateJsons = listOf(
+            """{"a":"1","public":"2","camel_case":"3"}""",
+        ),
+    )
+
+    checked.check(InteropJsonNameJ3("1", "2", "3"))
+    checked.check(InteropJsonNameK3("1", "2", "3"))
+  }
+
+  @Test fun `json names proto2`() {
+    val checked = InteropChecker(
+        protocMessage = InteropJsonNameP2.newBuilder()
+            .setA("1")
+            .setPublic("2")
+            .setCamelCase("3")
+            .build(),
+        canonicalJson = """{"one":"1","two":"2","three":"3"}""",
+        alternateJsons = listOf(
+            """{"a":"1","public":"2","camel_case":"3"}""",
+        ),
+    )
+
+    checked.check(InteropJsonNameJ2("1", "2", "3"))
+    checked.check(InteropJsonNameK2("1", "2", "3"))
   }
 }
 

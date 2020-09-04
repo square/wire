@@ -356,6 +356,7 @@ class ProtoParser internal constructor(
     val options: MutableList<OptionElement> = OptionReader(reader).readOptions().toMutableList()
 
     val defaultValue = stripDefault(options)
+    val jsonName = stripJsonName(options)
     reader.require(';')
 
     documentation = reader.tryAppendTrailingDocumentation(documentation)
@@ -366,24 +367,35 @@ class ProtoParser internal constructor(
         type = type,
         name = name,
         defaultValue = defaultValue,
+        jsonName = jsonName,
         tag = tag,
         documentation = documentation,
         options = options.toList()
     )
   }
 
-  /**
-   * Defaults aren't options. This finds an option named "default", removes, and returns it. Returns
-   * null if no default option is present.
-   */
+  /** Defaults aren't options. */
   private fun stripDefault(options: MutableList<OptionElement>): String? {
+    return stripValue("default", options)
+  }
+
+  /** `json_name` isn't an option. */
+  private fun stripJsonName(options: MutableList<OptionElement>): String? {
+    return stripValue("json_name", options)
+  }
+
+  /**
+   * This finds an option named [name], removes, and returns it.
+   * Returns null if no [name] option is present.
+   */
+  private fun stripValue(name: String, options: MutableList<OptionElement>): String? {
     var result: String? = null
     val i = options.iterator()
     while (i.hasNext()) {
       val element = i.next()
-      if (element.name == "default") {
+      if (element.name == name) {
         i.remove()
-        result = element.value.toString() // Defaults aren't options!
+        result = element.value.toString()
       }
     }
     return result

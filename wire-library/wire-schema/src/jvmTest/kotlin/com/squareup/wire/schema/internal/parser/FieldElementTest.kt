@@ -18,7 +18,6 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.SyntaxRules.Companion.PROTO_2_SYNTAX_RULES
 import com.squareup.wire.schema.SyntaxRules.Companion.PROTO_3_SYNTAX_RULES
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
@@ -77,7 +76,47 @@ class FieldElementTest {
     )
 
     assertThat(field.toSchema(PROTO_2_SYNTAX_RULES))
-        .isEqualTo("required string name = 1 [default = \"defaultValue\"];\n")
+        .isEqualTo("""
+            |required string name = 1 [default = "defaultValue"];
+            |""".trimMargin())
+  }
+
+  @Test
+  fun jsonNameAndDefaultValue() {
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        defaultValue = "defaultValue",
+        jsonName = "my_json",
+        tag = 1
+    )
+
+    assertThat(field.toSchema())
+        .isEqualTo("""
+            |required string name = 1 [
+            |  default = "defaultValue",
+            |  json_name = "my_json"
+            |];
+            |""".trimMargin())
+  }
+
+  @Test
+  fun jsonName() {
+    val field = FieldElement(
+        location = location,
+        label = REQUIRED,
+        type = "string",
+        name = "name",
+        jsonName = "my_json",
+        tag = 1
+    )
+
+    assertThat(field.toSchema(PROTO_2_SYNTAX_RULES))
+        .isEqualTo("""
+            |required string name = 1 [json_name = "my_json"];
+            |""".trimMargin())
   }
 
   @Test

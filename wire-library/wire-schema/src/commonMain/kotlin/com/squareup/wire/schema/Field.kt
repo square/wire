@@ -43,7 +43,9 @@ data class Field(
 
   val isExtension: Boolean,
 
-  val isOneOf: Boolean
+  val isOneOf: Boolean,
+
+  val declaredJsonName: String?
 ) {
   // Null until this field is linked.
   var type: ProtoType? = null
@@ -112,7 +114,7 @@ data class Field(
 
     encodeMode =
         syntaxRules.getEncodeMode(type!!, label, isPacked = packed == "true", isOneOf = isOneOf)
-    jsonName = syntaxRules.jsonName(name)
+    jsonName = syntaxRules.jsonName(name, declaredJsonName)
   }
 
   fun validate(linker: Linker, syntaxRules: SyntaxRules) {
@@ -174,7 +176,8 @@ data class Field(
         elementType = elementType,
         options = options,
         isExtension = isExtension,
-        isOneOf = isOneOf
+        isOneOf = isOneOf,
+        declaredJsonName = declaredJsonName,
     )
     result.type = type
     result.deprecated = deprecated
@@ -280,7 +283,8 @@ data class Field(
           elementType = it.type,
           options = Options(FIELD_OPTIONS, it.options),
           isExtension = extension,
-          isOneOf = oneOf
+          isOneOf = oneOf,
+          declaredJsonName = it.jsonName,
       )
     }
 
@@ -292,6 +296,7 @@ data class Field(
           type = it.elementType,
           name = it.name,
           defaultValue = it.default,
+          jsonName = it.declaredJsonName,
           tag = it.tag,
           documentation = it.documentation,
           options = it.options.elements

@@ -33,3 +33,9 @@ message InteropCamelCase {
   string _Ccc_ddd = 3;
   string EEee_ff_gGg = 4;
 }
+
+message InteropJsonName {
+  string a = 1 [json_name = "one"];
+  string public = 2 [json_name = "two"];
+  string camel_case = 3 [json_name = "three"];
+}

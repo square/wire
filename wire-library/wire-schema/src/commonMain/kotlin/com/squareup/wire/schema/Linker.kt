@@ -372,7 +372,9 @@ class Linker {
       nameToField.getOrPut(field.qualifiedName, { mutableSetOf() }).add(field)
       // We allow JSON collisions for extensions.
       if (!field.isExtension) {
-        jsonNameToField.getOrPut(syntaxRules.jsonName(field.name), { mutableSetOf() }).add(field)
+        jsonNameToField
+            .getOrPut(syntaxRules.jsonName(field.name, field.declaredJsonName), { mutableSetOf() })
+            .add(field)
       }
 
       val type = get(field.type!!)
@@ -410,7 +412,7 @@ class Linker {
       for ((jsonName, fields) in jsonNameToField) {
         if (fields.size > 1) {
           val error = StringBuilder()
-          error.append("multiple fields share same JSON camel-case name '${jsonName}':")
+          error.append("multiple fields share same JSON name '${jsonName}':")
           fields.forEachIndexed { index, field ->
             error.append("\n  ${index + 1}. ${field.name} (${field.location})")
           }

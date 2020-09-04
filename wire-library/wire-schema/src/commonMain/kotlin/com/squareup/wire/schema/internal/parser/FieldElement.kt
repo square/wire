@@ -29,6 +29,7 @@ data class FieldElement(
   val type: String,
   val name: String,
   val defaultValue: String? = null,
+  val jsonName: String? = null,
   val tag: Int = 0,
   val documentation: String = "",
   val options: List<OptionElement> = emptyList()
@@ -41,7 +42,7 @@ data class FieldElement(
     }
     append("$type $name = $tag")
 
-    val optionsWithDefault = optionsWithDefaultValue(syntaxRules)
+    val optionsWithDefault = optionsWithSpecialValues(syntaxRules)
     if (optionsWithDefault.isNotEmpty()) {
       append(' ')
       appendOptions(optionsWithDefault)
@@ -50,14 +51,24 @@ data class FieldElement(
     append(";\n")
   }
 
-  private fun optionsWithDefaultValue(syntaxRules: SyntaxRules): List<OptionElement> {
-    if (defaultValue == null || !syntaxRules.allowUserDefinedDefaultValue()) {
-      return options
-    }
+  /**
+   * Both `default` and `json_name` are defined in the schema like options but they are actually
+   * not options themselves as they're missing from `google.protobuf.FieldOptions`.
+   */
+  private fun optionsWithSpecialValues(syntaxRules: SyntaxRules): List<OptionElement> {
+    var options =
+        if (defaultValue == null || !syntaxRules.allowUserDefinedDefaultValue()) {
+          options
+        } else {
+          val protoType = ProtoType.get(type)
+          options + OptionElement.create("default", protoType.toKind(), defaultValue)
+        }
 
-    val protoType = ProtoType.get(type)
+    options =
+        if (jsonName == null) options
+        else options + OptionElement.create("json_name", OptionElement.Kind.STRING, jsonName)
 
-    return options + OptionElement.create("default", protoType.toKind(), defaultValue)
+    return options
   }
 
   // Only non-repeated scalar types and Enums support default values.
