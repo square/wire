@@ -1,0 +1,26 @@
+plugins {
+  id 'application'
+  id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
+}
+
+repositories {
+  maven {
+    url "file://${projectDir.absolutePath}/../../../../../build/localMaven"
+  }
+  mavenCentral()
+}
+
+dependencies {
+  implementation "com.squareup.wire:wire-runtime-multiplatform:$VERSION_NAME"
+}
+
+wire {
+  kotlin {}
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+}

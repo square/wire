@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+import "people/office_manager.proto";
+
+package locations;
+
+message Office {
+  optional people.OfficeManager office_manager = 1;
+}

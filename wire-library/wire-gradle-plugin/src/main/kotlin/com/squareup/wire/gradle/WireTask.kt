@@ -68,6 +68,9 @@ open class WireTask : SourceTask() {
   @Input
   lateinit var targets: List<Target>
 
+  @Input
+  var permitPackageCycles: Boolean = false
+
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -108,7 +111,8 @@ open class WireTask : SourceTask() {
         sinceVersion = sinceVersion,
         untilVersion = untilVersion,
         onlyVersion = onlyVersion,
-        targets = targets
+        targets = targets,
+        permitPackageCycles = permitPackageCycles
     )
     wireRun.execute()
   }

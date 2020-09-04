@@ -29,11 +29,12 @@ class Linker {
   private val contextStack: List<Any>
   private val requestedTypes: MutableSet<ProtoType>
   private val requestedFields: MutableSet<Field>
+  private val permitPackageCycles: Boolean
 
   /** Errors accumulated by this load. */
   val errors: ErrorCollector
 
-  constructor(loader: Loader, errors: ErrorCollector) {
+  constructor(loader: Loader, errors: ErrorCollector, permitPackageCycles: Boolean) {
     this.loader = loader
     this.fileLinkers = mutableMapOf()
     this.fileOptionsQueue = mutableQueueOf()
@@ -42,6 +43,7 @@ class Linker {
     this.requestedTypes = mutableSetOf()
     this.requestedFields = mutableSetOf()
     this.errors = errors
+    this.permitPackageCycles = permitPackageCycles
   }
 
   private constructor(enclosing: Linker, additionalContext: Any) {
@@ -53,6 +55,7 @@ class Linker {
     this.requestedTypes = enclosing.requestedTypes
     this.requestedFields = enclosing.requestedFields
     this.errors = enclosing.errors.at(additionalContext)
+    this.permitPackageCycles = false
   }
 
   /** Returns a linker for [path], loading the file if necessary. */
@@ -119,7 +122,9 @@ class Linker {
 
     val cycleChecker = CycleChecker(fileLinkers, errors)
     cycleChecker.checkForImportCycles()
-    cycleChecker.checkForPackageCycles()
+    if (!permitPackageCycles) {
+      cycleChecker.checkForPackageCycles()
+    }
 
     errors.throwIfNonEmpty()
 

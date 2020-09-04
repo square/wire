@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+import "locations/office.proto";
+import "locations/residence.proto";
+
+package people;
+
+message Employee {
+  optional locations.Office office = 1;
+  optional locations.Residence residence = 2;
+}
