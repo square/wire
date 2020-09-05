@@ -1,0 +1,6 @@
+syntax = "proto2";
+
+package people;
+
+message OfficeManager {
+}

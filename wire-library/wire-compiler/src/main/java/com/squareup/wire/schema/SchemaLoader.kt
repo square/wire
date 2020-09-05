@@ -83,9 +83,9 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
   }
 
   @Throws(IOException::class)
-  fun loadSchema(): Schema {
+  fun loadSchema(permitPackageCycles: Boolean = false): Schema {
     sourcePathFiles = loadSourcePathFiles()
-    val linker = Linker(this, errors)
+    val linker = Linker(this, errors, permitPackageCycles)
     val result = linker.link(sourcePathFiles)
     errors.throwIfNonEmpty()
     return result

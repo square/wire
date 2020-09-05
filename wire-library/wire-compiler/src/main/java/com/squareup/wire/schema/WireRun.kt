@@ -16,7 +16,6 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.ConsoleWireLogger
-import com.squareup.wire.Syntax
 import com.squareup.wire.WireLogger
 import com.squareup.wire.schema.PartitionedSchema.Partition
 import com.squareup.wire.schema.internal.DagChecker
@@ -180,7 +179,12 @@ data class WireRun(
    * If desired, multiple modules can be specified along with dependencies between them. Types
    * which appear in dependencies will not be re-generated.
    */
-  val modules: Map<String, Module> = emptyMap()
+  val modules: Map<String, Module> = emptyMap(),
+
+  /**
+   * If true, no validation will be executed to check package cycles.
+   */
+  val permitPackageCycles: Boolean = false,
 ) {
   data class Module(
     val dependencies: Set<String> = emptySet(),
@@ -214,7 +218,7 @@ data class WireRun(
     schemaLoader.initRoots(sourcePath, protoPath)
 
     // Validate the schema and resolve references
-    val fullSchema = schemaLoader.loadSchema()
+    val fullSchema = schemaLoader.loadSchema(permitPackageCycles)
     val sourceLocationPaths = schemaLoader.sourcePathFiles.map { it.location.path }
     val moveTargetPaths = moves.map { it.targetPath }
 

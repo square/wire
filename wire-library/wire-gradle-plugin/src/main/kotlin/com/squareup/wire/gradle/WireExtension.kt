@@ -37,6 +37,7 @@ open class WireExtension(project: Project) {
   internal var onlyVersion: String? = null
   internal var sinceVersion: String? = null
   internal var untilVersion: String? = null
+  internal var permitPackageCycles: Boolean = false
 
   @Input
   @Optional
@@ -91,6 +92,16 @@ open class WireExtension(project: Project) {
    */
   fun onlyVersion(onlyVersion: String) {
     this.onlyVersion = onlyVersion
+  }
+
+  @Input
+  fun permitPackageCycles() = permitPackageCycles
+
+  /**
+   * See [com.squareup.wire.schema.WireRun.permitPackageCycles]
+   */
+  fun permitPackageCycles(permitPackageCycles: Boolean) {
+    this.permitPackageCycles = permitPackageCycles
   }
 
   /**

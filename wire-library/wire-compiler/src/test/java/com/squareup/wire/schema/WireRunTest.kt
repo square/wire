@@ -162,10 +162,12 @@ class WireRunTest {
     assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt"))
         .contains("interface RouteGetUpdatedRedClient : Service")
     assertThat(fs.get("generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt"))
-        .contains("class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedBlueClient")
+        .contains(
+            "class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedBlueClient")
         .doesNotContain("RouteGetUpdatedRedClient")
     assertThat(fs.get("generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt"))
-        .contains("class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedRedClient")
+        .contains(
+            "class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedRedClient")
         .doesNotContain("RouteGetUpdatedBlueClient")
   }
 
@@ -778,6 +780,60 @@ class WireRunTest {
         |ERROR: Modules contain dependency cycle(s):
         | - [one, two, three]
         |""".trimMargin())
+    }
+  }
+
+  @Test fun crashOnPackageCycle() {
+    fs.add("source-path/people/employee.proto", """
+        |syntax = "proto2";
+        |import "locations/office.proto";
+        |import "locations/residence.proto";
+        |package people;
+        |message Employee {
+        |  optional locations.Office office = 1;
+        |  optional locations.Residence residence = 2;
+        |}
+        """.trimMargin())
+    fs.add("source-path/locations/office.proto", """
+        |syntax = "proto2";
+        |import "people/office_manager.proto";
+        |package locations;
+        |message Office {
+        |  optional people.OfficeManager office_manager = 1;
+        |}
+        """.trimMargin())
+    fs.add("source-path/locations/residence.proto", """
+        |syntax = "proto2";
+        |package locations;
+        |message Residence {
+        |}
+        """.trimMargin())
+    fs.add("source-path/people/office_manager.proto", """
+        |syntax = "proto2";
+        |package people;
+        |message OfficeManager {
+        |}
+        """.trimMargin())
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("source-path")),
+        targets = emptyList(),
+    )
+
+    try {
+      wireRun.execute(fs, logger)
+      fail()
+    } catch (e: SchemaException) {
+      assertThat(e).hasMessage("""
+        |packages form a cycle:
+        |  locations imports people
+        |    locations/office.proto:
+        |      import "people/office_manager.proto";
+        |  people imports locations
+        |    people/employee.proto:
+        |      import "locations/office.proto";
+        |      import "locations/residence.proto";
+        """.trimMargin())
     }
   }
 

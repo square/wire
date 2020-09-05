@@ -138,6 +138,7 @@ class WirePlugin : Plugin<Project> {
       it.onlyVersion = extension.onlyVersion
       it.rules = extension.rules
       it.targets = targets
+      it.permitPackageCycles = extension.permitPackageCycles
     }
 
     for (output in outputs) {

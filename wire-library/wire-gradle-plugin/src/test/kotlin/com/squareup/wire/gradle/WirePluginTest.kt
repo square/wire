@@ -863,6 +863,26 @@ class WirePluginTest {
     assertThat(octagon).contains("""@DocumentationUrl("https://en.wikipedia.org/wiki/Octagon")""")
   }
 
+  @Test
+  fun packageCycles() {
+    val fixtureRoot = File("src/test/projects/package-cycles")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    assertThat(result.output).contains("packages form a cycle")
+  }
+
+  @Test
+  fun packageCyclesPermitted() {
+    val fixtureRoot = File("src/test/projects/package-cycles-permitted")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    assertThat(result.output)
+        .contains("Writing people.Employee")
+        .contains("Writing people.OfficeManager")
+        .contains("Writing locations.Office")
+        .contains("Writing locations.Residence")
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult
