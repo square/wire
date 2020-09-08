@@ -63,12 +63,18 @@ kotlin {
     nativeTest {
       dependsOn commonTest
     }
+    darwinMain {
+      dependsOn commonMain
+    }
 
     configure([iosX64Main, iosArm64Main, linuxX64Main, macosX64Main]) {
       dependsOn nativeMain
     }
     configure([iosX64Test, iosArm64Test, linuxX64Test, macosX64Test]) {
       dependsOn nativeTest
+    }
+    configure([iosX64Main, iosArm64Main, macosX64Main]) {
+      dependsOn darwinMain
     }
   }
 }
