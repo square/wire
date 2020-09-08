@@ -15,6 +15,7 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.AnyMessage.Companion.toAny
 import com.squareup.wire.protos.kotlin.edgecases.NoFields
 import com.squareup.wire.protos.kotlin.edgecases.OneField
 import com.squareup.wire.protos.usesany.UsesAny
@@ -34,11 +35,8 @@ class AnyMessageTest {
     val four = OneField(opt_int32 = 4)
 
     val usesAny = UsesAny(
-        just_one = AnyMessage.pack(three),
-        many_anys = listOf(
-            AnyMessage.pack(three),
-            AnyMessage.pack(four)
-        )
+        just_one = three.toAny(),
+        many_anys = listOf(three.toAny(), four.toAny())
     )
 
     assertEquals(three, usesAny.just_one!!.unpack(OneField.ADAPTER))
@@ -61,11 +59,8 @@ class AnyMessageTest {
     val four = OneField(opt_int32 = 4)
 
     val usesAny = UsesAny(
-        just_one = AnyMessage.pack(three),
-        many_anys = listOf(
-            AnyMessage.pack(three),
-            AnyMessage.pack(four)
-        )
+        just_one = three.toAny(),
+        many_anys = listOf(three.toAny(), four.toAny())
     )
 
     assertEquals(hex, usesAny.encodeByteString().hex())
@@ -85,7 +80,7 @@ class AnyMessageTest {
 
   @Test fun unpackWithWrongTypeUrlThrow() {
     val usesAny = UsesAny(
-        just_one = AnyMessage.pack(OneField(opt_int32 = 3)),
+        just_one = OneField(opt_int32 = 3).toAny(),
         many_anys = listOf()
     )
 
@@ -100,7 +95,7 @@ class AnyMessageTest {
 
   @Test fun unpackOrNullWithWrongTypeUrlReturnsNull() {
     val usesAny = UsesAny(
-        just_one = AnyMessage.pack(OneField(opt_int32 = 3)),
+        just_one = OneField(opt_int32 = 3).toAny(),
         many_anys = listOf()
     )
 
@@ -109,7 +104,7 @@ class AnyMessageTest {
 
   @Test fun packWithoutATypeUrlThrows() {
     try {
-      AnyMessage.pack(NoTypeUrlMessage())
+      NoTypeUrlMessage().toAny()
       fail()
     } catch (expected: IllegalStateException) {
       assertTrue(expected.message!!.startsWith("recompile class "), expected.message)

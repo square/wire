@@ -20,6 +20,7 @@ import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
+import com.squareup.wire.AnyMessage.Companion.toAny
 import com.squareup.wire.json.assertJsonEquals
 import okio.ByteString
 import okio.buffer
@@ -217,7 +218,7 @@ class WireJsonTest {
     val value = PizzaDelivery.Builder()
         .address("507 Cross Street")
         .pizzas(listOf(Pizza.Builder().toppings(listOf("pineapple", "onion")).build()))
-        .promotion(AnyMessage.pack(BuyOneGetOnePromotion.Builder().coupon("MAUI").build()))
+        .promotion(BuyOneGetOnePromotion.Builder().coupon("MAUI").build().toAny())
         .delivered_within_or_free(durationOfSeconds(1_799L, 500_000_000L))
         .loyalty(emptyMap<String, Any?>())
         .ordered_at(ofEpochSecond(-631152000L, 250_000_000L))
@@ -253,8 +254,7 @@ class WireJsonTest {
     val value = PizzaDelivery.Builder()
         .address("507 Cross Street")
         .pizzas(listOf(Pizza.Builder().toppings(listOf("pineapple", "onion")).build()))
-        .promotion(
-            AnyMessage.pack(FreeGarlicBreadPromotion.Builder().is_extra_cheesey(true).build()))
+        .promotion(FreeGarlicBreadPromotion.Builder().is_extra_cheesey(true).build().toAny())
         .delivered_within_or_free(durationOfSeconds(1_799L, 500_000_000L))
         .loyalty(emptyMap<String, Any?>())
         .ordered_at(ofEpochSecond(-631152000L, 250_000_000L))
@@ -293,7 +293,7 @@ class WireJsonTest {
   @Test fun literalNullsReplacedWithIdentityInProto3() {
     val expected = PizzaDelivery.Builder()
         .pizzas(listOf(Pizza.Builder().build()))
-        .promotion(AnyMessage.pack(BuyOneGetOnePromotion.Builder().build()))
+        .promotion(BuyOneGetOnePromotion.Builder().build().toAny())
         .build()
     val parsed = jsonLibrary.fromJson(PIZZA_DELIVERY_LITERAL_NULLS_JSON, PizzaDelivery::class.java)
     assertThat(parsed).isEqualTo(expected)

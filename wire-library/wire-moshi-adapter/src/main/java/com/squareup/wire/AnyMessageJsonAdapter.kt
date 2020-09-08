@@ -20,6 +20,7 @@ import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
+import com.squareup.wire.AnyMessage.Companion.toAny
 import java.io.IOException
 
 internal class AnyMessageJsonAdapter(
@@ -66,7 +67,7 @@ internal class AnyMessageJsonAdapter(
 
     val value = delegate.fromJson(reader)
 
-    return AnyMessage.pack(value!!)
+    return value!!.toAny()
   }
 
   /** Returns the string named [name] of an object, or null if no such property exists. */

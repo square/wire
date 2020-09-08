@@ -21,6 +21,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import com.squareup.wire.AnyMessage.Companion.toAny
 import java.io.IOException
 
 class AnyMessageTypeAdapter(
@@ -72,6 +73,6 @@ class AnyMessageTypeAdapter(
 
     val value = delegate.fromJsonTree(jsonElement)
 
-    return AnyMessage.pack(value!!)
+    return value!!.toAny()
   }
 }
