@@ -693,12 +693,12 @@ class WireRunTest {
     // TODO(jwilson): fix modules to treat extension fields as first-class objects.
     assertThat(fs.find("gen/a")).containsExactly(
         "gen/a/example/A.java",
-        "gen/a/example/MapsTo.java",
-        "gen/a/example/Type.java")
+        "gen/a/example/MapsToOption.java",
+        "gen/a/example/TypeOption.java")
     assertThat(fs.find("gen/b")).containsExactly(
         "gen/b/example/B.java",
-        "gen/b/example/MapsTo.java",
-        "gen/b/example/Type.java")
+        "gen/b/example/MapsToOption.java",
+        "gen/b/example/TypeOption.java")
   }
 
   @Test fun crashWhenTypeGenerationConflicts() {
@@ -857,12 +857,12 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
     assertThat(fs.find("generated")).containsExactly(
-        "generated/java/squareup/options/DocumentationUrl.java",
-        "generated/kt/squareup/options/DocumentationUrl.kt")
-    assertThat(fs.get("generated/java/squareup/options/DocumentationUrl.java"))
-        .contains("public @interface DocumentationUrl")
-    assertThat(fs.get("generated/kt/squareup/options/DocumentationUrl.kt"))
-        .contains("annotation class DocumentationUrl")
+        "generated/java/squareup/options/DocumentationUrlOption.java",
+        "generated/kt/squareup/options/DocumentationUrlOption.kt")
+    assertThat(fs.get("generated/java/squareup/options/DocumentationUrlOption.java"))
+        .contains("public @interface DocumentationUrlOption")
+    assertThat(fs.get("generated/kt/squareup/options/DocumentationUrlOption.kt"))
+        .contains("annotation class DocumentationUrlOption")
   }
 
   @Test
@@ -911,9 +911,9 @@ class WireRunTest {
         "generated/java/squareup/polygons/Octagon.java",
         "generated/kt/squareup/polygons/Octagon.kt")
     assertThat(fs.get("generated/java/squareup/polygons/Octagon.java"))
-        .contains("@DocumentationUrl(\"https://en.wikipedia.org/wiki/Octagon\")")
+        .contains("@DocumentationUrlOption(\"https://en.wikipedia.org/wiki/Octagon\")")
     assertThat(fs.get("generated/kt/squareup/polygons/Octagon.kt"))
-        .contains("@DocumentationUrl(\"https://en.wikipedia.org/wiki/Octagon\")")
+        .contains("@DocumentationUrlOption(\"https://en.wikipedia.org/wiki/Octagon\")")
   }
 
   @Test

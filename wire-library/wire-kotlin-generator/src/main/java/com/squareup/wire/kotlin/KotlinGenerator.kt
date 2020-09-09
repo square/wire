@@ -1726,7 +1726,7 @@ class KotlinGenerator private constructor(
     if (!eligibleAsAnnotationMember(schema, field)) return null
 
     val protoFile: ProtoFile = schema.protoFile(field.location.path) ?: return null
-    val simpleName = camelCase(field.name, true)
+    val simpleName = camelCase(field.name, upperCamel = true) + "Option"
     val type = ClassName(javaPackage(protoFile), simpleName)
     val fieldValue = defaultFieldInitializer(field.type!!, value)
 
@@ -1831,7 +1831,7 @@ class KotlinGenerator private constructor(
           for (field in extend.fields) {
             if (!eligibleAsAnnotationMember(schema, field)) continue
             val protoMember = field.member
-            val simpleName = camelCase(protoMember.simpleName, upperCamel = true)
+            val simpleName = camelCase(protoMember.simpleName, upperCamel = true) + "Option"
             val className = ClassName(kotlinPackage, simpleName)
             memberToKotlinName[protoMember] = className
           }

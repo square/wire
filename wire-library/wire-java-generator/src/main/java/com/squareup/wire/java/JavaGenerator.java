@@ -307,7 +307,7 @@ public final class JavaGenerator {
           if (!eligibleAsAnnotationMember(schema, field)) continue;
 
           ProtoMember protoMember = field.getMember();
-          String simpleName = camelCase(protoMember.getSimpleName(), true);
+          String simpleName = camelCase(protoMember.getSimpleName(), true) + "Option";
           ClassName className = ClassName.get(javaPackage, simpleName);
           memberToJavaName.put(protoMember, className);
         }
@@ -2037,7 +2037,7 @@ public final class JavaGenerator {
     if (!eligibleAsAnnotationMember(schema, field)) return null;
 
     ProtoFile protoFile = schema.protoFile(field.getLocation().getPath());
-    String simpleName = camelCase(field.getName(), true);
+    String simpleName = camelCase(field.getName(), true) + "Option";
     ClassName type = ClassName.get(javaPackage(protoFile), simpleName);
     CodeBlock fieldValue = fieldInitializer(field.getType(), value);
 
