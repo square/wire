@@ -8,7 +8,7 @@ ext.versions = [
   'javapoet': '1.13.0',
   'kotlinpoet': '1.6.0',
   'jsr305': '3.0.2',
-  'kotlin': '1.4.0',
+  'kotlin': '1.4.10',
   'okio': '2.8.0',
   'okhttp': '4.2.2',
   'moshi': '1.10.0',
