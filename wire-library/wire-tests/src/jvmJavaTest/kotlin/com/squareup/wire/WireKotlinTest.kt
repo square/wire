@@ -17,11 +17,11 @@ package com.squareup.wire
 
 import com.squareup.wire.protos.custom_options.FooBar
 import com.squareup.wire.protos.custom_options.MessageWithOptions
-import com.squareup.wire.protos.custom_options.MyFieldOptionOne
-import com.squareup.wire.protos.custom_options.MyFieldOptionThree
-import com.squareup.wire.protos.custom_options.MyFieldOptionTwo
-import com.squareup.wire.protos.custom_options.MyMessageOptionFour
-import com.squareup.wire.protos.custom_options.MyMessageOptionTwo
+import com.squareup.wire.protos.custom_options.MyFieldOptionOneOption
+import com.squareup.wire.protos.custom_options.MyFieldOptionThreeOption
+import com.squareup.wire.protos.custom_options.MyFieldOptionTwoOption
+import com.squareup.wire.protos.custom_options.MyMessageOptionFourOption
+import com.squareup.wire.protos.custom_options.MyMessageOptionTwoOption
 import com.squareup.wire.protos.person.Person
 import com.squareup.wire.protos.person.Person.PhoneNumber
 import com.squareup.wire.protos.person.Person.PhoneType
@@ -56,26 +56,26 @@ class WireKotlinTest {
 
   @Test fun optionsOnMessageType() {
     val myMessageOptionTwo = MessageWithOptions::class.annotations
-        .filterIsInstance<MyMessageOptionTwo>()
+        .filterIsInstance<MyMessageOptionTwoOption>()
         .first()
     assertThat(myMessageOptionTwo.value).isEqualTo(91011.0f)
     val myMessageOptionFour = MessageWithOptions::class.annotations
-        .filterIsInstance<MyMessageOptionFour>()
+        .filterIsInstance<MyMessageOptionFourOption>()
         .first()
     assertThat(myMessageOptionFour.value).isEqualTo(FooBar.FooBarBazEnum.FOO)
   }
 
   @Test fun optionsOnField() {
     val myFieldOptionOne = FooBar::class.members.first { it.name == "foo" }.annotations
-        .filterIsInstance<MyFieldOptionOne>()
+        .filterIsInstance<MyFieldOptionOneOption>()
         .first()
     assertThat(myFieldOptionOne.value).isEqualTo(17)
     val myFieldOptionTwo = FooBar::class.members.first { it.name == "bar" }.annotations
-        .filterIsInstance<MyFieldOptionTwo>()
+        .filterIsInstance<MyFieldOptionTwoOption>()
         .first()
     assertThat(myFieldOptionTwo.value).isEqualTo(33.5f)
     val myFieldOptionThree = FooBar::class.members.first { it.name == "baz" }.annotations
-        .filterIsInstance<MyFieldOptionThree>()
+        .filterIsInstance<MyFieldOptionThreeOption>()
         .first()
     assertThat(myFieldOptionThree.value).isEqualTo(FooBar.FooBarBazEnum.BAR)
   }

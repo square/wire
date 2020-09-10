@@ -12,7 +12,7 @@ import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
-import com.squareup.wire.protos.foreign.ForeignEnumValueOption;
+import com.squareup.wire.protos.foreign.ForeignEnumValueOptionOption;
 import java.io.IOException;
 import java.lang.Double;
 import java.lang.Float;
@@ -41,36 +41,36 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
 
   public static final FooBarBazEnum DEFAULT_EXT = FooBarBazEnum.FOO;
 
-  @MyFieldOptionOne(17)
+  @MyFieldOptionOneOption(17)
   @WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   public final Integer foo;
 
-  @MyFieldOptionTwo(33.5f)
+  @MyFieldOptionTwoOption(33.5f)
   @WireField(
       tag = 2,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   public final String bar;
 
-  @MyFieldOptionThree(FooBarBazEnum.BAR)
+  @MyFieldOptionThreeOption(FooBarBazEnum.BAR)
   @WireField(
       tag = 3,
       adapter = "com.squareup.wire.protos.custom_options.FooBar$Nested#ADAPTER"
   )
   public final Nested baz;
 
-  @MyFieldOptionOne(18)
-  @MyFieldOptionTwo(34.5f)
+  @MyFieldOptionOneOption(18)
+  @MyFieldOptionTwoOption(34.5f)
   @WireField(
       tag = 4,
       adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   public final Long qux;
 
-  @MyFieldOptionTwo(99.9f)
+  @MyFieldOptionTwoOption(99.9f)
   @WireField(
       tag = 5,
       adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
@@ -520,16 +520,16 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
     }
   }
 
-  @EnumOption(true)
+  @EnumOptionOption(true)
   public enum FooBarBazEnum implements WireEnum {
-    @EnumValueOption(17)
+    @EnumValueOptionOption(17)
     FOO(1),
 
-    @ForeignEnumValueOption(true)
+    @ForeignEnumValueOptionOption(true)
     BAR(2),
 
-    @EnumValueOption(18)
-    @ForeignEnumValueOption(false)
+    @EnumValueOptionOption(18)
+    @ForeignEnumValueOptionOption(false)
     BAZ(3);
 
     public static final ProtoAdapter<FooBarBazEnum> ADAPTER = new ProtoAdapter_FooBarBazEnum();

@@ -14,7 +14,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.immutableCopyOf
 import com.squareup.wire.internal.sanitize
-import com.squareup.wire.protos.kotlin.foreign.ForeignEnumValueOption
+import com.squareup.wire.protos.kotlin.foreign.ForeignEnumValueOptionOption
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -33,26 +33,26 @@ import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 class FooBar(
-  @MyFieldOptionOne(17)
+  @MyFieldOptionOneOption(17)
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   val foo: Int? = null,
-  @MyFieldOptionTwo(33.5f)
+  @MyFieldOptionTwoOption(33.5f)
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   val bar: String? = null,
-  @MyFieldOptionThree(FooBarBazEnum.BAR)
+  @MyFieldOptionThreeOption(FooBarBazEnum.BAR)
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}Nested#ADAPTER"
   )
   val baz: Nested? = null,
-  @MyFieldOptionOne(18)
-  @MyFieldOptionTwo(34.5f)
+  @MyFieldOptionOneOption(18)
+  @MyFieldOptionTwoOption(34.5f)
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
@@ -76,7 +76,7 @@ class FooBar(
   rep: List<FooBarBazEnum> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FooBar, Nothing>(ADAPTER, unknownFields) {
-  @MyFieldOptionTwo(99.9f)
+  @MyFieldOptionTwoOption(99.9f)
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
@@ -436,14 +436,14 @@ class FooBar(
     }
   }
 
-  @EnumOption(true)
+  @EnumOptionOption(true)
   enum class FooBarBazEnum(
     override val value: Int,
     val enum_value_option: Int?,
     val complex_enum_value_option: More?,
     val foreign_enum_value_option: Boolean?
   ) : WireEnum {
-    @EnumValueOption(17)
+    @EnumValueOptionOption(17)
     FOO(1, 17, More(
       serial = listOf(
         99,
@@ -451,11 +451,11 @@ class FooBar(
       )
     ), null),
 
-    @ForeignEnumValueOption(true)
+    @ForeignEnumValueOptionOption(true)
     BAR(2, null, null, true),
 
-    @EnumValueOption(18)
-    @ForeignEnumValueOption(false)
+    @EnumValueOptionOption(18)
+    @ForeignEnumValueOptionOption(false)
     BAZ(3, 18, null, false);
 
     companion object {

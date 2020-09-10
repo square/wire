@@ -103,7 +103,7 @@ class WireCompilerTest {
         "com/squareup/wire/protos/simple/SimpleMessage.java",
         "com/squareup/wire/protos/simple/ExternalMessage.java",
         "com/squareup/wire/protos/foreign/ForeignEnum.java",
-        "com/squareup/wire/protos/foreign/ForeignEnumValueOption.java",
+        "com/squareup/wire/protos/foreign/ForeignEnumValueOptionOption.java",
         "com/squareup/wire/protos/foreign/ForeignMessage.java")
     assertJavaOutputs(outputs)
   }
@@ -195,17 +195,17 @@ class WireCompilerTest {
     compileToJava(sources, "--named_files_only", "--emit_applied_options")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/custom_options/EnumOption.java",
-        "com/squareup/wire/protos/custom_options/EnumValueOption.java",
+        "com/squareup/wire/protos/custom_options/EnumOptionOption.java",
+        "com/squareup/wire/protos/custom_options/EnumValueOptionOption.java",
         "com/squareup/wire/protos/custom_options/FooBar.java",
-        "com/squareup/wire/protos/custom_options/MethodOptionOne.java",
+        "com/squareup/wire/protos/custom_options/MethodOptionOneOption.java",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.java",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionOne.java",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionTwo.java",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionThree.java",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.java",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.java",
-        "com/squareup/wire/protos/custom_options/ServiceOptionOne.java")
+        "com/squareup/wire/protos/custom_options/MyFieldOptionOneOption.java",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.java",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionThreeOption.java",
+        "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.java",
+        "com/squareup/wire/protos/custom_options/MyMessageOptionFourOption.java",
+        "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.java")
     assertJavaOutputs(outputs)
   }
 
@@ -488,18 +488,18 @@ class WireCompilerTest {
     compileToKotlin(sources, "--named_files_only", "--emit_applied_options")
 
     val outputs = arrayOf(
-        "com/squareup/wire/protos/custom_options/EnumOption.kt",
-        "com/squareup/wire/protos/custom_options/EnumValueOption.kt",
+        "com/squareup/wire/protos/custom_options/EnumOptionOption.kt",
+        "com/squareup/wire/protos/custom_options/EnumValueOptionOption.kt",
         "com/squareup/wire/protos/custom_options/FooBar.kt",
         "com/squareup/wire/protos/custom_options/GrpcServiceWithOptionsClient.kt",
         "com/squareup/wire/protos/custom_options/MessageWithOptions.kt",
-        "com/squareup/wire/protos/custom_options/MethodOptionOne.kt",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionOne.kt",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionTwo.kt",
-        "com/squareup/wire/protos/custom_options/MyFieldOptionThree.kt",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionTwo.kt",
-        "com/squareup/wire/protos/custom_options/MyMessageOptionFour.kt",
-        "com/squareup/wire/protos/custom_options/ServiceOptionOne.kt",
+        "com/squareup/wire/protos/custom_options/MethodOptionOneOption.kt",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionOneOption.kt",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionTwoOption.kt",
+        "com/squareup/wire/protos/custom_options/MyFieldOptionThreeOption.kt",
+        "com/squareup/wire/protos/custom_options/MyMessageOptionTwoOption.kt",
+        "com/squareup/wire/protos/custom_options/MyMessageOptionFourOption.kt",
+        "com/squareup/wire/protos/custom_options/ServiceOptionOneOption.kt",
         "com/squareup/wire/protos/custom_options/ServiceWithOptionsClient.kt"
     )
     assertKotlinOutputs(outputs)

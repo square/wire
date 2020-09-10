@@ -5,8 +5,8 @@ package com.squareup.wire.protos.custom_options
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.Service
 
-@ServiceOptionOne(456)
+@ServiceOptionOneOption(456)
 interface ServiceWithOptionsClient : Service {
-  @MethodOptionOne(789)
+  @MethodOptionOneOption(789)
   fun MethodWithOptions(): GrpcCall<FooBar, FooBar>
 }

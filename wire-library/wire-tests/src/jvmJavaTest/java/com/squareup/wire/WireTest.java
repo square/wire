@@ -17,11 +17,11 @@ package com.squareup.wire;
 
 import com.squareup.wire.protos.custom_options.FooBar;
 import com.squareup.wire.protos.custom_options.MessageWithOptions;
-import com.squareup.wire.protos.custom_options.MyFieldOptionOne;
-import com.squareup.wire.protos.custom_options.MyFieldOptionThree;
-import com.squareup.wire.protos.custom_options.MyFieldOptionTwo;
-import com.squareup.wire.protos.custom_options.MyMessageOptionFour;
-import com.squareup.wire.protos.custom_options.MyMessageOptionTwo;
+import com.squareup.wire.protos.custom_options.MyFieldOptionOneOption;
+import com.squareup.wire.protos.custom_options.MyFieldOptionThreeOption;
+import com.squareup.wire.protos.custom_options.MyFieldOptionTwoOption;
+import com.squareup.wire.protos.custom_options.MyMessageOptionFourOption;
+import com.squareup.wire.protos.custom_options.MyMessageOptionTwoOption;
 import com.squareup.wire.protos.edgecases.NoFields;
 import com.squareup.wire.protos.person.Person;
 import com.squareup.wire.protos.person.Person.PhoneNumber;
@@ -410,26 +410,26 @@ public class WireTest {
   }
 
   @Test public void optionsOnMessageType() {
-    MyMessageOptionTwo myMessageOptionTwo
-        = MessageWithOptions.class.getAnnotation(MyMessageOptionTwo.class);
+    MyMessageOptionTwoOption myMessageOptionTwo
+        = MessageWithOptions.class.getAnnotation(MyMessageOptionTwoOption.class);
     assertThat(myMessageOptionTwo.value()).isEqualTo(91011.0f);
 
-    MyMessageOptionFour myMessageOptionFour
-        = MessageWithOptions.class.getAnnotation(MyMessageOptionFour.class);
+    MyMessageOptionFourOption myMessageOptionFour
+        = MessageWithOptions.class.getAnnotation(MyMessageOptionFourOption.class);
     assertThat(myMessageOptionFour.value()).isEqualTo(FooBar.FooBarBazEnum.FOO);
   }
 
   @Test public void optionsOnField() throws Exception {
-    MyFieldOptionOne myFieldOptionOne = FooBar.class.getDeclaredField("foo")
-        .getAnnotation(MyFieldOptionOne.class);
+    MyFieldOptionOneOption myFieldOptionOne = FooBar.class.getDeclaredField("foo")
+        .getAnnotation(MyFieldOptionOneOption.class);
     assertThat(myFieldOptionOne.value()).isEqualTo(17);
 
-    MyFieldOptionTwo myFieldOptionTwo = FooBar.class.getDeclaredField("bar")
-        .getAnnotation(MyFieldOptionTwo.class);
+    MyFieldOptionTwoOption myFieldOptionTwo = FooBar.class.getDeclaredField("bar")
+        .getAnnotation(MyFieldOptionTwoOption.class);
     assertThat(myFieldOptionTwo.value()).isEqualTo(33.5f);
 
-    MyFieldOptionThree myFieldOptionThree = FooBar.class.getDeclaredField("baz")
-        .getAnnotation(MyFieldOptionThree.class);
+    MyFieldOptionThreeOption myFieldOptionThree = FooBar.class.getDeclaredField("baz")
+        .getAnnotation(MyFieldOptionThreeOption.class);
     assertThat(myFieldOptionThree.value()).isEqualTo(FooBar.FooBarBazEnum.BAR);
   }
 }

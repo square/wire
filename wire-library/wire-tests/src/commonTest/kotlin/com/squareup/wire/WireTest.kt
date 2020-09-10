@@ -15,13 +15,6 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.protos.custom_options.FooBar
-import com.squareup.wire.protos.custom_options.MessageWithOptions
-import com.squareup.wire.protos.custom_options.MyFieldOptionOne
-import com.squareup.wire.protos.custom_options.MyFieldOptionThree
-import com.squareup.wire.protos.custom_options.MyFieldOptionTwo
-import com.squareup.wire.protos.custom_options.MyMessageOptionFour
-import com.squareup.wire.protos.custom_options.MyMessageOptionTwo
 import com.squareup.wire.protos.kotlin.person.Person
 import com.squareup.wire.protos.kotlin.simple.ExternalMessage
 import com.squareup.wire.protos.kotlin.simple.SimpleMessage
