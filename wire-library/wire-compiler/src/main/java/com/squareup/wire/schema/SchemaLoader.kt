@@ -43,6 +43,9 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
   /** Proto path roots that need to be closed */
   private var protoPathRoots: List<Root>?
 
+  /** Strict by default. Note that golang cannot build protos with package cycles. */
+  var permitPackageCycles = false
+
   /** Subset of the schema that was loaded from the source path. */
   var sourcePathFiles: List<ProtoFile>
     private set
@@ -83,7 +86,7 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
   }
 
   @Throws(IOException::class)
-  fun loadSchema(permitPackageCycles: Boolean = false): Schema {
+  fun loadSchema(): Schema {
     sourcePathFiles = loadSourcePathFiles()
     val linker = Linker(this, errors, permitPackageCycles)
     val result = linker.link(sourcePathFiles)

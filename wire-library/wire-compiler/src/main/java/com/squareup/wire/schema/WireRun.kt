@@ -209,16 +209,17 @@ data class WireRun(
   }
 
   fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
-    return SchemaLoader(fs).use { newSchemaLoader ->
-      execute(fs, logger, newSchemaLoader)
+    return SchemaLoader(fs).use { schemaLoader ->
+      execute(fs, logger, schemaLoader)
     }
   }
 
   private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: SchemaLoader) {
+    schemaLoader.permitPackageCycles = permitPackageCycles
     schemaLoader.initRoots(sourcePath, protoPath)
 
     // Validate the schema and resolve references
-    val fullSchema = schemaLoader.loadSchema(permitPackageCycles)
+    val fullSchema = schemaLoader.loadSchema()
     val sourceLocationPaths = schemaLoader.sourcePathFiles.map { it.location.path }
     val moveTargetPaths = moves.map { it.targetPath }
 
