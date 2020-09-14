@@ -315,6 +315,12 @@ wire {
     // True to emit code that uses reflection for reading, writing, and toString
     // methods which are normally implemented with generated code.
     compact = true
+
+    // True to emit types for options declared on messages, fields, etc.
+    emitDeclaredOptions = false,
+
+    // True to emit annotations for options applied on messages, fields, etc.
+    emitAppliedOptions = true
   }
 }
 ```
@@ -355,6 +361,12 @@ wire {
     // True for emitted types to implement APIs for easier migration from the Java
     // target.
     javaInterop = true
+
+    // True to emit types for options declared on messages, fields, etc.
+    emitDeclaredOptions = false,
+
+    // True to emit annotations for options applied on messages, fields, etc.
+    emitAppliedOptions = true,
 
     // `suspending` to generate coroutines APIs that require a Kotlin coroutines context.
     // `blocking` to generate blocking APIs callable by Java and Kotlin.
