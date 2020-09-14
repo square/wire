@@ -1,6 +1,36 @@
 Change Log
 ==========
 
+Version 3.3.0
+-------------
+
+_2020-09-14_
+
+ * New: Proto3 support! This includes the new behaviors, the new types, and the JSON.
+ * New: Swift support for proto2 schemas. The details are in our [blog post][swiftblogpost].
+ * New: Wire will now throw an error when:
+   * two generated files end up overriding each other,
+   * imports form a cycle,
+   * packages form a cycle. This can be turned out with the flag `permitPackageCycles`,
+   * an option within the source set cannot be resolved,
+   * there are name duplications of members in a message, or of rpcs in a service,
+   * a map is used as an extension.
+ * New: Support for the `json_name` pseudo option.
+ * New: The `wire_package` file option allows one to set the JVM package where classes generated
+   from the concerned file will be placed. `wire_package` takes precedence over `java_package`.
+ * New: Lists and maps in Kotlin generated code are now immutable.
+ * New: Support UTF-8 with BOM in proto files.
+ * New: `wire.since` and `wire.until` have been renamed with the prefix `constant_` for
+   `EnumValueOptions`.
+ * New: Wire generates 1) annotations for options which 2) gets assigned to the generated code where
+   appropriate. Both behavior can be turn on or off via the flags:
+   * `emitDeclaredOptions`: True to emit types for options declared on messages, fields, etc.
+     Default to true,
+   * `emitAppliedOptions`: True to emit annotations for options applied on messages, fields, etc.
+     Default to false.
+ * Fix: Recursive map values.
+ * Fix: Long expressions in equals and encodedSize functions.
+
 Version 3.2.2
 -------------
 
@@ -704,3 +734,4 @@ Initial version.
 
  [jimfs]: https://github.com/google/jimfs
  [javapoet]: https://github.com/square/javapoet
+ [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
