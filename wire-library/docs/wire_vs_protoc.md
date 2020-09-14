@@ -114,7 +114,7 @@ version of the primitive type it defines. For instance `google.protobuf.FloatVal
 represented in Java by the float boxed type `@Nullable Float`, in Kotlin by `Float?`.
 
 ```kotlin
-// Wire kotlin
+// Wire
 val floatValue = 33.3f
 
 // Protoc
@@ -129,7 +129,7 @@ or [Gson][gson]. Protoc brings its own JsonFormatter. Beware that Protoc throws 
 fields, you need to configure it to opt-out of this behavior!
 
 ```kotlin
-// Wire Kotlin Moshi
+// Wire & Moshi
 val moshi = Moshi.Builder()
       .add(WireJsonAdapterFactory())
       .build()
