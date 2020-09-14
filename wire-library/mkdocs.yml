@@ -47,6 +47,7 @@ nav:
   - '2.x API':
     - 'wire-gson-support ⏏': https://square.github.io/wire/2.x/wire-gson-support/
     - 'wire-runtime ⏏': https://square.github.io/wire/2.x/wire-runtime/
+  - 'Wire vs Protoc': wire_vs_protoc.md
   - 'Change Log': changelog.md
   - 'Contributing': contributing.md
   - 'Code of Conduct': code_of_conduct.md
