@@ -11,7 +11,7 @@ _2020-09-14_
  * New: Wire will now throw an error when:
    * two generated files end up overriding each other,
    * imports form a cycle,
-   * packages form a cycle. This can be turned out with the flag `permitPackageCycles`,
+   * packages form a cycle. This can be turned off with the flag `permitPackageCycles`,
    * an option within the source set cannot be resolved,
    * there are name duplications of members in a message, or of rpcs in a service,
    * a map is used as an extension.
