@@ -17,8 +17,6 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.SyntaxRules.Companion.PROTO_2_SYNTAX_RULES
-import com.squareup.wire.schema.SyntaxRules.Companion.PROTO_3_SYNTAX_RULES
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -154,32 +152,6 @@ class ExtendElementTest {
         |  required string name = 1 [default = "defaultValue"];
         |}
         |""".trimMargin()
-    assertThat(extend.toSchema(PROTO_2_SYNTAX_RULES)).isEqualTo(expected)
-  }
-
-  @Test
-  fun defaultIsNotSetInProto3File() {
-    val extend = ExtendElement(
-        location = location,
-        name = "Name",
-        documentation = "Hello",
-        fields = listOf(
-            FieldElement(
-                location = location,
-                label = REQUIRED,
-                type = "string",
-                name = "name",
-                tag = 1,
-                defaultValue = "default value shouldn't be set"
-            )
-        )
-    )
-    val expected = """
-        |// Hello
-        |extend Name {
-        |  required string name = 1;
-        |}
-        |""".trimMargin()
-    assertThat(extend.toSchema(PROTO_3_SYNTAX_RULES)).isEqualTo(expected)
+    assertThat(extend.toSchema()).isEqualTo(expected)
   }
 }

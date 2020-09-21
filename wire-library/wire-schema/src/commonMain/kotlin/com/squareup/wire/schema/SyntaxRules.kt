@@ -22,9 +22,11 @@ import com.squareup.wire.internal.camelCase
 
 /** A set of rules which defines schema requirements for a specific [Syntax]. */
 interface SyntaxRules {
-  fun allowUserDefinedDefaultValue(): Boolean
-  fun canExtend(protoType: ProtoType): Boolean
-  fun enumRequiresZeroValueAtFirstPosition(): Boolean
+  fun validateDefaultValue(hasDefaultValue: Boolean, errors: ErrorCollector)
+  fun validateExtension(protoType: ProtoType, errors: ErrorCollector)
+  fun validateEnumConstants(constants: List<EnumConstant>, errors: ErrorCollector)
+  fun validateTypeReference(type: Type?, errors: ErrorCollector)
+
   fun isPackedByDefault(type: ProtoType, label: Field.Label?): Boolean
   fun getEncodeMode(
     protoType: ProtoType,
@@ -34,7 +36,6 @@ interface SyntaxRules {
   ): Field.EncodeMode
 
   fun jsonName(name: String, declaredJsonName: String?): String
-  fun allowTypeReference(type: Type): Boolean
 
   companion object {
     fun get(syntax: Syntax?): SyntaxRules {
@@ -46,9 +47,20 @@ interface SyntaxRules {
     }
 
     internal val PROTO_2_SYNTAX_RULES = object : SyntaxRules {
-      override fun allowUserDefinedDefaultValue(): Boolean = true
-      override fun canExtend(protoType: ProtoType): Boolean = true
-      override fun enumRequiresZeroValueAtFirstPosition(): Boolean = false
+      override fun validateDefaultValue(
+        hasDefaultValue: Boolean,
+        errors: ErrorCollector
+      ) = Unit
+
+      override fun validateExtension(protoType: ProtoType, errors: ErrorCollector) = Unit
+
+      override fun validateEnumConstants(
+        constants: List<EnumConstant>,
+        errors: ErrorCollector
+      ) = Unit
+
+      override fun validateTypeReference(type: Type?, errors: ErrorCollector) = Unit
+
       override fun isPackedByDefault(
         type: ProtoType,
         label: Field.Label?
@@ -74,16 +86,36 @@ interface SyntaxRules {
       override fun jsonName(name: String, declaredJsonName: String?): String {
         return declaredJsonName ?: name
       }
-      override fun allowTypeReference(type: Type) = true
     }
 
     internal val PROTO_3_SYNTAX_RULES = object : SyntaxRules {
-      override fun allowUserDefinedDefaultValue(): Boolean = false
-      override fun canExtend(protoType: ProtoType): Boolean {
-        return protoType in Options.GOOGLE_PROTOBUF_OPTION_TYPES
+      override fun validateDefaultValue(hasDefaultValue: Boolean, errors: ErrorCollector) {
+        if (hasDefaultValue) {
+          errors += "user-defined default values are not permitted in proto3"
+        }
       }
 
-      override fun enumRequiresZeroValueAtFirstPosition(): Boolean = true
+      override fun validateExtension(protoType: ProtoType, errors: ErrorCollector) {
+        if (protoType !in Options.GOOGLE_PROTOBUF_OPTION_TYPES) {
+          errors += "extensions are not allowed in proto3"
+        }
+      }
+
+      override fun validateEnumConstants(constants: List<EnumConstant>, errors: ErrorCollector) {
+        if (constants.isEmpty() || constants.first().tag != 0) {
+          errors += "missing a zero value at the first element in proto3"
+        }
+      }
+
+      override fun validateTypeReference(type: Type?, errors: ErrorCollector) {
+        if (type == null) return
+        if (type !is EnumType) return
+        if (type.syntax == PROTO_3) return
+
+        errors += "Proto2 enums cannot be referenced in a proto3 message"
+
+      }
+
       override fun isPackedByDefault(
         type: ProtoType,
         label: Field.Label?
@@ -112,12 +144,6 @@ interface SyntaxRules {
 
       override fun jsonName(name: String, declaredJsonName: String?): String {
         return declaredJsonName ?: camelCase(name, upperCamel = false)
-      }
-      override fun allowTypeReference(type: Type): Boolean {
-        if (type is EnumType) {
-          return type.syntax != PROTO_2
-        }
-        return true
       }
     }
   }

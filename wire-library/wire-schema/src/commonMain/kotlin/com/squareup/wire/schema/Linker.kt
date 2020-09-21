@@ -382,10 +382,7 @@ class Linker {
             .add(field)
       }
 
-      val type = get(field.type!!)
-      if (type != null && !syntaxRules.allowTypeReference(type)) {
-        errors.at(field) += "Proto2 enums cannot be referenced in a proto3 message"
-      }
+      syntaxRules.validateTypeReference(get(field.type!!), errors.at(field))
     }
 
     for ((key, values) in tagToField) {
