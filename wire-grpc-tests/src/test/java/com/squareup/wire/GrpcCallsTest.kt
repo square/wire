@@ -75,7 +75,7 @@ class GrpcCallsTest {
       try {
         grpcCall.execute("hello")
         fail()
-      } catch (e: Exception) {
+      } catch (e: IOException) {
         assertThat(e).hasMessage("call failed: java.lang.Exception: boom!")
       }
     }
@@ -90,7 +90,7 @@ class GrpcCallsTest {
     try {
       grpcCall.executeBlocking("hello")
       fail()
-    } catch (e: Exception) {
+    } catch (e: IOException) {
       assertThat(e).hasMessage("call failed: java.lang.Exception: boom!")
     }
   }
@@ -117,7 +117,6 @@ class GrpcCallsTest {
     assertThat(log).isEmpty()
   }
 
-
   @Test
   fun executeAfterExecute() {
     val grpcCall = GrpcCall<String, String> { request ->
@@ -129,7 +128,7 @@ class GrpcCallsTest {
       try {
         grpcCall.execute("hello")
         fail()
-      } catch (e: Exception) {
+      } catch (e: IllegalStateException) {
         assertThat(e).hasMessage("already executed")
       }
     }
@@ -145,7 +144,7 @@ class GrpcCallsTest {
     try {
       grpcCall.executeBlocking("hello")
       fail()
-    } catch (e: Exception) {
+    } catch (e: IllegalStateException) {
       assertThat(e).hasMessage("already executed")
     }
   }
@@ -168,7 +167,7 @@ class GrpcCallsTest {
         }
       })
       fail()
-    } catch (e: Exception) {
+    } catch (e: IllegalStateException) {
       assertThat(e).hasMessage("already executed")
     }
   }
@@ -184,7 +183,7 @@ class GrpcCallsTest {
       try {
         grpcCall.execute("hello")
         fail()
-      } catch (e: Exception) {
+      } catch (e: IOException) {
         assertThat(e).hasMessage("canceled")
       }
     }
@@ -200,7 +199,7 @@ class GrpcCallsTest {
     try {
       grpcCall.executeBlocking("hello")
       fail()
-    } catch (e: Exception) {
+    } catch (e: IOException) {
       assertThat(e).hasMessage("canceled")
     }
   }
