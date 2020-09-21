@@ -438,25 +438,17 @@ class FooBar(
 
   @EnumOptionOption(true)
   enum class FooBarBazEnum(
-    override val value: Int,
-    val enum_value_option: Int?,
-    val complex_enum_value_option: More?,
-    val foreign_enum_value_option: Boolean?
+    override val value: Int
   ) : WireEnum {
     @EnumValueOptionOption(17)
-    FOO(1, 17, More(
-      serial = listOf(
-        99,
-        199
-      )
-    ), null),
+    FOO(1),
 
     @ForeignEnumValueOptionOption(true)
-    BAR(2, null, null, true),
+    BAR(2),
 
     @EnumValueOptionOption(18)
     @ForeignEnumValueOptionOption(false)
-    BAZ(3, 18, null, false);
+    BAZ(3);
 
     companion object {
       @JvmField

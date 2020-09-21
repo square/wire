@@ -430,17 +430,16 @@ class SimpleMessage(
   }
 
   enum class NestedEnum(
-    override val value: Int,
-    val deprecated: Boolean?
+    override val value: Int
   ) : WireEnum {
-    FOO(1, null),
+    FOO(1),
 
-    BAR(2, null),
+    BAR(2),
 
-    BAZ(3, null),
+    BAZ(3),
 
     @Deprecated(message = "BUZ is deprecated")
-    BUZ(3, true);
+    BUZ(3);
 
     companion object {
       @JvmField
