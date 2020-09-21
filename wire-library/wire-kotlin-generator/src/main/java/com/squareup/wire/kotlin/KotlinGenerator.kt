@@ -1411,36 +1411,10 @@ class KotlinGenerator private constructor(
             .build())
         .addType(generateEnumCompanion(message))
 
-    val allOptionFieldsBuilder = mutableSetOf<ProtoMember>()
-
-    // Each enum constant option requires a constructor parameter and property
-    message.constants.forEach { constant ->
-      constant.options.map.keys.forEach { protoMember ->
-        if (allOptionFieldsBuilder.add(protoMember)) {
-          val optionField = schema.getField(protoMember)!!
-          primaryConstructor.addParameter(optionField.name, optionField.typeNameForMessageField)
-          builder.addProperty(
-              PropertySpec.builder(optionField.name, optionField.typeNameForMessageField)
-                  .initializer(optionField.name)
-                  .build())
-        }
-      }
-    }
-
     message.constants.forEach { constant ->
       builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
           .addSuperclassConstructorParameter("%L", constant.tag)
           .apply {
-            allOptionFieldsBuilder.toList().forEach { protoMember ->
-              val field = schema.getField(protoMember)!!
-              val fieldValue = constant.options.map[protoMember]
-              if (fieldValue != null) {
-                addSuperclassConstructorParameter("%L",
-                    defaultFieldInitializer(field.type!!, fieldValue))
-              } else {
-                addSuperclassConstructorParameter("null")
-              }
-            }
             if (constant.documentation.isNotBlank()) {
               addKdoc("%L\n", constant.documentation.sanitizeKdoc())
             }
