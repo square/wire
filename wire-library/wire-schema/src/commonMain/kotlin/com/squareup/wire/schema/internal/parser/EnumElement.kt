@@ -30,7 +30,7 @@ data class EnumElement(
   // Enums do not allow nested type declarations.
   override val nestedTypes: List<TypeElement> = emptyList()
 
-  override fun toSchema(syntaxRules: SyntaxRules) = buildString {
+  override fun toSchema() = buildString {
     appendDocumentation(documentation)
     append("enum $name {")
 

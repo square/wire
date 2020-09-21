@@ -18,8 +18,6 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Field.Label.OPTIONAL
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.SyntaxRules.Companion.PROTO_2_SYNTAX_RULES
-import com.squareup.wire.schema.SyntaxRules.Companion.PROTO_3_SYNTAX_RULES
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -65,7 +63,7 @@ class FieldElementTest {
   }
 
   @Test
-  fun defaultIsSetInProto2File() {
+  fun defaultIsSet() {
     val field = FieldElement(
         location = location,
         label = REQUIRED,
@@ -75,7 +73,7 @@ class FieldElementTest {
         defaultValue = "defaultValue"
     )
 
-    assertThat(field.toSchema(PROTO_2_SYNTAX_RULES))
+    assertThat(field.toSchema())
         .isEqualTo("""
             |required string name = 1 [default = "defaultValue"];
             |""".trimMargin())
@@ -113,23 +111,9 @@ class FieldElementTest {
         tag = 1
     )
 
-    assertThat(field.toSchema(PROTO_2_SYNTAX_RULES))
+    assertThat(field.toSchema())
         .isEqualTo("""
             |required string name = 1 [json_name = "my_json"];
             |""".trimMargin())
-  }
-
-  @Test
-  fun defaultIsNotSetInProto3File() {
-    val field = FieldElement(
-        location = location,
-        label = REQUIRED,
-        type = "string",
-        name = "name",
-        tag = 1,
-        defaultValue = "default value shouldn't be set"
-    )
-
-    assertThat(field.toSchema(PROTO_3_SYNTAX_RULES)).isEqualTo("required string name = 1;\n")
   }
 }

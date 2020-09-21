@@ -17,7 +17,6 @@ package com.squareup.wire.schema.internal.parser
 
 import com.squareup.wire.Syntax
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.SyntaxRules
 import kotlin.jvm.JvmStatic
 
 /** A single `.proto` file.  */
@@ -33,17 +32,15 @@ data class ProtoFileElement(
   val options: List<OptionElement> = emptyList()
 ) {
   fun toSchema() = buildString {
-    val syntaxRules = SyntaxRules.get(syntax)
-
     append("// ")
     append(location.withPathOnly())
     append('\n')
 
     if (syntax != null) {
-       append("syntax = \"$syntax\";\n")
+      append("syntax = \"$syntax\";\n")
     }
     if (packageName != null) {
-       append("package $packageName;\n")
+      append("package $packageName;\n")
     }
     if (imports.isNotEmpty() || publicImports.isNotEmpty()) {
       append('\n')
@@ -63,13 +60,13 @@ data class ProtoFileElement(
     if (types.isNotEmpty()) {
       for (typeElement in types) {
         append('\n')
-        append(typeElement.toSchema(syntaxRules))
+        append(typeElement.toSchema())
       }
     }
     if (extendDeclarations.isNotEmpty()) {
       for (extendDeclaration in extendDeclarations) {
         append('\n')
-        append(extendDeclaration.toSchema(syntaxRules))
+        append(extendDeclaration.toSchema())
       }
     }
     if (services.isNotEmpty()) {

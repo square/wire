@@ -52,9 +52,7 @@ data class Extend(
     val linker = linker.withContext(this)
     linker.validateImportForType(location, type!!)
 
-    if (!syntaxRules.canExtend(ProtoType.get(name))) {
-      linker.errors += "extensions are not allowed [proto3]"
-    }
+    syntaxRules.validateExtension(ProtoType.get(name), linker.errors)
   }
 
   fun retainAll(schema: Schema, markSet: MarkSet): Extend? {

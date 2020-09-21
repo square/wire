@@ -1584,7 +1584,7 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-          |missing a zero value at the first element [proto3]
+          |missing a zero value at the first element in proto3
           |  for enum Period (/source/period.proto:3:1)
           """.trimMargin()
       )
@@ -1609,7 +1609,7 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-          |missing a zero value at the first element [proto3]
+          |missing a zero value at the first element in proto3
           |  for enum Period (/source/period.proto:3:1)
           """.trimMargin()
       )
@@ -1629,7 +1629,7 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-          |missing a zero value at the first element [proto3]
+          |missing a zero value at the first element in proto3
           |  for enum Period (/source/period.proto:3:1)
           """.trimMargin()
       )
@@ -1712,7 +1712,7 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-          |extensions are not allowed [proto3]
+          |extensions are not allowed in proto3
           |  for extend Dinosaur (/source/dinosaur.proto:7:1)
           """.trimMargin()
       )
@@ -1735,7 +1735,7 @@ class SchemaTest {
       fail()
     } catch (expected: SchemaException) {
       assertThat(expected).hasMessage("""
-            |user-defined default values are not permitted [proto3]
+            |user-defined default values are not permitted in proto3
             |  for field name (/source/dinosaur.proto:4:3)
             |  in message Dinosaur (/source/dinosaur.proto:3:1)
             """.trimMargin()

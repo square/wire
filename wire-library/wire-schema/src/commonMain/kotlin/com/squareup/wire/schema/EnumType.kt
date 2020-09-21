@@ -59,15 +59,7 @@ data class EnumType(
     if ("true" != allowAlias) {
       validateTagUniqueness(linker)
     }
-    if (syntaxRules.enumRequiresZeroValueAtFirstPosition()) {
-      validateZeroValueAtFirstPosition(linker)
-    }
-  }
-
-  private fun validateZeroValueAtFirstPosition(linker: Linker) {
-    if (constants.isEmpty() || constants.first().tag != 0) {
-      linker.errors += "missing a zero value at the first element [proto3]"
-    }
+    syntaxRules.validateEnumConstants(constants, linker.errors)
   }
 
   private fun validateTagUniqueness(linker: Linker) {

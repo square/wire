@@ -130,9 +130,7 @@ data class Field(
         linker.errors += "extension fields cannot be a map"
       }
     }
-    if (default != null && !syntaxRules.allowUserDefinedDefaultValue()) {
-      linker.errors += "user-defined default values are not permitted [proto3]"
-    }
+    syntaxRules.validateDefaultValue(default != null, linker.errors)
     if (type!!.isMap) {
       val valueType = linker.get(type!!.valueType!!)
       if (valueType is EnumType && valueType.constants[0].tag != 0) {

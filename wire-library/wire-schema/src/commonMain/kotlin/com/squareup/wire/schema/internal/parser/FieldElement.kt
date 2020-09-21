@@ -18,7 +18,6 @@ package com.squareup.wire.schema.internal.parser
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoType
-import com.squareup.wire.schema.SyntaxRules
 import com.squareup.wire.schema.internal.appendDocumentation
 import com.squareup.wire.schema.internal.appendOptions
 import com.squareup.wire.schema.internal.toEnglishLowerCase
@@ -34,7 +33,7 @@ data class FieldElement(
   val documentation: String = "",
   val options: List<OptionElement> = emptyList()
 ) {
-  fun toSchema(syntaxRules: SyntaxRules = SyntaxRules.get(syntax = null)) = buildString {
+  fun toSchema() = buildString {
     appendDocumentation(documentation)
 
     if (label != null) {
@@ -42,7 +41,7 @@ data class FieldElement(
     }
     append("$type $name = $tag")
 
-    val optionsWithDefault = optionsWithSpecialValues(syntaxRules)
+    val optionsWithDefault = optionsWithSpecialValues()
     if (optionsWithDefault.isNotEmpty()) {
       append(' ')
       appendOptions(optionsWithDefault)
@@ -55,9 +54,9 @@ data class FieldElement(
    * Both `default` and `json_name` are defined in the schema like options but they are actually
    * not options themselves as they're missing from `google.protobuf.FieldOptions`.
    */
-  private fun optionsWithSpecialValues(syntaxRules: SyntaxRules): List<OptionElement> {
+  private fun optionsWithSpecialValues(): List<OptionElement> {
     var options =
-        if (defaultValue == null || !syntaxRules.allowUserDefinedDefaultValue()) {
+        if (defaultValue == null) {
           options
         } else {
           val protoType = ProtoType.get(type)
