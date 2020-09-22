@@ -18,6 +18,9 @@ package com.squareup.wire
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.receiveOrNull
 import kotlinx.coroutines.runBlocking
@@ -36,7 +39,7 @@ class GrpcStreamingCallsTest {
       responses.close()
     }
     runBlocking {
-      val (requests, responses) = grpcCall.execute()
+      val (requests, responses) = grpcCall.executeIn(this)
       requests.send("hello")
       requests.close()
       assertThat(responses.receive()).isEqualTo("HELLO")
@@ -63,7 +66,7 @@ class GrpcStreamingCallsTest {
       throw Exception("boom!")
     }
     runBlocking {
-      val (requests, responses) = grpcCall.execute()
+      val (requests, responses) = grpcCall.executeIn(this)
       try {
         responses.receive()
         fail()
@@ -106,13 +109,14 @@ class GrpcStreamingCallsTest {
       requests.consumeEach { responses.send(it.toUpperCase()) }
       responses.close()
     }
-    val (requests, responses) = grpcCall.execute()
-    requests.close()
-    responses.cancel()
 
     runBlocking {
+      val (requests, responses) = grpcCall.executeIn(this)
+      requests.close()
+      responses.cancel()
+
       try {
-        grpcCall.execute()
+        grpcCall.executeIn(this)
         fail()
       } catch (e: IllegalStateException) {
         assertThat(e).hasMessage("already executed")
@@ -126,9 +130,12 @@ class GrpcStreamingCallsTest {
       requests.consumeEach { responses.send(it.toUpperCase()) }
       responses.close()
     }
-    val (requests, responses) = grpcCall.execute()
-    requests.close()
-    responses.cancel()
+
+    runBlocking {
+      val (requests, responses) = grpcCall.executeIn(this)
+      requests.close()
+      responses.cancel()
+    }
 
     try {
       grpcCall.executeBlocking()
@@ -146,7 +153,7 @@ class GrpcStreamingCallsTest {
     grpcCall.cancel()
 
     runBlocking {
-      val (requests, responses) = grpcCall.execute()
+      val (requests, responses) = grpcCall.executeIn(this)
       try {
         responses.receive()
         fail()
@@ -187,16 +194,57 @@ class GrpcStreamingCallsTest {
       responses.close()
     }
 
-    val (requests1, responses1) = grpcCall.execute()
-    requests1.close()
-    responses1.cancel()
-
     runBlocking {
-      val (requests2, responses2) = grpcCall.clone().execute()
+      val (requests1, responses1) = grpcCall.executeIn(this)
+      requests1.close()
+      responses1.cancel()
+
+      val (requests2, responses2) = grpcCall.clone().executeIn(this)
       requests2.send("hello")
       requests2.close()
       assertThat(responses2.receive()).isEqualTo("HELLO")
       assertThat(responses2.receiveOrNull()).isNull()
+    }
+  }
+
+  /**
+   * Confirm that if the scope that we called `execute()` with is canceled, the channels are
+   * canceled also.
+   */
+  @Test
+  fun executeIsScoped() {
+    val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
+      requests.consumeEach { responses.send(it.toUpperCase()) }
+      responses.close()
+    }
+
+    var requests: SendChannel<String>? = null
+    var responses: ReceiveChannel<String>? = null
+    try {
+      runBlocking {
+        val execute = grpcCall.executeIn(this)
+        requests = execute.first
+        responses = execute.second
+        cancel()
+      }
+      fail()
+    } catch (expected: CancellationException) {
+    }
+
+    try {
+      runBlocking {
+        requests!!.send("hello")
+      }
+      fail()
+    } catch (expected: CancellationException) {
+    }
+
+    try {
+      runBlocking {
+        responses!!.receive()
+      }
+      fail()
+    } catch (expected: CancellationException) {
     }
   }
 }

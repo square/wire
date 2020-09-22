@@ -20,9 +20,13 @@ import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.launch
 import okio.Timeout
 import java.util.concurrent.TimeUnit
 
@@ -47,11 +51,11 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
 
   override fun isCanceled(): Boolean = call.isCanceled()
 
-  override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> {
+  override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> = executeIn(GlobalScope)
+
+  override fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>> {
     val requestChannel = Channel<S>(1)
     val responseChannel = Channel<R>(1)
-    requestChannel.writeToRequestBody(requestBody, grpcMethod.requestAdapter, call)
-    call.enqueue(responseChannel.readFromResponseBodyCallback(grpcMethod.responseAdapter))
 
     responseChannel.invokeOnClose {
       if (responseChannel.isClosedForReceive) {
@@ -60,6 +64,11 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
         requestChannel.cancel()
       }
     }
+
+    scope.launch(Dispatchers.IO) {
+      requestChannel.writeToRequestBody(requestBody, grpcMethod.requestAdapter, call)
+    }
+    call.enqueue(responseChannel.readFromResponseBodyCallback(grpcMethod.responseAdapter))
 
     return requestChannel to responseChannel
   }

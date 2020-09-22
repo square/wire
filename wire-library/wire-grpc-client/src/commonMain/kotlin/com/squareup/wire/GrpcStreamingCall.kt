@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.IOException
@@ -37,7 +39,7 @@ import okio.Timeout
  *
  * A gRPC call cannot be executed twice.
  *
- * gRPC calls can be [suspending][execute] or [blocking][executeBlocking]. Use whichever mechanism
+ * gRPC calls can be [suspending][executeIn] or [blocking][executeBlocking]. Use whichever mechanism
  * works at your call site: the bytes transmitted on the network are the same.
  */
 interface GrpcStreamingCall<S : Any, R : Any> {
@@ -62,6 +64,23 @@ interface GrpcStreamingCall<S : Any, R : Any> {
    * Enqueues this call for execution and returns channels to send and receive the call's messages.
    * This uses the [Dispatchers.IO] to transmit outbound messages.
    */
+  fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>>
+
+  /**
+   * Enqueues this call for execution and returns channels to send and receive the call's messages.
+   * This uses the [Dispatchers.IO] to transmit outbound messages.
+   *
+   * This method is deprecated because it doesn't support structured concurrency. Instead, prefer
+   * [executeIn]. When its scope is canceled, resources held by the function will be released.
+   */
+  @Deprecated(
+      level = DeprecationLevel.WARNING,
+      message = "Provide a scope, preferably not GlobalScope",
+      replaceWith = ReplaceWith(
+          expression = "executeIn(GlobalScope)",
+          imports = ["kotlinx.coroutines.GlobalScope"]
+      )
+  )
   fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>>
 
   /**
@@ -71,7 +90,7 @@ interface GrpcStreamingCall<S : Any, R : Any> {
   fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>>
 
   /**
-   * Returns true if [execute] or [executeBlocking] was called. It is an error to execute a call
+   * Returns true if [executeIn] or [executeBlocking] was called. It is an error to execute a call
    * more than once.
    */
   fun isExecuted(): Boolean
