@@ -19,6 +19,7 @@ import com.squareup.wire.VERSION
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -27,6 +28,7 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
+@CacheableTask
 open class WireTask : SourceTask() {
   @get:OutputDirectories
   var outputDirectories: List<File>? = null
