@@ -11,7 +11,7 @@ To develop the runtime or run tests using Xcode, ensure you have the following d
 - The [`CocoaPods` Ruby gem](https://guides.cocoapods.org/using/getting-started.html)
 - The [`cocoapods-generate` Ruby gem](https://github.com/square/cocoapods-generate)
 
-Then, run the following commands from the root of the rep:
+Then, run the following commands from the root of the repo:
 
 ```
 pod gen ./Wire.podspec
