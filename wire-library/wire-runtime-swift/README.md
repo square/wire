@@ -4,18 +4,19 @@
 
 ### Developing in Xcode
 
-To develop the runtime or run tests using Xcode, run the following commands from the root of the rep:
+To develop the runtime or run tests using Xcode, ensure you have the following dependencies installed:
+
+- Xcode
+- Ruby
+- The [`CocoaPods` Ruby gem](https://guides.cocoapods.org/using/getting-started.html)
+- The [`cocoapods-generate` Ruby gem](https://github.com/square/cocoapods-generate)
+
+Then, run the following commands from the root of the repo:
 
 ```
 pod gen ./Wire.podspec
 open gen/Wire/Wire.xcworkspace
 ```
-
-For these commands to work you'll need the following installed:
-
-- Ruby
-- The CocoaPods Ruby gem
-- Xcode
 
 ### Running Tests On the Command Line
 
