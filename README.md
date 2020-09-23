@@ -58,13 +58,13 @@ option java_package = "com.squareup.geology";
 
 enum Period {
   // 145.5 million years ago — 66.0 million years ago.
-  CRETACEOUS = 1;
+  CRETACEOUS = 0;
 
   // 201.3 million years ago — 145.0 million years ago.
-  JURASSIC = 2;
+  JURASSIC = 1;
 
   // 252.17 million years ago — 201.3 million years ago.
-  TRIASSIC = 3;
+  TRIASSIC = 2;
 }
 ```
 
