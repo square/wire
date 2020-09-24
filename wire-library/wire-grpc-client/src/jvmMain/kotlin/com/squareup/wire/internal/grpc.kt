@@ -18,12 +18,9 @@ package com.squareup.wire.internal
 import com.squareup.wire.GrpcResponse
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.use
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
@@ -110,22 +107,20 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
  * 2. write it to the stream (blocking)
  * 3. repeat. We also have to wait for all 2s to end before closing the writer
  */
-internal fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
+internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestBody: PipeDuplexRequestBody,
   requestAdapter: ProtoAdapter<S>,
   callForCancel: Call
 ) {
-  CoroutineScope(Dispatchers.IO).launch {
-    requestBody.messageSink(requestAdapter, callForCancel).use { requestWriter ->
-      var success = false
-      try {
-        consumeEach { message ->
-          requestWriter.write(message)
-        }
-        success = true
-      } finally {
-        if (!success) requestWriter.cancel()
+  requestBody.messageSink(requestAdapter, callForCancel).use { requestWriter ->
+    var success = false
+    try {
+      consumeEach { message ->
+        requestWriter.write(message)
       }
+      success = true
+    } finally {
+      if (!success) requestWriter.cancel()
     }
   }
 }
