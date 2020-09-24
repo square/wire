@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 3.4.0
+-------------
+
+_2020-09-24_
+
+ * New: Stop emitting enum constant options as fields for Kotlin.
+ * New: The Wire Gradle plugin task is now cacheable.
+ * New: New GrpcCall function to help implement fakes.
+ * New: Change GrpcStreamingCall.execute() to support structured concurrency.
+
 Version 3.3.0
 -------------
 
