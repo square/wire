@@ -16,6 +16,7 @@ dependencies {
 
   compileOnly gradleApi()
   implementation deps.plugins.kotlin
+  compileOnly deps.plugins.androidDependency
 
   testImplementation deps.junit
   testImplementation deps.assertj

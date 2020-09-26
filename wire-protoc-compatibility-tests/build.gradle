@@ -43,14 +43,12 @@ wire {
 
 sourceSets {
   test.java.srcDirs += 'build/generated/source/proto/main/java'
-  test.java.srcDirs += 'build/generated/source/wire/'
 }
 
 dependencies {
   protobuf deps.wire.schema
   implementation deps.okio.jvm
   implementation deps.protobuf.java
-  implementation deps.wire.runtime
   testImplementation deps.wire.gsonSupport
   testImplementation deps.wire.moshiAdapter
   testImplementation deps.assertj

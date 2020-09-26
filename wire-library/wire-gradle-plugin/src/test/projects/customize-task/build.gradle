@@ -28,4 +28,6 @@ wire {
   }
 }
 
-tasks.getByName("generateProtos").dependsOn helloWorld
+afterEvaluate {
+  tasks.getByName("generateProtos").dependsOn helloWorld
+}

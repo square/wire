@@ -22,12 +22,6 @@ import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
-import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.compile.JavaCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import javax.inject.Inject
 
 /**
@@ -41,13 +35,6 @@ abstract class WireOutput {
 
   /** Create a target for the WireCompiler to use when emitting sources. */
   abstract fun toTarget(): Target
-
-  /** Configure the project's graph to compile the files emitted. */
-  abstract fun applyToProject(
-    project: Project,
-    wireTask: TaskProvider<WireTask>?,
-    kotlin: Boolean
-  )
 }
 
 open class JavaOutput @Inject constructor() : WireOutput() {
@@ -72,30 +59,6 @@ open class JavaOutput @Inject constructor() : WireOutput() {
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions
     )
-  }
-
-  override fun applyToProject(
-    project: Project,
-    wireTask: TaskProvider<WireTask>?,
-    kotlin: Boolean
-  ) {
-    @Suppress("UNCHECKED_CAST")
-    val compileJavaTask = project.tasks.named("compileJava") as TaskProvider<JavaCompile>
-    compileJavaTask.configure {
-      it.source(out)
-      it.dependsOn(wireTask)
-    }
-    if (kotlin) {
-      val sourceSetContainer = project.extensions.getByName("sourceSets") as SourceSetContainer
-      val mainSourceSet = sourceSetContainer.getByName("main") as SourceSet
-      mainSourceSet.java.srcDirs(out)
-
-      @Suppress("UNCHECKED_CAST")
-      val compileKotlinTask = project.tasks.named("compileKotlin") as TaskProvider<KotlinCompile>
-      compileKotlinTask.configure {
-        it.dependsOn(wireTask)
-      }
-    }
   }
 }
 
@@ -135,35 +98,11 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         singleMethodServices = singleMethodServices
     )
   }
-
-  override fun applyToProject(
-    project: Project,
-    wireTask: TaskProvider<WireTask>?,
-    kotlin: Boolean
-  ) {
-    val compileKotlinTasks = project.tasks.withType(KotlinCompile::class.java)
-    check(compileKotlinTasks.isNotEmpty()) {
-      "To generate Kotlin protos, please apply a Kotlin plugin."
-    }
-    compileKotlinTasks.configureEach {
-      it.source(out!!)
-      it.dependsOn(wireTask)
-    }
-  }
 }
 
 open class ProtoOutput @Inject constructor() : WireOutput() {
   override fun toTarget(): ProtoTarget {
-    return ProtoTarget(
-        outDirectory = out!!
-    )
-  }
-
-  override fun applyToProject(
-    project: Project,
-    wireTask: TaskProvider<WireTask>?,
-    kotlin: Boolean
-  ) {
+    return ProtoTarget(outDirectory = out!!)
   }
 }
 
@@ -182,12 +121,5 @@ open class CustomOutput @Inject constructor() : WireOutput() {
         customHandlerClass = customHandlerClass
             ?: throw IllegalArgumentException("customHandlerClass required")
     )
-  }
-
-  override fun applyToProject(
-    project: Project,
-    wireTask: TaskProvider<WireTask>?,
-    kotlin: Boolean
-  ) {
   }
 }

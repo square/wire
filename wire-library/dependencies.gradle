@@ -24,6 +24,8 @@ ext.versions = [
 
 ext.deps = [
   plugins: [
+    android: 'com.android.tools.build:gradle:3.6.0',
+    androidDependency: 'com.android.tools.build:gradle:3.4.1',
     kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
     kotlinSerialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
     shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
@@ -31,7 +33,6 @@ ext.deps = [
     mavenPublish: "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}"
   ],
   'android': "com.google.android:android:${versions.android}",
-  'androidGradlePlugin': "com.android.tools.build:gradle:3.5.0",
   'androidx': [
     annotations: "androidx.annotation:annotation:1.1.0",
     'appcompat': "androidx.appcompat:appcompat:1.0.2",
