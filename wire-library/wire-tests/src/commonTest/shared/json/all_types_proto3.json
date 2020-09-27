@@ -18,6 +18,21 @@
   "nestedMessage": {
     "a": 999
   },
+  "optInt32": 111,
+  "optUint32": 112,
+  "optSint32": 113,
+  "optFixed32": 114,
+  "optSfixed32": 115,
+  "optInt64": "116",
+  "optUint64": "117",
+  "optSint64": "118",
+  "optFixed64": "119",
+  "optSfixed64": "120",
+  "optBool": true,
+  "optFloat": 122.0,
+  "optDouble": 123.0,
+  "optString": "124",
+  "optBytes": "e30=",
   "repInt32": [
     111,
     111

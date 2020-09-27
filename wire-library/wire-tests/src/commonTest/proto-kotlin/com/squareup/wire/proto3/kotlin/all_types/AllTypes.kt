@@ -189,6 +189,96 @@ class AllTypes(
     label = WireField.Label.OMIT_IDENTITY
   )
   val timestamp: Instant? = null,
+  @field:WireField(
+    tag = 101,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    jsonName = "optInt32"
+  )
+  val opt_int32: Int? = null,
+  @field:WireField(
+    tag = 102,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+    jsonName = "optUint32"
+  )
+  val opt_uint32: Int? = null,
+  @field:WireField(
+    tag = 103,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+    jsonName = "optSint32"
+  )
+  val opt_sint32: Int? = null,
+  @field:WireField(
+    tag = 104,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+    jsonName = "optFixed32"
+  )
+  val opt_fixed32: Int? = null,
+  @field:WireField(
+    tag = 105,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+    jsonName = "optSfixed32"
+  )
+  val opt_sfixed32: Int? = null,
+  @field:WireField(
+    tag = 106,
+    adapter = "com.squareup.wire.ProtoAdapter#INT64",
+    jsonName = "optInt64"
+  )
+  val opt_int64: Long? = null,
+  @field:WireField(
+    tag = 107,
+    adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+    jsonName = "optUint64"
+  )
+  val opt_uint64: Long? = null,
+  @field:WireField(
+    tag = 108,
+    adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+    jsonName = "optSint64"
+  )
+  val opt_sint64: Long? = null,
+  @field:WireField(
+    tag = 109,
+    adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+    jsonName = "optFixed64"
+  )
+  val opt_fixed64: Long? = null,
+  @field:WireField(
+    tag = 110,
+    adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+    jsonName = "optSfixed64"
+  )
+  val opt_sfixed64: Long? = null,
+  @field:WireField(
+    tag = 111,
+    adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+    jsonName = "optBool"
+  )
+  val opt_bool: Boolean? = null,
+  @field:WireField(
+    tag = 112,
+    adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+    jsonName = "optFloat"
+  )
+  val opt_float: Float? = null,
+  @field:WireField(
+    tag = 113,
+    adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+    jsonName = "optDouble"
+  )
+  val opt_double: Double? = null,
+  @field:WireField(
+    tag = 114,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    jsonName = "optString"
+  )
+  val opt_string: String? = null,
+  @field:WireField(
+    tag = 115,
+    adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+    jsonName = "optBytes"
+  )
+  val opt_bytes: ByteString? = null,
   rep_int32: List<Int> = emptyList(),
   rep_uint32: List<Int> = emptyList(),
   rep_sint32: List<Int> = emptyList(),
@@ -802,6 +892,21 @@ class AllTypes(
     if (null_value != other.null_value) return false
     if (empty != other.empty) return false
     if (timestamp != other.timestamp) return false
+    if (opt_int32 != other.opt_int32) return false
+    if (opt_uint32 != other.opt_uint32) return false
+    if (opt_sint32 != other.opt_sint32) return false
+    if (opt_fixed32 != other.opt_fixed32) return false
+    if (opt_sfixed32 != other.opt_sfixed32) return false
+    if (opt_int64 != other.opt_int64) return false
+    if (opt_uint64 != other.opt_uint64) return false
+    if (opt_sint64 != other.opt_sint64) return false
+    if (opt_fixed64 != other.opt_fixed64) return false
+    if (opt_sfixed64 != other.opt_sfixed64) return false
+    if (opt_bool != other.opt_bool) return false
+    if (opt_float != other.opt_float) return false
+    if (opt_double != other.opt_double) return false
+    if (opt_string != other.opt_string) return false
+    if (opt_bytes != other.opt_bytes) return false
     if (rep_int32 != other.rep_int32) return false
     if (rep_uint32 != other.rep_uint32) return false
     if (rep_sint32 != other.rep_sint32) return false
@@ -895,6 +1000,21 @@ class AllTypes(
       result = result * 37 + null_value.hashCode()
       result = result * 37 + empty.hashCode()
       result = result * 37 + timestamp.hashCode()
+      result = result * 37 + opt_int32.hashCode()
+      result = result * 37 + opt_uint32.hashCode()
+      result = result * 37 + opt_sint32.hashCode()
+      result = result * 37 + opt_fixed32.hashCode()
+      result = result * 37 + opt_sfixed32.hashCode()
+      result = result * 37 + opt_int64.hashCode()
+      result = result * 37 + opt_uint64.hashCode()
+      result = result * 37 + opt_sint64.hashCode()
+      result = result * 37 + opt_fixed64.hashCode()
+      result = result * 37 + opt_sfixed64.hashCode()
+      result = result * 37 + opt_bool.hashCode()
+      result = result * 37 + opt_float.hashCode()
+      result = result * 37 + opt_double.hashCode()
+      result = result * 37 + opt_string.hashCode()
+      result = result * 37 + opt_bytes.hashCode()
       result = result * 37 + rep_int32.hashCode()
       result = result * 37 + rep_uint32.hashCode()
       result = result * 37 + rep_sint32.hashCode()
@@ -988,6 +1108,21 @@ class AllTypes(
     if (null_value != null) result += """null_value=$null_value"""
     if (empty != null) result += """empty=$empty"""
     if (timestamp != null) result += """timestamp=$timestamp"""
+    if (opt_int32 != null) result += """opt_int32=$opt_int32"""
+    if (opt_uint32 != null) result += """opt_uint32=$opt_uint32"""
+    if (opt_sint32 != null) result += """opt_sint32=$opt_sint32"""
+    if (opt_fixed32 != null) result += """opt_fixed32=$opt_fixed32"""
+    if (opt_sfixed32 != null) result += """opt_sfixed32=$opt_sfixed32"""
+    if (opt_int64 != null) result += """opt_int64=$opt_int64"""
+    if (opt_uint64 != null) result += """opt_uint64=$opt_uint64"""
+    if (opt_sint64 != null) result += """opt_sint64=$opt_sint64"""
+    if (opt_fixed64 != null) result += """opt_fixed64=$opt_fixed64"""
+    if (opt_sfixed64 != null) result += """opt_sfixed64=$opt_sfixed64"""
+    if (opt_bool != null) result += """opt_bool=$opt_bool"""
+    if (opt_float != null) result += """opt_float=$opt_float"""
+    if (opt_double != null) result += """opt_double=$opt_double"""
+    if (opt_string != null) result += """opt_string=${sanitize(opt_string)}"""
+    if (opt_bytes != null) result += """opt_bytes=$opt_bytes"""
     if (rep_int32.isNotEmpty()) result += """rep_int32=$rep_int32"""
     if (rep_uint32.isNotEmpty()) result += """rep_uint32=$rep_uint32"""
     if (rep_sint32.isNotEmpty()) result += """rep_sint32=$rep_sint32"""
@@ -1080,6 +1215,21 @@ class AllTypes(
     null_value: Nothing? = this.null_value,
     empty: Unit? = this.empty,
     timestamp: Instant? = this.timestamp,
+    opt_int32: Int? = this.opt_int32,
+    opt_uint32: Int? = this.opt_uint32,
+    opt_sint32: Int? = this.opt_sint32,
+    opt_fixed32: Int? = this.opt_fixed32,
+    opt_sfixed32: Int? = this.opt_sfixed32,
+    opt_int64: Long? = this.opt_int64,
+    opt_uint64: Long? = this.opt_uint64,
+    opt_sint64: Long? = this.opt_sint64,
+    opt_fixed64: Long? = this.opt_fixed64,
+    opt_sfixed64: Long? = this.opt_sfixed64,
+    opt_bool: Boolean? = this.opt_bool,
+    opt_float: Float? = this.opt_float,
+    opt_double: Double? = this.opt_double,
+    opt_string: String? = this.opt_string,
+    opt_bytes: ByteString? = this.opt_bytes,
     rep_int32: List<Int> = this.rep_int32,
     rep_uint32: List<Int> = this.rep_uint32,
     rep_sint32: List<Int> = this.rep_sint32,
@@ -1147,8 +1297,10 @@ class AllTypes(
       proto3_kotlin_sint64, proto3_kotlin_fixed64, proto3_kotlin_sfixed64, proto3_kotlin_bool,
       proto3_kotlin_float, proto3_kotlin_double, proto3_kotlin_string, proto3_kotlin_bytes,
       nested_enum, nested_message, any, duration, struct, list_value, value, null_value, empty,
-      timestamp, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32, rep_int64,
-      rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double,
+      timestamp, opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
+      opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
+      opt_string, opt_bytes, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32,
+      rep_int64, rep_uint64, rep_sint64, rep_fixed64, rep_sfixed64, rep_bool, rep_float, rep_double,
       rep_string, rep_bytes, rep_nested_enum, rep_nested_message, rep_any, rep_duration, rep_struct,
       rep_list_value, rep_value, rep_null_value, rep_empty, rep_timestamp, pack_int32, pack_uint32,
       pack_sint32, pack_fixed32, pack_sfixed32, pack_int64, pack_uint64, pack_sint64, pack_fixed64,
@@ -1254,6 +1406,21 @@ class AllTypes(
         if (value.empty != null) size += ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty)
         if (value.timestamp != null) size += ProtoAdapter.INSTANT.encodedSizeWithTag(25,
             value.timestamp)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(101, value.opt_int32)
+        size += ProtoAdapter.UINT32.encodedSizeWithTag(102, value.opt_uint32)
+        size += ProtoAdapter.SINT32.encodedSizeWithTag(103, value.opt_sint32)
+        size += ProtoAdapter.FIXED32.encodedSizeWithTag(104, value.opt_fixed32)
+        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(105, value.opt_sfixed32)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(106, value.opt_int64)
+        size += ProtoAdapter.UINT64.encodedSizeWithTag(107, value.opt_uint64)
+        size += ProtoAdapter.SINT64.encodedSizeWithTag(108, value.opt_sint64)
+        size += ProtoAdapter.FIXED64.encodedSizeWithTag(109, value.opt_fixed64)
+        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(110, value.opt_sfixed64)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(111, value.opt_bool)
+        size += ProtoAdapter.FLOAT.encodedSizeWithTag(112, value.opt_float)
+        size += ProtoAdapter.DOUBLE.encodedSizeWithTag(113, value.opt_double)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(114, value.opt_string)
+        size += ProtoAdapter.BYTES.encodedSizeWithTag(115, value.opt_bytes)
         size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32)
         size += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32)
         size += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32)
@@ -1363,6 +1530,21 @@ class AllTypes(
             value.null_value)
         if (value.empty != null) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty)
         if (value.timestamp != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 25, value.timestamp)
+        ProtoAdapter.INT32.encodeWithTag(writer, 101, value.opt_int32)
+        ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.opt_uint32)
+        ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.opt_sint32)
+        ProtoAdapter.FIXED32.encodeWithTag(writer, 104, value.opt_fixed32)
+        ProtoAdapter.SFIXED32.encodeWithTag(writer, 105, value.opt_sfixed32)
+        ProtoAdapter.INT64.encodeWithTag(writer, 106, value.opt_int64)
+        ProtoAdapter.UINT64.encodeWithTag(writer, 107, value.opt_uint64)
+        ProtoAdapter.SINT64.encodeWithTag(writer, 108, value.opt_sint64)
+        ProtoAdapter.FIXED64.encodeWithTag(writer, 109, value.opt_fixed64)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 110, value.opt_sfixed64)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 111, value.opt_bool)
+        ProtoAdapter.FLOAT.encodeWithTag(writer, 112, value.opt_float)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 113, value.opt_double)
+        ProtoAdapter.STRING.encodeWithTag(writer, 114, value.opt_string)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 115, value.opt_bytes)
         ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32)
         ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32)
         ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32)
@@ -1453,6 +1635,21 @@ class AllTypes(
         var null_value: Nothing? = null
         var empty: Unit? = null
         var timestamp: Instant? = null
+        var opt_int32: Int? = null
+        var opt_uint32: Int? = null
+        var opt_sint32: Int? = null
+        var opt_fixed32: Int? = null
+        var opt_sfixed32: Int? = null
+        var opt_int64: Long? = null
+        var opt_uint64: Long? = null
+        var opt_sint64: Long? = null
+        var opt_fixed64: Long? = null
+        var opt_sfixed64: Long? = null
+        var opt_bool: Boolean? = null
+        var opt_float: Float? = null
+        var opt_double: Double? = null
+        var opt_string: String? = null
+        var opt_bytes: ByteString? = null
         val rep_int32 = mutableListOf<Int>()
         val rep_uint32 = mutableListOf<Int>()
         val rep_sint32 = mutableListOf<Int>()
@@ -1549,6 +1746,21 @@ class AllTypes(
             }
             24 -> empty = ProtoAdapter.EMPTY.decode(reader)
             25 -> timestamp = ProtoAdapter.INSTANT.decode(reader)
+            101 -> opt_int32 = ProtoAdapter.INT32.decode(reader)
+            102 -> opt_uint32 = ProtoAdapter.UINT32.decode(reader)
+            103 -> opt_sint32 = ProtoAdapter.SINT32.decode(reader)
+            104 -> opt_fixed32 = ProtoAdapter.FIXED32.decode(reader)
+            105 -> opt_sfixed32 = ProtoAdapter.SFIXED32.decode(reader)
+            106 -> opt_int64 = ProtoAdapter.INT64.decode(reader)
+            107 -> opt_uint64 = ProtoAdapter.UINT64.decode(reader)
+            108 -> opt_sint64 = ProtoAdapter.SINT64.decode(reader)
+            109 -> opt_fixed64 = ProtoAdapter.FIXED64.decode(reader)
+            110 -> opt_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
+            111 -> opt_bool = ProtoAdapter.BOOL.decode(reader)
+            112 -> opt_float = ProtoAdapter.FLOAT.decode(reader)
+            113 -> opt_double = ProtoAdapter.DOUBLE.decode(reader)
+            114 -> opt_string = ProtoAdapter.STRING.decode(reader)
+            115 -> opt_bytes = ProtoAdapter.BYTES.decode(reader)
             201 -> rep_int32.add(ProtoAdapter.INT32.decode(reader))
             202 -> rep_uint32.add(ProtoAdapter.UINT32.decode(reader))
             203 -> rep_sint32.add(ProtoAdapter.SINT32.decode(reader))
@@ -1655,6 +1867,21 @@ class AllTypes(
           null_value = null_value,
           empty = empty,
           timestamp = timestamp,
+          opt_int32 = opt_int32,
+          opt_uint32 = opt_uint32,
+          opt_sint32 = opt_sint32,
+          opt_fixed32 = opt_fixed32,
+          opt_sfixed32 = opt_sfixed32,
+          opt_int64 = opt_int64,
+          opt_uint64 = opt_uint64,
+          opt_sint64 = opt_sint64,
+          opt_fixed64 = opt_fixed64,
+          opt_sfixed64 = opt_sfixed64,
+          opt_bool = opt_bool,
+          opt_float = opt_float,
+          opt_double = opt_double,
+          opt_string = opt_string,
+          opt_bytes = opt_bytes,
           rep_int32 = rep_int32,
           rep_uint32 = rep_uint32,
           rep_sint32 = rep_sint32,
