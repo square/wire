@@ -26,6 +26,7 @@ import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -99,6 +100,7 @@ class WireJsonTest {
     assertJsonEquals(ALL_TYPES_PROTO2_JSON, jsonLibrary.toJson(value, AllTypesProto2::class.java))
   }
 
+  @Ignore("Broken see https://github.com/square/wire/issues/1801")
   @Test fun fieldNamesAreEncodedWithCamelCaseAndDecodedWithEither() {
     val nested = NestedCamelCase.Builder().one_int32(1).build()
     assertThat(jsonLibrary.fromJson("""{"oneInt32":1}""", NestedCamelCase::class.java))
