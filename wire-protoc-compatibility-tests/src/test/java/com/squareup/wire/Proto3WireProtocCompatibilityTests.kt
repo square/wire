@@ -565,6 +565,21 @@ class Proto3WireProtocCompatibilityTests {
         .setMyBytes(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray()))
         .setNestedEnum(AllTypesOuterClass.AllTypes.NestedEnum.A)
         .setNestedMessage(AllTypesOuterClass.AllTypes.NestedMessage.newBuilder().setA(999).build())
+        .setOptInt32(111)
+        .setOptUint32(112)
+        .setOptSint32(113)
+        .setOptFixed32(114)
+        .setOptSfixed32(115)
+        .setOptInt64(116L)
+        .setOptUint64(117L)
+        .setOptSint64(118L)
+        .setOptFixed64(119L)
+        .setOptSfixed64(120L)
+        .setOptBool(true)
+        .setOptFloat(122.0F)
+        .setOptDouble(123.0)
+        .setOptString("124")
+        .setOptBytes(com.google.protobuf.ByteString.copyFrom(ByteString.of(123, 125).toByteArray()))
         .addAllRepInt32(list(111))
         .addAllRepUint32(list(112))
         .addAllRepSint32(list(113))
@@ -624,6 +639,21 @@ class Proto3WireProtocCompatibilityTests {
         my_bytes = ByteString.of(123, 125),
         nested_enum = AllTypesK.NestedEnum.A,
         nested_message = AllTypesK.NestedMessage(a = 999),
+        opt_int32 = 111,
+        opt_uint32 = 112,
+        opt_sint32 = 113,
+        opt_fixed32 = 114,
+        opt_sfixed32 = 115,
+        opt_int64 = 116L,
+        opt_uint64 = 117L,
+        opt_sint64 = 118L,
+        opt_fixed64 = 119L,
+        opt_sfixed64 = 120L,
+        opt_bool = true,
+        opt_float = 122.0F,
+        opt_double = 123.0,
+        opt_string = "124",
+        opt_bytes = ByteString.of(123, 125),
         rep_int32 = list(111),
         rep_uint32 = list(112),
         rep_sint32 = list(113),
@@ -680,6 +710,21 @@ class Proto3WireProtocCompatibilityTests {
         .bytes(ByteString.of(123, 125))
         .nested_enum(AllTypesJ.NestedEnum.A)
         .nested_message(AllTypesJ.NestedMessage(999))
+        .opt_int32(111)
+        .opt_uint32(112)
+        .opt_sint32(113)
+        .opt_fixed32(114)
+        .opt_sfixed32(115)
+        .opt_int64(116L)
+        .opt_uint64(117L)
+        .opt_sint64(118L)
+        .opt_fixed64(119L)
+        .opt_sfixed64(120L)
+        .opt_bool(true)
+        .opt_float(122.0F)
+        .opt_double(123.0)
+        .opt_string("124")
+        .opt_bytes(ByteString.of(123, 125))
         .rep_int32(list(111))
         .rep_uint32(list(112))
         .rep_sint32(list(113))

@@ -17,8 +17,6 @@ syntax = "proto3";
 
 package squareup.proto3.java.interop;
 
-import "google/protobuf/duration.proto";
-
 /*
  * The name of this file must contain `test_proto3_optional`. From: the protobuf site,
  * https://github.com/protocolbuffers/protobuf/blob/master/docs/implementing_proto3_presence.md
