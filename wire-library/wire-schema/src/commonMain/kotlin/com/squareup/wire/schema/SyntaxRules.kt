@@ -138,6 +138,7 @@ interface SyntaxRules {
         }
         if (protoType.isMap) return Field.EncodeMode.MAP
         if (isOneOf) return Field.EncodeMode.NULL_IF_ABSENT
+        if (label == Field.Label.OPTIONAL) return Field.EncodeMode.NULL_IF_ABSENT
 
         return Field.EncodeMode.OMIT_IDENTITY
       }
