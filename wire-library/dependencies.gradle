@@ -24,8 +24,7 @@ ext.versions = [
 
 ext.deps = [
   plugins: [
-    android: 'com.android.tools.build:gradle:3.6.0',
-    androidDependency: 'com.android.tools.build:gradle:3.4.1',
+    android: 'com.android.tools.build:gradle:4.0.1',
     kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
     kotlinSerialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
     shadow: 'com.github.jengelman.gradle.plugins:shadow:4.0.1',
