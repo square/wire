@@ -16,6 +16,7 @@
 package com.squareup.wire
 
 import com.google.protobuf.Duration
+import org.junit.Ignore
 import org.junit.Test
 import squareup.proto2.java.interop.InteropCamelCase as InteropCamelCaseJ2
 import squareup.proto2.java.interop.InteropDuration as InteropDurationJ2
@@ -31,6 +32,7 @@ import squareup.proto2.kotlin.interop.InteropUint64 as InteropUint64K2
 import squareup.proto3.java.interop.InteropCamelCase as InteropCamelCaseJ3
 import squareup.proto3.java.interop.InteropDuration as InteropDurationJ3
 import squareup.proto3.java.interop.InteropJsonName as InteropJsonNameJ3
+import squareup.proto3.java.interop.InteropOptional as InteropOptionalJ3
 import squareup.proto3.java.interop.InteropTest.InteropCamelCase as InteropCamelCaseP3
 import squareup.proto3.java.interop.InteropTest.InteropDuration as InteropDurationP3
 import squareup.proto3.java.interop.InteropTest.InteropJsonName as InteropJsonNameP3
@@ -39,7 +41,9 @@ import squareup.proto3.java.interop.InteropUint64 as InteropUint64J3
 import squareup.proto3.kotlin.interop.InteropCamelCase as InteropCamelCaseK3
 import squareup.proto3.kotlin.interop.InteropDuration as InteropDurationK3
 import squareup.proto3.kotlin.interop.InteropJsonName as InteropJsonNameK3
+import squareup.proto3.kotlin.interop.InteropOptional as InteropOptionalK3
 import squareup.proto3.kotlin.interop.InteropUint64 as InteropUint64K3
+import squareup.proto3.kotlin.interop.TestProto3Optional.InteropOptional as InteropOptionalP3
 
 class InteropTest {
   @Test fun duration() {
@@ -124,6 +128,7 @@ class InteropTest {
     max.check(InteropUint64J2(-1L))
   }
 
+  @Ignore("broken! https://github.com/square/wire/issues/1801")
   @Test fun `camel case`() {
     val checker = InteropChecker(
         protocMessage = InteropCamelCaseP3.newBuilder()
@@ -142,6 +147,7 @@ class InteropTest {
     checker.check(InteropCamelCaseJ3("1", "2", "3", "4"))
   }
 
+  @Ignore("broken! https://github.com/square/wire/issues/1801")
   @Test fun `camel case proto 2`() {
     val checker = InteropChecker(
         protocMessage = InteropCamelCaseP2.newBuilder()
@@ -194,6 +200,37 @@ class InteropTest {
 
     checked.check(InteropJsonNameJ2("1", "2", "3"))
     checked.check(InteropJsonNameK2("1", "2", "3"))
+  }
+
+  @Test fun optionalNonIdentity() {
+    val checker = InteropChecker(
+        protocMessage = InteropOptionalP3.newBuilder()
+            .setValue("hello")
+            .build(),
+        canonicalJson = """{"value":"hello"}""",
+        wireAlternateJsons = listOf(
+            """{"unused": false, "value":"hello"}""",
+        ),
+    )
+
+    checker.check(InteropOptionalK3("hello"))
+    checker.check(InteropOptionalJ3("hello"))
+  }
+
+  @Ignore("broken! https://github.com/square/wire/issues/1800")
+  @Test fun optionalIdentity() {
+    val checker = InteropChecker(
+        protocMessage = InteropOptionalP3.newBuilder()
+            .setValue("")
+            .build(),
+        canonicalJson = """{"value":""}""",
+        wireAlternateJsons = listOf(
+            """{"unused": false, "value":""}""",
+        ),
+    )
+
+    checker.check(InteropOptionalK3(""))
+    checker.check(InteropOptionalJ3(""))
   }
 }
 
