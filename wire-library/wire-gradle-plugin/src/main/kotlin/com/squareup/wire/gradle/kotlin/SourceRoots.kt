@@ -88,8 +88,8 @@ internal fun WirePlugin.sourceRoots(javaOnly: Boolean): List<Source> {
 
 private fun KotlinMultiplatformExtension.sourceRoots(project: Project): List<Source> {
   // TODO: Look at KotlinPlatformType when we get around to module dependencies and compatibility.
-  // We'll probably want to include that in the source so we can tell which source to rely on
-  // during dependency resolution.
+  //  We'll probably want to include that in the source so we can tell which source to rely on
+  //  during dependency resolution.
 
   return targets
       .flatMap { target ->

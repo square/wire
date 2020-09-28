@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.gradle
 
-import com.android.builder.model.AndroidProject.FD_GENERATED
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.kotlin.sourceRoots
 import org.gradle.api.Plugin
@@ -98,17 +97,16 @@ class WirePlugin : Plugin<Project> {
 
     val hasJavaOutput = outputs.any { it is JavaOutput }
     val hasKotlinOutput = outputs.any { it is KotlinOutput }
-    if (hasKotlinOutput && !kotlin.get()) {
-      throw IllegalStateException("Wire Gradle plugin applied in " +
+    check(!hasKotlinOutput || kotlin.get()) {
+      "Wire Gradle plugin applied in " +
           "project '${project.path}' but no supported Kotlin plugin was found"
-      )
     }
 
     addWireRuntimeDependency(hasJavaOutput, hasKotlinOutput)
 
     for (output in outputs) {
       if (output.out == null) {
-        output.out = "${project.buildDir}/$FD_GENERATED/source/wire"
+        output.out = "${project.buildDir}/generated/source/wire"
       } else {
         output.out = project.file(output.out!!).path
       }
