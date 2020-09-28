@@ -47,6 +47,22 @@ message AllTypes {
   NestedEnum nested_enum = 16;
   NestedMessage nested_message = 17;
 
+  optional int32 opt_int32 = 101;
+  optional uint32 opt_uint32 = 102;
+  optional sint32 opt_sint32 = 103;
+  optional fixed32 opt_fixed32 = 104;
+  optional sfixed32 opt_sfixed32 = 105;
+  optional int64 opt_int64 = 106;
+  optional uint64 opt_uint64 = 107;
+  optional sint64 opt_sint64 = 108;
+  optional fixed64 opt_fixed64 = 109;
+  optional sfixed64 opt_sfixed64 = 110;
+  optional bool opt_bool = 111;
+  optional float opt_float = 112;
+  optional double opt_double = 113;
+  optional string opt_string = 114;
+  optional bytes opt_bytes = 115;
+
   repeated int32 rep_int32 = 201 [packed = false];
   repeated uint32 rep_uint32 = 202 [packed = false];
   repeated sint32 rep_sint32 = 203 [packed = false];
