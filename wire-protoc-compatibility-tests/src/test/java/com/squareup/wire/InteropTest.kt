@@ -217,7 +217,6 @@ class InteropTest {
     checker.check(InteropOptionalJ3("hello"))
   }
 
-  @Ignore("broken! https://github.com/square/wire/issues/1800")
   @Test fun optionalIdentity() {
     val checker = InteropChecker(
         protocMessage = InteropOptionalP3.newBuilder()

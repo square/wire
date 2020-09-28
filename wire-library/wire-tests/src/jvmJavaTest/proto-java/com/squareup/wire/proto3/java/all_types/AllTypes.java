@@ -37,6 +37,36 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   private static final long serialVersionUID = 0L;
 
+  public static final Integer DEFAULT_OPT_INT32 = 0;
+
+  public static final Integer DEFAULT_OPT_UINT32 = 0;
+
+  public static final Integer DEFAULT_OPT_SINT32 = 0;
+
+  public static final Integer DEFAULT_OPT_FIXED32 = 0;
+
+  public static final Integer DEFAULT_OPT_SFIXED32 = 0;
+
+  public static final Long DEFAULT_OPT_INT64 = 0L;
+
+  public static final Long DEFAULT_OPT_UINT64 = 0L;
+
+  public static final Long DEFAULT_OPT_SINT64 = 0L;
+
+  public static final Long DEFAULT_OPT_FIXED64 = 0L;
+
+  public static final Long DEFAULT_OPT_SFIXED64 = 0L;
+
+  public static final Boolean DEFAULT_OPT_BOOL = false;
+
+  public static final Float DEFAULT_OPT_FLOAT = 0.0f;
+
+  public static final Double DEFAULT_OPT_DOUBLE = 0.0d;
+
+  public static final String DEFAULT_OPT_STRING = "";
+
+  public static final ByteString DEFAULT_OPT_BYTES = ByteString.EMPTY;
+
   public static final String DEFAULT_ONEOF_STRING = "";
 
   public static final Integer DEFAULT_ONEOF_INT32 = 0;
@@ -221,6 +251,111 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       label = WireField.Label.OMIT_IDENTITY
   )
   public final Instant timestamp;
+
+  @WireField(
+      tag = 101,
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      jsonName = "optInt32"
+  )
+  public final Integer opt_int32;
+
+  @WireField(
+      tag = 102,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT32",
+      jsonName = "optUint32"
+  )
+  public final Integer opt_uint32;
+
+  @WireField(
+      tag = 103,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT32",
+      jsonName = "optSint32"
+  )
+  public final Integer opt_sint32;
+
+  @WireField(
+      tag = 104,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
+      jsonName = "optFixed32"
+  )
+  public final Integer opt_fixed32;
+
+  @WireField(
+      tag = 105,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
+      jsonName = "optSfixed32"
+  )
+  public final Integer opt_sfixed32;
+
+  @WireField(
+      tag = 106,
+      adapter = "com.squareup.wire.ProtoAdapter#INT64",
+      jsonName = "optInt64"
+  )
+  public final Long opt_int64;
+
+  @WireField(
+      tag = 107,
+      adapter = "com.squareup.wire.ProtoAdapter#UINT64",
+      jsonName = "optUint64"
+  )
+  public final Long opt_uint64;
+
+  @WireField(
+      tag = 108,
+      adapter = "com.squareup.wire.ProtoAdapter#SINT64",
+      jsonName = "optSint64"
+  )
+  public final Long opt_sint64;
+
+  @WireField(
+      tag = 109,
+      adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
+      jsonName = "optFixed64"
+  )
+  public final Long opt_fixed64;
+
+  @WireField(
+      tag = 110,
+      adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
+      jsonName = "optSfixed64"
+  )
+  public final Long opt_sfixed64;
+
+  @WireField(
+      tag = 111,
+      adapter = "com.squareup.wire.ProtoAdapter#BOOL",
+      jsonName = "optBool"
+  )
+  public final Boolean opt_bool;
+
+  @WireField(
+      tag = 112,
+      adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
+      jsonName = "optFloat"
+  )
+  public final Float opt_float;
+
+  @WireField(
+      tag = 113,
+      adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
+      jsonName = "optDouble"
+  )
+  public final Double opt_double;
+
+  @WireField(
+      tag = 114,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      jsonName = "optString"
+  )
+  public final String opt_string;
+
+  @WireField(
+      tag = 115,
+      adapter = "com.squareup.wire.ProtoAdapter#BYTES",
+      jsonName = "optBytes"
+  )
+  public final ByteString opt_bytes;
 
   @WireField(
       tag = 201,
@@ -744,6 +879,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     this.null_value = Internal.immutableCopyOfStruct("null_value", builder.null_value);
     this.empty = builder.empty;
     this.timestamp = builder.timestamp;
+    this.opt_int32 = builder.opt_int32;
+    this.opt_uint32 = builder.opt_uint32;
+    this.opt_sint32 = builder.opt_sint32;
+    this.opt_fixed32 = builder.opt_fixed32;
+    this.opt_sfixed32 = builder.opt_sfixed32;
+    this.opt_int64 = builder.opt_int64;
+    this.opt_uint64 = builder.opt_uint64;
+    this.opt_sint64 = builder.opt_sint64;
+    this.opt_fixed64 = builder.opt_fixed64;
+    this.opt_sfixed64 = builder.opt_sfixed64;
+    this.opt_bool = builder.opt_bool;
+    this.opt_float = builder.opt_float;
+    this.opt_double = builder.opt_double;
+    this.opt_string = builder.opt_string;
+    this.opt_bytes = builder.opt_bytes;
     this.rep_int32 = Internal.immutableCopyOf("rep_int32", builder.rep_int32);
     this.rep_uint32 = Internal.immutableCopyOf("rep_uint32", builder.rep_uint32);
     this.rep_sint32 = Internal.immutableCopyOf("rep_sint32", builder.rep_sint32);
@@ -835,6 +985,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     builder.null_value = null_value;
     builder.empty = empty;
     builder.timestamp = timestamp;
+    builder.opt_int32 = opt_int32;
+    builder.opt_uint32 = opt_uint32;
+    builder.opt_sint32 = opt_sint32;
+    builder.opt_fixed32 = opt_fixed32;
+    builder.opt_sfixed32 = opt_sfixed32;
+    builder.opt_int64 = opt_int64;
+    builder.opt_uint64 = opt_uint64;
+    builder.opt_sint64 = opt_sint64;
+    builder.opt_fixed64 = opt_fixed64;
+    builder.opt_sfixed64 = opt_sfixed64;
+    builder.opt_bool = opt_bool;
+    builder.opt_float = opt_float;
+    builder.opt_double = opt_double;
+    builder.opt_string = opt_string;
+    builder.opt_bytes = opt_bytes;
     builder.rep_int32 = Internal.copyOf(rep_int32);
     builder.rep_uint32 = Internal.copyOf(rep_uint32);
     builder.rep_sint32 = Internal.copyOf(rep_sint32);
@@ -931,6 +1096,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
         && Internal.equals(null_value, o.null_value)
         && Internal.equals(empty, o.empty)
         && Internal.equals(timestamp, o.timestamp)
+        && Internal.equals(opt_int32, o.opt_int32)
+        && Internal.equals(opt_uint32, o.opt_uint32)
+        && Internal.equals(opt_sint32, o.opt_sint32)
+        && Internal.equals(opt_fixed32, o.opt_fixed32)
+        && Internal.equals(opt_sfixed32, o.opt_sfixed32)
+        && Internal.equals(opt_int64, o.opt_int64)
+        && Internal.equals(opt_uint64, o.opt_uint64)
+        && Internal.equals(opt_sint64, o.opt_sint64)
+        && Internal.equals(opt_fixed64, o.opt_fixed64)
+        && Internal.equals(opt_sfixed64, o.opt_sfixed64)
+        && Internal.equals(opt_bool, o.opt_bool)
+        && Internal.equals(opt_float, o.opt_float)
+        && Internal.equals(opt_double, o.opt_double)
+        && Internal.equals(opt_string, o.opt_string)
+        && Internal.equals(opt_bytes, o.opt_bytes)
         && rep_int32.equals(o.rep_int32)
         && rep_uint32.equals(o.rep_uint32)
         && rep_sint32.equals(o.rep_sint32)
@@ -1024,6 +1204,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       result = result * 37 + (null_value != null ? null_value.hashCode() : 0);
       result = result * 37 + (empty != null ? empty.hashCode() : 0);
       result = result * 37 + (timestamp != null ? timestamp.hashCode() : 0);
+      result = result * 37 + (opt_int32 != null ? opt_int32.hashCode() : 0);
+      result = result * 37 + (opt_uint32 != null ? opt_uint32.hashCode() : 0);
+      result = result * 37 + (opt_sint32 != null ? opt_sint32.hashCode() : 0);
+      result = result * 37 + (opt_fixed32 != null ? opt_fixed32.hashCode() : 0);
+      result = result * 37 + (opt_sfixed32 != null ? opt_sfixed32.hashCode() : 0);
+      result = result * 37 + (opt_int64 != null ? opt_int64.hashCode() : 0);
+      result = result * 37 + (opt_uint64 != null ? opt_uint64.hashCode() : 0);
+      result = result * 37 + (opt_sint64 != null ? opt_sint64.hashCode() : 0);
+      result = result * 37 + (opt_fixed64 != null ? opt_fixed64.hashCode() : 0);
+      result = result * 37 + (opt_sfixed64 != null ? opt_sfixed64.hashCode() : 0);
+      result = result * 37 + (opt_bool != null ? opt_bool.hashCode() : 0);
+      result = result * 37 + (opt_float != null ? opt_float.hashCode() : 0);
+      result = result * 37 + (opt_double != null ? opt_double.hashCode() : 0);
+      result = result * 37 + (opt_string != null ? opt_string.hashCode() : 0);
+      result = result * 37 + (opt_bytes != null ? opt_bytes.hashCode() : 0);
       result = result * 37 + rep_int32.hashCode();
       result = result * 37 + rep_uint32.hashCode();
       result = result * 37 + rep_sint32.hashCode();
@@ -1118,6 +1313,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     if (null_value != null) builder.append(", null_value=").append(null_value);
     if (empty != null) builder.append(", empty=").append(empty);
     if (timestamp != null) builder.append(", timestamp=").append(timestamp);
+    if (opt_int32 != null) builder.append(", opt_int32=").append(opt_int32);
+    if (opt_uint32 != null) builder.append(", opt_uint32=").append(opt_uint32);
+    if (opt_sint32 != null) builder.append(", opt_sint32=").append(opt_sint32);
+    if (opt_fixed32 != null) builder.append(", opt_fixed32=").append(opt_fixed32);
+    if (opt_sfixed32 != null) builder.append(", opt_sfixed32=").append(opt_sfixed32);
+    if (opt_int64 != null) builder.append(", opt_int64=").append(opt_int64);
+    if (opt_uint64 != null) builder.append(", opt_uint64=").append(opt_uint64);
+    if (opt_sint64 != null) builder.append(", opt_sint64=").append(opt_sint64);
+    if (opt_fixed64 != null) builder.append(", opt_fixed64=").append(opt_fixed64);
+    if (opt_sfixed64 != null) builder.append(", opt_sfixed64=").append(opt_sfixed64);
+    if (opt_bool != null) builder.append(", opt_bool=").append(opt_bool);
+    if (opt_float != null) builder.append(", opt_float=").append(opt_float);
+    if (opt_double != null) builder.append(", opt_double=").append(opt_double);
+    if (opt_string != null) builder.append(", opt_string=").append(Internal.sanitize(opt_string));
+    if (opt_bytes != null) builder.append(", opt_bytes=").append(opt_bytes);
     if (!rep_int32.isEmpty()) builder.append(", rep_int32=").append(rep_int32);
     if (!rep_uint32.isEmpty()) builder.append(", rep_uint32=").append(rep_uint32);
     if (!rep_sint32.isEmpty()) builder.append(", rep_sint32=").append(rep_sint32);
@@ -1232,6 +1442,36 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     public Unit empty;
 
     public Instant timestamp;
+
+    public Integer opt_int32;
+
+    public Integer opt_uint32;
+
+    public Integer opt_sint32;
+
+    public Integer opt_fixed32;
+
+    public Integer opt_sfixed32;
+
+    public Long opt_int64;
+
+    public Long opt_uint64;
+
+    public Long opt_sint64;
+
+    public Long opt_fixed64;
+
+    public Long opt_sfixed64;
+
+    public Boolean opt_bool;
+
+    public Float opt_float;
+
+    public Double opt_double;
+
+    public String opt_string;
+
+    public ByteString opt_bytes;
 
     public List<Integer> rep_int32;
 
@@ -1548,6 +1788,81 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     public Builder timestamp(Instant timestamp) {
       this.timestamp = timestamp;
+      return this;
+    }
+
+    public Builder opt_int32(Integer opt_int32) {
+      this.opt_int32 = opt_int32;
+      return this;
+    }
+
+    public Builder opt_uint32(Integer opt_uint32) {
+      this.opt_uint32 = opt_uint32;
+      return this;
+    }
+
+    public Builder opt_sint32(Integer opt_sint32) {
+      this.opt_sint32 = opt_sint32;
+      return this;
+    }
+
+    public Builder opt_fixed32(Integer opt_fixed32) {
+      this.opt_fixed32 = opt_fixed32;
+      return this;
+    }
+
+    public Builder opt_sfixed32(Integer opt_sfixed32) {
+      this.opt_sfixed32 = opt_sfixed32;
+      return this;
+    }
+
+    public Builder opt_int64(Long opt_int64) {
+      this.opt_int64 = opt_int64;
+      return this;
+    }
+
+    public Builder opt_uint64(Long opt_uint64) {
+      this.opt_uint64 = opt_uint64;
+      return this;
+    }
+
+    public Builder opt_sint64(Long opt_sint64) {
+      this.opt_sint64 = opt_sint64;
+      return this;
+    }
+
+    public Builder opt_fixed64(Long opt_fixed64) {
+      this.opt_fixed64 = opt_fixed64;
+      return this;
+    }
+
+    public Builder opt_sfixed64(Long opt_sfixed64) {
+      this.opt_sfixed64 = opt_sfixed64;
+      return this;
+    }
+
+    public Builder opt_bool(Boolean opt_bool) {
+      this.opt_bool = opt_bool;
+      return this;
+    }
+
+    public Builder opt_float(Float opt_float) {
+      this.opt_float = opt_float;
+      return this;
+    }
+
+    public Builder opt_double(Double opt_double) {
+      this.opt_double = opt_double;
+      return this;
+    }
+
+    public Builder opt_string(String opt_string) {
+      this.opt_string = opt_string;
+      return this;
+    }
+
+    public Builder opt_bytes(ByteString opt_bytes) {
+      this.opt_bytes = opt_bytes;
       return this;
     }
 
@@ -2258,6 +2573,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       if (!Objects.equals(value.timestamp, null)) {
         result += ProtoAdapter.INSTANT.encodedSizeWithTag(25, value.timestamp);
       }
+      result += ProtoAdapter.INT32.encodedSizeWithTag(101, value.opt_int32);
+      result += ProtoAdapter.UINT32.encodedSizeWithTag(102, value.opt_uint32);
+      result += ProtoAdapter.SINT32.encodedSizeWithTag(103, value.opt_sint32);
+      result += ProtoAdapter.FIXED32.encodedSizeWithTag(104, value.opt_fixed32);
+      result += ProtoAdapter.SFIXED32.encodedSizeWithTag(105, value.opt_sfixed32);
+      result += ProtoAdapter.INT64.encodedSizeWithTag(106, value.opt_int64);
+      result += ProtoAdapter.UINT64.encodedSizeWithTag(107, value.opt_uint64);
+      result += ProtoAdapter.SINT64.encodedSizeWithTag(108, value.opt_sint64);
+      result += ProtoAdapter.FIXED64.encodedSizeWithTag(109, value.opt_fixed64);
+      result += ProtoAdapter.SFIXED64.encodedSizeWithTag(110, value.opt_sfixed64);
+      result += ProtoAdapter.BOOL.encodedSizeWithTag(111, value.opt_bool);
+      result += ProtoAdapter.FLOAT.encodedSizeWithTag(112, value.opt_float);
+      result += ProtoAdapter.DOUBLE.encodedSizeWithTag(113, value.opt_double);
+      result += ProtoAdapter.STRING.encodedSizeWithTag(114, value.opt_string);
+      result += ProtoAdapter.BYTES.encodedSizeWithTag(115, value.opt_bytes);
       result += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(201, value.rep_int32);
       result += ProtoAdapter.UINT32.asRepeated().encodedSizeWithTag(202, value.rep_uint32);
       result += ProtoAdapter.SINT32.asRepeated().encodedSizeWithTag(203, value.rep_sint32);
@@ -2350,6 +2680,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
       if (!Objects.equals(value.null_value, null)) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23, value.null_value);
       if (!Objects.equals(value.empty, null)) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty);
       if (!Objects.equals(value.timestamp, null)) ProtoAdapter.INSTANT.encodeWithTag(writer, 25, value.timestamp);
+      ProtoAdapter.INT32.encodeWithTag(writer, 101, value.opt_int32);
+      ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.opt_uint32);
+      ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.opt_sint32);
+      ProtoAdapter.FIXED32.encodeWithTag(writer, 104, value.opt_fixed32);
+      ProtoAdapter.SFIXED32.encodeWithTag(writer, 105, value.opt_sfixed32);
+      ProtoAdapter.INT64.encodeWithTag(writer, 106, value.opt_int64);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 107, value.opt_uint64);
+      ProtoAdapter.SINT64.encodeWithTag(writer, 108, value.opt_sint64);
+      ProtoAdapter.FIXED64.encodeWithTag(writer, 109, value.opt_fixed64);
+      ProtoAdapter.SFIXED64.encodeWithTag(writer, 110, value.opt_sfixed64);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 111, value.opt_bool);
+      ProtoAdapter.FLOAT.encodeWithTag(writer, 112, value.opt_float);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 113, value.opt_double);
+      ProtoAdapter.STRING.encodeWithTag(writer, 114, value.opt_string);
+      ProtoAdapter.BYTES.encodeWithTag(writer, 115, value.opt_bytes);
       ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
       ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32);
       ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32);
@@ -2452,6 +2797,21 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
           case 23: builder.null_value((Void) ProtoAdapter.STRUCT_NULL.decode(reader)); break;
           case 24: builder.empty(ProtoAdapter.EMPTY.decode(reader)); break;
           case 25: builder.timestamp(ProtoAdapter.INSTANT.decode(reader)); break;
+          case 101: builder.opt_int32(ProtoAdapter.INT32.decode(reader)); break;
+          case 102: builder.opt_uint32(ProtoAdapter.UINT32.decode(reader)); break;
+          case 103: builder.opt_sint32(ProtoAdapter.SINT32.decode(reader)); break;
+          case 104: builder.opt_fixed32(ProtoAdapter.FIXED32.decode(reader)); break;
+          case 105: builder.opt_sfixed32(ProtoAdapter.SFIXED32.decode(reader)); break;
+          case 106: builder.opt_int64(ProtoAdapter.INT64.decode(reader)); break;
+          case 107: builder.opt_uint64(ProtoAdapter.UINT64.decode(reader)); break;
+          case 108: builder.opt_sint64(ProtoAdapter.SINT64.decode(reader)); break;
+          case 109: builder.opt_fixed64(ProtoAdapter.FIXED64.decode(reader)); break;
+          case 110: builder.opt_sfixed64(ProtoAdapter.SFIXED64.decode(reader)); break;
+          case 111: builder.opt_bool(ProtoAdapter.BOOL.decode(reader)); break;
+          case 112: builder.opt_float(ProtoAdapter.FLOAT.decode(reader)); break;
+          case 113: builder.opt_double(ProtoAdapter.DOUBLE.decode(reader)); break;
+          case 114: builder.opt_string(ProtoAdapter.STRING.decode(reader)); break;
+          case 115: builder.opt_bytes(ProtoAdapter.BYTES.decode(reader)); break;
           case 201: builder.rep_int32.add(ProtoAdapter.INT32.decode(reader)); break;
           case 202: builder.rep_uint32.add(ProtoAdapter.UINT32.decode(reader)); break;
           case 203: builder.rep_sint32.add(ProtoAdapter.SINT32.decode(reader)); break;
