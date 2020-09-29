@@ -16,6 +16,7 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
+import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -85,9 +86,12 @@ class WirePlugin : Plugin<Project> {
       "Missing either the Java, Kotlin, or Android plugin"
     }
 
-    project.tasks.register(PARENT_TASK) {
-      it.group = GROUP
-      it.description = "Aggregation task which runs every generation task for every given source"
+    // TODO(benoit) Create parent tasks for Android too once variants are supported.
+    if (!android.get()) {
+      project.tasks.register(PARENT_TASK) {
+        it.group = GROUP
+        it.description = "Aggregation task which runs every generation task for every given source"
+      }
     }
 
     val outputs = extension.outputs.toMutableList()
@@ -119,76 +123,146 @@ class WirePlugin : Plugin<Project> {
     //   generatedSourcesDirectory.deleteRecursively()
     // }
 
-    val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
-    for (generatedSourcesDirectory in generatedSourcesDirectories) {
-      common?.sourceDirectorySet
-          ?.srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
+    if (android.get()) {
+      registerAndroidWireTask(outputs)
+    } else {
+      val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
+      for (generatedSourcesDirectory in generatedSourcesDirectories) {
+        common?.sourceDirectorySet
+            ?.srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
+      }
+      sources.forEach { source ->
+        registerSourcedWireTask(source, outputs, generatedSourcesDirectories, common != null)
+      }
     }
-    sources.forEach { source ->
-      if (common == null) {
-        for (generatedSourcesDirectory in generatedSourcesDirectories) {
-          source.sourceDirectorySet
-              .srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
+  }
+
+  // TODO(benoit) Remove that and use `registerSourcedWireTask` once variants are supported.
+  private fun registerAndroidWireTask(outputs: MutableList<WireOutput>) {
+    val sourceInput = WireInput(project.configurations.named("protoSource"))
+    if (extension.sourcePaths.isNotEmpty() ||
+        extension.sourceTrees.isNotEmpty() ||
+        extension.sourceJars.isNotEmpty()) {
+      sourceInput.addTrees(project, extension.sourceTrees)
+      sourceInput.addJars(project, extension.sourceJars)
+      sourceInput.addPaths(project, extension.sourcePaths)
+    } else {
+      sourceInput.addPaths(project, setOf("src/main/proto"))
+    }
+
+    val protoInput = WireInput(project.configurations.named("protoPath"))
+    if (extension.protoPaths.isNotEmpty() ||
+        extension.protoTrees.isNotEmpty() ||
+        extension.protoJars.isNotEmpty()) {
+      protoInput.addTrees(project, extension.protoTrees)
+      protoInput.addJars(project, extension.protoJars)
+      protoInput.addPaths(project, extension.protoPaths)
+    }
+
+    val targets = outputs.map { it.toTarget() }
+    project.tasks.register("generateProtos",
+        WireTask::class.java) { task: WireTask ->
+      task.group = GROUP
+      task.description = "Generate Wire protocol buffer implementation for .proto files"
+      task.source(sourceInput.configuration)
+
+      if (task.logger.isDebugEnabled) {
+        sourceInput.debug(task.logger)
+        protoInput.debug(task.logger)
+      }
+      task.outputDirectories = outputs.map { output -> File(output.out!!) }
+      task.source(sourceInput.configuration)
+      task.sourceInput.set(sourceInput.toLocations())
+      task.protoInput.set(protoInput.toLocations())
+      task.roots = extension.roots.toList()
+      task.prunes = extension.prunes.toList()
+      task.moves = extension.moves.toList()
+      task.sinceVersion = extension.sinceVersion
+      task.untilVersion = extension.untilVersion
+      task.onlyVersion = extension.onlyVersion
+      task.rules = extension.rules
+      task.targets = targets
+      task.permitPackageCycles = extension.permitPackageCycles
+    }
+
+    for (output in outputs) {
+      if (output is JavaOutput) {
+        (project.tasks.named("compileJava") as TaskProvider<JavaCompile>).configure {
+          it.source(output.out!!)
         }
       }
+    }
+  }
 
-      val sourceInput = WireInput(project.configurations.named("protoSource"))
-      if (extension.sourcePaths.isNotEmpty() ||
-          extension.sourceTrees.isNotEmpty() ||
-          extension.sourceJars.isNotEmpty()) {
-        sourceInput.addTrees(project, extension.sourceTrees)
-        sourceInput.addJars(project, extension.sourceJars)
-        sourceInput.addPaths(project, extension.sourcePaths)
-      } else {
-        sourceInput.addPaths(project, setOf("src/main/proto"))
+  private fun registerSourcedWireTask(
+    source: Source,
+    outputs: MutableList<WireOutput>,
+    generatedSourcesDirectories: Set<File>,
+    commonPlatformType: Boolean,
+  ) {
+    if (!commonPlatformType) {
+      for (generatedSourcesDirectory in generatedSourcesDirectories) {
+        source.sourceDirectorySet
+            .srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
       }
+    }
 
-      val protoInput = WireInput(project.configurations.named("protoPath"))
-      if (extension.protoPaths.isNotEmpty() ||
-          extension.protoTrees.isNotEmpty() ||
-          extension.protoJars.isNotEmpty()) {
-        protoInput.addTrees(project, extension.protoTrees)
-        protoInput.addJars(project, extension.protoJars)
-        protoInput.addPaths(project, extension.protoPaths)
-      }
+    val sourceInput = WireInput(project.configurations.named("protoSource"))
+    if (extension.sourcePaths.isNotEmpty() ||
+        extension.sourceTrees.isNotEmpty() ||
+        extension.sourceJars.isNotEmpty()) {
+      sourceInput.addTrees(project, extension.sourceTrees)
+      sourceInput.addJars(project, extension.sourceJars)
+      sourceInput.addPaths(project, extension.sourcePaths)
+    } else {
+      sourceInput.addPaths(project, setOf("src/main/proto"))
+    }
 
-      val targets = outputs.map { it.toTarget() }
-      val task =
-          project.tasks.register("generate${source.name.capitalize()}Protos",
-              WireTask::class.java) { task: WireTask ->
-            task.group = GROUP
-            task.description = "Generate protobuf implementation for ${source.name}"
-            task.source(sourceInput.configuration)
+    val protoInput = WireInput(project.configurations.named("protoPath"))
+    if (extension.protoPaths.isNotEmpty() ||
+        extension.protoTrees.isNotEmpty() ||
+        extension.protoJars.isNotEmpty()) {
+      protoInput.addTrees(project, extension.protoTrees)
+      protoInput.addJars(project, extension.protoJars)
+      protoInput.addPaths(project, extension.protoPaths)
+    }
 
-            if (task.logger.isDebugEnabled) {
-              sourceInput.debug(task.logger)
-              protoInput.debug(task.logger)
-            }
-            task.outputDirectories = outputs.map { output -> File(output.out!!) }
-            task.sourceInput.set(sourceInput.toLocations())
-            task.protoInput.set(protoInput.toLocations())
-            task.roots = extension.roots.toList()
-            task.prunes = extension.prunes.toList()
-            task.moves = extension.moves.toList()
-            task.sinceVersion = extension.sinceVersion
-            task.untilVersion = extension.untilVersion
-            task.onlyVersion = extension.onlyVersion
-            task.rules = extension.rules
-            task.targets = targets
-            task.permitPackageCycles = extension.permitPackageCycles
+    val targets = outputs.map { it.toTarget() }
+    val task =
+        project.tasks.register("generate${source.name.capitalize()}Protos",
+            WireTask::class.java) { task: WireTask ->
+          task.group = GROUP
+          task.description = "Generate protobuf implementation for ${source.name}"
+          task.source(sourceInput.configuration)
+
+          if (task.logger.isDebugEnabled) {
+            sourceInput.debug(task.logger)
+            protoInput.debug(task.logger)
           }
+          task.outputDirectories = outputs.map { output -> File(output.out!!) }
+          task.sourceInput.set(sourceInput.toLocations())
+          task.protoInput.set(protoInput.toLocations())
+          task.roots = extension.roots.toList()
+          task.prunes = extension.prunes.toList()
+          task.moves = extension.moves.toList()
+          task.sinceVersion = extension.sinceVersion
+          task.untilVersion = extension.untilVersion
+          task.onlyVersion = extension.onlyVersion
+          task.rules = extension.rules
+          task.targets = targets
+          task.permitPackageCycles = extension.permitPackageCycles
+        }
 
-      project.tasks.named(PARENT_TASK).configure {
-        it.dependsOn(task)
-      }
+    project.tasks.named(PARENT_TASK).configure {
+      it.dependsOn(task)
+    }
 
-      source.registerTaskDependency(task)
-      for (output in outputs) {
-        // TODO(Benoit) Why do I need this?
-        if (output is JavaOutput) {
-          (project.tasks.named("compileJava") as TaskProvider<JavaCompile>).configure {
-            it.source(output.out!!)
-          }
+    source.registerTaskDependency(task)
+    for (output in outputs) {
+      // TODO(Benoit) Why do I need this?
+      if (output is JavaOutput) {
+        (project.tasks.named("compileJava") as TaskProvider<JavaCompile>).configure {
+          it.source(output.out!!)
         }
       }
     }

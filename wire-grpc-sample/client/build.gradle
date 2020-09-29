@@ -24,6 +24,7 @@ wire {
   }
 
   kotlin {
+    out 'src/main/java'
     rpcCallStyle = 'suspending'
     rpcRole = 'client'
     singleMethodServices = false
