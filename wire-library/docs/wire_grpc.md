@@ -1,5 +1,5 @@
 Wire gRPC
-=============================
+=========
 
 The Wire compiler will generate interfaces for your service RPCs defined in your protobuf schema;
 under the condition that the target is set to Kotlin.
@@ -137,6 +137,83 @@ interface RouteGuideServer : Service {
 ```
 The server can use Kotlin coroutines' suspend and Channels mechanisms to execute suspending network
 calls.
+
+Implementing Client Interfaces
+------------------------------
+
+Wire has helper functions to make it easier to implement its client interfaces. This can be
+particularly useful for testing. It supports both streaming and non-streaming APIs in Kotlin:
+
+```kotlin
+class FakeRouteGuideClient : RouteGuideClient {
+  override fun GetFeature(): GrpcCall<Point, Feature> {
+    return GrpcCall { request: Point ->
+      return@GrpcCall Feature(name = "test", location = request)
+    }
+  }
+
+  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> {
+    return GrpcStreamingCall { requests: ReceiveChannel<RouteNote>, responses: SendChannel<RouteNote> ->
+      try {
+        requests.consumeEach { routeNote: RouteNote ->
+          responses.send(RouteNote(message = "ACK: ${routeNote.message}"))
+        }
+      } finally {
+        responses.close()
+      }
+    }
+  }
+
+  ...
+}
+```
+
+The `GrpcCall` and `GrpcStreamingCall` functions are well suited to expression functions:
+
+```kotlin
+class FakeRouteGuideClient : RouteGuideClient {
+  override fun GetFeature() =
+      GrpcCall<Point, Feature> { request ->
+        return@GrpcCall Feature(name = "test", location = request)
+      }
+
+  override fun RouteChat() =
+      GrpcStreamingCall<RouteNote, RouteNote> { requests, responses ->
+        try {
+          requests.consumeEach { routeNote ->
+            responses.send(RouteNote(message = "ACK: ${routeNote.message}"))
+          }
+        } finally {
+          responses.close()
+        }
+      }
+
+  ...
+}
+```
+
+The client interface may also be implemented in Java. Wire only offers a non-streaming helper
+function. The `GrpcStreamingCall` above uses coroutines which is Kotlin-only.
+
+```java
+public class FakeRouteGuideClient implements RouteGuideClient {
+  @Override public GrpcCall<Point, Feature> GetFeature() {
+    return GrpcCalls.grpcCall(new Function1<Point, Feature>() {
+      @Override public Feature invoke(Point request) {
+        return new Feature.Builder()
+            .name("test")
+            .location(request)
+            .build();
+      }
+    });
+  }
+
+  ...
+}
+```
+
+These similarly interact nicely with Java lambdas.
+
 
 Sample
 ------
