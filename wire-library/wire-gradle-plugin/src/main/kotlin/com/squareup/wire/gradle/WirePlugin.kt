@@ -82,7 +82,7 @@ class WirePlugin : Plugin<Project> {
     if (android.get() && !afterAndroid) return
 
     check(android.get() || java.get() || kotlin.get()) {
-      "Either the Java, Kotlin, or Android plugin must be applied before the Wire Gradle plugin."
+      "Missing either the Java, Kotlin, or Android plugin"
     }
 
     project.tasks.register(PARENT_TASK) {
@@ -199,7 +199,7 @@ class WirePlugin : Plugin<Project> {
     hasKotlinOutput: Boolean
   ) {
     val isMultiplatform = project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
-    // No need to add a runtime dependency for non-JVM targets.
+    // Only add the dependency for Java and Kotlin.
     if (hasJavaOutput || hasKotlinOutput) {
       if (isMultiplatform) {
         val sourceSets =
@@ -212,7 +212,7 @@ class WirePlugin : Plugin<Project> {
         try {
           project.configurations.getByName("api").dependencies
               .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))
-        } catch (e: UnknownConfigurationException) {
+        } catch (_: UnknownConfigurationException) {
           // No `api` configuration on Java applications.
           project.configurations.getByName("implementation").dependencies
               .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))

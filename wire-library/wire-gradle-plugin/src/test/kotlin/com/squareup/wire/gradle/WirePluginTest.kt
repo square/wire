@@ -35,9 +35,7 @@ class WirePluginTest {
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
     assertThat(result.task(":generateProtos")).isNull()
-    assertThat(result.output).contains(
-        """Either the Java, Kotlin, or Android plugin must be applied before the Wire Gradle plugin."""
-    )
+    assertThat(result.output).contains("Missing either the Java, Kotlin, or Android plugin")
   }
 
   @Test
