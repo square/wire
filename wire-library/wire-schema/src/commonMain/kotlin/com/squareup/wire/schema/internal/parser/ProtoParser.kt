@@ -96,6 +96,8 @@ class ProtoParser internal constructor(
     val location = reader.location()
     val label = reader.readWord()
 
+    // TODO(benoit) Let's better parse the proto keywords. We are pretty weak when field/constants
+    //  are named after any of the label we check here.
     return when {
       label == "package" -> {
         reader.expect(context.permitsPackage(), location) { "'package' in $context" }

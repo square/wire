@@ -24,6 +24,7 @@ import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
+import org.junit.Ignore
 import org.junit.Test
 import java.util.Arrays
 import java.util.LinkedHashMap
@@ -525,6 +526,7 @@ class ProtoParserTest {
         """.trimMargin()
     try {
       ProtoParser.parse(location, proto)
+      fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage(
           "Syntax error in file.proto:2:40: no syntax may follow trailing comment"
@@ -541,6 +543,7 @@ class ProtoParserTest {
         """.trimMargin()
     try {
       ProtoParser.parse(location, proto)
+      fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage(
           "Syntax error in file.proto:2:13: expected '//' or '/*'"
@@ -609,6 +612,7 @@ class ProtoParserTest {
         """.trimMargin()
     try {
       ProtoParser.parse(location, proto)
+      fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage("Syntax error in file.proto:1:1: unexpected syntax: proto4")
     }
@@ -623,6 +627,7 @@ class ProtoParserTest {
         """.trimMargin()
     try {
       ProtoParser.parse(location, proto)
+      fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage("Syntax error in file.proto:2:3: 'syntax' in MESSAGE")
     }
@@ -2406,5 +2411,53 @@ class ProtoParserTest {
         )
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test @Ignore("Broken. See https://github.com/square/wire/issues/1797")
+  fun protoKeywordAsEnumConstants() {
+    val proto = """
+      |enum Foo {
+      |  enum = 0;
+      |  service = 1;
+      |  message = 2;
+      |}
+      |""".trimMargin()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
+            EnumElement(
+                location = location.at(1, 1),
+                name = "Foo",
+                constants = listOf(
+                    EnumConstantElement(location.at(2, 3), "enum", 0),
+                    EnumConstantElement(location.at(3, 3), "service", 1),
+                    EnumConstantElement(location.at(4, 3), "message", 2),
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Ignore("Broken see https://github.com/square/wire/issues/1805")
+  @Test fun ambiguousEnumConstants() {
+    val proto = """
+      |enum Foo {
+      |  ZERO = 0;
+      |  zero = 1;
+      |}
+      |""".trimMargin()
+    // TODO(benoit) should fail. See proto:
+    //  Enum name ZERO has the same name as zero if you ignore case and strip out the enum name
+    //  prefix (if any). This is error-prone and can lead to undefined behavior. Please avoid doing
+    //  this. If you are using allow_alias, please assign the same numeric value to both enums.
+    try {
+      ProtoParser.parse(location, proto)
+      fail()
+    } catch (e: IllegalStateException) {
+      assertThat(e).hasMessage(
+          "TODO"
+      )
+    }
   }
 }
