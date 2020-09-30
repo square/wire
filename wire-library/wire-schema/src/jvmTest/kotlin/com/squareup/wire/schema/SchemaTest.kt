@@ -2433,4 +2433,65 @@ class SchemaTest {
       """.trimMargin())
     }
   }
+
+  @Test fun ambiguousEnumConstants() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+            |enum Foo {
+            |  ZERO = 0;
+            |  zero = 1;
+            |}
+          """.trimMargin())
+          .schema()
+      fail()
+    } catch (e: SchemaException) {
+      assertThat(e).hasMessage(
+          """|Ambiguous constant names (if you are using allow_alias, use the same value for these constants):
+             |  ZERO:0 (/source/message.proto:2:3)
+             |  zero:1 (/source/message.proto:3:3)
+             |  for enum Foo (/source/message.proto:1:1)
+             """.trimMargin()
+      )
+    }
+  }
+
+  @Test fun typeAliasAllowsAmbiguousEnumConstantsIfSameTag() {
+    val schema = RepoBuilder()
+        .add("message.proto", """
+            |enum Foo {
+            |  option allow_alias = true;
+            |  ZERO = 0;
+            |  zero = 0;
+            |}
+          """.trimMargin())
+        .schema()
+
+    val enumType = schema.getType("Foo") as EnumType
+    assertThat(enumType.constant("ZERO")!!.tag).isEqualTo(0)
+    assertThat(enumType.constant("zero")!!.tag).isEqualTo(0)
+  }
+
+  @Test fun typeAliasDoesNotAllowAmbiguousEnumConstantsIfDifferentTag() {
+    try {
+      RepoBuilder()
+          .add("message.proto", """
+            |enum Foo {
+            |  option allow_alias = true;
+            |  ZERO = 0;
+            |  zero = 1;
+            |}
+          """.trimMargin())
+          .schema()
+      fail()
+    } catch (e: SchemaException) {
+      assertThat(e).hasMessage(
+          """|Ambiguous constant names (if you are using allow_alias, use the same value for these constants):
+             |  ZERO:0 (/source/message.proto:3:3)
+             |  zero:1 (/source/message.proto:4:3)
+             |  for enum Foo (/source/message.proto:1:1)
+             """.trimMargin()
+      )
+    }
+  }
 }

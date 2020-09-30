@@ -68,6 +68,7 @@ ext.deps = [
     ],
     'serialization': 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC',
     'reflect': "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}",
+    'stdlib': "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
   ],
   'kaml': 'com.charleskorn.kaml:kaml:0.20.0',
   'misk': "com.squareup.misk:misk:0.11.0",

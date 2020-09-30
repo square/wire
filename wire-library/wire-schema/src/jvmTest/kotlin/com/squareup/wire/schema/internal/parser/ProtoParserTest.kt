@@ -2438,26 +2438,4 @@ class ProtoParserTest {
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
-
-  @Ignore("Broken see https://github.com/square/wire/issues/1805")
-  @Test fun ambiguousEnumConstants() {
-    val proto = """
-      |enum Foo {
-      |  ZERO = 0;
-      |  zero = 1;
-      |}
-      |""".trimMargin()
-    // TODO(benoit) should fail. See proto:
-    //  Enum name ZERO has the same name as zero if you ignore case and strip out the enum name
-    //  prefix (if any). This is error-prone and can lead to undefined behavior. Please avoid doing
-    //  this. If you are using allow_alias, please assign the same numeric value to both enums.
-    try {
-      ProtoParser.parse(location, proto)
-      fail()
-    } catch (e: IllegalStateException) {
-      assertThat(e).hasMessage(
-          "TODO"
-      )
-    }
-  }
 }
