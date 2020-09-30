@@ -1,7 +1,7 @@
 plugins {
   id 'application'
-  id 'com.squareup.wire' // order matters: https://youtrack.jetbrains.com/issue/KT-12715
   id 'org.jetbrains.kotlin.jvm'
+  id 'com.squareup.wire'
 }
 
 mainClassName = 'com.squareup.dinosaurs.Sample'

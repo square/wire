@@ -18,20 +18,12 @@ kotlin {
       nodejs()
     }
   }
-  sourceSets {
-    commonMain {
-      dependencies {
-        implementation "com.squareup.wire:wire-runtime-multiplatform:$VERSION_NAME"
-      }
-    }
-  }
 }
 
 wire {
   kotlin {
   }
 }
-
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
   kotlinOptions {
