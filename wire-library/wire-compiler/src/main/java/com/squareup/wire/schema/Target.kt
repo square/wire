@@ -300,8 +300,8 @@ data class KotlinTarget(
         javaInterop = javaInterop,
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions,
+        rpcRole = rpcRole,
         rpcCallStyle = rpcCallStyle,
-        rpcRole = rpcRole
     )
 
     return object : SchemaHandler {

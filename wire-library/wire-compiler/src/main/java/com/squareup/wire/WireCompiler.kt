@@ -16,6 +16,8 @@
 package com.squareup.wire
 
 import com.google.common.io.Closer
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.CoreLoader.WIRE_RUNTIME_JAR
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.JavaTarget
@@ -34,6 +36,7 @@ import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.Locale
 
 /**
  * Command line interface to the Wire Java generator.
@@ -47,6 +50,8 @@ import java.nio.file.Path
  *   [--kotlin_out=<path>]
  *   [--swift_out=<path>]
  *   [--files=<protos.include>]
+ *   [--rpcRole=<rpc.role>]
+ *   [--rpcCallStyle=<rpc.callStyle>]
  *   [--includes=<message_name>[,<message_name>...]]
  *   [--excludes=<message_name>[,<message_name>...]]
  *   [--quiet]
@@ -95,6 +100,8 @@ class WireCompiler internal constructor(
   val kotlinOut: String?,
   val swiftOut: String?,
   val sourceFileNames: List<String>,
+  val rpcRole: RpcRole,
+  val rpcCallStyle: RpcCallStyle,
   val treeShakingRoots: List<String>,
   val treeShakingRubbish: List<String>,
   val modules: Map<String, WireRun.Module>,
@@ -129,7 +136,9 @@ class WireCompiler internal constructor(
           android = emitAndroid,
           javaInterop = javaInterop,
           emitDeclaredOptions = emitDeclaredOptions,
-          emitAppliedOptions = emitAppliedOptions
+          emitAppliedOptions = emitAppliedOptions,
+          rpcRole = rpcRole,
+          rpcCallStyle = rpcCallStyle
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(
@@ -210,6 +219,8 @@ class WireCompiler internal constructor(
     private const val FILES_FLAG = "--files="
     private const val INCLUDES_FLAG = "--includes="
     private const val EXCLUDES_FLAG = "--excludes="
+    private const val RPC_ROLE_FLAG = "--rpcRole="
+    private const val RPC_CALL_STYLE_FLAG = "--rpcCallStyle="
     private const val MANIFEST_FLAG = "--experimental-module-manifest="
     private const val QUIET_FLAG = "--quiet"
     private const val DRY_RUN_FLAG = "--dry_run"
@@ -260,6 +271,8 @@ class WireCompiler internal constructor(
       var emitAppliedOptions = false
       var permitPackageCycles = false
       var javaInterop = false
+      var rpcRole = RpcRole.CLIENT
+      var rpcCallStyle = RpcCallStyle.SUSPENDING
 
       for (arg in args) {
         when {
@@ -279,6 +292,16 @@ class WireCompiler internal constructor(
 
           arg.startsWith(SWIFT_OUT_FLAG) -> {
             swiftOut = arg.substring(SWIFT_OUT_FLAG.length)
+          }
+  
+          arg.startsWith(RPC_ROLE_FLAG) -> {
+            val value = arg.substring(RPC_ROLE_FLAG.length)
+            rpcRole = RpcRole.valueOf(value.toUpperCase(Locale.getDefault()))
+          }
+  
+          arg.startsWith(RPC_CALL_STYLE_FLAG) -> {
+            val value = arg.substring(RPC_CALL_STYLE_FLAG.length)
+            rpcCallStyle = RpcCallStyle.valueOf(value.toUpperCase(Locale.getDefault()))
           }
 
           arg.startsWith(FILES_FLAG) -> {
@@ -335,7 +358,7 @@ class WireCompiler internal constructor(
       }
 
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, swiftOut,
-          sourceFileNames, treeShakingRoots, treeShakingRubbish, modules, dryRun, namedFilesOnly,
+          sourceFileNames, rpcRole, rpcCallStyle, treeShakingRoots, treeShakingRubbish, modules, dryRun, namedFilesOnly,
           emitAndroid, emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions,
           permitPackageCycles, javaInterop)
     }
