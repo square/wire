@@ -144,7 +144,7 @@ interface SyntaxRules {
       }
 
       override fun jsonName(name: String, declaredJsonName: String?): String {
-        return declaredJsonName ?: camelCase(name, upperCamel = false)
+        return declaredJsonName ?: camelCase(name)
       }
     }
   }

@@ -100,7 +100,6 @@ class WireJsonTest {
     assertJsonEquals(ALL_TYPES_PROTO2_JSON, jsonLibrary.toJson(value, AllTypesProto2::class.java))
   }
 
-  @Ignore("Broken see https://github.com/square/wire/issues/1801")
   @Test fun fieldNamesAreEncodedWithCamelCaseAndDecodedWithEither() {
     val nested = NestedCamelCase.Builder().one_int32(1).build()
     assertThat(jsonLibrary.fromJson("""{"oneInt32":1}""", NestedCamelCase::class.java))
@@ -138,7 +137,7 @@ class WireJsonTest {
         .isEqualTo(CamelCase.Builder()._Rep_int32(listOf(1, 2)).build())
     assertThat(jsonLibrary.fromJson("""{"_Rep_int32":[1, 2]}""", CamelCase::class.java))
         .isEqualTo(CamelCase.Builder()._Rep_int32(listOf(1, 2)).build())
-    assertThat(jsonLibrary.fromJson("""{"iDitItMyWAy":"frank"}""", CamelCase::class.java))
+    assertThat(jsonLibrary.fromJson("""{"IDitItMyWAy":"frank"}""", CamelCase::class.java))
         .isEqualTo(CamelCase.Builder().IDitIt_my_wAy("frank").build())
     assertThat(jsonLibrary.fromJson("""{"IDitIt_my_wAy":"frank"}""", CamelCase::class.java))
         .isEqualTo(CamelCase.Builder().IDitIt_my_wAy("frank").build())
@@ -163,7 +162,7 @@ class WireJsonTest {
         |    1,
         |    2
         |  ],
-        |  "iDitItMyWAy": "frank",
+        |  "IDitItMyWAy": "frank",
         |  "mapInt32Int32": {
         |    "1": 2
         |  }

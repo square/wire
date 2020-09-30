@@ -26,8 +26,8 @@ actual typealias ObjectStreamException = java.io.ObjectStreamException
 actual typealias ProtocolException = java.net.ProtocolException
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
-actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T>
-    = Collections.unmodifiableList(this)
+actual inline fun <T> MutableList<T>.toUnmodifiableList(): List<T> =
+    Collections.unmodifiableList(this)
 
 @Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
 actual inline fun <K, V> MutableMap<K, V>.toUnmodifiableMap(): Map<K, V> =
@@ -39,9 +39,6 @@ actual fun camelCase(string: String, upperCamel: Boolean): String {
     var uppercase = upperCamel
     while (index < string.length) {
       var codePoint = string.codePointAt(index)
-      if (index == 0) {
-        if (codePoint in 'A'.toInt()..'Z'.toInt()) codePoint -= 'A' - 'a'
-      }
 
       index += Character.charCount(codePoint)
 
