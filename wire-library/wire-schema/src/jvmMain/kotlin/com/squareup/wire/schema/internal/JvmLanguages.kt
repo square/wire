@@ -62,6 +62,10 @@ fun builtInAdapterString(type: ProtoType): String? {
 fun eligibleAsAnnotationMember(schema: Schema, field: Field): Boolean {
   val type = field.type!!
 
+  if (type == ProtoType.BYTES) {
+    return false
+  }
+
   if (!type.isScalar && schema.getType(type) !is EnumType) {
     return false
   }
