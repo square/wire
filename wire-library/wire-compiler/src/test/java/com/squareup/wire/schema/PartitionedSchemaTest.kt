@@ -111,6 +111,53 @@ class ManifestPartitionTest {
     // C is generated in feature because common's prunes do not apply and A depends on it.
     assertThat(featurePartition.types).contains(ProtoType.get("C"))
   }
+
+  @Test fun duplicatedTypesReportedOnce() {
+    val schema = RepoBuilder()
+      .add("example.proto", """
+          |syntax = "proto2";
+          |
+          |message A {
+          |  optional B b = 1;
+          |  optional C c = 2;
+          |}
+          |message B {
+          |  optional C c = 1;
+          |}
+          |message C {
+          |}
+          |""".trimMargin())
+      .schema()
+
+    val modules = mapOf(
+      "common" to Module(
+        pruningRules = PruningRules.Builder()
+          .addRoot("B")
+          .prune("C")
+          .build()
+      ),
+      "feature1" to Module(
+        dependencies = setOf("common"),
+        pruningRules = PruningRules.Builder()
+          .addRoot("A")
+          .build()
+      ),
+      "feature2" to Module(
+        dependencies = setOf("common"),
+        pruningRules = PruningRules.Builder()
+          .addRoot("A")
+          .build()
+      )
+    )
+
+    val partitionedSchema = schema.partition(modules)
+
+    assertThat(partitionedSchema.warnings).containsExactly("""
+      |C is generated twice in peer modules feature1 and feature2.
+      |  Consider moving this type into a common dependency of both modules.
+      |  To suppress this warning, explicitly add the type to the roots of both modules.
+    """.trimMargin())
+  }
 }
 
 private fun Schema.getMessage(name: String): MessageType {
