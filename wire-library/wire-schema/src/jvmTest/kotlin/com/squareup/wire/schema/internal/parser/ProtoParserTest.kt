@@ -2438,4 +2438,58 @@ class ProtoParserTest {
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
+
+  @Test fun oneOfOptions() {
+    val proto = """
+        |message SearchRequest {
+        |  required string query = 1;
+        |  oneof page_info {
+        |    option (my_option) = true;
+        |    int32 page_number = 2;
+        |    int32 result_per_page = 3;
+        |  }
+        |}
+    """.trimMargin()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
+            MessageElement(
+                location = location.at(1, 1),
+                name = "SearchRequest",
+                fields = listOf(
+                    FieldElement(
+                        location = location.at(2, 3),
+                        label = REQUIRED,
+                        type = "string",
+                        name = "query",
+                        tag = 1
+                    )
+                ),
+                oneOfs = listOf(
+                    OneOfElement(
+                        name = "page_info",
+                        fields = listOf(
+                            FieldElement(
+                                location = location.at(5, 5),
+                                type = "int32",
+                                name = "page_number",
+                                tag = 2
+                            ),
+                            FieldElement(
+                                location = location.at(6, 5),
+                                type = "int32",
+                                name = "result_per_page",
+                                tag = 3
+                            )
+                        ),
+                        options = listOf(
+                            OptionElement.create("my_option", Kind.BOOLEAN, value = "true",
+                                isParenthesized = true))
+                    )
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
 }

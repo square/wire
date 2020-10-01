@@ -407,6 +407,7 @@ class ProtoParser internal constructor(
     val name = reader.readName()
     val fields = mutableListOf<FieldElement>()
     val groups = mutableListOf<GroupElement>()
+    val options = mutableListOf<OptionElement>()
 
     reader.require('{')
     while (true) {
@@ -416,6 +417,10 @@ class ProtoParser internal constructor(
       val location = reader.location()
       when (val type = reader.readDataType()) {
         "group" -> groups.add(readGroup(location, nestedDocumentation, null))
+        "option" -> {
+          options.add(OptionReader(reader).readOption('='))
+          reader.require(';')
+        }
         else -> fields.add(readField(location, nestedDocumentation, null, type))
       }
     }
@@ -424,7 +429,8 @@ class ProtoParser internal constructor(
         name = name,
         documentation = documentation,
         fields = fields,
-        groups = groups
+        groups = groups,
+        options = options,
     )
   }
 

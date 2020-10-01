@@ -655,4 +655,35 @@ class MessageElementTest {
         |""".trimMargin()
     assertThat(field.toSchema()).isEqualTo(expected)
   }
+
+  @Test fun oneOfWithOptions() {
+    val expected = """
+        |oneof page_info {
+        |  option (my_option) = true;
+        |
+        |  int32 page_number = 2;
+        |  int32 result_per_page = 3;
+        |}
+        |""".trimMargin()
+    val oneOf = OneOfElement(
+        name = "page_info",
+        fields = listOf(
+            FieldElement(
+                location = location.at(4, 5),
+                type = "int32",
+                name = "page_number",
+                tag = 2
+            ),
+            FieldElement(
+                location = location.at(5, 5),
+                type = "int32",
+                name = "result_per_page",
+                tag = 3
+            )
+        ),
+        options = listOf(
+            OptionElement.create("my_option", Kind.BOOLEAN, "true", true))
+    )
+    assertThat(oneOf.toSchema()).isEqualTo(expected)
+  }
 }
