@@ -22,12 +22,19 @@ data class OneOfElement(
   val name: String,
   val documentation: String = "",
   val fields: List<FieldElement> = emptyList(),
-  val groups: List<GroupElement> = emptyList()
+  val groups: List<GroupElement> = emptyList(),
+  val options: List<OptionElement> = emptyList(),
 ) {
   fun toSchema() = buildString {
     appendDocumentation(documentation)
     append("oneof $name {")
 
+    if (options.isNotEmpty()) {
+      append('\n')
+      for (option in options) {
+        appendIndented(option.toSchemaDeclaration())
+      }
+    }
     if (fields.isNotEmpty()) {
       append('\n')
       for (field in fields) {
