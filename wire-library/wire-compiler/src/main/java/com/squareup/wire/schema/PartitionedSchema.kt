@@ -87,11 +87,9 @@ internal fun Schema.partition(modules: Map<String, Module>): PartitionedSchema {
 
   val warnings = mutableListOf<String>()
   for (subgraph in moduleGraph.disjointGraphs()) {
-    for (currentName in subgraph) {
-      for (otherName in subgraph) {
-        if (otherName == currentName) {
-          break
-        }
+    val subgraphList = subgraph.toList()
+    for ((index, currentName) in subgraphList.withIndex()) {
+      for (otherName in subgraphList.drop(index + 1)) {
         val currentTypes = partitions.getValue(currentName).types
         val otherTypes = partitions.getValue(otherName).types
         val duplicates = currentTypes.intersect(otherTypes)
