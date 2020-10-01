@@ -36,9 +36,6 @@ actual fun camelCase(string: String, upperCamel: Boolean): String {
     var uppercase = upperCamel
     while (index < string.length) {
       var char = string[index]
-      if (index == 0) {
-        if (char in 'A'..'Z') char -= 'A' - 'a'
-      }
 
       index++
 

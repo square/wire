@@ -39,7 +39,7 @@ class CamelCase(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY,
-    jsonName = "iDitItMyWAy"
+    jsonName = "IDitItMyWAy"
   )
   @JvmField
   val IDitIt_my_wAy: String = "",

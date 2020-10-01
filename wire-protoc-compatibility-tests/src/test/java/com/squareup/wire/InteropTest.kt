@@ -128,7 +128,6 @@ class InteropTest {
     max.check(InteropUint64J2(-1L))
   }
 
-  @Ignore("broken! https://github.com/square/wire/issues/1801")
   @Test fun `camel case`() {
     val checker = InteropChecker(
         protocMessage = InteropCamelCaseP3.newBuilder()
@@ -136,18 +135,22 @@ class InteropTest {
             .setAB("2")
             .setCccDdd("3")
             .setEEeeFfGGg("4")
+            .setABC("5")
+            .setGHI("6")
+            .setKLM("7")
+            .setTUV("8")
+            .setXYZ("9")
             .build(),
-        canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","eEeeFfGGg":"4"}""",
+        canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
         alternateJsons = listOf(
-            """{"hello_world": "1", "a__b": "2", "_Ccc_ddd": "3", "EEee_ff_gGg": "4"}""",
-        )
+            """{"hello_world": "1", "a__b": "2", "_Ccc_ddd": "3", "EEee_ff_gGg": "4", "a_b_c": "5", "GHI": "6", "K_L_M": "7", "__T__U__V__": "8", "_x_y_z_": "9"}""",
+        ),
     )
 
-    checker.check(InteropCamelCaseK3("1", "2", "3", "4"))
-    checker.check(InteropCamelCaseJ3("1", "2", "3", "4"))
+    checker.check(InteropCamelCaseK3("1", "2", "3", "4", "5", "6", "7", "8", "9"))
+    checker.check(InteropCamelCaseJ3("1", "2", "3", "4", "5", "6", "7", "8", "9"))
   }
 
-  @Ignore("broken! https://github.com/square/wire/issues/1801")
   @Test fun `camel case proto 2`() {
     val checker = InteropChecker(
         protocMessage = InteropCamelCaseP2.newBuilder()
@@ -155,17 +158,22 @@ class InteropTest {
             .setAB("2")
             .setCccDdd("3")
             .setEEeeFfGGg("4")
+            .setABC("5")
+            .setGHI("6")
+            .setKLM("7")
+            .setTUV("8")
+            .setXYZ("9")
             .build(),
-        canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","eEeeFfGGg":"4"}""",
-        wireCanonicalJson = """{"hello_world":"1","a__b":"2","_Ccc_ddd":"3","EEee_ff_gGg":"4"}""",
+        canonicalJson = """{"helloWorld":"1","aB":"2","CccDdd":"3","EEeeFfGGg":"4","aBC":"5","GHI":"6","KLM":"7","TUV":"8","XYZ":"9"}""",
+        """{"hello_world":"1","a__b":"2","_Ccc_ddd":"3","EEee_ff_gGg":"4","a_b_c":"5","GHI":"6","K_L_M":"7","__T__U__V__":"8","_x_y_z_":"9"}""",
         alternateJsons = listOf(
             // TODO(bquenaudon): support reading camelCase proto2 messages.
             // """{"helloWorld":"1","aB":"2","CccDdd":"3","eEeeFfGGg":"4"}""",
         )
     )
 
-    checker.check(InteropCamelCaseK2("1", "2", "3", "4"))
-    checker.check(InteropCamelCaseJ2("1", "2", "3", "4"))
+    checker.check(InteropCamelCaseK2("1", "2", "3", "4", "5", "6", "7", "8", "9"))
+    checker.check(InteropCamelCaseJ2("1", "2", "3", "4", "5", "6", "7", "8", "9"))
   }
 
   @Test fun `json names`() {

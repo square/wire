@@ -32,6 +32,11 @@ message InteropCamelCase {
   optional string a__b = 2;
   optional string _Ccc_ddd = 3;
   optional string EEee_ff_gGg = 4;
+  optional string a_b_c = 5;
+  optional string GHI = 6;
+  optional string K_L_M = 7;
+  optional string __T__U__V__ = 8;
+  optional string _x_y_z_ = 9;
 }
 
 message InteropJsonName {

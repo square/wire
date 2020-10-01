@@ -40,7 +40,7 @@ public final class CamelCase extends Message<CamelCase, CamelCase.Builder> {
       tag = 3,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.OMIT_IDENTITY,
-      jsonName = "iDitItMyWAy"
+      jsonName = "IDitItMyWAy"
   )
   public final String IDitIt_my_wAy;
 
