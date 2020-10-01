@@ -59,7 +59,35 @@ data class EnumType(
     if ("true" != allowAlias) {
       validateTagUniqueness(linker)
     }
+    validateTagNameAmbiguity("true" == allowAlias, linker)
     syntaxRules.validateEnumConstants(constants, linker.errors)
+  }
+
+  private fun validateTagNameAmbiguity(allowAlias: Boolean, linker: Linker) {
+    val nameToConstants: Map<String, List<EnumConstant>> =
+        constants.groupBy {
+          buildString(it.name.length) {
+            for (char in it.name) {
+              if (char in 'A'..'Z') append(char - ('A' - 'a'))
+              else append(char)
+            }
+          }
+        }
+
+    for ((_, constants) in nameToConstants) {
+      if (constants.size > 1) {
+        if (allowAlias && constants.groupBy { it.tag }.size == 1) continue
+
+        val error = buildString {
+          append("Ambiguous constant names (if you are using allow_alias, use the same value for " +
+              "these constants):")
+          constants.forEach { it ->
+            append("\n  ${it.name}:${it.tag} (${it.location})")
+          }
+        }
+        linker.errors += error
+      }
+    }
   }
 
   private fun validateTagUniqueness(linker: Linker) {
