@@ -24,5 +24,5 @@ interface TypeElement {
   val documentation: String
   val options: List<OptionElement>
   val nestedTypes: List<TypeElement>
-  fun toSchema(): String
+  fun toSchema(compact: Boolean = false): String
 }

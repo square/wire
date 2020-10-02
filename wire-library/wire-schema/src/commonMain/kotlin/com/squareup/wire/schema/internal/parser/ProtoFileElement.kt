@@ -31,7 +31,7 @@ data class ProtoFileElement(
   val extendDeclarations: List<ExtendElement> = emptyList(),
   val options: List<OptionElement> = emptyList()
 ) {
-  fun toSchema() = buildString {
+  fun toSchema(compact: Boolean = false) = buildString {
     append("// ")
     append(location.withPathOnly())
     append('\n')
@@ -58,20 +58,35 @@ data class ProtoFileElement(
       }
     }
     if (types.isNotEmpty()) {
-      for (typeElement in types) {
+      if (compact) {
         append('\n')
+      }
+      for (typeElement in types) {
+        if (!compact) {
+          append('\n')
+        }
         append(typeElement.toSchema())
       }
     }
     if (extendDeclarations.isNotEmpty()) {
-      for (extendDeclaration in extendDeclarations) {
+      if (compact) {
         append('\n')
+      }
+      for (extendDeclaration in extendDeclarations) {
+        if (!compact) {
+          append('\n')
+        }
         append(extendDeclaration.toSchema())
       }
     }
     if (services.isNotEmpty()) {
-      for (service in services) {
+      if (compact) {
         append('\n')
+      }
+      for (service in services) {
+        if (!compact) {
+          append('\n')
+        }
         append(service.toSchema())
       }
     }

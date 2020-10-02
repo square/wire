@@ -31,7 +31,7 @@ data class MessageElement(
   val extensions: List<ExtensionsElement> = emptyList(),
   val groups: List<GroupElement> = emptyList()
 ) : TypeElement {
-  override fun toSchema() = buildString {
+  override fun toSchema(compact: Boolean) = buildString {
     appendDocumentation(documentation)
     append("message $name {")
 
@@ -48,20 +48,35 @@ data class MessageElement(
       }
     }
     if (fields.isNotEmpty()) {
-      for (field in fields) {
+      if (compact) {
         append('\n')
+      }
+      for (field in fields) {
+        if (!compact) {
+          append('\n')
+        }
         appendIndented(field.toSchema())
       }
     }
     if (oneOfs.isNotEmpty()) {
-      for (oneOf in oneOfs) {
+      if (compact) {
         append('\n')
+      }
+      for (oneOf in oneOfs) {
+        if (!compact) {
+          append('\n')
+        }
         appendIndented(oneOf.toSchema())
       }
     }
     if (groups.isNotEmpty()) {
-      for (group in groups) {
+      if (compact) {
         append('\n')
+      }
+      for (group in groups) {
+        if (!compact) {
+          append('\n')
+        }
         appendIndented(group.toSchema())
       }
     }
@@ -72,8 +87,13 @@ data class MessageElement(
       }
     }
     if (nestedTypes.isNotEmpty()) {
-      for (type in nestedTypes) {
+      if (compact) {
         append('\n')
+      }
+      for (type in nestedTypes) {
+        if (!compact) {
+          append('\n')
+        }
         appendIndented(type.toSchema())
       }
     }
