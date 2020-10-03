@@ -24,6 +24,7 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Headers.Companion.headersOf
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
@@ -142,21 +143,37 @@ private fun GrpcResponse.checkGrpcResponse() {
       contentType == null ||
       contentType.type != "application" ||
       contentType.subtype != "grpc" && contentType.subtype != "grpc+proto") {
-    throw IOException("grpc failed: status=${code}, content-type=$contentType")
+    throw IOException("expected gRPC but was HTTP status=$code, content-type=$contentType")
   }
 }
 
 /** Returns an exception if the gRPC call didn't have a grpc-status of 0. */
 internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = null): IOException? {
-  val grpcStatus = trailers().get("grpc-status") ?: header("grpc-status")
-  return when (grpcStatus) {
-    "0" -> {
-      suppressed
-    }
-    else -> {
-      // also see https://github.com/grpc/grpc-go/blob/master/codes/codes.go#L31
-      val grpcMessage = trailers().get("grpc-message") ?: header("grpc-message")
-      IOException("grpc failed status=${code}, grpc-status=$grpcStatus, grpc-message=$grpcMessage", suppressed)
-    }
+  var trailers = headersOf()
+  var transportException = suppressed
+  try {
+    trailers = trailers()
+  } catch (e: IOException) {
+    if (transportException == null) transportException = e
   }
+
+  val grpcStatus = trailers["grpc-status"] ?: header("grpc-status")
+  val grpcMessage = trailers["grpc-message"] ?: header("grpc-message")
+
+  if (transportException != null) {
+    return IOException(
+        "gRPC transport failure" +
+            " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)",
+        transportException
+    )
+  }
+
+  if (grpcStatus != "0") {
+    return IOException(
+        "gRPC call failure" +
+            " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
+    )
+  }
+
+  return null // Success.
 }

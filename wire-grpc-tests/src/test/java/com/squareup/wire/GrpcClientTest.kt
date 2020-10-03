@@ -65,6 +65,7 @@ class GrpcClientTest {
   private lateinit var okhttpClient: OkHttpClient
   private lateinit var grpcClient: GrpcClient
   private lateinit var routeGuideService: RouteGuideClient
+  private lateinit var incompatibleRouteGuideService: IncompatibleRouteGuideClient
   private var callReference = AtomicReference<Call>()
 
   /** This is a pass through interceptor that tests can replace without extra plumbing. */
@@ -86,6 +87,7 @@ class GrpcClientTest {
         .baseUrl(mockService.url)
         .build()
     routeGuideService = grpcClient.create(RouteGuideClient::class)
+    incompatibleRouteGuideService = IncompatibleRouteGuideClient(grpcClient)
   }
 
   @After
@@ -754,7 +756,9 @@ class GrpcClientTest {
         grpcCall.execute(Point(latitude = 5, longitude = 6))
         fail()
       } catch (expected: IOException) {
-        assertThat(expected).hasMessage("grpc failed status=200, grpc-status=null, grpc-message=null")
+        assertThat(expected).hasMessage(
+            "gRPC call failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+        )
       }
     }
   }
@@ -773,7 +777,9 @@ class GrpcClientTest {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
     } catch (expected: IOException) {
-      assertThat(expected).hasMessage("grpc failed status=200, grpc-status=null, grpc-message=null")
+      assertThat(expected).hasMessage(
+          "gRPC call failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+      )
     }
   }
 
@@ -791,7 +797,9 @@ class GrpcClientTest {
     grpcCall.enqueue(Point(latitude = 5, longitude = 6),
         object : GrpcCall.Callback<Point, Feature> {
           override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
-            assertThat(exception).hasMessage("grpc failed status=200, grpc-status=null, grpc-message=null")
+            assertThat(exception).hasMessage(
+                "gRPC call failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+            )
             latch.countDown()
           }
 
@@ -824,7 +832,9 @@ class GrpcClientTest {
         grpcCall.execute(Point(latitude = 5, longitude = 6))
         fail()
       } catch (expected: IOException) {
-        assertThat(expected).hasMessage("grpc failed: status=500, content-type=application/grpc")
+        assertThat(expected).hasMessage(
+            "expected gRPC but was HTTP status=500, content-type=application/grpc"
+        )
       }
     }
   }
@@ -849,7 +859,9 @@ class GrpcClientTest {
         grpcCall.execute(Point(latitude = 5, longitude = 6))
         fail()
       } catch (expected: IOException) {
-        assertThat(expected).hasMessage("grpc failed: status=200, content-type=text/plain")
+        assertThat(expected).hasMessage(
+            "expected gRPC but was HTTP status=200, content-type=text/plain"
+        )
       }
     }
   }
@@ -905,7 +917,10 @@ class GrpcClientTest {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
     } catch (expected: IOException) {
-      assertThat(expected).hasMessage("grpc failed status=200, grpc-status=2, grpc-message=null")
+      assertThat(expected).hasMessage(
+          "gRPC transport failure (HTTP status=200, grpc-status=2, grpc-message=null)"
+      )
+      assertThat(expected.cause).hasMessage("expected 1 message but got none")
     }
   }
 
@@ -922,7 +937,98 @@ class GrpcClientTest {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
     } catch (expected: IOException) {
-      assertThat(expected).hasMessage("grpc failed status=200, grpc-status=13, grpc-message=boom")
+      assertThat(expected).hasMessage(
+          "gRPC transport failure (HTTP status=200, grpc-status=13, grpc-message=boom)"
+      )
+      assertThat(expected.cause).hasMessage("expected 1 message but got none")
+    }
+  }
+
+  /** Return a value, then send an error. This relies on trailers being read. */
+  @Test
+  fun requestLateFailureWithDescription() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueueSendError(Status.INTERNAL.withDescription("boom").asRuntimeException())
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage(
+          "gRPC call failure (HTTP status=200, grpc-status=13, grpc-message=boom)"
+      )
+    }
+  }
+
+  /** Violate the server's API contract, causing the stream to be canceled. */
+  @Test
+  fun serverCrashDueToTooManyResponses() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueueSendFeature(name = "tree at 7,8") // Invalid! Will cause a failure response.
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    try {
+      grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage(
+          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+      )
+      assertThat(expected.cause).hasMessage("stream was reset: CANCEL")
+    }
+  }
+
+  /** The server is streaming multiple responses, but the client expects 1 response. */
+  @Test
+  fun serverSendsTooManyResponseMessages() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    mockService.enqueueSendNote(message = "rené")
+    mockService.enqueueSendNote(message = "lacoste")
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = incompatibleRouteGuideService.RouteChat()
+    try {
+      grpcCall.executeBlocking(RouteNote(message = "marco"))
+      fail()
+    } catch (expected: IOException) {
+      // It's racy whether we receive trailers first or close the response stream first.
+      assertThat(expected.message).isIn(
+          "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)",
+          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+      )
+      assertThat(expected.cause).hasMessage("expected 1 message but got multiple")
+    }
+  }
+
+  /** The server is streaming zero responses, but the client expects 1 response. */
+  @Test
+  fun serverSendsTooFewResponseMessages() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = incompatibleRouteGuideService.RouteChat()
+    try {
+      grpcCall.executeBlocking(RouteNote(message = "marco"))
+      fail()
+    } catch (expected: IOException) {
+      assertThat(expected).hasMessage(
+          "gRPC transport failure (HTTP status=200, grpc-status=0, grpc-message=null)"
+      )
+      assertThat(expected.cause).hasMessage("expected 1 message but got none")
     }
   }
 
@@ -968,5 +1074,16 @@ class GrpcClientTest {
     runBlocking {
       awaitSuccess()
     }
+  }
+
+  class IncompatibleRouteGuideClient(
+    private val client: GrpcClient
+  ) {
+    fun RouteChat(): GrpcCall<RouteNote, RouteNote> =
+        client.newCall(GrpcMethod(
+            path = "/routeguide.RouteGuide/RouteChat",
+            requestAdapter = RouteNote.ADAPTER,
+            responseAdapter = RouteNote.ADAPTER
+        ))
   }
 }
