@@ -97,7 +97,7 @@ class OptionReader(internal val reader: SyntaxReader) {
 
   /**
    * Returns a map of string keys and values. This is similar to a JSON object, with '{' and '}'
-   * surrounding the map, ':' separating keys from values, and ',' separating entries.
+   * surrounding the map, ':' separating keys from values, and ',' or ';' separating entries.
    */
   private fun readMap(
     openBrace: Char,
@@ -138,8 +138,8 @@ class OptionReader(internal val reader: SyntaxReader) {
         }
       }
 
-      // Discard optional ',' separator.
-      reader.peekChar(',')
+      // Discard optional separator.
+      reader.peekChar(',') || reader.peekChar(';')
     }
   }
 

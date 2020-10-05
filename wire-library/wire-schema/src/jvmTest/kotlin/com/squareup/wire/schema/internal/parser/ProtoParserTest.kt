@@ -2492,4 +2492,34 @@ class ProtoParserTest {
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
+
+  @Test fun semiColonAsOptionsDelimiters() {
+    val proto = """
+      |service MyService {
+      |    option (custom_rule) = {
+      |        my_string: "abc"; my_int: 3;
+      |        my_list: ["a", "b", "c"];
+      |    };
+      |}
+    """.trimMargin()
+    val expected = ProtoFileElement(
+        location = location,
+        services = listOf(
+            ServiceElement(
+                location = location.at(1, 1),
+                name = "MyService",
+                options = listOf(
+                    OptionElement(
+                        "custom_rule",
+                        Kind.MAP,
+                        mapOf("my_string" to "abc", "my_int" to "3",
+                            "my_list" to listOf("a", "b", "c")),
+                        isParenthesized = true
+                    )
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
 }
