@@ -2440,6 +2440,30 @@ class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
+  @Test fun protoKeywordAsMessageNameAndField() {
+    // Note: cases were protoc fails are commented out.
+    val proto = """
+      |message message {
+      |  optional message message = 1;
+      |  // message message = 2;
+      |}
+      |""".trimMargin()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
+            MessageElement(
+                location = location.at(1, 1),
+                name = "message",
+                fields = listOf(
+                    FieldElement(location.at(2, 3), label = OPTIONAL, type = "message",
+                        name = "message", tag = 1)
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
   @Test fun protoKeywordAsMessageNameAndFieldProto2() {
     // Note: this is consistent with protoc.
     val proto = """
