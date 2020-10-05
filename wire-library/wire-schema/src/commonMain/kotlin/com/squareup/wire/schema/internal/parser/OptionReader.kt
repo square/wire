@@ -138,7 +138,7 @@ class OptionReader(internal val reader: SyntaxReader) {
         }
       }
 
-      // Discard optional ',' separator.
+      // Discard optional separator.
       reader.peekChar(',') || reader.peekChar(';')
     }
   }
