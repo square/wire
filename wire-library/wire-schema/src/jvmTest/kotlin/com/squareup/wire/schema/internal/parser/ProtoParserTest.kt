@@ -24,7 +24,6 @@ import com.squareup.wire.schema.internal.MAX_TAG_VALUE
 import com.squareup.wire.schema.internal.parser.OptionElement.Kind
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 import java.util.Arrays
 import java.util.LinkedHashMap
@@ -615,21 +614,6 @@ class ProtoParserTest {
       fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessage("Syntax error in file.proto:1:1: unexpected syntax: proto4")
-    }
-  }
-
-  @Test
-  fun syntaxInWrongContextThrows() {
-    val proto = """
-        |message Foo {
-        |  syntax = "proto2";
-        |}
-        """.trimMargin()
-    try {
-      ProtoParser.parse(location, proto)
-      fail()
-    } catch (e: IllegalStateException) {
-      assertThat(e).hasMessage("Syntax error in file.proto:2:3: 'syntax' in MESSAGE")
     }
   }
 
@@ -2413,13 +2397,22 @@ class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
-  @Test @Ignore("Broken. See https://github.com/square/wire/issues/1797")
-  fun protoKeywordAsEnumConstants() {
+  @Test fun protoKeywordAsEnumConstants() {
+    // Note: cases were protoc fails are commented out.
     val proto = """
       |enum Foo {
-      |  enum = 0;
-      |  service = 1;
-      |  message = 2;
+      |  syntax = 0;
+      |  import = 1;
+      |  package = 2;
+      |  // option = 3;
+      |  // reserved = 4;
+      |  message = 5;
+      |  enum = 6;
+      |  service = 7;
+      |  extend = 8;
+      |  rpc = 9;
+      |  oneof = 10;
+      |  extensions = 11;
       |}
       |""".trimMargin()
     val expected = ProtoFileElement(
@@ -2429,14 +2422,60 @@ class ProtoParserTest {
                 location = location.at(1, 1),
                 name = "Foo",
                 constants = listOf(
-                    EnumConstantElement(location.at(2, 3), "enum", 0),
-                    EnumConstantElement(location.at(3, 3), "service", 1),
-                    EnumConstantElement(location.at(4, 3), "message", 2),
+                    EnumConstantElement(location.at(2, 3), "syntax", 0),
+                    EnumConstantElement(location.at(3, 3), "import", 1),
+                    EnumConstantElement(location.at(4, 3), "package", 2),
+                    EnumConstantElement(location.at(7, 3), "message", 5,
+                        documentation = "option = 3;\nreserved = 4;"),
+                    EnumConstantElement(location.at(8, 3), "enum", 6),
+                    EnumConstantElement(location.at(9, 3), "service", 7),
+                    EnumConstantElement(location.at(10, 3), "extend", 8),
+                    EnumConstantElement(location.at(11, 3), "rpc", 9),
+                    EnumConstantElement(location.at(12, 3), "oneof", 10),
+                    EnumConstantElement(location.at(13, 3), "extensions", 11),
                 )
             )
         )
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test fun protoKeywordAsMessageNameAndField() {
+    // Note: cases were protoc fails are commented out.
+    val proto = """
+      |message message {
+      |  optional message message = 1;
+      |  // message message = 2;
+      |}
+      |""".trimMargin()
+    val expected = ProtoFileElement(
+        location = location,
+        types = listOf(
+            MessageElement(
+                location = location.at(1, 1),
+                name = "message",
+                fields = listOf(
+                    FieldElement(location.at(2, 3), label = OPTIONAL, type = "message",
+                        name = "message", tag = 1)
+                )
+            )
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test fun forbidMultipleSyntaxDefinitions() {
+    val proto = """
+          |  syntax = "proto2";
+          |  syntax = "proto2";
+          """.trimMargin()
+    try {
+      ProtoParser.parse(location, proto)
+      fail()
+    } catch (expected: IllegalStateException) {
+      assertThat(expected)
+          .hasMessageContaining("Syntax error in file.proto:2:3: too many syntax definitions")
+    }
   }
 
   @Test fun oneOfOptions() {
