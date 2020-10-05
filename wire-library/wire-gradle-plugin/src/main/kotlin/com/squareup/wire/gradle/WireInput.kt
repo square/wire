@@ -135,7 +135,7 @@ internal class WireInput(var configuration: Provider<Configuration>) {
   private fun File.toLocations(dependency: Dependency): List<Location> {
     if (dependency is FileCollectionDependency && dependency.files is SourceDirectorySet) {
       val srcDir = (dependency.files as SourceDirectorySet).srcDirs.first {
-        path.startsWith(it.path + "/")
+        path.startsWith(it.path + File.separator)
       }
       return listOf(Location.get(
           base = srcDir.path,
