@@ -2398,7 +2398,7 @@ class ProtoParserTest {
   }
 
   @Test fun protoKeywordAsEnumConstants() {
-    // Note: cases were protoc fails are commented out.
+    // Note: this is consistent with protoc.
     val proto = """
       |enum Foo {
       |  syntax = 0;
@@ -2440,12 +2440,44 @@ class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
-  @Test fun protoKeywordAsMessageNameAndField() {
-    // Note: cases were protoc fails are commented out.
+  @Test fun protoKeywordAsMessageNameAndFieldProto2() {
+    // Note: this is consistent with protoc.
     val proto = """
+      |message syntax {
+      |  optional syntax syntax = 1;
+      |}
+      |message import {
+      |  optional import import = 1;
+      |}
+      |message package {
+      |  optional package package = 1;
+      |}
+      |message option {
+      |  optional option option = 1;
+      |}
+      |message reserved {
+      |  optional reserved reserved = 1;
+      |}
       |message message {
       |  optional message message = 1;
-      |  // message message = 2;
+      |}
+      |message enum {
+      |  optional enum enum = 1;
+      |}
+      |message service {
+      |  optional service service = 1;
+      |}
+      |message extend {
+      |  optional extend extend = 1;
+      |}
+      |message rpc {
+      |  optional rpc rpc = 1;
+      |}
+      |message oneof {
+      |  optional oneof oneof = 1;
+      |}
+      |message extensions {
+      |  optional extensions extensions = 1;
       |}
       |""".trimMargin()
     val expected = ProtoFileElement(
@@ -2453,12 +2485,359 @@ class ProtoParserTest {
         types = listOf(
             MessageElement(
                 location = location.at(1, 1),
+                name = "syntax",
+                fields = listOf(
+                    FieldElement(location.at(2, 3), label = OPTIONAL, type = "syntax",
+                        name = "syntax", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(4, 1),
+                name = "import",
+                fields = listOf(
+                    FieldElement(location.at(5, 3), label = OPTIONAL, type = "import",
+                        name = "import", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(7, 1),
+                name = "package",
+                fields = listOf(
+                    FieldElement(location.at(8, 3), label = OPTIONAL, type = "package",
+                        name = "package", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(10, 1),
+                name = "option",
+                fields = listOf(
+                    FieldElement(location.at(11, 3), label = OPTIONAL, type = "option",
+                        name = "option", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(13, 1),
+                name = "reserved",
+                fields = listOf(
+                    FieldElement(location.at(14, 3), label = OPTIONAL, type = "reserved",
+                        name = "reserved", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(16, 1),
                 name = "message",
                 fields = listOf(
-                    FieldElement(location.at(2, 3), label = OPTIONAL, type = "message",
+                    FieldElement(location.at(17, 3), label = OPTIONAL, type = "message",
                         name = "message", tag = 1)
                 )
-            )
+            ),
+            MessageElement(
+                location = location.at(19, 1),
+                name = "enum",
+                fields = listOf(
+                    FieldElement(location.at(20, 3), label = OPTIONAL, type = "enum",
+                        name = "enum", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(22, 1),
+                name = "service",
+                fields = listOf(
+                    FieldElement(location.at(23, 3), label = OPTIONAL, type = "service",
+                        name = "service", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(25, 1),
+                name = "extend",
+                fields = listOf(
+                    FieldElement(location.at(26, 3), label = OPTIONAL, type = "extend",
+                        name = "extend", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(28, 1),
+                name = "rpc",
+                fields = listOf(
+                    FieldElement(location.at(29, 3), label = OPTIONAL, type = "rpc",
+                        name = "rpc", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(31, 1),
+                name = "oneof",
+                fields = listOf(
+                    FieldElement(location.at(32, 3), label = OPTIONAL, type = "oneof",
+                        name = "oneof", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(34, 1),
+                name = "extensions",
+                fields = listOf(
+                    FieldElement(location.at(35, 3), label = OPTIONAL, type = "extensions",
+                        name = "extensions", tag = 1)
+                )
+            ),
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test fun protoKeywordAsMessageNameAndFieldProto3() {
+    // Note: this is consistent with protoc.
+    val proto = """
+      |syntax = "proto3";
+      |message syntax {
+      |  syntax syntax = 1;
+      |}
+      |message import {
+      |  import import = 1;
+      |}
+      |message package {
+      |  package package = 1;
+      |}
+      |message option {
+      |  option option = 1;
+      |}
+      |message reserved {
+      |  // reserved reserved = 1;
+      |}
+      |message message {
+      |  // message message = 1;
+      |}
+      |message enum {
+      |  // enum enum = 1;
+      |}
+      |message service {
+      |  service service = 1;
+      |}
+      |message extend {
+      |  // extend extend = 1;
+      |}
+      |message rpc {
+      |  rpc rpc = 1;
+      |}
+      |message oneof {
+      |  // oneof oneof = 1;
+      |}
+      |message extensions {
+      |  // extensions extensions = 1;
+      |}
+      |""".trimMargin()
+    val expected = ProtoFileElement(
+        syntax = PROTO_3,
+        location = location,
+        types = listOf(
+            MessageElement(
+                location = location.at(2, 1),
+                name = "syntax",
+                fields = listOf(
+                    FieldElement(location.at(3, 3), type = "syntax", name = "syntax", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(5, 1),
+                name = "import",
+                fields = listOf(
+                    FieldElement(location.at(6, 3), type = "import", name = "import", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(8, 1),
+                name = "package",
+                fields = listOf(
+                    FieldElement(location.at(9, 3), type = "package", name = "package", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(11, 1),
+                name = "option",
+                options = listOf(OptionElement(name = "option", kind = Kind.NUMBER, value = "1",
+                    isParenthesized = false)),
+            ),
+            MessageElement(
+                location = location.at(14, 1),
+                name = "reserved",
+            ),
+            MessageElement(
+                location = location.at(17, 1),
+                name = "message",
+            ),
+            MessageElement(
+                location = location.at(20, 1),
+                name = "enum",
+            ),
+            MessageElement(
+                location = location.at(23, 1),
+                name = "service",
+                fields = listOf(
+                    FieldElement(location.at(24, 3), type = "service", name = "service", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(26, 1),
+                name = "extend",
+            ),
+            MessageElement(
+                location = location.at(29, 1),
+                name = "rpc",
+                fields = listOf(
+                    FieldElement(location.at(30, 3), type = "rpc", name = "rpc", tag = 1)
+                )
+            ),
+            MessageElement(
+                location = location.at(32, 1),
+                name = "oneof",
+            ),
+            MessageElement(
+                location = location.at(35, 1),
+                name = "extensions",
+            ),
+        )
+    )
+    assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
+  }
+
+  @Test fun protoKeywordAsServiceNameAndRpc() {
+    // Note: this is consistent with protoc.
+    val proto = """
+      |service syntax {
+      |  rpc syntax (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service import {
+      |  rpc import (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service package {
+      |  rpc package (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service option {
+      |  rpc option (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service reserved {
+      |  rpc reserved (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service message {
+      |  rpc message (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service enum {
+      |  rpc enum (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service service {
+      |  rpc service (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service extend {
+      |  rpc extend (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service rpc {
+      |  rpc rpc (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service oneof {
+      |  rpc oneof (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |service extensions {
+      |  rpc extensions (google.protobuf.StringValue) returns (google.protobuf.StringValue);
+      |}
+      |""".trimMargin()
+    val expected = ProtoFileElement(
+        location = location,
+        services = listOf(
+            ServiceElement(
+                location = location.at(1, 1),
+                name = "syntax",
+                rpcs = listOf(
+                    RpcElement(location.at(2, 3), name = "syntax",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(4, 1),
+                name = "import",
+                rpcs = listOf(
+                    RpcElement(location.at(5, 3), name = "import",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(7, 1),
+                name = "package",
+                rpcs = listOf(
+                    RpcElement(location.at(8, 3), name = "package",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(10, 1),
+                name = "option",
+                rpcs = listOf(
+                    RpcElement(location.at(11, 3), name = "option",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(13, 1),
+                name = "reserved",
+                rpcs = listOf(
+                    RpcElement(location.at(14, 3), name = "reserved",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(16, 1),
+                name = "message",
+                rpcs = listOf(
+                    RpcElement(location.at(17, 3), name = "message",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(19, 1),
+                name = "enum",
+                rpcs = listOf(
+                    RpcElement(location.at(20, 3), name = "enum",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(22, 1),
+                name = "service",
+                rpcs = listOf(
+                    RpcElement(location.at(23, 3), name = "service",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(25, 1),
+                name = "extend",
+                rpcs = listOf(
+                    RpcElement(location.at(26, 3), name = "extend",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(28, 1),
+                name = "rpc",
+                rpcs = listOf(
+                    RpcElement(location.at(29, 3), name = "rpc",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(31, 1),
+                name = "oneof",
+                rpcs = listOf(
+                    RpcElement(location.at(32, 3), name = "oneof",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
+            ServiceElement(
+                location = location.at(34, 1),
+                name = "extensions",
+                rpcs = listOf(
+                    RpcElement(location.at(35, 3), name = "extensions",
+                        requestType = "google.protobuf.StringValue", responseType = "google.protobuf.StringValue")
+                )
+            ),
         )
     )
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
