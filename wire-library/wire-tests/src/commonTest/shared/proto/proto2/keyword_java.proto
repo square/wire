@@ -22,4 +22,12 @@ message KeywordJava {
   required bool public = 2;
   map<string, string> package = 3;
   repeated bool return = 4;
+  repeated KeywordJavaEnum enums = 5;
+
+  enum KeywordJavaEnum {
+    final = 0;
+    public = 1;
+    package = 2;
+    return = 3;
+  }
 }

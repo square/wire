@@ -17,10 +17,12 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.wire.json.JsonUtils;
 import com.squareup.wire.proto2.RepeatedPackedAndMap;
 import com.squareup.wire.proto2.alltypes.AllTypes;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import okio.Okio;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
@@ -66,26 +68,58 @@ public class GsonTest {
   }
 
   @Test public void usedKeywordsInKotlin() {
-    KeywordKotlin keyword = new KeywordKotlin.Builder().object_("object").when_(1).build();
+    KeywordKotlin keyword = new KeywordKotlin.Builder()
+        .object_("object")
+        .when_(1)
+        .enums(
+            Arrays.asList(
+                KeywordKotlin.KeywordKotlinEnum.object_,
+                KeywordKotlin.KeywordKotlinEnum.when_,
+                KeywordKotlin.KeywordKotlinEnum.fun_,
+                KeywordKotlin.KeywordKotlinEnum.return_
+                // Broken, see https://github.com/square/kotlinpoet/issues/991
+                // KeywordKotlin.KeywordKotlinEnum.open
+            )
+        )
+        .build();
     String json = gson.toJson(keyword);
-    assertJsonEquals(json, "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[]}");
+    // TODO(benoit) We should print the constants as defined in the proto schema.
+    JsonUtils.assertJsonEquals(
+        "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[], \"enums\":[\"object_\", "
+            + "\"when_\", \"fun_\", \"return_\"]}",
+        json);
     KeywordKotlin parseKeyword = gson.fromJson(json, KeywordKotlin.class);
     assertThat(parseKeyword).isEqualTo(keyword);
 
-    String generatedNamedJson = "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[]}";
+    String generatedNamedJson = "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[], "
+        + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\"]}";
     assertThat(gson.fromJson(generatedNamedJson, KeywordKotlin.class)).isEqualTo(keyword);
   }
 
   @Test public void usedKeywordsInJava() {
-    KeywordJava keyword = new KeywordJava.Builder().final_("final").public_(true).build();
+    KeywordJava keyword = new KeywordJava.Builder()
+        .final_("final")
+        .public_(true)
+        .enums(
+            Arrays.asList(
+                KeywordJava.KeywordJavaEnum.final_,
+                KeywordJava.KeywordJavaEnum.public_,
+                KeywordJava.KeywordJavaEnum.package_,
+                KeywordJava.KeywordJavaEnum.return_
+            )
+        )
+        .build();
     String json = gson.toJson(keyword);
-    assertJsonEquals(json, "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[]}");
+    // TODO(benoit) We should print the constants as defined in the proto schema.
+    JsonUtils.assertJsonEquals(
+        "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[], "
+            + "\"enums\":[\"final_\", \"public_\", \"package_\", \"return_\"]}",
+        json);
     KeywordJava parseKeyword = gson.fromJson(json, KeywordJava.class);
     assertThat(parseKeyword).isEqualTo(keyword);
 
-
     String generatedNamedJson = "{\"final_\":\"final\", \"public_\":true, \"package_\":{}, "
-        + "\"return_\":[]}";
+        + "\"return_\":[], \"enums\":[\"final_\", \"public_\", \"package_\", \"return_\"]}";
     assertThat(gson.fromJson(generatedNamedJson, KeywordJava.class)).isEqualTo(keyword);
   }
 }
