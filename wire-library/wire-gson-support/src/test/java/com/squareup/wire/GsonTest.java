@@ -29,7 +29,6 @@ import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
 import squareup.proto2.keywords.KeywordKotlin;
 
-import static com.squareup.wire.json.JsonUtils.assertJsonEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
