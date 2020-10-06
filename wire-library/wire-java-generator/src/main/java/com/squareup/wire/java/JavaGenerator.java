@@ -566,7 +566,8 @@ public final class JavaGenerator {
 
       // Ensure constant case tags are unique, which might not be the case if allow_alias is true.
       if (seenTags.add(constant.getTag())) {
-        fromValueBuilder.addStatement("case $L: return $L", constant.getTag(), nameAllocator.get(constant));
+        fromValueBuilder.addStatement("case $L: return $L", constant.getTag(),
+            nameAllocator.get(constant));
       }
     }
 
