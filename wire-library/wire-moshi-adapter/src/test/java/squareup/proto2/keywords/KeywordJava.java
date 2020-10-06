@@ -2,12 +2,14 @@
 // Source: squareup.proto2.keywords.KeywordJava in keyword_java.proto
 package squareup.proto2.keywords;
 
+import com.squareup.wire.EnumAdapter;
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.Syntax;
+import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -60,18 +62,26 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
   )
   public final List<Boolean> return_;
 
+  @WireField(
+      tag = 5,
+      adapter = "squareup.proto2.keywords.KeywordJava$KeywordJavaEnum#ADAPTER",
+      label = WireField.Label.REPEATED
+  )
+  public final List<KeywordJavaEnum> enums;
+
   public KeywordJava(String final_, Boolean public_, Map<String, String> package_,
-      List<Boolean> return_) {
-    this(final_, public_, package_, return_, ByteString.EMPTY);
+      List<Boolean> return_, List<KeywordJavaEnum> enums) {
+    this(final_, public_, package_, return_, enums, ByteString.EMPTY);
   }
 
   public KeywordJava(String final_, Boolean public_, Map<String, String> package_,
-      List<Boolean> return_, ByteString unknownFields) {
+      List<Boolean> return_, List<KeywordJavaEnum> enums, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
     this.final_ = final_;
     this.public_ = public_;
     this.package_ = Internal.immutableCopyOf("package_", package_);
     this.return_ = Internal.immutableCopyOf("return_", return_);
+    this.enums = Internal.immutableCopyOf("enums", enums);
   }
 
   @Override
@@ -81,6 +91,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     builder.public_ = public_;
     builder.package_ = Internal.copyOf(package_);
     builder.return_ = Internal.copyOf(return_);
+    builder.enums = Internal.copyOf(enums);
     builder.addUnknownFields(unknownFields());
     return builder;
   }
@@ -94,7 +105,8 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
         && Internal.equals(final_, o.final_)
         && public_.equals(o.public_)
         && package_.equals(o.package_)
-        && return_.equals(o.return_);
+        && return_.equals(o.return_)
+        && enums.equals(o.enums);
   }
 
   @Override
@@ -106,6 +118,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       result = result * 37 + public_.hashCode();
       result = result * 37 + package_.hashCode();
       result = result * 37 + return_.hashCode();
+      result = result * 37 + enums.hashCode();
       super.hashCode = result;
     }
     return result;
@@ -118,6 +131,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
     builder.append(", public=").append(public_);
     if (!package_.isEmpty()) builder.append(", package=").append(package_);
     if (!return_.isEmpty()) builder.append(", return=").append(return_);
+    if (!enums.isEmpty()) builder.append(", enums=").append(enums);
     return builder.replace(0, 2, "KeywordJava{").append('}').toString();
   }
 
@@ -130,9 +144,12 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
 
     public List<Boolean> return_;
 
+    public List<KeywordJavaEnum> enums;
+
     public Builder() {
       package_ = Internal.newMutableMap();
       return_ = Internal.newMutableList();
+      enums = Internal.newMutableList();
     }
 
     public Builder final_(String final_) {
@@ -157,12 +174,65 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       return this;
     }
 
+    public Builder enums(List<KeywordJavaEnum> enums) {
+      Internal.checkElementsNotNull(enums);
+      this.enums = enums;
+      return this;
+    }
+
     @Override
     public KeywordJava build() {
       if (public_ == null) {
         throw Internal.missingRequiredFields(public_, "public");
       }
-      return new KeywordJava(final_, public_, package_, return_, super.buildUnknownFields());
+      return new KeywordJava(final_, public_, package_, return_, enums, super.buildUnknownFields());
+    }
+  }
+
+  public enum KeywordJavaEnum implements WireEnum {
+    final_(0),
+
+    public_(1),
+
+    package_(2),
+
+    return_(3);
+
+    public static final ProtoAdapter<KeywordJavaEnum> ADAPTER = new ProtoAdapter_KeywordJavaEnum();
+
+    private final int value;
+
+    KeywordJavaEnum(int value) {
+      this.value = value;
+    }
+
+    /**
+     * Return the constant for {@code value} or null.
+     */
+    public static KeywordJavaEnum fromValue(int value) {
+      switch (value) {
+        case 0: return final_;
+        case 1: return public_;
+        case 2: return package_;
+        case 3: return return_;
+        default: return null;
+      }
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
+
+    private static final class ProtoAdapter_KeywordJavaEnum extends EnumAdapter<KeywordJavaEnum> {
+      ProtoAdapter_KeywordJavaEnum() {
+        super(KeywordJavaEnum.class, Syntax.PROTO_2, KeywordJavaEnum.final_);
+      }
+
+      @Override
+      protected KeywordJavaEnum fromValue(int value) {
+        return KeywordJavaEnum.fromValue(value);
+      }
     }
   }
 
@@ -180,6 +250,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       result += ProtoAdapter.BOOL.encodedSizeWithTag(2, value.public_);
       result += package_Adapter().encodedSizeWithTag(3, value.package_);
       result += ProtoAdapter.BOOL.asRepeated().encodedSizeWithTag(4, value.return_);
+      result += KeywordJavaEnum.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enums);
       result += value.unknownFields().size();
       return result;
     }
@@ -190,6 +261,7 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.public_);
       package_Adapter().encodeWithTag(writer, 3, value.package_);
       ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_);
+      KeywordJavaEnum.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enums);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -203,6 +275,14 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
           case 2: builder.public_(ProtoAdapter.BOOL.decode(reader)); break;
           case 3: builder.package_.putAll(package_Adapter().decode(reader)); break;
           case 4: builder.return_.add(ProtoAdapter.BOOL.decode(reader)); break;
+          case 5: {
+            try {
+              builder.enums.add(KeywordJavaEnum.ADAPTER.decode(reader));
+            } catch (ProtoAdapter.EnumConstantNotFoundException e) {
+              builder.addUnknownField(tag, FieldEncoding.VARINT, (long) e.value);
+            }
+            break;
+          }
           default: {
             reader.readUnknownField(tag);
           }
