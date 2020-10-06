@@ -99,17 +99,14 @@ class ProtoParser internal constructor(
     // TODO(benoit) Let's better parse the proto keywords. We are pretty weak when field/constants
     //  are named after any of the label we check here.
     return when {
-      label == "package" -> {
-        reader.expect(context.permitsPackage(), location) { "'package' in $context" }
-        reader.expect(packageName == null, location) { "too many package names" }
+      label == "package" && context.permitsPackage() -> {
         packageName = reader.readName()
         prefix = "$packageName."
         reader.require(';')
         null
       }
 
-      label == "import" -> {
-        reader.expect(context.permitsImport(), location) { "'import' in $context" }
+      label == "import" && context.permitsImport() -> {
         when (val importString = reader.readString()) {
           "public" -> publicImports.add(reader.readString())
           else -> imports.add(importString)
@@ -118,8 +115,8 @@ class ProtoParser internal constructor(
         null
       }
 
-      label == "syntax" -> {
-        reader.expect(context.permitsSyntax(), location) { "'syntax' in $context" }
+      label == "syntax" && context.permitsSyntax() -> {
+        reader.expect(syntax == null, location) { "too many syntax definitions" }
         reader.require('=')
         reader.expect(index == 0, location) {
           "'syntax' element must be the first declaration in a file"
@@ -141,23 +138,20 @@ class ProtoParser internal constructor(
       }
 
       label == "reserved" -> readReserved(location, documentation)
-      label == "message" -> readMessage(location, documentation)
-      label == "enum" -> readEnumElement(location, documentation)
-      label == "service" -> readService(location, documentation)
-      label == "extend" -> readExtend(location, documentation)
+      label == "message" && context.permitsMessage() -> readMessage(location, documentation)
+      label == "enum" && context.permitsEnum() -> readEnumElement(location, documentation)
+      label == "service" && context.permitsService() -> readService(location, documentation)
+      label == "extend" && context.permitsExtend() -> readExtend(location, documentation)
 
-      label == "rpc" -> {
-        reader.expect(context.permitsRpc(), location) { "'rpc' in $context" }
+      label == "rpc" && context.permitsRpc() -> {
         readRpc(location, documentation)
       }
 
-      label == "oneof" -> {
-        reader.expect(context.permitsOneOf(), location) { "'oneof' must be nested in message" }
+      label == "oneof" && context.permitsOneOf() -> {
         readOneOf(documentation)
       }
 
-      label == "extensions" -> {
-        reader.expect(context.permitsExtensions(), location) { "'extensions' must be nested" }
+      label == "extensions" && context.permitsExtensions() -> {
         readExtensions(location, documentation)
       }
 
@@ -630,11 +624,19 @@ class ProtoParser internal constructor(
 
     fun permitsImport() = this == FILE
 
-    fun permitsExtensions() = this != FILE
+    fun permitsExtensions() = this == MESSAGE
 
     fun permitsRpc() = this == SERVICE
 
     fun permitsOneOf() = this == MESSAGE
+
+    fun permitsMessage() = this == FILE || this == MESSAGE
+
+    fun permitsService() = this == FILE
+
+    fun permitsEnum() = this == FILE || this == MESSAGE
+
+    fun permitsExtend() = this == FILE || this == MESSAGE
   }
 
   companion object {
