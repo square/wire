@@ -1595,7 +1595,7 @@ class KotlinGenerator private constructor(
 
   private fun EnumType.identity(): CodeBlock {
     val enumConstant = constant(0) ?: return CodeBlock.of("null")
-    return CodeBlock.of("%T.%L", type.typeName, enumConstant.name)
+    return CodeBlock.of("%T.%L", type.typeName, nameAllocator(this)[enumConstant])
   }
 
   private fun Field.typeNameForBuilderSetter(): TypeName {
