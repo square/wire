@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireEnumConstant;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import java.io.IOException;
@@ -190,12 +191,24 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
   }
 
   public enum KeywordJavaEnum implements WireEnum {
+    @WireEnumConstant(
+        declaredName = "final"
+    )
     final_(0),
 
+    @WireEnumConstant(
+        declaredName = "public"
+    )
     public_(1),
 
+    @WireEnumConstant(
+        declaredName = "package"
+    )
     package_(2),
 
+    @WireEnumConstant(
+        declaredName = "return"
+    )
     return_(3);
 
     public static final ProtoAdapter<KeywordJavaEnum> ADAPTER = new ProtoAdapter_KeywordJavaEnum();

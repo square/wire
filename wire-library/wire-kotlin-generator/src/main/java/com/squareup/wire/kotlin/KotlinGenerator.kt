@@ -64,10 +64,12 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
+import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
 import com.squareup.wire.internal.camelCase
 import com.squareup.wire.schema.EnclosingType
+import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
@@ -883,6 +885,17 @@ class KotlinGenerator private constructor(
         .build()
   }
 
+  private fun wireEnumConstantAnnotation(enum: EnumType, constant: EnumConstant): AnnotationSpec? {
+    return AnnotationSpec.builder(WireEnumConstant::class)
+        .apply {
+          val generatedName = nameAllocator(enum)[constant]
+          if (generatedName == constant.name) return null
+
+          addMember("declaredName = %S", constant.name)
+        }
+        .build()
+  }
+
   private fun generateToStringMethod(type: MessageType, nameAllocator: NameAllocator): FunSpec {
     val sanitizeMember = MemberName("com.squareup.wire.internal", "sanitize")
     val localNameAllocator = nameAllocator.copy()
@@ -1387,9 +1400,9 @@ class KotlinGenerator private constructor(
    * ```
    * }
    */
-  private fun generateEnum(message: EnumType): TypeSpec {
-    val type = message.type
-    val nameAllocator = nameAllocator(message)
+  private fun generateEnum(enum: EnumType): TypeSpec {
+    val type = enum.type
+    val nameAllocator = nameAllocator(enum)
 
     val valueName = nameAllocator["value"]
 
@@ -1398,10 +1411,10 @@ class KotlinGenerator private constructor(
 
     val builder = TypeSpec.enumBuilder(type.simpleName)
         .apply {
-          if (message.documentation.isNotBlank()) {
-            addKdoc("%L\n", message.documentation.sanitizeKdoc())
+          if (enum.documentation.isNotBlank()) {
+            addKdoc("%L\n", enum.documentation.sanitizeKdoc())
           }
-          for (annotation in optionAnnotations(message.options)) {
+          for (annotation in optionAnnotations(enum.options)) {
             addAnnotation(annotation)
           }
         }
@@ -1409,18 +1422,24 @@ class KotlinGenerator private constructor(
         .addProperty(PropertySpec.builder(valueName, Int::class)
             .initializer(valueName)
             .build())
-        .addType(generateEnumCompanion(message))
+        .addType(generateEnumCompanion(enum))
 
-    message.constants.forEach { constant ->
+    enum.constants.forEach { constant ->
       builder.addEnumConstant(nameAllocator[constant], TypeSpec.anonymousClassBuilder()
           .addSuperclassConstructorParameter("%L", constant.tag)
           .apply {
             if (constant.documentation.isNotBlank()) {
               addKdoc("%L\n", constant.documentation.sanitizeKdoc())
             }
+
             for (annotation in optionAnnotations(constant.options)) {
               addAnnotation(annotation)
             }
+            val wireEnumConstantAnnotation = wireEnumConstantAnnotation(enum, constant)
+            if (wireEnumConstantAnnotation != null) {
+              addAnnotation(wireEnumConstantAnnotation)
+            }
+
             if (constant.isDeprecated) {
               addAnnotation(AnnotationSpec.builder(Deprecated::class)
                   .addMember("message = %S", "${constant.name} is deprecated")
