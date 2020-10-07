@@ -28,6 +28,9 @@ import okio.Timeout
  * on the network are the same.
  */
 interface GrpcCall<S : Any, R : Any> {
+  /** The method invoked by this call. */
+  val method: GrpcMethod<S, R>
+
   /** Configures how long the call can take to complete before it is automatically canceled. */
   val timeout: Timeout
 

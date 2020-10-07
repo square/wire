@@ -19,6 +19,7 @@ includeBuild('wire-library') {
     substitute module('com.squareup.wire:wire-compiler') with project(':wire-compiler')
     substitute module('com.squareup.wire:wire-gradle-plugin') with project(':wire-gradle-plugin')
     substitute module('com.squareup.wire:wire-grpc-client') with project(':wire-grpc-client')
+    substitute module('com.squareup.wire:wire-grpc-mockwebserver') with project(':wire-grpc-mockwebserver')
     substitute module('com.squareup.wire:wire-gson-support') with project(':wire-gson-support')
     substitute module('com.squareup.wire:wire-java-generator') with project(':wire-java-generator')
     substitute module('com.squareup.wire:wire-kotlin-generator') with project(':wire-kotlin-generator')

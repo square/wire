@@ -63,6 +63,13 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
     private var canceled = AtomicBoolean()
     private var executed = AtomicBoolean()
 
+    override val method: GrpcMethod<S, R>
+      get() = GrpcMethod(
+          path = "/wire/AnonymousEndpoint",
+          requestAdapter = ProtoAdapter.BYTES,
+          responseAdapter = ProtoAdapter.BYTES
+      ) as GrpcMethod<S, R>
+
     override val timeout: Timeout = Timeout.NONE
 
     override fun cancel() {
@@ -136,6 +143,13 @@ fun <S : Any, R : Any> GrpcStreamingCall(
   function: suspend (ReceiveChannel<S>, SendChannel<R>) -> Unit
 ): GrpcStreamingCall<S, R> {
   return object : GrpcStreamingCall<S, R> {
+    override val method: GrpcMethod<S, R>
+      get() = GrpcMethod(
+          path = "/wire/AnonymousEndpoint",
+          requestAdapter = ProtoAdapter.BYTES,
+          responseAdapter = ProtoAdapter.BYTES
+      ) as GrpcMethod<S, R>
+
     private var canceled = AtomicBoolean()
     private var executed = AtomicBoolean()
     private val requestChannel = Channel<S>(1)

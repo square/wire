@@ -32,10 +32,10 @@ import java.util.concurrent.TimeUnit
 
 internal class RealGrpcStreamingCall<S : Any, R : Any>(
   private val grpcClient: GrpcClient,
-  private val grpcMethod: GrpcMethod<S, R>
+  override val method: GrpcMethod<S, R>
 ) : GrpcStreamingCall<S, R> {
   private val requestBody = newDuplexRequestBody()
-  private val call = grpcClient.newCall(grpcMethod.path, requestBody)
+  private val call = grpcClient.newCall(method.path, requestBody)
 
   override val timeout: Timeout
     get() = call.timeout()
@@ -66,16 +66,16 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
     }
 
     scope.launch(Dispatchers.IO) {
-      requestChannel.writeToRequestBody(requestBody, grpcMethod.requestAdapter, call)
+      requestChannel.writeToRequestBody(requestBody, method.requestAdapter, call)
     }
-    call.enqueue(responseChannel.readFromResponseBodyCallback(grpcMethod.responseAdapter))
+    call.enqueue(responseChannel.readFromResponseBodyCallback(method.responseAdapter))
 
     return requestChannel to responseChannel
   }
 
   override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
-    val messageSource = BlockingMessageSource(grpcMethod.responseAdapter, call)
-    val messageSink = requestBody.messageSink(grpcMethod.requestAdapter, call)
+    val messageSource = BlockingMessageSource(method.responseAdapter, call)
+    val messageSink = requestBody.messageSink(method.requestAdapter, call)
     call.enqueue(messageSource.readFromResponseBodyCallback())
 
     return messageSink to messageSource
@@ -84,7 +84,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   override fun isExecuted(): Boolean = call.isExecuted()
 
   override fun clone(): GrpcStreamingCall<S, R> {
-    val result = RealGrpcStreamingCall(grpcClient, grpcMethod)
+    val result = RealGrpcStreamingCall(grpcClient, method)
     val oldTimeout = this.timeout
     result.timeout.also { newTimeout ->
       newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)

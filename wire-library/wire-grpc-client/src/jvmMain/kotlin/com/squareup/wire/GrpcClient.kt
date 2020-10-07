@@ -22,7 +22,7 @@ import okhttp3.OkHttpClient
 import kotlin.reflect.KClass
 
 actual class GrpcClient private constructor(
-  internal val client: OkHttpClient,
+  internal val client: Call.Factory,
   internal val baseUrl: GrpcHttpUrl
 ) {
   /** Returns a [T] that makes gRPC calls using this client. */
@@ -73,26 +73,23 @@ actual class GrpcClient private constructor(
   }
 
   class Builder {
-    private var client: OkHttpClient? = null
+    private var client: Call.Factory? = null
     private var baseUrl: GrpcHttpUrl? = null
 
-    fun client(client: OkHttpClient): Builder {
+    fun client(client: OkHttpClient): Builder = callFactory(client)
+
+    fun callFactory(client: Call.Factory): Builder = apply {
       this.client = client
-      return this
     }
 
-    fun baseUrl(baseUrl: String): Builder {
+    fun baseUrl(baseUrl: String): Builder = apply {
       this.baseUrl = baseUrl.toHttpUrl()
-      return this
     }
 
-    fun baseUrl(url: GrpcHttpUrl): Builder {
+    fun baseUrl(url: GrpcHttpUrl): Builder = apply {
       this.baseUrl = url
-      return this
     }
 
-    fun build(): GrpcClient {
-      return GrpcClient(client = client!!, baseUrl = baseUrl!!)
-    }
+    fun build(): GrpcClient = GrpcClient(client = client!!, baseUrl = baseUrl!!)
   }
 }
