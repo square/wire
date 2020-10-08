@@ -29,7 +29,6 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import routeguide.RouteGuideGrpc
-import routeguide.RouteGuideProto
 import routeguide.RouteGuideProto.Feature
 import routeguide.RouteGuideProto.Point
 import routeguide.RouteGuideProto.Rectangle
@@ -63,7 +62,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
   }
 
   fun enqueueReceivePoint(latitude: Int, longitude: Int) {
-    enqueue(Action.ReceiveMessage(RouteGuideProto.Point.newBuilder()
+    enqueue(Action.ReceiveMessage(Point.newBuilder()
         .setLatitude(latitude)
         .setLongitude(longitude)
         .build()))
