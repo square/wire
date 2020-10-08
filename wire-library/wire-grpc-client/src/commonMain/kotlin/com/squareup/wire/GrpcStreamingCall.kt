@@ -43,6 +43,9 @@ import okio.Timeout
  * works at your call site: the bytes transmitted on the network are the same.
  */
 interface GrpcStreamingCall<S : Any, R : Any> {
+  /** The method invoked by this call. */
+  val method: GrpcMethod<S, R>
+
   /**
    * Configures how long the call can take to complete before it is automatically canceled. The
    * timeout applies to the full set of messages transmitted. For long-running streams you must
