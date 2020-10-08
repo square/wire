@@ -42,6 +42,7 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
+import com.squareup.wire.WireEnumConstant;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
 import com.squareup.wire.schema.EnclosingType;
@@ -556,6 +557,11 @@ public final class JavaGenerator {
 
       for (AnnotationSpec annotation : optionAnnotations(constant.getOptions())) {
         constantBuilder.addAnnotation(annotation);
+      }
+      AnnotationSpec wireEnumConstantAnnotation =
+          wireEnumConstantAnnotation(nameAllocator, constant);
+      if (wireEnumConstantAnnotation != null) {
+        constantBuilder.addAnnotation(wireEnumConstantAnnotation);
       }
 
       if (constant.isDeprecated()) {
@@ -1322,6 +1328,27 @@ public final class JavaGenerator {
     if (!field.getJsonName().equals(field.getName())) {
       result.addMember("jsonName", "$S", field.getJsonName());
     }
+
+    return result.build();
+  }
+
+  // Example:
+  //
+  // @WireEnumConstant(
+  //   declaredName = "final",
+  // )
+  //
+  private @Nullable AnnotationSpec wireEnumConstantAnnotation(NameAllocator nameAllocator,
+      EnumConstant constant) {
+    AnnotationSpec.Builder result = AnnotationSpec.builder(WireEnumConstant.class);
+
+    NameAllocator localNameAllocator = nameAllocator.clone();
+
+    String generatedName = localNameAllocator.get(constant);
+    if (generatedName.equals(constant.getName())) {
+      return null;
+    }
+    result.addMember("declaredName", "$S", constant.getName());
 
     return result.build();
   }

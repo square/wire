@@ -11,6 +11,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
+import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.checkElementsNotNull
 import com.squareup.wire.internal.immutableCopyOf
@@ -257,12 +258,16 @@ class KeywordKotlin(
   enum class KeywordKotlinEnum(
     override val value: Int
   ) : WireEnum {
+    @WireEnumConstant(declaredName = "object")
     object_(0),
 
+    @WireEnumConstant(declaredName = "when")
     when_(1),
 
+    @WireEnumConstant(declaredName = "fun")
     fun_(2),
 
+    @WireEnumConstant(declaredName = "return")
     return_(3);
 
     companion object {
