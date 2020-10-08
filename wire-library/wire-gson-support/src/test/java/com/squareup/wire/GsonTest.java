@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import okio.Okio;
+import org.junit.Ignore;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
 import squareup.proto2.keywords.KeywordKotlin;
@@ -67,6 +68,7 @@ public class GsonTest {
     assertThat(parsed.map_int32_int32).isEmpty();
   }
 
+  @Ignore("Broken we need enumConstantBinding.")
   @Test public void usedKeywordsInKotlin() {
     KeywordKotlin keyword = new KeywordKotlin.Builder()
         .object_("object")
@@ -83,10 +85,9 @@ public class GsonTest {
         )
         .build();
     String json = gson.toJson(keyword);
-    // TODO(benoit) We should print the constants as defined in the proto schema.
     JsonUtils.assertJsonEquals(
-        "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[], \"enums\":[\"object_\", "
-            + "\"when_\", \"fun_\", \"return_\"]}",
+        "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[], \"enums\":[\"object\", "
+            + "\"when\", \"fun\", \"return\"]}",
         json);
     KeywordKotlin parseKeyword = gson.fromJson(json, KeywordKotlin.class);
     assertThat(parseKeyword).isEqualTo(keyword);
@@ -96,6 +97,7 @@ public class GsonTest {
     assertThat(gson.fromJson(generatedNamedJson, KeywordKotlin.class)).isEqualTo(keyword);
   }
 
+  @Ignore("Broken we need enumConstantBinding.")
   @Test public void usedKeywordsInJava() {
     KeywordJava keyword = new KeywordJava.Builder()
         .final_("final")
@@ -110,10 +112,9 @@ public class GsonTest {
         )
         .build();
     String json = gson.toJson(keyword);
-    // TODO(benoit) We should print the constants as defined in the proto schema.
     JsonUtils.assertJsonEquals(
         "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[], "
-            + "\"enums\":[\"final_\", \"public_\", \"package_\", \"return_\"]}",
+            + "\"enums\":[\"final\", \"public\", \"package\", \"return\"]}",
         json);
     KeywordJava parseKeyword = gson.fromJson(json, KeywordJava.class);
     assertThat(parseKeyword).isEqualTo(keyword);
