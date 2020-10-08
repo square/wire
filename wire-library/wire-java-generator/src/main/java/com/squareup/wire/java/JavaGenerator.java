@@ -562,11 +562,12 @@ public final class JavaGenerator {
         constantBuilder.addAnnotation(Deprecated.class);
       }
 
-      builder.addEnumConstant(constant.getName(), constantBuilder.build());
+      builder.addEnumConstant(nameAllocator.get(constant), constantBuilder.build());
 
       // Ensure constant case tags are unique, which might not be the case if allow_alias is true.
       if (seenTags.add(constant.getTag())) {
-        fromValueBuilder.addStatement("case $L: return $L", constant.getTag(), constant.getName());
+        fromValueBuilder.addStatement("case $L: return $L", constant.getTag(),
+            nameAllocator.get(constant));
       }
     }
 
@@ -1967,9 +1968,10 @@ public final class JavaGenerator {
 
   private CodeBlock identity(EnumType enumType) {
     EnumConstant constantZero = enumType.constant(0);
-    return constantZero != null
-        ? CodeBlock.of("$T.$L", typeName(enumType.getType()), constantZero.getName())
-        : CodeBlock.of("null");
+    if (constantZero == null) return CodeBlock.of("null");
+
+    return CodeBlock.of("$T.$L", typeName(enumType.getType()),
+        nameAllocators.getUnchecked(enumType).get(constantZero));
   }
 
   /** Returns the full name of the class generated for {@code field}. */

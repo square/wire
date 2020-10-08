@@ -22,4 +22,14 @@ message KeywordKotlin {
   required int32 when = 2;
   map<string, string> fun = 3;
   repeated bool return = 4;
+  repeated KeywordKotlinEnum enums = 5;
+
+  enum KeywordKotlinEnum {
+    object = 0;
+    when = 1;
+    fun = 2;
+    return = 3;
+    // Broken see https://github.com/square/kotlinpoet/issues/991
+    // open = 4;
+  }
 }
