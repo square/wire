@@ -21,6 +21,7 @@ import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 import java.io.Closeable
+import java.io.File
 import java.io.IOException
 import java.nio.file.FileSystem
 import java.util.ArrayDeque
@@ -157,7 +158,7 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
     // relative to, confirm that the import path and file system path agree.
     if (protoFilePath.location.base.isEmpty()
         && protoFilePath.location.path != importPath
-        && !protoFilePath.location.path.endsWith("/$importPath")) {
+        && !protoFilePath.location.path.endsWith("${File.separator}$importPath")) {
       errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
     }
 
@@ -250,12 +251,12 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
     val result = mutableSetOf<Location>()
     while (true) {
       val protoLocation = queue.poll() ?: break
-      val lastSlash = protoLocation.path.lastIndexOf("/")
+      val lastSlash = protoLocation.path.lastIndexOf(File.separatorChar)
       val parentPath = protoLocation.path.substring(0, lastSlash + 1)
       val profileLocation = protoLocation.copy(path = "$parentPath$name.wire")
 
       if (!result.add(profileLocation)) continue // Already added.
-      if (!parentPath.isNotEmpty()) continue // No more parents to enqueue.
+      if (parentPath.isEmpty()) continue // No more parents to enqueue.
       queue += protoLocation.copy(path = parentPath.dropLast(1)) // Drop trailing '/'.
     }
     return result
@@ -270,6 +271,6 @@ internal fun ProtoFile.importPath(location: Location): String {
 }
 
 internal fun ProtoFile.canonicalImportPath(location: Location): String {
-  val filename = location.path.substringAfterLast('/')
-  return packageName!!.replace('.', '/') + "/" + filename
+  val filename = location.path.substringAfterLast(File.separatorChar)
+  return packageName!!.replace('.', File.separatorChar) + File.separator + filename
 }

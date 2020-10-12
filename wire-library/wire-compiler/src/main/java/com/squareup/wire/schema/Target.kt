@@ -28,6 +28,7 @@ import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftGenerator
 import okio.buffer
 import okio.sink
+import java.io.File
 import java.io.IOException
 import java.io.Serializable
 import java.nio.file.FileSystem
@@ -457,7 +458,7 @@ data class ProtoTarget(
         if (protoFile.isEmpty()) return
 
         val relativePath: String = protoFile.location.path
-            .substringBeforeLast("/", missingDelimiterValue = ".")
+            .substringBeforeLast(File.separator, missingDelimiterValue = ".")
         val outputDirectory = modulePath.resolve(relativePath)
 
         require(Files.notExists(outputDirectory) || Files.isDirectory(outputDirectory)) {
