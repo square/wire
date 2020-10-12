@@ -19,8 +19,8 @@ import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
+import com.squareup.wire.internal.EnumJsonFormatter
 import com.squareup.wire.internal.RuntimeMessageAdapter
-import okio.ByteString
 
 /**
  * A [TypeAdapterFactory] that allows Wire messages to be serialized and deserialized
@@ -77,6 +77,11 @@ class WireTypeAdapterFactory(
         val messageAdapter = RuntimeMessageAdapter.create<Nothing, Nothing>(rawType as Class<Nothing>)
         val jsonAdapters = messageAdapter.jsonAdapters(GsonJsonIntegration, gson)
         MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>
+      }
+      WireEnum::class.java.isAssignableFrom(rawType) -> {
+        val enumAdapter = RuntimeEnumAdapter.create(rawType as Class<Nothing>)
+        val enumJsonFormatter = EnumJsonFormatter(enumAdapter)
+        EnumTypeAdapter(enumJsonFormatter).nullSafe() as TypeAdapter<T>
       }
       else -> null
     }

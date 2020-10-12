@@ -21,7 +21,7 @@ import java.lang.reflect.Method
 /**
  * Converts values of an enum to and from integers using reflection.
  */
-internal class RuntimeEnumAdapter<E : WireEnum>(
+class RuntimeEnumAdapter<E : WireEnum> internal constructor(
   private val javaType: Class<E>,
   syntax: Syntax
 ) : EnumAdapter<E>(javaType.kotlin, syntax, javaType.identityOrNull) {
@@ -41,4 +41,13 @@ internal class RuntimeEnumAdapter<E : WireEnum>(
   override fun equals(other: Any?) = other is RuntimeEnumAdapter<*> && other.type == type
 
   override fun hashCode() = type.hashCode()
+
+  companion object {
+    @JvmStatic fun <E : WireEnum> create(
+      enumType: Class<E>
+    ): RuntimeEnumAdapter<E> {
+      val defaultAdapter = get(enumType as Class<*>)
+      return RuntimeEnumAdapter(enumType, defaultAdapter.syntax)
+    }
+  }
 }

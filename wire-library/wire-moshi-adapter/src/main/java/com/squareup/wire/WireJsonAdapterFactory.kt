@@ -18,6 +18,7 @@ package com.squareup.wire
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.squareup.wire.internal.EnumJsonFormatter
 import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.lang.reflect.Type
 
@@ -77,6 +78,11 @@ class WireJsonAdapterFactory private constructor(
         val messageAdapter = RuntimeMessageAdapter.create<Nothing, Nothing>(type as Class<Nothing>)
         val jsonAdapters = messageAdapter.jsonAdapters(MoshiJsonIntegration, moshi)
         MessageJsonAdapter(messageAdapter, jsonAdapters).nullSafe()
+      }
+      WireEnum::class.java.isAssignableFrom(rawType) -> {
+        val enumAdapter = RuntimeEnumAdapter.create(type as Class<Nothing>)
+        val enumJsonFormatter = EnumJsonFormatter(enumAdapter)
+        EnumJsonAdapter(enumJsonFormatter).nullSafe()
       }
       else -> null
     }
