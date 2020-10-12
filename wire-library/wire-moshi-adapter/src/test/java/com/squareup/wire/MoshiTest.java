@@ -28,7 +28,9 @@ import okio.Okio;
 import org.junit.Ignore;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
+import squareup.proto2.keywords.KeywordJava.KeywordJavaEnum;
 import squareup.proto2.keywords.KeywordKotlin;
+import squareup.proto2.keywords.KeywordKotlin.KeywordKotlinEnum;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -114,7 +116,6 @@ public class MoshiTest {
     assertThat(parsed.map_int32_int32).isEmpty();
   }
 
-  @Ignore("Broken we need enumConstantBinding.")
   @Test public void usedKeywordsInKotlin() throws IOException {
     JsonAdapter<KeywordKotlin> adapter = moshi.adapter(KeywordKotlin.class);
 
@@ -123,10 +124,10 @@ public class MoshiTest {
         .when_(1)
         .enums(
             Arrays.asList(
-                KeywordKotlin.KeywordKotlinEnum.object_,
-                KeywordKotlin.KeywordKotlinEnum.when_,
-                KeywordKotlin.KeywordKotlinEnum.fun_,
-                KeywordKotlin.KeywordKotlinEnum.return_
+                KeywordKotlinEnum.object_,
+                KeywordKotlinEnum.when_,
+                KeywordKotlinEnum.fun_,
+                KeywordKotlinEnum.return_
                 // Broken, see https://github.com/square/kotlinpoet/issues/991
                 // KeywordKotlin.KeywordKotlinEnum.open
             )
@@ -144,7 +145,6 @@ public class MoshiTest {
     assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(keyword);
   }
 
-  @Ignore("Broken we need enumConstantBinding.")
   @Test public void usedKeywordsInJava() throws IOException {
     JsonAdapter<KeywordJava> adapter = moshi.adapter(KeywordJava.class);
 
@@ -153,10 +153,10 @@ public class MoshiTest {
         .final_("final")
         .enums(
             Arrays.asList(
-                KeywordJava.KeywordJavaEnum.final_,
-                KeywordJava.KeywordJavaEnum.public_,
-                KeywordJava.KeywordJavaEnum.package_,
-                KeywordJava.KeywordJavaEnum.return_
+                KeywordJavaEnum.final_,
+                KeywordJavaEnum.public_,
+                KeywordJavaEnum.package_,
+                KeywordJavaEnum.return_
             )
         )
         .build();
@@ -170,5 +170,31 @@ public class MoshiTest {
     String generatedNamedJson = "{\"final_\":\"final\", \"public_\":true, \"package_\":{}, "
         + "\"return_\":[], \"enums\":[\"final_\", \"public_\", \"package_\", \"return_\"]}";
     assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(keyword);
+  }
+
+  @Ignore("Broken. We need to fix the WireJsonAdapterFactory.")
+  @Test public void enumKeywordsAtRootInKotlin() throws IOException {
+    JsonAdapter<KeywordKotlinEnum> adapter = moshi.adapter(KeywordKotlinEnum.class);
+
+    KeywordKotlinEnum constant = KeywordKotlinEnum.object_;
+    String json = adapter.toJson(constant);
+    JsonUtils.assertJsonEquals("\"object\"", json);
+    assertThat(adapter.fromJson(json)).isEqualTo(constant);
+
+    String generatedNamedJson = "\"object_\"";
+    assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(constant);
+  }
+
+  @Ignore("Broken. We need to fix the WireJsonAdapterFactory.")
+  @Test public void enumKeywordsAtRootInJava() throws IOException {
+    JsonAdapter<KeywordJavaEnum> adapter = moshi.adapter(KeywordJavaEnum.class);
+
+    KeywordJavaEnum constant = KeywordJavaEnum.final_;
+    String json = adapter.toJson(constant);
+    JsonUtils.assertJsonEquals("\"final\"", json);
+    assertThat(adapter.fromJson(json)).isEqualTo(constant);
+
+    String generatedNamedJson = "\"final_\"";
+    assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(constant);
   }
 }

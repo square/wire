@@ -17,20 +17,50 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.EnumAdapter
 import com.squareup.wire.WireEnum
+import com.squareup.wire.WireEnumConstant
 
-/** Encodes enums using their names. Decodes using either their names or their tags. */
-class EnumJsonFormatter<E : WireEnum>(adapter: EnumAdapter<E>) : JsonFormatter<E> {
-  private val stringToValue = run {
-    val map = mutableMapOf<String, E>()
+/**
+ * Encodes enums using their declared names as defined in [WireEnumConstant] or their generated
+ * names if the declared name is empty. Decodes using either their declared names, their generated
+ * names, or their tags.
+ */
+class EnumJsonFormatter<E : WireEnum>(
+  adapter: EnumAdapter<E>
+) : JsonFormatter<E> {
+  private val stringToValue: Map<String, E>
+  private val valueToString: Map<E, String>
+
+  init {
+    val mutableStringToValue = mutableMapOf<String, E>()
+    val mutableValueToString = mutableMapOf<E, String>()
+
     // E is a subtype of Enum<*>, but we don't know that statically.
-    for (t in adapter.type!!.java.enumConstants) {
-      map[(t as Enum<*>).name] = t as E
-      map[t.value.toString()] = t as E
+    val enumType = adapter.type!!.java as Class<E>
+    for (constant in enumType.enumConstants) {
+      val name = (constant as Enum<*>).name
+
+      mutableStringToValue[name] = constant
+      mutableStringToValue[constant.value.toString()] = constant
+
+      mutableValueToString[constant] = name
+
+      val constantField = enumType.getDeclaredField(name)
+      val wireEnumConstant = constantField.getAnnotation(WireEnumConstant::class.java)
+      if (wireEnumConstant != null && wireEnumConstant.declaredName.isNotEmpty()) {
+        mutableStringToValue[wireEnumConstant.declaredName] = constant
+        mutableValueToString[constant] = wireEnumConstant.declaredName
+      }
     }
-    return@run map
+
+    stringToValue = mutableStringToValue
+    valueToString = mutableValueToString
   }
 
-  override fun fromString(value: String): E? = stringToValue[value]
+  override fun fromString(value: String): E? {
+    return stringToValue[value]
+  }
 
-  override fun toStringOrNumber(value: E): String = (value as Enum<*>).name
+  override fun toStringOrNumber(value: E): String {
+    return valueToString[value]!!
+  }
 }

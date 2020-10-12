@@ -218,7 +218,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
       val builderType = getBuilderType(messageType)
       val fieldBindings = LinkedHashMap<Int, FieldBinding<M, B>>()
 
-      // Create tag bindings for fields annotated with '@WireField'
+      // Create tag bindings for fields annotated with '@WireField'.
       for (messageField in messageType.declaredFields) {
         val wireField = messageField.getAnnotation(WireField::class.java)
         if (wireField != null) {
