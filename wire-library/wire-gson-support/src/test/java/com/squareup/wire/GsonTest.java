@@ -17,6 +17,7 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.moshi.JsonAdapter;
 import com.squareup.wire.json.JsonUtils;
 import com.squareup.wire.proto2.RepeatedPackedAndMap;
 import com.squareup.wire.proto2.alltypes.AllTypes;
@@ -27,7 +28,9 @@ import okio.Okio;
 import org.junit.Ignore;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
+import squareup.proto2.keywords.KeywordJava.KeywordJavaEnum;
 import squareup.proto2.keywords.KeywordKotlin;
+import squareup.proto2.keywords.KeywordKotlin.KeywordKotlinEnum;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,17 +70,16 @@ public class GsonTest {
     assertThat(parsed.map_int32_int32).isEmpty();
   }
 
-  @Ignore("Broken we need enumConstantBinding.")
   @Test public void usedKeywordsInKotlin() {
     KeywordKotlin keyword = new KeywordKotlin.Builder()
         .object_("object")
         .when_(1)
         .enums(
             Arrays.asList(
-                KeywordKotlin.KeywordKotlinEnum.object_,
-                KeywordKotlin.KeywordKotlinEnum.when_,
-                KeywordKotlin.KeywordKotlinEnum.fun_,
-                KeywordKotlin.KeywordKotlinEnum.return_
+                KeywordKotlinEnum.object_,
+                KeywordKotlinEnum.when_,
+                KeywordKotlinEnum.fun_,
+                KeywordKotlinEnum.return_
                 // Broken, see https://github.com/square/kotlinpoet/issues/991
                 // KeywordKotlin.KeywordKotlinEnum.open
             )
@@ -96,17 +98,16 @@ public class GsonTest {
     assertThat(gson.fromJson(generatedNamedJson, KeywordKotlin.class)).isEqualTo(keyword);
   }
 
-  @Ignore("Broken we need enumConstantBinding.")
   @Test public void usedKeywordsInJava() {
     KeywordJava keyword = new KeywordJava.Builder()
         .final_("final")
         .public_(true)
         .enums(
             Arrays.asList(
-                KeywordJava.KeywordJavaEnum.final_,
-                KeywordJava.KeywordJavaEnum.public_,
-                KeywordJava.KeywordJavaEnum.package_,
-                KeywordJava.KeywordJavaEnum.return_
+                KeywordJavaEnum.final_,
+                KeywordJavaEnum.public_,
+                KeywordJavaEnum.package_,
+                KeywordJavaEnum.return_
             )
         )
         .build();
@@ -121,5 +122,29 @@ public class GsonTest {
     String generatedNamedJson = "{\"final_\":\"final\", \"public_\":true, \"package_\":{}, "
         + "\"return_\":[], \"enums\":[\"final_\", \"public_\", \"package_\", \"return_\"]}";
     assertThat(gson.fromJson(generatedNamedJson, KeywordJava.class)).isEqualTo(keyword);
+  }
+
+  @Ignore("Broken. We need to fix the WireJsonAdapterFactory.")
+  @Test public void enumKeywordsAtRootInKotlin() {
+    KeywordKotlinEnum constant = KeywordKotlinEnum.object_;
+    String json = gson.toJson(constant);
+    JsonUtils.assertJsonEquals("\"object\"", json);
+    KeywordKotlinEnum parseKeyword = gson.fromJson(json, KeywordKotlinEnum.class);
+    assertThat(parseKeyword).isEqualTo(constant);
+
+    String generatedNamedJson = "\"object_\"";
+    assertThat(gson.fromJson(generatedNamedJson, KeywordKotlinEnum.class)).isEqualTo(constant);
+  }
+
+  @Ignore("Broken. We need to fix the WireJsonAdapterFactory.")
+  @Test public void enumKeywordsAtRootInJava() {
+    KeywordJavaEnum constant = KeywordJavaEnum.final_;
+    String json = gson.toJson(constant);
+    JsonUtils.assertJsonEquals("\"final\"", json);
+    KeywordJavaEnum parseKeyword = gson.fromJson(json, KeywordJavaEnum.class);
+    assertThat(parseKeyword).isEqualTo(constant);
+
+    String generatedNamedJson = "\"final_\"";
+    assertThat(gson.fromJson(generatedNamedJson, KeywordJavaEnum.class)).isEqualTo(constant);
   }
 }
