@@ -27,23 +27,17 @@ internal class DirectedAcyclicGraph<N>(
   private fun incomingEdges(node: N) = nodes.filter { node in edges(it) }
 
   fun disjointGraphs(): Set<Set<N>> {
-    val graphs = mutableSetOf<Set<N>>()
-    for (root in seeds) {
-      val reachableNames = mutableSetOf<N>()
-      val visitQueue = ArrayDeque<N>().apply { add(root) }
-      while (visitQueue.isNotEmpty()) {
-        val visitName = visitQueue.removeFirst()
-        reachableNames += visitName
-
-        for (dependency in edges(visitName) + incomingEdges(visitName)) {
-          if (dependency !in reachableNames && dependency !in visitQueue) {
-            visitQueue += dependency
-          }
-        }
+    val uf = UnionFind(nodes)
+    val components = mutableMapOf<N, MutableSet<N>>()
+    for (node in nodes) {
+      for (dependency in edges(node)) {
+        uf.union(node, dependency)
       }
-      graphs += reachableNames
     }
-    return graphs
+    for ((child, root) in uf.parents.entries) {
+      components[root] = components.computeIfAbsent(root, { mutableSetOf() }).apply { add(child) }
+    }
+    return components.values.toSet()
   }
 
   fun topologicalOrder(): List<N> {
@@ -73,4 +67,5 @@ internal class DirectedAcyclicGraph<N>(
     }
     return nodes
   }
+
 }
