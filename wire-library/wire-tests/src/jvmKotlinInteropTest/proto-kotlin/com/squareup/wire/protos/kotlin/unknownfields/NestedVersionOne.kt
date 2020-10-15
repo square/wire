@@ -14,27 +14,28 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class NestedVersionOne(
+public class NestedVersionOne(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val i: Int? = null,
+  public val i: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NestedVersionOne, NestedVersionOne.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.i = i
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NestedVersionOne) return false
     if (unknownFields != other.unknownFields) return false
@@ -42,7 +43,7 @@ class NestedVersionOne(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -52,51 +53,51 @@ class NestedVersionOne(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     return result.joinToString(prefix = "NestedVersionOne{", separator = ", ", postfix = "}")
   }
 
-  fun copy(i: Int? = this.i, unknownFields: ByteString = this.unknownFields): NestedVersionOne =
-      NestedVersionOne(i, unknownFields)
+  public fun copy(i: Int? = this.i, unknownFields: ByteString = this.unknownFields):
+      NestedVersionOne = NestedVersionOne(i, unknownFields)
 
-  class Builder : Message.Builder<NestedVersionOne, Builder>() {
+  public class Builder : Message.Builder<NestedVersionOne, Builder>() {
     @JvmField
-    var i: Int? = null
+    public var i: Int? = null
 
-    fun i(i: Int?): Builder {
+    public fun i(i: Int?): Builder {
       this.i = i
       return this
     }
 
-    override fun build(): NestedVersionOne = NestedVersionOne(
+    public override fun build(): NestedVersionOne = NestedVersionOne(
       i = i,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<NestedVersionOne> = object : ProtoAdapter<NestedVersionOne>(
+    public val ADAPTER: ProtoAdapter<NestedVersionOne> = object : ProtoAdapter<NestedVersionOne>(
       FieldEncoding.LENGTH_DELIMITED, 
       NestedVersionOne::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionOne", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: NestedVersionOne): Int {
+      public override fun encodedSize(value: NestedVersionOne): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: NestedVersionOne) {
+      public override fun encode(writer: ProtoWriter, value: NestedVersionOne): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): NestedVersionOne {
+      public override fun decode(reader: ProtoReader): NestedVersionOne {
         var i: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -110,7 +111,7 @@ class NestedVersionOne(
         )
       }
 
-      override fun redact(value: NestedVersionOne): NestedVersionOne = value.copy(
+      public override fun redact(value: NestedVersionOne): NestedVersionOne = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

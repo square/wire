@@ -5,6 +5,6 @@ package com.squareup.wire.protos.kotlin.services
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.Service
 
-interface SomeServiceClient : Service {
-  fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse>
+public interface SomeServiceClient : Service {
+  public fun SomeMethod(): GrpcCall<SomeRequest, SomeResponse>
 }

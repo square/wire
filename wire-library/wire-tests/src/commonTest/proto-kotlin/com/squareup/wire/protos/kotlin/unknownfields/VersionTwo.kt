@@ -9,8 +9,8 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -20,48 +20,49 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class VersionTwo(
+public class VersionTwo(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val i: Int? = null,
+  public val i: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val v2_i: Int? = null,
+  public val v2_i: Int? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  val v2_s: String? = null,
+  public val v2_s: String? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
-  val v2_f32: Int? = null,
+  public val v2_f32: Int? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
-  val v2_f64: Long? = null,
+  public val v2_f64: Long? = null,
   v2_rs: List<String> = emptyList(),
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionTwo#ADAPTER"
   )
-  val obj: NestedVersionTwo? = null,
+  public val obj: NestedVersionTwo? = null,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionTwo#ADAPTER"
   )
-  val en: EnumVersionTwo? = null,
+  public val en: EnumVersionTwo? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<VersionTwo, Nothing>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -69,15 +70,15 @@ class VersionTwo(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REPEATED
   )
-  val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
+  public val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VersionTwo) return false
     if (unknownFields != other.unknownFields) return false
@@ -92,7 +93,7 @@ class VersionTwo(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -109,7 +110,7 @@ class VersionTwo(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     if (v2_i != null) result += """v2_i=$v2_i"""
@@ -122,7 +123,7 @@ class VersionTwo(
     return result.joinToString(prefix = "VersionTwo{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     i: Int? = this.i,
     v2_i: Int? = this.v2_i,
     v2_s: String? = this.v2_s,
@@ -134,16 +135,16 @@ class VersionTwo(
     unknownFields: ByteString = this.unknownFields
   ): VersionTwo = VersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, obj, en, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<VersionTwo> = object : ProtoAdapter<VersionTwo>(
+    public val ADAPTER: ProtoAdapter<VersionTwo> = object : ProtoAdapter<VersionTwo>(
       FieldEncoding.LENGTH_DELIMITED, 
       VersionTwo::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionTwo", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: VersionTwo): Int {
+      public override fun encodedSize(value: VersionTwo): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i)
@@ -156,7 +157,7 @@ class VersionTwo(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: VersionTwo) {
+      public override fun encode(writer: ProtoWriter, value: VersionTwo): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s)
@@ -168,7 +169,7 @@ class VersionTwo(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): VersionTwo {
+      public override fun decode(reader: ProtoReader): VersionTwo {
         var i: Int? = null
         var v2_i: Int? = null
         var v2_s: String? = null
@@ -207,7 +208,7 @@ class VersionTwo(
         )
       }
 
-      override fun redact(value: VersionTwo): VersionTwo = value.copy(
+      public override fun redact(value: VersionTwo): VersionTwo = value.copy(
         obj = value.obj?.let(NestedVersionTwo.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

@@ -10,7 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.`internal`.countNonNull
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -20,71 +20,72 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class Form(
+public class Form(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}ButtonElement#ADAPTER"
   )
-  val button_element: ButtonElement? = null,
+  public val button_element: ButtonElement? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}LocalImageElement#ADAPTER"
   )
-  val local_image_element: LocalImageElement? = null,
+  public val local_image_element: LocalImageElement? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}RemoteImageElement#ADAPTER"
   )
-  val remote_image_element: RemoteImageElement? = null,
+  public val remote_image_element: RemoteImageElement? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}MoneyElement#ADAPTER"
   )
-  val money_element: MoneyElement? = null,
+  public val money_element: MoneyElement? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}SpacerElement#ADAPTER"
   )
-  val spacer_element: SpacerElement? = null,
+  public val spacer_element: SpacerElement? = null,
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}TextElement#ADAPTER"
   )
-  val text_element: TextElement? = null,
+  public val text_element: TextElement? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}CustomizedCardElement#ADAPTER"
   )
-  val customized_card_element: CustomizedCardElement? = null,
+  public val customized_card_element: CustomizedCardElement? = null,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}AddressElement#ADAPTER"
   )
-  val address_element: AddressElement? = null,
+  public val address_element: AddressElement? = null,
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}TextInputElement#ADAPTER"
   )
-  val text_input_element: TextInputElement? = null,
+  public val text_input_element: TextInputElement? = null,
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}OptionPickerElement#ADAPTER"
   )
-  val option_picker_element: OptionPickerElement? = null,
+  public val option_picker_element: OptionPickerElement? = null,
   @field:WireField(
     tag = 11,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}DetailRowElement#ADAPTER"
   )
-  val detail_row_element: DetailRowElement? = null,
+  public val detail_row_element: DetailRowElement? = null,
   @field:WireField(
     tag = 12,
     adapter = "com.squareup.wire.protos.kotlin.Form${'$'}CurrencyConversionFlagsElement#ADAPTER"
   )
-  val currency_conversion_flags_element: CurrencyConversionFlagsElement? = null,
+  public val currency_conversion_flags_element: CurrencyConversionFlagsElement? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Form, Nothing>(ADAPTER, unknownFields) {
   init {
@@ -99,9 +100,9 @@ class Form(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Form) return false
     if (unknownFields != other.unknownFields) return false
@@ -120,7 +121,7 @@ class Form(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -141,7 +142,7 @@ class Form(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (button_element != null) result += """button_element=$button_element"""
     if (local_image_element != null) result += """local_image_element=$local_image_element"""
@@ -160,7 +161,7 @@ class Form(
     return result.joinToString(prefix = "Form{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     button_element: ButtonElement? = this.button_element,
     local_image_element: LocalImageElement? = this.local_image_element,
     remote_image_element: RemoteImageElement? = this.remote_image_element,
@@ -179,16 +180,16 @@ class Form(
       spacer_element, text_element, customized_card_element, address_element, text_input_element,
       option_picker_element, detail_row_element, currency_conversion_flags_element, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Form> = object : ProtoAdapter<Form>(
+    public val ADAPTER: ProtoAdapter<Form> = object : ProtoAdapter<Form>(
       FieldEncoding.LENGTH_DELIMITED, 
       Form::class, 
       "type.googleapis.com/squareup.protos.kotlin.oneof.Form", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Form): Int {
+      public override fun encodedSize(value: Form): Int {
         var size = value.unknownFields.size
         size += ButtonElement.ADAPTER.encodedSizeWithTag(1, value.button_element)
         size += LocalImageElement.ADAPTER.encodedSizeWithTag(2, value.local_image_element)
@@ -206,7 +207,7 @@ class Form(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Form) {
+      public override fun encode(writer: ProtoWriter, value: Form): Unit {
         ButtonElement.ADAPTER.encodeWithTag(writer, 1, value.button_element)
         LocalImageElement.ADAPTER.encodeWithTag(writer, 2, value.local_image_element)
         RemoteImageElement.ADAPTER.encodeWithTag(writer, 3, value.remote_image_element)
@@ -223,7 +224,7 @@ class Form(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Form {
+      public override fun decode(reader: ProtoReader): Form {
         var button_element: ButtonElement? = null
         var local_image_element: LocalImageElement? = null
         var remote_image_element: RemoteImageElement? = null
@@ -271,7 +272,7 @@ class Form(
         )
       }
 
-      override fun redact(value: Form): Form = value.copy(
+      public override fun redact(value: Form): Form = value.copy(
         button_element = value.button_element?.let(ButtonElement.ADAPTER::redact),
         local_image_element = value.local_image_element?.let(LocalImageElement.ADAPTER::redact),
         remote_image_element = value.remote_image_element?.let(RemoteImageElement.ADAPTER::redact),
@@ -294,55 +295,55 @@ class Form(
     private const val serialVersionUID: Long = 0L
   }
 
-  class ButtonElement(
+  public class ButtonElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<ButtonElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is ButtonElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "ButtonElement{}"
+    public override fun toString(): String = "ButtonElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): ButtonElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): ButtonElement =
         ButtonElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<ButtonElement> = object : ProtoAdapter<ButtonElement>(
+      public val ADAPTER: ProtoAdapter<ButtonElement> = object : ProtoAdapter<ButtonElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         ButtonElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.ButtonElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: ButtonElement): Int {
+        public override fun encodedSize(value: ButtonElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: ButtonElement) {
+        public override fun encode(writer: ProtoWriter, value: ButtonElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): ButtonElement {
+        public override fun decode(reader: ProtoReader): ButtonElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return ButtonElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: ButtonElement): ButtonElement = value.copy(
+        public override fun redact(value: ButtonElement): ButtonElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -351,55 +352,56 @@ class Form(
     }
   }
 
-  class LocalImageElement(
+  public class LocalImageElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<LocalImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is LocalImageElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "LocalImageElement{}"
+    public override fun toString(): String = "LocalImageElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): LocalImageElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): LocalImageElement =
         LocalImageElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<LocalImageElement> = object : ProtoAdapter<LocalImageElement>(
+      public val ADAPTER: ProtoAdapter<LocalImageElement> = object :
+          ProtoAdapter<LocalImageElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         LocalImageElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.LocalImageElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: LocalImageElement): Int {
+        public override fun encodedSize(value: LocalImageElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: LocalImageElement) {
+        public override fun encode(writer: ProtoWriter, value: LocalImageElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): LocalImageElement {
+        public override fun decode(reader: ProtoReader): LocalImageElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return LocalImageElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: LocalImageElement): LocalImageElement = value.copy(
+        public override fun redact(value: LocalImageElement): LocalImageElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -408,55 +410,56 @@ class Form(
     }
   }
 
-  class RemoteImageElement(
+  public class RemoteImageElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<RemoteImageElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is RemoteImageElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "RemoteImageElement{}"
+    public override fun toString(): String = "RemoteImageElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): RemoteImageElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): RemoteImageElement =
         RemoteImageElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<RemoteImageElement> = object : ProtoAdapter<RemoteImageElement>(
+      public val ADAPTER: ProtoAdapter<RemoteImageElement> = object :
+          ProtoAdapter<RemoteImageElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         RemoteImageElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.RemoteImageElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: RemoteImageElement): Int {
+        public override fun encodedSize(value: RemoteImageElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: RemoteImageElement) {
+        public override fun encode(writer: ProtoWriter, value: RemoteImageElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): RemoteImageElement {
+        public override fun decode(reader: ProtoReader): RemoteImageElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return RemoteImageElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: RemoteImageElement): RemoteImageElement = value.copy(
+        public override fun redact(value: RemoteImageElement): RemoteImageElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -465,55 +468,55 @@ class Form(
     }
   }
 
-  class MoneyElement(
+  public class MoneyElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<MoneyElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is MoneyElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "MoneyElement{}"
+    public override fun toString(): String = "MoneyElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): MoneyElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): MoneyElement =
         MoneyElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<MoneyElement> = object : ProtoAdapter<MoneyElement>(
+      public val ADAPTER: ProtoAdapter<MoneyElement> = object : ProtoAdapter<MoneyElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         MoneyElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.MoneyElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: MoneyElement): Int {
+        public override fun encodedSize(value: MoneyElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: MoneyElement) {
+        public override fun encode(writer: ProtoWriter, value: MoneyElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): MoneyElement {
+        public override fun decode(reader: ProtoReader): MoneyElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return MoneyElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: MoneyElement): MoneyElement = value.copy(
+        public override fun redact(value: MoneyElement): MoneyElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -522,55 +525,55 @@ class Form(
     }
   }
 
-  class SpacerElement(
+  public class SpacerElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<SpacerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is SpacerElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "SpacerElement{}"
+    public override fun toString(): String = "SpacerElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): SpacerElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): SpacerElement =
         SpacerElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<SpacerElement> = object : ProtoAdapter<SpacerElement>(
+      public val ADAPTER: ProtoAdapter<SpacerElement> = object : ProtoAdapter<SpacerElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         SpacerElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.SpacerElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: SpacerElement): Int {
+        public override fun encodedSize(value: SpacerElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: SpacerElement) {
+        public override fun encode(writer: ProtoWriter, value: SpacerElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): SpacerElement {
+        public override fun decode(reader: ProtoReader): SpacerElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return SpacerElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: SpacerElement): SpacerElement = value.copy(
+        public override fun redact(value: SpacerElement): SpacerElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -579,55 +582,55 @@ class Form(
     }
   }
 
-  class TextElement(
+  public class TextElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<TextElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "TextElement{}"
+    public override fun toString(): String = "TextElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): TextElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): TextElement =
         TextElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<TextElement> = object : ProtoAdapter<TextElement>(
+      public val ADAPTER: ProtoAdapter<TextElement> = object : ProtoAdapter<TextElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         TextElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: TextElement): Int {
+        public override fun encodedSize(value: TextElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: TextElement) {
+        public override fun encode(writer: ProtoWriter, value: TextElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): TextElement {
+        public override fun decode(reader: ProtoReader): TextElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return TextElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: TextElement): TextElement = value.copy(
+        public override fun redact(value: TextElement): TextElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -636,32 +639,32 @@ class Form(
     }
   }
 
-  class CustomizedCardElement(
+  public class CustomizedCardElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<CustomizedCardElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CustomizedCardElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "CustomizedCardElement{}"
+    public override fun toString(): String = "CustomizedCardElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): CustomizedCardElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): CustomizedCardElement =
         CustomizedCardElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<CustomizedCardElement> = object :
+      public val ADAPTER: ProtoAdapter<CustomizedCardElement> = object :
           ProtoAdapter<CustomizedCardElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         CustomizedCardElement::class, 
@@ -669,23 +672,24 @@ class Form(
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: CustomizedCardElement): Int {
+        public override fun encodedSize(value: CustomizedCardElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: CustomizedCardElement) {
+        public override fun encode(writer: ProtoWriter, value: CustomizedCardElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): CustomizedCardElement {
+        public override fun decode(reader: ProtoReader): CustomizedCardElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return CustomizedCardElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: CustomizedCardElement): CustomizedCardElement = value.copy(
+        public override fun redact(value: CustomizedCardElement): CustomizedCardElement =
+            value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -694,55 +698,55 @@ class Form(
     }
   }
 
-  class AddressElement(
+  public class AddressElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<AddressElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is AddressElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "AddressElement{}"
+    public override fun toString(): String = "AddressElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): AddressElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): AddressElement =
         AddressElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<AddressElement> = object : ProtoAdapter<AddressElement>(
+      public val ADAPTER: ProtoAdapter<AddressElement> = object : ProtoAdapter<AddressElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         AddressElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.AddressElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: AddressElement): Int {
+        public override fun encodedSize(value: AddressElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: AddressElement) {
+        public override fun encode(writer: ProtoWriter, value: AddressElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): AddressElement {
+        public override fun decode(reader: ProtoReader): AddressElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return AddressElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: AddressElement): AddressElement = value.copy(
+        public override fun redact(value: AddressElement): AddressElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -751,55 +755,55 @@ class Form(
     }
   }
 
-  class TextInputElement(
+  public class TextInputElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<TextInputElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is TextInputElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "TextInputElement{}"
+    public override fun toString(): String = "TextInputElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): TextInputElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): TextInputElement =
         TextInputElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<TextInputElement> = object : ProtoAdapter<TextInputElement>(
+      public val ADAPTER: ProtoAdapter<TextInputElement> = object : ProtoAdapter<TextInputElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         TextInputElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.TextInputElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: TextInputElement): Int {
+        public override fun encodedSize(value: TextInputElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: TextInputElement) {
+        public override fun encode(writer: ProtoWriter, value: TextInputElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): TextInputElement {
+        public override fun decode(reader: ProtoReader): TextInputElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return TextInputElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: TextInputElement): TextInputElement = value.copy(
+        public override fun redact(value: TextInputElement): TextInputElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -808,55 +812,56 @@ class Form(
     }
   }
 
-  class OptionPickerElement(
+  public class OptionPickerElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<OptionPickerElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is OptionPickerElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "OptionPickerElement{}"
+    public override fun toString(): String = "OptionPickerElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): OptionPickerElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): OptionPickerElement =
         OptionPickerElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<OptionPickerElement> = object : ProtoAdapter<OptionPickerElement>(
+      public val ADAPTER: ProtoAdapter<OptionPickerElement> = object :
+          ProtoAdapter<OptionPickerElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         OptionPickerElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.OptionPickerElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: OptionPickerElement): Int {
+        public override fun encodedSize(value: OptionPickerElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: OptionPickerElement) {
+        public override fun encode(writer: ProtoWriter, value: OptionPickerElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): OptionPickerElement {
+        public override fun decode(reader: ProtoReader): OptionPickerElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return OptionPickerElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: OptionPickerElement): OptionPickerElement = value.copy(
+        public override fun redact(value: OptionPickerElement): OptionPickerElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -865,55 +870,55 @@ class Form(
     }
   }
 
-  class DetailRowElement(
+  public class DetailRowElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<DetailRowElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is DetailRowElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "DetailRowElement{}"
+    public override fun toString(): String = "DetailRowElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): DetailRowElement =
+    public fun copy(unknownFields: ByteString = this.unknownFields): DetailRowElement =
         DetailRowElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<DetailRowElement> = object : ProtoAdapter<DetailRowElement>(
+      public val ADAPTER: ProtoAdapter<DetailRowElement> = object : ProtoAdapter<DetailRowElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         DetailRowElement::class, 
         "type.googleapis.com/squareup.protos.kotlin.oneof.Form.DetailRowElement", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: DetailRowElement): Int {
+        public override fun encodedSize(value: DetailRowElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: DetailRowElement) {
+        public override fun encode(writer: ProtoWriter, value: DetailRowElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): DetailRowElement {
+        public override fun decode(reader: ProtoReader): DetailRowElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return DetailRowElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: DetailRowElement): DetailRowElement = value.copy(
+        public override fun redact(value: DetailRowElement): DetailRowElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -922,32 +927,32 @@ class Form(
     }
   }
 
-  class CurrencyConversionFlagsElement(
+  public class CurrencyConversionFlagsElement(
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<CurrencyConversionFlagsElement, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is CurrencyConversionFlagsElement) return false
       if (unknownFields != other.unknownFields) return false
       return true
     }
 
-    override fun hashCode(): Int = unknownFields.hashCode()
+    public override fun hashCode(): Int = unknownFields.hashCode()
 
-    override fun toString(): String = "CurrencyConversionFlagsElement{}"
+    public override fun toString(): String = "CurrencyConversionFlagsElement{}"
 
-    fun copy(unknownFields: ByteString = this.unknownFields): CurrencyConversionFlagsElement =
-        CurrencyConversionFlagsElement(unknownFields)
+    public fun copy(unknownFields: ByteString = this.unknownFields): CurrencyConversionFlagsElement
+        = CurrencyConversionFlagsElement(unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<CurrencyConversionFlagsElement> = object :
+      public val ADAPTER: ProtoAdapter<CurrencyConversionFlagsElement> = object :
           ProtoAdapter<CurrencyConversionFlagsElement>(
         FieldEncoding.LENGTH_DELIMITED, 
         CurrencyConversionFlagsElement::class, 
@@ -955,24 +960,25 @@ class Form(
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: CurrencyConversionFlagsElement): Int {
+        public override fun encodedSize(value: CurrencyConversionFlagsElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: CurrencyConversionFlagsElement) {
+        public override fun encode(writer: ProtoWriter, value: CurrencyConversionFlagsElement):
+            Unit {
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): CurrencyConversionFlagsElement {
+        public override fun decode(reader: ProtoReader): CurrencyConversionFlagsElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return CurrencyConversionFlagsElement(
             unknownFields = unknownFields
           )
         }
 
-        override fun redact(value: CurrencyConversionFlagsElement): CurrencyConversionFlagsElement =
-            value.copy(
+        public override fun redact(value: CurrencyConversionFlagsElement):
+            CurrencyConversionFlagsElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

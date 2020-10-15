@@ -17,58 +17,59 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class NoPackageRequest(
+public class NoPackageRequest(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NoPackageRequest, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoPackageRequest) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  public override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = "NoPackageRequest{}"
+  public override fun toString(): String = "NoPackageRequest{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): NoPackageRequest =
+  public fun copy(unknownFields: ByteString = this.unknownFields): NoPackageRequest =
       NoPackageRequest(unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<NoPackageRequest> = object : ProtoAdapter<NoPackageRequest>(
+    public val ADAPTER: ProtoAdapter<NoPackageRequest> = object : ProtoAdapter<NoPackageRequest>(
       FieldEncoding.LENGTH_DELIMITED, 
       NoPackageRequest::class, 
       "type.googleapis.com/NoPackageRequest", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: NoPackageRequest): Int {
+      public override fun encodedSize(value: NoPackageRequest): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: NoPackageRequest) {
+      public override fun encode(writer: ProtoWriter, value: NoPackageRequest): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): NoPackageRequest {
+      public override fun decode(reader: ProtoReader): NoPackageRequest {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return NoPackageRequest(
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(value: NoPackageRequest): NoPackageRequest = value.copy(
+      public override fun redact(value: NoPackageRequest): NoPackageRequest = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

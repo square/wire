@@ -9,19 +9,20 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.redactElements
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.redactElements
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class Repeated(
+public class Repeated(
   things: List<Thing> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Repeated, Repeated.Builder>(ADAPTER, unknownFields) {
@@ -31,16 +32,16 @@ class Repeated(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val things: List<Thing> = immutableCopyOf("things", things)
+  public val things: List<Thing> = immutableCopyOf("things", things)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.things = things
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Repeated) return false
     if (unknownFields != other.unknownFields) return false
@@ -48,7 +49,7 @@ class Repeated(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -58,52 +59,52 @@ class Repeated(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (things.isNotEmpty()) result += """things=$things"""
     return result.joinToString(prefix = "Repeated{", separator = ", ", postfix = "}")
   }
 
-  fun copy(things: List<Thing> = this.things, unknownFields: ByteString = this.unknownFields):
-      Repeated = Repeated(things, unknownFields)
+  public fun copy(things: List<Thing> = this.things, unknownFields: ByteString =
+      this.unknownFields): Repeated = Repeated(things, unknownFields)
 
-  class Builder : Message.Builder<Repeated, Builder>() {
+  public class Builder : Message.Builder<Repeated, Builder>() {
     @JvmField
-    var things: List<Thing> = emptyList()
+    public var things: List<Thing> = emptyList()
 
-    fun things(things: List<Thing>): Builder {
+    public fun things(things: List<Thing>): Builder {
       checkElementsNotNull(things)
       this.things = things
       return this
     }
 
-    override fun build(): Repeated = Repeated(
+    public override fun build(): Repeated = Repeated(
       things = things,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Repeated> = object : ProtoAdapter<Repeated>(
+    public val ADAPTER: ProtoAdapter<Repeated> = object : ProtoAdapter<Repeated>(
       FieldEncoding.LENGTH_DELIMITED, 
       Repeated::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Repeated", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Repeated): Int {
+      public override fun encodedSize(value: Repeated): Int {
         var size = value.unknownFields.size
         size += Thing.ADAPTER.asRepeated().encodedSizeWithTag(1, value.things)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Repeated) {
+      public override fun encode(writer: ProtoWriter, value: Repeated): Unit {
         Thing.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.things)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Repeated {
+      public override fun decode(reader: ProtoReader): Repeated {
         val things = mutableListOf<Thing>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -117,7 +118,7 @@ class Repeated(
         )
       }
 
-      override fun redact(value: Repeated): Repeated = value.copy(
+      public override fun redact(value: Repeated): Repeated = value.copy(
         things = value.things.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

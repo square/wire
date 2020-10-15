@@ -2,13 +2,13 @@
 // Source: squareup.protos.custom_options.my_field_option_three in custom_options.proto
 package com.squareup.wire.protos.custom_options
 
-import kotlin.annotation.AnnotationRetention
-import kotlin.annotation.AnnotationTarget
-import kotlin.annotation.Retention
-import kotlin.annotation.Target
+import kotlin.`annotation`.AnnotationRetention
+import kotlin.`annotation`.AnnotationTarget
+import kotlin.`annotation`.Retention
+import kotlin.`annotation`.Target
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
-annotation class MyFieldOptionThreeOption(
-  val value: FooBar.FooBarBazEnum
+public annotation class MyFieldOptionThreeOption(
+  public val value: FooBar.FooBarBazEnum
 )

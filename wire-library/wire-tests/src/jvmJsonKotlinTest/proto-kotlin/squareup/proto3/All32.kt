@@ -9,14 +9,15 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.countNonNull
-import com.squareup.wire.internal.immutableCopyOf
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.countNonNull
+import com.squareup.wire.`internal`.immutableCopyOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
@@ -24,7 +25,7 @@ import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
 
-class All32(
+public class All32(
   /**
    * Prefixing so the generated code doesn't rename it weirdly.
    */
@@ -35,7 +36,7 @@ class All32(
     jsonName = "myInt32"
   )
   @JvmField
-  val my_int32: Int = 0,
+  public val my_int32: Int = 0,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
@@ -43,7 +44,7 @@ class All32(
     jsonName = "myUint32"
   )
   @JvmField
-  val my_uint32: Int = 0,
+  public val my_uint32: Int = 0,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
@@ -51,7 +52,7 @@ class All32(
     jsonName = "mySint32"
   )
   @JvmField
-  val my_sint32: Int = 0,
+  public val my_sint32: Int = 0,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
@@ -59,7 +60,7 @@ class All32(
     jsonName = "myFixed32"
   )
   @JvmField
-  val my_fixed32: Int = 0,
+  public val my_fixed32: Int = 0,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
@@ -67,7 +68,7 @@ class All32(
     jsonName = "mySfixed32"
   )
   @JvmField
-  val my_sfixed32: Int = 0,
+  public val my_sfixed32: Int = 0,
   rep_int32: List<Int> = emptyList(),
   rep_uint32: List<Int> = emptyList(),
   rep_sint32: List<Int> = emptyList(),
@@ -89,14 +90,14 @@ class All32(
     jsonName = "oneofInt32"
   )
   @JvmField
-  val oneof_int32: Int? = null,
+  public val oneof_int32: Int? = null,
   @field:WireField(
     tag = 402,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     jsonName = "oneofSfixed32"
   )
   @JvmField
-  val oneof_sfixed32: Int? = null,
+  public val oneof_sfixed32: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<All32, All32.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -106,7 +107,7 @@ class All32(
     jsonName = "repInt32"
   )
   @JvmField
-  val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
+  public val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
 
   @field:WireField(
     tag = 202,
@@ -115,7 +116,7 @@ class All32(
     jsonName = "repUint32"
   )
   @JvmField
-  val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
+  public val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
 
   @field:WireField(
     tag = 203,
@@ -124,7 +125,7 @@ class All32(
     jsonName = "repSint32"
   )
   @JvmField
-  val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
+  public val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
 
   @field:WireField(
     tag = 204,
@@ -133,7 +134,7 @@ class All32(
     jsonName = "repFixed32"
   )
   @JvmField
-  val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
+  public val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
 
   @field:WireField(
     tag = 205,
@@ -142,7 +143,7 @@ class All32(
     jsonName = "repSfixed32"
   )
   @JvmField
-  val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
+  public val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
 
   @field:WireField(
     tag = 301,
@@ -151,7 +152,7 @@ class All32(
     jsonName = "packInt32"
   )
   @JvmField
-  val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
+  public val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
 
   @field:WireField(
     tag = 302,
@@ -160,7 +161,7 @@ class All32(
     jsonName = "packUint32"
   )
   @JvmField
-  val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
+  public val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
 
   @field:WireField(
     tag = 303,
@@ -169,7 +170,7 @@ class All32(
     jsonName = "packSint32"
   )
   @JvmField
-  val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
+  public val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
 
   @field:WireField(
     tag = 304,
@@ -178,7 +179,7 @@ class All32(
     jsonName = "packFixed32"
   )
   @JvmField
-  val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
+  public val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
 
   @field:WireField(
     tag = 305,
@@ -187,7 +188,7 @@ class All32(
     jsonName = "packSfixed32"
   )
   @JvmField
-  val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
+  public val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
 
   @field:WireField(
     tag = 501,
@@ -196,7 +197,7 @@ class All32(
     jsonName = "mapInt32Int32"
   )
   @JvmField
-  val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
+  public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
 
   @field:WireField(
     tag = 502,
@@ -205,7 +206,7 @@ class All32(
     jsonName = "mapInt32Uint32"
   )
   @JvmField
-  val map_int32_uint32: Map<Int, Int> = immutableCopyOf("map_int32_uint32", map_int32_uint32)
+  public val map_int32_uint32: Map<Int, Int> = immutableCopyOf("map_int32_uint32", map_int32_uint32)
 
   @field:WireField(
     tag = 503,
@@ -214,7 +215,7 @@ class All32(
     jsonName = "mapInt32Sint32"
   )
   @JvmField
-  val map_int32_sint32: Map<Int, Int> = immutableCopyOf("map_int32_sint32", map_int32_sint32)
+  public val map_int32_sint32: Map<Int, Int> = immutableCopyOf("map_int32_sint32", map_int32_sint32)
 
   @field:WireField(
     tag = 504,
@@ -223,7 +224,8 @@ class All32(
     jsonName = "mapInt32Fixed32"
   )
   @JvmField
-  val map_int32_fixed32: Map<Int, Int> = immutableCopyOf("map_int32_fixed32", map_int32_fixed32)
+  public val map_int32_fixed32: Map<Int, Int> = immutableCopyOf("map_int32_fixed32",
+      map_int32_fixed32)
 
   @field:WireField(
     tag = 505,
@@ -232,7 +234,8 @@ class All32(
     jsonName = "mapInt32Sfixed32"
   )
   @JvmField
-  val map_int32_sfixed32: Map<Int, Int> = immutableCopyOf("map_int32_sfixed32", map_int32_sfixed32)
+  public val map_int32_sfixed32: Map<Int, Int> = immutableCopyOf("map_int32_sfixed32",
+      map_int32_sfixed32)
 
   init {
     require(countNonNull(oneof_int32, oneof_sfixed32) <= 1) {
@@ -240,7 +243,7 @@ class All32(
     }
   }
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.my_int32 = my_int32
     builder.my_uint32 = my_uint32
@@ -268,7 +271,7 @@ class All32(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is All32) return false
     if (unknownFields != other.unknownFields) return false
@@ -297,7 +300,7 @@ class All32(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -328,7 +331,7 @@ class All32(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     result += """my_int32=$my_int32"""
     result += """my_uint32=$my_uint32"""
@@ -355,7 +358,7 @@ class All32(
     return result.joinToString(prefix = "All32{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     my_int32: Int = this.my_int32,
     my_uint32: Int = this.my_uint32,
     my_sint32: Int = this.my_sint32,
@@ -384,199 +387,199 @@ class All32(
       pack_sfixed32, map_int32_int32, map_int32_uint32, map_int32_sint32, map_int32_fixed32,
       map_int32_sfixed32, oneof_int32, oneof_sfixed32, unknownFields)
 
-  class Builder : Message.Builder<All32, Builder>() {
+  public class Builder : Message.Builder<All32, Builder>() {
     @JvmField
-    var my_int32: Int = 0
+    public var my_int32: Int = 0
 
     @JvmField
-    var my_uint32: Int = 0
+    public var my_uint32: Int = 0
 
     @JvmField
-    var my_sint32: Int = 0
+    public var my_sint32: Int = 0
 
     @JvmField
-    var my_fixed32: Int = 0
+    public var my_fixed32: Int = 0
 
     @JvmField
-    var my_sfixed32: Int = 0
+    public var my_sfixed32: Int = 0
 
     @JvmField
-    var rep_int32: List<Int> = emptyList()
+    public var rep_int32: List<Int> = emptyList()
 
     @JvmField
-    var rep_uint32: List<Int> = emptyList()
+    public var rep_uint32: List<Int> = emptyList()
 
     @JvmField
-    var rep_sint32: List<Int> = emptyList()
+    public var rep_sint32: List<Int> = emptyList()
 
     @JvmField
-    var rep_fixed32: List<Int> = emptyList()
+    public var rep_fixed32: List<Int> = emptyList()
 
     @JvmField
-    var rep_sfixed32: List<Int> = emptyList()
+    public var rep_sfixed32: List<Int> = emptyList()
 
     @JvmField
-    var pack_int32: List<Int> = emptyList()
+    public var pack_int32: List<Int> = emptyList()
 
     @JvmField
-    var pack_uint32: List<Int> = emptyList()
+    public var pack_uint32: List<Int> = emptyList()
 
     @JvmField
-    var pack_sint32: List<Int> = emptyList()
+    public var pack_sint32: List<Int> = emptyList()
 
     @JvmField
-    var pack_fixed32: List<Int> = emptyList()
+    public var pack_fixed32: List<Int> = emptyList()
 
     @JvmField
-    var pack_sfixed32: List<Int> = emptyList()
+    public var pack_sfixed32: List<Int> = emptyList()
 
     @JvmField
-    var map_int32_int32: Map<Int, Int> = emptyMap()
+    public var map_int32_int32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_int32_uint32: Map<Int, Int> = emptyMap()
+    public var map_int32_uint32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_int32_sint32: Map<Int, Int> = emptyMap()
+    public var map_int32_sint32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_int32_fixed32: Map<Int, Int> = emptyMap()
+    public var map_int32_fixed32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_int32_sfixed32: Map<Int, Int> = emptyMap()
+    public var map_int32_sfixed32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var oneof_int32: Int? = null
+    public var oneof_int32: Int? = null
 
     @JvmField
-    var oneof_sfixed32: Int? = null
+    public var oneof_sfixed32: Int? = null
 
     /**
      * Prefixing so the generated code doesn't rename it weirdly.
      */
-    fun my_int32(my_int32: Int): Builder {
+    public fun my_int32(my_int32: Int): Builder {
       this.my_int32 = my_int32
       return this
     }
 
-    fun my_uint32(my_uint32: Int): Builder {
+    public fun my_uint32(my_uint32: Int): Builder {
       this.my_uint32 = my_uint32
       return this
     }
 
-    fun my_sint32(my_sint32: Int): Builder {
+    public fun my_sint32(my_sint32: Int): Builder {
       this.my_sint32 = my_sint32
       return this
     }
 
-    fun my_fixed32(my_fixed32: Int): Builder {
+    public fun my_fixed32(my_fixed32: Int): Builder {
       this.my_fixed32 = my_fixed32
       return this
     }
 
-    fun my_sfixed32(my_sfixed32: Int): Builder {
+    public fun my_sfixed32(my_sfixed32: Int): Builder {
       this.my_sfixed32 = my_sfixed32
       return this
     }
 
-    fun rep_int32(rep_int32: List<Int>): Builder {
+    public fun rep_int32(rep_int32: List<Int>): Builder {
       checkElementsNotNull(rep_int32)
       this.rep_int32 = rep_int32
       return this
     }
 
-    fun rep_uint32(rep_uint32: List<Int>): Builder {
+    public fun rep_uint32(rep_uint32: List<Int>): Builder {
       checkElementsNotNull(rep_uint32)
       this.rep_uint32 = rep_uint32
       return this
     }
 
-    fun rep_sint32(rep_sint32: List<Int>): Builder {
+    public fun rep_sint32(rep_sint32: List<Int>): Builder {
       checkElementsNotNull(rep_sint32)
       this.rep_sint32 = rep_sint32
       return this
     }
 
-    fun rep_fixed32(rep_fixed32: List<Int>): Builder {
+    public fun rep_fixed32(rep_fixed32: List<Int>): Builder {
       checkElementsNotNull(rep_fixed32)
       this.rep_fixed32 = rep_fixed32
       return this
     }
 
-    fun rep_sfixed32(rep_sfixed32: List<Int>): Builder {
+    public fun rep_sfixed32(rep_sfixed32: List<Int>): Builder {
       checkElementsNotNull(rep_sfixed32)
       this.rep_sfixed32 = rep_sfixed32
       return this
     }
 
-    fun pack_int32(pack_int32: List<Int>): Builder {
+    public fun pack_int32(pack_int32: List<Int>): Builder {
       checkElementsNotNull(pack_int32)
       this.pack_int32 = pack_int32
       return this
     }
 
-    fun pack_uint32(pack_uint32: List<Int>): Builder {
+    public fun pack_uint32(pack_uint32: List<Int>): Builder {
       checkElementsNotNull(pack_uint32)
       this.pack_uint32 = pack_uint32
       return this
     }
 
-    fun pack_sint32(pack_sint32: List<Int>): Builder {
+    public fun pack_sint32(pack_sint32: List<Int>): Builder {
       checkElementsNotNull(pack_sint32)
       this.pack_sint32 = pack_sint32
       return this
     }
 
-    fun pack_fixed32(pack_fixed32: List<Int>): Builder {
+    public fun pack_fixed32(pack_fixed32: List<Int>): Builder {
       checkElementsNotNull(pack_fixed32)
       this.pack_fixed32 = pack_fixed32
       return this
     }
 
-    fun pack_sfixed32(pack_sfixed32: List<Int>): Builder {
+    public fun pack_sfixed32(pack_sfixed32: List<Int>): Builder {
       checkElementsNotNull(pack_sfixed32)
       this.pack_sfixed32 = pack_sfixed32
       return this
     }
 
-    fun map_int32_int32(map_int32_int32: Map<Int, Int>): Builder {
+    public fun map_int32_int32(map_int32_int32: Map<Int, Int>): Builder {
       this.map_int32_int32 = map_int32_int32
       return this
     }
 
-    fun map_int32_uint32(map_int32_uint32: Map<Int, Int>): Builder {
+    public fun map_int32_uint32(map_int32_uint32: Map<Int, Int>): Builder {
       this.map_int32_uint32 = map_int32_uint32
       return this
     }
 
-    fun map_int32_sint32(map_int32_sint32: Map<Int, Int>): Builder {
+    public fun map_int32_sint32(map_int32_sint32: Map<Int, Int>): Builder {
       this.map_int32_sint32 = map_int32_sint32
       return this
     }
 
-    fun map_int32_fixed32(map_int32_fixed32: Map<Int, Int>): Builder {
+    public fun map_int32_fixed32(map_int32_fixed32: Map<Int, Int>): Builder {
       this.map_int32_fixed32 = map_int32_fixed32
       return this
     }
 
-    fun map_int32_sfixed32(map_int32_sfixed32: Map<Int, Int>): Builder {
+    public fun map_int32_sfixed32(map_int32_sfixed32: Map<Int, Int>): Builder {
       this.map_int32_sfixed32 = map_int32_sfixed32
       return this
     }
 
-    fun oneof_int32(oneof_int32: Int?): Builder {
+    public fun oneof_int32(oneof_int32: Int?): Builder {
       this.oneof_int32 = oneof_int32
       this.oneof_sfixed32 = null
       return this
     }
 
-    fun oneof_sfixed32(oneof_sfixed32: Int?): Builder {
+    public fun oneof_sfixed32(oneof_sfixed32: Int?): Builder {
       this.oneof_sfixed32 = oneof_sfixed32
       this.oneof_int32 = null
       return this
     }
 
-    override fun build(): All32 = All32(
+    public override fun build(): All32 = All32(
       my_int32 = my_int32,
       my_uint32 = my_uint32,
       my_sint32 = my_sint32,
@@ -603,9 +606,9 @@ class All32(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<All32> = object : ProtoAdapter<All32>(
+    public val ADAPTER: ProtoAdapter<All32> = object : ProtoAdapter<All32>(
       FieldEncoding.LENGTH_DELIMITED, 
       All32::class, 
       "type.googleapis.com/squareup.proto3.All32", 
@@ -627,7 +630,7 @@ class All32(
       private val map_int32_sfixed32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.SFIXED32) }
 
-      override fun encodedSize(value: All32): Int {
+      public override fun encodedSize(value: All32): Int {
         var size = value.unknownFields.size
         if (value.my_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
         if (value.my_uint32 != 0) size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
@@ -656,7 +659,7 @@ class All32(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: All32) {
+      public override fun encode(writer: ProtoWriter, value: All32): Unit {
         if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
         if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
         if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
@@ -683,7 +686,7 @@ class All32(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): All32 {
+      public override fun decode(reader: ProtoReader): All32 {
         var my_int32: Int = 0
         var my_uint32: Int = 0
         var my_sint32: Int = 0
@@ -760,7 +763,7 @@ class All32(
         )
       }
 
-      override fun redact(value: All32): All32 = value.copy(
+      public override fun redact(value: All32): All32 = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

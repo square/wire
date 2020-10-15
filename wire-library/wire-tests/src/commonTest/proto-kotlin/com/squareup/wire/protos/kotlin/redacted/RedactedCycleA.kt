@@ -18,25 +18,26 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class RedactedCycleA(
+public class RedactedCycleA(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedCycleB#ADAPTER"
   )
-  val b: RedactedCycleB? = null,
+  public val b: RedactedCycleB? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedCycleA, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedCycleA) return false
     if (unknownFields != other.unknownFields) return false
@@ -44,7 +45,7 @@ class RedactedCycleA(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -54,36 +55,36 @@ class RedactedCycleA(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (b != null) result += """b=$b"""
     return result.joinToString(prefix = "RedactedCycleA{", separator = ", ", postfix = "}")
   }
 
-  fun copy(b: RedactedCycleB? = this.b, unknownFields: ByteString = this.unknownFields):
+  public fun copy(b: RedactedCycleB? = this.b, unknownFields: ByteString = this.unknownFields):
       RedactedCycleA = RedactedCycleA(b, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<RedactedCycleA> = object : ProtoAdapter<RedactedCycleA>(
+    public val ADAPTER: ProtoAdapter<RedactedCycleA> = object : ProtoAdapter<RedactedCycleA>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedCycleA::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedCycleA", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: RedactedCycleA): Int {
+      public override fun encodedSize(value: RedactedCycleA): Int {
         var size = value.unknownFields.size
         size += RedactedCycleB.ADAPTER.encodedSizeWithTag(1, value.b)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: RedactedCycleA) {
+      public override fun encode(writer: ProtoWriter, value: RedactedCycleA): Unit {
         RedactedCycleB.ADAPTER.encodeWithTag(writer, 1, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): RedactedCycleA {
+      public override fun decode(reader: ProtoReader): RedactedCycleA {
         var b: RedactedCycleB? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -97,7 +98,7 @@ class RedactedCycleA(
         )
       }
 
-      override fun redact(value: RedactedCycleA): RedactedCycleA = value.copy(
+      public override fun redact(value: RedactedCycleA): RedactedCycleA = value.copy(
         b = value.b?.let(RedactedCycleB.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

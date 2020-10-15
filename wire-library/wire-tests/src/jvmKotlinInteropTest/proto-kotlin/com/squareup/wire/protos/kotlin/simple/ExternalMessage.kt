@@ -9,26 +9,27 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.immutableCopyOf
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.immutableCopyOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class ExternalMessage(
+public class ExternalMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   @JvmField
-  val f: Float? = null,
+  public val f: Float? = null,
   fooext: List<Int> = emptyList(),
   /**
    * Extension source: simple_message.proto
@@ -38,7 +39,7 @@ class ExternalMessage(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val barext: Int? = null,
+  public val barext: Int? = null,
   /**
    * Extension source: simple_message.proto
    */
@@ -47,7 +48,7 @@ class ExternalMessage(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val bazext: Int? = null,
+  public val bazext: Int? = null,
   /**
    * Extension source: simple_message.proto
    */
@@ -56,7 +57,7 @@ class ExternalMessage(
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
   )
   @JvmField
-  val nested_message_ext: SimpleMessage.NestedMessage? = null,
+  public val nested_message_ext: SimpleMessage.NestedMessage? = null,
   /**
    * Extension source: simple_message.proto
    */
@@ -65,7 +66,7 @@ class ExternalMessage(
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER"
   )
   @JvmField
-  val nested_enum_ext: SimpleMessage.NestedEnum? = null,
+  public val nested_enum_ext: SimpleMessage.NestedEnum? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<ExternalMessage, ExternalMessage.Builder>(ADAPTER, unknownFields) {
   /**
@@ -77,9 +78,9 @@ class ExternalMessage(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val fooext: List<Int> = immutableCopyOf("fooext", fooext)
+  public val fooext: List<Int> = immutableCopyOf("fooext", fooext)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.f = f
     builder.fooext = fooext
@@ -91,7 +92,7 @@ class ExternalMessage(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ExternalMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -104,7 +105,7 @@ class ExternalMessage(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -119,7 +120,7 @@ class ExternalMessage(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (f != null) result += """f=$f"""
     if (fooext.isNotEmpty()) result += """fooext=$fooext"""
@@ -130,7 +131,7 @@ class ExternalMessage(
     return result.joinToString(prefix = "ExternalMessage{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     f: Float? = this.f,
     fooext: List<Int> = this.fooext,
     barext: Int? = this.barext,
@@ -141,57 +142,57 @@ class ExternalMessage(
   ): ExternalMessage = ExternalMessage(f, fooext, barext, bazext, nested_message_ext,
       nested_enum_ext, unknownFields)
 
-  class Builder : Message.Builder<ExternalMessage, Builder>() {
+  public class Builder : Message.Builder<ExternalMessage, Builder>() {
     @JvmField
-    var f: Float? = null
+    public var f: Float? = null
 
     @JvmField
-    var fooext: List<Int> = emptyList()
+    public var fooext: List<Int> = emptyList()
 
     @JvmField
-    var barext: Int? = null
+    public var barext: Int? = null
 
     @JvmField
-    var bazext: Int? = null
+    public var bazext: Int? = null
 
     @JvmField
-    var nested_message_ext: SimpleMessage.NestedMessage? = null
+    public var nested_message_ext: SimpleMessage.NestedMessage? = null
 
     @JvmField
-    var nested_enum_ext: SimpleMessage.NestedEnum? = null
+    public var nested_enum_ext: SimpleMessage.NestedEnum? = null
 
-    fun f(f: Float?): Builder {
+    public fun f(f: Float?): Builder {
       this.f = f
       return this
     }
 
-    fun fooext(fooext: List<Int>): Builder {
+    public fun fooext(fooext: List<Int>): Builder {
       checkElementsNotNull(fooext)
       this.fooext = fooext
       return this
     }
 
-    fun barext(barext: Int?): Builder {
+    public fun barext(barext: Int?): Builder {
       this.barext = barext
       return this
     }
 
-    fun bazext(bazext: Int?): Builder {
+    public fun bazext(bazext: Int?): Builder {
       this.bazext = bazext
       return this
     }
 
-    fun nested_message_ext(nested_message_ext: SimpleMessage.NestedMessage?): Builder {
+    public fun nested_message_ext(nested_message_ext: SimpleMessage.NestedMessage?): Builder {
       this.nested_message_ext = nested_message_ext
       return this
     }
 
-    fun nested_enum_ext(nested_enum_ext: SimpleMessage.NestedEnum?): Builder {
+    public fun nested_enum_ext(nested_enum_ext: SimpleMessage.NestedEnum?): Builder {
       this.nested_enum_ext = nested_enum_ext
       return this
     }
 
-    override fun build(): ExternalMessage = ExternalMessage(
+    public override fun build(): ExternalMessage = ExternalMessage(
       f = f,
       fooext = fooext,
       barext = barext,
@@ -202,18 +203,18 @@ class ExternalMessage(
     )
   }
 
-  companion object {
-    const val DEFAULT_F: Float = 20f
+  public companion object {
+    public const val DEFAULT_F: Float = 20f
 
     @JvmField
-    val ADAPTER: ProtoAdapter<ExternalMessage> = object : ProtoAdapter<ExternalMessage>(
+    public val ADAPTER: ProtoAdapter<ExternalMessage> = object : ProtoAdapter<ExternalMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       ExternalMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: ExternalMessage): Int {
+      public override fun encodedSize(value: ExternalMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f)
         size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext)
@@ -225,7 +226,7 @@ class ExternalMessage(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: ExternalMessage) {
+      public override fun encode(writer: ProtoWriter, value: ExternalMessage): Unit {
         ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f)
         ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext)
         ProtoAdapter.INT32.encodeWithTag(writer, 126, value.barext)
@@ -235,7 +236,7 @@ class ExternalMessage(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): ExternalMessage {
+      public override fun decode(reader: ProtoReader): ExternalMessage {
         var f: Float? = null
         val fooext = mutableListOf<Int>()
         var barext: Int? = null
@@ -268,7 +269,7 @@ class ExternalMessage(
         )
       }
 
-      override fun redact(value: ExternalMessage): ExternalMessage = value.copy(
+      public override fun redact(value: ExternalMessage): ExternalMessage = value.copy(
         nested_message_ext =
             value.nested_message_ext?.let(SimpleMessage.NestedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

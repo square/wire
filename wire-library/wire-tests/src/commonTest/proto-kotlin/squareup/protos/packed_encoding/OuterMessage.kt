@@ -18,30 +18,31 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class OuterMessage(
+public class OuterMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val outer_number_before: Int? = null,
+  public val outer_number_before: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "squareup.protos.packed_encoding.EmbeddedMessage#ADAPTER"
   )
-  val embedded_message: EmbeddedMessage? = null,
+  public val embedded_message: EmbeddedMessage? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OuterMessage, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OuterMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -50,7 +51,7 @@ class OuterMessage(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -61,42 +62,42 @@ class OuterMessage(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (outer_number_before != null) result += """outer_number_before=$outer_number_before"""
     if (embedded_message != null) result += """embedded_message=$embedded_message"""
     return result.joinToString(prefix = "OuterMessage{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     outer_number_before: Int? = this.outer_number_before,
     embedded_message: EmbeddedMessage? = this.embedded_message,
     unknownFields: ByteString = this.unknownFields
   ): OuterMessage = OuterMessage(outer_number_before, embedded_message, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<OuterMessage> = object : ProtoAdapter<OuterMessage>(
+    public val ADAPTER: ProtoAdapter<OuterMessage> = object : ProtoAdapter<OuterMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       OuterMessage::class, 
       "type.googleapis.com/squareup.protos.packed_encoding.OuterMessage", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: OuterMessage): Int {
+      public override fun encodedSize(value: OuterMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before)
         size += EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: OuterMessage) {
+      public override fun encode(writer: ProtoWriter, value: OuterMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)
         EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): OuterMessage {
+      public override fun decode(reader: ProtoReader): OuterMessage {
         var outer_number_before: Int? = null
         var embedded_message: EmbeddedMessage? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -113,7 +114,7 @@ class OuterMessage(
         )
       }
 
-      override fun redact(value: OuterMessage): OuterMessage = value.copy(
+      public override fun redact(value: OuterMessage): OuterMessage = value.copy(
         embedded_message = value.embedded_message?.let(EmbeddedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.missingRequiredFields
+import com.squareup.wire.`internal`.missingRequiredFields
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -19,27 +19,28 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.UnsupportedOperationException
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class RedactedRequired(
+public class RedactedRequired(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REQUIRED,
     redacted = true
   )
-  val a: String,
+  public val a: String,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedRequired, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedRequired) return false
     if (unknownFields != other.unknownFields) return false
@@ -47,7 +48,7 @@ class RedactedRequired(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -57,36 +58,36 @@ class RedactedRequired(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     result += """a=██"""
     return result.joinToString(prefix = "RedactedRequired{", separator = ", ", postfix = "}")
   }
 
-  fun copy(a: String = this.a, unknownFields: ByteString = this.unknownFields): RedactedRequired =
-      RedactedRequired(a, unknownFields)
+  public fun copy(a: String = this.a, unknownFields: ByteString = this.unknownFields):
+      RedactedRequired = RedactedRequired(a, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<RedactedRequired> = object : ProtoAdapter<RedactedRequired>(
+    public val ADAPTER: ProtoAdapter<RedactedRequired> = object : ProtoAdapter<RedactedRequired>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedRequired::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRequired", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: RedactedRequired): Int {
+      public override fun encodedSize(value: RedactedRequired): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: RedactedRequired) {
+      public override fun encode(writer: ProtoWriter, value: RedactedRequired): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): RedactedRequired {
+      public override fun decode(reader: ProtoReader): RedactedRequired {
         var a: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -100,7 +101,7 @@ class RedactedRequired(
         )
       }
 
-      override fun redact(value: RedactedRequired): RedactedRequired = throw
+      public override fun redact(value: RedactedRequired): RedactedRequired = throw
           UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
     }
 

@@ -14,11 +14,12 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class FreeGarlicBreadPromotion(
+public class FreeGarlicBreadPromotion(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
@@ -26,17 +27,17 @@ class FreeGarlicBreadPromotion(
     jsonName = "isExtraCheesey"
   )
   @JvmField
-  val is_extra_cheesey: Boolean = false,
+  public val is_extra_cheesey: Boolean = false,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FreeGarlicBreadPromotion, FreeGarlicBreadPromotion.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.is_extra_cheesey = is_extra_cheesey
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FreeGarlicBreadPromotion) return false
     if (unknownFields != other.unknownFields) return false
@@ -44,7 +45,7 @@ class FreeGarlicBreadPromotion(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -54,35 +55,35 @@ class FreeGarlicBreadPromotion(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     result += """is_extra_cheesey=$is_extra_cheesey"""
     return result.joinToString(prefix = "FreeGarlicBreadPromotion{", separator = ", ", postfix =
         "}")
   }
 
-  fun copy(is_extra_cheesey: Boolean = this.is_extra_cheesey, unknownFields: ByteString =
+  public fun copy(is_extra_cheesey: Boolean = this.is_extra_cheesey, unknownFields: ByteString =
       this.unknownFields): FreeGarlicBreadPromotion = FreeGarlicBreadPromotion(is_extra_cheesey,
       unknownFields)
 
-  class Builder : Message.Builder<FreeGarlicBreadPromotion, Builder>() {
+  public class Builder : Message.Builder<FreeGarlicBreadPromotion, Builder>() {
     @JvmField
-    var is_extra_cheesey: Boolean = false
+    public var is_extra_cheesey: Boolean = false
 
-    fun is_extra_cheesey(is_extra_cheesey: Boolean): Builder {
+    public fun is_extra_cheesey(is_extra_cheesey: Boolean): Builder {
       this.is_extra_cheesey = is_extra_cheesey
       return this
     }
 
-    override fun build(): FreeGarlicBreadPromotion = FreeGarlicBreadPromotion(
+    public override fun build(): FreeGarlicBreadPromotion = FreeGarlicBreadPromotion(
       is_extra_cheesey = is_extra_cheesey,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<FreeGarlicBreadPromotion> = object :
+    public val ADAPTER: ProtoAdapter<FreeGarlicBreadPromotion> = object :
         ProtoAdapter<FreeGarlicBreadPromotion>(
       FieldEncoding.LENGTH_DELIMITED, 
       FreeGarlicBreadPromotion::class, 
@@ -90,20 +91,20 @@ class FreeGarlicBreadPromotion(
       PROTO_3, 
       null
     ) {
-      override fun encodedSize(value: FreeGarlicBreadPromotion): Int {
+      public override fun encodedSize(value: FreeGarlicBreadPromotion): Int {
         var size = value.unknownFields.size
         if (value.is_extra_cheesey != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(1,
             value.is_extra_cheesey)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: FreeGarlicBreadPromotion) {
+      public override fun encode(writer: ProtoWriter, value: FreeGarlicBreadPromotion): Unit {
         if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
             value.is_extra_cheesey)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): FreeGarlicBreadPromotion {
+      public override fun decode(reader: ProtoReader): FreeGarlicBreadPromotion {
         var is_extra_cheesey: Boolean = false
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -117,7 +118,8 @@ class FreeGarlicBreadPromotion(
         )
       }
 
-      override fun redact(value: FreeGarlicBreadPromotion): FreeGarlicBreadPromotion = value.copy(
+      public override fun redact(value: FreeGarlicBreadPromotion): FreeGarlicBreadPromotion =
+          value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

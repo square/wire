@@ -10,25 +10,25 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
-enum class ForeignEnum(
-  override val value: Int
+public enum class ForeignEnum(
+  public override val value: Int
 ) : WireEnum {
   BAV(0),
+  BAX(1),
+  ;
 
-  BAX(1);
-
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<ForeignEnum> = object : EnumAdapter<ForeignEnum>(
+    public val ADAPTER: ProtoAdapter<ForeignEnum> = object : EnumAdapter<ForeignEnum>(
       ForeignEnum::class, 
       PROTO_2, 
       ForeignEnum.BAV
     ) {
-      override fun fromValue(value: Int): ForeignEnum? = ForeignEnum.fromValue(value)
+      public override fun fromValue(value: Int): ForeignEnum? = ForeignEnum.fromValue(value)
     }
 
     @JvmStatic
-    fun fromValue(value: Int): ForeignEnum? = when (value) {
+    public fun fromValue(value: Int): ForeignEnum? = when (value) {
       0 -> BAV
       1 -> BAX
       else -> null

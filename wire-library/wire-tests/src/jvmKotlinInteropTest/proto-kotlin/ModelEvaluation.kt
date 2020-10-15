@@ -7,15 +7,16 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.redactElements
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.redactElements
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Double
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.hashCode
 import kotlin.jvm.JvmField
@@ -37,19 +38,19 @@ import okio.ByteString
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class ModelEvaluation(
+public class ModelEvaluation(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val name: String? = null,
+  public val name: String? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   @JvmField
-  val score: Double? = null,
+  public val score: Double? = null,
   models: Map<String, ModelEvaluation> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<ModelEvaluation, ModelEvaluation.Builder>(ADAPTER, unknownFields) {
@@ -59,9 +60,9 @@ class ModelEvaluation(
     adapter = "ModelEvaluation#ADAPTER"
   )
   @JvmField
-  val models: Map<String, ModelEvaluation> = immutableCopyOf("models", models)
+  public val models: Map<String, ModelEvaluation> = immutableCopyOf("models", models)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
     builder.score = score
@@ -70,7 +71,7 @@ class ModelEvaluation(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ModelEvaluation) return false
     if (unknownFields != other.unknownFields) return false
@@ -80,7 +81,7 @@ class ModelEvaluation(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -92,7 +93,7 @@ class ModelEvaluation(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=${sanitize(name)}"""
     if (score != null) result += """score=$score"""
@@ -100,39 +101,39 @@ class ModelEvaluation(
     return result.joinToString(prefix = "ModelEvaluation{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     name: String? = this.name,
     score: Double? = this.score,
     models: Map<String, ModelEvaluation> = this.models,
     unknownFields: ByteString = this.unknownFields
   ): ModelEvaluation = ModelEvaluation(name, score, models, unknownFields)
 
-  class Builder : Message.Builder<ModelEvaluation, Builder>() {
+  public class Builder : Message.Builder<ModelEvaluation, Builder>() {
     @JvmField
-    var name: String? = null
+    public var name: String? = null
 
     @JvmField
-    var score: Double? = null
+    public var score: Double? = null
 
     @JvmField
-    var models: Map<String, ModelEvaluation> = emptyMap()
+    public var models: Map<String, ModelEvaluation> = emptyMap()
 
-    fun name(name: String?): Builder {
+    public fun name(name: String?): Builder {
       this.name = name
       return this
     }
 
-    fun score(score: Double?): Builder {
+    public fun score(score: Double?): Builder {
       this.score = score
       return this
     }
 
-    fun models(models: Map<String, ModelEvaluation>): Builder {
+    public fun models(models: Map<String, ModelEvaluation>): Builder {
       this.models = models
       return this
     }
 
-    override fun build(): ModelEvaluation = ModelEvaluation(
+    public override fun build(): ModelEvaluation = ModelEvaluation(
       name = name,
       score = score,
       models = models,
@@ -140,9 +141,9 @@ class ModelEvaluation(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<ModelEvaluation> = object : ProtoAdapter<ModelEvaluation>(
+    public val ADAPTER: ProtoAdapter<ModelEvaluation> = object : ProtoAdapter<ModelEvaluation>(
       FieldEncoding.LENGTH_DELIMITED, 
       ModelEvaluation::class, 
       "type.googleapis.com/ModelEvaluation", 
@@ -152,7 +153,7 @@ class ModelEvaluation(
       private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }
 
-      override fun encodedSize(value: ModelEvaluation): Int {
+      public override fun encodedSize(value: ModelEvaluation): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.DOUBLE.encodedSizeWithTag(2, value.score)
@@ -160,14 +161,14 @@ class ModelEvaluation(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: ModelEvaluation) {
+      public override fun encode(writer: ProtoWriter, value: ModelEvaluation): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 2, value.score)
         modelsAdapter.encodeWithTag(writer, 3, value.models)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): ModelEvaluation {
+      public override fun decode(reader: ProtoReader): ModelEvaluation {
         var name: String? = null
         var score: Double? = null
         val models = mutableMapOf<String, ModelEvaluation>()
@@ -187,7 +188,7 @@ class ModelEvaluation(
         )
       }
 
-      override fun redact(value: ModelEvaluation): ModelEvaluation = value.copy(
+      public override fun redact(value: ModelEvaluation): ModelEvaluation = value.copy(
         models = value.models.redactElements(ModelEvaluation.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

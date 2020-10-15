@@ -18,25 +18,26 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class OneBytesField(
+public class OneBytesField(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
-  val opt_bytes: ByteString? = null,
+  public val opt_bytes: ByteString? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneBytesField, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneBytesField) return false
     if (unknownFields != other.unknownFields) return false
@@ -44,7 +45,7 @@ class OneBytesField(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -54,36 +55,36 @@ class OneBytesField(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (opt_bytes != null) result += """opt_bytes=$opt_bytes"""
     return result.joinToString(prefix = "OneBytesField{", separator = ", ", postfix = "}")
   }
 
-  fun copy(opt_bytes: ByteString? = this.opt_bytes, unknownFields: ByteString = this.unknownFields):
-      OneBytesField = OneBytesField(opt_bytes, unknownFields)
+  public fun copy(opt_bytes: ByteString? = this.opt_bytes, unknownFields: ByteString =
+      this.unknownFields): OneBytesField = OneBytesField(opt_bytes, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<OneBytesField> = object : ProtoAdapter<OneBytesField>(
+    public val ADAPTER: ProtoAdapter<OneBytesField> = object : ProtoAdapter<OneBytesField>(
       FieldEncoding.LENGTH_DELIMITED, 
       OneBytesField::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.OneBytesField", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: OneBytesField): Int {
+      public override fun encodedSize(value: OneBytesField): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.BYTES.encodedSizeWithTag(1, value.opt_bytes)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: OneBytesField) {
+      public override fun encode(writer: ProtoWriter, value: OneBytesField): Unit {
         ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): OneBytesField {
+      public override fun decode(reader: ProtoReader): OneBytesField {
         var opt_bytes: ByteString? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -97,7 +98,7 @@ class OneBytesField(
         )
       }
 
-      override fun redact(value: OneBytesField): OneBytesField = value.copy(
+      public override fun redact(value: OneBytesField): OneBytesField = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

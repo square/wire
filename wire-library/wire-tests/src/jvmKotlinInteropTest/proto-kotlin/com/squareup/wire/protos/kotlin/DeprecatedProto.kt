@@ -9,35 +9,36 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class DeprecatedProto(
+public class DeprecatedProto(
   @Deprecated(message = "foo is deprecated")
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val foo: String? = null,
+  public val foo: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<DeprecatedProto, DeprecatedProto.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.foo = foo
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is DeprecatedProto) return false
     if (unknownFields != other.unknownFields) return false
@@ -45,7 +46,7 @@ class DeprecatedProto(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -55,52 +56,52 @@ class DeprecatedProto(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=${sanitize(foo)}"""
     return result.joinToString(prefix = "DeprecatedProto{", separator = ", ", postfix = "}")
   }
 
-  fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields): DeprecatedProto
-      = DeprecatedProto(foo, unknownFields)
+  public fun copy(foo: String? = this.foo, unknownFields: ByteString = this.unknownFields):
+      DeprecatedProto = DeprecatedProto(foo, unknownFields)
 
-  class Builder : Message.Builder<DeprecatedProto, Builder>() {
+  public class Builder : Message.Builder<DeprecatedProto, Builder>() {
     @JvmField
-    var foo: String? = null
+    public var foo: String? = null
 
     @Deprecated(message = "foo is deprecated")
-    fun foo(foo: String?): Builder {
+    public fun foo(foo: String?): Builder {
       this.foo = foo
       return this
     }
 
-    override fun build(): DeprecatedProto = DeprecatedProto(
+    public override fun build(): DeprecatedProto = DeprecatedProto(
       foo = foo,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
+    public val ADAPTER: ProtoAdapter<DeprecatedProto> = object : ProtoAdapter<DeprecatedProto>(
       FieldEncoding.LENGTH_DELIMITED, 
       DeprecatedProto::class, 
       "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: DeprecatedProto): Int {
+      public override fun encodedSize(value: DeprecatedProto): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: DeprecatedProto) {
+      public override fun encode(writer: ProtoWriter, value: DeprecatedProto): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): DeprecatedProto {
+      public override fun decode(reader: ProtoReader): DeprecatedProto {
         var foo: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -114,7 +115,7 @@ class DeprecatedProto(
         )
       }
 
-      override fun redact(value: DeprecatedProto): DeprecatedProto = value.copy(
+      public override fun redact(value: DeprecatedProto): DeprecatedProto = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

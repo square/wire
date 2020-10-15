@@ -9,14 +9,15 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.countNonNull
-import com.squareup.wire.internal.immutableCopyOf
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.countNonNull
+import com.squareup.wire.`internal`.immutableCopyOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
@@ -24,7 +25,7 @@ import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
 
-class All64(
+public class All64(
   /**
    * Prefixing so the generated code doesn't rename it weirdly.
    */
@@ -35,7 +36,7 @@ class All64(
     jsonName = "myInt64"
   )
   @JvmField
-  val my_int64: Long = 0L,
+  public val my_int64: Long = 0L,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
@@ -43,7 +44,7 @@ class All64(
     jsonName = "myUint64"
   )
   @JvmField
-  val my_uint64: Long = 0L,
+  public val my_uint64: Long = 0L,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
@@ -51,7 +52,7 @@ class All64(
     jsonName = "mySint64"
   )
   @JvmField
-  val my_sint64: Long = 0L,
+  public val my_sint64: Long = 0L,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
@@ -59,7 +60,7 @@ class All64(
     jsonName = "myFixed64"
   )
   @JvmField
-  val my_fixed64: Long = 0L,
+  public val my_fixed64: Long = 0L,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
@@ -67,7 +68,7 @@ class All64(
     jsonName = "mySfixed64"
   )
   @JvmField
-  val my_sfixed64: Long = 0L,
+  public val my_sfixed64: Long = 0L,
   rep_int64: List<Long> = emptyList(),
   rep_uint64: List<Long> = emptyList(),
   rep_sint64: List<Long> = emptyList(),
@@ -89,14 +90,14 @@ class All64(
     jsonName = "oneofInt64"
   )
   @JvmField
-  val oneof_int64: Long? = null,
+  public val oneof_int64: Long? = null,
   @field:WireField(
     tag = 402,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     jsonName = "oneofSfixed64"
   )
   @JvmField
-  val oneof_sfixed64: Long? = null,
+  public val oneof_sfixed64: Long? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<All64, All64.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -106,7 +107,7 @@ class All64(
     jsonName = "repInt64"
   )
   @JvmField
-  val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
+  public val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
 
   @field:WireField(
     tag = 202,
@@ -115,7 +116,7 @@ class All64(
     jsonName = "repUint64"
   )
   @JvmField
-  val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
+  public val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
 
   @field:WireField(
     tag = 203,
@@ -124,7 +125,7 @@ class All64(
     jsonName = "repSint64"
   )
   @JvmField
-  val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
+  public val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
 
   @field:WireField(
     tag = 204,
@@ -133,7 +134,7 @@ class All64(
     jsonName = "repFixed64"
   )
   @JvmField
-  val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
+  public val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
 
   @field:WireField(
     tag = 205,
@@ -142,7 +143,7 @@ class All64(
     jsonName = "repSfixed64"
   )
   @JvmField
-  val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
+  public val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
 
   @field:WireField(
     tag = 301,
@@ -151,7 +152,7 @@ class All64(
     jsonName = "packInt64"
   )
   @JvmField
-  val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
+  public val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
 
   @field:WireField(
     tag = 302,
@@ -160,7 +161,7 @@ class All64(
     jsonName = "packUint64"
   )
   @JvmField
-  val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
+  public val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
 
   @field:WireField(
     tag = 303,
@@ -169,7 +170,7 @@ class All64(
     jsonName = "packSint64"
   )
   @JvmField
-  val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
+  public val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
 
   @field:WireField(
     tag = 304,
@@ -178,7 +179,7 @@ class All64(
     jsonName = "packFixed64"
   )
   @JvmField
-  val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
+  public val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
 
   @field:WireField(
     tag = 305,
@@ -187,7 +188,7 @@ class All64(
     jsonName = "packSfixed64"
   )
   @JvmField
-  val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
+  public val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
 
   @field:WireField(
     tag = 501,
@@ -196,7 +197,7 @@ class All64(
     jsonName = "mapInt64Int64"
   )
   @JvmField
-  val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
+  public val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
 
   @field:WireField(
     tag = 502,
@@ -205,7 +206,8 @@ class All64(
     jsonName = "mapInt64Uint64"
   )
   @JvmField
-  val map_int64_uint64: Map<Long, Long> = immutableCopyOf("map_int64_uint64", map_int64_uint64)
+  public val map_int64_uint64: Map<Long, Long> = immutableCopyOf("map_int64_uint64",
+      map_int64_uint64)
 
   @field:WireField(
     tag = 503,
@@ -214,7 +216,8 @@ class All64(
     jsonName = "mapInt64Sint64"
   )
   @JvmField
-  val map_int64_sint64: Map<Long, Long> = immutableCopyOf("map_int64_sint64", map_int64_sint64)
+  public val map_int64_sint64: Map<Long, Long> = immutableCopyOf("map_int64_sint64",
+      map_int64_sint64)
 
   @field:WireField(
     tag = 504,
@@ -223,7 +226,8 @@ class All64(
     jsonName = "mapInt64Fixed64"
   )
   @JvmField
-  val map_int64_fixed64: Map<Long, Long> = immutableCopyOf("map_int64_fixed64", map_int64_fixed64)
+  public val map_int64_fixed64: Map<Long, Long> = immutableCopyOf("map_int64_fixed64",
+      map_int64_fixed64)
 
   @field:WireField(
     tag = 505,
@@ -232,7 +236,7 @@ class All64(
     jsonName = "mapInt64Sfixed64"
   )
   @JvmField
-  val map_int64_sfixed64: Map<Long, Long> = immutableCopyOf("map_int64_sfixed64",
+  public val map_int64_sfixed64: Map<Long, Long> = immutableCopyOf("map_int64_sfixed64",
       map_int64_sfixed64)
 
   init {
@@ -241,7 +245,7 @@ class All64(
     }
   }
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.my_int64 = my_int64
     builder.my_uint64 = my_uint64
@@ -269,7 +273,7 @@ class All64(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is All64) return false
     if (unknownFields != other.unknownFields) return false
@@ -298,7 +302,7 @@ class All64(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -329,7 +333,7 @@ class All64(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     result += """my_int64=$my_int64"""
     result += """my_uint64=$my_uint64"""
@@ -356,7 +360,7 @@ class All64(
     return result.joinToString(prefix = "All64{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     my_int64: Long = this.my_int64,
     my_uint64: Long = this.my_uint64,
     my_sint64: Long = this.my_sint64,
@@ -385,199 +389,199 @@ class All64(
       pack_sfixed64, map_int64_int64, map_int64_uint64, map_int64_sint64, map_int64_fixed64,
       map_int64_sfixed64, oneof_int64, oneof_sfixed64, unknownFields)
 
-  class Builder : Message.Builder<All64, Builder>() {
+  public class Builder : Message.Builder<All64, Builder>() {
     @JvmField
-    var my_int64: Long = 0L
+    public var my_int64: Long = 0L
 
     @JvmField
-    var my_uint64: Long = 0L
+    public var my_uint64: Long = 0L
 
     @JvmField
-    var my_sint64: Long = 0L
+    public var my_sint64: Long = 0L
 
     @JvmField
-    var my_fixed64: Long = 0L
+    public var my_fixed64: Long = 0L
 
     @JvmField
-    var my_sfixed64: Long = 0L
+    public var my_sfixed64: Long = 0L
 
     @JvmField
-    var rep_int64: List<Long> = emptyList()
+    public var rep_int64: List<Long> = emptyList()
 
     @JvmField
-    var rep_uint64: List<Long> = emptyList()
+    public var rep_uint64: List<Long> = emptyList()
 
     @JvmField
-    var rep_sint64: List<Long> = emptyList()
+    public var rep_sint64: List<Long> = emptyList()
 
     @JvmField
-    var rep_fixed64: List<Long> = emptyList()
+    public var rep_fixed64: List<Long> = emptyList()
 
     @JvmField
-    var rep_sfixed64: List<Long> = emptyList()
+    public var rep_sfixed64: List<Long> = emptyList()
 
     @JvmField
-    var pack_int64: List<Long> = emptyList()
+    public var pack_int64: List<Long> = emptyList()
 
     @JvmField
-    var pack_uint64: List<Long> = emptyList()
+    public var pack_uint64: List<Long> = emptyList()
 
     @JvmField
-    var pack_sint64: List<Long> = emptyList()
+    public var pack_sint64: List<Long> = emptyList()
 
     @JvmField
-    var pack_fixed64: List<Long> = emptyList()
+    public var pack_fixed64: List<Long> = emptyList()
 
     @JvmField
-    var pack_sfixed64: List<Long> = emptyList()
+    public var pack_sfixed64: List<Long> = emptyList()
 
     @JvmField
-    var map_int64_int64: Map<Long, Long> = emptyMap()
+    public var map_int64_int64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var map_int64_uint64: Map<Long, Long> = emptyMap()
+    public var map_int64_uint64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var map_int64_sint64: Map<Long, Long> = emptyMap()
+    public var map_int64_sint64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var map_int64_fixed64: Map<Long, Long> = emptyMap()
+    public var map_int64_fixed64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var map_int64_sfixed64: Map<Long, Long> = emptyMap()
+    public var map_int64_sfixed64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var oneof_int64: Long? = null
+    public var oneof_int64: Long? = null
 
     @JvmField
-    var oneof_sfixed64: Long? = null
+    public var oneof_sfixed64: Long? = null
 
     /**
      * Prefixing so the generated code doesn't rename it weirdly.
      */
-    fun my_int64(my_int64: Long): Builder {
+    public fun my_int64(my_int64: Long): Builder {
       this.my_int64 = my_int64
       return this
     }
 
-    fun my_uint64(my_uint64: Long): Builder {
+    public fun my_uint64(my_uint64: Long): Builder {
       this.my_uint64 = my_uint64
       return this
     }
 
-    fun my_sint64(my_sint64: Long): Builder {
+    public fun my_sint64(my_sint64: Long): Builder {
       this.my_sint64 = my_sint64
       return this
     }
 
-    fun my_fixed64(my_fixed64: Long): Builder {
+    public fun my_fixed64(my_fixed64: Long): Builder {
       this.my_fixed64 = my_fixed64
       return this
     }
 
-    fun my_sfixed64(my_sfixed64: Long): Builder {
+    public fun my_sfixed64(my_sfixed64: Long): Builder {
       this.my_sfixed64 = my_sfixed64
       return this
     }
 
-    fun rep_int64(rep_int64: List<Long>): Builder {
+    public fun rep_int64(rep_int64: List<Long>): Builder {
       checkElementsNotNull(rep_int64)
       this.rep_int64 = rep_int64
       return this
     }
 
-    fun rep_uint64(rep_uint64: List<Long>): Builder {
+    public fun rep_uint64(rep_uint64: List<Long>): Builder {
       checkElementsNotNull(rep_uint64)
       this.rep_uint64 = rep_uint64
       return this
     }
 
-    fun rep_sint64(rep_sint64: List<Long>): Builder {
+    public fun rep_sint64(rep_sint64: List<Long>): Builder {
       checkElementsNotNull(rep_sint64)
       this.rep_sint64 = rep_sint64
       return this
     }
 
-    fun rep_fixed64(rep_fixed64: List<Long>): Builder {
+    public fun rep_fixed64(rep_fixed64: List<Long>): Builder {
       checkElementsNotNull(rep_fixed64)
       this.rep_fixed64 = rep_fixed64
       return this
     }
 
-    fun rep_sfixed64(rep_sfixed64: List<Long>): Builder {
+    public fun rep_sfixed64(rep_sfixed64: List<Long>): Builder {
       checkElementsNotNull(rep_sfixed64)
       this.rep_sfixed64 = rep_sfixed64
       return this
     }
 
-    fun pack_int64(pack_int64: List<Long>): Builder {
+    public fun pack_int64(pack_int64: List<Long>): Builder {
       checkElementsNotNull(pack_int64)
       this.pack_int64 = pack_int64
       return this
     }
 
-    fun pack_uint64(pack_uint64: List<Long>): Builder {
+    public fun pack_uint64(pack_uint64: List<Long>): Builder {
       checkElementsNotNull(pack_uint64)
       this.pack_uint64 = pack_uint64
       return this
     }
 
-    fun pack_sint64(pack_sint64: List<Long>): Builder {
+    public fun pack_sint64(pack_sint64: List<Long>): Builder {
       checkElementsNotNull(pack_sint64)
       this.pack_sint64 = pack_sint64
       return this
     }
 
-    fun pack_fixed64(pack_fixed64: List<Long>): Builder {
+    public fun pack_fixed64(pack_fixed64: List<Long>): Builder {
       checkElementsNotNull(pack_fixed64)
       this.pack_fixed64 = pack_fixed64
       return this
     }
 
-    fun pack_sfixed64(pack_sfixed64: List<Long>): Builder {
+    public fun pack_sfixed64(pack_sfixed64: List<Long>): Builder {
       checkElementsNotNull(pack_sfixed64)
       this.pack_sfixed64 = pack_sfixed64
       return this
     }
 
-    fun map_int64_int64(map_int64_int64: Map<Long, Long>): Builder {
+    public fun map_int64_int64(map_int64_int64: Map<Long, Long>): Builder {
       this.map_int64_int64 = map_int64_int64
       return this
     }
 
-    fun map_int64_uint64(map_int64_uint64: Map<Long, Long>): Builder {
+    public fun map_int64_uint64(map_int64_uint64: Map<Long, Long>): Builder {
       this.map_int64_uint64 = map_int64_uint64
       return this
     }
 
-    fun map_int64_sint64(map_int64_sint64: Map<Long, Long>): Builder {
+    public fun map_int64_sint64(map_int64_sint64: Map<Long, Long>): Builder {
       this.map_int64_sint64 = map_int64_sint64
       return this
     }
 
-    fun map_int64_fixed64(map_int64_fixed64: Map<Long, Long>): Builder {
+    public fun map_int64_fixed64(map_int64_fixed64: Map<Long, Long>): Builder {
       this.map_int64_fixed64 = map_int64_fixed64
       return this
     }
 
-    fun map_int64_sfixed64(map_int64_sfixed64: Map<Long, Long>): Builder {
+    public fun map_int64_sfixed64(map_int64_sfixed64: Map<Long, Long>): Builder {
       this.map_int64_sfixed64 = map_int64_sfixed64
       return this
     }
 
-    fun oneof_int64(oneof_int64: Long?): Builder {
+    public fun oneof_int64(oneof_int64: Long?): Builder {
       this.oneof_int64 = oneof_int64
       this.oneof_sfixed64 = null
       return this
     }
 
-    fun oneof_sfixed64(oneof_sfixed64: Long?): Builder {
+    public fun oneof_sfixed64(oneof_sfixed64: Long?): Builder {
       this.oneof_sfixed64 = oneof_sfixed64
       this.oneof_int64 = null
       return this
     }
 
-    override fun build(): All64 = All64(
+    public override fun build(): All64 = All64(
       my_int64 = my_int64,
       my_uint64 = my_uint64,
       my_sint64 = my_sint64,
@@ -604,9 +608,9 @@ class All64(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<All64> = object : ProtoAdapter<All64>(
+    public val ADAPTER: ProtoAdapter<All64> = object : ProtoAdapter<All64>(
       FieldEncoding.LENGTH_DELIMITED, 
       All64::class, 
       "type.googleapis.com/squareup.proto3.All64", 
@@ -628,7 +632,7 @@ class All64(
       private val map_int64_sfixed64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.SFIXED64) }
 
-      override fun encodedSize(value: All64): Int {
+      public override fun encodedSize(value: All64): Int {
         var size = value.unknownFields.size
         if (value.my_int64 != 0L) size += ProtoAdapter.INT64.encodedSizeWithTag(1, value.my_int64)
         if (value.my_uint64 != 0L) size += ProtoAdapter.UINT64.encodedSizeWithTag(2,
@@ -659,7 +663,7 @@ class All64(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: All64) {
+      public override fun encode(writer: ProtoWriter, value: All64): Unit {
         if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
         if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
         if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
@@ -686,7 +690,7 @@ class All64(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): All64 {
+      public override fun decode(reader: ProtoReader): All64 {
         var my_int64: Long = 0L
         var my_uint64: Long = 0L
         var my_sint64: Long = 0L
@@ -763,7 +767,7 @@ class All64(
         )
       }
 
-      override fun redact(value: All64): All64 = value.copy(
+      public override fun redact(value: All64): All64 = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

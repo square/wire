@@ -14,32 +14,33 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class VersionOne(
+public class VersionOne(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val i: Int? = null,
+  public val i: Int? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.NestedVersionOne#ADAPTER"
   )
   @JvmField
-  val obj: NestedVersionOne? = null,
+  public val obj: NestedVersionOne? = null,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.protos.kotlin.unknownfields.EnumVersionOne#ADAPTER"
   )
   @JvmField
-  val en: EnumVersionOne? = null,
+  public val en: EnumVersionOne? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<VersionOne, VersionOne.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.i = i
     builder.obj = obj
@@ -48,7 +49,7 @@ class VersionOne(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is VersionOne) return false
     if (unknownFields != other.unknownFields) return false
@@ -58,7 +59,7 @@ class VersionOne(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -70,7 +71,7 @@ class VersionOne(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     if (obj != null) result += """obj=$obj"""
@@ -78,39 +79,39 @@ class VersionOne(
     return result.joinToString(prefix = "VersionOne{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     i: Int? = this.i,
     obj: NestedVersionOne? = this.obj,
     en: EnumVersionOne? = this.en,
     unknownFields: ByteString = this.unknownFields
   ): VersionOne = VersionOne(i, obj, en, unknownFields)
 
-  class Builder : Message.Builder<VersionOne, Builder>() {
+  public class Builder : Message.Builder<VersionOne, Builder>() {
     @JvmField
-    var i: Int? = null
+    public var i: Int? = null
 
     @JvmField
-    var obj: NestedVersionOne? = null
+    public var obj: NestedVersionOne? = null
 
     @JvmField
-    var en: EnumVersionOne? = null
+    public var en: EnumVersionOne? = null
 
-    fun i(i: Int?): Builder {
+    public fun i(i: Int?): Builder {
       this.i = i
       return this
     }
 
-    fun obj(obj: NestedVersionOne?): Builder {
+    public fun obj(obj: NestedVersionOne?): Builder {
       this.obj = obj
       return this
     }
 
-    fun en(en: EnumVersionOne?): Builder {
+    public fun en(en: EnumVersionOne?): Builder {
       this.en = en
       return this
     }
 
-    override fun build(): VersionOne = VersionOne(
+    public override fun build(): VersionOne = VersionOne(
       i = i,
       obj = obj,
       en = en,
@@ -118,16 +119,16 @@ class VersionOne(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<VersionOne> = object : ProtoAdapter<VersionOne>(
+    public val ADAPTER: ProtoAdapter<VersionOne> = object : ProtoAdapter<VersionOne>(
       FieldEncoding.LENGTH_DELIMITED, 
       VersionOne::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionOne", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: VersionOne): Int {
+      public override fun encodedSize(value: VersionOne): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += NestedVersionOne.ADAPTER.encodedSizeWithTag(7, value.obj)
@@ -135,14 +136,14 @@ class VersionOne(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: VersionOne) {
+      public override fun encode(writer: ProtoWriter, value: VersionOne): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         NestedVersionOne.ADAPTER.encodeWithTag(writer, 7, value.obj)
         EnumVersionOne.ADAPTER.encodeWithTag(writer, 8, value.en)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): VersionOne {
+      public override fun decode(reader: ProtoReader): VersionOne {
         var i: Int? = null
         var obj: NestedVersionOne? = null
         var en: EnumVersionOne? = null
@@ -166,7 +167,7 @@ class VersionOne(
         )
       }
 
-      override fun redact(value: VersionOne): VersionOne = value.copy(
+      public override fun redact(value: VersionOne): VersionOne = value.copy(
         obj = value.obj?.let(NestedVersionOne.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

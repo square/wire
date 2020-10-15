@@ -14,17 +14,18 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class ForeignMessage(
+public class ForeignMessage(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val i: Int? = null,
+  public val i: Int? = null,
   /**
    * Extension source: simple_message.proto
    */
@@ -33,10 +34,10 @@ class ForeignMessage(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val j: Int? = null,
+  public val j: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<ForeignMessage, ForeignMessage.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.i = i
     builder.j = j
@@ -44,7 +45,7 @@ class ForeignMessage(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is ForeignMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -53,7 +54,7 @@ class ForeignMessage(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -64,66 +65,66 @@ class ForeignMessage(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     if (j != null) result += """j=$j"""
     return result.joinToString(prefix = "ForeignMessage{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     i: Int? = this.i,
     j: Int? = this.j,
     unknownFields: ByteString = this.unknownFields
   ): ForeignMessage = ForeignMessage(i, j, unknownFields)
 
-  class Builder : Message.Builder<ForeignMessage, Builder>() {
+  public class Builder : Message.Builder<ForeignMessage, Builder>() {
     @JvmField
-    var i: Int? = null
+    public var i: Int? = null
 
     @JvmField
-    var j: Int? = null
+    public var j: Int? = null
 
-    fun i(i: Int?): Builder {
+    public fun i(i: Int?): Builder {
       this.i = i
       return this
     }
 
-    fun j(j: Int?): Builder {
+    public fun j(j: Int?): Builder {
       this.j = j
       return this
     }
 
-    override fun build(): ForeignMessage = ForeignMessage(
+    public override fun build(): ForeignMessage = ForeignMessage(
       i = i,
       j = j,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<ForeignMessage> = object : ProtoAdapter<ForeignMessage>(
+    public val ADAPTER: ProtoAdapter<ForeignMessage> = object : ProtoAdapter<ForeignMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       ForeignMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.foreign.ForeignMessage", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: ForeignMessage): Int {
+      public override fun encodedSize(value: ForeignMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += ProtoAdapter.INT32.encodedSizeWithTag(100, value.j)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: ForeignMessage) {
+      public override fun encode(writer: ProtoWriter, value: ForeignMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         ProtoAdapter.INT32.encodeWithTag(writer, 100, value.j)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): ForeignMessage {
+      public override fun decode(reader: ProtoReader): ForeignMessage {
         var i: Int? = null
         var j: Int? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -140,7 +141,7 @@ class ForeignMessage(
         )
       }
 
-      override fun redact(value: ForeignMessage): ForeignMessage = value.copy(
+      public override fun redact(value: ForeignMessage): ForeignMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

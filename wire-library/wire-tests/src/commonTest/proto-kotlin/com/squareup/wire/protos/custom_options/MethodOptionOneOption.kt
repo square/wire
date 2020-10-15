@@ -3,16 +3,16 @@
 package com.squareup.wire.protos.custom_options
 
 import kotlin.Int
-import kotlin.annotation.AnnotationRetention
-import kotlin.annotation.AnnotationTarget
-import kotlin.annotation.Retention
-import kotlin.annotation.Target
+import kotlin.`annotation`.AnnotationRetention
+import kotlin.`annotation`.AnnotationTarget
+import kotlin.`annotation`.Retention
+import kotlin.`annotation`.Target
 
 /**
  * This is a shiny option! Apply it to your brightest methods.
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
-annotation class MethodOptionOneOption(
-  val value: Int
+public annotation class MethodOptionOneOption(
+  public val value: Int
 )

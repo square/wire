@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -19,6 +19,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -28,7 +29,7 @@ import okio.ByteString
  *
  * If a feature could not be named, the name is empty.
  */
-class Feature(
+public class Feature(
   /**
    * The name of the feature.
    */
@@ -36,7 +37,7 @@ class Feature(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  val name: String? = null,
+  public val name: String? = null,
   /**
    * The point where the feature is detected.
    */
@@ -44,16 +45,16 @@ class Feature(
     tag = 2,
     adapter = "routeguide.Point#ADAPTER"
   )
-  val location: Point? = null,
+  public val location: Point? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Feature, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Feature) return false
     if (unknownFields != other.unknownFields) return false
@@ -62,7 +63,7 @@ class Feature(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -73,42 +74,42 @@ class Feature(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=${sanitize(name)}"""
     if (location != null) result += """location=$location"""
     return result.joinToString(prefix = "Feature{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     name: String? = this.name,
     location: Point? = this.location,
     unknownFields: ByteString = this.unknownFields
   ): Feature = Feature(name, location, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Feature> = object : ProtoAdapter<Feature>(
+    public val ADAPTER: ProtoAdapter<Feature> = object : ProtoAdapter<Feature>(
       FieldEncoding.LENGTH_DELIMITED, 
       Feature::class, 
       "type.googleapis.com/routeguide.Feature", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Feature): Int {
+      public override fun encodedSize(value: Feature): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += Point.ADAPTER.encodedSizeWithTag(2, value.location)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Feature) {
+      public override fun encode(writer: ProtoWriter, value: Feature): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         Point.ADAPTER.encodeWithTag(writer, 2, value.location)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Feature {
+      public override fun decode(reader: ProtoReader): Feature {
         var name: String? = null
         var location: Point? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -125,7 +126,7 @@ class Feature(
         )
       }
 
-      override fun redact(value: Feature): Feature = value.copy(
+      public override fun redact(value: Feature): Feature = value.copy(
         location = value.location?.let(Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

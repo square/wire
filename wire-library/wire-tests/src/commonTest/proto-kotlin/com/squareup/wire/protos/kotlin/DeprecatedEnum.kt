@@ -11,31 +11,29 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
-enum class DeprecatedEnum(
-  override val value: Int
+public enum class DeprecatedEnum(
+  public override val value: Int
 ) : WireEnum {
   @Deprecated(message = "DISABLED is deprecated")
   DISABLED(1),
-
   @Deprecated(message = "ENABLED is deprecated")
   ENABLED(2),
-
   ON(3),
+  OFF(4),
+  ;
 
-  OFF(4);
-
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<DeprecatedEnum> = object : EnumAdapter<DeprecatedEnum>(
+    public val ADAPTER: ProtoAdapter<DeprecatedEnum> = object : EnumAdapter<DeprecatedEnum>(
       DeprecatedEnum::class, 
       PROTO_2, 
       null
     ) {
-      override fun fromValue(value: Int): DeprecatedEnum? = DeprecatedEnum.fromValue(value)
+      public override fun fromValue(value: Int): DeprecatedEnum? = DeprecatedEnum.fromValue(value)
     }
 
     @JvmStatic
-    fun fromValue(value: Int): DeprecatedEnum? = when (value) {
+    public fun fromValue(value: Int): DeprecatedEnum? = when (value) {
       1 -> DISABLED
       2 -> ENABLED
       3 -> ON

@@ -17,58 +17,59 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class SomeResponse(
+public class SomeResponse(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<SomeResponse, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is SomeResponse) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  public override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = "SomeResponse{}"
+  public override fun toString(): String = "SomeResponse{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): SomeResponse =
+  public fun copy(unknownFields: ByteString = this.unknownFields): SomeResponse =
       SomeResponse(unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<SomeResponse> = object : ProtoAdapter<SomeResponse>(
+    public val ADAPTER: ProtoAdapter<SomeResponse> = object : ProtoAdapter<SomeResponse>(
       FieldEncoding.LENGTH_DELIMITED, 
       SomeResponse::class, 
       "type.googleapis.com/squareup.protos.kotlin.SomeResponse", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: SomeResponse): Int {
+      public override fun encodedSize(value: SomeResponse): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: SomeResponse) {
+      public override fun encode(writer: ProtoWriter, value: SomeResponse): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): SomeResponse {
+      public override fun decode(reader: ProtoReader): SomeResponse {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return SomeResponse(
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(value: SomeResponse): SomeResponse = value.copy(
+      public override fun redact(value: SomeResponse): SomeResponse = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

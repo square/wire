@@ -10,14 +10,15 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
@@ -25,7 +26,7 @@ import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
 
-class CamelCase(
+public class CamelCase(
   @field:WireField(
     tag = 1,
     adapter = "squareup.proto3.CamelCase${'$'}NestedCamelCase#ADAPTER",
@@ -33,7 +34,7 @@ class CamelCase(
     jsonName = "nestedMessage"
   )
   @JvmField
-  val nested__message: NestedCamelCase? = null,
+  public val nested__message: NestedCamelCase? = null,
   _Rep_int32: List<Int> = emptyList(),
   @field:WireField(
     tag = 3,
@@ -42,7 +43,7 @@ class CamelCase(
     jsonName = "IDitItMyWAy"
   )
   @JvmField
-  val IDitIt_my_wAy: String = "",
+  public val IDitIt_my_wAy: String = "",
   map_int32_Int32: Map<Int, Int> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<CamelCase, CamelCase.Builder>(ADAPTER, unknownFields) {
@@ -53,7 +54,7 @@ class CamelCase(
     jsonName = "RepInt32"
   )
   @JvmField
-  val _Rep_int32: List<Int> = immutableCopyOf("_Rep_int32", _Rep_int32)
+  public val _Rep_int32: List<Int> = immutableCopyOf("_Rep_int32", _Rep_int32)
 
   @field:WireField(
     tag = 4,
@@ -62,9 +63,9 @@ class CamelCase(
     jsonName = "mapInt32Int32"
   )
   @JvmField
-  val map_int32_Int32: Map<Int, Int> = immutableCopyOf("map_int32_Int32", map_int32_Int32)
+  public val map_int32_Int32: Map<Int, Int> = immutableCopyOf("map_int32_Int32", map_int32_Int32)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.nested__message = nested__message
     builder._Rep_int32 = _Rep_int32
@@ -74,7 +75,7 @@ class CamelCase(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is CamelCase) return false
     if (unknownFields != other.unknownFields) return false
@@ -85,7 +86,7 @@ class CamelCase(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -98,7 +99,7 @@ class CamelCase(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (nested__message != null) result += """nested__message=$nested__message"""
     if (_Rep_int32.isNotEmpty()) result += """_Rep_int32=$_Rep_int32"""
@@ -107,7 +108,7 @@ class CamelCase(
     return result.joinToString(prefix = "CamelCase{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     nested__message: NestedCamelCase? = this.nested__message,
     _Rep_int32: List<Int> = this._Rep_int32,
     IDitIt_my_wAy: String = this.IDitIt_my_wAy,
@@ -116,41 +117,41 @@ class CamelCase(
   ): CamelCase = CamelCase(nested__message, _Rep_int32, IDitIt_my_wAy, map_int32_Int32,
       unknownFields)
 
-  class Builder : Message.Builder<CamelCase, Builder>() {
+  public class Builder : Message.Builder<CamelCase, Builder>() {
     @JvmField
-    var nested__message: NestedCamelCase? = null
+    public var nested__message: NestedCamelCase? = null
 
     @JvmField
-    var _Rep_int32: List<Int> = emptyList()
+    public var _Rep_int32: List<Int> = emptyList()
 
     @JvmField
-    var IDitIt_my_wAy: String = ""
+    public var IDitIt_my_wAy: String = ""
 
     @JvmField
-    var map_int32_Int32: Map<Int, Int> = emptyMap()
+    public var map_int32_Int32: Map<Int, Int> = emptyMap()
 
-    fun nested__message(nested__message: NestedCamelCase?): Builder {
+    public fun nested__message(nested__message: NestedCamelCase?): Builder {
       this.nested__message = nested__message
       return this
     }
 
-    fun _Rep_int32(_Rep_int32: List<Int>): Builder {
+    public fun _Rep_int32(_Rep_int32: List<Int>): Builder {
       checkElementsNotNull(_Rep_int32)
       this._Rep_int32 = _Rep_int32
       return this
     }
 
-    fun IDitIt_my_wAy(IDitIt_my_wAy: String): Builder {
+    public fun IDitIt_my_wAy(IDitIt_my_wAy: String): Builder {
       this.IDitIt_my_wAy = IDitIt_my_wAy
       return this
     }
 
-    fun map_int32_Int32(map_int32_Int32: Map<Int, Int>): Builder {
+    public fun map_int32_Int32(map_int32_Int32: Map<Int, Int>): Builder {
       this.map_int32_Int32 = map_int32_Int32
       return this
     }
 
-    override fun build(): CamelCase = CamelCase(
+    public override fun build(): CamelCase = CamelCase(
       nested__message = nested__message,
       _Rep_int32 = _Rep_int32,
       IDitIt_my_wAy = IDitIt_my_wAy,
@@ -159,9 +160,9 @@ class CamelCase(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<CamelCase> = object : ProtoAdapter<CamelCase>(
+    public val ADAPTER: ProtoAdapter<CamelCase> = object : ProtoAdapter<CamelCase>(
       FieldEncoding.LENGTH_DELIMITED, 
       CamelCase::class, 
       "type.googleapis.com/squareup.proto3.CamelCase", 
@@ -171,7 +172,7 @@ class CamelCase(
       private val map_int32_Int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      override fun encodedSize(value: CamelCase): Int {
+      public override fun encodedSize(value: CamelCase): Int {
         var size = value.unknownFields.size
         if (value.nested__message != null) size += NestedCamelCase.ADAPTER.encodedSizeWithTag(1,
             value.nested__message)
@@ -182,7 +183,7 @@ class CamelCase(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: CamelCase) {
+      public override fun encode(writer: ProtoWriter, value: CamelCase): Unit {
         if (value.nested__message != null) NestedCamelCase.ADAPTER.encodeWithTag(writer, 1,
             value.nested__message)
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value._Rep_int32)
@@ -192,7 +193,7 @@ class CamelCase(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): CamelCase {
+      public override fun decode(reader: ProtoReader): CamelCase {
         var nested__message: NestedCamelCase? = null
         val _Rep_int32 = mutableListOf<Int>()
         var IDitIt_my_wAy: String = ""
@@ -215,7 +216,7 @@ class CamelCase(
         )
       }
 
-      override fun redact(value: CamelCase): CamelCase = value.copy(
+      public override fun redact(value: CamelCase): CamelCase = value.copy(
         nested__message = value.nested__message?.let(NestedCamelCase.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
@@ -224,7 +225,7 @@ class CamelCase(
     private const val serialVersionUID: Long = 0L
   }
 
-  class NestedCamelCase(
+  public class NestedCamelCase(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -232,17 +233,17 @@ class CamelCase(
       jsonName = "oneInt32"
     )
     @JvmField
-    val one_int32: Int = 0,
+    public val one_int32: Int = 0,
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<NestedCamelCase, NestedCamelCase.Builder>(ADAPTER, unknownFields) {
-    override fun newBuilder(): Builder {
+    public override fun newBuilder(): Builder {
       val builder = Builder()
       builder.one_int32 = one_int32
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedCamelCase) return false
       if (unknownFields != other.unknownFields) return false
@@ -250,7 +251,7 @@ class CamelCase(
       return true
     }
 
-    override fun hashCode(): Int {
+    public override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -260,52 +261,52 @@ class CamelCase(
       return result
     }
 
-    override fun toString(): String {
+    public override fun toString(): String {
       val result = mutableListOf<String>()
       result += """one_int32=$one_int32"""
       return result.joinToString(prefix = "NestedCamelCase{", separator = ", ", postfix = "}")
     }
 
-    fun copy(one_int32: Int = this.one_int32, unknownFields: ByteString = this.unknownFields):
-        NestedCamelCase = NestedCamelCase(one_int32, unknownFields)
+    public fun copy(one_int32: Int = this.one_int32, unknownFields: ByteString =
+        this.unknownFields): NestedCamelCase = NestedCamelCase(one_int32, unknownFields)
 
-    class Builder : Message.Builder<NestedCamelCase, Builder>() {
+    public class Builder : Message.Builder<NestedCamelCase, Builder>() {
       @JvmField
-      var one_int32: Int = 0
+      public var one_int32: Int = 0
 
-      fun one_int32(one_int32: Int): Builder {
+      public fun one_int32(one_int32: Int): Builder {
         this.one_int32 = one_int32
         return this
       }
 
-      override fun build(): NestedCamelCase = NestedCamelCase(
+      public override fun build(): NestedCamelCase = NestedCamelCase(
         one_int32 = one_int32,
         unknownFields = buildUnknownFields()
       )
     }
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<NestedCamelCase> = object : ProtoAdapter<NestedCamelCase>(
+      public val ADAPTER: ProtoAdapter<NestedCamelCase> = object : ProtoAdapter<NestedCamelCase>(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedCamelCase::class, 
         "type.googleapis.com/squareup.proto3.CamelCase.NestedCamelCase", 
         PROTO_3, 
         null
       ) {
-        override fun encodedSize(value: NestedCamelCase): Int {
+        public override fun encodedSize(value: NestedCamelCase): Int {
           var size = value.unknownFields.size
           if (value.one_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1,
               value.one_int32)
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: NestedCamelCase) {
+        public override fun encode(writer: ProtoWriter, value: NestedCamelCase): Unit {
           if (value.one_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.one_int32)
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): NestedCamelCase {
+        public override fun decode(reader: ProtoReader): NestedCamelCase {
           var one_int32: Int = 0
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -319,7 +320,7 @@ class CamelCase(
           )
         }
 
-        override fun redact(value: NestedCamelCase): NestedCamelCase = value.copy(
+        public override fun redact(value: NestedCamelCase): NestedCamelCase = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

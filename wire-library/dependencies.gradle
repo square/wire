@@ -6,7 +6,7 @@ ext.versions = [
   'gson': '2.8.6',
   'guava': '20.0',
   'javapoet': '1.13.0',
-  'kotlinpoet': '1.6.0',
+  'kotlinpoet': '1.7.1',
   'jsr305': '3.0.2',
   'kotlin': '1.4.10',
   'okio': '2.8.0',

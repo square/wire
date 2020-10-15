@@ -17,58 +17,59 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class NoPackageResponse(
+public class NoPackageResponse(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NoPackageResponse, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoPackageResponse) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  public override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = "NoPackageResponse{}"
+  public override fun toString(): String = "NoPackageResponse{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): NoPackageResponse =
+  public fun copy(unknownFields: ByteString = this.unknownFields): NoPackageResponse =
       NoPackageResponse(unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<NoPackageResponse> = object : ProtoAdapter<NoPackageResponse>(
+    public val ADAPTER: ProtoAdapter<NoPackageResponse> = object : ProtoAdapter<NoPackageResponse>(
       FieldEncoding.LENGTH_DELIMITED, 
       NoPackageResponse::class, 
       "type.googleapis.com/NoPackageResponse", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: NoPackageResponse): Int {
+      public override fun encodedSize(value: NoPackageResponse): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: NoPackageResponse) {
+      public override fun encode(writer: ProtoWriter, value: NoPackageResponse): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): NoPackageResponse {
+      public override fun decode(reader: ProtoReader): NoPackageResponse {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return NoPackageResponse(
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(value: NoPackageResponse): NoPackageResponse = value.copy(
+      public override fun redact(value: NoPackageResponse): NoPackageResponse = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

@@ -12,11 +12,11 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.missingRequiredFields
-import com.squareup.wire.internal.redactElements
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.missingRequiredFields
+import com.squareup.wire.`internal`.redactElements
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Double
@@ -24,6 +24,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
@@ -33,228 +34,228 @@ import kotlin.lazy
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
 
-class AllTypes(
+public class AllTypes(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val opt_int32: Int? = null,
+  public val opt_int32: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   @JvmField
-  val opt_uint32: Int? = null,
+  public val opt_uint32: Int? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   @JvmField
-  val opt_sint32: Int? = null,
+  public val opt_sint32: Int? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   @JvmField
-  val opt_fixed32: Int? = null,
+  public val opt_fixed32: Int? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   @JvmField
-  val opt_sfixed32: Int? = null,
+  public val opt_sfixed32: Int? = null,
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   @JvmField
-  val opt_int64: Long? = null,
+  public val opt_int64: Long? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   @JvmField
-  val opt_uint64: Long? = null,
+  public val opt_uint64: Long? = null,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   @JvmField
-  val opt_sint64: Long? = null,
+  public val opt_sint64: Long? = null,
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   @JvmField
-  val opt_fixed64: Long? = null,
+  public val opt_fixed64: Long? = null,
   @field:WireField(
     tag = 10,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   @JvmField
-  val opt_sfixed64: Long? = null,
+  public val opt_sfixed64: Long? = null,
   @field:WireField(
     tag = 11,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   @JvmField
-  val opt_bool: Boolean? = null,
+  public val opt_bool: Boolean? = null,
   @field:WireField(
     tag = 12,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   @JvmField
-  val opt_float: Float? = null,
+  public val opt_float: Float? = null,
   @field:WireField(
     tag = 13,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   @JvmField
-  val opt_double: Double? = null,
+  public val opt_double: Double? = null,
   @field:WireField(
     tag = 14,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val opt_string: String? = null,
+  public val opt_string: String? = null,
   @field:WireField(
     tag = 15,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   @JvmField
-  val opt_bytes: ByteString? = null,
+  public val opt_bytes: ByteString? = null,
   @field:WireField(
     tag = 16,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   @JvmField
-  val opt_nested_enum: NestedEnum? = null,
+  public val opt_nested_enum: NestedEnum? = null,
   @field:WireField(
     tag = 17,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
   )
   @JvmField
-  val opt_nested_message: NestedMessage? = null,
+  public val opt_nested_message: NestedMessage? = null,
   @field:WireField(
     tag = 101,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_int32: Int,
+  public val req_int32: Int,
   @field:WireField(
     tag = 102,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_uint32: Int,
+  public val req_uint32: Int,
   @field:WireField(
     tag = 103,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_sint32: Int,
+  public val req_sint32: Int,
   @field:WireField(
     tag = 104,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_fixed32: Int,
+  public val req_fixed32: Int,
   @field:WireField(
     tag = 105,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_sfixed32: Int,
+  public val req_sfixed32: Int,
   @field:WireField(
     tag = 106,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_int64: Long,
+  public val req_int64: Long,
   @field:WireField(
     tag = 107,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_uint64: Long,
+  public val req_uint64: Long,
   @field:WireField(
     tag = 108,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_sint64: Long,
+  public val req_sint64: Long,
   @field:WireField(
     tag = 109,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_fixed64: Long,
+  public val req_fixed64: Long,
   @field:WireField(
     tag = 110,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_sfixed64: Long,
+  public val req_sfixed64: Long,
   @field:WireField(
     tag = 111,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_bool: Boolean,
+  public val req_bool: Boolean,
   @field:WireField(
     tag = 112,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_float: Float,
+  public val req_float: Float,
   @field:WireField(
     tag = 113,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_double: Double,
+  public val req_double: Double,
   @field:WireField(
     tag = 114,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_string: String,
+  public val req_string: String,
   @field:WireField(
     tag = 115,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_bytes: ByteString,
+  public val req_bytes: ByteString,
   @field:WireField(
     tag = 116,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_nested_enum: NestedEnum,
+  public val req_nested_enum: NestedEnum,
   @field:WireField(
     tag = 117,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
     label = WireField.Label.REQUIRED
   )
   @JvmField
-  val req_nested_message: NestedMessage,
+  public val req_nested_message: NestedMessage,
   rep_int32: List<Int> = emptyList(),
   rep_uint32: List<Int> = emptyList(),
   rep_sint32: List<Int> = emptyList(),
@@ -291,97 +292,97 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val default_int32: Int? = null,
+  public val default_int32: Int? = null,
   @field:WireField(
     tag = 402,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   @JvmField
-  val default_uint32: Int? = null,
+  public val default_uint32: Int? = null,
   @field:WireField(
     tag = 403,
     adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   @JvmField
-  val default_sint32: Int? = null,
+  public val default_sint32: Int? = null,
   @field:WireField(
     tag = 404,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   @JvmField
-  val default_fixed32: Int? = null,
+  public val default_fixed32: Int? = null,
   @field:WireField(
     tag = 405,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   @JvmField
-  val default_sfixed32: Int? = null,
+  public val default_sfixed32: Int? = null,
   @field:WireField(
     tag = 406,
     adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   @JvmField
-  val default_int64: Long? = null,
+  public val default_int64: Long? = null,
   @field:WireField(
     tag = 407,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   @JvmField
-  val default_uint64: Long? = null,
+  public val default_uint64: Long? = null,
   @field:WireField(
     tag = 408,
     adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   @JvmField
-  val default_sint64: Long? = null,
+  public val default_sint64: Long? = null,
   @field:WireField(
     tag = 409,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   @JvmField
-  val default_fixed64: Long? = null,
+  public val default_fixed64: Long? = null,
   @field:WireField(
     tag = 410,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   @JvmField
-  val default_sfixed64: Long? = null,
+  public val default_sfixed64: Long? = null,
   @field:WireField(
     tag = 411,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   @JvmField
-  val default_bool: Boolean? = null,
+  public val default_bool: Boolean? = null,
   @field:WireField(
     tag = 412,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   @JvmField
-  val default_float: Float? = null,
+  public val default_float: Float? = null,
   @field:WireField(
     tag = 413,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   @JvmField
-  val default_double: Double? = null,
+  public val default_double: Double? = null,
   @field:WireField(
     tag = 414,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val default_string: String? = null,
+  public val default_string: String? = null,
   @field:WireField(
     tag = 415,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   @JvmField
-  val default_bytes: ByteString? = null,
+  public val default_bytes: ByteString? = null,
   @field:WireField(
     tag = 416,
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   @JvmField
-  val default_nested_enum: NestedEnum? = null,
+  public val default_nested_enum: NestedEnum? = null,
   map_int32_int32: Map<Int, Int> = emptyMap(),
   map_string_string: Map<String, String> = emptyMap(),
   map_string_message: Map<String, NestedMessage> = emptyMap(),
@@ -394,7 +395,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val ext_opt_int32: Int? = null,
+  public val ext_opt_int32: Int? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -403,7 +404,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#UINT32"
   )
   @JvmField
-  val ext_opt_uint32: Int? = null,
+  public val ext_opt_uint32: Int? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -412,7 +413,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SINT32"
   )
   @JvmField
-  val ext_opt_sint32: Int? = null,
+  public val ext_opt_sint32: Int? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -421,7 +422,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   @JvmField
-  val ext_opt_fixed32: Int? = null,
+  public val ext_opt_fixed32: Int? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -430,7 +431,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32"
   )
   @JvmField
-  val ext_opt_sfixed32: Int? = null,
+  public val ext_opt_sfixed32: Int? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -439,7 +440,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT64"
   )
   @JvmField
-  val ext_opt_int64: Long? = null,
+  public val ext_opt_int64: Long? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -448,7 +449,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
   @JvmField
-  val ext_opt_uint64: Long? = null,
+  public val ext_opt_uint64: Long? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -457,7 +458,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SINT64"
   )
   @JvmField
-  val ext_opt_sint64: Long? = null,
+  public val ext_opt_sint64: Long? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -466,7 +467,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   @JvmField
-  val ext_opt_fixed64: Long? = null,
+  public val ext_opt_fixed64: Long? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -475,7 +476,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64"
   )
   @JvmField
-  val ext_opt_sfixed64: Long? = null,
+  public val ext_opt_sfixed64: Long? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -484,7 +485,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#BOOL"
   )
   @JvmField
-  val ext_opt_bool: Boolean? = null,
+  public val ext_opt_bool: Boolean? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -493,7 +494,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT"
   )
   @JvmField
-  val ext_opt_float: Float? = null,
+  public val ext_opt_float: Float? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -502,7 +503,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   @JvmField
-  val ext_opt_double: Double? = null,
+  public val ext_opt_double: Double? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -511,7 +512,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val ext_opt_string: String? = null,
+  public val ext_opt_string: String? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -520,7 +521,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#BYTES"
   )
   @JvmField
-  val ext_opt_bytes: ByteString? = null,
+  public val ext_opt_bytes: ByteString? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -529,7 +530,7 @@ class AllTypes(
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   @JvmField
-  val ext_opt_nested_enum: NestedEnum? = null,
+  public val ext_opt_nested_enum: NestedEnum? = null,
   /**
    * Extension source: all_types.proto
    */
@@ -538,7 +539,7 @@ class AllTypes(
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
   )
   @JvmField
-  val ext_opt_nested_message: NestedMessage? = null,
+  public val ext_opt_nested_message: NestedMessage? = null,
   ext_rep_int32: List<Int> = emptyList(),
   ext_rep_uint32: List<Int> = emptyList(),
   ext_rep_sint32: List<Int> = emptyList(),
@@ -578,7 +579,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
+  public val rep_int32: List<Int> = immutableCopyOf("rep_int32", rep_int32)
 
   @field:WireField(
     tag = 202,
@@ -586,7 +587,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
+  public val rep_uint32: List<Int> = immutableCopyOf("rep_uint32", rep_uint32)
 
   @field:WireField(
     tag = 203,
@@ -594,7 +595,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
+  public val rep_sint32: List<Int> = immutableCopyOf("rep_sint32", rep_sint32)
 
   @field:WireField(
     tag = 204,
@@ -602,7 +603,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
+  public val rep_fixed32: List<Int> = immutableCopyOf("rep_fixed32", rep_fixed32)
 
   @field:WireField(
     tag = 205,
@@ -610,7 +611,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
+  public val rep_sfixed32: List<Int> = immutableCopyOf("rep_sfixed32", rep_sfixed32)
 
   @field:WireField(
     tag = 206,
@@ -618,7 +619,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
+  public val rep_int64: List<Long> = immutableCopyOf("rep_int64", rep_int64)
 
   @field:WireField(
     tag = 207,
@@ -626,7 +627,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
+  public val rep_uint64: List<Long> = immutableCopyOf("rep_uint64", rep_uint64)
 
   @field:WireField(
     tag = 208,
@@ -634,7 +635,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
+  public val rep_sint64: List<Long> = immutableCopyOf("rep_sint64", rep_sint64)
 
   @field:WireField(
     tag = 209,
@@ -642,7 +643,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
+  public val rep_fixed64: List<Long> = immutableCopyOf("rep_fixed64", rep_fixed64)
 
   @field:WireField(
     tag = 210,
@@ -650,7 +651,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
+  public val rep_sfixed64: List<Long> = immutableCopyOf("rep_sfixed64", rep_sfixed64)
 
   @field:WireField(
     tag = 211,
@@ -658,7 +659,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_bool: List<Boolean> = immutableCopyOf("rep_bool", rep_bool)
+  public val rep_bool: List<Boolean> = immutableCopyOf("rep_bool", rep_bool)
 
   @field:WireField(
     tag = 212,
@@ -666,7 +667,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_float: List<Float> = immutableCopyOf("rep_float", rep_float)
+  public val rep_float: List<Float> = immutableCopyOf("rep_float", rep_float)
 
   @field:WireField(
     tag = 213,
@@ -674,7 +675,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_double: List<Double> = immutableCopyOf("rep_double", rep_double)
+  public val rep_double: List<Double> = immutableCopyOf("rep_double", rep_double)
 
   @field:WireField(
     tag = 214,
@@ -682,7 +683,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_string: List<String> = immutableCopyOf("rep_string", rep_string)
+  public val rep_string: List<String> = immutableCopyOf("rep_string", rep_string)
 
   @field:WireField(
     tag = 215,
@@ -690,7 +691,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_bytes: List<ByteString> = immutableCopyOf("rep_bytes", rep_bytes)
+  public val rep_bytes: List<ByteString> = immutableCopyOf("rep_bytes", rep_bytes)
 
   @field:WireField(
     tag = 216,
@@ -698,7 +699,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_nested_enum: List<NestedEnum> = immutableCopyOf("rep_nested_enum", rep_nested_enum)
+  public val rep_nested_enum: List<NestedEnum> = immutableCopyOf("rep_nested_enum", rep_nested_enum)
 
   @field:WireField(
     tag = 217,
@@ -706,7 +707,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
+  public val rep_nested_message: List<NestedMessage> = immutableCopyOf("rep_nested_message",
       rep_nested_message)
 
   @field:WireField(
@@ -715,7 +716,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
+  public val pack_int32: List<Int> = immutableCopyOf("pack_int32", pack_int32)
 
   @field:WireField(
     tag = 302,
@@ -723,7 +724,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
+  public val pack_uint32: List<Int> = immutableCopyOf("pack_uint32", pack_uint32)
 
   @field:WireField(
     tag = 303,
@@ -731,7 +732,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
+  public val pack_sint32: List<Int> = immutableCopyOf("pack_sint32", pack_sint32)
 
   @field:WireField(
     tag = 304,
@@ -739,7 +740,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
+  public val pack_fixed32: List<Int> = immutableCopyOf("pack_fixed32", pack_fixed32)
 
   @field:WireField(
     tag = 305,
@@ -747,7 +748,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
+  public val pack_sfixed32: List<Int> = immutableCopyOf("pack_sfixed32", pack_sfixed32)
 
   @field:WireField(
     tag = 306,
@@ -755,7 +756,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
+  public val pack_int64: List<Long> = immutableCopyOf("pack_int64", pack_int64)
 
   @field:WireField(
     tag = 307,
@@ -763,7 +764,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
+  public val pack_uint64: List<Long> = immutableCopyOf("pack_uint64", pack_uint64)
 
   @field:WireField(
     tag = 308,
@@ -771,7 +772,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
+  public val pack_sint64: List<Long> = immutableCopyOf("pack_sint64", pack_sint64)
 
   @field:WireField(
     tag = 309,
@@ -779,7 +780,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
+  public val pack_fixed64: List<Long> = immutableCopyOf("pack_fixed64", pack_fixed64)
 
   @field:WireField(
     tag = 310,
@@ -787,7 +788,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
+  public val pack_sfixed64: List<Long> = immutableCopyOf("pack_sfixed64", pack_sfixed64)
 
   @field:WireField(
     tag = 311,
@@ -795,7 +796,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_bool: List<Boolean> = immutableCopyOf("pack_bool", pack_bool)
+  public val pack_bool: List<Boolean> = immutableCopyOf("pack_bool", pack_bool)
 
   @field:WireField(
     tag = 312,
@@ -803,7 +804,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_float: List<Float> = immutableCopyOf("pack_float", pack_float)
+  public val pack_float: List<Float> = immutableCopyOf("pack_float", pack_float)
 
   @field:WireField(
     tag = 313,
@@ -811,7 +812,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_double: List<Double> = immutableCopyOf("pack_double", pack_double)
+  public val pack_double: List<Double> = immutableCopyOf("pack_double", pack_double)
 
   @field:WireField(
     tag = 316,
@@ -819,7 +820,8 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum", pack_nested_enum)
+  public val pack_nested_enum: List<NestedEnum> = immutableCopyOf("pack_nested_enum",
+      pack_nested_enum)
 
   @field:WireField(
     tag = 501,
@@ -827,7 +829,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
+  public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
 
   @field:WireField(
     tag = 502,
@@ -835,7 +837,7 @@ class AllTypes(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
+  public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
       map_string_string)
 
   @field:WireField(
@@ -844,7 +846,7 @@ class AllTypes(
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
   )
   @JvmField
-  val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
+  public val map_string_message: Map<String, NestedMessage> = immutableCopyOf("map_string_message",
       map_string_message)
 
   @field:WireField(
@@ -853,7 +855,8 @@ class AllTypes(
     adapter = "com.squareup.wire.protos.kotlin.alltypes.AllTypes${'$'}NestedEnum#ADAPTER"
   )
   @JvmField
-  val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum", map_string_enum)
+  public val map_string_enum: Map<String, NestedEnum> = immutableCopyOf("map_string_enum",
+      map_string_enum)
 
   /**
    * Extension source: all_types.proto
@@ -864,7 +867,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_int32: List<Int> = immutableCopyOf("ext_rep_int32", ext_rep_int32)
+  public val ext_rep_int32: List<Int> = immutableCopyOf("ext_rep_int32", ext_rep_int32)
 
   /**
    * Extension source: all_types.proto
@@ -875,7 +878,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_uint32: List<Int> = immutableCopyOf("ext_rep_uint32", ext_rep_uint32)
+  public val ext_rep_uint32: List<Int> = immutableCopyOf("ext_rep_uint32", ext_rep_uint32)
 
   /**
    * Extension source: all_types.proto
@@ -886,7 +889,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_sint32: List<Int> = immutableCopyOf("ext_rep_sint32", ext_rep_sint32)
+  public val ext_rep_sint32: List<Int> = immutableCopyOf("ext_rep_sint32", ext_rep_sint32)
 
   /**
    * Extension source: all_types.proto
@@ -897,7 +900,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_fixed32: List<Int> = immutableCopyOf("ext_rep_fixed32", ext_rep_fixed32)
+  public val ext_rep_fixed32: List<Int> = immutableCopyOf("ext_rep_fixed32", ext_rep_fixed32)
 
   /**
    * Extension source: all_types.proto
@@ -908,7 +911,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_sfixed32: List<Int> = immutableCopyOf("ext_rep_sfixed32", ext_rep_sfixed32)
+  public val ext_rep_sfixed32: List<Int> = immutableCopyOf("ext_rep_sfixed32", ext_rep_sfixed32)
 
   /**
    * Extension source: all_types.proto
@@ -919,7 +922,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_int64: List<Long> = immutableCopyOf("ext_rep_int64", ext_rep_int64)
+  public val ext_rep_int64: List<Long> = immutableCopyOf("ext_rep_int64", ext_rep_int64)
 
   /**
    * Extension source: all_types.proto
@@ -930,7 +933,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_uint64: List<Long> = immutableCopyOf("ext_rep_uint64", ext_rep_uint64)
+  public val ext_rep_uint64: List<Long> = immutableCopyOf("ext_rep_uint64", ext_rep_uint64)
 
   /**
    * Extension source: all_types.proto
@@ -941,7 +944,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_sint64: List<Long> = immutableCopyOf("ext_rep_sint64", ext_rep_sint64)
+  public val ext_rep_sint64: List<Long> = immutableCopyOf("ext_rep_sint64", ext_rep_sint64)
 
   /**
    * Extension source: all_types.proto
@@ -952,7 +955,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_fixed64: List<Long> = immutableCopyOf("ext_rep_fixed64", ext_rep_fixed64)
+  public val ext_rep_fixed64: List<Long> = immutableCopyOf("ext_rep_fixed64", ext_rep_fixed64)
 
   /**
    * Extension source: all_types.proto
@@ -963,7 +966,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_sfixed64: List<Long> = immutableCopyOf("ext_rep_sfixed64", ext_rep_sfixed64)
+  public val ext_rep_sfixed64: List<Long> = immutableCopyOf("ext_rep_sfixed64", ext_rep_sfixed64)
 
   /**
    * Extension source: all_types.proto
@@ -974,7 +977,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_bool: List<Boolean> = immutableCopyOf("ext_rep_bool", ext_rep_bool)
+  public val ext_rep_bool: List<Boolean> = immutableCopyOf("ext_rep_bool", ext_rep_bool)
 
   /**
    * Extension source: all_types.proto
@@ -985,7 +988,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_float: List<Float> = immutableCopyOf("ext_rep_float", ext_rep_float)
+  public val ext_rep_float: List<Float> = immutableCopyOf("ext_rep_float", ext_rep_float)
 
   /**
    * Extension source: all_types.proto
@@ -996,7 +999,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_double: List<Double> = immutableCopyOf("ext_rep_double", ext_rep_double)
+  public val ext_rep_double: List<Double> = immutableCopyOf("ext_rep_double", ext_rep_double)
 
   /**
    * Extension source: all_types.proto
@@ -1007,7 +1010,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_string: List<String> = immutableCopyOf("ext_rep_string", ext_rep_string)
+  public val ext_rep_string: List<String> = immutableCopyOf("ext_rep_string", ext_rep_string)
 
   /**
    * Extension source: all_types.proto
@@ -1018,7 +1021,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_bytes: List<ByteString> = immutableCopyOf("ext_rep_bytes", ext_rep_bytes)
+  public val ext_rep_bytes: List<ByteString> = immutableCopyOf("ext_rep_bytes", ext_rep_bytes)
 
   /**
    * Extension source: all_types.proto
@@ -1029,7 +1032,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_nested_enum: List<NestedEnum> = immutableCopyOf("ext_rep_nested_enum",
+  public val ext_rep_nested_enum: List<NestedEnum> = immutableCopyOf("ext_rep_nested_enum",
       ext_rep_nested_enum)
 
   /**
@@ -1041,7 +1044,7 @@ class AllTypes(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val ext_rep_nested_message: List<NestedMessage> = immutableCopyOf("ext_rep_nested_message",
+  public val ext_rep_nested_message: List<NestedMessage> = immutableCopyOf("ext_rep_nested_message",
       ext_rep_nested_message)
 
   /**
@@ -1053,7 +1056,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_int32: List<Int> = immutableCopyOf("ext_pack_int32", ext_pack_int32)
+  public val ext_pack_int32: List<Int> = immutableCopyOf("ext_pack_int32", ext_pack_int32)
 
   /**
    * Extension source: all_types.proto
@@ -1064,7 +1067,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_uint32: List<Int> = immutableCopyOf("ext_pack_uint32", ext_pack_uint32)
+  public val ext_pack_uint32: List<Int> = immutableCopyOf("ext_pack_uint32", ext_pack_uint32)
 
   /**
    * Extension source: all_types.proto
@@ -1075,7 +1078,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_sint32: List<Int> = immutableCopyOf("ext_pack_sint32", ext_pack_sint32)
+  public val ext_pack_sint32: List<Int> = immutableCopyOf("ext_pack_sint32", ext_pack_sint32)
 
   /**
    * Extension source: all_types.proto
@@ -1086,7 +1089,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_fixed32: List<Int> = immutableCopyOf("ext_pack_fixed32", ext_pack_fixed32)
+  public val ext_pack_fixed32: List<Int> = immutableCopyOf("ext_pack_fixed32", ext_pack_fixed32)
 
   /**
    * Extension source: all_types.proto
@@ -1097,7 +1100,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_sfixed32: List<Int> = immutableCopyOf("ext_pack_sfixed32", ext_pack_sfixed32)
+  public val ext_pack_sfixed32: List<Int> = immutableCopyOf("ext_pack_sfixed32", ext_pack_sfixed32)
 
   /**
    * Extension source: all_types.proto
@@ -1108,7 +1111,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_int64: List<Long> = immutableCopyOf("ext_pack_int64", ext_pack_int64)
+  public val ext_pack_int64: List<Long> = immutableCopyOf("ext_pack_int64", ext_pack_int64)
 
   /**
    * Extension source: all_types.proto
@@ -1119,7 +1122,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_uint64: List<Long> = immutableCopyOf("ext_pack_uint64", ext_pack_uint64)
+  public val ext_pack_uint64: List<Long> = immutableCopyOf("ext_pack_uint64", ext_pack_uint64)
 
   /**
    * Extension source: all_types.proto
@@ -1130,7 +1133,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_sint64: List<Long> = immutableCopyOf("ext_pack_sint64", ext_pack_sint64)
+  public val ext_pack_sint64: List<Long> = immutableCopyOf("ext_pack_sint64", ext_pack_sint64)
 
   /**
    * Extension source: all_types.proto
@@ -1141,7 +1144,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_fixed64: List<Long> = immutableCopyOf("ext_pack_fixed64", ext_pack_fixed64)
+  public val ext_pack_fixed64: List<Long> = immutableCopyOf("ext_pack_fixed64", ext_pack_fixed64)
 
   /**
    * Extension source: all_types.proto
@@ -1152,7 +1155,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_sfixed64: List<Long> = immutableCopyOf("ext_pack_sfixed64", ext_pack_sfixed64)
+  public val ext_pack_sfixed64: List<Long> = immutableCopyOf("ext_pack_sfixed64", ext_pack_sfixed64)
 
   /**
    * Extension source: all_types.proto
@@ -1163,7 +1166,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_bool: List<Boolean> = immutableCopyOf("ext_pack_bool", ext_pack_bool)
+  public val ext_pack_bool: List<Boolean> = immutableCopyOf("ext_pack_bool", ext_pack_bool)
 
   /**
    * Extension source: all_types.proto
@@ -1174,7 +1177,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_float: List<Float> = immutableCopyOf("ext_pack_float", ext_pack_float)
+  public val ext_pack_float: List<Float> = immutableCopyOf("ext_pack_float", ext_pack_float)
 
   /**
    * Extension source: all_types.proto
@@ -1185,7 +1188,7 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_double: List<Double> = immutableCopyOf("ext_pack_double", ext_pack_double)
+  public val ext_pack_double: List<Double> = immutableCopyOf("ext_pack_double", ext_pack_double)
 
   /**
    * Extension source: all_types.proto
@@ -1196,10 +1199,10 @@ class AllTypes(
     label = WireField.Label.PACKED
   )
   @JvmField
-  val ext_pack_nested_enum: List<NestedEnum> = immutableCopyOf("ext_pack_nested_enum",
+  public val ext_pack_nested_enum: List<NestedEnum> = immutableCopyOf("ext_pack_nested_enum",
       ext_pack_nested_enum)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.opt_int32 = opt_int32
     builder.opt_uint32 = opt_uint32
@@ -1338,7 +1341,7 @@ class AllTypes(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllTypes) return false
     if (unknownFields != other.unknownFields) return false
@@ -1478,7 +1481,7 @@ class AllTypes(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -1620,7 +1623,7 @@ class AllTypes(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (opt_int32 != null) result += """opt_int32=$opt_int32"""
     if (opt_uint32 != null) result += """opt_uint32=$opt_uint32"""
@@ -1761,7 +1764,7 @@ class AllTypes(
     return result.joinToString(prefix = "AllTypes{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     opt_int32: Int? = this.opt_int32,
     opt_uint32: Int? = this.opt_uint32,
     opt_sint32: Int? = this.opt_sint32,
@@ -1921,1134 +1924,1134 @@ class AllTypes(
       ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum,
       unknownFields)
 
-  class Builder : Message.Builder<AllTypes, Builder>() {
+  public class Builder : Message.Builder<AllTypes, Builder>() {
     @JvmField
-    var opt_int32: Int? = null
+    public var opt_int32: Int? = null
 
     @JvmField
-    var opt_uint32: Int? = null
+    public var opt_uint32: Int? = null
 
     @JvmField
-    var opt_sint32: Int? = null
+    public var opt_sint32: Int? = null
 
     @JvmField
-    var opt_fixed32: Int? = null
+    public var opt_fixed32: Int? = null
 
     @JvmField
-    var opt_sfixed32: Int? = null
+    public var opt_sfixed32: Int? = null
 
     @JvmField
-    var opt_int64: Long? = null
+    public var opt_int64: Long? = null
 
     @JvmField
-    var opt_uint64: Long? = null
+    public var opt_uint64: Long? = null
 
     @JvmField
-    var opt_sint64: Long? = null
+    public var opt_sint64: Long? = null
 
     @JvmField
-    var opt_fixed64: Long? = null
+    public var opt_fixed64: Long? = null
 
     @JvmField
-    var opt_sfixed64: Long? = null
+    public var opt_sfixed64: Long? = null
 
     @JvmField
-    var opt_bool: Boolean? = null
+    public var opt_bool: Boolean? = null
 
     @JvmField
-    var opt_float: Float? = null
+    public var opt_float: Float? = null
 
     @JvmField
-    var opt_double: Double? = null
+    public var opt_double: Double? = null
 
     @JvmField
-    var opt_string: String? = null
+    public var opt_string: String? = null
 
     @JvmField
-    var opt_bytes: ByteString? = null
+    public var opt_bytes: ByteString? = null
 
     @JvmField
-    var opt_nested_enum: NestedEnum? = null
+    public var opt_nested_enum: NestedEnum? = null
 
     @JvmField
-    var opt_nested_message: NestedMessage? = null
+    public var opt_nested_message: NestedMessage? = null
 
     @JvmField
-    var req_int32: Int? = null
+    public var req_int32: Int? = null
 
     @JvmField
-    var req_uint32: Int? = null
+    public var req_uint32: Int? = null
 
     @JvmField
-    var req_sint32: Int? = null
+    public var req_sint32: Int? = null
 
     @JvmField
-    var req_fixed32: Int? = null
+    public var req_fixed32: Int? = null
 
     @JvmField
-    var req_sfixed32: Int? = null
+    public var req_sfixed32: Int? = null
 
     @JvmField
-    var req_int64: Long? = null
+    public var req_int64: Long? = null
 
     @JvmField
-    var req_uint64: Long? = null
+    public var req_uint64: Long? = null
 
     @JvmField
-    var req_sint64: Long? = null
+    public var req_sint64: Long? = null
 
     @JvmField
-    var req_fixed64: Long? = null
+    public var req_fixed64: Long? = null
 
     @JvmField
-    var req_sfixed64: Long? = null
+    public var req_sfixed64: Long? = null
 
     @JvmField
-    var req_bool: Boolean? = null
+    public var req_bool: Boolean? = null
 
     @JvmField
-    var req_float: Float? = null
+    public var req_float: Float? = null
 
     @JvmField
-    var req_double: Double? = null
+    public var req_double: Double? = null
 
     @JvmField
-    var req_string: String? = null
+    public var req_string: String? = null
 
     @JvmField
-    var req_bytes: ByteString? = null
+    public var req_bytes: ByteString? = null
 
     @JvmField
-    var req_nested_enum: NestedEnum? = null
+    public var req_nested_enum: NestedEnum? = null
 
     @JvmField
-    var req_nested_message: NestedMessage? = null
+    public var req_nested_message: NestedMessage? = null
 
     @JvmField
-    var rep_int32: List<Int> = emptyList()
+    public var rep_int32: List<Int> = emptyList()
 
     @JvmField
-    var rep_uint32: List<Int> = emptyList()
+    public var rep_uint32: List<Int> = emptyList()
 
     @JvmField
-    var rep_sint32: List<Int> = emptyList()
+    public var rep_sint32: List<Int> = emptyList()
 
     @JvmField
-    var rep_fixed32: List<Int> = emptyList()
+    public var rep_fixed32: List<Int> = emptyList()
 
     @JvmField
-    var rep_sfixed32: List<Int> = emptyList()
+    public var rep_sfixed32: List<Int> = emptyList()
 
     @JvmField
-    var rep_int64: List<Long> = emptyList()
+    public var rep_int64: List<Long> = emptyList()
 
     @JvmField
-    var rep_uint64: List<Long> = emptyList()
+    public var rep_uint64: List<Long> = emptyList()
 
     @JvmField
-    var rep_sint64: List<Long> = emptyList()
+    public var rep_sint64: List<Long> = emptyList()
 
     @JvmField
-    var rep_fixed64: List<Long> = emptyList()
+    public var rep_fixed64: List<Long> = emptyList()
 
     @JvmField
-    var rep_sfixed64: List<Long> = emptyList()
+    public var rep_sfixed64: List<Long> = emptyList()
 
     @JvmField
-    var rep_bool: List<Boolean> = emptyList()
+    public var rep_bool: List<Boolean> = emptyList()
 
     @JvmField
-    var rep_float: List<Float> = emptyList()
+    public var rep_float: List<Float> = emptyList()
 
     @JvmField
-    var rep_double: List<Double> = emptyList()
+    public var rep_double: List<Double> = emptyList()
 
     @JvmField
-    var rep_string: List<String> = emptyList()
+    public var rep_string: List<String> = emptyList()
 
     @JvmField
-    var rep_bytes: List<ByteString> = emptyList()
+    public var rep_bytes: List<ByteString> = emptyList()
 
     @JvmField
-    var rep_nested_enum: List<NestedEnum> = emptyList()
+    public var rep_nested_enum: List<NestedEnum> = emptyList()
 
     @JvmField
-    var rep_nested_message: List<NestedMessage> = emptyList()
+    public var rep_nested_message: List<NestedMessage> = emptyList()
 
     @JvmField
-    var pack_int32: List<Int> = emptyList()
+    public var pack_int32: List<Int> = emptyList()
 
     @JvmField
-    var pack_uint32: List<Int> = emptyList()
+    public var pack_uint32: List<Int> = emptyList()
 
     @JvmField
-    var pack_sint32: List<Int> = emptyList()
+    public var pack_sint32: List<Int> = emptyList()
 
     @JvmField
-    var pack_fixed32: List<Int> = emptyList()
+    public var pack_fixed32: List<Int> = emptyList()
 
     @JvmField
-    var pack_sfixed32: List<Int> = emptyList()
+    public var pack_sfixed32: List<Int> = emptyList()
 
     @JvmField
-    var pack_int64: List<Long> = emptyList()
+    public var pack_int64: List<Long> = emptyList()
 
     @JvmField
-    var pack_uint64: List<Long> = emptyList()
+    public var pack_uint64: List<Long> = emptyList()
 
     @JvmField
-    var pack_sint64: List<Long> = emptyList()
+    public var pack_sint64: List<Long> = emptyList()
 
     @JvmField
-    var pack_fixed64: List<Long> = emptyList()
+    public var pack_fixed64: List<Long> = emptyList()
 
     @JvmField
-    var pack_sfixed64: List<Long> = emptyList()
+    public var pack_sfixed64: List<Long> = emptyList()
 
     @JvmField
-    var pack_bool: List<Boolean> = emptyList()
+    public var pack_bool: List<Boolean> = emptyList()
 
     @JvmField
-    var pack_float: List<Float> = emptyList()
+    public var pack_float: List<Float> = emptyList()
 
     @JvmField
-    var pack_double: List<Double> = emptyList()
+    public var pack_double: List<Double> = emptyList()
 
     @JvmField
-    var pack_nested_enum: List<NestedEnum> = emptyList()
+    public var pack_nested_enum: List<NestedEnum> = emptyList()
 
     @JvmField
-    var default_int32: Int? = null
+    public var default_int32: Int? = null
 
     @JvmField
-    var default_uint32: Int? = null
+    public var default_uint32: Int? = null
 
     @JvmField
-    var default_sint32: Int? = null
+    public var default_sint32: Int? = null
 
     @JvmField
-    var default_fixed32: Int? = null
+    public var default_fixed32: Int? = null
 
     @JvmField
-    var default_sfixed32: Int? = null
+    public var default_sfixed32: Int? = null
 
     @JvmField
-    var default_int64: Long? = null
+    public var default_int64: Long? = null
 
     @JvmField
-    var default_uint64: Long? = null
+    public var default_uint64: Long? = null
 
     @JvmField
-    var default_sint64: Long? = null
+    public var default_sint64: Long? = null
 
     @JvmField
-    var default_fixed64: Long? = null
+    public var default_fixed64: Long? = null
 
     @JvmField
-    var default_sfixed64: Long? = null
+    public var default_sfixed64: Long? = null
 
     @JvmField
-    var default_bool: Boolean? = null
+    public var default_bool: Boolean? = null
 
     @JvmField
-    var default_float: Float? = null
+    public var default_float: Float? = null
 
     @JvmField
-    var default_double: Double? = null
+    public var default_double: Double? = null
 
     @JvmField
-    var default_string: String? = null
+    public var default_string: String? = null
 
     @JvmField
-    var default_bytes: ByteString? = null
+    public var default_bytes: ByteString? = null
 
     @JvmField
-    var default_nested_enum: NestedEnum? = null
+    public var default_nested_enum: NestedEnum? = null
 
     @JvmField
-    var map_int32_int32: Map<Int, Int> = emptyMap()
+    public var map_int32_int32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_string_string: Map<String, String> = emptyMap()
+    public var map_string_string: Map<String, String> = emptyMap()
 
     @JvmField
-    var map_string_message: Map<String, NestedMessage> = emptyMap()
+    public var map_string_message: Map<String, NestedMessage> = emptyMap()
 
     @JvmField
-    var map_string_enum: Map<String, NestedEnum> = emptyMap()
+    public var map_string_enum: Map<String, NestedEnum> = emptyMap()
 
     @JvmField
-    var ext_opt_int32: Int? = null
+    public var ext_opt_int32: Int? = null
 
     @JvmField
-    var ext_opt_uint32: Int? = null
+    public var ext_opt_uint32: Int? = null
 
     @JvmField
-    var ext_opt_sint32: Int? = null
+    public var ext_opt_sint32: Int? = null
 
     @JvmField
-    var ext_opt_fixed32: Int? = null
+    public var ext_opt_fixed32: Int? = null
 
     @JvmField
-    var ext_opt_sfixed32: Int? = null
+    public var ext_opt_sfixed32: Int? = null
 
     @JvmField
-    var ext_opt_int64: Long? = null
+    public var ext_opt_int64: Long? = null
 
     @JvmField
-    var ext_opt_uint64: Long? = null
+    public var ext_opt_uint64: Long? = null
 
     @JvmField
-    var ext_opt_sint64: Long? = null
+    public var ext_opt_sint64: Long? = null
 
     @JvmField
-    var ext_opt_fixed64: Long? = null
+    public var ext_opt_fixed64: Long? = null
 
     @JvmField
-    var ext_opt_sfixed64: Long? = null
+    public var ext_opt_sfixed64: Long? = null
 
     @JvmField
-    var ext_opt_bool: Boolean? = null
+    public var ext_opt_bool: Boolean? = null
 
     @JvmField
-    var ext_opt_float: Float? = null
+    public var ext_opt_float: Float? = null
 
     @JvmField
-    var ext_opt_double: Double? = null
+    public var ext_opt_double: Double? = null
 
     @JvmField
-    var ext_opt_string: String? = null
+    public var ext_opt_string: String? = null
 
     @JvmField
-    var ext_opt_bytes: ByteString? = null
+    public var ext_opt_bytes: ByteString? = null
 
     @JvmField
-    var ext_opt_nested_enum: NestedEnum? = null
+    public var ext_opt_nested_enum: NestedEnum? = null
 
     @JvmField
-    var ext_opt_nested_message: NestedMessage? = null
+    public var ext_opt_nested_message: NestedMessage? = null
 
     @JvmField
-    var ext_rep_int32: List<Int> = emptyList()
+    public var ext_rep_int32: List<Int> = emptyList()
 
     @JvmField
-    var ext_rep_uint32: List<Int> = emptyList()
+    public var ext_rep_uint32: List<Int> = emptyList()
 
     @JvmField
-    var ext_rep_sint32: List<Int> = emptyList()
+    public var ext_rep_sint32: List<Int> = emptyList()
 
     @JvmField
-    var ext_rep_fixed32: List<Int> = emptyList()
+    public var ext_rep_fixed32: List<Int> = emptyList()
 
     @JvmField
-    var ext_rep_sfixed32: List<Int> = emptyList()
+    public var ext_rep_sfixed32: List<Int> = emptyList()
 
     @JvmField
-    var ext_rep_int64: List<Long> = emptyList()
+    public var ext_rep_int64: List<Long> = emptyList()
 
     @JvmField
-    var ext_rep_uint64: List<Long> = emptyList()
+    public var ext_rep_uint64: List<Long> = emptyList()
 
     @JvmField
-    var ext_rep_sint64: List<Long> = emptyList()
+    public var ext_rep_sint64: List<Long> = emptyList()
 
     @JvmField
-    var ext_rep_fixed64: List<Long> = emptyList()
+    public var ext_rep_fixed64: List<Long> = emptyList()
 
     @JvmField
-    var ext_rep_sfixed64: List<Long> = emptyList()
+    public var ext_rep_sfixed64: List<Long> = emptyList()
 
     @JvmField
-    var ext_rep_bool: List<Boolean> = emptyList()
+    public var ext_rep_bool: List<Boolean> = emptyList()
 
     @JvmField
-    var ext_rep_float: List<Float> = emptyList()
+    public var ext_rep_float: List<Float> = emptyList()
 
     @JvmField
-    var ext_rep_double: List<Double> = emptyList()
+    public var ext_rep_double: List<Double> = emptyList()
 
     @JvmField
-    var ext_rep_string: List<String> = emptyList()
+    public var ext_rep_string: List<String> = emptyList()
 
     @JvmField
-    var ext_rep_bytes: List<ByteString> = emptyList()
+    public var ext_rep_bytes: List<ByteString> = emptyList()
 
     @JvmField
-    var ext_rep_nested_enum: List<NestedEnum> = emptyList()
+    public var ext_rep_nested_enum: List<NestedEnum> = emptyList()
 
     @JvmField
-    var ext_rep_nested_message: List<NestedMessage> = emptyList()
+    public var ext_rep_nested_message: List<NestedMessage> = emptyList()
 
     @JvmField
-    var ext_pack_int32: List<Int> = emptyList()
+    public var ext_pack_int32: List<Int> = emptyList()
 
     @JvmField
-    var ext_pack_uint32: List<Int> = emptyList()
+    public var ext_pack_uint32: List<Int> = emptyList()
 
     @JvmField
-    var ext_pack_sint32: List<Int> = emptyList()
+    public var ext_pack_sint32: List<Int> = emptyList()
 
     @JvmField
-    var ext_pack_fixed32: List<Int> = emptyList()
+    public var ext_pack_fixed32: List<Int> = emptyList()
 
     @JvmField
-    var ext_pack_sfixed32: List<Int> = emptyList()
+    public var ext_pack_sfixed32: List<Int> = emptyList()
 
     @JvmField
-    var ext_pack_int64: List<Long> = emptyList()
+    public var ext_pack_int64: List<Long> = emptyList()
 
     @JvmField
-    var ext_pack_uint64: List<Long> = emptyList()
+    public var ext_pack_uint64: List<Long> = emptyList()
 
     @JvmField
-    var ext_pack_sint64: List<Long> = emptyList()
+    public var ext_pack_sint64: List<Long> = emptyList()
 
     @JvmField
-    var ext_pack_fixed64: List<Long> = emptyList()
+    public var ext_pack_fixed64: List<Long> = emptyList()
 
     @JvmField
-    var ext_pack_sfixed64: List<Long> = emptyList()
+    public var ext_pack_sfixed64: List<Long> = emptyList()
 
     @JvmField
-    var ext_pack_bool: List<Boolean> = emptyList()
+    public var ext_pack_bool: List<Boolean> = emptyList()
 
     @JvmField
-    var ext_pack_float: List<Float> = emptyList()
+    public var ext_pack_float: List<Float> = emptyList()
 
     @JvmField
-    var ext_pack_double: List<Double> = emptyList()
+    public var ext_pack_double: List<Double> = emptyList()
 
     @JvmField
-    var ext_pack_nested_enum: List<NestedEnum> = emptyList()
+    public var ext_pack_nested_enum: List<NestedEnum> = emptyList()
 
-    fun opt_int32(opt_int32: Int?): Builder {
+    public fun opt_int32(opt_int32: Int?): Builder {
       this.opt_int32 = opt_int32
       return this
     }
 
-    fun opt_uint32(opt_uint32: Int?): Builder {
+    public fun opt_uint32(opt_uint32: Int?): Builder {
       this.opt_uint32 = opt_uint32
       return this
     }
 
-    fun opt_sint32(opt_sint32: Int?): Builder {
+    public fun opt_sint32(opt_sint32: Int?): Builder {
       this.opt_sint32 = opt_sint32
       return this
     }
 
-    fun opt_fixed32(opt_fixed32: Int?): Builder {
+    public fun opt_fixed32(opt_fixed32: Int?): Builder {
       this.opt_fixed32 = opt_fixed32
       return this
     }
 
-    fun opt_sfixed32(opt_sfixed32: Int?): Builder {
+    public fun opt_sfixed32(opt_sfixed32: Int?): Builder {
       this.opt_sfixed32 = opt_sfixed32
       return this
     }
 
-    fun opt_int64(opt_int64: Long?): Builder {
+    public fun opt_int64(opt_int64: Long?): Builder {
       this.opt_int64 = opt_int64
       return this
     }
 
-    fun opt_uint64(opt_uint64: Long?): Builder {
+    public fun opt_uint64(opt_uint64: Long?): Builder {
       this.opt_uint64 = opt_uint64
       return this
     }
 
-    fun opt_sint64(opt_sint64: Long?): Builder {
+    public fun opt_sint64(opt_sint64: Long?): Builder {
       this.opt_sint64 = opt_sint64
       return this
     }
 
-    fun opt_fixed64(opt_fixed64: Long?): Builder {
+    public fun opt_fixed64(opt_fixed64: Long?): Builder {
       this.opt_fixed64 = opt_fixed64
       return this
     }
 
-    fun opt_sfixed64(opt_sfixed64: Long?): Builder {
+    public fun opt_sfixed64(opt_sfixed64: Long?): Builder {
       this.opt_sfixed64 = opt_sfixed64
       return this
     }
 
-    fun opt_bool(opt_bool: Boolean?): Builder {
+    public fun opt_bool(opt_bool: Boolean?): Builder {
       this.opt_bool = opt_bool
       return this
     }
 
-    fun opt_float(opt_float: Float?): Builder {
+    public fun opt_float(opt_float: Float?): Builder {
       this.opt_float = opt_float
       return this
     }
 
-    fun opt_double(opt_double: Double?): Builder {
+    public fun opt_double(opt_double: Double?): Builder {
       this.opt_double = opt_double
       return this
     }
 
-    fun opt_string(opt_string: String?): Builder {
+    public fun opt_string(opt_string: String?): Builder {
       this.opt_string = opt_string
       return this
     }
 
-    fun opt_bytes(opt_bytes: ByteString?): Builder {
+    public fun opt_bytes(opt_bytes: ByteString?): Builder {
       this.opt_bytes = opt_bytes
       return this
     }
 
-    fun opt_nested_enum(opt_nested_enum: NestedEnum?): Builder {
+    public fun opt_nested_enum(opt_nested_enum: NestedEnum?): Builder {
       this.opt_nested_enum = opt_nested_enum
       return this
     }
 
-    fun opt_nested_message(opt_nested_message: NestedMessage?): Builder {
+    public fun opt_nested_message(opt_nested_message: NestedMessage?): Builder {
       this.opt_nested_message = opt_nested_message
       return this
     }
 
-    fun req_int32(req_int32: Int): Builder {
+    public fun req_int32(req_int32: Int): Builder {
       this.req_int32 = req_int32
       return this
     }
 
-    fun req_uint32(req_uint32: Int): Builder {
+    public fun req_uint32(req_uint32: Int): Builder {
       this.req_uint32 = req_uint32
       return this
     }
 
-    fun req_sint32(req_sint32: Int): Builder {
+    public fun req_sint32(req_sint32: Int): Builder {
       this.req_sint32 = req_sint32
       return this
     }
 
-    fun req_fixed32(req_fixed32: Int): Builder {
+    public fun req_fixed32(req_fixed32: Int): Builder {
       this.req_fixed32 = req_fixed32
       return this
     }
 
-    fun req_sfixed32(req_sfixed32: Int): Builder {
+    public fun req_sfixed32(req_sfixed32: Int): Builder {
       this.req_sfixed32 = req_sfixed32
       return this
     }
 
-    fun req_int64(req_int64: Long): Builder {
+    public fun req_int64(req_int64: Long): Builder {
       this.req_int64 = req_int64
       return this
     }
 
-    fun req_uint64(req_uint64: Long): Builder {
+    public fun req_uint64(req_uint64: Long): Builder {
       this.req_uint64 = req_uint64
       return this
     }
 
-    fun req_sint64(req_sint64: Long): Builder {
+    public fun req_sint64(req_sint64: Long): Builder {
       this.req_sint64 = req_sint64
       return this
     }
 
-    fun req_fixed64(req_fixed64: Long): Builder {
+    public fun req_fixed64(req_fixed64: Long): Builder {
       this.req_fixed64 = req_fixed64
       return this
     }
 
-    fun req_sfixed64(req_sfixed64: Long): Builder {
+    public fun req_sfixed64(req_sfixed64: Long): Builder {
       this.req_sfixed64 = req_sfixed64
       return this
     }
 
-    fun req_bool(req_bool: Boolean): Builder {
+    public fun req_bool(req_bool: Boolean): Builder {
       this.req_bool = req_bool
       return this
     }
 
-    fun req_float(req_float: Float): Builder {
+    public fun req_float(req_float: Float): Builder {
       this.req_float = req_float
       return this
     }
 
-    fun req_double(req_double: Double): Builder {
+    public fun req_double(req_double: Double): Builder {
       this.req_double = req_double
       return this
     }
 
-    fun req_string(req_string: String): Builder {
+    public fun req_string(req_string: String): Builder {
       this.req_string = req_string
       return this
     }
 
-    fun req_bytes(req_bytes: ByteString): Builder {
+    public fun req_bytes(req_bytes: ByteString): Builder {
       this.req_bytes = req_bytes
       return this
     }
 
-    fun req_nested_enum(req_nested_enum: NestedEnum): Builder {
+    public fun req_nested_enum(req_nested_enum: NestedEnum): Builder {
       this.req_nested_enum = req_nested_enum
       return this
     }
 
-    fun req_nested_message(req_nested_message: NestedMessage?): Builder {
+    public fun req_nested_message(req_nested_message: NestedMessage?): Builder {
       this.req_nested_message = req_nested_message
       return this
     }
 
-    fun rep_int32(rep_int32: List<Int>): Builder {
+    public fun rep_int32(rep_int32: List<Int>): Builder {
       checkElementsNotNull(rep_int32)
       this.rep_int32 = rep_int32
       return this
     }
 
-    fun rep_uint32(rep_uint32: List<Int>): Builder {
+    public fun rep_uint32(rep_uint32: List<Int>): Builder {
       checkElementsNotNull(rep_uint32)
       this.rep_uint32 = rep_uint32
       return this
     }
 
-    fun rep_sint32(rep_sint32: List<Int>): Builder {
+    public fun rep_sint32(rep_sint32: List<Int>): Builder {
       checkElementsNotNull(rep_sint32)
       this.rep_sint32 = rep_sint32
       return this
     }
 
-    fun rep_fixed32(rep_fixed32: List<Int>): Builder {
+    public fun rep_fixed32(rep_fixed32: List<Int>): Builder {
       checkElementsNotNull(rep_fixed32)
       this.rep_fixed32 = rep_fixed32
       return this
     }
 
-    fun rep_sfixed32(rep_sfixed32: List<Int>): Builder {
+    public fun rep_sfixed32(rep_sfixed32: List<Int>): Builder {
       checkElementsNotNull(rep_sfixed32)
       this.rep_sfixed32 = rep_sfixed32
       return this
     }
 
-    fun rep_int64(rep_int64: List<Long>): Builder {
+    public fun rep_int64(rep_int64: List<Long>): Builder {
       checkElementsNotNull(rep_int64)
       this.rep_int64 = rep_int64
       return this
     }
 
-    fun rep_uint64(rep_uint64: List<Long>): Builder {
+    public fun rep_uint64(rep_uint64: List<Long>): Builder {
       checkElementsNotNull(rep_uint64)
       this.rep_uint64 = rep_uint64
       return this
     }
 
-    fun rep_sint64(rep_sint64: List<Long>): Builder {
+    public fun rep_sint64(rep_sint64: List<Long>): Builder {
       checkElementsNotNull(rep_sint64)
       this.rep_sint64 = rep_sint64
       return this
     }
 
-    fun rep_fixed64(rep_fixed64: List<Long>): Builder {
+    public fun rep_fixed64(rep_fixed64: List<Long>): Builder {
       checkElementsNotNull(rep_fixed64)
       this.rep_fixed64 = rep_fixed64
       return this
     }
 
-    fun rep_sfixed64(rep_sfixed64: List<Long>): Builder {
+    public fun rep_sfixed64(rep_sfixed64: List<Long>): Builder {
       checkElementsNotNull(rep_sfixed64)
       this.rep_sfixed64 = rep_sfixed64
       return this
     }
 
-    fun rep_bool(rep_bool: List<Boolean>): Builder {
+    public fun rep_bool(rep_bool: List<Boolean>): Builder {
       checkElementsNotNull(rep_bool)
       this.rep_bool = rep_bool
       return this
     }
 
-    fun rep_float(rep_float: List<Float>): Builder {
+    public fun rep_float(rep_float: List<Float>): Builder {
       checkElementsNotNull(rep_float)
       this.rep_float = rep_float
       return this
     }
 
-    fun rep_double(rep_double: List<Double>): Builder {
+    public fun rep_double(rep_double: List<Double>): Builder {
       checkElementsNotNull(rep_double)
       this.rep_double = rep_double
       return this
     }
 
-    fun rep_string(rep_string: List<String>): Builder {
+    public fun rep_string(rep_string: List<String>): Builder {
       checkElementsNotNull(rep_string)
       this.rep_string = rep_string
       return this
     }
 
-    fun rep_bytes(rep_bytes: List<ByteString>): Builder {
+    public fun rep_bytes(rep_bytes: List<ByteString>): Builder {
       checkElementsNotNull(rep_bytes)
       this.rep_bytes = rep_bytes
       return this
     }
 
-    fun rep_nested_enum(rep_nested_enum: List<NestedEnum>): Builder {
+    public fun rep_nested_enum(rep_nested_enum: List<NestedEnum>): Builder {
       checkElementsNotNull(rep_nested_enum)
       this.rep_nested_enum = rep_nested_enum
       return this
     }
 
-    fun rep_nested_message(rep_nested_message: List<NestedMessage>): Builder {
+    public fun rep_nested_message(rep_nested_message: List<NestedMessage>): Builder {
       checkElementsNotNull(rep_nested_message)
       this.rep_nested_message = rep_nested_message
       return this
     }
 
-    fun pack_int32(pack_int32: List<Int>): Builder {
+    public fun pack_int32(pack_int32: List<Int>): Builder {
       checkElementsNotNull(pack_int32)
       this.pack_int32 = pack_int32
       return this
     }
 
-    fun pack_uint32(pack_uint32: List<Int>): Builder {
+    public fun pack_uint32(pack_uint32: List<Int>): Builder {
       checkElementsNotNull(pack_uint32)
       this.pack_uint32 = pack_uint32
       return this
     }
 
-    fun pack_sint32(pack_sint32: List<Int>): Builder {
+    public fun pack_sint32(pack_sint32: List<Int>): Builder {
       checkElementsNotNull(pack_sint32)
       this.pack_sint32 = pack_sint32
       return this
     }
 
-    fun pack_fixed32(pack_fixed32: List<Int>): Builder {
+    public fun pack_fixed32(pack_fixed32: List<Int>): Builder {
       checkElementsNotNull(pack_fixed32)
       this.pack_fixed32 = pack_fixed32
       return this
     }
 
-    fun pack_sfixed32(pack_sfixed32: List<Int>): Builder {
+    public fun pack_sfixed32(pack_sfixed32: List<Int>): Builder {
       checkElementsNotNull(pack_sfixed32)
       this.pack_sfixed32 = pack_sfixed32
       return this
     }
 
-    fun pack_int64(pack_int64: List<Long>): Builder {
+    public fun pack_int64(pack_int64: List<Long>): Builder {
       checkElementsNotNull(pack_int64)
       this.pack_int64 = pack_int64
       return this
     }
 
-    fun pack_uint64(pack_uint64: List<Long>): Builder {
+    public fun pack_uint64(pack_uint64: List<Long>): Builder {
       checkElementsNotNull(pack_uint64)
       this.pack_uint64 = pack_uint64
       return this
     }
 
-    fun pack_sint64(pack_sint64: List<Long>): Builder {
+    public fun pack_sint64(pack_sint64: List<Long>): Builder {
       checkElementsNotNull(pack_sint64)
       this.pack_sint64 = pack_sint64
       return this
     }
 
-    fun pack_fixed64(pack_fixed64: List<Long>): Builder {
+    public fun pack_fixed64(pack_fixed64: List<Long>): Builder {
       checkElementsNotNull(pack_fixed64)
       this.pack_fixed64 = pack_fixed64
       return this
     }
 
-    fun pack_sfixed64(pack_sfixed64: List<Long>): Builder {
+    public fun pack_sfixed64(pack_sfixed64: List<Long>): Builder {
       checkElementsNotNull(pack_sfixed64)
       this.pack_sfixed64 = pack_sfixed64
       return this
     }
 
-    fun pack_bool(pack_bool: List<Boolean>): Builder {
+    public fun pack_bool(pack_bool: List<Boolean>): Builder {
       checkElementsNotNull(pack_bool)
       this.pack_bool = pack_bool
       return this
     }
 
-    fun pack_float(pack_float: List<Float>): Builder {
+    public fun pack_float(pack_float: List<Float>): Builder {
       checkElementsNotNull(pack_float)
       this.pack_float = pack_float
       return this
     }
 
-    fun pack_double(pack_double: List<Double>): Builder {
+    public fun pack_double(pack_double: List<Double>): Builder {
       checkElementsNotNull(pack_double)
       this.pack_double = pack_double
       return this
     }
 
-    fun pack_nested_enum(pack_nested_enum: List<NestedEnum>): Builder {
+    public fun pack_nested_enum(pack_nested_enum: List<NestedEnum>): Builder {
       checkElementsNotNull(pack_nested_enum)
       this.pack_nested_enum = pack_nested_enum
       return this
     }
 
-    fun default_int32(default_int32: Int?): Builder {
+    public fun default_int32(default_int32: Int?): Builder {
       this.default_int32 = default_int32
       return this
     }
 
-    fun default_uint32(default_uint32: Int?): Builder {
+    public fun default_uint32(default_uint32: Int?): Builder {
       this.default_uint32 = default_uint32
       return this
     }
 
-    fun default_sint32(default_sint32: Int?): Builder {
+    public fun default_sint32(default_sint32: Int?): Builder {
       this.default_sint32 = default_sint32
       return this
     }
 
-    fun default_fixed32(default_fixed32: Int?): Builder {
+    public fun default_fixed32(default_fixed32: Int?): Builder {
       this.default_fixed32 = default_fixed32
       return this
     }
 
-    fun default_sfixed32(default_sfixed32: Int?): Builder {
+    public fun default_sfixed32(default_sfixed32: Int?): Builder {
       this.default_sfixed32 = default_sfixed32
       return this
     }
 
-    fun default_int64(default_int64: Long?): Builder {
+    public fun default_int64(default_int64: Long?): Builder {
       this.default_int64 = default_int64
       return this
     }
 
-    fun default_uint64(default_uint64: Long?): Builder {
+    public fun default_uint64(default_uint64: Long?): Builder {
       this.default_uint64 = default_uint64
       return this
     }
 
-    fun default_sint64(default_sint64: Long?): Builder {
+    public fun default_sint64(default_sint64: Long?): Builder {
       this.default_sint64 = default_sint64
       return this
     }
 
-    fun default_fixed64(default_fixed64: Long?): Builder {
+    public fun default_fixed64(default_fixed64: Long?): Builder {
       this.default_fixed64 = default_fixed64
       return this
     }
 
-    fun default_sfixed64(default_sfixed64: Long?): Builder {
+    public fun default_sfixed64(default_sfixed64: Long?): Builder {
       this.default_sfixed64 = default_sfixed64
       return this
     }
 
-    fun default_bool(default_bool: Boolean?): Builder {
+    public fun default_bool(default_bool: Boolean?): Builder {
       this.default_bool = default_bool
       return this
     }
 
-    fun default_float(default_float: Float?): Builder {
+    public fun default_float(default_float: Float?): Builder {
       this.default_float = default_float
       return this
     }
 
-    fun default_double(default_double: Double?): Builder {
+    public fun default_double(default_double: Double?): Builder {
       this.default_double = default_double
       return this
     }
 
-    fun default_string(default_string: String?): Builder {
+    public fun default_string(default_string: String?): Builder {
       this.default_string = default_string
       return this
     }
 
-    fun default_bytes(default_bytes: ByteString?): Builder {
+    public fun default_bytes(default_bytes: ByteString?): Builder {
       this.default_bytes = default_bytes
       return this
     }
 
-    fun default_nested_enum(default_nested_enum: NestedEnum?): Builder {
+    public fun default_nested_enum(default_nested_enum: NestedEnum?): Builder {
       this.default_nested_enum = default_nested_enum
       return this
     }
 
-    fun map_int32_int32(map_int32_int32: Map<Int, Int>): Builder {
+    public fun map_int32_int32(map_int32_int32: Map<Int, Int>): Builder {
       this.map_int32_int32 = map_int32_int32
       return this
     }
 
-    fun map_string_string(map_string_string: Map<String, String>): Builder {
+    public fun map_string_string(map_string_string: Map<String, String>): Builder {
       this.map_string_string = map_string_string
       return this
     }
 
-    fun map_string_message(map_string_message: Map<String, NestedMessage>): Builder {
+    public fun map_string_message(map_string_message: Map<String, NestedMessage>): Builder {
       this.map_string_message = map_string_message
       return this
     }
 
-    fun map_string_enum(map_string_enum: Map<String, NestedEnum>): Builder {
+    public fun map_string_enum(map_string_enum: Map<String, NestedEnum>): Builder {
       this.map_string_enum = map_string_enum
       return this
     }
 
-    fun ext_opt_int32(ext_opt_int32: Int?): Builder {
+    public fun ext_opt_int32(ext_opt_int32: Int?): Builder {
       this.ext_opt_int32 = ext_opt_int32
       return this
     }
 
-    fun ext_opt_uint32(ext_opt_uint32: Int?): Builder {
+    public fun ext_opt_uint32(ext_opt_uint32: Int?): Builder {
       this.ext_opt_uint32 = ext_opt_uint32
       return this
     }
 
-    fun ext_opt_sint32(ext_opt_sint32: Int?): Builder {
+    public fun ext_opt_sint32(ext_opt_sint32: Int?): Builder {
       this.ext_opt_sint32 = ext_opt_sint32
       return this
     }
 
-    fun ext_opt_fixed32(ext_opt_fixed32: Int?): Builder {
+    public fun ext_opt_fixed32(ext_opt_fixed32: Int?): Builder {
       this.ext_opt_fixed32 = ext_opt_fixed32
       return this
     }
 
-    fun ext_opt_sfixed32(ext_opt_sfixed32: Int?): Builder {
+    public fun ext_opt_sfixed32(ext_opt_sfixed32: Int?): Builder {
       this.ext_opt_sfixed32 = ext_opt_sfixed32
       return this
     }
 
-    fun ext_opt_int64(ext_opt_int64: Long?): Builder {
+    public fun ext_opt_int64(ext_opt_int64: Long?): Builder {
       this.ext_opt_int64 = ext_opt_int64
       return this
     }
 
-    fun ext_opt_uint64(ext_opt_uint64: Long?): Builder {
+    public fun ext_opt_uint64(ext_opt_uint64: Long?): Builder {
       this.ext_opt_uint64 = ext_opt_uint64
       return this
     }
 
-    fun ext_opt_sint64(ext_opt_sint64: Long?): Builder {
+    public fun ext_opt_sint64(ext_opt_sint64: Long?): Builder {
       this.ext_opt_sint64 = ext_opt_sint64
       return this
     }
 
-    fun ext_opt_fixed64(ext_opt_fixed64: Long?): Builder {
+    public fun ext_opt_fixed64(ext_opt_fixed64: Long?): Builder {
       this.ext_opt_fixed64 = ext_opt_fixed64
       return this
     }
 
-    fun ext_opt_sfixed64(ext_opt_sfixed64: Long?): Builder {
+    public fun ext_opt_sfixed64(ext_opt_sfixed64: Long?): Builder {
       this.ext_opt_sfixed64 = ext_opt_sfixed64
       return this
     }
 
-    fun ext_opt_bool(ext_opt_bool: Boolean?): Builder {
+    public fun ext_opt_bool(ext_opt_bool: Boolean?): Builder {
       this.ext_opt_bool = ext_opt_bool
       return this
     }
 
-    fun ext_opt_float(ext_opt_float: Float?): Builder {
+    public fun ext_opt_float(ext_opt_float: Float?): Builder {
       this.ext_opt_float = ext_opt_float
       return this
     }
 
-    fun ext_opt_double(ext_opt_double: Double?): Builder {
+    public fun ext_opt_double(ext_opt_double: Double?): Builder {
       this.ext_opt_double = ext_opt_double
       return this
     }
 
-    fun ext_opt_string(ext_opt_string: String?): Builder {
+    public fun ext_opt_string(ext_opt_string: String?): Builder {
       this.ext_opt_string = ext_opt_string
       return this
     }
 
-    fun ext_opt_bytes(ext_opt_bytes: ByteString?): Builder {
+    public fun ext_opt_bytes(ext_opt_bytes: ByteString?): Builder {
       this.ext_opt_bytes = ext_opt_bytes
       return this
     }
 
-    fun ext_opt_nested_enum(ext_opt_nested_enum: NestedEnum?): Builder {
+    public fun ext_opt_nested_enum(ext_opt_nested_enum: NestedEnum?): Builder {
       this.ext_opt_nested_enum = ext_opt_nested_enum
       return this
     }
 
-    fun ext_opt_nested_message(ext_opt_nested_message: NestedMessage?): Builder {
+    public fun ext_opt_nested_message(ext_opt_nested_message: NestedMessage?): Builder {
       this.ext_opt_nested_message = ext_opt_nested_message
       return this
     }
 
-    fun ext_rep_int32(ext_rep_int32: List<Int>): Builder {
+    public fun ext_rep_int32(ext_rep_int32: List<Int>): Builder {
       checkElementsNotNull(ext_rep_int32)
       this.ext_rep_int32 = ext_rep_int32
       return this
     }
 
-    fun ext_rep_uint32(ext_rep_uint32: List<Int>): Builder {
+    public fun ext_rep_uint32(ext_rep_uint32: List<Int>): Builder {
       checkElementsNotNull(ext_rep_uint32)
       this.ext_rep_uint32 = ext_rep_uint32
       return this
     }
 
-    fun ext_rep_sint32(ext_rep_sint32: List<Int>): Builder {
+    public fun ext_rep_sint32(ext_rep_sint32: List<Int>): Builder {
       checkElementsNotNull(ext_rep_sint32)
       this.ext_rep_sint32 = ext_rep_sint32
       return this
     }
 
-    fun ext_rep_fixed32(ext_rep_fixed32: List<Int>): Builder {
+    public fun ext_rep_fixed32(ext_rep_fixed32: List<Int>): Builder {
       checkElementsNotNull(ext_rep_fixed32)
       this.ext_rep_fixed32 = ext_rep_fixed32
       return this
     }
 
-    fun ext_rep_sfixed32(ext_rep_sfixed32: List<Int>): Builder {
+    public fun ext_rep_sfixed32(ext_rep_sfixed32: List<Int>): Builder {
       checkElementsNotNull(ext_rep_sfixed32)
       this.ext_rep_sfixed32 = ext_rep_sfixed32
       return this
     }
 
-    fun ext_rep_int64(ext_rep_int64: List<Long>): Builder {
+    public fun ext_rep_int64(ext_rep_int64: List<Long>): Builder {
       checkElementsNotNull(ext_rep_int64)
       this.ext_rep_int64 = ext_rep_int64
       return this
     }
 
-    fun ext_rep_uint64(ext_rep_uint64: List<Long>): Builder {
+    public fun ext_rep_uint64(ext_rep_uint64: List<Long>): Builder {
       checkElementsNotNull(ext_rep_uint64)
       this.ext_rep_uint64 = ext_rep_uint64
       return this
     }
 
-    fun ext_rep_sint64(ext_rep_sint64: List<Long>): Builder {
+    public fun ext_rep_sint64(ext_rep_sint64: List<Long>): Builder {
       checkElementsNotNull(ext_rep_sint64)
       this.ext_rep_sint64 = ext_rep_sint64
       return this
     }
 
-    fun ext_rep_fixed64(ext_rep_fixed64: List<Long>): Builder {
+    public fun ext_rep_fixed64(ext_rep_fixed64: List<Long>): Builder {
       checkElementsNotNull(ext_rep_fixed64)
       this.ext_rep_fixed64 = ext_rep_fixed64
       return this
     }
 
-    fun ext_rep_sfixed64(ext_rep_sfixed64: List<Long>): Builder {
+    public fun ext_rep_sfixed64(ext_rep_sfixed64: List<Long>): Builder {
       checkElementsNotNull(ext_rep_sfixed64)
       this.ext_rep_sfixed64 = ext_rep_sfixed64
       return this
     }
 
-    fun ext_rep_bool(ext_rep_bool: List<Boolean>): Builder {
+    public fun ext_rep_bool(ext_rep_bool: List<Boolean>): Builder {
       checkElementsNotNull(ext_rep_bool)
       this.ext_rep_bool = ext_rep_bool
       return this
     }
 
-    fun ext_rep_float(ext_rep_float: List<Float>): Builder {
+    public fun ext_rep_float(ext_rep_float: List<Float>): Builder {
       checkElementsNotNull(ext_rep_float)
       this.ext_rep_float = ext_rep_float
       return this
     }
 
-    fun ext_rep_double(ext_rep_double: List<Double>): Builder {
+    public fun ext_rep_double(ext_rep_double: List<Double>): Builder {
       checkElementsNotNull(ext_rep_double)
       this.ext_rep_double = ext_rep_double
       return this
     }
 
-    fun ext_rep_string(ext_rep_string: List<String>): Builder {
+    public fun ext_rep_string(ext_rep_string: List<String>): Builder {
       checkElementsNotNull(ext_rep_string)
       this.ext_rep_string = ext_rep_string
       return this
     }
 
-    fun ext_rep_bytes(ext_rep_bytes: List<ByteString>): Builder {
+    public fun ext_rep_bytes(ext_rep_bytes: List<ByteString>): Builder {
       checkElementsNotNull(ext_rep_bytes)
       this.ext_rep_bytes = ext_rep_bytes
       return this
     }
 
-    fun ext_rep_nested_enum(ext_rep_nested_enum: List<NestedEnum>): Builder {
+    public fun ext_rep_nested_enum(ext_rep_nested_enum: List<NestedEnum>): Builder {
       checkElementsNotNull(ext_rep_nested_enum)
       this.ext_rep_nested_enum = ext_rep_nested_enum
       return this
     }
 
-    fun ext_rep_nested_message(ext_rep_nested_message: List<NestedMessage>): Builder {
+    public fun ext_rep_nested_message(ext_rep_nested_message: List<NestedMessage>): Builder {
       checkElementsNotNull(ext_rep_nested_message)
       this.ext_rep_nested_message = ext_rep_nested_message
       return this
     }
 
-    fun ext_pack_int32(ext_pack_int32: List<Int>): Builder {
+    public fun ext_pack_int32(ext_pack_int32: List<Int>): Builder {
       checkElementsNotNull(ext_pack_int32)
       this.ext_pack_int32 = ext_pack_int32
       return this
     }
 
-    fun ext_pack_uint32(ext_pack_uint32: List<Int>): Builder {
+    public fun ext_pack_uint32(ext_pack_uint32: List<Int>): Builder {
       checkElementsNotNull(ext_pack_uint32)
       this.ext_pack_uint32 = ext_pack_uint32
       return this
     }
 
-    fun ext_pack_sint32(ext_pack_sint32: List<Int>): Builder {
+    public fun ext_pack_sint32(ext_pack_sint32: List<Int>): Builder {
       checkElementsNotNull(ext_pack_sint32)
       this.ext_pack_sint32 = ext_pack_sint32
       return this
     }
 
-    fun ext_pack_fixed32(ext_pack_fixed32: List<Int>): Builder {
+    public fun ext_pack_fixed32(ext_pack_fixed32: List<Int>): Builder {
       checkElementsNotNull(ext_pack_fixed32)
       this.ext_pack_fixed32 = ext_pack_fixed32
       return this
     }
 
-    fun ext_pack_sfixed32(ext_pack_sfixed32: List<Int>): Builder {
+    public fun ext_pack_sfixed32(ext_pack_sfixed32: List<Int>): Builder {
       checkElementsNotNull(ext_pack_sfixed32)
       this.ext_pack_sfixed32 = ext_pack_sfixed32
       return this
     }
 
-    fun ext_pack_int64(ext_pack_int64: List<Long>): Builder {
+    public fun ext_pack_int64(ext_pack_int64: List<Long>): Builder {
       checkElementsNotNull(ext_pack_int64)
       this.ext_pack_int64 = ext_pack_int64
       return this
     }
 
-    fun ext_pack_uint64(ext_pack_uint64: List<Long>): Builder {
+    public fun ext_pack_uint64(ext_pack_uint64: List<Long>): Builder {
       checkElementsNotNull(ext_pack_uint64)
       this.ext_pack_uint64 = ext_pack_uint64
       return this
     }
 
-    fun ext_pack_sint64(ext_pack_sint64: List<Long>): Builder {
+    public fun ext_pack_sint64(ext_pack_sint64: List<Long>): Builder {
       checkElementsNotNull(ext_pack_sint64)
       this.ext_pack_sint64 = ext_pack_sint64
       return this
     }
 
-    fun ext_pack_fixed64(ext_pack_fixed64: List<Long>): Builder {
+    public fun ext_pack_fixed64(ext_pack_fixed64: List<Long>): Builder {
       checkElementsNotNull(ext_pack_fixed64)
       this.ext_pack_fixed64 = ext_pack_fixed64
       return this
     }
 
-    fun ext_pack_sfixed64(ext_pack_sfixed64: List<Long>): Builder {
+    public fun ext_pack_sfixed64(ext_pack_sfixed64: List<Long>): Builder {
       checkElementsNotNull(ext_pack_sfixed64)
       this.ext_pack_sfixed64 = ext_pack_sfixed64
       return this
     }
 
-    fun ext_pack_bool(ext_pack_bool: List<Boolean>): Builder {
+    public fun ext_pack_bool(ext_pack_bool: List<Boolean>): Builder {
       checkElementsNotNull(ext_pack_bool)
       this.ext_pack_bool = ext_pack_bool
       return this
     }
 
-    fun ext_pack_float(ext_pack_float: List<Float>): Builder {
+    public fun ext_pack_float(ext_pack_float: List<Float>): Builder {
       checkElementsNotNull(ext_pack_float)
       this.ext_pack_float = ext_pack_float
       return this
     }
 
-    fun ext_pack_double(ext_pack_double: List<Double>): Builder {
+    public fun ext_pack_double(ext_pack_double: List<Double>): Builder {
       checkElementsNotNull(ext_pack_double)
       this.ext_pack_double = ext_pack_double
       return this
     }
 
-    fun ext_pack_nested_enum(ext_pack_nested_enum: List<NestedEnum>): Builder {
+    public fun ext_pack_nested_enum(ext_pack_nested_enum: List<NestedEnum>): Builder {
       checkElementsNotNull(ext_pack_nested_enum)
       this.ext_pack_nested_enum = ext_pack_nested_enum
       return this
     }
 
-    override fun build(): AllTypes = AllTypes(
+    public override fun build(): AllTypes = AllTypes(
       opt_int32 = opt_int32,
       opt_uint32 = opt_uint32,
       opt_sint32 = opt_sint32,
@@ -3188,44 +3191,45 @@ class AllTypes(
     )
   }
 
-  companion object {
-    const val DEFAULT_DEFAULT_INT32: Int = Int.MAX_VALUE
+  public companion object {
+    public const val DEFAULT_DEFAULT_INT32: Int = Int.MAX_VALUE
 
-    const val DEFAULT_DEFAULT_UINT32: Int = -1
+    public const val DEFAULT_DEFAULT_UINT32: Int = -1
 
-    const val DEFAULT_DEFAULT_SINT32: Int = Int.MIN_VALUE
+    public const val DEFAULT_DEFAULT_SINT32: Int = Int.MIN_VALUE
 
-    const val DEFAULT_DEFAULT_FIXED32: Int = -1
+    public const val DEFAULT_DEFAULT_FIXED32: Int = -1
 
-    const val DEFAULT_DEFAULT_SFIXED32: Int = Int.MIN_VALUE
+    public const val DEFAULT_DEFAULT_SFIXED32: Int = Int.MIN_VALUE
 
-    const val DEFAULT_DEFAULT_INT64: Long = Long.MAX_VALUE
+    public const val DEFAULT_DEFAULT_INT64: Long = Long.MAX_VALUE
 
-    const val DEFAULT_DEFAULT_UINT64: Long = -1L
+    public const val DEFAULT_DEFAULT_UINT64: Long = -1L
 
-    const val DEFAULT_DEFAULT_SINT64: Long = Long.MIN_VALUE
+    public const val DEFAULT_DEFAULT_SINT64: Long = Long.MIN_VALUE
 
-    const val DEFAULT_DEFAULT_FIXED64: Long = -1L
+    public const val DEFAULT_DEFAULT_FIXED64: Long = -1L
 
-    const val DEFAULT_DEFAULT_SFIXED64: Long = Long.MIN_VALUE
+    public const val DEFAULT_DEFAULT_SFIXED64: Long = Long.MIN_VALUE
 
-    const val DEFAULT_DEFAULT_BOOL: Boolean = true
+    public const val DEFAULT_DEFAULT_BOOL: Boolean = true
 
-    const val DEFAULT_DEFAULT_FLOAT: Float = 123.456e7f
+    public const val DEFAULT_DEFAULT_FLOAT: Float = 123.456e7f
 
-    const val DEFAULT_DEFAULT_DOUBLE: Double = 1.23456E80
+    public const val DEFAULT_DEFAULT_DOUBLE: Double = 1.23456E80
 
-    const val DEFAULT_DEFAULT_STRING: String =
+    public const val DEFAULT_DEFAULT_STRING: String =
         "çok\u0007\b\u000c\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel"
 
     @JvmField
-    val DEFAULT_DEFAULT_BYTES: ByteString = "529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs".decodeBase64()!!
+    public val DEFAULT_DEFAULT_BYTES: ByteString =
+        "529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs".decodeBase64()!!
 
     @JvmField
-    val DEFAULT_DEFAULT_NESTED_ENUM: NestedEnum = NestedEnum.A
+    public val DEFAULT_DEFAULT_NESTED_ENUM: NestedEnum = NestedEnum.A
 
     @JvmField
-    val ADAPTER: ProtoAdapter<AllTypes> = object : ProtoAdapter<AllTypes>(
+    public val ADAPTER: ProtoAdapter<AllTypes> = object : ProtoAdapter<AllTypes>(
       FieldEncoding.LENGTH_DELIMITED, 
       AllTypes::class, 
       "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes", 
@@ -3244,7 +3248,7 @@ class AllTypes(
       private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
-      override fun encodedSize(value: AllTypes): Int {
+      public override fun encodedSize(value: AllTypes): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
         size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.opt_uint32)
@@ -3383,7 +3387,7 @@ class AllTypes(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: AllTypes) {
+      public override fun encode(writer: ProtoWriter, value: AllTypes): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.opt_uint32)
         ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.opt_sint32)
@@ -3520,7 +3524,7 @@ class AllTypes(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): AllTypes {
+      public override fun decode(reader: ProtoReader): AllTypes {
         var opt_int32: Int? = null
         var opt_uint32: Int? = null
         var opt_sint32: Int? = null
@@ -3964,7 +3968,7 @@ class AllTypes(
         )
       }
 
-      override fun redact(value: AllTypes): AllTypes = value.copy(
+      public override fun redact(value: AllTypes): AllTypes = value.copy(
         opt_nested_message = value.opt_nested_message?.let(NestedMessage.ADAPTER::redact),
         req_nested_message = NestedMessage.ADAPTER.redact(value.req_nested_message),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
@@ -3978,25 +3982,25 @@ class AllTypes(
     private const val serialVersionUID: Long = 0L
   }
 
-  enum class NestedEnum(
-    override val value: Int
+  public enum class NestedEnum(
+    public override val value: Int
   ) : WireEnum {
     UNKNOWN(0),
+    A(1),
+    ;
 
-    A(1);
-
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
+      public val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class, 
         PROTO_2, 
         NestedEnum.UNKNOWN
       ) {
-        override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
+        public override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): NestedEnum? = when (value) {
+      public fun fromValue(value: Int): NestedEnum? = when (value) {
         0 -> UNKNOWN
         1 -> A
         else -> null
@@ -4004,23 +4008,23 @@ class AllTypes(
     }
   }
 
-  class NestedMessage(
+  public class NestedMessage(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
     @JvmField
-    val a: Int? = null,
+    public val a: Int? = null,
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<NestedMessage, NestedMessage.Builder>(ADAPTER, unknownFields) {
-    override fun newBuilder(): Builder {
+    public override fun newBuilder(): Builder {
       val builder = Builder()
       builder.a = a
       builder.addUnknownFields(unknownFields)
       return builder
     }
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
       if (unknownFields != other.unknownFields) return false
@@ -4028,7 +4032,7 @@ class AllTypes(
       return true
     }
 
-    override fun hashCode(): Int {
+    public override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -4038,51 +4042,51 @@ class AllTypes(
       return result
     }
 
-    override fun toString(): String {
+    public override fun toString(): String {
       val result = mutableListOf<String>()
       if (a != null) result += """a=$a"""
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    fun copy(a: Int? = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage =
-        NestedMessage(a, unknownFields)
+    public fun copy(a: Int? = this.a, unknownFields: ByteString = this.unknownFields): NestedMessage
+        = NestedMessage(a, unknownFields)
 
-    class Builder : Message.Builder<NestedMessage, Builder>() {
+    public class Builder : Message.Builder<NestedMessage, Builder>() {
       @JvmField
-      var a: Int? = null
+      public var a: Int? = null
 
-      fun a(a: Int?): Builder {
+      public fun a(a: Int?): Builder {
         this.a = a
         return this
       }
 
-      override fun build(): NestedMessage = NestedMessage(
+      public override fun build(): NestedMessage = NestedMessage(
         a = a,
         unknownFields = buildUnknownFields()
       )
     }
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
+      public val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.alltypes.AllTypes.NestedMessage", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: NestedMessage): Int {
+        public override fun encodedSize(value: NestedMessage): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: NestedMessage) {
+        public override fun encode(writer: ProtoWriter, value: NestedMessage): Unit {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): NestedMessage {
+        public override fun decode(reader: ProtoReader): NestedMessage {
           var a: Int? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -4096,7 +4100,7 @@ class AllTypes(
           )
         }
 
-        override fun redact(value: NestedMessage): NestedMessage = value.copy(
+        public override fun redact(value: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

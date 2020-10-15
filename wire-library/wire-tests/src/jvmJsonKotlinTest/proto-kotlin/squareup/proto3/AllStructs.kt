@@ -9,17 +9,18 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.countNonNull
-import com.squareup.wire.internal.immutableCopyOfMapWithStructValues
-import com.squareup.wire.internal.immutableCopyOfStruct
-import com.squareup.wire.internal.redactElements
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.countNonNull
+import com.squareup.wire.`internal`.immutableCopyOfMapWithStructValues
+import com.squareup.wire.`internal`.immutableCopyOfStruct
+import com.squareup.wire.`internal`.redactElements
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
@@ -27,7 +28,7 @@ import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
 
-class AllStructs(
+public class AllStructs(
   struct: Map<String, *>? = null,
   list: List<*>? = null,
   null_value: Nothing? = null,
@@ -55,7 +56,7 @@ class AllStructs(
     label = WireField.Label.OMIT_IDENTITY
   )
   @JvmField
-  val struct: Map<String, *>? = immutableCopyOfStruct("struct", struct)
+  public val struct: Map<String, *>? = immutableCopyOfStruct("struct", struct)
 
   @field:WireField(
     tag = 2,
@@ -63,7 +64,7 @@ class AllStructs(
     label = WireField.Label.OMIT_IDENTITY
   )
   @JvmField
-  val list: List<*>? = immutableCopyOfStruct("list", list)
+  public val list: List<*>? = immutableCopyOfStruct("list", list)
 
   @field:WireField(
     tag = 3,
@@ -72,7 +73,7 @@ class AllStructs(
     jsonName = "nullValue"
   )
   @JvmField
-  val null_value: Nothing? = immutableCopyOfStruct("null_value", null_value)
+  public val null_value: Nothing? = immutableCopyOfStruct("null_value", null_value)
 
   @field:WireField(
     tag = 4,
@@ -81,7 +82,7 @@ class AllStructs(
     jsonName = "valueA"
   )
   @JvmField
-  val value_a: Any? = immutableCopyOfStruct("value_a", value_a)
+  public val value_a: Any? = immutableCopyOfStruct("value_a", value_a)
 
   @field:WireField(
     tag = 5,
@@ -90,7 +91,7 @@ class AllStructs(
     jsonName = "valueB"
   )
   @JvmField
-  val value_b: Any? = immutableCopyOfStruct("value_b", value_b)
+  public val value_b: Any? = immutableCopyOfStruct("value_b", value_b)
 
   @field:WireField(
     tag = 6,
@@ -99,7 +100,7 @@ class AllStructs(
     jsonName = "valueC"
   )
   @JvmField
-  val value_c: Any? = immutableCopyOfStruct("value_c", value_c)
+  public val value_c: Any? = immutableCopyOfStruct("value_c", value_c)
 
   @field:WireField(
     tag = 7,
@@ -108,7 +109,7 @@ class AllStructs(
     jsonName = "valueD"
   )
   @JvmField
-  val value_d: Any? = immutableCopyOfStruct("value_d", value_d)
+  public val value_d: Any? = immutableCopyOfStruct("value_d", value_d)
 
   @field:WireField(
     tag = 8,
@@ -117,7 +118,7 @@ class AllStructs(
     jsonName = "valueE"
   )
   @JvmField
-  val value_e: Any? = immutableCopyOfStruct("value_e", value_e)
+  public val value_e: Any? = immutableCopyOfStruct("value_e", value_e)
 
   @field:WireField(
     tag = 9,
@@ -126,7 +127,7 @@ class AllStructs(
     jsonName = "valueF"
   )
   @JvmField
-  val value_f: Any? = immutableCopyOfStruct("value_f", value_f)
+  public val value_f: Any? = immutableCopyOfStruct("value_f", value_f)
 
   @field:WireField(
     tag = 101,
@@ -135,7 +136,7 @@ class AllStructs(
     jsonName = "repStruct"
   )
   @JvmField
-  val rep_struct: List<Map<String, *>?> = immutableCopyOfStruct("rep_struct", rep_struct)
+  public val rep_struct: List<Map<String, *>?> = immutableCopyOfStruct("rep_struct", rep_struct)
 
   @field:WireField(
     tag = 102,
@@ -144,7 +145,7 @@ class AllStructs(
     jsonName = "repList"
   )
   @JvmField
-  val rep_list: List<List<*>?> = immutableCopyOfStruct("rep_list", rep_list)
+  public val rep_list: List<List<*>?> = immutableCopyOfStruct("rep_list", rep_list)
 
   @field:WireField(
     tag = 103,
@@ -153,7 +154,7 @@ class AllStructs(
     jsonName = "repValueA"
   )
   @JvmField
-  val rep_value_a: List<Any?> = immutableCopyOfStruct("rep_value_a", rep_value_a)
+  public val rep_value_a: List<Any?> = immutableCopyOfStruct("rep_value_a", rep_value_a)
 
   @field:WireField(
     tag = 104,
@@ -162,7 +163,8 @@ class AllStructs(
     jsonName = "repNullValue"
   )
   @JvmField
-  val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value", rep_null_value)
+  public val rep_null_value: List<Nothing?> = immutableCopyOfStruct("rep_null_value",
+      rep_null_value)
 
   @field:WireField(
     tag = 301,
@@ -171,7 +173,7 @@ class AllStructs(
     jsonName = "mapInt32Struct"
   )
   @JvmField
-  val map_int32_struct: Map<Int, Map<String, *>?> =
+  public val map_int32_struct: Map<Int, Map<String, *>?> =
       immutableCopyOfMapWithStructValues("map_int32_struct", map_int32_struct)
 
   @field:WireField(
@@ -181,8 +183,8 @@ class AllStructs(
     jsonName = "mapInt32List"
   )
   @JvmField
-  val map_int32_list: Map<Int, List<*>?> = immutableCopyOfMapWithStructValues("map_int32_list",
-      map_int32_list)
+  public val map_int32_list: Map<Int, List<*>?> =
+      immutableCopyOfMapWithStructValues("map_int32_list", map_int32_list)
 
   @field:WireField(
     tag = 303,
@@ -191,8 +193,8 @@ class AllStructs(
     jsonName = "mapInt32ValueA"
   )
   @JvmField
-  val map_int32_value_a: Map<Int, Any?> = immutableCopyOfMapWithStructValues("map_int32_value_a",
-      map_int32_value_a)
+  public val map_int32_value_a: Map<Int, Any?> =
+      immutableCopyOfMapWithStructValues("map_int32_value_a", map_int32_value_a)
 
   @field:WireField(
     tag = 304,
@@ -201,7 +203,7 @@ class AllStructs(
     jsonName = "mapInt32NullValue"
   )
   @JvmField
-  val map_int32_null_value: Map<Int, Nothing?> =
+  public val map_int32_null_value: Map<Int, Nothing?> =
       immutableCopyOfMapWithStructValues("map_int32_null_value", map_int32_null_value)
 
   @field:WireField(
@@ -210,7 +212,7 @@ class AllStructs(
     jsonName = "oneofStruct"
   )
   @JvmField
-  val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
+  public val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
 
   @field:WireField(
     tag = 202,
@@ -218,7 +220,7 @@ class AllStructs(
     jsonName = "oneofList"
   )
   @JvmField
-  val oneof_list: List<*>? = immutableCopyOfStruct("oneof_list", oneof_list)
+  public val oneof_list: List<*>? = immutableCopyOfStruct("oneof_list", oneof_list)
 
   init {
     require(countNonNull(oneof_struct, oneof_list) <= 1) {
@@ -226,7 +228,7 @@ class AllStructs(
     }
   }
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.struct = struct
     builder.list = list
@@ -251,7 +253,7 @@ class AllStructs(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllStructs) return false
     if (unknownFields != other.unknownFields) return false
@@ -277,7 +279,7 @@ class AllStructs(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -305,7 +307,7 @@ class AllStructs(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (struct != null) result += """struct=$struct"""
     if (list != null) result += """list=$list"""
@@ -330,7 +332,7 @@ class AllStructs(
     return result.joinToString(prefix = "AllStructs{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     struct: Map<String, *>? = this.struct,
     list: List<*>? = this.list,
     null_value: Nothing? = this.null_value,
@@ -355,166 +357,166 @@ class AllStructs(
       value_f, rep_struct, rep_list, rep_value_a, rep_null_value, map_int32_struct, map_int32_list,
       map_int32_value_a, map_int32_null_value, oneof_struct, oneof_list, unknownFields)
 
-  class Builder : Message.Builder<AllStructs, Builder>() {
+  public class Builder : Message.Builder<AllStructs, Builder>() {
     @JvmField
-    var struct: Map<String, *>? = null
+    public var struct: Map<String, *>? = null
 
     @JvmField
-    var list: List<*>? = null
+    public var list: List<*>? = null
 
     @JvmField
-    var null_value: Nothing? = null
+    public var null_value: Nothing? = null
 
     @JvmField
-    var value_a: Any? = null
+    public var value_a: Any? = null
 
     @JvmField
-    var value_b: Any? = null
+    public var value_b: Any? = null
 
     @JvmField
-    var value_c: Any? = null
+    public var value_c: Any? = null
 
     @JvmField
-    var value_d: Any? = null
+    public var value_d: Any? = null
 
     @JvmField
-    var value_e: Any? = null
+    public var value_e: Any? = null
 
     @JvmField
-    var value_f: Any? = null
+    public var value_f: Any? = null
 
     @JvmField
-    var rep_struct: List<Map<String, *>?> = emptyList()
+    public var rep_struct: List<Map<String, *>?> = emptyList()
 
     @JvmField
-    var rep_list: List<List<*>?> = emptyList()
+    public var rep_list: List<List<*>?> = emptyList()
 
     @JvmField
-    var rep_value_a: List<Any?> = emptyList()
+    public var rep_value_a: List<Any?> = emptyList()
 
     @JvmField
-    var rep_null_value: List<Nothing?> = emptyList()
+    public var rep_null_value: List<Nothing?> = emptyList()
 
     @JvmField
-    var map_int32_struct: Map<Int, Map<String, *>?> = emptyMap()
+    public var map_int32_struct: Map<Int, Map<String, *>?> = emptyMap()
 
     @JvmField
-    var map_int32_list: Map<Int, List<*>?> = emptyMap()
+    public var map_int32_list: Map<Int, List<*>?> = emptyMap()
 
     @JvmField
-    var map_int32_value_a: Map<Int, Any?> = emptyMap()
+    public var map_int32_value_a: Map<Int, Any?> = emptyMap()
 
     @JvmField
-    var map_int32_null_value: Map<Int, Nothing?> = emptyMap()
+    public var map_int32_null_value: Map<Int, Nothing?> = emptyMap()
 
     @JvmField
-    var oneof_struct: Map<String, *>? = null
+    public var oneof_struct: Map<String, *>? = null
 
     @JvmField
-    var oneof_list: List<*>? = null
+    public var oneof_list: List<*>? = null
 
-    fun struct(struct: Map<String, *>?): Builder {
+    public fun struct(struct: Map<String, *>?): Builder {
       this.struct = struct
       return this
     }
 
-    fun list(list: List<*>?): Builder {
+    public fun list(list: List<*>?): Builder {
       this.list = list
       return this
     }
 
-    fun null_value(null_value: Nothing): Builder {
+    public fun null_value(null_value: Nothing): Builder {
       this.null_value = null_value
       return this
     }
 
-    fun value_a(value_a: Any?): Builder {
+    public fun value_a(value_a: Any?): Builder {
       this.value_a = value_a
       return this
     }
 
-    fun value_b(value_b: Any?): Builder {
+    public fun value_b(value_b: Any?): Builder {
       this.value_b = value_b
       return this
     }
 
-    fun value_c(value_c: Any?): Builder {
+    public fun value_c(value_c: Any?): Builder {
       this.value_c = value_c
       return this
     }
 
-    fun value_d(value_d: Any?): Builder {
+    public fun value_d(value_d: Any?): Builder {
       this.value_d = value_d
       return this
     }
 
-    fun value_e(value_e: Any?): Builder {
+    public fun value_e(value_e: Any?): Builder {
       this.value_e = value_e
       return this
     }
 
-    fun value_f(value_f: Any?): Builder {
+    public fun value_f(value_f: Any?): Builder {
       this.value_f = value_f
       return this
     }
 
-    fun rep_struct(rep_struct: List<Map<String, *>?>): Builder {
+    public fun rep_struct(rep_struct: List<Map<String, *>?>): Builder {
       checkElementsNotNull(rep_struct)
       this.rep_struct = rep_struct
       return this
     }
 
-    fun rep_list(rep_list: List<List<*>?>): Builder {
+    public fun rep_list(rep_list: List<List<*>?>): Builder {
       checkElementsNotNull(rep_list)
       this.rep_list = rep_list
       return this
     }
 
-    fun rep_value_a(rep_value_a: List<Any?>): Builder {
+    public fun rep_value_a(rep_value_a: List<Any?>): Builder {
       checkElementsNotNull(rep_value_a)
       this.rep_value_a = rep_value_a
       return this
     }
 
-    fun rep_null_value(rep_null_value: List<Nothing?>): Builder {
+    public fun rep_null_value(rep_null_value: List<Nothing?>): Builder {
       checkElementsNotNull(rep_null_value)
       this.rep_null_value = rep_null_value
       return this
     }
 
-    fun map_int32_struct(map_int32_struct: Map<Int, Map<String, *>?>): Builder {
+    public fun map_int32_struct(map_int32_struct: Map<Int, Map<String, *>?>): Builder {
       this.map_int32_struct = map_int32_struct
       return this
     }
 
-    fun map_int32_list(map_int32_list: Map<Int, List<*>?>): Builder {
+    public fun map_int32_list(map_int32_list: Map<Int, List<*>?>): Builder {
       this.map_int32_list = map_int32_list
       return this
     }
 
-    fun map_int32_value_a(map_int32_value_a: Map<Int, Any?>): Builder {
+    public fun map_int32_value_a(map_int32_value_a: Map<Int, Any?>): Builder {
       this.map_int32_value_a = map_int32_value_a
       return this
     }
 
-    fun map_int32_null_value(map_int32_null_value: Map<Int, Nothing?>): Builder {
+    public fun map_int32_null_value(map_int32_null_value: Map<Int, Nothing?>): Builder {
       this.map_int32_null_value = map_int32_null_value
       return this
     }
 
-    fun oneof_struct(oneof_struct: Map<String, *>?): Builder {
+    public fun oneof_struct(oneof_struct: Map<String, *>?): Builder {
       this.oneof_struct = oneof_struct
       this.oneof_list = null
       return this
     }
 
-    fun oneof_list(oneof_list: List<*>?): Builder {
+    public fun oneof_list(oneof_list: List<*>?): Builder {
       this.oneof_list = oneof_list
       this.oneof_struct = null
       return this
     }
 
-    override fun build(): AllStructs = AllStructs(
+    public override fun build(): AllStructs = AllStructs(
       struct = struct,
       list = list,
       null_value = null_value,
@@ -538,9 +540,9 @@ class AllStructs(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<AllStructs> = object : ProtoAdapter<AllStructs>(
+    public val ADAPTER: ProtoAdapter<AllStructs> = object : ProtoAdapter<AllStructs>(
       FieldEncoding.LENGTH_DELIMITED, 
       AllStructs::class, 
       "type.googleapis.com/squareup.proto3.AllStructs", 
@@ -559,7 +561,7 @@ class AllStructs(
       private val map_int32_null_valueAdapter: ProtoAdapter<Map<Int, Nothing?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_NULL) }
 
-      override fun encodedSize(value: AllStructs): Int {
+      public override fun encodedSize(value: AllStructs): Int {
         var size = value.unknownFields.size
         if (value.struct != null) size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(1,
             value.struct)
@@ -591,7 +593,7 @@ class AllStructs(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: AllStructs) {
+      public override fun encode(writer: ProtoWriter, value: AllStructs): Unit {
         if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
         if (value.list != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 2, value.list)
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 3,
@@ -615,7 +617,7 @@ class AllStructs(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): AllStructs {
+      public override fun decode(reader: ProtoReader): AllStructs {
         var struct: Map<String, *>? = null
         var list: List<*>? = null
         var null_value: Nothing? = null
@@ -691,7 +693,7 @@ class AllStructs(
         )
       }
 
-      override fun redact(value: AllStructs): AllStructs = value.copy(
+      public override fun redact(value: AllStructs): AllStructs = value.copy(
         struct = value.struct?.let(ProtoAdapter.STRUCT_MAP::redact),
         list = value.list?.let(ProtoAdapter.STRUCT_LIST::redact),
         value_a = value.value_a?.let(ProtoAdapter.STRUCT_VALUE::redact),

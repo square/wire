@@ -9,9 +9,9 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.redactElements
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.redactElements
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Double
@@ -19,6 +19,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
@@ -26,7 +27,7 @@ import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
 
-class AllWrappers(
+public class AllWrappers(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE_VALUE",
@@ -34,7 +35,7 @@ class AllWrappers(
     jsonName = "doubleValue"
   )
   @JvmField
-  val double_value: Double? = null,
+  public val double_value: Double? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT_VALUE",
@@ -42,7 +43,7 @@ class AllWrappers(
     jsonName = "floatValue"
   )
   @JvmField
-  val float_value: Float? = null,
+  public val float_value: Float? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#INT64_VALUE",
@@ -50,7 +51,7 @@ class AllWrappers(
     jsonName = "int64Value"
   )
   @JvmField
-  val int64_value: Long? = null,
+  public val int64_value: Long? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64_VALUE",
@@ -58,7 +59,7 @@ class AllWrappers(
     jsonName = "uint64Value"
   )
   @JvmField
-  val uint64_value: Long? = null,
+  public val uint64_value: Long? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#INT32_VALUE",
@@ -66,7 +67,7 @@ class AllWrappers(
     jsonName = "int32Value"
   )
   @JvmField
-  val int32_value: Int? = null,
+  public val int32_value: Int? = null,
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#UINT32_VALUE",
@@ -74,7 +75,7 @@ class AllWrappers(
     jsonName = "uint32Value"
   )
   @JvmField
-  val uint32_value: Int? = null,
+  public val uint32_value: Int? = null,
   @field:WireField(
     tag = 7,
     adapter = "com.squareup.wire.ProtoAdapter#BOOL_VALUE",
@@ -82,7 +83,7 @@ class AllWrappers(
     jsonName = "boolValue"
   )
   @JvmField
-  val bool_value: Boolean? = null,
+  public val bool_value: Boolean? = null,
   @field:WireField(
     tag = 8,
     adapter = "com.squareup.wire.ProtoAdapter#STRING_VALUE",
@@ -90,7 +91,7 @@ class AllWrappers(
     jsonName = "stringValue"
   )
   @JvmField
-  val string_value: String? = null,
+  public val string_value: String? = null,
   @field:WireField(
     tag = 9,
     adapter = "com.squareup.wire.ProtoAdapter#BYTES_VALUE",
@@ -98,7 +99,7 @@ class AllWrappers(
     jsonName = "bytesValue"
   )
   @JvmField
-  val bytes_value: ByteString? = null,
+  public val bytes_value: ByteString? = null,
   rep_double_value: List<Double?> = emptyList(),
   rep_float_value: List<Float?> = emptyList(),
   rep_int64_value: List<Long?> = emptyList(),
@@ -126,7 +127,7 @@ class AllWrappers(
     jsonName = "repDoubleValue"
   )
   @JvmField
-  val rep_double_value: List<Double?> = immutableCopyOf("rep_double_value", rep_double_value)
+  public val rep_double_value: List<Double?> = immutableCopyOf("rep_double_value", rep_double_value)
 
   @field:WireField(
     tag = 102,
@@ -135,7 +136,7 @@ class AllWrappers(
     jsonName = "repFloatValue"
   )
   @JvmField
-  val rep_float_value: List<Float?> = immutableCopyOf("rep_float_value", rep_float_value)
+  public val rep_float_value: List<Float?> = immutableCopyOf("rep_float_value", rep_float_value)
 
   @field:WireField(
     tag = 103,
@@ -144,7 +145,7 @@ class AllWrappers(
     jsonName = "repInt64Value"
   )
   @JvmField
-  val rep_int64_value: List<Long?> = immutableCopyOf("rep_int64_value", rep_int64_value)
+  public val rep_int64_value: List<Long?> = immutableCopyOf("rep_int64_value", rep_int64_value)
 
   @field:WireField(
     tag = 104,
@@ -153,7 +154,7 @@ class AllWrappers(
     jsonName = "repUint64Value"
   )
   @JvmField
-  val rep_uint64_value: List<Long?> = immutableCopyOf("rep_uint64_value", rep_uint64_value)
+  public val rep_uint64_value: List<Long?> = immutableCopyOf("rep_uint64_value", rep_uint64_value)
 
   @field:WireField(
     tag = 105,
@@ -162,7 +163,7 @@ class AllWrappers(
     jsonName = "repInt32Value"
   )
   @JvmField
-  val rep_int32_value: List<Int?> = immutableCopyOf("rep_int32_value", rep_int32_value)
+  public val rep_int32_value: List<Int?> = immutableCopyOf("rep_int32_value", rep_int32_value)
 
   @field:WireField(
     tag = 106,
@@ -171,7 +172,7 @@ class AllWrappers(
     jsonName = "repUint32Value"
   )
   @JvmField
-  val rep_uint32_value: List<Int?> = immutableCopyOf("rep_uint32_value", rep_uint32_value)
+  public val rep_uint32_value: List<Int?> = immutableCopyOf("rep_uint32_value", rep_uint32_value)
 
   @field:WireField(
     tag = 107,
@@ -180,7 +181,7 @@ class AllWrappers(
     jsonName = "repBoolValue"
   )
   @JvmField
-  val rep_bool_value: List<Boolean?> = immutableCopyOf("rep_bool_value", rep_bool_value)
+  public val rep_bool_value: List<Boolean?> = immutableCopyOf("rep_bool_value", rep_bool_value)
 
   @field:WireField(
     tag = 108,
@@ -189,7 +190,7 @@ class AllWrappers(
     jsonName = "repStringValue"
   )
   @JvmField
-  val rep_string_value: List<String?> = immutableCopyOf("rep_string_value", rep_string_value)
+  public val rep_string_value: List<String?> = immutableCopyOf("rep_string_value", rep_string_value)
 
   @field:WireField(
     tag = 109,
@@ -198,7 +199,8 @@ class AllWrappers(
     jsonName = "repBytesValue"
   )
   @JvmField
-  val rep_bytes_value: List<ByteString?> = immutableCopyOf("rep_bytes_value", rep_bytes_value)
+  public val rep_bytes_value: List<ByteString?> = immutableCopyOf("rep_bytes_value",
+      rep_bytes_value)
 
   @field:WireField(
     tag = 301,
@@ -207,7 +209,7 @@ class AllWrappers(
     jsonName = "mapInt32DoubleValue"
   )
   @JvmField
-  val map_int32_double_value: Map<Int, Double?> = immutableCopyOf("map_int32_double_value",
+  public val map_int32_double_value: Map<Int, Double?> = immutableCopyOf("map_int32_double_value",
       map_int32_double_value)
 
   @field:WireField(
@@ -217,7 +219,7 @@ class AllWrappers(
     jsonName = "mapInt32FloatValue"
   )
   @JvmField
-  val map_int32_float_value: Map<Int, Float?> = immutableCopyOf("map_int32_float_value",
+  public val map_int32_float_value: Map<Int, Float?> = immutableCopyOf("map_int32_float_value",
       map_int32_float_value)
 
   @field:WireField(
@@ -227,7 +229,7 @@ class AllWrappers(
     jsonName = "mapInt32Int64Value"
   )
   @JvmField
-  val map_int32_int64_value: Map<Int, Long?> = immutableCopyOf("map_int32_int64_value",
+  public val map_int32_int64_value: Map<Int, Long?> = immutableCopyOf("map_int32_int64_value",
       map_int32_int64_value)
 
   @field:WireField(
@@ -237,7 +239,7 @@ class AllWrappers(
     jsonName = "mapInt32Uint64Value"
   )
   @JvmField
-  val map_int32_uint64_value: Map<Int, Long?> = immutableCopyOf("map_int32_uint64_value",
+  public val map_int32_uint64_value: Map<Int, Long?> = immutableCopyOf("map_int32_uint64_value",
       map_int32_uint64_value)
 
   @field:WireField(
@@ -247,7 +249,7 @@ class AllWrappers(
     jsonName = "mapInt32Int32Value"
   )
   @JvmField
-  val map_int32_int32_value: Map<Int, Int?> = immutableCopyOf("map_int32_int32_value",
+  public val map_int32_int32_value: Map<Int, Int?> = immutableCopyOf("map_int32_int32_value",
       map_int32_int32_value)
 
   @field:WireField(
@@ -257,7 +259,7 @@ class AllWrappers(
     jsonName = "mapInt32Uint32Value"
   )
   @JvmField
-  val map_int32_uint32_value: Map<Int, Int?> = immutableCopyOf("map_int32_uint32_value",
+  public val map_int32_uint32_value: Map<Int, Int?> = immutableCopyOf("map_int32_uint32_value",
       map_int32_uint32_value)
 
   @field:WireField(
@@ -267,7 +269,7 @@ class AllWrappers(
     jsonName = "mapInt32BoolValue"
   )
   @JvmField
-  val map_int32_bool_value: Map<Int, Boolean?> = immutableCopyOf("map_int32_bool_value",
+  public val map_int32_bool_value: Map<Int, Boolean?> = immutableCopyOf("map_int32_bool_value",
       map_int32_bool_value)
 
   @field:WireField(
@@ -277,7 +279,7 @@ class AllWrappers(
     jsonName = "mapInt32StringValue"
   )
   @JvmField
-  val map_int32_string_value: Map<Int, String?> = immutableCopyOf("map_int32_string_value",
+  public val map_int32_string_value: Map<Int, String?> = immutableCopyOf("map_int32_string_value",
       map_int32_string_value)
 
   @field:WireField(
@@ -287,10 +289,10 @@ class AllWrappers(
     jsonName = "mapInt32BytesValue"
   )
   @JvmField
-  val map_int32_bytes_value: Map<Int, ByteString?> = immutableCopyOf("map_int32_bytes_value",
+  public val map_int32_bytes_value: Map<Int, ByteString?> = immutableCopyOf("map_int32_bytes_value",
       map_int32_bytes_value)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.double_value = double_value
     builder.float_value = float_value
@@ -323,7 +325,7 @@ class AllWrappers(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is AllWrappers) return false
     if (unknownFields != other.unknownFields) return false
@@ -357,7 +359,7 @@ class AllWrappers(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -393,7 +395,7 @@ class AllWrappers(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (double_value != null) result += """double_value=$double_value"""
     if (float_value != null) result += """float_value=$float_value"""
@@ -434,7 +436,7 @@ class AllWrappers(
     return result.joinToString(prefix = "AllWrappers{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     double_value: Double? = this.double_value,
     float_value: Float? = this.float_value,
     int64_value: Long? = this.int64_value,
@@ -470,233 +472,233 @@ class AllWrappers(
       map_int32_int64_value, map_int32_uint64_value, map_int32_int32_value, map_int32_uint32_value,
       map_int32_bool_value, map_int32_string_value, map_int32_bytes_value, unknownFields)
 
-  class Builder : Message.Builder<AllWrappers, Builder>() {
+  public class Builder : Message.Builder<AllWrappers, Builder>() {
     @JvmField
-    var double_value: Double? = null
+    public var double_value: Double? = null
 
     @JvmField
-    var float_value: Float? = null
+    public var float_value: Float? = null
 
     @JvmField
-    var int64_value: Long? = null
+    public var int64_value: Long? = null
 
     @JvmField
-    var uint64_value: Long? = null
+    public var uint64_value: Long? = null
 
     @JvmField
-    var int32_value: Int? = null
+    public var int32_value: Int? = null
 
     @JvmField
-    var uint32_value: Int? = null
+    public var uint32_value: Int? = null
 
     @JvmField
-    var bool_value: Boolean? = null
+    public var bool_value: Boolean? = null
 
     @JvmField
-    var string_value: String? = null
+    public var string_value: String? = null
 
     @JvmField
-    var bytes_value: ByteString? = null
+    public var bytes_value: ByteString? = null
 
     @JvmField
-    var rep_double_value: List<Double?> = emptyList()
+    public var rep_double_value: List<Double?> = emptyList()
 
     @JvmField
-    var rep_float_value: List<Float?> = emptyList()
+    public var rep_float_value: List<Float?> = emptyList()
 
     @JvmField
-    var rep_int64_value: List<Long?> = emptyList()
+    public var rep_int64_value: List<Long?> = emptyList()
 
     @JvmField
-    var rep_uint64_value: List<Long?> = emptyList()
+    public var rep_uint64_value: List<Long?> = emptyList()
 
     @JvmField
-    var rep_int32_value: List<Int?> = emptyList()
+    public var rep_int32_value: List<Int?> = emptyList()
 
     @JvmField
-    var rep_uint32_value: List<Int?> = emptyList()
+    public var rep_uint32_value: List<Int?> = emptyList()
 
     @JvmField
-    var rep_bool_value: List<Boolean?> = emptyList()
+    public var rep_bool_value: List<Boolean?> = emptyList()
 
     @JvmField
-    var rep_string_value: List<String?> = emptyList()
+    public var rep_string_value: List<String?> = emptyList()
 
     @JvmField
-    var rep_bytes_value: List<ByteString?> = emptyList()
+    public var rep_bytes_value: List<ByteString?> = emptyList()
 
     @JvmField
-    var map_int32_double_value: Map<Int, Double?> = emptyMap()
+    public var map_int32_double_value: Map<Int, Double?> = emptyMap()
 
     @JvmField
-    var map_int32_float_value: Map<Int, Float?> = emptyMap()
+    public var map_int32_float_value: Map<Int, Float?> = emptyMap()
 
     @JvmField
-    var map_int32_int64_value: Map<Int, Long?> = emptyMap()
+    public var map_int32_int64_value: Map<Int, Long?> = emptyMap()
 
     @JvmField
-    var map_int32_uint64_value: Map<Int, Long?> = emptyMap()
+    public var map_int32_uint64_value: Map<Int, Long?> = emptyMap()
 
     @JvmField
-    var map_int32_int32_value: Map<Int, Int?> = emptyMap()
+    public var map_int32_int32_value: Map<Int, Int?> = emptyMap()
 
     @JvmField
-    var map_int32_uint32_value: Map<Int, Int?> = emptyMap()
+    public var map_int32_uint32_value: Map<Int, Int?> = emptyMap()
 
     @JvmField
-    var map_int32_bool_value: Map<Int, Boolean?> = emptyMap()
+    public var map_int32_bool_value: Map<Int, Boolean?> = emptyMap()
 
     @JvmField
-    var map_int32_string_value: Map<Int, String?> = emptyMap()
+    public var map_int32_string_value: Map<Int, String?> = emptyMap()
 
     @JvmField
-    var map_int32_bytes_value: Map<Int, ByteString?> = emptyMap()
+    public var map_int32_bytes_value: Map<Int, ByteString?> = emptyMap()
 
-    fun double_value(double_value: Double?): Builder {
+    public fun double_value(double_value: Double?): Builder {
       this.double_value = double_value
       return this
     }
 
-    fun float_value(float_value: Float?): Builder {
+    public fun float_value(float_value: Float?): Builder {
       this.float_value = float_value
       return this
     }
 
-    fun int64_value(int64_value: Long?): Builder {
+    public fun int64_value(int64_value: Long?): Builder {
       this.int64_value = int64_value
       return this
     }
 
-    fun uint64_value(uint64_value: Long?): Builder {
+    public fun uint64_value(uint64_value: Long?): Builder {
       this.uint64_value = uint64_value
       return this
     }
 
-    fun int32_value(int32_value: Int?): Builder {
+    public fun int32_value(int32_value: Int?): Builder {
       this.int32_value = int32_value
       return this
     }
 
-    fun uint32_value(uint32_value: Int?): Builder {
+    public fun uint32_value(uint32_value: Int?): Builder {
       this.uint32_value = uint32_value
       return this
     }
 
-    fun bool_value(bool_value: Boolean?): Builder {
+    public fun bool_value(bool_value: Boolean?): Builder {
       this.bool_value = bool_value
       return this
     }
 
-    fun string_value(string_value: String?): Builder {
+    public fun string_value(string_value: String?): Builder {
       this.string_value = string_value
       return this
     }
 
-    fun bytes_value(bytes_value: ByteString?): Builder {
+    public fun bytes_value(bytes_value: ByteString?): Builder {
       this.bytes_value = bytes_value
       return this
     }
 
-    fun rep_double_value(rep_double_value: List<Double?>): Builder {
+    public fun rep_double_value(rep_double_value: List<Double?>): Builder {
       checkElementsNotNull(rep_double_value)
       this.rep_double_value = rep_double_value
       return this
     }
 
-    fun rep_float_value(rep_float_value: List<Float?>): Builder {
+    public fun rep_float_value(rep_float_value: List<Float?>): Builder {
       checkElementsNotNull(rep_float_value)
       this.rep_float_value = rep_float_value
       return this
     }
 
-    fun rep_int64_value(rep_int64_value: List<Long?>): Builder {
+    public fun rep_int64_value(rep_int64_value: List<Long?>): Builder {
       checkElementsNotNull(rep_int64_value)
       this.rep_int64_value = rep_int64_value
       return this
     }
 
-    fun rep_uint64_value(rep_uint64_value: List<Long?>): Builder {
+    public fun rep_uint64_value(rep_uint64_value: List<Long?>): Builder {
       checkElementsNotNull(rep_uint64_value)
       this.rep_uint64_value = rep_uint64_value
       return this
     }
 
-    fun rep_int32_value(rep_int32_value: List<Int?>): Builder {
+    public fun rep_int32_value(rep_int32_value: List<Int?>): Builder {
       checkElementsNotNull(rep_int32_value)
       this.rep_int32_value = rep_int32_value
       return this
     }
 
-    fun rep_uint32_value(rep_uint32_value: List<Int?>): Builder {
+    public fun rep_uint32_value(rep_uint32_value: List<Int?>): Builder {
       checkElementsNotNull(rep_uint32_value)
       this.rep_uint32_value = rep_uint32_value
       return this
     }
 
-    fun rep_bool_value(rep_bool_value: List<Boolean?>): Builder {
+    public fun rep_bool_value(rep_bool_value: List<Boolean?>): Builder {
       checkElementsNotNull(rep_bool_value)
       this.rep_bool_value = rep_bool_value
       return this
     }
 
-    fun rep_string_value(rep_string_value: List<String?>): Builder {
+    public fun rep_string_value(rep_string_value: List<String?>): Builder {
       checkElementsNotNull(rep_string_value)
       this.rep_string_value = rep_string_value
       return this
     }
 
-    fun rep_bytes_value(rep_bytes_value: List<ByteString?>): Builder {
+    public fun rep_bytes_value(rep_bytes_value: List<ByteString?>): Builder {
       checkElementsNotNull(rep_bytes_value)
       this.rep_bytes_value = rep_bytes_value
       return this
     }
 
-    fun map_int32_double_value(map_int32_double_value: Map<Int, Double?>): Builder {
+    public fun map_int32_double_value(map_int32_double_value: Map<Int, Double?>): Builder {
       this.map_int32_double_value = map_int32_double_value
       return this
     }
 
-    fun map_int32_float_value(map_int32_float_value: Map<Int, Float?>): Builder {
+    public fun map_int32_float_value(map_int32_float_value: Map<Int, Float?>): Builder {
       this.map_int32_float_value = map_int32_float_value
       return this
     }
 
-    fun map_int32_int64_value(map_int32_int64_value: Map<Int, Long?>): Builder {
+    public fun map_int32_int64_value(map_int32_int64_value: Map<Int, Long?>): Builder {
       this.map_int32_int64_value = map_int32_int64_value
       return this
     }
 
-    fun map_int32_uint64_value(map_int32_uint64_value: Map<Int, Long?>): Builder {
+    public fun map_int32_uint64_value(map_int32_uint64_value: Map<Int, Long?>): Builder {
       this.map_int32_uint64_value = map_int32_uint64_value
       return this
     }
 
-    fun map_int32_int32_value(map_int32_int32_value: Map<Int, Int?>): Builder {
+    public fun map_int32_int32_value(map_int32_int32_value: Map<Int, Int?>): Builder {
       this.map_int32_int32_value = map_int32_int32_value
       return this
     }
 
-    fun map_int32_uint32_value(map_int32_uint32_value: Map<Int, Int?>): Builder {
+    public fun map_int32_uint32_value(map_int32_uint32_value: Map<Int, Int?>): Builder {
       this.map_int32_uint32_value = map_int32_uint32_value
       return this
     }
 
-    fun map_int32_bool_value(map_int32_bool_value: Map<Int, Boolean?>): Builder {
+    public fun map_int32_bool_value(map_int32_bool_value: Map<Int, Boolean?>): Builder {
       this.map_int32_bool_value = map_int32_bool_value
       return this
     }
 
-    fun map_int32_string_value(map_int32_string_value: Map<Int, String?>): Builder {
+    public fun map_int32_string_value(map_int32_string_value: Map<Int, String?>): Builder {
       this.map_int32_string_value = map_int32_string_value
       return this
     }
 
-    fun map_int32_bytes_value(map_int32_bytes_value: Map<Int, ByteString?>): Builder {
+    public fun map_int32_bytes_value(map_int32_bytes_value: Map<Int, ByteString?>): Builder {
       this.map_int32_bytes_value = map_int32_bytes_value
       return this
     }
 
-    override fun build(): AllWrappers = AllWrappers(
+    public override fun build(): AllWrappers = AllWrappers(
       double_value = double_value,
       float_value = float_value,
       int64_value = int64_value,
@@ -728,9 +730,9 @@ class AllWrappers(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<AllWrappers> = object : ProtoAdapter<AllWrappers>(
+    public val ADAPTER: ProtoAdapter<AllWrappers> = object : ProtoAdapter<AllWrappers>(
       FieldEncoding.LENGTH_DELIMITED, 
       AllWrappers::class, 
       "type.googleapis.com/squareup.proto3.AllWrappers", 
@@ -764,7 +766,7 @@ class AllWrappers(
       private val map_int32_bytes_valueAdapter: ProtoAdapter<Map<Int, ByteString?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.BYTES_VALUE) }
 
-      override fun encodedSize(value: AllWrappers): Int {
+      public override fun encodedSize(value: AllWrappers): Int {
         var size = value.unknownFields.size
         if (value.double_value != null) size += ProtoAdapter.DOUBLE_VALUE.encodedSizeWithTag(1,
             value.double_value)
@@ -809,7 +811,7 @@ class AllWrappers(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: AllWrappers) {
+      public override fun encode(writer: ProtoWriter, value: AllWrappers): Unit {
         if (value.double_value != null) ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1,
             value.double_value)
         if (value.float_value != null) ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2,
@@ -849,7 +851,7 @@ class AllWrappers(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): AllWrappers {
+      public override fun decode(reader: ProtoReader): AllWrappers {
         var double_value: Double? = null
         var float_value: Float? = null
         var int64_value: Long? = null
@@ -941,7 +943,7 @@ class AllWrappers(
         )
       }
 
-      override fun redact(value: AllWrappers): AllWrappers = value.copy(
+      public override fun redact(value: AllWrappers): AllWrappers = value.copy(
         double_value = value.double_value?.let(ProtoAdapter.DOUBLE_VALUE::redact),
         float_value = value.float_value?.let(ProtoAdapter.FLOAT_VALUE::redact),
         int64_value = value.int64_value?.let(ProtoAdapter.INT64_VALUE::redact),
