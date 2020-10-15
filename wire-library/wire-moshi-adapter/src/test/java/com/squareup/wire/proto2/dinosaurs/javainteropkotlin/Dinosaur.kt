@@ -9,9 +9,9 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.sanitize
 import com.squareup.wire.proto2.geology.javainteropkotlin.Period
 import kotlin.Any
 import kotlin.Boolean
@@ -19,12 +19,13 @@ import kotlin.Double
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class Dinosaur(
+public class Dinosaur(
   /**
    * Common name of this dinosaur, like "Stegosaurus".
    */
@@ -33,26 +34,26 @@ class Dinosaur(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val name: String? = null,
+  public val name: String? = null,
   picture_urls: List<String> = emptyList(),
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   @JvmField
-  val length_meters: Double? = null,
+  public val length_meters: Double? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
   @JvmField
-  val mass_kilograms: Double? = null,
+  public val mass_kilograms: Double? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.proto2.geology.javainteropkotlin.Period#ADAPTER"
   )
   @JvmField
-  val period: Period? = null,
+  public val period: Period? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Dinosaur, Dinosaur.Builder>(ADAPTER, unknownFields) {
   /**
@@ -64,9 +65,9 @@ class Dinosaur(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)
+  public val picture_urls: List<String> = immutableCopyOf("picture_urls", picture_urls)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
     builder.picture_urls = picture_urls
@@ -77,7 +78,7 @@ class Dinosaur(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Dinosaur) return false
     if (unknownFields != other.unknownFields) return false
@@ -89,7 +90,7 @@ class Dinosaur(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -103,7 +104,7 @@ class Dinosaur(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=${sanitize(name)}"""
     if (picture_urls.isNotEmpty()) result += """picture_urls=${sanitize(picture_urls)}"""
@@ -113,7 +114,7 @@ class Dinosaur(
     return result.joinToString(prefix = "Dinosaur{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     name: String? = this.name,
     picture_urls: List<String> = this.picture_urls,
     length_meters: Double? = this.length_meters,
@@ -122,26 +123,26 @@ class Dinosaur(
     unknownFields: ByteString = this.unknownFields
   ): Dinosaur = Dinosaur(name, picture_urls, length_meters, mass_kilograms, period, unknownFields)
 
-  class Builder : Message.Builder<Dinosaur, Builder>() {
+  public class Builder : Message.Builder<Dinosaur, Builder>() {
     @JvmField
-    var name: String? = null
+    public var name: String? = null
 
     @JvmField
-    var picture_urls: List<String> = emptyList()
+    public var picture_urls: List<String> = emptyList()
 
     @JvmField
-    var length_meters: Double? = null
+    public var length_meters: Double? = null
 
     @JvmField
-    var mass_kilograms: Double? = null
+    public var mass_kilograms: Double? = null
 
     @JvmField
-    var period: Period? = null
+    public var period: Period? = null
 
     /**
      * Common name of this dinosaur, like "Stegosaurus".
      */
-    fun name(name: String?): Builder {
+    public fun name(name: String?): Builder {
       this.name = name
       return this
     }
@@ -149,28 +150,28 @@ class Dinosaur(
     /**
      * URLs with images of this dinosaur.
      */
-    fun picture_urls(picture_urls: List<String>): Builder {
+    public fun picture_urls(picture_urls: List<String>): Builder {
       checkElementsNotNull(picture_urls)
       this.picture_urls = picture_urls
       return this
     }
 
-    fun length_meters(length_meters: Double?): Builder {
+    public fun length_meters(length_meters: Double?): Builder {
       this.length_meters = length_meters
       return this
     }
 
-    fun mass_kilograms(mass_kilograms: Double?): Builder {
+    public fun mass_kilograms(mass_kilograms: Double?): Builder {
       this.mass_kilograms = mass_kilograms
       return this
     }
 
-    fun period(period: Period?): Builder {
+    public fun period(period: Period?): Builder {
       this.period = period
       return this
     }
 
-    override fun build(): Dinosaur = Dinosaur(
+    public override fun build(): Dinosaur = Dinosaur(
       name = name,
       picture_urls = picture_urls,
       length_meters = length_meters,
@@ -180,16 +181,16 @@ class Dinosaur(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Dinosaur> = object : ProtoAdapter<Dinosaur>(
+    public val ADAPTER: ProtoAdapter<Dinosaur> = object : ProtoAdapter<Dinosaur>(
       FieldEncoding.LENGTH_DELIMITED, 
       Dinosaur::class, 
       "type.googleapis.com/squareup.dinosaurs.javainteropkotlin.Dinosaur", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Dinosaur): Int {
+      public override fun encodedSize(value: Dinosaur): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls)
@@ -199,7 +200,7 @@ class Dinosaur(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Dinosaur) {
+      public override fun encode(writer: ProtoWriter, value: Dinosaur): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 2, value.picture_urls)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 3, value.length_meters)
@@ -208,7 +209,7 @@ class Dinosaur(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Dinosaur {
+      public override fun decode(reader: ProtoReader): Dinosaur {
         var name: String? = null
         val picture_urls = mutableListOf<String>()
         var length_meters: Double? = null
@@ -238,7 +239,7 @@ class Dinosaur(
         )
       }
 
-      override fun redact(value: Dinosaur): Dinosaur = value.copy(
+      public override fun redact(value: Dinosaur): Dinosaur = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

@@ -12,8 +12,8 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.sanitize
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnumValueOptionOption
 import kotlin.Any
 import kotlin.AssertionError
@@ -26,44 +26,45 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-class FooBar(
+public class FooBar(
   @MyFieldOptionOneOption(17)
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val foo: Int? = null,
+  public val foo: Int? = null,
   @MyFieldOptionTwoOption(33.5f)
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  val bar: String? = null,
+  public val bar: String? = null,
   @MyFieldOptionThreeOption(FooBarBazEnum.BAR)
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}Nested#ADAPTER"
   )
-  val baz: Nested? = null,
+  public val baz: Nested? = null,
   @MyFieldOptionOneOption(18)
   @MyFieldOptionTwoOption(34.5f)
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#UINT64"
   )
-  val qux: Long? = null,
+  public val qux: Long? = null,
   fred: List<Float> = emptyList(),
   @field:WireField(
     tag = 6,
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE"
   )
-  val daisy: Double? = null,
+  public val daisy: Double? = null,
   nested: List<FooBar> = emptyList(),
   /**
    * Extension source: custom_options.proto
@@ -72,7 +73,7 @@ class FooBar(
     tag = 101,
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER"
   )
-  val ext: FooBarBazEnum? = null,
+  public val ext: FooBarBazEnum? = null,
   rep: List<FooBarBazEnum> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FooBar, Nothing>(ADAPTER, unknownFields) {
@@ -82,7 +83,7 @@ class FooBar(
     adapter = "com.squareup.wire.ProtoAdapter#FLOAT",
     label = WireField.Label.REPEATED
   )
-  val fred: List<Float> = immutableCopyOf("fred", fred)
+  public val fred: List<Float> = immutableCopyOf("fred", fred)
 
   @field:WireField(
     tag = 7,
@@ -90,7 +91,7 @@ class FooBar(
     label = WireField.Label.REPEATED,
     redacted = true
   )
-  val nested: List<FooBar> = immutableCopyOf("nested", nested)
+  public val nested: List<FooBar> = immutableCopyOf("nested", nested)
 
   /**
    * Extension source: custom_options.proto
@@ -100,15 +101,15 @@ class FooBar(
     adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val rep: List<FooBarBazEnum> = immutableCopyOf("rep", rep)
+  public val rep: List<FooBarBazEnum> = immutableCopyOf("rep", rep)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FooBar) return false
     if (unknownFields != other.unknownFields) return false
@@ -124,7 +125,7 @@ class FooBar(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -142,7 +143,7 @@ class FooBar(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=$foo"""
     if (bar != null) result += """bar=${sanitize(bar)}"""
@@ -156,7 +157,7 @@ class FooBar(
     return result.joinToString(prefix = "FooBar{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     foo: Int? = this.foo,
     bar: String? = this.bar,
     baz: Nested? = this.baz,
@@ -169,16 +170,16 @@ class FooBar(
     unknownFields: ByteString = this.unknownFields
   ): FooBar = FooBar(foo, bar, baz, qux, fred, daisy, nested, ext, rep, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<FooBar> = object : ProtoAdapter<FooBar>(
+    public val ADAPTER: ProtoAdapter<FooBar> = object : ProtoAdapter<FooBar>(
       FieldEncoding.LENGTH_DELIMITED, 
       FooBar::class, 
       "type.googleapis.com/squareup.protos.custom_options.FooBar", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: FooBar): Int {
+      public override fun encodedSize(value: FooBar): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar)
@@ -192,7 +193,7 @@ class FooBar(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: FooBar) {
+      public override fun encode(writer: ProtoWriter, value: FooBar): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar)
         Nested.ADAPTER.encodeWithTag(writer, 3, value.baz)
@@ -205,7 +206,7 @@ class FooBar(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): FooBar {
+      public override fun decode(reader: ProtoReader): FooBar {
         var foo: Int? = null
         var bar: String? = null
         var baz: Nested? = null
@@ -251,7 +252,7 @@ class FooBar(
         )
       }
 
-      override fun redact(value: FooBar): FooBar = value.copy(
+      public override fun redact(value: FooBar): FooBar = value.copy(
         baz = value.baz?.let(Nested.ADAPTER::redact),
         nested = emptyList(),
         unknownFields = ByteString.EMPTY
@@ -261,21 +262,21 @@ class FooBar(
     private const val serialVersionUID: Long = 0L
   }
 
-  class Nested(
+  public class Nested(
     @field:WireField(
       tag = 1,
       adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER"
     )
-    val value: FooBarBazEnum? = null,
+    public val value: FooBarBazEnum? = null,
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<Nested, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is Nested) return false
       if (unknownFields != other.unknownFields) return false
@@ -283,7 +284,7 @@ class FooBar(
       return true
     }
 
-    override fun hashCode(): Int {
+    public override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -293,36 +294,36 @@ class FooBar(
       return result
     }
 
-    override fun toString(): String {
+    public override fun toString(): String {
       val result = mutableListOf<String>()
       if (value != null) result += """value=$value"""
       return result.joinToString(prefix = "Nested{", separator = ", ", postfix = "}")
     }
 
-    fun copy(value: FooBarBazEnum? = this.value, unknownFields: ByteString = this.unknownFields):
-        Nested = Nested(value, unknownFields)
+    public fun copy(value: FooBarBazEnum? = this.value, unknownFields: ByteString =
+        this.unknownFields): Nested = Nested(value, unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<Nested> = object : ProtoAdapter<Nested>(
+      public val ADAPTER: ProtoAdapter<Nested> = object : ProtoAdapter<Nested>(
         FieldEncoding.LENGTH_DELIMITED, 
         Nested::class, 
         "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: Nested): Int {
+        public override fun encodedSize(value: Nested): Int {
           var size = value.unknownFields.size
           size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value)
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: Nested) {
+        public override fun encode(writer: ProtoWriter, value: Nested): Unit {
           FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value)
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): Nested {
+        public override fun decode(reader: ProtoReader): Nested {
           var value: FooBarBazEnum? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -340,7 +341,7 @@ class FooBar(
           )
         }
 
-        override fun redact(value: Nested): Nested = value.copy(
+        public override fun redact(value: Nested): Nested = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -349,7 +350,7 @@ class FooBar(
     }
   }
 
-  class More(
+  public class More(
     serial: List<Int> = emptyList(),
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<More, Nothing>(ADAPTER, unknownFields) {
@@ -358,15 +359,15 @@ class FooBar(
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
       label = WireField.Label.REPEATED
     )
-    val serial: List<Int> = immutableCopyOf("serial", serial)
+    public val serial: List<Int> = immutableCopyOf("serial", serial)
 
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is More) return false
       if (unknownFields != other.unknownFields) return false
@@ -374,7 +375,7 @@ class FooBar(
       return true
     }
 
-    override fun hashCode(): Int {
+    public override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -384,36 +385,36 @@ class FooBar(
       return result
     }
 
-    override fun toString(): String {
+    public override fun toString(): String {
       val result = mutableListOf<String>()
       if (serial.isNotEmpty()) result += """serial=$serial"""
       return result.joinToString(prefix = "More{", separator = ", ", postfix = "}")
     }
 
-    fun copy(serial: List<Int> = this.serial, unknownFields: ByteString = this.unknownFields): More
-        = More(serial, unknownFields)
+    public fun copy(serial: List<Int> = this.serial, unknownFields: ByteString =
+        this.unknownFields): More = More(serial, unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<More> = object : ProtoAdapter<More>(
+      public val ADAPTER: ProtoAdapter<More> = object : ProtoAdapter<More>(
         FieldEncoding.LENGTH_DELIMITED, 
         More::class, 
         "type.googleapis.com/squareup.protos.custom_options.FooBar.More", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: More): Int {
+        public override fun encodedSize(value: More): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial)
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: More) {
+        public override fun encode(writer: ProtoWriter, value: More): Unit {
           ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial)
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): More {
+        public override fun decode(reader: ProtoReader): More {
           val serial = mutableListOf<Int>()
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -427,7 +428,7 @@ class FooBar(
           )
         }
 
-        override fun redact(value: More): More = value.copy(
+        public override fun redact(value: More): More = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -437,31 +438,30 @@ class FooBar(
   }
 
   @EnumOptionOption(true)
-  enum class FooBarBazEnum(
-    override val value: Int
+  public enum class FooBarBazEnum(
+    public override val value: Int
   ) : WireEnum {
     @EnumValueOptionOption(17)
     FOO(1),
-
     @ForeignEnumValueOptionOption(true)
     BAR(2),
-
     @EnumValueOptionOption(18)
     @ForeignEnumValueOptionOption(false)
-    BAZ(3);
+    BAZ(3),
+    ;
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<FooBarBazEnum> = object : EnumAdapter<FooBarBazEnum>(
+      public val ADAPTER: ProtoAdapter<FooBarBazEnum> = object : EnumAdapter<FooBarBazEnum>(
         FooBarBazEnum::class, 
         PROTO_2, 
         null
       ) {
-        override fun fromValue(value: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
+        public override fun fromValue(value: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): FooBarBazEnum? = when (value) {
+      public fun fromValue(value: Int): FooBarBazEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         3 -> BAZ

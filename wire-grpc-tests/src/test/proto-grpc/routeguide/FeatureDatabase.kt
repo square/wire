@@ -9,8 +9,8 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.redactElements
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.redactElements
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -20,6 +20,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -27,7 +28,7 @@ import okio.ByteString
 /**
  * Not used in the RPC.  Instead, this is here for the form serialized to disk.
  */
-class FeatureDatabase(
+public class FeatureDatabase(
   feature: List<Feature> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FeatureDatabase, Nothing>(ADAPTER, unknownFields) {
@@ -36,15 +37,15 @@ class FeatureDatabase(
     adapter = "routeguide.Feature#ADAPTER",
     label = WireField.Label.REPEATED
   )
-  val feature: List<Feature> = immutableCopyOf("feature", feature)
+  public val feature: List<Feature> = immutableCopyOf("feature", feature)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FeatureDatabase) return false
     if (unknownFields != other.unknownFields) return false
@@ -52,7 +53,7 @@ class FeatureDatabase(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -62,36 +63,36 @@ class FeatureDatabase(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (feature.isNotEmpty()) result += """feature=$feature"""
     return result.joinToString(prefix = "FeatureDatabase{", separator = ", ", postfix = "}")
   }
 
-  fun copy(feature: List<Feature> = this.feature, unknownFields: ByteString = this.unknownFields):
-      FeatureDatabase = FeatureDatabase(feature, unknownFields)
+  public fun copy(feature: List<Feature> = this.feature, unknownFields: ByteString =
+      this.unknownFields): FeatureDatabase = FeatureDatabase(feature, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<FeatureDatabase> = object : ProtoAdapter<FeatureDatabase>(
+    public val ADAPTER: ProtoAdapter<FeatureDatabase> = object : ProtoAdapter<FeatureDatabase>(
       FieldEncoding.LENGTH_DELIMITED, 
       FeatureDatabase::class, 
       "type.googleapis.com/routeguide.FeatureDatabase", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: FeatureDatabase): Int {
+      public override fun encodedSize(value: FeatureDatabase): Int {
         var size = value.unknownFields.size
         size += Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: FeatureDatabase) {
+      public override fun encode(writer: ProtoWriter, value: FeatureDatabase): Unit {
         Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): FeatureDatabase {
+      public override fun decode(reader: ProtoReader): FeatureDatabase {
         val feature = mutableListOf<Feature>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -105,7 +106,7 @@ class FeatureDatabase(
         )
       }
 
-      override fun redact(value: FeatureDatabase): FeatureDatabase = value.copy(
+      public override fun redact(value: FeatureDatabase): FeatureDatabase = value.copy(
         feature = value.feature.redactElements(Feature.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

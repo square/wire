@@ -3,13 +3,13 @@
 package com.squareup.wire.protos.custom_options
 
 import kotlin.Float
-import kotlin.annotation.AnnotationRetention
-import kotlin.annotation.AnnotationTarget
-import kotlin.annotation.Retention
-import kotlin.annotation.Target
+import kotlin.`annotation`.AnnotationRetention
+import kotlin.`annotation`.AnnotationTarget
+import kotlin.`annotation`.Retention
+import kotlin.`annotation`.Target
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class MyMessageOptionTwoOption(
-  val value: Float
+public annotation class MyMessageOptionTwoOption(
+  public val value: Float
 )

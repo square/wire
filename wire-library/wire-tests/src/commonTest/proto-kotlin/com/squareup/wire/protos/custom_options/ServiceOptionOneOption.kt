@@ -3,16 +3,16 @@
 package com.squareup.wire.protos.custom_options
 
 import kotlin.Int
-import kotlin.annotation.AnnotationRetention
-import kotlin.annotation.AnnotationTarget
-import kotlin.annotation.Retention
-import kotlin.annotation.Target
+import kotlin.`annotation`.AnnotationRetention
+import kotlin.`annotation`.AnnotationTarget
+import kotlin.`annotation`.Retention
+import kotlin.`annotation`.Target
 
 /**
  * This is a fluffy option! Apply it to your softest service types.
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class ServiceOptionOneOption(
-  val value: Int
+public annotation class ServiceOptionOneOption(
+  public val value: Int
 )

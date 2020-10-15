@@ -9,50 +9,51 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class NestedVersionTwo(
+public class NestedVersionTwo(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val i: Int? = null,
+  public val i: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val v2_i: Int? = null,
+  public val v2_i: Int? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val v2_s: String? = null,
+  public val v2_s: String? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED32"
   )
   @JvmField
-  val v2_f32: Int? = null,
+  public val v2_f32: Int? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#FIXED64"
   )
   @JvmField
-  val v2_f64: Long? = null,
+  public val v2_f64: Long? = null,
   v2_rs: List<String> = emptyList(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NestedVersionTwo, NestedVersionTwo.Builder>(ADAPTER, unknownFields) {
@@ -62,9 +63,9 @@ class NestedVersionTwo(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
+  public val v2_rs: List<String> = immutableCopyOf("v2_rs", v2_rs)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.i = i
     builder.v2_i = v2_i
@@ -76,7 +77,7 @@ class NestedVersionTwo(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NestedVersionTwo) return false
     if (unknownFields != other.unknownFields) return false
@@ -89,7 +90,7 @@ class NestedVersionTwo(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -104,7 +105,7 @@ class NestedVersionTwo(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (i != null) result += """i=$i"""
     if (v2_i != null) result += """v2_i=$v2_i"""
@@ -115,7 +116,7 @@ class NestedVersionTwo(
     return result.joinToString(prefix = "NestedVersionTwo{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     i: Int? = this.i,
     v2_i: Int? = this.v2_i,
     v2_s: String? = this.v2_s,
@@ -125,57 +126,57 @@ class NestedVersionTwo(
     unknownFields: ByteString = this.unknownFields
   ): NestedVersionTwo = NestedVersionTwo(i, v2_i, v2_s, v2_f32, v2_f64, v2_rs, unknownFields)
 
-  class Builder : Message.Builder<NestedVersionTwo, Builder>() {
+  public class Builder : Message.Builder<NestedVersionTwo, Builder>() {
     @JvmField
-    var i: Int? = null
+    public var i: Int? = null
 
     @JvmField
-    var v2_i: Int? = null
+    public var v2_i: Int? = null
 
     @JvmField
-    var v2_s: String? = null
+    public var v2_s: String? = null
 
     @JvmField
-    var v2_f32: Int? = null
+    public var v2_f32: Int? = null
 
     @JvmField
-    var v2_f64: Long? = null
+    public var v2_f64: Long? = null
 
     @JvmField
-    var v2_rs: List<String> = emptyList()
+    public var v2_rs: List<String> = emptyList()
 
-    fun i(i: Int?): Builder {
+    public fun i(i: Int?): Builder {
       this.i = i
       return this
     }
 
-    fun v2_i(v2_i: Int?): Builder {
+    public fun v2_i(v2_i: Int?): Builder {
       this.v2_i = v2_i
       return this
     }
 
-    fun v2_s(v2_s: String?): Builder {
+    public fun v2_s(v2_s: String?): Builder {
       this.v2_s = v2_s
       return this
     }
 
-    fun v2_f32(v2_f32: Int?): Builder {
+    public fun v2_f32(v2_f32: Int?): Builder {
       this.v2_f32 = v2_f32
       return this
     }
 
-    fun v2_f64(v2_f64: Long?): Builder {
+    public fun v2_f64(v2_f64: Long?): Builder {
       this.v2_f64 = v2_f64
       return this
     }
 
-    fun v2_rs(v2_rs: List<String>): Builder {
+    public fun v2_rs(v2_rs: List<String>): Builder {
       checkElementsNotNull(v2_rs)
       this.v2_rs = v2_rs
       return this
     }
 
-    override fun build(): NestedVersionTwo = NestedVersionTwo(
+    public override fun build(): NestedVersionTwo = NestedVersionTwo(
       i = i,
       v2_i = v2_i,
       v2_s = v2_s,
@@ -186,16 +187,16 @@ class NestedVersionTwo(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<NestedVersionTwo> = object : ProtoAdapter<NestedVersionTwo>(
+    public val ADAPTER: ProtoAdapter<NestedVersionTwo> = object : ProtoAdapter<NestedVersionTwo>(
       FieldEncoding.LENGTH_DELIMITED, 
       NestedVersionTwo::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionTwo", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: NestedVersionTwo): Int {
+      public override fun encodedSize(value: NestedVersionTwo): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i)
@@ -206,7 +207,7 @@ class NestedVersionTwo(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: NestedVersionTwo) {
+      public override fun encode(writer: ProtoWriter, value: NestedVersionTwo): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s)
@@ -216,7 +217,7 @@ class NestedVersionTwo(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): NestedVersionTwo {
+      public override fun decode(reader: ProtoReader): NestedVersionTwo {
         var i: Int? = null
         var v2_i: Int? = null
         var v2_s: String? = null
@@ -245,7 +246,7 @@ class NestedVersionTwo(
         )
       }
 
-      override fun redact(value: NestedVersionTwo): NestedVersionTwo = value.copy(
+      public override fun redact(value: NestedVersionTwo): NestedVersionTwo = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -19,35 +19,36 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class RedactedChild(
+public class RedactedChild(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  val a: String? = null,
+  public val a: String? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.redacted.RedactedFields#ADAPTER"
   )
-  val b: RedactedFields? = null,
+  public val b: RedactedFields? = null,
   @field:WireField(
     tag = 3,
     adapter = "com.squareup.wire.protos.kotlin.redacted.NotRedacted#ADAPTER"
   )
-  val c: NotRedacted? = null,
+  public val c: NotRedacted? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedChild, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedChild) return false
     if (unknownFields != other.unknownFields) return false
@@ -57,7 +58,7 @@ class RedactedChild(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -69,7 +70,7 @@ class RedactedChild(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (a != null) result += """a=${sanitize(a)}"""
     if (b != null) result += """b=$b"""
@@ -77,23 +78,23 @@ class RedactedChild(
     return result.joinToString(prefix = "RedactedChild{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     a: String? = this.a,
     b: RedactedFields? = this.b,
     c: NotRedacted? = this.c,
     unknownFields: ByteString = this.unknownFields
   ): RedactedChild = RedactedChild(a, b, c, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<RedactedChild> = object : ProtoAdapter<RedactedChild>(
+    public val ADAPTER: ProtoAdapter<RedactedChild> = object : ProtoAdapter<RedactedChild>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedChild::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedChild", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: RedactedChild): Int {
+      public override fun encodedSize(value: RedactedChild): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         size += RedactedFields.ADAPTER.encodedSizeWithTag(2, value.b)
@@ -101,14 +102,14 @@ class RedactedChild(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: RedactedChild) {
+      public override fun encode(writer: ProtoWriter, value: RedactedChild): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         RedactedFields.ADAPTER.encodeWithTag(writer, 2, value.b)
         NotRedacted.ADAPTER.encodeWithTag(writer, 3, value.c)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): RedactedChild {
+      public override fun decode(reader: ProtoReader): RedactedChild {
         var a: String? = null
         var b: RedactedFields? = null
         var c: NotRedacted? = null
@@ -128,7 +129,7 @@ class RedactedChild(
         )
       }
 
-      override fun redact(value: RedactedChild): RedactedChild = value.copy(
+      public override fun redact(value: RedactedChild): RedactedChild = value.copy(
         b = value.b?.let(RedactedFields.ADAPTER::redact),
         c = value.c?.let(NotRedacted.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

@@ -17,29 +17,30 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-class FreeDrinkPromotion(
+public class FreeDrinkPromotion(
   @field:WireField(
     tag = 1,
     adapter = "squareup.proto3.FreeDrinkPromotion${'$'}Drink#ADAPTER",
     label = WireField.Label.OMIT_IDENTITY
   )
   @JvmField
-  val drink: Drink = Drink.UNKNOWN,
+  public val drink: Drink = Drink.UNKNOWN,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<FreeDrinkPromotion, FreeDrinkPromotion.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.drink = drink
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is FreeDrinkPromotion) return false
     if (unknownFields != other.unknownFields) return false
@@ -47,7 +48,7 @@ class FreeDrinkPromotion(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -57,51 +58,52 @@ class FreeDrinkPromotion(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     result += """drink=$drink"""
     return result.joinToString(prefix = "FreeDrinkPromotion{", separator = ", ", postfix = "}")
   }
 
-  fun copy(drink: Drink = this.drink, unknownFields: ByteString = this.unknownFields):
+  public fun copy(drink: Drink = this.drink, unknownFields: ByteString = this.unknownFields):
       FreeDrinkPromotion = FreeDrinkPromotion(drink, unknownFields)
 
-  class Builder : Message.Builder<FreeDrinkPromotion, Builder>() {
+  public class Builder : Message.Builder<FreeDrinkPromotion, Builder>() {
     @JvmField
-    var drink: Drink = Drink.UNKNOWN
+    public var drink: Drink = Drink.UNKNOWN
 
-    fun drink(drink: Drink): Builder {
+    public fun drink(drink: Drink): Builder {
       this.drink = drink
       return this
     }
 
-    override fun build(): FreeDrinkPromotion = FreeDrinkPromotion(
+    public override fun build(): FreeDrinkPromotion = FreeDrinkPromotion(
       drink = drink,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<FreeDrinkPromotion> = object : ProtoAdapter<FreeDrinkPromotion>(
+    public val ADAPTER: ProtoAdapter<FreeDrinkPromotion> = object :
+        ProtoAdapter<FreeDrinkPromotion>(
       FieldEncoding.LENGTH_DELIMITED, 
       FreeDrinkPromotion::class, 
       "type.googleapis.com/squareup.proto3.FreeDrinkPromotion", 
       PROTO_3, 
       null
     ) {
-      override fun encodedSize(value: FreeDrinkPromotion): Int {
+      public override fun encodedSize(value: FreeDrinkPromotion): Int {
         var size = value.unknownFields.size
         if (value.drink != Drink.UNKNOWN) size += Drink.ADAPTER.encodedSizeWithTag(1, value.drink)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: FreeDrinkPromotion) {
+      public override fun encode(writer: ProtoWriter, value: FreeDrinkPromotion): Unit {
         if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): FreeDrinkPromotion {
+      public override fun decode(reader: ProtoReader): FreeDrinkPromotion {
         var drink: Drink = Drink.UNKNOWN
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -119,7 +121,7 @@ class FreeDrinkPromotion(
         )
       }
 
-      override fun redact(value: FreeDrinkPromotion): FreeDrinkPromotion = value.copy(
+      public override fun redact(value: FreeDrinkPromotion): FreeDrinkPromotion = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -127,29 +129,27 @@ class FreeDrinkPromotion(
     private const val serialVersionUID: Long = 0L
   }
 
-  enum class Drink(
-    override val value: Int
+  public enum class Drink(
+    public override val value: Int
   ) : WireEnum {
     UNKNOWN(0),
-
     PEPSI(1),
-
     MOUNTAIN_DEW(2),
+    ROOT_BEER(9),
+    ;
 
-    ROOT_BEER(9);
-
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<Drink> = object : EnumAdapter<Drink>(
+      public val ADAPTER: ProtoAdapter<Drink> = object : EnumAdapter<Drink>(
         Drink::class, 
         PROTO_3, 
         Drink.UNKNOWN
       ) {
-        override fun fromValue(value: Int): Drink? = Drink.fromValue(value)
+        public override fun fromValue(value: Int): Drink? = Drink.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): Drink? = when (value) {
+      public fun fromValue(value: Int): Drink? = when (value) {
         0 -> UNKNOWN
         1 -> PEPSI
         2 -> MOUNTAIN_DEW

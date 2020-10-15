@@ -12,23 +12,24 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.checkElementsNotNull
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.immutableCopyOfStruct
-import com.squareup.wire.internal.redactElements
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.checkElementsNotNull
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.immutableCopyOfStruct
+import com.squareup.wire.`internal`.redactElements
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class PizzaDelivery(
+public class PizzaDelivery(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
@@ -36,14 +37,14 @@ class PizzaDelivery(
     jsonName = "phoneNumber"
   )
   @JvmField
-  val phone_number: String = "",
+  public val phone_number: String = "",
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     label = WireField.Label.OMIT_IDENTITY
   )
   @JvmField
-  val address: String = "",
+  public val address: String = "",
   pizzas: List<Pizza> = emptyList(),
   @field:WireField(
     tag = 4,
@@ -51,7 +52,7 @@ class PizzaDelivery(
     label = WireField.Label.OMIT_IDENTITY
   )
   @JvmField
-  val promotion: AnyMessage? = null,
+  public val promotion: AnyMessage? = null,
   @field:WireField(
     tag = 5,
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
@@ -59,7 +60,7 @@ class PizzaDelivery(
     jsonName = "deliveredWithinOrFree"
   )
   @JvmField
-  val delivered_within_or_free: Duration? = null,
+  public val delivered_within_or_free: Duration? = null,
   loyalty: Map<String, *>? = null,
   @field:WireField(
     tag = 7,
@@ -68,7 +69,7 @@ class PizzaDelivery(
     jsonName = "orderedAt"
   )
   @JvmField
-  val ordered_at: Instant? = null,
+  public val ordered_at: Instant? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<PizzaDelivery, PizzaDelivery.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -77,7 +78,7 @@ class PizzaDelivery(
     label = WireField.Label.REPEATED
   )
   @JvmField
-  val pizzas: List<Pizza> = immutableCopyOf("pizzas", pizzas)
+  public val pizzas: List<Pizza> = immutableCopyOf("pizzas", pizzas)
 
   @field:WireField(
     tag = 6,
@@ -85,9 +86,9 @@ class PizzaDelivery(
     label = WireField.Label.OMIT_IDENTITY
   )
   @JvmField
-  val loyalty: Map<String, *>? = immutableCopyOfStruct("loyalty", loyalty)
+  public val loyalty: Map<String, *>? = immutableCopyOfStruct("loyalty", loyalty)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.phone_number = phone_number
     builder.address = address
@@ -100,7 +101,7 @@ class PizzaDelivery(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is PizzaDelivery) return false
     if (unknownFields != other.unknownFields) return false
@@ -114,7 +115,7 @@ class PizzaDelivery(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -130,7 +131,7 @@ class PizzaDelivery(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     result += """phone_number=${sanitize(phone_number)}"""
     result += """address=${sanitize(address)}"""
@@ -143,7 +144,7 @@ class PizzaDelivery(
     return result.joinToString(prefix = "PizzaDelivery{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     phone_number: String = this.phone_number,
     address: String = this.address,
     pizzas: List<Pizza> = this.pizzas,
@@ -155,65 +156,65 @@ class PizzaDelivery(
   ): PizzaDelivery = PizzaDelivery(phone_number, address, pizzas, promotion,
       delivered_within_or_free, loyalty, ordered_at, unknownFields)
 
-  class Builder : Message.Builder<PizzaDelivery, Builder>() {
+  public class Builder : Message.Builder<PizzaDelivery, Builder>() {
     @JvmField
-    var phone_number: String = ""
+    public var phone_number: String = ""
 
     @JvmField
-    var address: String = ""
+    public var address: String = ""
 
     @JvmField
-    var pizzas: List<Pizza> = emptyList()
+    public var pizzas: List<Pizza> = emptyList()
 
     @JvmField
-    var promotion: AnyMessage? = null
+    public var promotion: AnyMessage? = null
 
     @JvmField
-    var delivered_within_or_free: Duration? = null
+    public var delivered_within_or_free: Duration? = null
 
     @JvmField
-    var loyalty: Map<String, *>? = null
+    public var loyalty: Map<String, *>? = null
 
     @JvmField
-    var ordered_at: Instant? = null
+    public var ordered_at: Instant? = null
 
-    fun phone_number(phone_number: String): Builder {
+    public fun phone_number(phone_number: String): Builder {
       this.phone_number = phone_number
       return this
     }
 
-    fun address(address: String): Builder {
+    public fun address(address: String): Builder {
       this.address = address
       return this
     }
 
-    fun pizzas(pizzas: List<Pizza>): Builder {
+    public fun pizzas(pizzas: List<Pizza>): Builder {
       checkElementsNotNull(pizzas)
       this.pizzas = pizzas
       return this
     }
 
-    fun promotion(promotion: AnyMessage?): Builder {
+    public fun promotion(promotion: AnyMessage?): Builder {
       this.promotion = promotion
       return this
     }
 
-    fun delivered_within_or_free(delivered_within_or_free: Duration?): Builder {
+    public fun delivered_within_or_free(delivered_within_or_free: Duration?): Builder {
       this.delivered_within_or_free = delivered_within_or_free
       return this
     }
 
-    fun loyalty(loyalty: Map<String, *>?): Builder {
+    public fun loyalty(loyalty: Map<String, *>?): Builder {
       this.loyalty = loyalty
       return this
     }
 
-    fun ordered_at(ordered_at: Instant?): Builder {
+    public fun ordered_at(ordered_at: Instant?): Builder {
       this.ordered_at = ordered_at
       return this
     }
 
-    override fun build(): PizzaDelivery = PizzaDelivery(
+    public override fun build(): PizzaDelivery = PizzaDelivery(
       phone_number = phone_number,
       address = address,
       pizzas = pizzas,
@@ -225,16 +226,16 @@ class PizzaDelivery(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<PizzaDelivery> = object : ProtoAdapter<PizzaDelivery>(
+    public val ADAPTER: ProtoAdapter<PizzaDelivery> = object : ProtoAdapter<PizzaDelivery>(
       FieldEncoding.LENGTH_DELIMITED, 
       PizzaDelivery::class, 
       "type.googleapis.com/squareup.proto3.PizzaDelivery", 
       PROTO_3, 
       null
     ) {
-      override fun encodedSize(value: PizzaDelivery): Int {
+      public override fun encodedSize(value: PizzaDelivery): Int {
         var size = value.unknownFields.size
         if (value.phone_number != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1,
             value.phone_number)
@@ -251,7 +252,7 @@ class PizzaDelivery(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: PizzaDelivery) {
+      public override fun encode(writer: ProtoWriter, value: PizzaDelivery): Unit {
         if (value.phone_number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1,
             value.phone_number)
         if (value.address != "") ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
@@ -265,7 +266,7 @@ class PizzaDelivery(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): PizzaDelivery {
+      public override fun decode(reader: ProtoReader): PizzaDelivery {
         var phone_number: String = ""
         var address: String = ""
         val pizzas = mutableListOf<Pizza>()
@@ -297,7 +298,7 @@ class PizzaDelivery(
         )
       }
 
-      override fun redact(value: PizzaDelivery): PizzaDelivery = value.copy(
+      public override fun redact(value: PizzaDelivery): PizzaDelivery = value.copy(
         pizzas = value.pizzas.redactElements(Pizza.ADAPTER),
         promotion = value.promotion?.let(AnyMessage.ADAPTER::redact),
         delivered_within_or_free =

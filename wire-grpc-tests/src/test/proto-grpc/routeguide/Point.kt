@@ -18,6 +18,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -28,26 +29,26 @@ import okio.ByteString
  * Latitudes should be in the range +/- 90 degrees and longitude should be in
  * the range +/- 180 degrees (inclusive).
  */
-class Point(
+public class Point(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val latitude: Int? = null,
+  public val latitude: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val longitude: Int? = null,
+  public val longitude: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Point, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Point) return false
     if (unknownFields != other.unknownFields) return false
@@ -56,7 +57,7 @@ class Point(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -67,42 +68,42 @@ class Point(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (latitude != null) result += """latitude=$latitude"""
     if (longitude != null) result += """longitude=$longitude"""
     return result.joinToString(prefix = "Point{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     latitude: Int? = this.latitude,
     longitude: Int? = this.longitude,
     unknownFields: ByteString = this.unknownFields
   ): Point = Point(latitude, longitude, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Point> = object : ProtoAdapter<Point>(
+    public val ADAPTER: ProtoAdapter<Point> = object : ProtoAdapter<Point>(
       FieldEncoding.LENGTH_DELIMITED, 
       Point::class, 
       "type.googleapis.com/routeguide.Point", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Point): Int {
+      public override fun encodedSize(value: Point): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.latitude)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.longitude)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Point) {
+      public override fun encode(writer: ProtoWriter, value: Point): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.latitude)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.longitude)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Point {
+      public override fun decode(reader: ProtoReader): Point {
         var latitude: Int? = null
         var longitude: Int? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -119,7 +120,7 @@ class Point(
         )
       }
 
-      override fun redact(value: Point): Point = value.copy(
+      public override fun redact(value: Point): Point = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

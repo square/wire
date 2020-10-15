@@ -9,13 +9,14 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.countNonNull
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.countNonNull
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -23,7 +24,7 @@ import okio.ByteString
 /**
  * It's a one of message.
  */
-class OneOfMessage(
+public class OneOfMessage(
   /**
    * What foo.
    */
@@ -32,7 +33,7 @@ class OneOfMessage(
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val foo: Int? = null,
+  public val foo: Int? = null,
   /**
    * Such bar.
    */
@@ -41,7 +42,7 @@ class OneOfMessage(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val bar: String? = null,
+  public val bar: String? = null,
   /**
    * Nice baz.
    */
@@ -50,7 +51,7 @@ class OneOfMessage(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val baz: String? = null,
+  public val baz: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneOfMessage, OneOfMessage.Builder>(ADAPTER, unknownFields) {
   init {
@@ -59,7 +60,7 @@ class OneOfMessage(
     }
   }
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.foo = foo
     builder.bar = bar
@@ -68,7 +69,7 @@ class OneOfMessage(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneOfMessage) return false
     if (unknownFields != other.unknownFields) return false
@@ -78,7 +79,7 @@ class OneOfMessage(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -90,7 +91,7 @@ class OneOfMessage(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (foo != null) result += """foo=$foo"""
     if (bar != null) result += """bar=${sanitize(bar)}"""
@@ -98,27 +99,27 @@ class OneOfMessage(
     return result.joinToString(prefix = "OneOfMessage{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     foo: Int? = this.foo,
     bar: String? = this.bar,
     baz: String? = this.baz,
     unknownFields: ByteString = this.unknownFields
   ): OneOfMessage = OneOfMessage(foo, bar, baz, unknownFields)
 
-  class Builder : Message.Builder<OneOfMessage, Builder>() {
+  public class Builder : Message.Builder<OneOfMessage, Builder>() {
     @JvmField
-    var foo: Int? = null
+    public var foo: Int? = null
 
     @JvmField
-    var bar: String? = null
+    public var bar: String? = null
 
     @JvmField
-    var baz: String? = null
+    public var baz: String? = null
 
     /**
      * What foo.
      */
-    fun foo(foo: Int?): Builder {
+    public fun foo(foo: Int?): Builder {
       this.foo = foo
       this.bar = null
       this.baz = null
@@ -128,7 +129,7 @@ class OneOfMessage(
     /**
      * Such bar.
      */
-    fun bar(bar: String?): Builder {
+    public fun bar(bar: String?): Builder {
       this.bar = bar
       this.foo = null
       this.baz = null
@@ -138,14 +139,14 @@ class OneOfMessage(
     /**
      * Nice baz.
      */
-    fun baz(baz: String?): Builder {
+    public fun baz(baz: String?): Builder {
       this.baz = baz
       this.foo = null
       this.bar = null
       return this
     }
 
-    override fun build(): OneOfMessage = OneOfMessage(
+    public override fun build(): OneOfMessage = OneOfMessage(
       foo = foo,
       bar = bar,
       baz = baz,
@@ -153,16 +154,16 @@ class OneOfMessage(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
+    public val ADAPTER: ProtoAdapter<OneOfMessage> = object : ProtoAdapter<OneOfMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       OneOfMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.oneof.OneOfMessage", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: OneOfMessage): Int {
+      public override fun encodedSize(value: OneOfMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
         size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar)
@@ -170,14 +171,14 @@ class OneOfMessage(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: OneOfMessage) {
+      public override fun encode(writer: ProtoWriter, value: OneOfMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
         ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): OneOfMessage {
+      public override fun decode(reader: ProtoReader): OneOfMessage {
         var foo: Int? = null
         var bar: String? = null
         var baz: String? = null
@@ -197,7 +198,7 @@ class OneOfMessage(
         )
       }
 
-      override fun redact(value: OneOfMessage): OneOfMessage = value.copy(
+      public override fun redact(value: OneOfMessage): OneOfMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

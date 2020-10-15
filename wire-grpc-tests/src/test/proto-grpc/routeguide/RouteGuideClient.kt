@@ -9,7 +9,7 @@ import com.squareup.wire.Service
 /**
  * Interface exported by the server.
  */
-interface RouteGuideClient : Service {
+public interface RouteGuideClient : Service {
   /**
    * A simple RPC.
    *
@@ -18,7 +18,7 @@ interface RouteGuideClient : Service {
    * A feature with an empty name is returned if there's no feature at the given
    * position.
    */
-  fun GetFeature(): GrpcCall<Point, Feature>
+  public fun GetFeature(): GrpcCall<Point, Feature>
 
   /**
    * A server-to-client streaming RPC.
@@ -28,7 +28,7 @@ interface RouteGuideClient : Service {
    * repeated field), as the rectangle may cover a large area and contain a
    * huge number of features.
    */
-  fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature>
+  public fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature>
 
   /**
    * A client-to-server streaming RPC.
@@ -36,7 +36,7 @@ interface RouteGuideClient : Service {
    * Accepts a stream of Points on a route being traversed, returning a
    * RouteSummary when traversal is completed.
    */
-  fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary>
+  public fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary>
 
   /**
    * A Bidirectional streaming RPC.
@@ -44,5 +44,5 @@ interface RouteGuideClient : Service {
    * Accepts a stream of RouteNotes sent while a route is being traversed,
    * while receiving other RouteNotes (e.g. from other users).
    */
-  fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
+  public fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
 }

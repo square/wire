@@ -9,18 +9,19 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.immutableCopyOf
+import com.squareup.wire.`internal`.immutableCopyOf
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
 
-class MapTypes(
+public class MapTypes(
   map_string_string: Map<String, String> = emptyMap(),
   map_int32_int32: Map<Int, Int> = emptyMap(),
   map_sint32_sint32: Map<Int, Int> = emptyMap(),
@@ -41,7 +42,7 @@ class MapTypes(
     jsonName = "mapStringString"
   )
   @JvmField
-  val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
+  public val map_string_string: Map<String, String> = immutableCopyOf("map_string_string",
       map_string_string)
 
   @field:WireField(
@@ -51,7 +52,7 @@ class MapTypes(
     jsonName = "mapInt32Int32"
   )
   @JvmField
-  val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
+  public val map_int32_int32: Map<Int, Int> = immutableCopyOf("map_int32_int32", map_int32_int32)
 
   @field:WireField(
     tag = 3,
@@ -60,7 +61,8 @@ class MapTypes(
     jsonName = "mapSint32Sint32"
   )
   @JvmField
-  val map_sint32_sint32: Map<Int, Int> = immutableCopyOf("map_sint32_sint32", map_sint32_sint32)
+  public val map_sint32_sint32: Map<Int, Int> = immutableCopyOf("map_sint32_sint32",
+      map_sint32_sint32)
 
   @field:WireField(
     tag = 4,
@@ -69,7 +71,7 @@ class MapTypes(
     jsonName = "mapSfixed32Sfixed32"
   )
   @JvmField
-  val map_sfixed32_sfixed32: Map<Int, Int> = immutableCopyOf("map_sfixed32_sfixed32",
+  public val map_sfixed32_sfixed32: Map<Int, Int> = immutableCopyOf("map_sfixed32_sfixed32",
       map_sfixed32_sfixed32)
 
   @field:WireField(
@@ -79,7 +81,7 @@ class MapTypes(
     jsonName = "mapFixed32Fixed32"
   )
   @JvmField
-  val map_fixed32_fixed32: Map<Int, Int> = immutableCopyOf("map_fixed32_fixed32",
+  public val map_fixed32_fixed32: Map<Int, Int> = immutableCopyOf("map_fixed32_fixed32",
       map_fixed32_fixed32)
 
   @field:WireField(
@@ -89,7 +91,8 @@ class MapTypes(
     jsonName = "mapUint32Uint32"
   )
   @JvmField
-  val map_uint32_uint32: Map<Int, Int> = immutableCopyOf("map_uint32_uint32", map_uint32_uint32)
+  public val map_uint32_uint32: Map<Int, Int> = immutableCopyOf("map_uint32_uint32",
+      map_uint32_uint32)
 
   @field:WireField(
     tag = 7,
@@ -98,7 +101,7 @@ class MapTypes(
     jsonName = "mapInt64Int64"
   )
   @JvmField
-  val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
+  public val map_int64_int64: Map<Long, Long> = immutableCopyOf("map_int64_int64", map_int64_int64)
 
   @field:WireField(
     tag = 8,
@@ -107,7 +110,7 @@ class MapTypes(
     jsonName = "mapSfixed64Sfixed64"
   )
   @JvmField
-  val map_sfixed64_sfixed64: Map<Long, Long> = immutableCopyOf("map_sfixed64_sfixed64",
+  public val map_sfixed64_sfixed64: Map<Long, Long> = immutableCopyOf("map_sfixed64_sfixed64",
       map_sfixed64_sfixed64)
 
   @field:WireField(
@@ -117,7 +120,8 @@ class MapTypes(
     jsonName = "mapSint64Sint64"
   )
   @JvmField
-  val map_sint64_sint64: Map<Long, Long> = immutableCopyOf("map_sint64_sint64", map_sint64_sint64)
+  public val map_sint64_sint64: Map<Long, Long> = immutableCopyOf("map_sint64_sint64",
+      map_sint64_sint64)
 
   @field:WireField(
     tag = 10,
@@ -126,7 +130,7 @@ class MapTypes(
     jsonName = "mapFixed64Fixed64"
   )
   @JvmField
-  val map_fixed64_fixed64: Map<Long, Long> = immutableCopyOf("map_fixed64_fixed64",
+  public val map_fixed64_fixed64: Map<Long, Long> = immutableCopyOf("map_fixed64_fixed64",
       map_fixed64_fixed64)
 
   @field:WireField(
@@ -136,9 +140,10 @@ class MapTypes(
     jsonName = "mapUint64Uint64"
   )
   @JvmField
-  val map_uint64_uint64: Map<Long, Long> = immutableCopyOf("map_uint64_uint64", map_uint64_uint64)
+  public val map_uint64_uint64: Map<Long, Long> = immutableCopyOf("map_uint64_uint64",
+      map_uint64_uint64)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.map_string_string = map_string_string
     builder.map_int32_int32 = map_int32_int32
@@ -155,7 +160,7 @@ class MapTypes(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MapTypes) return false
     if (unknownFields != other.unknownFields) return false
@@ -173,7 +178,7 @@ class MapTypes(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -193,7 +198,7 @@ class MapTypes(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (map_string_string.isNotEmpty()) result += """map_string_string=$map_string_string"""
     if (map_int32_int32.isNotEmpty()) result += """map_int32_int32=$map_int32_int32"""
@@ -211,7 +216,7 @@ class MapTypes(
     return result.joinToString(prefix = "MapTypes{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     map_string_string: Map<String, String> = this.map_string_string,
     map_int32_int32: Map<Int, Int> = this.map_int32_int32,
     map_sint32_sint32: Map<Int, Int> = this.map_sint32_sint32,
@@ -229,96 +234,96 @@ class MapTypes(
       map_sfixed64_sfixed64, map_sint64_sint64, map_fixed64_fixed64, map_uint64_uint64,
       unknownFields)
 
-  class Builder : Message.Builder<MapTypes, Builder>() {
+  public class Builder : Message.Builder<MapTypes, Builder>() {
     @JvmField
-    var map_string_string: Map<String, String> = emptyMap()
+    public var map_string_string: Map<String, String> = emptyMap()
 
     @JvmField
-    var map_int32_int32: Map<Int, Int> = emptyMap()
+    public var map_int32_int32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_sint32_sint32: Map<Int, Int> = emptyMap()
+    public var map_sint32_sint32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_sfixed32_sfixed32: Map<Int, Int> = emptyMap()
+    public var map_sfixed32_sfixed32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_fixed32_fixed32: Map<Int, Int> = emptyMap()
+    public var map_fixed32_fixed32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_uint32_uint32: Map<Int, Int> = emptyMap()
+    public var map_uint32_uint32: Map<Int, Int> = emptyMap()
 
     @JvmField
-    var map_int64_int64: Map<Long, Long> = emptyMap()
+    public var map_int64_int64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var map_sfixed64_sfixed64: Map<Long, Long> = emptyMap()
+    public var map_sfixed64_sfixed64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var map_sint64_sint64: Map<Long, Long> = emptyMap()
+    public var map_sint64_sint64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var map_fixed64_fixed64: Map<Long, Long> = emptyMap()
+    public var map_fixed64_fixed64: Map<Long, Long> = emptyMap()
 
     @JvmField
-    var map_uint64_uint64: Map<Long, Long> = emptyMap()
+    public var map_uint64_uint64: Map<Long, Long> = emptyMap()
 
-    fun map_string_string(map_string_string: Map<String, String>): Builder {
+    public fun map_string_string(map_string_string: Map<String, String>): Builder {
       this.map_string_string = map_string_string
       return this
     }
 
-    fun map_int32_int32(map_int32_int32: Map<Int, Int>): Builder {
+    public fun map_int32_int32(map_int32_int32: Map<Int, Int>): Builder {
       this.map_int32_int32 = map_int32_int32
       return this
     }
 
-    fun map_sint32_sint32(map_sint32_sint32: Map<Int, Int>): Builder {
+    public fun map_sint32_sint32(map_sint32_sint32: Map<Int, Int>): Builder {
       this.map_sint32_sint32 = map_sint32_sint32
       return this
     }
 
-    fun map_sfixed32_sfixed32(map_sfixed32_sfixed32: Map<Int, Int>): Builder {
+    public fun map_sfixed32_sfixed32(map_sfixed32_sfixed32: Map<Int, Int>): Builder {
       this.map_sfixed32_sfixed32 = map_sfixed32_sfixed32
       return this
     }
 
-    fun map_fixed32_fixed32(map_fixed32_fixed32: Map<Int, Int>): Builder {
+    public fun map_fixed32_fixed32(map_fixed32_fixed32: Map<Int, Int>): Builder {
       this.map_fixed32_fixed32 = map_fixed32_fixed32
       return this
     }
 
-    fun map_uint32_uint32(map_uint32_uint32: Map<Int, Int>): Builder {
+    public fun map_uint32_uint32(map_uint32_uint32: Map<Int, Int>): Builder {
       this.map_uint32_uint32 = map_uint32_uint32
       return this
     }
 
-    fun map_int64_int64(map_int64_int64: Map<Long, Long>): Builder {
+    public fun map_int64_int64(map_int64_int64: Map<Long, Long>): Builder {
       this.map_int64_int64 = map_int64_int64
       return this
     }
 
-    fun map_sfixed64_sfixed64(map_sfixed64_sfixed64: Map<Long, Long>): Builder {
+    public fun map_sfixed64_sfixed64(map_sfixed64_sfixed64: Map<Long, Long>): Builder {
       this.map_sfixed64_sfixed64 = map_sfixed64_sfixed64
       return this
     }
 
-    fun map_sint64_sint64(map_sint64_sint64: Map<Long, Long>): Builder {
+    public fun map_sint64_sint64(map_sint64_sint64: Map<Long, Long>): Builder {
       this.map_sint64_sint64 = map_sint64_sint64
       return this
     }
 
-    fun map_fixed64_fixed64(map_fixed64_fixed64: Map<Long, Long>): Builder {
+    public fun map_fixed64_fixed64(map_fixed64_fixed64: Map<Long, Long>): Builder {
       this.map_fixed64_fixed64 = map_fixed64_fixed64
       return this
     }
 
-    fun map_uint64_uint64(map_uint64_uint64: Map<Long, Long>): Builder {
+    public fun map_uint64_uint64(map_uint64_uint64: Map<Long, Long>): Builder {
       this.map_uint64_uint64 = map_uint64_uint64
       return this
     }
 
-    override fun build(): MapTypes = MapTypes(
+    public override fun build(): MapTypes = MapTypes(
       map_string_string = map_string_string,
       map_int32_int32 = map_int32_int32,
       map_sint32_sint32 = map_sint32_sint32,
@@ -334,9 +339,9 @@ class MapTypes(
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<MapTypes> = object : ProtoAdapter<MapTypes>(
+    public val ADAPTER: ProtoAdapter<MapTypes> = object : ProtoAdapter<MapTypes>(
       FieldEncoding.LENGTH_DELIMITED, 
       MapTypes::class, 
       "type.googleapis.com/squareup.proto3.MapTypes", 
@@ -376,7 +381,7 @@ class MapTypes(
       private val map_uint64_uint64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.UINT64, ProtoAdapter.UINT64) }
 
-      override fun encodedSize(value: MapTypes): Int {
+      public override fun encodedSize(value: MapTypes): Int {
         var size = value.unknownFields.size
         size += map_string_stringAdapter.encodedSizeWithTag(1, value.map_string_string)
         size += map_int32_int32Adapter.encodedSizeWithTag(2, value.map_int32_int32)
@@ -392,7 +397,7 @@ class MapTypes(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: MapTypes) {
+      public override fun encode(writer: ProtoWriter, value: MapTypes): Unit {
         map_string_stringAdapter.encodeWithTag(writer, 1, value.map_string_string)
         map_int32_int32Adapter.encodeWithTag(writer, 2, value.map_int32_int32)
         map_sint32_sint32Adapter.encodeWithTag(writer, 3, value.map_sint32_sint32)
@@ -407,7 +412,7 @@ class MapTypes(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): MapTypes {
+      public override fun decode(reader: ProtoReader): MapTypes {
         val map_string_string = mutableMapOf<String, String>()
         val map_int32_int32 = mutableMapOf<Int, Int>()
         val map_sint32_sint32 = mutableMapOf<Int, Int>()
@@ -451,7 +456,7 @@ class MapTypes(
         )
       }
 
-      override fun redact(value: MapTypes): MapTypes = value.copy(
+      public override fun redact(value: MapTypes): MapTypes = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

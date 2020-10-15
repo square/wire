@@ -9,30 +9,31 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.countNonNull
+import com.squareup.wire.`internal`.countNonNull
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class RedactedOneOf(
+public class RedactedOneOf(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
   @JvmField
-  val b: Int? = null,
+  public val b: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     redacted = true
   )
   @JvmField
-  val c: String? = null,
+  public val c: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RedactedOneOf, RedactedOneOf.Builder>(ADAPTER, unknownFields) {
   init {
@@ -41,7 +42,7 @@ class RedactedOneOf(
     }
   }
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.b = b
     builder.c = c
@@ -49,7 +50,7 @@ class RedactedOneOf(
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RedactedOneOf) return false
     if (unknownFields != other.unknownFields) return false
@@ -58,7 +59,7 @@ class RedactedOneOf(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -69,68 +70,68 @@ class RedactedOneOf(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (b != null) result += """b=$b"""
     if (c != null) result += """c=██"""
     return result.joinToString(prefix = "RedactedOneOf{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     b: Int? = this.b,
     c: String? = this.c,
     unknownFields: ByteString = this.unknownFields
   ): RedactedOneOf = RedactedOneOf(b, c, unknownFields)
 
-  class Builder : Message.Builder<RedactedOneOf, Builder>() {
+  public class Builder : Message.Builder<RedactedOneOf, Builder>() {
     @JvmField
-    var b: Int? = null
+    public var b: Int? = null
 
     @JvmField
-    var c: String? = null
+    public var c: String? = null
 
-    fun b(b: Int?): Builder {
+    public fun b(b: Int?): Builder {
       this.b = b
       this.c = null
       return this
     }
 
-    fun c(c: String?): Builder {
+    public fun c(c: String?): Builder {
       this.c = c
       this.b = null
       return this
     }
 
-    override fun build(): RedactedOneOf = RedactedOneOf(
+    public override fun build(): RedactedOneOf = RedactedOneOf(
       b = b,
       c = c,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<RedactedOneOf> = object : ProtoAdapter<RedactedOneOf>(
+    public val ADAPTER: ProtoAdapter<RedactedOneOf> = object : ProtoAdapter<RedactedOneOf>(
       FieldEncoding.LENGTH_DELIMITED, 
       RedactedOneOf::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedOneOf", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: RedactedOneOf): Int {
+      public override fun encodedSize(value: RedactedOneOf): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.b)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.c)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: RedactedOneOf) {
+      public override fun encode(writer: ProtoWriter, value: RedactedOneOf): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): RedactedOneOf {
+      public override fun decode(reader: ProtoReader): RedactedOneOf {
         var b: Int? = null
         var c: String? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -147,7 +148,7 @@ class RedactedOneOf(
         )
       }
 
-      override fun redact(value: RedactedOneOf): RedactedOneOf = value.copy(
+      public override fun redact(value: RedactedOneOf): RedactedOneOf = value.copy(
         c = null,
         unknownFields = ByteString.EMPTY
       )

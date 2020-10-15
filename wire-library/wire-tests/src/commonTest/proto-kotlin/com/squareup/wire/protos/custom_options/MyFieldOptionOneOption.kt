@@ -3,16 +3,16 @@
 package com.squareup.wire.protos.custom_options
 
 import kotlin.Int
-import kotlin.annotation.AnnotationRetention
-import kotlin.annotation.AnnotationTarget
-import kotlin.annotation.Retention
-import kotlin.annotation.Target
+import kotlin.`annotation`.AnnotationRetention
+import kotlin.`annotation`.AnnotationTarget
+import kotlin.`annotation`.Retention
+import kotlin.`annotation`.Target
 
 /**
  * This is a superb option! Apply it to your greatest fields.
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
-annotation class MyFieldOptionOneOption(
-  val value: Int
+public annotation class MyFieldOptionOneOption(
+  public val value: Int
 )

@@ -16,65 +16,66 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-class MessageWithStatus(
+public class MessageWithStatus(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageWithStatus, MessageWithStatus.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageWithStatus) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  public override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = "MessageWithStatus{}"
+  public override fun toString(): String = "MessageWithStatus{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): MessageWithStatus =
+  public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithStatus =
       MessageWithStatus(unknownFields)
 
-  class Builder : Message.Builder<MessageWithStatus, Builder>() {
-    override fun build(): MessageWithStatus = MessageWithStatus(
+  public class Builder : Message.Builder<MessageWithStatus, Builder>() {
+    public override fun build(): MessageWithStatus = MessageWithStatus(
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<MessageWithStatus> = object : ProtoAdapter<MessageWithStatus>(
+    public val ADAPTER: ProtoAdapter<MessageWithStatus> = object : ProtoAdapter<MessageWithStatus>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.MessageWithStatus", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: MessageWithStatus): Int {
+      public override fun encodedSize(value: MessageWithStatus): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: MessageWithStatus) {
+      public override fun encode(writer: ProtoWriter, value: MessageWithStatus): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): MessageWithStatus {
+      public override fun decode(reader: ProtoReader): MessageWithStatus {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return MessageWithStatus(
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(value: MessageWithStatus): MessageWithStatus = value.copy(
+      public override fun redact(value: MessageWithStatus): MessageWithStatus = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -82,23 +83,24 @@ class MessageWithStatus(
     private const val serialVersionUID: Long = 0L
   }
 
-  enum class Status(
-    override val value: Int
+  public enum class Status(
+    public override val value: Int
   ) : WireEnum {
-    A(1);
+    A(1),
+    ;
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<Status> = object : EnumAdapter<Status>(
+      public val ADAPTER: ProtoAdapter<Status> = object : EnumAdapter<Status>(
         Status::class, 
         PROTO_2, 
         null
       ) {
-        override fun fromValue(value: Int): Status? = Status.fromValue(value)
+        public override fun fromValue(value: Int): Status? = Status.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): Status? = when (value) {
+      public fun fromValue(value: Int): Status? = when (value) {
         1 -> A
         else -> null
       }

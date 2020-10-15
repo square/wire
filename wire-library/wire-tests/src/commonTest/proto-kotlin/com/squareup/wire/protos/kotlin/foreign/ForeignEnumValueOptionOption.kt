@@ -3,13 +3,13 @@
 package com.squareup.wire.protos.kotlin.foreign
 
 import kotlin.Boolean
-import kotlin.annotation.AnnotationRetention
-import kotlin.annotation.AnnotationTarget
-import kotlin.annotation.Retention
-import kotlin.annotation.Target
+import kotlin.`annotation`.AnnotationRetention
+import kotlin.`annotation`.AnnotationTarget
+import kotlin.`annotation`.Retention
+import kotlin.`annotation`.Target
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
-annotation class ForeignEnumValueOptionOption(
-  val value: Boolean
+public annotation class ForeignEnumValueOptionOption(
+  public val value: Boolean
 )

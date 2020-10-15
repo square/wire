@@ -9,33 +9,34 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class Thing(
+public class Thing(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val name: String? = null,
+  public val name: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Thing, Thing.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.name = name
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Thing) return false
     if (unknownFields != other.unknownFields) return false
@@ -43,7 +44,7 @@ class Thing(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -53,51 +54,51 @@ class Thing(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (name != null) result += """name=${sanitize(name)}"""
     return result.joinToString(prefix = "Thing{", separator = ", ", postfix = "}")
   }
 
-  fun copy(name: String? = this.name, unknownFields: ByteString = this.unknownFields): Thing =
-      Thing(name, unknownFields)
+  public fun copy(name: String? = this.name, unknownFields: ByteString = this.unknownFields): Thing
+      = Thing(name, unknownFields)
 
-  class Builder : Message.Builder<Thing, Builder>() {
+  public class Builder : Message.Builder<Thing, Builder>() {
     @JvmField
-    var name: String? = null
+    public var name: String? = null
 
-    fun name(name: String?): Builder {
+    public fun name(name: String?): Builder {
       this.name = name
       return this
     }
 
-    override fun build(): Thing = Thing(
+    public override fun build(): Thing = Thing(
       name = name,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Thing> = object : ProtoAdapter<Thing>(
+    public val ADAPTER: ProtoAdapter<Thing> = object : ProtoAdapter<Thing>(
       FieldEncoding.LENGTH_DELIMITED, 
       Thing::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Thing", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Thing): Int {
+      public override fun encodedSize(value: Thing): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Thing) {
+      public override fun encode(writer: ProtoWriter, value: Thing): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Thing {
+      public override fun decode(reader: ProtoReader): Thing {
         var name: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -111,7 +112,7 @@ class Thing(
         )
       }
 
-      override fun redact(value: Thing): Thing = value.copy(
+      public override fun redact(value: Thing): Thing = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

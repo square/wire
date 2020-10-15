@@ -13,63 +13,65 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class NoFields(
+public class NoFields(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NoFields, NoFields.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is NoFields) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  public override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = "NoFields{}"
+  public override fun toString(): String = "NoFields{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): NoFields = NoFields(unknownFields)
+  public fun copy(unknownFields: ByteString = this.unknownFields): NoFields =
+      NoFields(unknownFields)
 
-  class Builder : Message.Builder<NoFields, Builder>() {
-    override fun build(): NoFields = NoFields(
+  public class Builder : Message.Builder<NoFields, Builder>() {
+    public override fun build(): NoFields = NoFields(
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<NoFields> = object : ProtoAdapter<NoFields>(
+    public val ADAPTER: ProtoAdapter<NoFields> = object : ProtoAdapter<NoFields>(
       FieldEncoding.LENGTH_DELIMITED, 
       NoFields::class, 
       "type.googleapis.com/squareup.protos.kotlin.NoFields", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: NoFields): Int {
+      public override fun encodedSize(value: NoFields): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: NoFields) {
+      public override fun encode(writer: ProtoWriter, value: NoFields): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): NoFields {
+      public override fun decode(reader: ProtoReader): NoFields {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return NoFields(
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(value: NoFields): NoFields = value.copy(
+      public override fun redact(value: NoFields): NoFields = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

@@ -10,7 +10,7 @@ import com.squareup.wire.GrpcStreamingCall
 /**
  * Interface exported by the server.
  */
-class GrpcRouteGuideClient(
+public class GrpcRouteGuideClient(
   private val client: GrpcClient
 ) : RouteGuideClient {
   /**
@@ -21,7 +21,7 @@ class GrpcRouteGuideClient(
    * A feature with an empty name is returned if there's no feature at the given
    * position.
    */
-  override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
+  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
       path = "/routeguide.RouteGuide/GetFeature",
       requestAdapter = Point.ADAPTER,
       responseAdapter = Feature.ADAPTER
@@ -35,7 +35,7 @@ class GrpcRouteGuideClient(
    * repeated field), as the rectangle may cover a large area and contain a
    * huge number of features.
    */
-  override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> =
+  public override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> =
       client.newStreamingCall(GrpcMethod(
       path = "/routeguide.RouteGuide/ListFeatures",
       requestAdapter = Rectangle.ADAPTER,
@@ -48,7 +48,7 @@ class GrpcRouteGuideClient(
    * Accepts a stream of Points on a route being traversed, returning a
    * RouteSummary when traversal is completed.
    */
-  override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> =
+  public override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> =
       client.newStreamingCall(GrpcMethod(
       path = "/routeguide.RouteGuide/RecordRoute",
       requestAdapter = Point.ADAPTER,
@@ -61,7 +61,7 @@ class GrpcRouteGuideClient(
    * Accepts a stream of RouteNotes sent while a route is being traversed,
    * while receiving other RouteNotes (e.g. from other users).
    */
-  override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
+  public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
       client.newStreamingCall(GrpcMethod(
       path = "/routeguide.RouteGuide/RouteChat",
       requestAdapter = RouteNote.ADAPTER,

@@ -21,26 +21,27 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
 
-class OptionalEnumUser(
+public class OptionalEnumUser(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.OptionalEnumUser${'$'}OptionalEnum#ADAPTER"
   )
-  val optional_enum: OptionalEnum? = null,
+  public val optional_enum: OptionalEnum? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OptionalEnumUser, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OptionalEnumUser) return false
     if (unknownFields != other.unknownFields) return false
@@ -48,7 +49,7 @@ class OptionalEnumUser(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -58,36 +59,36 @@ class OptionalEnumUser(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (optional_enum != null) result += """optional_enum=$optional_enum"""
     return result.joinToString(prefix = "OptionalEnumUser{", separator = ", ", postfix = "}")
   }
 
-  fun copy(optional_enum: OptionalEnum? = this.optional_enum, unknownFields: ByteString =
+  public fun copy(optional_enum: OptionalEnum? = this.optional_enum, unknownFields: ByteString =
       this.unknownFields): OptionalEnumUser = OptionalEnumUser(optional_enum, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<OptionalEnumUser> = object : ProtoAdapter<OptionalEnumUser>(
+    public val ADAPTER: ProtoAdapter<OptionalEnumUser> = object : ProtoAdapter<OptionalEnumUser>(
       FieldEncoding.LENGTH_DELIMITED, 
       OptionalEnumUser::class, 
       "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: OptionalEnumUser): Int {
+      public override fun encodedSize(value: OptionalEnumUser): Int {
         var size = value.unknownFields.size
         size += OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: OptionalEnumUser) {
+      public override fun encode(writer: ProtoWriter, value: OptionalEnumUser): Unit {
         OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): OptionalEnumUser {
+      public override fun decode(reader: ProtoReader): OptionalEnumUser {
         var optional_enum: OptionalEnum? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -105,7 +106,7 @@ class OptionalEnumUser(
         )
       }
 
-      override fun redact(value: OptionalEnumUser): OptionalEnumUser = value.copy(
+      public override fun redact(value: OptionalEnumUser): OptionalEnumUser = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -113,25 +114,25 @@ class OptionalEnumUser(
     private const val serialVersionUID: Long = 0L
   }
 
-  enum class OptionalEnum(
-    override val value: Int
+  public enum class OptionalEnum(
+    public override val value: Int
   ) : WireEnum {
     FOO(1),
+    BAR(2),
+    ;
 
-    BAR(2);
-
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
+      public val ADAPTER: ProtoAdapter<OptionalEnum> = object : EnumAdapter<OptionalEnum>(
         OptionalEnum::class, 
         PROTO_2, 
         null
       ) {
-        override fun fromValue(value: Int): OptionalEnum? = OptionalEnum.fromValue(value)
+        public override fun fromValue(value: Int): OptionalEnum? = OptionalEnum.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): OptionalEnum? = when (value) {
+      public fun fromValue(value: Int): OptionalEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         else -> null

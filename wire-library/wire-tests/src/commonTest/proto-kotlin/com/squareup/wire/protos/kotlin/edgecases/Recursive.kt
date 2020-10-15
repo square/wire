@@ -18,30 +18,31 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class Recursive(
+public class Recursive(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val value: Int? = null,
+  public val value: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.edgecases.Recursive#ADAPTER"
   )
-  val recursive: Recursive? = null,
+  public val recursive: Recursive? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Recursive, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Recursive) return false
     if (unknownFields != other.unknownFields) return false
@@ -50,7 +51,7 @@ class Recursive(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -61,42 +62,42 @@ class Recursive(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (value != null) result += """value=$value"""
     if (recursive != null) result += """recursive=$recursive"""
     return result.joinToString(prefix = "Recursive{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     value: Int? = this.value,
     recursive: Recursive? = this.recursive,
     unknownFields: ByteString = this.unknownFields
   ): Recursive = Recursive(value, recursive, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Recursive> = object : ProtoAdapter<Recursive>(
+    public val ADAPTER: ProtoAdapter<Recursive> = object : ProtoAdapter<Recursive>(
       FieldEncoding.LENGTH_DELIMITED, 
       Recursive::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.Recursive", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Recursive): Int {
+      public override fun encodedSize(value: Recursive): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.value)
         size += Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Recursive) {
+      public override fun encode(writer: ProtoWriter, value: Recursive): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value)
         Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Recursive {
+      public override fun decode(reader: ProtoReader): Recursive {
         var value: Int? = null
         var recursive: Recursive? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -113,7 +114,7 @@ class Recursive(
         )
       }
 
-      override fun redact(value: Recursive): Recursive = value.copy(
+      public override fun redact(value: Recursive): Recursive = value.copy(
         recursive = value.recursive?.let(Recursive.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

@@ -17,60 +17,62 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 @MyMessageOptionTwoOption(91011.0f)
 @MyMessageOptionFourOption(FooBar.FooBarBazEnum.FOO)
-class MessageWithOptions(
+public class MessageWithOptions(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageWithOptions, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageWithOptions) return false
     if (unknownFields != other.unknownFields) return false
     return true
   }
 
-  override fun hashCode(): Int = unknownFields.hashCode()
+  public override fun hashCode(): Int = unknownFields.hashCode()
 
-  override fun toString(): String = "MessageWithOptions{}"
+  public override fun toString(): String = "MessageWithOptions{}"
 
-  fun copy(unknownFields: ByteString = this.unknownFields): MessageWithOptions =
+  public fun copy(unknownFields: ByteString = this.unknownFields): MessageWithOptions =
       MessageWithOptions(unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<MessageWithOptions> = object : ProtoAdapter<MessageWithOptions>(
+    public val ADAPTER: ProtoAdapter<MessageWithOptions> = object :
+        ProtoAdapter<MessageWithOptions>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageWithOptions::class, 
       "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: MessageWithOptions): Int {
+      public override fun encodedSize(value: MessageWithOptions): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: MessageWithOptions) {
+      public override fun encode(writer: ProtoWriter, value: MessageWithOptions): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): MessageWithOptions {
+      public override fun decode(reader: ProtoReader): MessageWithOptions {
         val unknownFields = reader.forEachTag(reader::readUnknownField)
         return MessageWithOptions(
           unknownFields = unknownFields
         )
       }
 
-      override fun redact(value: MessageWithOptions): MessageWithOptions = value.copy(
+      public override fun redact(value: MessageWithOptions): MessageWithOptions = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

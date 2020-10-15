@@ -9,17 +9,18 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class Percents(
+public class Percents(
   /**
    * e.g. "No limits, free to send and just 2.75% to receive".
    */
@@ -28,17 +29,17 @@ class Percents(
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
   @JvmField
-  val text: String? = null,
+  public val text: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Percents, Percents.Builder>(ADAPTER, unknownFields) {
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.text = text
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Percents) return false
     if (unknownFields != other.unknownFields) return false
@@ -46,7 +47,7 @@ class Percents(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -56,54 +57,54 @@ class Percents(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (text != null) result += """text=${sanitize(text)}"""
     return result.joinToString(prefix = "Percents{", separator = ", ", postfix = "}")
   }
 
-  fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields): Percents =
-      Percents(text, unknownFields)
+  public fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields):
+      Percents = Percents(text, unknownFields)
 
-  class Builder : Message.Builder<Percents, Builder>() {
+  public class Builder : Message.Builder<Percents, Builder>() {
     @JvmField
-    var text: String? = null
+    public var text: String? = null
 
     /**
      * e.g. "No limits, free to send and just 2.75% to receive".
      */
-    fun text(text: String?): Builder {
+    public fun text(text: String?): Builder {
       this.text = text
       return this
     }
 
-    override fun build(): Percents = Percents(
+    public override fun build(): Percents = Percents(
       text = text,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Percents> = object : ProtoAdapter<Percents>(
+    public val ADAPTER: ProtoAdapter<Percents> = object : ProtoAdapter<Percents>(
       FieldEncoding.LENGTH_DELIMITED, 
       Percents::class, 
       "type.googleapis.com/squareup.protos.kotlin.Percents", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Percents): Int {
+      public override fun encodedSize(value: Percents): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Percents) {
+      public override fun encode(writer: ProtoWriter, value: Percents): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Percents {
+      public override fun decode(reader: ProtoReader): Percents {
         var text: String? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -117,7 +118,7 @@ class Percents(
         )
       }
 
-      override fun redact(value: Percents): Percents = value.copy(
+      public override fun redact(value: Percents): Percents = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

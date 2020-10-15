@@ -9,19 +9,20 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.redactElements
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.redactElements
 import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.Map
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
 
-class Mappy(
+public class Mappy(
   things: Map<String, Thing> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Mappy, Mappy.Builder>(ADAPTER, unknownFields) {
@@ -31,16 +32,16 @@ class Mappy(
     adapter = "com.squareup.wire.protos.kotlin.map.Thing#ADAPTER"
   )
   @JvmField
-  val things: Map<String, Thing> = immutableCopyOf("things", things)
+  public val things: Map<String, Thing> = immutableCopyOf("things", things)
 
-  override fun newBuilder(): Builder {
+  public override fun newBuilder(): Builder {
     val builder = Builder()
     builder.things = things
     builder.addUnknownFields(unknownFields)
     return builder
   }
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Mappy) return false
     if (unknownFields != other.unknownFields) return false
@@ -48,7 +49,7 @@ class Mappy(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -58,33 +59,33 @@ class Mappy(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (things.isNotEmpty()) result += """things=$things"""
     return result.joinToString(prefix = "Mappy{", separator = ", ", postfix = "}")
   }
 
-  fun copy(things: Map<String, Thing> = this.things, unknownFields: ByteString =
+  public fun copy(things: Map<String, Thing> = this.things, unknownFields: ByteString =
       this.unknownFields): Mappy = Mappy(things, unknownFields)
 
-  class Builder : Message.Builder<Mappy, Builder>() {
+  public class Builder : Message.Builder<Mappy, Builder>() {
     @JvmField
-    var things: Map<String, Thing> = emptyMap()
+    public var things: Map<String, Thing> = emptyMap()
 
-    fun things(things: Map<String, Thing>): Builder {
+    public fun things(things: Map<String, Thing>): Builder {
       this.things = things
       return this
     }
 
-    override fun build(): Mappy = Mappy(
+    public override fun build(): Mappy = Mappy(
       things = things,
       unknownFields = buildUnknownFields()
     )
   }
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(
+    public val ADAPTER: ProtoAdapter<Mappy> = object : ProtoAdapter<Mappy>(
       FieldEncoding.LENGTH_DELIMITED, 
       Mappy::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy", 
@@ -94,18 +95,18 @@ class Mappy(
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
 
-      override fun encodedSize(value: Mappy): Int {
+      public override fun encodedSize(value: Mappy): Int {
         var size = value.unknownFields.size
         size += thingsAdapter.encodedSizeWithTag(1, value.things)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Mappy) {
+      public override fun encode(writer: ProtoWriter, value: Mappy): Unit {
         thingsAdapter.encodeWithTag(writer, 1, value.things)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Mappy {
+      public override fun decode(reader: ProtoReader): Mappy {
         val things = mutableMapOf<String, Thing>()
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -119,7 +120,7 @@ class Mappy(
         )
       }
 
-      override fun redact(value: Mappy): Mappy = value.copy(
+      public override fun redact(value: Mappy): Mappy = value.copy(
         things = value.things.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

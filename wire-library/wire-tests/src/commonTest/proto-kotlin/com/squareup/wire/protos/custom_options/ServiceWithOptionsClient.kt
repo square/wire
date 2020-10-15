@@ -6,7 +6,7 @@ import com.squareup.wire.GrpcCall
 import com.squareup.wire.Service
 
 @ServiceOptionOneOption(456)
-interface ServiceWithOptionsClient : Service {
+public interface ServiceWithOptionsClient : Service {
   @MethodOptionOneOption(789)
-  fun MethodWithOptions(): GrpcCall<FooBar, FooBar>
+  public fun MethodWithOptions(): GrpcCall<FooBar, FooBar>
 }

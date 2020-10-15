@@ -10,29 +10,27 @@ import kotlin.Int
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
-enum class EnumVersionTwo(
-  override val value: Int
+public enum class EnumVersionTwo(
+  public override val value: Int
 ) : WireEnum {
   SHREK_V2(1),
-
   DONKEY_V2(2),
-
   FIONA_V2(3),
+  PUSS_IN_BOOTS_V2(4),
+  ;
 
-  PUSS_IN_BOOTS_V2(4);
-
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<EnumVersionTwo> = object : EnumAdapter<EnumVersionTwo>(
+    public val ADAPTER: ProtoAdapter<EnumVersionTwo> = object : EnumAdapter<EnumVersionTwo>(
       EnumVersionTwo::class, 
       PROTO_2, 
       null
     ) {
-      override fun fromValue(value: Int): EnumVersionTwo? = EnumVersionTwo.fromValue(value)
+      public override fun fromValue(value: Int): EnumVersionTwo? = EnumVersionTwo.fromValue(value)
     }
 
     @JvmStatic
-    fun fromValue(value: Int): EnumVersionTwo? = when (value) {
+    public fun fromValue(value: Int): EnumVersionTwo? = when (value) {
       1 -> SHREK_V2
       2 -> DONKEY_V2
       3 -> FIONA_V2

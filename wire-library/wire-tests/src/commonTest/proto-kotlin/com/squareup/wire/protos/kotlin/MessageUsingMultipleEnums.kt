@@ -18,6 +18,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -25,26 +26,26 @@ import okio.ByteString
 /**
  * Enum names must be fully qualified in generated Kotlin
  */
-class MessageUsingMultipleEnums(
+public class MessageUsingMultipleEnums(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.protos.kotlin.MessageWithStatus${'$'}Status#ADAPTER"
   )
-  val a: MessageWithStatus.Status? = null,
+  public val a: MessageWithStatus.Status? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.OtherMessageWithStatus${'$'}Status#ADAPTER"
   )
-  val b: OtherMessageWithStatus.Status? = null,
+  public val b: OtherMessageWithStatus.Status? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<MessageUsingMultipleEnums, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is MessageUsingMultipleEnums) return false
     if (unknownFields != other.unknownFields) return false
@@ -53,7 +54,7 @@ class MessageUsingMultipleEnums(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -64,7 +65,7 @@ class MessageUsingMultipleEnums(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (a != null) result += """a=$a"""
     if (b != null) result += """b=$b"""
@@ -72,15 +73,15 @@ class MessageUsingMultipleEnums(
         "}")
   }
 
-  fun copy(
+  public fun copy(
     a: MessageWithStatus.Status? = this.a,
     b: OtherMessageWithStatus.Status? = this.b,
     unknownFields: ByteString = this.unknownFields
   ): MessageUsingMultipleEnums = MessageUsingMultipleEnums(a, b, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
+    public val ADAPTER: ProtoAdapter<MessageUsingMultipleEnums> = object :
         ProtoAdapter<MessageUsingMultipleEnums>(
       FieldEncoding.LENGTH_DELIMITED, 
       MessageUsingMultipleEnums::class, 
@@ -88,20 +89,20 @@ class MessageUsingMultipleEnums(
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: MessageUsingMultipleEnums): Int {
+      public override fun encodedSize(value: MessageUsingMultipleEnums): Int {
         var size = value.unknownFields.size
         size += MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a)
         size += OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums) {
+      public override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums): Unit {
         MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
         OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
+      public override fun decode(reader: ProtoReader): MessageUsingMultipleEnums {
         var a: MessageWithStatus.Status? = null
         var b: OtherMessageWithStatus.Status? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -126,7 +127,8 @@ class MessageUsingMultipleEnums(
         )
       }
 
-      override fun redact(value: MessageUsingMultipleEnums): MessageUsingMultipleEnums = value.copy(
+      public override fun redact(value: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
+          value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

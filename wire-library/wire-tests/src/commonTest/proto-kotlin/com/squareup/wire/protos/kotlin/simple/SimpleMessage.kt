@@ -12,9 +12,9 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.immutableCopyOf
-import com.squareup.wire.internal.missingRequiredFields
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.immutableCopyOf
+import com.squareup.wire.`internal`.missingRequiredFields
+import com.squareup.wire.`internal`.sanitize
 import com.squareup.wire.protos.kotlin.foreign.ForeignEnum
 import kotlin.Any
 import kotlin.AssertionError
@@ -26,6 +26,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
 import kotlin.hashCode
 import kotlin.jvm.JvmField
@@ -35,7 +36,7 @@ import okio.ByteString
 /**
  * A message for testing.
  */
-class SimpleMessage(
+public class SimpleMessage(
   /**
    * An optional int32 //&#42;we should escape that comment*
    */
@@ -43,7 +44,7 @@ class SimpleMessage(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val optional_int32: Int? = null,
+  public val optional_int32: Int? = null,
   /**
    * An optional NestedMessage, *deprecated&#42;//
    */
@@ -52,7 +53,7 @@ class SimpleMessage(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedMessage#ADAPTER"
   )
-  val optional_nested_msg: NestedMessage? = null,
+  public val optional_nested_msg: NestedMessage? = null,
   /**
    * An optional ExternalMessage
    */
@@ -60,12 +61,12 @@ class SimpleMessage(
     tag = 3,
     adapter = "com.squareup.wire.protos.kotlin.simple.ExternalMessage#ADAPTER"
   )
-  val optional_external_msg: ExternalMessage? = null,
+  public val optional_external_msg: ExternalMessage? = null,
   @field:WireField(
     tag = 4,
     adapter = "com.squareup.wire.protos.kotlin.simple.SimpleMessage${'$'}NestedEnum#ADAPTER"
   )
-  val default_nested_enum: NestedEnum? = null,
+  public val default_nested_enum: NestedEnum? = null,
   /**
    * A required int32
    */
@@ -74,7 +75,7 @@ class SimpleMessage(
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
     label = WireField.Label.REQUIRED
   )
-  val required_int32: Int,
+  public val required_int32: Int,
   repeated_double: List<Double> = emptyList(),
   /**
    * enum from another package with an explicit default
@@ -83,7 +84,7 @@ class SimpleMessage(
     tag = 7,
     adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER"
   )
-  val default_foreign_enum: ForeignEnum? = null,
+  public val default_foreign_enum: ForeignEnum? = null,
   /**
    * enum from another package without an explicit default
    */
@@ -91,7 +92,7 @@ class SimpleMessage(
     tag = 8,
     adapter = "com.squareup.wire.protos.kotlin.foreign.ForeignEnum#ADAPTER"
   )
-  val no_default_foreign_enum: ForeignEnum? = null,
+  public val no_default_foreign_enum: ForeignEnum? = null,
   /**
    * field with the same name as a Java keyword
    */
@@ -100,7 +101,7 @@ class SimpleMessage(
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
     declaredName = "package"
   )
-  val package_: String? = null,
+  public val package_: String? = null,
   /**
    * field with the name "result"
    */
@@ -108,7 +109,7 @@ class SimpleMessage(
     tag = 10,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  val result: String? = null,
+  public val result: String? = null,
   /**
    * field with the name "other"
    */
@@ -116,7 +117,7 @@ class SimpleMessage(
     tag = 11,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  val other: String? = null,
+  public val other: String? = null,
   /**
    * field with the name "o"
    */
@@ -124,7 +125,7 @@ class SimpleMessage(
     tag = 12,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  val o: String? = null,
+  public val o: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<SimpleMessage, Nothing>(ADAPTER, unknownFields) {
   /**
@@ -136,15 +137,15 @@ class SimpleMessage(
     adapter = "com.squareup.wire.ProtoAdapter#DOUBLE",
     label = WireField.Label.REPEATED
   )
-  val repeated_double: List<Double> = immutableCopyOf("repeated_double", repeated_double)
+  public val repeated_double: List<Double> = immutableCopyOf("repeated_double", repeated_double)
 
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other_: Any?): Boolean {
+  public override fun equals(other_: Any?): Boolean {
     if (other_ === this) return true
     if (other_ !is SimpleMessage) return false
     if (unknownFields != other_.unknownFields) return false
@@ -163,7 +164,7 @@ class SimpleMessage(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result_ = super.hashCode
     if (result_ == 0) {
       result_ = unknownFields.hashCode()
@@ -184,7 +185,7 @@ class SimpleMessage(
     return result_
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result_ = mutableListOf<String>()
     if (optional_int32 != null) result_ += """optional_int32=$optional_int32"""
     if (optional_nested_msg != null) result_ += """optional_nested_msg=$optional_nested_msg"""
@@ -202,7 +203,7 @@ class SimpleMessage(
     return result_.joinToString(prefix = "SimpleMessage{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     optional_int32: Int? = this.optional_int32,
     optional_nested_msg: NestedMessage? = this.optional_nested_msg,
     optional_external_msg: ExternalMessage? = this.optional_external_msg,
@@ -220,26 +221,26 @@ class SimpleMessage(
       default_nested_enum, required_int32, repeated_double, default_foreign_enum,
       no_default_foreign_enum, package_, result, other, o, unknownFields)
 
-  companion object {
-    const val DEFAULT_OPTIONAL_INT32: Int = 123
+  public companion object {
+    public const val DEFAULT_OPTIONAL_INT32: Int = 123
 
     @JvmField
-    val DEFAULT_DEFAULT_NESTED_ENUM: NestedEnum = NestedEnum.BAZ
+    public val DEFAULT_DEFAULT_NESTED_ENUM: NestedEnum = NestedEnum.BAZ
 
-    const val DEFAULT_REQUIRED_INT32: Int = 456
-
-    @JvmField
-    val DEFAULT_DEFAULT_FOREIGN_ENUM: ForeignEnum = ForeignEnum.BAX
+    public const val DEFAULT_REQUIRED_INT32: Int = 456
 
     @JvmField
-    val ADAPTER: ProtoAdapter<SimpleMessage> = object : ProtoAdapter<SimpleMessage>(
+    public val DEFAULT_DEFAULT_FOREIGN_ENUM: ForeignEnum = ForeignEnum.BAX
+
+    @JvmField
+    public val ADAPTER: ProtoAdapter<SimpleMessage> = object : ProtoAdapter<SimpleMessage>(
       FieldEncoding.LENGTH_DELIMITED, 
       SimpleMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: SimpleMessage): Int {
+      public override fun encodedSize(value: SimpleMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32)
         size += NestedMessage.ADAPTER.encodedSizeWithTag(2, value.optional_nested_msg)
@@ -256,7 +257,7 @@ class SimpleMessage(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: SimpleMessage) {
+      public override fun encode(writer: ProtoWriter, value: SimpleMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32)
         NestedMessage.ADAPTER.encodeWithTag(writer, 2, value.optional_nested_msg)
         ExternalMessage.ADAPTER.encodeWithTag(writer, 3, value.optional_external_msg)
@@ -272,7 +273,7 @@ class SimpleMessage(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): SimpleMessage {
+      public override fun decode(reader: ProtoReader): SimpleMessage {
         var optional_int32: Int? = null
         var optional_nested_msg: NestedMessage? = null
         var optional_external_msg: ExternalMessage? = null
@@ -332,7 +333,7 @@ class SimpleMessage(
         )
       }
 
-      override fun redact(value: SimpleMessage): SimpleMessage = value.copy(
+      public override fun redact(value: SimpleMessage): SimpleMessage = value.copy(
         optional_nested_msg = value.optional_nested_msg?.let(NestedMessage.ADAPTER::redact),
         optional_external_msg = value.optional_external_msg?.let(ExternalMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
@@ -342,7 +343,7 @@ class SimpleMessage(
     private const val serialVersionUID: Long = 0L
   }
 
-  class NestedMessage(
+  public class NestedMessage(
     /**
      * An optional int32
      */
@@ -350,16 +351,16 @@ class SimpleMessage(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#INT32"
     )
-    val bb: Int? = null,
+    public val bb: Int? = null,
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<NestedMessage, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
       message = "Shouldn't be used in Kotlin",
       level = DeprecationLevel.HIDDEN
     )
-    override fun newBuilder(): Nothing = throw AssertionError()
+    public override fun newBuilder(): Nothing = throw AssertionError()
 
-    override fun equals(other: Any?): Boolean {
+    public override fun equals(other: Any?): Boolean {
       if (other === this) return true
       if (other !is NestedMessage) return false
       if (unknownFields != other.unknownFields) return false
@@ -367,7 +368,7 @@ class SimpleMessage(
       return true
     }
 
-    override fun hashCode(): Int {
+    public override fun hashCode(): Int {
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
@@ -377,36 +378,36 @@ class SimpleMessage(
       return result
     }
 
-    override fun toString(): String {
+    public override fun toString(): String {
       val result = mutableListOf<String>()
       if (bb != null) result += """bb=$bb"""
       return result.joinToString(prefix = "NestedMessage{", separator = ", ", postfix = "}")
     }
 
-    fun copy(bb: Int? = this.bb, unknownFields: ByteString = this.unknownFields): NestedMessage =
-        NestedMessage(bb, unknownFields)
+    public fun copy(bb: Int? = this.bb, unknownFields: ByteString = this.unknownFields):
+        NestedMessage = NestedMessage(bb, unknownFields)
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
+      public val ADAPTER: ProtoAdapter<NestedMessage> = object : ProtoAdapter<NestedMessage>(
         FieldEncoding.LENGTH_DELIMITED, 
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage", 
         PROTO_2, 
         null
       ) {
-        override fun encodedSize(value: NestedMessage): Int {
+        public override fun encodedSize(value: NestedMessage): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb)
           return size
         }
 
-        override fun encode(writer: ProtoWriter, value: NestedMessage) {
+        public override fun encode(writer: ProtoWriter, value: NestedMessage): Unit {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)
           writer.writeBytes(value.unknownFields)
         }
 
-        override fun decode(reader: ProtoReader): NestedMessage {
+        public override fun decode(reader: ProtoReader): NestedMessage {
           var bb: Int? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
@@ -420,7 +421,7 @@ class SimpleMessage(
           )
         }
 
-        override fun redact(value: NestedMessage): NestedMessage = value.copy(
+        public override fun redact(value: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -429,30 +430,28 @@ class SimpleMessage(
     }
   }
 
-  enum class NestedEnum(
-    override val value: Int
+  public enum class NestedEnum(
+    public override val value: Int
   ) : WireEnum {
     FOO(1),
-
     BAR(2),
-
     BAZ(3),
-
     @Deprecated(message = "BUZ is deprecated")
-    BUZ(3);
+    BUZ(3),
+    ;
 
-    companion object {
+    public companion object {
       @JvmField
-      val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
+      public val ADAPTER: ProtoAdapter<NestedEnum> = object : EnumAdapter<NestedEnum>(
         NestedEnum::class, 
         PROTO_2, 
         null
       ) {
-        override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
+        public override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      fun fromValue(value: Int): NestedEnum? = when (value) {
+      public fun fromValue(value: Int): NestedEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         3 -> BAZ

@@ -18,6 +18,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -29,7 +30,7 @@ import okio.ByteString
  * detected features, and the total distance covered as the cumulative sum of
  * the distance between each point.
  */
-class RouteSummary(
+public class RouteSummary(
   /**
    * The number of points received.
    */
@@ -37,7 +38,7 @@ class RouteSummary(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val point_count: Int? = null,
+  public val point_count: Int? = null,
   /**
    * The number of known features passed while traversing the route.
    */
@@ -45,7 +46,7 @@ class RouteSummary(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val feature_count: Int? = null,
+  public val feature_count: Int? = null,
   /**
    * The distance covered in metres.
    */
@@ -53,7 +54,7 @@ class RouteSummary(
     tag = 3,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val distance: Int? = null,
+  public val distance: Int? = null,
   /**
    * The duration of the traversal in seconds.
    */
@@ -61,16 +62,16 @@ class RouteSummary(
     tag = 4,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val elapsed_time: Int? = null,
+  public val elapsed_time: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteSummary, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteSummary) return false
     if (unknownFields != other.unknownFields) return false
@@ -81,7 +82,7 @@ class RouteSummary(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -94,7 +95,7 @@ class RouteSummary(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (point_count != null) result += """point_count=$point_count"""
     if (feature_count != null) result += """feature_count=$feature_count"""
@@ -103,7 +104,7 @@ class RouteSummary(
     return result.joinToString(prefix = "RouteSummary{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     point_count: Int? = this.point_count,
     feature_count: Int? = this.feature_count,
     distance: Int? = this.distance,
@@ -111,16 +112,16 @@ class RouteSummary(
     unknownFields: ByteString = this.unknownFields
   ): RouteSummary = RouteSummary(point_count, feature_count, distance, elapsed_time, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<RouteSummary> = object : ProtoAdapter<RouteSummary>(
+    public val ADAPTER: ProtoAdapter<RouteSummary> = object : ProtoAdapter<RouteSummary>(
       FieldEncoding.LENGTH_DELIMITED, 
       RouteSummary::class, 
       "type.googleapis.com/routeguide.RouteSummary", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: RouteSummary): Int {
+      public override fun encodedSize(value: RouteSummary): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.point_count)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.feature_count)
@@ -129,7 +130,7 @@ class RouteSummary(
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: RouteSummary) {
+      public override fun encode(writer: ProtoWriter, value: RouteSummary): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.point_count)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.feature_count)
         ProtoAdapter.INT32.encodeWithTag(writer, 3, value.distance)
@@ -137,7 +138,7 @@ class RouteSummary(
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): RouteSummary {
+      public override fun decode(reader: ProtoReader): RouteSummary {
         var point_count: Int? = null
         var feature_count: Int? = null
         var distance: Int? = null
@@ -160,7 +161,7 @@ class RouteSummary(
         )
       }
 
-      override fun redact(value: RouteSummary): RouteSummary = value.copy(
+      public override fun redact(value: RouteSummary): RouteSummary = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

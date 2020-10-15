@@ -18,25 +18,26 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
-class OneField(
+public class OneField(
   @field:WireField(
     tag = 1,
     adapter = "com.squareup.wire.ProtoAdapter#INT32"
   )
-  val opt_int32: Int? = null,
+  public val opt_int32: Int? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<OneField, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is OneField) return false
     if (unknownFields != other.unknownFields) return false
@@ -44,7 +45,7 @@ class OneField(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -54,36 +55,36 @@ class OneField(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (opt_int32 != null) result += """opt_int32=$opt_int32"""
     return result.joinToString(prefix = "OneField{", separator = ", ", postfix = "}")
   }
 
-  fun copy(opt_int32: Int? = this.opt_int32, unknownFields: ByteString = this.unknownFields):
+  public fun copy(opt_int32: Int? = this.opt_int32, unknownFields: ByteString = this.unknownFields):
       OneField = OneField(opt_int32, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<OneField> = object : ProtoAdapter<OneField>(
+    public val ADAPTER: ProtoAdapter<OneField> = object : ProtoAdapter<OneField>(
       FieldEncoding.LENGTH_DELIMITED, 
       OneField::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.OneField", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: OneField): Int {
+      public override fun encodedSize(value: OneField): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: OneField) {
+      public override fun encode(writer: ProtoWriter, value: OneField): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): OneField {
+      public override fun decode(reader: ProtoReader): OneField {
         var opt_int32: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
@@ -97,7 +98,7 @@ class OneField(
         )
       }
 
-      override fun redact(value: OneField): OneField = value.copy(
+      public override fun redact(value: OneField): OneField = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

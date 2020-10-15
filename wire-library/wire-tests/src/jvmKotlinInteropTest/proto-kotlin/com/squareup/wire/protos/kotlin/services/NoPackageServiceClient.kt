@@ -5,6 +5,6 @@ package com.squareup.wire.protos.kotlin.services
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.Service
 
-interface NoPackageServiceClient : Service {
-  fun NoPackageMethod(): GrpcCall<NoPackageRequest, NoPackageResponse>
+public interface NoPackageServiceClient : Service {
+  public fun NoPackageMethod(): GrpcCall<NoPackageRequest, NoPackageResponse>
 }

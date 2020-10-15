@@ -18,6 +18,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -26,7 +27,7 @@ import okio.ByteString
  * A latitude-longitude rectangle, represented as two diagonally opposite
  * points "lo" and "hi".
  */
-class Rectangle(
+public class Rectangle(
   /**
    * One corner of the rectangle.
    */
@@ -34,7 +35,7 @@ class Rectangle(
     tag = 1,
     adapter = "routeguide.Point#ADAPTER"
   )
-  val lo: Point? = null,
+  public val lo: Point? = null,
   /**
    * The other corner of the rectangle.
    */
@@ -42,16 +43,16 @@ class Rectangle(
     tag = 2,
     adapter = "routeguide.Point#ADAPTER"
   )
-  val hi: Point? = null,
+  public val hi: Point? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Rectangle, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is Rectangle) return false
     if (unknownFields != other.unknownFields) return false
@@ -60,7 +61,7 @@ class Rectangle(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -71,42 +72,42 @@ class Rectangle(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (lo != null) result += """lo=$lo"""
     if (hi != null) result += """hi=$hi"""
     return result.joinToString(prefix = "Rectangle{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     lo: Point? = this.lo,
     hi: Point? = this.hi,
     unknownFields: ByteString = this.unknownFields
   ): Rectangle = Rectangle(lo, hi, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<Rectangle> = object : ProtoAdapter<Rectangle>(
+    public val ADAPTER: ProtoAdapter<Rectangle> = object : ProtoAdapter<Rectangle>(
       FieldEncoding.LENGTH_DELIMITED, 
       Rectangle::class, 
       "type.googleapis.com/routeguide.Rectangle", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: Rectangle): Int {
+      public override fun encodedSize(value: Rectangle): Int {
         var size = value.unknownFields.size
         size += Point.ADAPTER.encodedSizeWithTag(1, value.lo)
         size += Point.ADAPTER.encodedSizeWithTag(2, value.hi)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: Rectangle) {
+      public override fun encode(writer: ProtoWriter, value: Rectangle): Unit {
         Point.ADAPTER.encodeWithTag(writer, 1, value.lo)
         Point.ADAPTER.encodeWithTag(writer, 2, value.hi)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): Rectangle {
+      public override fun decode(reader: ProtoReader): Rectangle {
         var lo: Point? = null
         var hi: Point? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -123,7 +124,7 @@ class Rectangle(
         )
       }
 
-      override fun redact(value: Rectangle): Rectangle = value.copy(
+      public override fun redact(value: Rectangle): Rectangle = value.copy(
         lo = value.lo?.let(Point.ADAPTER::redact),
         hi = value.hi?.let(Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

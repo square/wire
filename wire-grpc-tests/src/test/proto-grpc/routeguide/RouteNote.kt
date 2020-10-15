@@ -9,7 +9,7 @@ import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
-import com.squareup.wire.internal.sanitize
+import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
 import kotlin.AssertionError
 import kotlin.Boolean
@@ -19,6 +19,7 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
+import kotlin.Unit
 import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
@@ -26,7 +27,7 @@ import okio.ByteString
 /**
  * A RouteNote is a message sent while at a given point.
  */
-class RouteNote(
+public class RouteNote(
   /**
    * The location from which the message is sent.
    */
@@ -34,7 +35,7 @@ class RouteNote(
     tag = 1,
     adapter = "routeguide.Point#ADAPTER"
   )
-  val location: Point? = null,
+  public val location: Point? = null,
   /**
    * The message to be sent.
    */
@@ -42,16 +43,16 @@ class RouteNote(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING"
   )
-  val message: String? = null,
+  public val message: String? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<RouteNote, Nothing>(ADAPTER, unknownFields) {
   @Deprecated(
     message = "Shouldn't be used in Kotlin",
     level = DeprecationLevel.HIDDEN
   )
-  override fun newBuilder(): Nothing = throw AssertionError()
+  public override fun newBuilder(): Nothing = throw AssertionError()
 
-  override fun equals(other: Any?): Boolean {
+  public override fun equals(other: Any?): Boolean {
     if (other === this) return true
     if (other !is RouteNote) return false
     if (unknownFields != other.unknownFields) return false
@@ -60,7 +61,7 @@ class RouteNote(
     return true
   }
 
-  override fun hashCode(): Int {
+  public override fun hashCode(): Int {
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
@@ -71,42 +72,42 @@ class RouteNote(
     return result
   }
 
-  override fun toString(): String {
+  public override fun toString(): String {
     val result = mutableListOf<String>()
     if (location != null) result += """location=$location"""
     if (message != null) result += """message=${sanitize(message)}"""
     return result.joinToString(prefix = "RouteNote{", separator = ", ", postfix = "}")
   }
 
-  fun copy(
+  public fun copy(
     location: Point? = this.location,
     message: String? = this.message,
     unknownFields: ByteString = this.unknownFields
   ): RouteNote = RouteNote(location, message, unknownFields)
 
-  companion object {
+  public companion object {
     @JvmField
-    val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(
+    public val ADAPTER: ProtoAdapter<RouteNote> = object : ProtoAdapter<RouteNote>(
       FieldEncoding.LENGTH_DELIMITED, 
       RouteNote::class, 
       "type.googleapis.com/routeguide.RouteNote", 
       PROTO_2, 
       null
     ) {
-      override fun encodedSize(value: RouteNote): Int {
+      public override fun encodedSize(value: RouteNote): Int {
         var size = value.unknownFields.size
         size += Point.ADAPTER.encodedSizeWithTag(1, value.location)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.message)
         return size
       }
 
-      override fun encode(writer: ProtoWriter, value: RouteNote) {
+      public override fun encode(writer: ProtoWriter, value: RouteNote): Unit {
         Point.ADAPTER.encodeWithTag(writer, 1, value.location)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
         writer.writeBytes(value.unknownFields)
       }
 
-      override fun decode(reader: ProtoReader): RouteNote {
+      public override fun decode(reader: ProtoReader): RouteNote {
         var location: Point? = null
         var message: String? = null
         val unknownFields = reader.forEachTag { tag ->
@@ -123,7 +124,7 @@ class RouteNote(
         )
       }
 
-      override fun redact(value: RouteNote): RouteNote = value.copy(
+      public override fun redact(value: RouteNote): RouteNote = value.copy(
         location = value.location?.let(Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
