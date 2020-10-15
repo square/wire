@@ -172,7 +172,6 @@ public class MoshiTest {
     assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(keyword);
   }
 
-  @Ignore("Broken. We need to fix the WireJsonAdapterFactory.")
   @Test public void enumKeywordsAtRootInKotlin() throws IOException {
     JsonAdapter<KeywordKotlinEnum> adapter = moshi.adapter(KeywordKotlinEnum.class);
 
@@ -185,7 +184,6 @@ public class MoshiTest {
     assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(constant);
   }
 
-  @Ignore("Broken. We need to fix the WireJsonAdapterFactory.")
   @Test public void enumKeywordsAtRootInJava() throws IOException {
     JsonAdapter<KeywordJavaEnum> adapter = moshi.adapter(KeywordJavaEnum.class);
 

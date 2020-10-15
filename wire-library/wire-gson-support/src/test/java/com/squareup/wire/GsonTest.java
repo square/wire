@@ -124,7 +124,6 @@ public class GsonTest {
     assertThat(gson.fromJson(generatedNamedJson, KeywordJava.class)).isEqualTo(keyword);
   }
 
-  @Ignore("Broken. We need to fix the WireJsonAdapterFactory.")
   @Test public void enumKeywordsAtRootInKotlin() {
     KeywordKotlinEnum constant = KeywordKotlinEnum.object_;
     String json = gson.toJson(constant);
@@ -136,7 +135,6 @@ public class GsonTest {
     assertThat(gson.fromJson(generatedNamedJson, KeywordKotlinEnum.class)).isEqualTo(constant);
   }
 
-  @Ignore("Broken. We need to fix the WireJsonAdapterFactory.")
   @Test public void enumKeywordsAtRootInJava() {
     KeywordJavaEnum constant = KeywordJavaEnum.final_;
     String json = gson.toJson(constant);
