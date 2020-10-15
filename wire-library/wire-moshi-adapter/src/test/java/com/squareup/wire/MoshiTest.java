@@ -127,21 +127,20 @@ public class MoshiTest {
                 KeywordKotlinEnum.object_,
                 KeywordKotlinEnum.when_,
                 KeywordKotlinEnum.fun_,
-                KeywordKotlinEnum.return_
-                // Broken, see https://github.com/square/kotlinpoet/issues/991
-                // KeywordKotlin.KeywordKotlinEnum.open
+                KeywordKotlinEnum.return_,
+                KeywordKotlinEnum.open_
             )
         )
         .build();
     String json = adapter.toJson(keyword);
     JsonUtils.assertJsonEquals(
         "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[], \"enums\":[\"object\", "
-            + "\"when\", \"fun\", \"return\"]}",
+            + "\"when\", \"fun\", \"return\", \"open\"]}",
         json);
     assertThat(adapter.fromJson(json)).isEqualTo(keyword);
 
     String generatedNamedJson = "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[], "
-        + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\"]}";
+        + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\", \"open_\"]}";
     assertThat(adapter.fromJson(generatedNamedJson)).isEqualTo(keyword);
   }
 
