@@ -15,6 +15,8 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.kotlin.RpcCallStyle
+import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.WireRun
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -120,6 +122,26 @@ class CommandLineOptionsTest {
 
     assertThat(compiler.modules).isEqualTo(
         mapOf("a" to WireRun.Module(), "b" to WireRun.Module(dependencies = setOf("a"))))
+  }
+  
+  @Test
+  fun rpcDefaultValues() {
+    val compiler = parseArgs("--kotlin_out=.")
+    assertThat(compiler.rpcRole).isEqualTo(RpcRole.CLIENT)
+    assertThat(compiler.rpcCallStyle).isEqualTo(RpcCallStyle.SUSPENDING)
+  }
+  
+  @Test
+  fun rpcRole() {
+    val compiler = parseArgs("--kotlin_out=.", "--rpcRole=server")
+    assertThat(compiler.rpcRole).isEqualTo(RpcRole.SERVER)
+  }
+  
+  @Test
+  fun rpcCallStyle() {
+    val compiler = parseArgs("--kotlin_out=.", "--rpcRole=client", "--rpcCallStyle=blocking")
+    assertThat(compiler.rpcRole).isEqualTo(RpcRole.CLIENT)
+    assertThat(compiler.rpcCallStyle).isEqualTo(RpcCallStyle.BLOCKING)
   }
 
   private fun parseArgs(vararg args: String) = WireCompiler.forArgs(args = *args)
