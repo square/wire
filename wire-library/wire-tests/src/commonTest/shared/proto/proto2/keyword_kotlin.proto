@@ -29,7 +29,6 @@ message KeywordKotlin {
     when = 1;
     fun = 2;
     return = 3;
-    // Broken see https://github.com/square/kotlinpoet/issues/991
-    // open = 4;
+    open = 4;
   }
 }

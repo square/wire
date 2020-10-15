@@ -267,6 +267,8 @@ public class KeywordKotlin(
     fun_(2),
     @WireEnumConstant(declaredName = "return")
     return_(3),
+    @WireEnumConstant(declaredName = "open")
+    open_(4),
     ;
 
     public companion object {
@@ -286,6 +288,7 @@ public class KeywordKotlin(
         1 -> when_
         2 -> fun_
         3 -> return_
+        4 -> open_
         else -> null
       }
     }
