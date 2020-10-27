@@ -1,6 +1,26 @@
 Change Log
 ==========
 
+Version 3.5.0
+-------------
+
+_2020-10-27_
+
+ * New: Wire Gradle plugin improvements:
+   - A task is now created for each available sources (main, Android variants, etc).
+   - The `wire-runtime` dependency is automatically added.
+   - Generated code directories are automatically added into their module's source sets.
+ * New: Wire's proto parser now knows about `oneOfOptions`.
+ * New: Wire will throw when two enum constants are ambiguous, like `ZERO` and `zero`.
+ * New: Bytes options are not eligible anymore as annotation members.
+ * Fix: Optional fields in proto3 are now generated as nullable fields.
+ * Fix: JSON camel-casing is updated to fit latest protobuf specifications.
+ * Fix: Exception messages when gRPC fails have been improved.
+ * Fix: Allow `;` as entry separator in option maps.
+ * Fix: Enum constants are now properly escaped when conflicting with keywords of their generated
+ target platform.
+ * Fix: Update to KotlinPoet 1.7.2 which makes a lot of change in how Kotlin code is generated.
+
 Version 3.4.0
 -------------
 
