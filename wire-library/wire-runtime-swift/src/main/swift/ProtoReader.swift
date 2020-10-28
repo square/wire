@@ -65,6 +65,7 @@ public final class ProtoReader {
     private static let collectionPreallocationMaxValueSize = 128
 
     private let buffer: ReadBuffer
+    private let enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy
 
     /**
      A stack of frames where each frame represents a level of message nesting.
@@ -93,7 +94,8 @@ public final class ProtoReader {
 
     // MARK: - Initialization
 
-    init(buffer: ReadBuffer) {
+    init(buffer: ReadBuffer, enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError) {
+        self.enumDecodingStrategy = enumDecodingStrategy
         self.buffer = buffer
         self.state = .lengthDelimited(length: buffer.count)
 
@@ -139,6 +141,7 @@ public final class ProtoReader {
         return messageStackIndex
     }
 
+    var currentTag: UInt32? = nil
     /**
      Reads and returns the next tag of the message, or `nil` if there are no further tags.
      This method should be paired with calls to `beginMessage` and `endMessage`.
@@ -147,6 +150,7 @@ public final class ProtoReader {
     public func nextTag(token: Int) throws -> UInt32? {
         guard token != -1 else {
             // This is an empty message, so bail out.
+            currentTag = nil
             return nil
         }
 
@@ -172,22 +176,27 @@ public final class ProtoReader {
             case .lengthDelimited:
                 let length = try buffer.readVarint32()
                 state = .lengthDelimited(length: Int(length))
+                currentTag = tag
                 return tag
 
             case .fixed32:
                 state = .fixed32
+                currentTag = tag
                 return tag
 
             case .fixed64:
                 state = .fixed64
+                currentTag = tag
                 return tag
 
             case .varint:
                 state = .varint
+                currentTag = tag
                 return tag
             }
         }
 
+        currentTag = nil
         return nil
     }
 
@@ -220,11 +229,16 @@ public final class ProtoReader {
      Decode enums. Note that the enums themselves do not need to be `ProtoDecodable`
      so long as they're RawRepresentable as `UInt32`
      */
-    public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T where T.RawValue == UInt32 {
+    public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T? where T.RawValue == UInt32 {
         // Pop the enum int value and pass in to initializer
         let intValue = try readVarint32()
         guard let enumValue = T(rawValue: intValue) else {
-            throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+            switch enumDecodingStrategy {
+            case .returnNil:
+                return nil
+            case .throwError:
+                throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+            }
         }
         return enumValue
     }
@@ -406,7 +420,20 @@ public final class ProtoReader {
         try decode(into: &array) {
             let intValue = try readVarint32()
             guard let enumValue = T(rawValue: intValue) else {
-                throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+                switch enumDecodingStrategy {
+                case .returnNil:
+                    guard let tag = currentTag else {
+                        throw ProtoDecoder.Error.currentTagExpectedButNotFound
+                    }
+
+                    // We encountered an unknown enum value. Given the strategy is .returnNil, we'll add this value
+                    // to the unknown fields for the current tag. Note: enum fields use .variable encoding.
+                    try addUnknownField(tag: tag, value: intValue, encoding: .variable)
+
+                    return nil
+                case.throwError:
+                    throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+                }
             }
             return enumValue
         }
@@ -686,7 +713,7 @@ public final class ProtoReader {
 
     // MARK: - Private Methods - Decoding - Repeated Field
 
-    private func decode<T>(into array: inout [T], decode: () throws -> T) throws {
+    private func decode<T>(into array: inout [T], decode: () throws -> T?) throws {
         switch state {
         case let .lengthDelimited(length):
             // Preallocate space for the unpacked data.
@@ -705,8 +732,9 @@ public final class ProtoReader {
                 // we're reading a single value most of the time and are then done.
                 // Since we're in a repeated field we'll keep reading values though.
                 state = .packedValue
-
-                array.append(try decode())
+                if let decodedVal = try decode() {
+                    array.append(decodedVal)
+                }
             }
         default:
             // It's faster to allocate multiple slots in the array up front rather
@@ -718,23 +746,36 @@ public final class ProtoReader {
             }
 
             // This is a single entry in a regular repeated field
-            array.append(try decode())
+            if let decodedVal = try decode() {
+                array.append(decodedVal)
+            }
         }
     }
 
     private func decode<K, V>(
         into dictionary: inout [K: V],
         decodeKey: () throws -> K,
-        decodeValue: () throws -> V
+        decodeValue: () throws -> V?
     ) throws {
         var key: K?
         var value: V?
+        var removedUnknownEnumFromArray = false
 
         let token = try beginMessage()
+        guard let startTag = currentTag else {
+            fatalError()
+        }
+
         while let tag = try nextTag(token: token) {
             switch tag {
-            case 1: key = try decodeKey()
-            case 2: value = try decodeValue()
+            case 1:
+                key = try decodeKey()
+            case 2:
+                value = try decodeValue()
+                if value == nil {
+                    try handleUnknownEnumDictionaryEntry(type: V.self, startTag: startTag, token: token)
+                    return
+                }
             default:
                 throw ProtoDecoder.Error.unexpectedFieldNumberInMap(tag)
             }
@@ -754,6 +795,38 @@ public final class ProtoReader {
         }
 
         dictionary[unwrappedKey] = unwrappedValue
+    }
+
+    private func handleUnknownEnumDictionaryEntry<T>(type: T.Type, startTag: UInt32, token: Int) throws  {
+        switch enumDecodingStrategy {
+        case .returnNil:
+            // We've found an unknown enum in a dictionary and need to write it to unknown fields.
+            // However, our reader has gone past the key and value, so we need to retrieve it.
+            // Example data:
+            // [0A] The tag that holds the map (1/Packed)
+            // [05] The length of the map (5)
+            // [0A] The tag of the key (1/Packed) <- We need the data starting here
+            // [01] The length of the key (1 - .HOME)
+            // [61] The value of the key: "a"
+            // [10] The tag of the value (2/Varint)
+            // [05] The value of the value (5 - unknown enum)
+            // [XX] <- Reader is now here
+            // We want to get the data for the last 5 of these bytes and write it to
+            // unknown fields in the parent tag, which will add back the first two bytes for us for us
+            let numberOfReadsPerKeyValuePair = 5
+
+            // NB: `buffer.getDataFromPastReads` does not move the pointer on the reader
+            // but creates a temporary pointer to get the historical data for us.
+            let keyValueData = try buffer.getDataFromPastReads(numPastReads: numberOfReadsPerKeyValuePair)
+
+            // It's important to end the message here, so that the unknown field is written at the parent
+            // message level (the first byte in the list above) and not our current nested level (the
+            // third byte in the list above).
+            _ = try endMessage(token: token)
+            try addUnknownField(tag: startTag, value: keyValueData)
+        case .throwError:
+            throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: 1000)
+        }
     }
 
     // MARK: - Private Methods - Message Stack
@@ -777,8 +850,11 @@ public final class ProtoReader {
         }
     }
 
+
     private func addUnknownField(tag: UInt32, value: Data) throws {
-        try addUnknownField { try $0.encode(tag: tag, value: value) }
+        try addUnknownField {
+            try $0.encode(tag: tag, value: value)
+        }
     }
 
     private func addUnknownField(_ block: (ProtoWriter) throws -> Void) rethrows {

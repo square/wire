@@ -28,13 +28,24 @@ import Foundation
  */
 public final class ProtoDecoder {
 
-    // MARK: -
+    // MARK: - Public enums
+
+    /// Determines the way in which Wire's Swift runtime library handles unknown enum values when decoding.
+    public enum UnknownEnumValueDecodingStrategy {
+        /// Throws an error when encountering unknown enum values in single-value fields or arrays.
+        case throwError
+        /// Defaults the unknown enum value to nil for single-value fields. With this option, unknown values in arrays are removed
+        /// from the array in which they originated in and added to an array for the same tag in unknown fields.
+        case returnNil
+    }
 
     public enum Error: Swift.Error, LocalizedError {
 
         case boxedValueMissingField(type: Any.Type)
+        case currentTagExpectedButNotFound
         case fieldKeyValueZero
         case invalidFieldWireType(_: UInt32)
+        case invalidPastBufferRead(requested: Int, actual: Int)
         case invalidStructure(message: String)
         case invalidUTF8StringData(_: Data)
         case malformedVarint
@@ -51,17 +62,20 @@ public final class ProtoDecoder {
 
         var localizedDescription: String {
             switch self {
+            case .currentTagExpectedButNotFound:
+                return "Performed an operation that expected an active tag, but none was found."
             case .fieldKeyValueZero:
                 return "Message field has a field number of zero, which is invalid."
             case let .invalidFieldWireType(value):
                 return "Field has an invalid wire type of \(value)."
+            case .invalidPastBufferRead(let requested, let actual):
+                return "A request (\(requested)) was made to the ReadBuffer that either exceeded the number of past reads (\(actual)) or returned no data."
             case let .invalidStructure(message):
                 return "Message structure is invalid: \(message)."
             case let .invalidUTF8StringData(data):
                 return "String field of size \(data.count) is not valid UTF8 encoded data."
             case .malformedVarint:
                 return "Encoded varint was not in the correct format."
-
             case let .mapEntryWithoutKey(value):
                 return "Map entry with value \(value ?? "") did not include a key."
             case let .mapEntryWithoutValue(key):
@@ -92,9 +106,15 @@ public final class ProtoDecoder {
         }
     }
 
+    // MARK: - Private constants
+
+    private let enumDecodingStrategy: UnknownEnumValueDecodingStrategy
+
     // MARK: - Initialization
 
-    public init() {}
+    public init(enumDecodingStrategy: UnknownEnumValueDecodingStrategy = .throwError) {
+        self.enumDecodingStrategy = enumDecodingStrategy
+    }
 
     // MARK: - Public Methods
 
