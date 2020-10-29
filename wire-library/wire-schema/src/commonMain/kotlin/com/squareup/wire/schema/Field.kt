@@ -141,16 +141,13 @@ data class Field(
   }
 
   fun retainAll(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Field? {
-    if (!isUsedAsOption(schema, markSet, enclosingType)) {
-      // If the type is null this field was never linked. Prune it.
-      // TODO(jwilson): perform this transformation in the Linker.
-      val type = type ?: return null
+    // TODO(jwilson): perform this transformation in the Linker.
+    val type = type ?: return null
 
-      // For map types only the value can participate in pruning as the key will always be scalar.
-      if (type.isMap && type.valueType!! !in markSet) return null
+    // For map types only the value can participate in pruning as the key will always be scalar.
+    if (type.isMap && type.valueType!! !in markSet) return null
 
-      if (!markSet.contains(type)) return null
-    }
+    if (!markSet.contains(type)) return null
 
     val memberName = if (isExtension) qualifiedName else name
     val protoMember = ProtoMember.get(enclosingType, memberName)
@@ -183,49 +180,6 @@ data class Field(
     result.isRedacted = isRedacted
     result.jsonName = jsonName
     return result
-  }
-
-  private fun isUsedAsOption(schema: Schema, markSet: MarkSet, enclosingType: ProtoType): Boolean {
-    for (protoFile in schema.protoFiles) {
-      if (protoFile.types.any { isUsedAsOption(markSet, enclosingType, it) }) return true
-      if (protoFile.services.any { isUsedAsOption(markSet, enclosingType, it) }) return true
-    }
-    return false
-  }
-
-  private fun isUsedAsOption(
-    markSet: MarkSet,
-    enclosingType: ProtoType,
-    service: Service
-  ): Boolean {
-    if (service.type !in markSet) return false
-
-    val protoMember = ProtoMember.get(enclosingType, if (isExtension) qualifiedName else name)
-    if (service.options.assignsMember(protoMember)) return true
-    if (service.rpcs.any { it.options.assignsMember(protoMember) }) return true
-
-    return false
-  }
-
-  private fun isUsedAsOption(markSet: MarkSet, enclosingType: ProtoType, type: Type): Boolean {
-    if (type.type !in markSet) return false
-
-    val protoMember = ProtoMember.get(enclosingType, if (isExtension) qualifiedName else name)
-
-    when (type) {
-      is MessageType -> {
-        if (type.options.assignsMember(protoMember)) return true
-        if (type.fields.any { it.options.assignsMember(protoMember) }) return true
-      }
-      is EnumType -> {
-        if (type.options.assignsMember(protoMember)) return true
-        if (type.constants.any { it.options.assignsMember(protoMember) }) return true
-      }
-    }
-
-    if (type.nestedTypes.any { isUsedAsOption(markSet, enclosingType, it) }) return true
-
-    return false
   }
 
   override fun toString() = name
