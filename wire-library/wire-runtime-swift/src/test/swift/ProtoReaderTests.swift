@@ -399,7 +399,11 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [.HOME])
-            XCTAssertEqual(fields, Data(hexEncoded: "08_05"))
+            let expectedData = Data(hexEncoded: """
+                08       // (tag 1 | Varint)
+                05       // Unknown enum
+            """)!
+            XCTAssertEqual(fields, expectedData)
         }
     }
 
@@ -424,7 +428,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [])
-            XCTAssertEqual(fields, Data(hexEncoded: "08_04_08_05"))
+            XCTAssertEqual(fields, data)
         }
     }
 
@@ -459,8 +463,13 @@ final class ProtoReaderTests: XCTestCase {
                 }
             }
 
+            let expectedData = Data(hexEncoded: """
+                       08       // (Tag 1 | Varint)
+                       05       // Unknown enum
+                   """)!
+
             XCTAssertEqual(values, [.HOME])
-            XCTAssertEqual(fields, Data(hexEncoded: "08_05"))
+            XCTAssertEqual(fields, expectedData)
         }
     }
 
@@ -484,8 +493,18 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [])
-            // Addition of unknown fields results in Varint rather than Length Delimited
+            
+            // The original data is packed (length delimited), but we encode it as
+            // unpacked in the unknown data, so it shows up as individual varints
             // So format changes from `0A_02_04_05` to `08_04_08_05`.
+
+            let expectedData = Data(hexEncoded: """
+                08       // (Tag 1 | Varint)
+                04       // Unknown enum
+                08       // (Tag 1 | Varint)
+                05       // Unknown enum
+            """)!
+
             XCTAssertEqual(fields, Data(hexEncoded: "08_04_08_05"))
         }
     }
@@ -769,8 +788,67 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, ["b": .MOBILE])
-            XCTAssertEqual(unknownFields, Data(hexEncoded: "0A_05_0A_01_61_10_05")!)
+            let expectedData = Data(hexEncoded: """
+                // Key/Value 1
+                0A // (Tag 1 | Length Delimited)
+                05 // Length 5
+                0A // (Tag 1 | Length Delimited)
+                01 // Length 1
+                61 // Value "a"
+                10 // (Tag 2 | Varint)
+                05 // Value unknown
+            """)!
+            XCTAssertEqual(unknownFields, expectedData  )
+        }
+    }
 
+    func testDecodeStringToUnknownEnumMapOneFailReverseOrder() throws {
+        
+        let data = Data(hexEncoded: """
+            // Key/Value 1 out of order
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            10 // (Tag 2 | Varint)
+            05 // Value unknown
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            61 // Value "a"
+
+
+            // Key/Value 2 out of order
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            10 // (Tag 2 | Varint)
+            00 // Value .MOBILE
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            62 // Value "b"
+        """)!
+
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            var values: [String: Person.PhoneType] = [:]
+
+            let unknownFields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    try reader.decode(into: &values)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            XCTAssertEqual(values, ["b": .MOBILE])
+            let expectedData = Data(hexEncoded: """
+                    // Key/Value 1 in proper order
+                    0A // (Tag 1 | Length Delimited)
+                    05 // Length 5
+                    0A // (Tag 1 | Length Delimited)
+                    01 // Length 1
+                    61 // Value "a"
+                    10 // (Tag 2 | Varint)
+                    05 // Value unknown
+                """)!
+            XCTAssertEqual(unknownFields, expectedData)
         }
     }
 
@@ -808,7 +886,7 @@ final class ProtoReaderTests: XCTestCase {
             }
 
             XCTAssertEqual(values, [:])
-            XCTAssertEqual(unknownFields, Data(hexEncoded: "0A_05_0A_01_61_10_05_0A_05_0A_01_62_10_05")!)
+            XCTAssertEqual(unknownFields, data)
         }
     }
 

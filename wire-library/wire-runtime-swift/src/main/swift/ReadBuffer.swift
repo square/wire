@@ -43,10 +43,7 @@ final class ReadBuffer {
 
     // MARK: - Private Properties
 
-    private(set) var pointer: UnsafePointer<UInt8>
-
-    // track the distances we've advanced the pointer for each read
-    private(set) var previousPointerOffsets: [Int] = []
+    fileprivate(set) var pointer: UnsafePointer<UInt8>
 
     // MARK: - Initialization
 
@@ -76,46 +73,16 @@ final class ReadBuffer {
         }
     }
 
-    /// Advances the current pointer by the given byte offset. All internal mutation of the pointer should
-    /// use this method through this method so our reads can be tracked.
-    /// - Parameter by:The number of bytes to advance the pointer
-    /// - Returns: A pointer to new position.
-    func advancePointer(by: Int) {
-        previousPointerOffsets.append(by)
-        pointer = pointer.advanced(by: by)
-    }
-
-    /// Returns a Data instance representative of the last n reads that we've done. This is useful when
-    /// we've gone past one or more fields that did not validate, and need to retrieve associated data
-    /// for further processing. Example: When a dictionary has an unknown enum for a value, we must retrieve
-    /// the key to place in unknown fields.
-    /// - Parameter numPastReads:The number of previous reads to include in the historical data.
-    /// - Returns: All of the data that was read in the past given number of reads. NB: we do not store
-    ///            the data with each read, just the offsets. Therefore the data returned is the data present
-    ///            in the buffer at the time of the request.
-    func getDataFromPastReads(numPastReads: Int) throws -> Data {
-        let lastOffsets = previousPointerOffsets.suffix(numPastReads)
-        let totalBytes = lastOffsets.reduce(0) { $0 + $1 }
-        guard totalBytes > 0 && totalBytes <= pointer - start  else {
-            throw ProtoDecoder.Error.invalidPastBufferRead(
-                requested: numPastReads,
-                actual: previousPointerOffsets.count
-            )
-        }
-
-        let backwardsPointer = pointer.advanced(by: -totalBytes)
-        return Data(bytes: backwardsPointer, count: totalBytes)
-    }
 }
 
 extension ReadBuffer {
 
-    // MARK: - Readings
+    // MARK: - Reading
 
     func readBuffer(count: Int) throws -> UnsafeRawBufferPointer {
         try verifyAdditional(count: count)
         let buffer = UnsafeRawBufferPointer(start: pointer, count: count)
-        advancePointer(by: count)
+        pointer = pointer.advanced(by: count)
 
         return buffer
     }
@@ -123,7 +90,7 @@ extension ReadBuffer {
     func readData(count: Int) throws -> Data {
         try verifyAdditional(count: count)
         let data = Data(bytes: pointer, count: count)
-        advancePointer(by: count)
+        pointer = pointer.advanced(by: count)
 
         return data
     }
@@ -134,7 +101,7 @@ extension ReadBuffer {
         withUnsafeMutableBytes(of: &value) { dest -> Void in
             dest.copyMemory(from: UnsafeRawBufferPointer(start: pointer, count: 4))
         }
-        advancePointer(by: 4)
+        pointer = pointer.advanced(by: 4)
 
         return UInt32(littleEndian: value)
     }
@@ -158,7 +125,7 @@ extension ReadBuffer {
         var result: UInt32 = 0
         while shift < 32 {
             let byte = pointer.pointee
-            advancePointer(by: 1)
+            pointer = pointer.advanced(by: 1)
 
             result |= UInt32(byte & 0x7f) << shift
             if byte < 0x80 {

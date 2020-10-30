@@ -32,25 +32,23 @@ public final class ProtoDecoder {
 
     /// Determines the way in which Wire's Swift runtime library handles unknown enum values when decoding.
     public enum UnknownEnumValueDecodingStrategy {
-        /// Throws an error when encountering unknown enum values in single-value fields or arrays.
+        /// Throws an error when encountering unknown enum values in single-value fields or collections.
         case throwError
-        /// Defaults the unknown enum value to nil for single-value fields. With this option, unknown values in arrays are removed
-        /// from the array in which they originated in and added to an array for the same tag in unknown fields.
+        /// Defaults the unknown enum value to nil for single-value fields. With this option, unknown values in collections are removed
+        /// from the collection in which they originated and added to a collection for the same tag in unknown fields.
         case returnNil
     }
 
     public enum Error: Swift.Error, LocalizedError {
 
         case boxedValueMissingField(type: Any.Type)
-        case currentTagExpectedButNotFound
         case fieldKeyValueZero
         case invalidFieldWireType(_: UInt32)
-        case invalidPastBufferRead(requested: Int, actual: Int)
         case invalidStructure(message: String)
         case invalidUTF8StringData(_: Data)
         case malformedVarint
         case mapEntryWithoutKey(value: Any?)
-        case mapEntryWithoutValue(key: Any?)
+        case mapEntryWithoutValue(key: Any)
         case missingRequiredField(typeName: String, fieldName: String)
         case recursionLimitExceeded
         case unexpectedEndOfData
@@ -62,14 +60,10 @@ public final class ProtoDecoder {
 
         var localizedDescription: String {
             switch self {
-            case .currentTagExpectedButNotFound:
-                return "Performed an operation that expected an active tag, but none was found."
             case .fieldKeyValueZero:
                 return "Message field has a field number of zero, which is invalid."
             case let .invalidFieldWireType(value):
                 return "Field has an invalid wire type of \(value)."
-            case .invalidPastBufferRead(let requested, let actual):
-                return "A request (\(requested)) was made to the ReadBuffer that either exceeded the number of past reads (\(actual)) or returned no data."
             case let .invalidStructure(message):
                 return "Message structure is invalid: \(message)."
             case let .invalidUTF8StringData(data):
@@ -79,7 +73,7 @@ public final class ProtoDecoder {
             case let .mapEntryWithoutKey(value):
                 return "Map entry with value \(value ?? "") did not include a key."
             case let .mapEntryWithoutValue(key):
-                return "Map entry with \(key ?? "") did not include a value."
+                return "Map entry with \(key) did not include a value."
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
             case let .boxedValueMissingField(type):
@@ -108,7 +102,7 @@ public final class ProtoDecoder {
 
     // MARK: - Private constants
 
-    private let enumDecodingStrategy: UnknownEnumValueDecodingStrategy
+    public private(set) var enumDecodingStrategy: UnknownEnumValueDecodingStrategy
 
     // MARK: - Initialization
 
