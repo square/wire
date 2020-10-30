@@ -28,7 +28,16 @@ import Foundation
  */
 public final class ProtoDecoder {
 
-    // MARK: -
+    // MARK: - Public enums
+
+    /// Determines the way in which Wire's Swift runtime library handles unknown enum values when decoding.
+    public enum UnknownEnumValueDecodingStrategy {
+        /// Throws an error when encountering unknown enum values in single-value fields or collections.
+        case throwError
+        /// Defaults the unknown enum value to nil for single-value fields. With this option, unknown values in collections are removed
+        /// from the collection in which they originated and added to a collection for the same tag in unknown fields.
+        case returnNil
+    }
 
     public enum Error: Swift.Error, LocalizedError {
 
@@ -39,7 +48,7 @@ public final class ProtoDecoder {
         case invalidUTF8StringData(_: Data)
         case malformedVarint
         case mapEntryWithoutKey(value: Any?)
-        case mapEntryWithoutValue(key: Any?)
+        case mapEntryWithoutValue(key: Any)
         case missingRequiredField(typeName: String, fieldName: String)
         case recursionLimitExceeded
         case unexpectedEndOfData
@@ -61,11 +70,10 @@ public final class ProtoDecoder {
                 return "String field of size \(data.count) is not valid UTF8 encoded data."
             case .malformedVarint:
                 return "Encoded varint was not in the correct format."
-
             case let .mapEntryWithoutKey(value):
                 return "Map entry with value \(value ?? "") did not include a key."
             case let .mapEntryWithoutValue(key):
-                return "Map entry with \(key ?? "") did not include a value."
+                return "Map entry with \(key) did not include a value."
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
             case let .boxedValueMissingField(type):
@@ -92,9 +100,15 @@ public final class ProtoDecoder {
         }
     }
 
+    // MARK: - Private constants
+
+    public private(set) var enumDecodingStrategy: UnknownEnumValueDecodingStrategy
+
     // MARK: - Initialization
 
-    public init() {}
+    public init(enumDecodingStrategy: UnknownEnumValueDecodingStrategy = .throwError) {
+        self.enumDecodingStrategy = enumDecodingStrategy
+    }
 
     // MARK: - Public Methods
 

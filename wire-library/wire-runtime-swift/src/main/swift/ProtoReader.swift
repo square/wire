@@ -65,6 +65,7 @@ public final class ProtoReader {
     private static let collectionPreallocationMaxValueSize = 128
 
     private let buffer: ReadBuffer
+    private let enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy
 
     /**
      A stack of frames where each frame represents a level of message nesting.
@@ -93,7 +94,8 @@ public final class ProtoReader {
 
     // MARK: - Initialization
 
-    init(buffer: ReadBuffer) {
+    init(buffer: ReadBuffer, enumDecodingStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError) {
+        self.enumDecodingStrategy = enumDecodingStrategy
         self.buffer = buffer
         self.state = .lengthDelimited(length: buffer.count)
 
@@ -139,6 +141,9 @@ public final class ProtoReader {
         return messageStackIndex
     }
 
+    /// Tracks the most recently read tag. When we need to write an unknown enum value to
+    /// the unknown fields buffer, we'll write it using this tag.
+    private var currentTag: UInt32? = nil
     /**
      Reads and returns the next tag of the message, or `nil` if there are no further tags.
      This method should be paired with calls to `beginMessage` and `endMessage`.
@@ -147,6 +152,7 @@ public final class ProtoReader {
     public func nextTag(token: Int) throws -> UInt32? {
         guard token != -1 else {
             // This is an empty message, so bail out.
+            currentTag = nil
             return nil
         }
 
@@ -172,22 +178,27 @@ public final class ProtoReader {
             case .lengthDelimited:
                 let length = try buffer.readVarint32()
                 state = .lengthDelimited(length: Int(length))
+                currentTag = tag
                 return tag
 
             case .fixed32:
                 state = .fixed32
+                currentTag = tag
                 return tag
 
             case .fixed64:
                 state = .fixed64
+                currentTag = tag
                 return tag
 
             case .varint:
                 state = .varint
+                currentTag = tag
                 return tag
             }
         }
 
+        currentTag = nil
         return nil
     }
 
@@ -220,11 +231,16 @@ public final class ProtoReader {
      Decode enums. Note that the enums themselves do not need to be `ProtoDecodable`
      so long as they're RawRepresentable as `UInt32`
      */
-    public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T where T.RawValue == UInt32 {
+    public func decode<T: RawRepresentable>(_ type: T.Type) throws -> T? where T.RawValue == UInt32 {
         // Pop the enum int value and pass in to initializer
         let intValue = try readVarint32()
         guard let enumValue = T(rawValue: intValue) else {
-            throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+            switch enumDecodingStrategy {
+            case .returnNil:
+                return nil
+            case .throwError:
+                throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+            }
         }
         return enumValue
     }
@@ -406,7 +422,20 @@ public final class ProtoReader {
         try decode(into: &array) {
             let intValue = try readVarint32()
             guard let enumValue = T(rawValue: intValue) else {
-                throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+                switch enumDecodingStrategy {
+                case .returnNil:
+                    guard let tag = currentTag else {
+                        fatalError("The current tag was unexpectedly nil.")
+                    }
+
+                    // We encountered an unknown enum value. Given the strategy is .returnNil, we'll add this value
+                    // to the unknown fields for the current tag. NB: enum fields use varint encoding.
+                    try addUnknownField(tag: tag, value: intValue, encoding: .variable)
+
+                    return nil
+                case.throwError:
+                    throw ProtoDecoder.Error.unknownEnumCase(type: T.self, fieldNumber: intValue)
+                }
             }
             return enumValue
         }
@@ -467,16 +496,17 @@ public final class ProtoReader {
     }
 
     /**
-     Decode a single key-value pair from a map of values keyed by a `string` with an `enum` value type.
-
-     If the given value was not known at the time of generating these protos then nothing will be added to the map.
-     */
+    Decode a single key-value pair from a map of values keyed by a `string` with an `enum` value type.
+    */
     public func decode<V: RawRepresentable>(into dictionary: inout [String: V]) throws where V.RawValue == UInt32 {
         try decode(
             into: &dictionary,
-            decodeKey: { try decode(String.self) },
-            decodeValue: { try decode(V.self) }
-        )
+            decodeKey: { try String(from: self) },
+            addUnknownPair: { (tag, key, rawValue) in
+                try addUnknownField { protoWriter in
+                    try protoWriter.encode(tag: tag, value: [key: rawValue])
+                }
+        })
     }
 
     /**
@@ -686,7 +716,7 @@ public final class ProtoReader {
 
     // MARK: - Private Methods - Decoding - Repeated Field
 
-    private func decode<T>(into array: inout [T], decode: () throws -> T) throws {
+    private func decode<T>(into array: inout [T], decode: () throws -> T?) throws {
         switch state {
         case let .lengthDelimited(length):
             // Preallocate space for the unpacked data.
@@ -705,8 +735,9 @@ public final class ProtoReader {
                 // we're reading a single value most of the time and are then done.
                 // Since we're in a repeated field we'll keep reading values though.
                 state = .packedValue
-
-                array.append(try decode())
+                if let decodedVal = try decode() {
+                    array.append(decodedVal)
+                }
             }
         default:
             // It's faster to allocate multiple slots in the array up front rather
@@ -718,7 +749,9 @@ public final class ProtoReader {
             }
 
             // This is a single entry in a regular repeated field
-            array.append(try decode())
+            if let decodedVal = try decode() {
+                array.append(decodedVal)
+            }
         }
     }
 
@@ -745,7 +778,66 @@ public final class ProtoReader {
             throw ProtoDecoder.Error.mapEntryWithoutKey(value: value)
         }
         guard let unwrappedValue = value else {
-            throw ProtoDecoder.Error.mapEntryWithoutValue(key: key)
+            throw ProtoDecoder.Error.mapEntryWithoutValue(key: unwrappedKey)
+        }
+
+        // Preallocate a few empty slots to avoid reallocations.
+        if dictionary.isEmpty && MemoryLayout<V>.size <= ProtoReader.collectionPreallocationMaxValueSize {
+            dictionary.reserveCapacity(ProtoReader.collectionPreallocationSlotCount)
+        }
+
+        dictionary[unwrappedKey] = unwrappedValue
+    }
+
+    /// Decode a key-value pair where the value is RawReprentable with RawValue == Int32.
+    /// - Parameters:
+    ///   - dictionary: The dictionary in which to add key-value pair if the decoded value is a known case in V.
+    ///   - decodeKey: A closure that decodes the key for each pair
+    ///   - addUnknownPair: A closure that adds to the key-value pair to unknown fields in the event a given raw value is not a known case in V.
+    private func decode<K, V: RawRepresentable>(
+        into dictionary: inout [K: V],
+        decodeKey: () throws -> K,
+        addUnknownPair: (UInt32, K, V.RawValue) throws -> ()
+    ) throws where V.RawValue == UInt32 {
+        var key: K?
+        var value: V?
+        var rawValue: UInt32?
+
+        guard let startTag = currentTag else {
+            fatalError("Decoding enum map but current tag is not set.")
+        }
+
+        let token = try beginMessage()
+        while let tag = try nextTag(token: token) {
+            switch tag {
+            case 1: key = try decodeKey()
+            case 2:
+                let intValue = try readVarint32()
+                let enumValue = V(rawValue: intValue)
+                if enumValue == nil {
+                    if case .throwError = enumDecodingStrategy {
+                        throw ProtoDecoder.Error.unknownEnumCase(type: V.self, fieldNumber: intValue)
+                    }
+                }
+                value = enumValue
+                rawValue = intValue
+            default:
+                throw ProtoDecoder.Error.unexpectedFieldNumberInMap(tag)
+            }
+        }
+        _ = try endMessage(token: token)
+
+        guard let unwrappedKey = key else {
+            throw ProtoDecoder.Error.mapEntryWithoutKey(value: value)
+        }
+        guard let unwrappedRawValue = rawValue else {
+            throw ProtoDecoder.Error.mapEntryWithoutValue(key: unwrappedKey)
+        }
+
+        guard let unwrappedValue = value else {
+            // We found a value but weren't able to decode it, so we have an unknown enum case.
+            try addUnknownPair(startTag, unwrappedKey, unwrappedRawValue)
+            return
         }
 
         // Preallocate a few empty slots to avoid reallocations.

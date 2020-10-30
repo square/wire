@@ -290,6 +290,30 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testDecodeUnknownEnumNilStrategy() throws {
+        let data = Data(hexEncoded: "08_05")!
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            let value = try reader.decode(tag: 1) { try reader.decode(Person.PhoneType.self) }
+            XCTAssertNil(value)
+        }
+    }
+
+    func testDecodeUnknownEnumThrowStrategy() throws {
+        let data = Data(hexEncoded: "08_05")!
+        var didThrow = false
+
+        try test(data: data, enumStrategy: .throwError) { reader in
+            do {
+                let _ = try reader.decode(tag: 1) { try reader.decode(Person.PhoneType.self) }
+            } catch ProtoDecoder.Error.unknownEnumCase(_, let fieldNumber) {
+                didThrow = true
+                XCTAssertEqual(fieldNumber, 5)
+            }
+        }
+
+        XCTAssertTrue(didThrow, "Unknown enum should throw")
+    }
+
     // MARK: - Tests - Decoding Repeated Fields
 
     func testDecodeRepeatedBools() throws {
@@ -322,6 +346,93 @@ final class ProtoReaderTests: XCTestCase {
         }
     }
 
+    func testDecodeRepeatedUnknownEnumsThrowStrategy() throws {
+        let data = Data(hexEncoded: """
+             08       // (tag 1 | Varint)
+             01       // .HOME
+             08       // (tag 1 | Varint)
+             05       // Unknown enum
+         """)!
+
+        try test(data: data, enumStrategy: .throwError) { reader in
+            var values: [Person.PhoneType] = []
+
+            var didThrow = false
+
+            try _ = reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    do {
+                        try reader.decode(into: &values)
+                    } catch ProtoDecoder.Error.unknownEnumCase(_, let fieldNumber) {
+                        didThrow = true
+                        XCTAssertEqual(fieldNumber, 5)
+                    }
+
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            XCTAssertTrue(didThrow, "Unknown enum should throw")
+        }
+    }
+
+    func testDecodeRepeatedUnknownEnumsNilStrategySomeFail() throws {
+        let data = Data(hexEncoded: """
+             08       // (tag 1 | Varint)
+             01       // .HOME
+             08       // (tag 1 | Varint)
+             05       // Unknown enum
+         """)!
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            var values: [Person.PhoneType] = []
+
+
+            let fields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    try reader.decode(into: &values)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            XCTAssertEqual(values, [.HOME])
+            let expectedData = Data(hexEncoded: """
+                08       // (tag 1 | Varint)
+                05       // Unknown enum
+            """)!
+            XCTAssertEqual(fields, expectedData)
+        }
+    }
+
+    func testDecodeRepeatedUnknownEnumsNilStrategyAllFail() throws {
+        let data = Data(hexEncoded: """
+             08       // (tag 1 | Varint)
+             04       // Unknown enum
+             08       // (tag 1 | Varint)
+             05       // Unknown enum
+         """)!
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            var values: [Person.PhoneType] = []
+
+
+            let fields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    try reader.decode(into: &values)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            XCTAssertEqual(values, [])
+            XCTAssertEqual(fields, data)
+        }
+    }
+
+
     func testDecodePackedRepeatedEnums() throws {
         let data = Data(hexEncoded: "0A_02_01_00")!
         try test(data: data) { reader in
@@ -329,6 +440,72 @@ final class ProtoReaderTests: XCTestCase {
             try reader.decode(tag: 1) { try reader.decode(into: &values) }
 
             XCTAssertEqual(values, [.HOME, .MOBILE])
+        }
+    }
+
+    func testDecodePackedRepeatedUnknownEnumsSomeFail() throws {
+        let data = Data(hexEncoded: """
+            0A       // (tag 1 | Length Delimited)
+            02       // Number of enums
+            01       // .HOME
+            05       // Unknown enum
+        """)!
+
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            var values: [Person.PhoneType] = []
+
+            let fields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    try reader.decode(into: &values)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            let expectedData = Data(hexEncoded: """
+                       08       // (Tag 1 | Varint)
+                       05       // Unknown enum
+                   """)!
+
+            XCTAssertEqual(values, [.HOME])
+            XCTAssertEqual(fields, expectedData)
+        }
+    }
+
+    func testDecodePackedRepeatedUnknownEnumsAllFail() throws {
+        let data = Data(hexEncoded: """
+            0A       // (tag 1 | Length Delimited)
+            02       // Number of enums
+            04       // Unknown enum
+            05       // Unknown enum
+        """)!
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            var values: [Person.PhoneType] = []
+
+            let fields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    try reader.decode(into: &values)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            XCTAssertEqual(values, [])
+            
+            // The original data is packed (length delimited), but we encode it as
+            // unpacked in the unknown data, so it shows up as individual varints
+            // So format changes from `0A_02_04_05` to `08_04_08_05`.
+
+            let expectedData = Data(hexEncoded: """
+                08       // (Tag 1 | Varint)
+                04       // Unknown enum
+                08       // (Tag 1 | Varint)
+                05       // Unknown enum
+            """)!
+
+            XCTAssertEqual(fields, Data(hexEncoded: "08_04_08_05"))
         }
     }
 
@@ -574,6 +751,142 @@ final class ProtoReaderTests: XCTestCase {
             try reader.decode(tag: 1) { try reader.decode(into: &values) }
 
             XCTAssertEqual(values, ["a": .HOME, "b": .MOBILE])
+        }
+    }
+
+    func testDecodeStringToUnknownEnumMapOneFail() throws {
+        let data = Data(hexEncoded: """
+            // Key/Value 1
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            61 // Value "a"
+            10 // (Tag 2 | Varint)
+            05 // Value unknown
+
+            // Key/Value 2
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            62 // Value "b"
+            10 // (Tag 2 | Varint)
+            00 // Value .MOBILE
+        """)!
+
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            var values: [String: Person.PhoneType] = [:]
+
+            let unknownFields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    try reader.decode(into: &values)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            XCTAssertEqual(values, ["b": .MOBILE])
+            let expectedData = Data(hexEncoded: """
+                // Key/Value 1
+                0A // (Tag 1 | Length Delimited)
+                05 // Length 5
+                0A // (Tag 1 | Length Delimited)
+                01 // Length 1
+                61 // Value "a"
+                10 // (Tag 2 | Varint)
+                05 // Value unknown
+            """)!
+            XCTAssertEqual(unknownFields, expectedData  )
+        }
+    }
+
+    func testDecodeStringToUnknownEnumMapOneFailReverseOrder() throws {
+        
+        let data = Data(hexEncoded: """
+            // Key/Value 1 out of order
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            10 // (Tag 2 | Varint)
+            05 // Value unknown
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            61 // Value "a"
+
+
+            // Key/Value 2 out of order
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            10 // (Tag 2 | Varint)
+            00 // Value .MOBILE
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            62 // Value "b"
+        """)!
+
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            var values: [String: Person.PhoneType] = [:]
+
+            let unknownFields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    try reader.decode(into: &values)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            XCTAssertEqual(values, ["b": .MOBILE])
+            let expectedData = Data(hexEncoded: """
+                    // Key/Value 1 in proper order
+                    0A // (Tag 1 | Length Delimited)
+                    05 // Length 5
+                    0A // (Tag 1 | Length Delimited)
+                    01 // Length 1
+                    61 // Value "a"
+                    10 // (Tag 2 | Varint)
+                    05 // Value unknown
+                """)!
+            XCTAssertEqual(unknownFields, expectedData)
+        }
+    }
+
+    func testDecodeStringToUnknownEnumMapAllFail() throws {
+        let data = Data(hexEncoded: """
+            // Key/Value 1
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            61 // Value "a"
+            10 // (Tag 2 | Varint)
+            05 // Value unknown
+
+            // Key/Value 2
+            0A // (Tag 1 | Length Delimited)
+            05 // Length 5
+            0A // (Tag 1 | Length Delimited)
+            01 // Length 1
+            62 // Value "b"
+            10 // (Tag 2 | Varint)
+            05 // Value unknown
+        """)!
+
+        try test(data: data, enumStrategy: .returnNil) { reader in
+            var values: [String: Person.PhoneType] = [:]
+
+            let unknownFields = try reader.forEachTag { tag in
+                switch tag {
+                case 1:
+                    try reader.decode(into: &values)
+                default:
+                    XCTFail("Should not encounter unknown fields")
+                }
+            }
+
+            XCTAssertEqual(values, [:])
+            XCTAssertEqual(unknownFields, data)
         }
     }
 
@@ -881,7 +1194,7 @@ final class ProtoReaderTests: XCTestCase {
 
     // MARK: - Private Methods
 
-    private func test(data: Data, test: (ProtoReader) throws -> Void) rethrows {
+    private func test(data: Data, enumStrategy: ProtoDecoder.UnknownEnumValueDecodingStrategy = .throwError, test: (ProtoReader) throws -> Void) rethrows {
         try data.withUnsafeBytes { buffer in
             guard let baseAddress = buffer.baseAddress, buffer.count > 0 else {
                 return
@@ -891,7 +1204,7 @@ final class ProtoReaderTests: XCTestCase {
                 storage: baseAddress.bindMemory(to: UInt8.self, capacity: buffer.count),
                 count: buffer.count
             )
-            let reader = ProtoReader(buffer: readBuffer)
+            let reader = ProtoReader(buffer: readBuffer, enumDecodingStrategy: enumStrategy)
             try test(reader)
         }
     }
