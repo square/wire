@@ -125,7 +125,7 @@ public final class ProtoDecoder {
                 storage: baseAddress.bindMemory(to: UInt8.self, capacity: buffer.count),
                 count: buffer.count
             )
-            let reader = ProtoReader(buffer: readBuffer)
+            let reader = ProtoReader(buffer: readBuffer, enumDecodingStrategy: enumDecodingStrategy)
             value = try reader.decode(type)
         }
 
