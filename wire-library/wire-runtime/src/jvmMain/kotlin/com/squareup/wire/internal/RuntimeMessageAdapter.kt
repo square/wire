@@ -109,6 +109,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
       } else if (isMessage && fieldBinding.label.isRepeated) {
         @Suppress("UNCHECKED_CAST")
         val values = fieldBinding.getFromBuilder(builder) as List<Any>
+
         @Suppress("UNCHECKED_CAST")
         val adapter = fieldBinding.singleAdapter() as ProtoAdapter<Any>
         fieldBinding.set(builder, values.redactElements(adapter))
@@ -188,15 +189,28 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
   fun <A> writeAllFields(
     message: M?,
     jsonAdapters: List<A>,
+    redactedFieldsAdapter: A?,
     encodeValue: (String, Any?, A) -> Unit
   ) {
+    var redactedFields: MutableList<String>? = null
     for (index in fieldBindingsArray.indices) {
       val fieldBinding = fieldBindingsArray[index]
       val value = fieldBinding[message!!]
       if (fieldBinding.omitIdentity() && value == fieldBinding.adapter().identity) {
         continue
       }
+      if (fieldBinding.redacted && redactedFieldsAdapter != null && value != null) {
+        // We initialize here to avoid a performance hit for non-redacted code.
+        if (redactedFields == null) {
+          redactedFields = mutableListOf()
+        }
+        redactedFields.add(jsonNames[index])
+        continue
+      }
       encodeValue(jsonNames[index], value, jsonAdapters[index])
+    }
+    if (redactedFields?.isNotEmpty() == true) {
+      encodeValue("__redacted_fields", redactedFields, redactedFieldsAdapter!!)
     }
   }
 

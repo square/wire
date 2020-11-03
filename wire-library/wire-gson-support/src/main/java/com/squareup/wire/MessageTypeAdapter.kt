@@ -42,7 +42,11 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   @Throws(IOException::class)
   override fun write(out: JsonWriter, message: M?) {
     out.beginObject()
-    messageAdapter.writeAllFields(message, jsonAdapters) { name, value, jsonAdapter ->
+    messageAdapter.writeAllFields(
+        message = message,
+        jsonAdapters = jsonAdapters,
+        redactedFieldsAdapter = null
+    ) { name, value, jsonAdapter ->
       out.name(name)
       jsonAdapter.write(out, value)
     }

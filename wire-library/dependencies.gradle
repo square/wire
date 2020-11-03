@@ -11,7 +11,7 @@ ext.versions = [
   'kotlin': '1.4.10',
   'okio': '2.8.0',
   'okhttp': '4.2.2',
-  'moshi': '1.10.0',
+  'moshi': '1.11.0',
   'protobuf': '3.13.0',
   'protobufGradlePlugin': '0.8.13',
   'junit': '4.12',
