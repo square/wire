@@ -92,7 +92,10 @@ kotlin.targets.matching { it.platformType.name == 'jvm' }.all { target ->
       jsonKotlinTestImplementation deps.assertj
       jsonKotlinTestImplementation deps.jimfs
 
+      jvmJavaTestImplementation project(':wire-moshi-adapter')
       jvmJavaTestImplementation deps.kotlin.reflect
+      jvmJavaTestImplementation deps.moshi
+      jvmJavaTestImplementation deps.moshiKotlin
     }
   }
 

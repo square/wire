@@ -77,7 +77,9 @@ class WireJsonAdapterFactory private constructor(
       Message::class.java.isAssignableFrom(rawType) -> {
         val messageAdapter = RuntimeMessageAdapter.create<Nothing, Nothing>(type as Class<Nothing>)
         val jsonAdapters = messageAdapter.jsonAdapters(MoshiJsonIntegration, moshi)
-        MessageJsonAdapter(messageAdapter, jsonAdapters).nullSafe()
+        val redactedFieldsAdapter = moshi.adapter<List<String>>(
+            Types.newParameterizedType(List::class.java, String::class.java))
+        MessageJsonAdapter(messageAdapter, jsonAdapters, redactedFieldsAdapter).nullSafe()
       }
       WireEnum::class.java.isAssignableFrom(rawType) -> {
         val enumAdapter = RuntimeEnumAdapter.create(type as Class<Nothing>)

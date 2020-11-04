@@ -23,7 +23,8 @@ import java.io.IOException
 
 internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
   private val messageAdapter: RuntimeMessageAdapter<M, B>,
-  private val jsonAdapters: List<JsonAdapter<Any?>>
+  private val jsonAdapters: List<JsonAdapter<Any?>>,
+  private val redactedFieldsAdapter: JsonAdapter<List<String>>,
 ) : JsonAdapter<M>() {
   private val jsonNames = messageAdapter.jsonNames
   private val jsonAlternateNames = messageAdapter.jsonAlternateNames
@@ -40,8 +41,17 @@ internal class MessageJsonAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
   @Throws(IOException::class)
   override fun toJson(out: JsonWriter, message: M?) {
+    val redactedFieldsAdapter = when (out.tag(RedactedTag::class.java)?.enabled) {
+      true -> redactedFieldsAdapter
+      else -> null
+    } as JsonAdapter<Any?>?
+
     out.beginObject()
-    messageAdapter.writeAllFields(message, jsonAdapters) { name, value, jsonAdapter ->
+    messageAdapter.writeAllFields(
+        message = message,
+        jsonAdapters = jsonAdapters,
+        redactedFieldsAdapter = redactedFieldsAdapter
+    ) { name, value, jsonAdapter ->
       out.name(name)
       jsonAdapter.toJson(out, value)
     }
