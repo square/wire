@@ -206,7 +206,7 @@ class WirePlugin : Plugin<Project> {
             project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
         project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-            project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION")
+            project.dependencies.create("com.squareup.wire:wire-runtime-multiplatform:$VERSION")
         )
       } else {
         try {
