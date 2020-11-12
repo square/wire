@@ -104,9 +104,12 @@ class RepoBuilder {
     return javaFile.toString()
   }
 
-  fun generateKotlin(typeName: String): String {
+  fun generateKotlin(typeName: String, emitKotlinSerialization: Boolean = false): String {
     val schema = schema()
-    val kotlinGenerator = KotlinGenerator(schema)
+    val kotlinGenerator = KotlinGenerator(
+        schema,
+        emitKotlinSerialization = emitKotlinSerialization
+    )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)
     val packageName = kotlinGenerator.generatedTypeName(type).packageName

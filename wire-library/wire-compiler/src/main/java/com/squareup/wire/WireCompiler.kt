@@ -105,6 +105,7 @@ class WireCompiler internal constructor(
   val emitCompact: Boolean,
   val emitDeclaredOptions: Boolean,
   val emitAppliedOptions: Boolean,
+  val emitKotlinSerialization: Boolean,
   val permitPackageCycles: Boolean,
   val javaInterop: Boolean
 ) {
@@ -129,7 +130,8 @@ class WireCompiler internal constructor(
           android = emitAndroid,
           javaInterop = javaInterop,
           emitDeclaredOptions = emitDeclaredOptions,
-          emitAppliedOptions = emitAppliedOptions
+          emitAppliedOptions = emitAppliedOptions,
+          emitKotlinSerialization = emitKotlinSerialization
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(
@@ -219,6 +221,7 @@ class WireCompiler internal constructor(
     private const val COMPACT = "--compact"
     private const val SKIP_DECLARED_OPTIONS = "--skip_declared_options"
     private const val EMIT_APPLIED_OPTIONS = "--emit_applied_options"
+    private const val EMIT_KOTLIN_SERIALIZATION = "--emit_kotlin_serialization_UNSUPPORTED"
     private const val PERMIT_PACKAGE_CYCLES_OPTIONS = "--permit_package_cycles"
     private const val JAVA_INTEROP = "--java_interop"
 
@@ -258,6 +261,7 @@ class WireCompiler internal constructor(
       var emitCompact = false
       var emitDeclaredOptions = true
       var emitAppliedOptions = false
+      var emitKotlinSerialization = false
       var permitPackageCycles = false
       var javaInterop = false
 
@@ -316,6 +320,7 @@ class WireCompiler internal constructor(
           arg == COMPACT -> emitCompact = true
           arg == SKIP_DECLARED_OPTIONS -> emitDeclaredOptions = false
           arg == EMIT_APPLIED_OPTIONS -> emitAppliedOptions = true
+          arg == EMIT_KOTLIN_SERIALIZATION -> emitKotlinSerialization = true
           arg == EMIT_APPLIED_OPTIONS -> permitPackageCycles = true
           arg == JAVA_INTEROP -> javaInterop = true
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
@@ -337,7 +342,7 @@ class WireCompiler internal constructor(
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, swiftOut,
           sourceFileNames, treeShakingRoots, treeShakingRubbish, modules, dryRun, namedFilesOnly,
           emitAndroid, emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions,
-          permitPackageCycles, javaInterop)
+          emitKotlinSerialization, permitPackageCycles, javaInterop)
     }
   }
 }

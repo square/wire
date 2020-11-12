@@ -95,12 +95,12 @@ import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
 import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
+import java.util.Locale
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
-import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -110,6 +110,7 @@ class KotlinGenerator private constructor(
   private val javaInterOp: Boolean,
   private val emitDeclaredOptions: Boolean,
   private val emitAppliedOptions: Boolean,
+  private val emitKotlinSerialization: Boolean,
   private val rpcCallStyle: RpcCallStyle,
   private val rpcRole: RpcRole
 ) {
@@ -410,7 +411,17 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(type)
     val adapterName = nameAllocator["ADAPTER"]
     val unknownFields = nameAllocator["unknownFields"]
-    val superclass = if (emitAndroid) ANDROID_MESSAGE else MESSAGE
+    val rawSuperclass = when {
+      emitKotlinSerialization -> ANY
+      emitAndroid -> ANDROID_MESSAGE
+      else -> MESSAGE
+    }
+    val superclass = when {
+      emitKotlinSerialization -> rawSuperclass
+      javaInterOp -> rawSuperclass.parameterizedBy(className, builderClassName)
+      else -> rawSuperclass.parameterizedBy(className, NOTHING)
+    }
+
     val companionBuilder = TypeSpec.companionObjectBuilder()
 
     addDefaultFields(type, companionBuilder, nameAllocator)
@@ -424,15 +435,19 @@ class KotlinGenerator private constructor(
           for (annotation in optionAnnotations(type.options)) {
             addAnnotation(annotation)
           }
+          if (emitKotlinSerialization) {
+            addAnnotation(AnnotationSpec.builder(SERIALIZABLE)
+                .build())
+          }
         }
-        .superclass(if (javaInterOp) {
-          superclass.parameterizedBy(className, builderClassName)
-        } else {
-          superclass.parameterizedBy(className, NOTHING)
-        })
-        .addSuperclassConstructorParameter(adapterName)
-        .addSuperclassConstructorParameter(unknownFields)
-        .addFunction(generateNewBuilderMethod(type, builderClassName))
+        .superclass(superclass)
+        .apply {
+          if (!emitKotlinSerialization) {
+            addSuperclassConstructorParameter(adapterName)
+            addSuperclassConstructorParameter(unknownFields)
+            addFunction(generateNewBuilderMethod(type, builderClassName))
+          }
+        }
         .addFunction(generateEqualsMethod(type, nameAllocator))
         .addFunction(generateHashCodeMethod(type, nameAllocator))
         .addFunction(generateToStringMethod(type, nameAllocator))
@@ -453,9 +468,11 @@ class KotlinGenerator private constructor(
       classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
     }
 
-    companionBuilder.addProperty(PropertySpec.builder("serialVersionUID", LONG, PRIVATE, CONST)
-        .initializer("0L")
-        .build())
+    if (!emitKotlinSerialization) {
+      companionBuilder.addProperty(PropertySpec.builder("serialVersionUID", LONG, PRIVATE, CONST)
+          .initializer("0L")
+          .build())
+    }
 
     classBuilder.addType(companionBuilder.build())
 
@@ -577,7 +594,11 @@ class KotlinGenerator private constructor(
     }
 
     val body = buildCodeBlock {
-      addStatement("var %N = super.hashCode", resultName)
+      if (!emitKotlinSerialization) {
+        addStatement("var %N = super.hashCode", resultName)
+      } else {
+        addStatement("var %N = 0", resultName)
+      }
       beginControlFlow("if (%N == 0)", resultName)
 
       val hashCode = MemberName("kotlin", "hashCode")
@@ -592,7 +613,9 @@ class KotlinGenerator private constructor(
         }
       }
 
-      addStatement("super.hashCode = %N", resultName)
+      if (!emitKotlinSerialization) {
+        addStatement("super.hashCode = %N", resultName)
+      }
       endControlFlow()
       addStatement("return %N", resultName)
     }
@@ -781,6 +804,7 @@ class KotlinGenerator private constructor(
       }
 
       val initializer = when {
+        emitKotlinSerialization -> CodeBlock.of("%N", fieldName)
         field.type!!.valueType?.isStruct == true -> {
           CodeBlock.of("%M(%S, %N)",
               MemberName("com.squareup.wire.internal", "immutableCopyOfMapWithStructValues"),
@@ -821,6 +845,15 @@ class KotlinGenerator private constructor(
             if (javaInterOp) {
               addAnnotation(JvmField::class)
             }
+            if (emitKotlinSerialization) {
+              val jsonName = field.jsonName!!
+              val generatedName = nameAllocator(message)[field]
+              if (jsonName != generatedName) {
+                addAnnotation(AnnotationSpec.builder(SERIAL_NAME)
+                    .addMember("%S", jsonName)
+                    .build())
+              }
+            }
             if (field.documentation.isNotBlank()) {
               addKdoc("%L\n", field.documentation.sanitizeKdoc())
             }
@@ -836,6 +869,11 @@ class KotlinGenerator private constructor(
         ParameterSpec.builder(unknownFields, byteClass)
             .defaultValue("%T.EMPTY", byteClass)
             .build())
+    if (emitKotlinSerialization) {
+      classBuilder.addProperty(PropertySpec.builder(unknownFields, byteClass)
+          .initializer(unknownFields)
+          .build())
+    }
 
     classBuilder.primaryConstructor(constructorBuilder.build())
   }
@@ -1728,6 +1766,16 @@ class KotlinGenerator private constructor(
         .build()
   }
 
+  fun generateFileAnnotations(): List<AnnotationSpec> {
+    if (emitKotlinSerialization) {
+      return listOf(AnnotationSpec.builder(USE_SERIALIZERS)
+          .addMember("%T::class", BYTE_STRING_SERIALIZER)
+          .build())
+    } else {
+      return listOf()
+    }
+  }
+
   companion object {
     private val BUILT_IN_TYPES = mapOf(
         ProtoType.BOOL to BOOLEAN,
@@ -1787,6 +1835,10 @@ class KotlinGenerator private constructor(
     )
     private val MESSAGE = Message::class.asClassName()
     private val ANDROID_MESSAGE = MESSAGE.peerClass("AndroidMessage")
+    private val SERIALIZABLE = ClassName("kotlinx.serialization", "Serializable")
+    private val SERIAL_NAME = ClassName("kotlinx.serialization", "SerialName")
+    private val USE_SERIALIZERS = ClassName("kotlinx.serialization", "UseSerializers")
+    private val BYTE_STRING_SERIALIZER = ClassName("com.squareup.wire", "ByteStringSerializer")
 
     @JvmStatic @JvmName("get")
     operator fun invoke(
@@ -1795,6 +1847,7 @@ class KotlinGenerator private constructor(
       javaInterop: Boolean = false,
       emitDeclaredOptions: Boolean = true,
       emitAppliedOptions: Boolean = false,
+      emitKotlinSerialization: Boolean = false,
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT
     ): KotlinGenerator {
@@ -1841,6 +1894,7 @@ class KotlinGenerator private constructor(
           javaInterOp = javaInterop,
           emitDeclaredOptions = emitDeclaredOptions,
           emitAppliedOptions = emitAppliedOptions,
+          emitKotlinSerialization = emitKotlinSerialization,
           rpcCallStyle = rpcCallStyle,
           rpcRole = rpcRole
       )
