@@ -328,6 +328,21 @@ task generateKotlinJavaInteropTests(type: JavaExec) {
   ]
 }
 
+// KOTLIN SERIALIZATION
+
+task generateKotlinSerializationTests(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes for kotlin.serialization'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+          '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin-serialization',
+          '--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin-serialization',
+          '--emit_kotlin_serialization_UNSUPPORTED',
+          'cdn_resource.proto',
+  ]
+}
+
 // SWIFT
 
 task generateSwiftTests(type: JavaExec) {
@@ -527,7 +542,7 @@ task generateTests(dependsOn: [generateJavaTests, generateCompactTests, generate
     generateAndroidCompactTests, generateKotlinTests, generateKotlinServicesTests,
     generateKotlinAndroidTests, generateKotlinJavaInteropTests, generateSwiftTests,
     generateGrpcTests, generateMoshiTests, generateProto3KotlinTests, generateProto3JavaTests,
-    generateSharedJson]) {
+    generateSharedJson, generateKotlinSerializationTests]) {
   group = 'Generate Tests'
   description = 'Generates all test classes'
 }

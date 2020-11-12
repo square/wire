@@ -1,4 +1,5 @@
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 
 kotlin {
   jvm {
@@ -61,11 +62,14 @@ kotlin {
       dependencies {
         api project(':wire-runtime')
         api project(':wire-grpc-client')
+        implementation deps.kotlin.serializationJson
       }
     }
     commonTest {
       kotlin.srcDirs += 'src/commonTest/proto-kotlin'
+      kotlin.srcDirs += 'src/commonTest/proto-kotlin-serialization'
       dependencies {
+        implementation project(':wire-kotlin-serialization')
         implementation deps.kotlin.test.common
         implementation deps.kotlin.test.annotations
       }

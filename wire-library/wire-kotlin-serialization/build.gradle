@@ -1,0 +1,40 @@
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+
+kotlin {
+  jvm {
+    withJava()
+  }
+  if (kmpJsEnabled) {
+    js {
+      configure([compilations.main, compilations.test]) {
+        tasks.getByName(compileKotlinTaskName).kotlinOptions {
+          moduleKind = 'umd'
+          sourceMap = true
+          metaInfo = true
+        }
+      }
+      nodejs()
+      browser()
+    }
+  }
+  if (kmpNativeEnabled) {
+    iosX64()
+    iosArm64()
+    // Required to generate tests tasks: https://youtrack.jetbrains.com/issue/KT-26547
+    linuxX64()
+    macosX64()
+  }
+  sourceSets {
+    all {
+      languageSettings {
+        useExperimentalAnnotation("kotlin.Experimental")
+      }
+    }
+    commonMain {
+      dependencies {
+        implementation deps.okio.multiplatform
+        implementation deps.kotlin.serializationJson
+      }
+    }
+  }
+}

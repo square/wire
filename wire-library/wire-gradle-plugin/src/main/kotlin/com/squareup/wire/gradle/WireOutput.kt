@@ -70,6 +70,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var javaInterop: Boolean = false
   var emitDeclaredOptions: Boolean = true
   var emitAppliedOptions: Boolean = false
+  var emitKotlinSerialization: String? = null
   var rpcCallStyle: String = "suspending"
   var rpcRole: String = "client"
   var singleMethodServices: Boolean = false
@@ -93,6 +94,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         javaInterop = javaInterop,
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions,
+        emitKotlinSerialization = emitKotlinSerialization == "UNSUPPORTED",
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole,
         singleMethodServices = singleMethodServices
