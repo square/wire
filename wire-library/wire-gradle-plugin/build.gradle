@@ -1,5 +1,6 @@
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'java-gradle-plugin'
+apply plugin: 'maven-publish'
 
 gradlePlugin {
   plugins {
