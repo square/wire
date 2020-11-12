@@ -52,7 +52,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.squareup.wire:wire-gradle-plugin:3.5.0'
+    classpath 'com.squareup.wire:wire-gradle-plugin:<version>'
   }
 }
 
