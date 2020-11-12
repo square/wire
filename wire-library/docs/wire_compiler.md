@@ -42,9 +42,28 @@ src/
 build.gradle
 ```
 
-Because this project uses the standard location the plugin configuration is easy. Just a simple
-block in `build.gradle`:
+Because this project uses the default configuration, plugin setup is easy. Just a simple
+block in `build.gradle`,
 
+Using plugin application:
+```groovy
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.squareup.wire:wire-gradle-plugin:3.5.0'
+  }
+}
+
+apply plugin: 'com.squareup.wire'
+
+wire {
+  kotlin {}
+}
+```
+
+Using the plugins DSL:
 ```groovy
 plugins {
   id 'application'
@@ -53,8 +72,7 @@ plugins {
 }
 
 wire {
-  kotlin {
-  }
+  kotlin {}
 }
 ```
 
