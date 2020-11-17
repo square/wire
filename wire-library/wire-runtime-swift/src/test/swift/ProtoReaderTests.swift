@@ -495,8 +495,7 @@ final class ProtoReaderTests: XCTestCase {
             XCTAssertEqual(values, [])
             
             // The original data is packed (length delimited), but we encode it as
-            // unpacked in the unknown data, so it shows up as individual varints
-            // So format changes from `0A_02_04_05` to `08_04_08_05`.
+            // unpacked in the unknown data, so it shows up as individual varints.
 
             let expectedData = Data(hexEncoded: """
                 08       // (Tag 1 | Varint)
@@ -505,7 +504,7 @@ final class ProtoReaderTests: XCTestCase {
                 05       // Unknown enum
             """)!
 
-            XCTAssertEqual(fields, Data(hexEncoded: "08_04_08_05"))
+            XCTAssertEqual(fields, expectedData)
         }
     }
 
@@ -798,7 +797,7 @@ final class ProtoReaderTests: XCTestCase {
                 10 // (Tag 2 | Varint)
                 05 // Value unknown
             """)!
-            XCTAssertEqual(unknownFields, expectedData  )
+            XCTAssertEqual(unknownFields, expectedData)
         }
     }
 
