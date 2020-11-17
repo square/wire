@@ -789,11 +789,11 @@ public final class ProtoReader {
         dictionary[unwrappedKey] = unwrappedValue
     }
 
-    /// Decode a key-value pair where the value is RawReprentable with RawValue == Int32.
+    /// Decode a key-value pair where the value is an enum.
     /// - Parameters:
     ///   - dictionary: The dictionary in which to add key-value pair if the decoded value is a known case in V.
     ///   - decodeKey: A closure that decodes the key for each pair
-    ///   - addUnknownPair: A closure that adds to the key-value pair to unknown fields in the event a given raw value is not a known case in V.
+    ///   - addUnknownPair: A closure that adds the key-value pair to unknown fields in the event a given raw value is not a known case in V.
     private func decode<K, V: RawRepresentable>(
         into dictionary: inout [K: V],
         decodeKey: () throws -> K,
@@ -815,7 +815,7 @@ public final class ProtoReader {
                 let intValue = try readVarint32()
                 let enumValue = V(rawValue: intValue)
                 if enumValue == nil {
-                    if case .throwError = enumDecodingStrategy {
+                    if enumDecodingStrategy == .throwError {
                         throw ProtoDecoder.Error.unknownEnumCase(type: V.self, fieldNumber: intValue)
                     }
                 }
