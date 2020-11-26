@@ -61,13 +61,14 @@ actual class GrpcClient private constructor(
     return RealGrpcStreamingCall(this, method)
   }
 
-  internal fun newCall(path: String, requestBody: GrpcRequestBody): Call {
+  internal fun newCall(method: GrpcMethod<*, *>, requestBody: GrpcRequestBody): Call {
     return client.newCall(GrpcRequestBuilder()
-        .url(baseUrl.resolve(path)!!)
+        .url(baseUrl.resolve(method.path)!!)
         .addHeader("te", "trailers")
         .addHeader("grpc-trace-bin", "")
         .addHeader("grpc-accept-encoding", "gzip")
         .addHeader("grpc-encoding", "gzip")
+        .tag(GrpcMethod::class.java, method)
         .method("POST", requestBody)
         .build())
   }

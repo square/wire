@@ -35,7 +35,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
   override val method: GrpcMethod<S, R>
 ) : GrpcStreamingCall<S, R> {
   private val requestBody = newDuplexRequestBody()
-  private val call = grpcClient.newCall(method.path, requestBody)
+  private val call = grpcClient.newCall(method, requestBody)
 
   override val timeout: Timeout
     get() = call.timeout()

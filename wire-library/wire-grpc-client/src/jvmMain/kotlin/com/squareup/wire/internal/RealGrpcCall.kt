@@ -126,7 +126,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
     check(this.call == null) { "already executed" }
 
     val requestBody = newRequestBody(method.requestAdapter, request)
-    val result = grpcClient.newCall(method.path, requestBody)
+    val result = grpcClient.newCall(method, requestBody)
     this.call = result
     if (canceled) result.cancel()
     (timeout as LateInitTimeout).init(result.timeout())
