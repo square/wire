@@ -1032,6 +1032,27 @@ class GrpcClientTest {
     }
   }
 
+  @Test
+  fun grpcMethodTagIsPresent() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Interceptor.Chain): Response {
+        val grpcMethod = chain.request().tag(GrpcMethod::class.java)
+        assertThat(grpcMethod?.path).isEqualTo("/routeguide.RouteGuide/GetFeature")
+        return chain.proceed(chain.request())
+      }
+    }
+
+    val grpcCall = routeGuideService.GetFeature()
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+  }
+
   private fun removeGrpcStatusInterceptor(): Interceptor {
     val noTrailersResponse = noTrailersResponse()
     assertThat(noTrailersResponse.trailers().size).isEqualTo(0)
