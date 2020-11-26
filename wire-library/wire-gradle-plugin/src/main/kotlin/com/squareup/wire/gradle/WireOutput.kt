@@ -22,6 +22,9 @@ import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity.RELATIVE
+import java.io.Serializable
 import javax.inject.Inject
 
 /**
@@ -29,8 +32,9 @@ import javax.inject.Inject
  * as destination directories and configuration options). This includes registering output
  * directories with the project so they can be compiled after they are generated.
  */
-abstract class WireOutput {
+abstract class WireOutput : Serializable {
   /** This will be set to a non-null value before [toTarget] is invoked. */
+  @get:PathSensitive(RELATIVE)
   var out: String? = null
 
   /** Create a target for the WireCompiler to use when emitting sources. */

@@ -152,7 +152,6 @@ class WirePlugin : Plugin<Project> {
         protoInput.addPaths(project, extension.protoPaths)
       }
 
-      val targets = outputs.map { it.toTarget() }
       val task =
           project.tasks.register("generate${source.name.capitalize()}Protos",
               WireTask::class.java) { task: WireTask ->
@@ -174,7 +173,7 @@ class WirePlugin : Plugin<Project> {
             task.untilVersion = extension.untilVersion
             task.onlyVersion = extension.onlyVersion
             task.rules = extension.rules
-            task.targets = targets
+            task.outputs.set(outputs)
             task.permitPackageCycles = extension.permitPackageCycles
           }
 

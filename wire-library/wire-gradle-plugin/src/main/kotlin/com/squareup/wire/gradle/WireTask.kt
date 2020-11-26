@@ -20,6 +20,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -32,6 +33,7 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 import java.io.File
+import kotlin.DeprecationLevel.ERROR
 
 @CacheableTask
 open class WireTask : SourceTask() {
@@ -72,8 +74,17 @@ open class WireTask : SourceTask() {
   @Optional
   var rules: String? = null
 
-  @Input
-  lateinit var targets: List<Target>
+  @Deprecated(
+    "Use outputs instead, this property is not compatible with build caching",
+    level = ERROR
+  )
+  @get:Input
+  @get:Optional
+  var targets: List<Target>? = null
+
+  @get:Optional // only optional for backward compat with previous deprecated targets property
+  @get:Input
+  val outputs: ListProperty<WireOutput> = project.objects.listProperty(WireOutput::class.java)
 
   @Input
   var permitPackageCycles: Boolean = false
@@ -102,11 +113,17 @@ open class WireTask : SourceTask() {
     }
     if (includes.isEmpty() && excludes.isEmpty()) logger.info("NO INCLUDES OR EXCLUDES")
 
+    @Suppress("deprecation")
+    val finalTargets = when {
+      outputs.isPresent -> outputs.get().map { it.toTarget() }
+      targets != null -> targets!!
+      else -> error("No targets available.")
+    }
     if (logger.isDebugEnabled) {
       logger.debug("roots: $roots")
       logger.debug("prunes: $prunes")
       logger.debug("rules: $rules")
-      logger.debug("targets: $targets")
+      logger.debug("targets: $finalTargets")
     }
 
     val wireRun = WireRun(
@@ -118,7 +135,7 @@ open class WireTask : SourceTask() {
         sinceVersion = sinceVersion,
         untilVersion = untilVersion,
         onlyVersion = onlyVersion,
-        targets = targets,
+        targets = finalTargets,
         permitPackageCycles = permitPackageCycles
     )
     wireRun.execute()
