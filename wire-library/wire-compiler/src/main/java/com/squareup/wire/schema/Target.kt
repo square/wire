@@ -277,7 +277,13 @@ data class KotlinTarget(
   val rpcRole: RpcRole = RpcRole.CLIENT,
 
   /** True for emitted services to implement one interface per RPC. */
-  val singleMethodServices: Boolean = false
+  val singleMethodServices: Boolean = false,
+
+  /**
+   * If a oneof has more than or [boxOneOfsMinSize] fields, it will be generated using boxed oneofs
+   * as defined in [OneOf][com.squareup.wire.OneOf].
+   */
+  val boxOneOfsMinSize: Int = 5_000,
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -305,7 +311,8 @@ data class KotlinTarget(
         emitAppliedOptions = emitAppliedOptions,
         emitKotlinSerialization = emitKotlinSerialization,
         rpcCallStyle = rpcCallStyle,
-        rpcRole = rpcRole
+        rpcRole = rpcRole,
+        boxOneOfsMinSize = boxOneOfsMinSize
     )
 
     return object : SchemaHandler {

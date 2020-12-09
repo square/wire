@@ -157,9 +157,9 @@ public class Form(
                 }
               }
               reader.readUnknownField(tag)
-              for (choiceKey_ in decisionKeys) {
-                if (tag == choiceKey_.tag) {
-                  decision = choiceKey_.decode(reader)
+              for (choiceKey in decisionKeys) {
+                if (tag == choiceKey.tag) {
+                  decision = choiceKey.decode(reader)
                   return@forEachTag Unit
                 }
               }

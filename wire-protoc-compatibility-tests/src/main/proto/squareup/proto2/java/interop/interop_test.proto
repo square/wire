@@ -44,3 +44,14 @@ message InteropJsonName {
   optional string public = 2 [json_name = "two"];
   optional string camel_case = 3 [json_name = "three"];
 }
+
+message InteropBoxOneOf {
+  oneof option {
+    string a = 1;
+    int32 b = 2;
+    bool c = 3;
+    int64 d = 4;
+    bytes e = 5;
+    sint32 f = 6;
+  }
+}

@@ -26,6 +26,8 @@ wire {
 
   kotlin {
     javaInterop = true
+    boxOneOfsMinSize = 5
+
     includes = [
             'squareup.proto2.kotlin.*',
             'squareup.proto3.kotlin.*',

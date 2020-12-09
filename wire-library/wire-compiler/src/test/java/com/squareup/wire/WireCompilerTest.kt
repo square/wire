@@ -557,7 +557,7 @@ class WireCompilerTest {
   @Test
   fun testFormOneOfKotlin() {
     val sources = arrayOf("form.proto")
-    compileToKotlin(sources)
+    compileToKotlin(sources, "--kotlin_box_oneofs_min_size=8")
 
     val outputs = arrayOf("com/squareup/wire/protos/kotlin/Form.kt")
     assertKotlinOutputs(outputs)

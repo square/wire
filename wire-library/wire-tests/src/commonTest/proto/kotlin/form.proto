@@ -29,6 +29,7 @@ message Form {
   message SpacerElement {
   }
   message TextElement {
+    optional string text = 1;
   }
   message CustomizedCardElement {
   }
@@ -53,8 +54,19 @@ message Form {
     CustomizedCardElement customized_card_element = 7;
     AddressElement address_element = 8;
     TextInputElement text_input_element = 9;
-    OptionPickerElement option_picker_element = 10;
+    OptionPickerElement option_picker_element = 10 [deprecated = true];
     DetailRowElement detail_row_element = 11;
     CurrencyConversionFlagsElement currency_conversion_flags_element = 12;
+  }
+
+  oneof decision {
+    string a = 101;
+    string b = 102;
+    string c = 103;
+    string d = 104;
+    string e = 105;
+    string f = 106;
+    string g = 107;
+    string h = 108;
   }
 }

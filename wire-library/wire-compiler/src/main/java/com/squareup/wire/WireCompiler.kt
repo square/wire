@@ -107,7 +107,8 @@ class WireCompiler internal constructor(
   val emitAppliedOptions: Boolean,
   val emitKotlinSerialization: Boolean,
   val permitPackageCycles: Boolean,
-  val javaInterop: Boolean
+  val javaInterop: Boolean,
+  val kotlinBoxOneOfsMinSize: Int,
 ) {
 
   @Throws(IOException::class)
@@ -131,7 +132,8 @@ class WireCompiler internal constructor(
           javaInterop = javaInterop,
           emitDeclaredOptions = emitDeclaredOptions,
           emitAppliedOptions = emitAppliedOptions,
-          emitKotlinSerialization = emitKotlinSerialization
+          emitKotlinSerialization = emitKotlinSerialization,
+          boxOneOfsMinSize = kotlinBoxOneOfsMinSize,
       )
     } else if (swiftOut != null) {
       targets += SwiftTarget(
@@ -224,6 +226,7 @@ class WireCompiler internal constructor(
     private const val EMIT_KOTLIN_SERIALIZATION = "--emit_kotlin_serialization_UNSUPPORTED"
     private const val PERMIT_PACKAGE_CYCLES_OPTIONS = "--permit_package_cycles"
     private const val JAVA_INTEROP = "--java_interop"
+    private const val KOTLIN_BOX_ONEOFS_MIN_SIZE = "--kotlin_box_oneofs_min_size="
 
     @Throws(IOException::class)
     @JvmStatic fun main(args: Array<String>) {
@@ -264,6 +267,7 @@ class WireCompiler internal constructor(
       var emitKotlinSerialization = false
       var permitPackageCycles = false
       var javaInterop = false
+      var kotlinBoxOneOfsMinSize = 5_000
 
       for (arg in args) {
         when {
@@ -279,6 +283,10 @@ class WireCompiler internal constructor(
           arg.startsWith(KOTLIN_OUT_FLAG) -> {
             check(kotlinOut == null) { "kotlin_out already set" }
             kotlinOut = arg.substring(KOTLIN_OUT_FLAG.length)
+          }
+
+          arg.startsWith(KOTLIN_BOX_ONEOFS_MIN_SIZE) -> {
+            kotlinBoxOneOfsMinSize = arg.substring(KOTLIN_BOX_ONEOFS_MIN_SIZE.length).toInt()
           }
 
           arg.startsWith(SWIFT_OUT_FLAG) -> {
@@ -342,7 +350,7 @@ class WireCompiler internal constructor(
       return WireCompiler(fileSystem, logger, protoPaths, javaOut, kotlinOut, swiftOut,
           sourceFileNames, treeShakingRoots, treeShakingRubbish, modules, dryRun, namedFilesOnly,
           emitAndroid, emitAndroidAnnotations, emitCompact, emitDeclaredOptions, emitAppliedOptions,
-          emitKotlinSerialization, permitPackageCycles, javaInterop)
+          emitKotlinSerialization, permitPackageCycles, javaInterop, kotlinBoxOneOfsMinSize)
     }
   }
 }
