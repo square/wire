@@ -210,6 +210,7 @@ task generateKotlinTests(type: JavaExec) {
   args = [
       '--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin',
       '--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin',
+      '--kotlin_box_oneofs_min_size=8',
       '--emit_applied_options',
       'all_types.proto',
       'custom_options.proto',

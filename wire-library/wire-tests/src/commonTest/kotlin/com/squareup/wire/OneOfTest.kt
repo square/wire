@@ -15,19 +15,45 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.protos.kotlin.OneOfMessage
+import com.squareup.wire.protos.kotlin.OneOfMessage2 as OneOfMessage
+import okio.ByteString.Companion.decodeHex
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.fail
 
 class OneOfTest {
   @Test
   fun constructorFailsWhenBothFieldsAreNonNull() {
-    try {
-      OneOfMessage(foo = 1, bar = "two", baz = null)
-      fail()
-    } catch (expected: IllegalArgumentException) {
-      assertEquals("At most one of foo, bar, baz may be non-null", expected.message)
+//    try {
+//      OneOfMessage(foo = 1, bar = "two", baz = null)
+//      fail()
+//    } catch (expected: IllegalArgumentException) {
+//      assertEquals("At most one of foo, bar, baz may be non-null", expected.message)
+//    }
+  }
+
+  @Test
+  fun encodeDecode() {
+
+    val choice = OneOf(OneOfMessage.choiceBar, "hello")
+    val message = OneOfMessage(choice = choice)
+
+    val s = when (message.choice?.key) {
+      OneOfMessage.choiceBar -> "bar"
+      OneOfMessage.choiceBaz -> "baz"
+      OneOfMessage.choiceFoo -> "foo"
+      null -> "none"
+      else -> error("unexpected choice")
     }
+
+    val expectedBytes = "1a0568656c6c6f".decodeHex()
+    assertEquals(expectedBytes, OneOfMessage.ADAPTER.encodeByteString(message))
+    assertEquals(message, OneOfMessage.ADAPTER.decode(expectedBytes))
+
+//    try {
+//      OneOfMessage(foo = 1, bar = "two", baz = null)
+//      fail()
+//    } catch (expected: IllegalArgumentException) {
+//      assertEquals("At most one of foo, bar, baz may be non-null", expected.message)
+//    }
   }
 }
