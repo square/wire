@@ -6,10 +6,12 @@ import Wire
 public struct Form {
 
     public var choice: Choice?
+    public var decision: Decision?
     public var unknownFields: Data = .init()
 
-    public init(choice: Choice? = nil) {
+    public init(choice: Choice? = nil, decision: Decision? = nil) {
         self.choice = choice
+        self.decision = decision
     }
 
     public enum Choice {
@@ -23,6 +25,7 @@ public struct Form {
         case customized_card_element(CustomizedCardElement)
         case address_element(AddressElement)
         case text_input_element(TextInputElement)
+        @available(*, deprecated)
         case option_picker_element(OptionPickerElement)
         case detail_row_element(DetailRowElement)
         case currency_conversion_flags_element(CurrencyConversionFlagsElement)
@@ -41,6 +44,32 @@ public struct Form {
             case .option_picker_element(let option_picker_element): try writer.encode(tag: 10, value: option_picker_element)
             case .detail_row_element(let detail_row_element): try writer.encode(tag: 11, value: detail_row_element)
             case .currency_conversion_flags_element(let currency_conversion_flags_element): try writer.encode(tag: 12, value: currency_conversion_flags_element)
+            }
+        }
+
+    }
+
+    public enum Decision {
+
+        case a(String)
+        case b(String)
+        case c(String)
+        case d(String)
+        case e(String)
+        case f(String)
+        case g(String)
+        case h(String)
+
+        fileprivate func encode(to writer: ProtoWriter) throws {
+            switch self {
+            case .a(let a): try writer.encode(tag: 101, value: a)
+            case .b(let b): try writer.encode(tag: 102, value: b)
+            case .c(let c): try writer.encode(tag: 103, value: c)
+            case .d(let d): try writer.encode(tag: 104, value: d)
+            case .e(let e): try writer.encode(tag: 105, value: e)
+            case .f(let f): try writer.encode(tag: 106, value: f)
+            case .g(let g): try writer.encode(tag: 107, value: g)
+            case .h(let h): try writer.encode(tag: 108, value: h)
             }
         }
 
@@ -93,9 +122,11 @@ public struct Form {
 
     public struct TextElement {
 
+        public var text: String?
         public var unknownFields: Data = .init()
 
-        public init() {
+        public init(text: String? = nil) {
+            self.text = text
         }
 
     }
@@ -163,6 +194,16 @@ extension Form.Choice : Equatable {
 
 #if !WIRE_REMOVE_HASHABLE
 extension Form.Choice : Hashable {
+}
+#endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension Form.Decision : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension Form.Decision : Hashable {
 }
 #endif
 
@@ -338,23 +379,33 @@ extension Form.TextElement : Hashable {
 
 extension Form.TextElement : Proto2Codable {
     public init(from reader: ProtoReader) throws {
+        var text: String? = nil
+
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
             switch tag {
+            case 1: text = try reader.decode(String.self)
             default: try reader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try reader.endMessage(token: token)
 
+        self.text = text
     }
 
     public func encode(to writer: ProtoWriter) throws {
+        try writer.encode(tag: 1, value: self.text)
         try writer.writeUnknownFields(unknownFields)
     }
 }
 
 #if !WIRE_REMOVE_CODABLE
 extension Form.TextElement : Codable {
+    public enum CodingKeys : String, CodingKey {
+
+        case text
+
+    }
 }
 #endif
 
@@ -563,6 +614,7 @@ extension Form : Hashable {
 extension Form : Proto2Codable {
     public init(from reader: ProtoReader) throws {
         var choice: Form.Choice? = nil
+        var decision: Form.Decision? = nil
 
         let token = try reader.beginMessage()
         while let tag = try reader.nextTag(token: token) {
@@ -579,17 +631,29 @@ extension Form : Proto2Codable {
             case 10: choice = .option_picker_element(try reader.decode(Form.OptionPickerElement.self))
             case 11: choice = .detail_row_element(try reader.decode(Form.DetailRowElement.self))
             case 12: choice = .currency_conversion_flags_element(try reader.decode(Form.CurrencyConversionFlagsElement.self))
+            case 101: decision = .a(try reader.decode(String.self))
+            case 102: decision = .b(try reader.decode(String.self))
+            case 103: decision = .c(try reader.decode(String.self))
+            case 104: decision = .d(try reader.decode(String.self))
+            case 105: decision = .e(try reader.decode(String.self))
+            case 106: decision = .f(try reader.decode(String.self))
+            case 107: decision = .g(try reader.decode(String.self))
+            case 108: decision = .h(try reader.decode(String.self))
             default: try reader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try reader.endMessage(token: token)
 
         self.choice = choice
+        self.decision = decision
     }
 
     public func encode(to writer: ProtoWriter) throws {
         if let choice = self.choice {
             try choice.encode(to: writer)
+        }
+        if let decision = self.decision {
+            try decision.encode(to: writer)
         }
         try writer.writeUnknownFields(unknownFields)
     }
@@ -638,6 +702,33 @@ extension Form : Codable {
         } else  {
             self.choice = nil
         }
+        if container.contains(.a) {
+            let a = try container.decode(String.self, forKey: .a)
+            self.decision = .a(a)
+        } else if container.contains(.b) {
+            let b = try container.decode(String.self, forKey: .b)
+            self.decision = .b(b)
+        } else if container.contains(.c) {
+            let c = try container.decode(String.self, forKey: .c)
+            self.decision = .c(c)
+        } else if container.contains(.d) {
+            let d = try container.decode(String.self, forKey: .d)
+            self.decision = .d(d)
+        } else if container.contains(.e) {
+            let e = try container.decode(String.self, forKey: .e)
+            self.decision = .e(e)
+        } else if container.contains(.f) {
+            let f = try container.decode(String.self, forKey: .f)
+            self.decision = .f(f)
+        } else if container.contains(.g) {
+            let g = try container.decode(String.self, forKey: .g)
+            self.decision = .g(g)
+        } else if container.contains(.h) {
+            let h = try container.decode(String.self, forKey: .h)
+            self.decision = .h(h)
+        } else  {
+            self.decision = nil
+        }
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -657,6 +748,17 @@ extension Form : Codable {
         case .currency_conversion_flags_element(let currency_conversion_flags_element): try container.encode(currency_conversion_flags_element, forKey: .currency_conversion_flags_element)
         case Optional.none: break
         }
+        switch self.decision {
+        case .a(let a): try container.encode(a, forKey: .a)
+        case .b(let b): try container.encode(b, forKey: .b)
+        case .c(let c): try container.encode(c, forKey: .c)
+        case .d(let d): try container.encode(d, forKey: .d)
+        case .e(let e): try container.encode(e, forKey: .e)
+        case .f(let f): try container.encode(f, forKey: .f)
+        case .g(let g): try container.encode(g, forKey: .g)
+        case .h(let h): try container.encode(h, forKey: .h)
+        case Optional.none: break
+        }
     }
 
     public enum CodingKeys : String, CodingKey {
@@ -673,6 +775,14 @@ extension Form : Codable {
         case option_picker_element
         case detail_row_element
         case currency_conversion_flags_element
+        case a
+        case b
+        case c
+        case d
+        case e
+        case f
+        case g
+        case h
 
     }
 }

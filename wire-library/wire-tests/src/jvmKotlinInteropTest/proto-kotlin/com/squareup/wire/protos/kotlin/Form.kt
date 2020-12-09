@@ -13,13 +13,10 @@ import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
 import kotlin.Any
-import kotlin.AssertionError
 import kotlin.Boolean
 import kotlin.Deprecated
-import kotlin.DeprecationLevel
 import kotlin.Int
 import kotlin.Long
-import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Set
@@ -28,15 +25,19 @@ import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class Form(
+  @JvmField
   public val choice: OneOf<Choice<*>, *>? = null,
+  @JvmField
   public val decision: OneOf<Decision<*>, *>? = null,
   unknownFields: ByteString = ByteString.EMPTY
-) : Message<Form, Nothing>(ADAPTER, unknownFields) {
-  @Deprecated(
-    message = "Shouldn't be used in Kotlin",
-    level = DeprecationLevel.HIDDEN
-  )
-  public override fun newBuilder(): Nothing = throw AssertionError()
+) : Message<Form, Form.Builder>(ADAPTER, unknownFields) {
+  public override fun newBuilder(): Builder {
+    val builder = Builder()
+    builder.choice = choice
+    builder.decision = decision
+    builder.addUnknownFields(unknownFields)
+    return builder
+  }
 
   public override fun equals(other: Any?): Boolean {
     if (other === this) return true
@@ -70,6 +71,30 @@ public class Form(
     decision: OneOf<Decision<*>, *>? = this.decision,
     unknownFields: ByteString = this.unknownFields
   ): Form = Form(choice, decision, unknownFields)
+
+  public class Builder : Message.Builder<Form, Builder>() {
+    @JvmField
+    public var choice: OneOf<Choice<*>, *>? = null
+
+    @JvmField
+    public var decision: OneOf<Decision<*>, *>? = null
+
+    public fun choice(choice: OneOf<Choice<*>, *>?): Builder {
+      this.choice = choice
+      return this
+    }
+
+    public fun decision(decision: OneOf<Decision<*>, *>?): Builder {
+      this.decision = decision
+      return this
+    }
+
+    public override fun build(): Form = Form(
+      choice = choice,
+      decision = decision,
+      unknownFields = buildUnknownFields()
+    )
+  }
 
   /**
    *
@@ -233,12 +258,12 @@ public class Form(
 
   public class ButtonElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<ButtonElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<ButtonElement, ButtonElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -253,6 +278,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): ButtonElement =
         ButtonElement(unknownFields)
+
+    public class Builder : Message.Builder<ButtonElement, Builder>() {
+      public override fun build(): ButtonElement = ButtonElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -290,12 +321,12 @@ public class Form(
 
   public class LocalImageElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<LocalImageElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<LocalImageElement, LocalImageElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -310,6 +341,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): LocalImageElement =
         LocalImageElement(unknownFields)
+
+    public class Builder : Message.Builder<LocalImageElement, Builder>() {
+      public override fun build(): LocalImageElement = LocalImageElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -348,12 +385,12 @@ public class Form(
 
   public class RemoteImageElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<RemoteImageElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<RemoteImageElement, RemoteImageElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -368,6 +405,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): RemoteImageElement =
         RemoteImageElement(unknownFields)
+
+    public class Builder : Message.Builder<RemoteImageElement, Builder>() {
+      public override fun build(): RemoteImageElement = RemoteImageElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -406,12 +449,12 @@ public class Form(
 
   public class MoneyElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<MoneyElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<MoneyElement, MoneyElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -426,6 +469,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): MoneyElement =
         MoneyElement(unknownFields)
+
+    public class Builder : Message.Builder<MoneyElement, Builder>() {
+      public override fun build(): MoneyElement = MoneyElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -463,12 +512,12 @@ public class Form(
 
   public class SpacerElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<SpacerElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<SpacerElement, SpacerElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -483,6 +532,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): SpacerElement =
         SpacerElement(unknownFields)
+
+    public class Builder : Message.Builder<SpacerElement, Builder>() {
+      public override fun build(): SpacerElement = SpacerElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -523,14 +578,16 @@ public class Form(
       tag = 1,
       adapter = "com.squareup.wire.ProtoAdapter#STRING"
     )
+    @JvmField
     public val text: String? = null,
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<TextElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<TextElement, TextElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.text = text
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -558,6 +615,21 @@ public class Form(
 
     public fun copy(text: String? = this.text, unknownFields: ByteString = this.unknownFields):
         TextElement = TextElement(text, unknownFields)
+
+    public class Builder : Message.Builder<TextElement, Builder>() {
+      @JvmField
+      public var text: String? = null
+
+      public fun text(text: String?): Builder {
+        this.text = text
+        return this
+      }
+
+      public override fun build(): TextElement = TextElement(
+        text = text,
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -604,12 +676,12 @@ public class Form(
 
   public class CustomizedCardElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<CustomizedCardElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<CustomizedCardElement, CustomizedCardElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -624,6 +696,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): CustomizedCardElement =
         CustomizedCardElement(unknownFields)
+
+    public class Builder : Message.Builder<CustomizedCardElement, Builder>() {
+      public override fun build(): CustomizedCardElement = CustomizedCardElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -663,12 +741,12 @@ public class Form(
 
   public class AddressElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<AddressElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<AddressElement, AddressElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -683,6 +761,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): AddressElement =
         AddressElement(unknownFields)
+
+    public class Builder : Message.Builder<AddressElement, Builder>() {
+      public override fun build(): AddressElement = AddressElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -720,12 +804,12 @@ public class Form(
 
   public class TextInputElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<TextInputElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<TextInputElement, TextInputElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -740,6 +824,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): TextInputElement =
         TextInputElement(unknownFields)
+
+    public class Builder : Message.Builder<TextInputElement, Builder>() {
+      public override fun build(): TextInputElement = TextInputElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -777,12 +867,12 @@ public class Form(
 
   public class OptionPickerElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<OptionPickerElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<OptionPickerElement, OptionPickerElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -797,6 +887,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): OptionPickerElement =
         OptionPickerElement(unknownFields)
+
+    public class Builder : Message.Builder<OptionPickerElement, Builder>() {
+      public override fun build(): OptionPickerElement = OptionPickerElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -835,12 +931,12 @@ public class Form(
 
   public class DetailRowElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<DetailRowElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<DetailRowElement, DetailRowElement.Builder>(ADAPTER, unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -855,6 +951,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): DetailRowElement =
         DetailRowElement(unknownFields)
+
+    public class Builder : Message.Builder<DetailRowElement, Builder>() {
+      public override fun build(): DetailRowElement = DetailRowElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
@@ -892,12 +994,13 @@ public class Form(
 
   public class CurrencyConversionFlagsElement(
     unknownFields: ByteString = ByteString.EMPTY
-  ) : Message<CurrencyConversionFlagsElement, Nothing>(ADAPTER, unknownFields) {
-    @Deprecated(
-      message = "Shouldn't be used in Kotlin",
-      level = DeprecationLevel.HIDDEN
-    )
-    public override fun newBuilder(): Nothing = throw AssertionError()
+  ) : Message<CurrencyConversionFlagsElement, CurrencyConversionFlagsElement.Builder>(ADAPTER,
+      unknownFields) {
+    public override fun newBuilder(): Builder {
+      val builder = Builder()
+      builder.addUnknownFields(unknownFields)
+      return builder
+    }
 
     public override fun equals(other: Any?): Boolean {
       if (other === this) return true
@@ -912,6 +1015,12 @@ public class Form(
 
     public fun copy(unknownFields: ByteString = this.unknownFields): CurrencyConversionFlagsElement
         = CurrencyConversionFlagsElement(unknownFields)
+
+    public class Builder : Message.Builder<CurrencyConversionFlagsElement, Builder>() {
+      public override fun build(): CurrencyConversionFlagsElement = CurrencyConversionFlagsElement(
+        unknownFields = buildUnknownFields()
+      )
+    }
 
     public companion object {
       @JvmField
