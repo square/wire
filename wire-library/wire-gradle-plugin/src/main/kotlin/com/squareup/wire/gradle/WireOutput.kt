@@ -74,6 +74,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var rpcCallStyle: String = "suspending"
   var rpcRole: String = "client"
   var singleMethodServices: Boolean = false
+  var boxOneOfsMinSize: Int = 5_000
 
   override fun toTarget(): KotlinTarget {
     val rpcCallStyle = RpcCallStyle.values()
@@ -97,7 +98,8 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         emitKotlinSerialization = emitKotlinSerialization == "UNSUPPORTED",
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole,
-        singleMethodServices = singleMethodServices
+        singleMethodServices = singleMethodServices,
+        boxOneOfsMinSize = boxOneOfsMinSize,
     )
   }
 }

@@ -15,10 +15,12 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.protos.kotlin.Form
 import com.squareup.wire.protos.kotlin.OneOfMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class OneOfTest {
   private val INITIAL_BYTES = byteArrayOf()
@@ -68,6 +70,27 @@ class OneOfTest {
     } catch (expected: IllegalArgumentException) {
       assertThat(expected).hasMessage("At most one of foo, bar, baz may be non-null")
     }
+  }
+
+  @Test
+  fun usingBoxOneOfs() {
+    val viaBuilder = Form.Builder()
+      .choice(OneOf(Form.choiceText_element, Form.TextElement("Hello!")))
+      .decision(OneOf(Form.decisionD, "Hi!"))
+      .build()
+    val viaConstructor = Form(
+      choice = OneOf(Form.choiceText_element, Form.TextElement("Hello!")),
+      decision = OneOf(Form.decisionD, "Hi!"),
+    )
+
+    assertEquals(viaBuilder, viaConstructor)
+    assertEquals(viaBuilder.toString(), viaConstructor.toString())
+
+    assertThat(viaBuilder.choice!!.getOrNull(Form.choiceAddress_element)).isNull()
+    assertThat(viaBuilder.choice.getOrNull(Form.choiceText_element))
+      .isEqualTo(Form.TextElement("Hello!"))
+    assertThat(viaBuilder.decision!!.getOrNull(Form.decisionA)).isNull()
+    assertThat(viaBuilder.decision.getOrNull(Form.decisionD)).isEqualTo("Hi!")
   }
 
   private fun OneOfMessage.Builder.validate(

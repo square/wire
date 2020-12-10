@@ -18,6 +18,7 @@ package com.squareup.wire
 import com.google.protobuf.Duration
 import org.junit.Ignore
 import org.junit.Test
+import squareup.proto2.java.interop.InteropBoxOneOf as InteropBoxOneOfJ2
 import squareup.proto2.java.interop.InteropCamelCase as InteropCamelCaseJ2
 import squareup.proto2.java.interop.InteropDuration as InteropDurationJ2
 import squareup.proto2.java.interop.InteropJsonName as InteropJsonNameJ2
@@ -25,19 +26,23 @@ import squareup.proto2.java.interop.InteropTest.InteropCamelCase as InteropCamel
 import squareup.proto2.java.interop.InteropTest.InteropJsonName as InteropJsonNameP2
 import squareup.proto2.java.interop.InteropTest.InteropUint64 as InteropUint64P2
 import squareup.proto2.java.interop.InteropUint64 as InteropUint64J2
+import squareup.proto2.kotlin.interop.InteropBoxOneOf as InteropBoxOneOfK2
 import squareup.proto2.kotlin.interop.InteropCamelCase as InteropCamelCaseK2
 import squareup.proto2.kotlin.interop.InteropDuration as InteropDurationK2
 import squareup.proto2.kotlin.interop.InteropJsonName as InteropJsonNameK2
 import squareup.proto2.kotlin.interop.InteropUint64 as InteropUint64K2
+import squareup.proto3.java.interop.InteropBoxOneOf as InteropBoxOneOfJ3
 import squareup.proto3.java.interop.InteropCamelCase as InteropCamelCaseJ3
 import squareup.proto3.java.interop.InteropDuration as InteropDurationJ3
 import squareup.proto3.java.interop.InteropJsonName as InteropJsonNameJ3
 import squareup.proto3.java.interop.InteropOptional as InteropOptionalJ3
+import squareup.proto3.java.interop.InteropTest.InteropBoxOneOf as InteropBoxOneOfP3
 import squareup.proto3.java.interop.InteropTest.InteropCamelCase as InteropCamelCaseP3
 import squareup.proto3.java.interop.InteropTest.InteropDuration as InteropDurationP3
 import squareup.proto3.java.interop.InteropTest.InteropJsonName as InteropJsonNameP3
 import squareup.proto3.java.interop.InteropTest.InteropUint64 as InteropUint64P3
 import squareup.proto3.java.interop.InteropUint64 as InteropUint64J3
+import squareup.proto3.kotlin.interop.InteropBoxOneOf as InteropBoxOneOfK3
 import squareup.proto3.kotlin.interop.InteropCamelCase as InteropCamelCaseK3
 import squareup.proto3.kotlin.interop.InteropDuration as InteropDurationK3
 import squareup.proto3.kotlin.interop.InteropJsonName as InteropJsonNameK3
@@ -238,6 +243,20 @@ class InteropTest {
 
     checker.check(InteropOptionalK3(""))
     checker.check(InteropOptionalJ3(""))
+  }
+
+  @Ignore("Needs to fix JSON for boxed oneofs.")
+  @Test fun boxOneOfs() {
+    val checker = InteropChecker(
+      protocMessage = InteropBoxOneOfP3.newBuilder()
+        .setA("Hello")
+        .build(),
+      canonicalJson = """{"a":"Hello"}""",
+    )
+    checker.check(InteropBoxOneOfJ2.Builder().a("Hello").build())
+    checker.check(InteropBoxOneOfJ3.Builder().a("Hello").build())
+    checker.check(InteropBoxOneOfK2.Builder().option(OneOf(InteropBoxOneOfK2.optionA, "Hello")).build())
+    checker.check(InteropBoxOneOfK3.Builder().option(OneOf(InteropBoxOneOfK3.optionA, "Hello")).build())
   }
 }
 
