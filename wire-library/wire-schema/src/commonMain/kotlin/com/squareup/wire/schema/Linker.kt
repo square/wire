@@ -60,12 +60,13 @@ class Linker {
 
   /** Returns a linker for [path], loading the file if necessary. */
   internal fun getFileLinker(path: String): FileLinker {
-    val existing = fileLinkers[path]
+    val normalisedPath = normaliseImportPath(path)
+    val existing = fileLinkers[normalisedPath]
     if (existing != null) return existing
 
     val protoFile = loader.withErrors(errors).load(path)
     val result = FileLinker(protoFile, withContext(protoFile))
-    fileLinkers[path] = result
+    fileLinkers[normalisedPath] = result
     fileOptionsQueue += result
     return result
   }
@@ -79,7 +80,7 @@ class Linker {
     sourceFiles += getFileLinker("google/protobuf/descriptor.proto")
     for (sourceFile in sourceProtoFiles) {
       val fileLinker = FileLinker(sourceFile, withContext(sourceFile))
-      fileLinkers[sourceFile.location.path] = fileLinker
+      fileLinkers[normaliseImportPath(sourceFile.location.path)] = fileLinker
       sourceFiles += fileLinker
     }
 
@@ -460,7 +461,7 @@ class Linker {
     if (type.isScalar) return
 
     val path = location.path
-    val requiredImport = get(type)!!.location.path
+    val requiredImport = normaliseImportPath(get(type)!!.location.path)
     val fileLinker = getFileLinker(path)
     if (path != requiredImport && !fileLinker.effectiveImports().contains(requiredImport)) {
       errors += "$path needs to import $requiredImport"
@@ -480,4 +481,6 @@ class Linker {
 
   /** Returns a new linker that uses [context] to resolve type names and report errors. */
   fun withContext(context: Any) = Linker(this, context)
+
+  private fun normaliseImportPath(path: String): String = path.replace('\\', '/')
 }
