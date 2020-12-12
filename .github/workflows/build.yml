@@ -36,6 +36,7 @@ jobs:
           java-version: ${{ matrix.java-version }}
 
       - name: Check test files
+        shell: bash
         run: |
           ./gradlew clean generateTests
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
