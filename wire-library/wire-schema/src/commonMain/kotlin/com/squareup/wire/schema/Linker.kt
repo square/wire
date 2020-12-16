@@ -475,7 +475,7 @@ class Linker {
     val path = location.path
     val fileLinker = getFileLinker(path)
     val normalisedImportPath = Location.normalisePath(requiredImport)
-    if (location.withNormalisedPath().path != requiredImport && !fileLinker.effectiveImports().contains(normalisedImportPath)) {
+    if (location.withNormalisedPath().path != normalisedImportPath && !fileLinker.effectiveImports().contains(normalisedImportPath)) {
       errors += "$path needs to import $requiredImport"
     }
   }
