@@ -228,7 +228,7 @@ data class JavaTarget(
       ): Path {
         val javaFile = JavaFile.builder(javaTypeName.packageName(), typeSpec)
             .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
-            .addFileComment("\nSource: \$L in \$L", source, location.withPathOnly())
+            .addFileComment("\nSource: \$L in \$L", source, location.withPathOnly().withNormalisedPath())
             .build()
         val generatedFilePath = modulePath.resolve(javaFile.packageName)
             .resolve("${javaFile.typeSpec.name}.java")
@@ -356,7 +356,7 @@ data class KotlinTarget(
       ): Path {
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-            .addComment("\nSource: %L in %L", source, location.withPathOnly())
+            .addComment("\nSource: %L in %L", source, location.withPathOnly().withNormalisedPath())
             .apply {
               for (annotation in kotlinGenerator.generateFileAnnotations()) {
                 addAnnotation(annotation)
@@ -410,7 +410,7 @@ data class SwiftTarget(
         val typeName = generator.generatedTypeName(type)
         val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
-            .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly())
+            .addComment("\nSource: %L in %L", type.type, type.location.withPathOnly().withNormalisedPath())
             .indent("    ")
             .apply {
               generator.generateTypeTo(type, this)

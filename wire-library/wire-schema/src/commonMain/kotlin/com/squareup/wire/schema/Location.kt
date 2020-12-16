@@ -43,6 +43,8 @@ data class Location(
   /** Returns a copy of this location including only its path.  */
   fun withPathOnly() = Location("", path, -1, -1)
 
+  fun withNormalisedPath() = Location(base, normalisePath(path), line, column)
+
   override fun toString() = buildString {
     if (base.isNotEmpty()) {
       append(base)
@@ -72,5 +74,7 @@ data class Location(
     ): Location {
       return Location(base.trimEnd('/'), path, -1, -1)
     }
+
+    fun normalisePath(path: String): String = path.replace('\\', '/')
   }
 }
