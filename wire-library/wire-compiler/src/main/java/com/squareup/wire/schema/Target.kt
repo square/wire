@@ -474,14 +474,14 @@ data class ProtoTarget(
 
         val relativePath: String = protoFile.location.path
             .substringBeforeLast("/", missingDelimiterValue = ".")
-        val outputDirectory = modulePath.resolve(relativePath)
+        val outputDirectory = if (relativePath == ".") modulePath else modulePath.resolve(relativePath)
 
         require(Files.notExists(outputDirectory) || Files.isDirectory(outputDirectory)) {
           "path $outputDirectory exists but is not a directory."
         }
-        Files.createDirectories(outputDirectory)
 
         val outputFilePath = outputDirectory.resolve("${protoFile.name()}.proto")
+        Files.createDirectories(outputFilePath.parent)
 
         logger.artifact(outputDirectory, protoFile.location.path)
 

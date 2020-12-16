@@ -755,8 +755,8 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing squareup/dinosaurs/dinosaur.proto")
-        .contains("Writing squareup/geology/period.proto")
+        .contains("Writing squareup/dinosaurs/dinosaur.proto".withPlatformSpecificPathSeparator())
+        .contains("Writing squareup/geology/period.proto".withPlatformSpecificPathSeparator())
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "squareup/dinosaurs/dinosaur.proto")).exists()
@@ -821,7 +821,7 @@ class WirePluginTest {
     assertThat(task).isNotNull
     assertThat(result.output)
         .contains("Writing squareup/dinosaurs/dinosaur.proto".withPlatformSpecificPathSeparator())
-        .contains("Writing squareup/geology/geology.proto".withPlatformSpecificPathSeparator())
+        .contains("Writing squareup/geology/geology.proto")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
 
