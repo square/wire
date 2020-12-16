@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.kotlin
 
+import com.google.common.truth.Truth.assertThat
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
@@ -136,7 +137,7 @@ class KotlinGeneratorTest {
           | */
           |public interface RouteGuideClient : Service {
           |  /**
-          |   * Returns the [Feature] for a [Point].
+          |   * Returns the \[Feature\] for a \[Point\].
           |   */
           |  public fun GetFeature(): GrpcCall<Point, Feature>
           |}
@@ -155,7 +156,7 @@ class KotlinGeneratorTest {
           |  private val client: GrpcClient
           |) : RouteGuideClient {
           |  /**
-          |   * Returns the [Feature] for a [Point].
+          |   * Returns the \[Feature\] for a \[Point\].
           |   */
           |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/GetFeature",
@@ -194,7 +195,7 @@ class KotlinGeneratorTest {
          */
         public interface RouteGuideBlockingServer : Service {
           /**
-           * Returns the [Feature] for a [Point].
+           * Returns the \[Feature\] for a \[Point\].
            */
           @WireRpc(
             path = "/routeguide.RouteGuide/GetFeature",
@@ -236,7 +237,7 @@ class KotlinGeneratorTest {
          */
         public interface RouteGuideBlockingServer : Service {
           /**
-           * Creates a [RouteSummary] based on the provided [Point]s.
+           * Creates a \[RouteSummary\] based on the provided \[Point\]s.
            */
           @WireRpc(
             path = "/routeguide.RouteGuide/RecordRoute",
@@ -279,7 +280,7 @@ class KotlinGeneratorTest {
          */
         public interface RouteGuideBlockingServer : Service {
           /**
-           * Returns the [Feature]s within a [Rectangle].
+           * Returns the \[Feature\]s within a \[Rectangle\].
            */
           @WireRpc(
             path = "/routeguide.RouteGuide/ListFeatures",
@@ -324,7 +325,7 @@ class KotlinGeneratorTest {
          */
         public interface RouteGuideBlockingServer : Service {
           /**
-           * Chat with someone using a [RouteNote].
+           * Chat with someone using a \[RouteNote\].
            */
           @WireRpc(
             path = "/routeguide.RouteGuide/RouteChat",
@@ -369,7 +370,7 @@ class KotlinGeneratorTest {
          */
         public interface RouteGuideBlockingServer : Service {
           /**
-           * Returns the [Feature] for a [Point].
+           * Returns the \[Feature\] for a \[Point\].
            */
           @WireRpc(
             path = "/routeguide.RouteGuide/GetFeature",
@@ -413,7 +414,7 @@ class KotlinGeneratorTest {
           | */
           |public interface RouteGuideClient : Service {
           |  /**
-          |   * Returns the [Feature] for a [Point].
+          |   * Returns the \[Feature\] for a \[Point\].
           |   */
           |  public fun GetFeature(): GrpcCall<Point, Feature>
           |}
@@ -430,7 +431,7 @@ class KotlinGeneratorTest {
           |  private val client: GrpcClient
           |) : RouteGuideClient {
           |  /**
-          |   * Returns the [Feature] for a [Point].
+          |   * Returns the \[Feature\] for a \[Point\].
           |   */
           |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/RouteGuide/GetFeature",
@@ -468,7 +469,7 @@ class KotlinGeneratorTest {
           | */
           |public interface RouteGuideClient : Service {
           |  /**
-          |   * Returns the [Feature] at the given [Point].
+          |   * Returns the \[Feature\] at the given \[Point\].
           |   */
           |  public fun GetFeature(): GrpcCall<Point, Feature>
           |}
@@ -487,7 +488,7 @@ class KotlinGeneratorTest {
           |  private val client: GrpcClient
           |) : RouteGuideClient {
           |  /**
-          |   * Returns the [Feature] at the given [Point].
+          |   * Returns the \[Feature\] at the given \[Point\].
           |   */
           |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/routeguide.grpc.RouteGuide/GetFeature",
@@ -527,7 +528,7 @@ class KotlinGeneratorTest {
           | */
           |public interface RouteGuideClient : Service {
           |  /**
-          |   * Records a route made up of the provided [Point]s.
+          |   * Records a route made up of the provided \[Point\]s.
           |   */
           |  public fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary>
           |}
@@ -546,7 +547,7 @@ class KotlinGeneratorTest {
           |  private val client: GrpcClient
           |) : RouteGuideClient {
           |  /**
-          |   * Records a route made up of the provided [Point]s.
+          |   * Records a route made up of the provided \[Point\]s.
           |   */
           |  public override fun RecordRoute(): GrpcStreamingCall<Point, RouteSummary> =
           |      client.newStreamingCall(GrpcMethod(
@@ -587,7 +588,7 @@ class KotlinGeneratorTest {
           | */
           |public interface RouteGuideClient : Service {
           |  /**
-          |   * List the features available in the area defined by [Rectangle].
+          |   * List the features available in the area defined by \[Rectangle\].
           |   */
           |  public fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature>
           |}
@@ -606,7 +607,7 @@ class KotlinGeneratorTest {
           |  private val client: GrpcClient
           |) : RouteGuideClient {
           |  /**
-          |   * List the features available in the area defined by [Rectangle].
+          |   * List the features available in the area defined by \[Rectangle\].
           |   */
           |  public override fun ListFeatures(): GrpcStreamingCall<Rectangle, Feature> =
           |      client.newStreamingCall(GrpcMethod(
@@ -649,7 +650,7 @@ class KotlinGeneratorTest {
          */
         public interface RouteGuideClient : Service {
           /**
-           * Chat with someone using a [RouteNote].
+           * Chat with someone using a \[RouteNote\].
            */
           public fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
         }
@@ -670,7 +671,7 @@ class KotlinGeneratorTest {
           private val client: GrpcClient
         ) : RouteGuideClient {
           /**
-           * Chat with someone using a [RouteNote].
+           * Chat with someone using a \[RouteNote\].
            */
           public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
               client.newStreamingCall(GrpcMethod(
@@ -696,7 +697,7 @@ class KotlinGeneratorTest {
          */
         public interface RouteGuideBlockingServer : Service {
           /**
-           * Chat with someone using a [RouteNote].
+           * Chat with someone using a \[RouteNote\].
            */
           @WireRpc(
             path = "/routeguide.RouteGuide/RouteChat",
@@ -719,7 +720,7 @@ class KotlinGeneratorTest {
           */
          public interface RouteGuideClient : Service {
            /**
-            * Chat with someone using a [RouteNote].
+            * Chat with someone using a \[RouteNote\].
             */
            public fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
          }
@@ -740,7 +741,7 @@ class KotlinGeneratorTest {
            private val client: GrpcClient
          ) : RouteGuideClient {
            /**
-            * Chat with someone using a [RouteNote].
+            * Chat with someone using a \[RouteNote\].
             */
            public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
                client.newStreamingCall(GrpcMethod(
@@ -766,7 +767,7 @@ class KotlinGeneratorTest {
           */
          public interface RouteGuideServer : Service {
            /**
-            * Chat with someone using a [RouteNote].
+            * Chat with someone using a \[RouteNote\].
             */
            @WireRpc(
              path = "/routeguide.RouteGuide/RouteChat",
@@ -819,12 +820,12 @@ class KotlinGeneratorTest {
           | */
           |public interface RouteGuideClient : Service {
           |  /**
-          |   * Returns the [Feature] for a [Point].
+          |   * Returns the \[Feature\] for a \[Point\].
           |   */
           |  public fun GetFeature(): GrpcCall<Point, Feature>
           |
           |  /**
-          |   * Chat with someone using a [RouteNote].
+          |   * Chat with someone using a \[RouteNote\].
           |   */
           |  public fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
           |}
@@ -844,7 +845,7 @@ class KotlinGeneratorTest {
           |  private val client: GrpcClient
           |) : RouteGuideClient {
           |  /**
-          |   * Returns the [Feature] for a [Point].
+          |   * Returns the \[Feature\] for a \[Point\].
           |   */
           |  public override fun GetFeature(): GrpcCall<Point, Feature> = client.newCall(GrpcMethod(
           |      path = "/routeguide.RouteGuide/GetFeature",
@@ -853,7 +854,7 @@ class KotlinGeneratorTest {
           |  ))
           |
           |  /**
-          |   * Chat with someone using a [RouteNote].
+          |   * Chat with someone using a \[RouteNote\].
           |   */
           |  public override fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote> =
           |      client.newStreamingCall(GrpcMethod(
@@ -1245,6 +1246,31 @@ class KotlinGeneratorTest {
     ).replace(Regex("[\n ]+"), " ")
     assertTrue(code.contains("@SerialName(\"data\") public val data_: ByteString"))
     assertTrue(code.contains("@Serializable public class CdnResource"))
+  }
+
+  @Test fun documentationEscapesBrackets() {
+    val repoBuilder = RepoBuilder()
+      .add("message.proto", """
+        |syntax = "proto3";
+        |
+        |// a [b]
+        |message Message {
+        |  // c [d..e]
+        |  string a = 1;
+        |}
+        |
+        |// [f]
+        |enum Enum {
+        |  // g [h.i.j] k
+        |  CONSTANT = 0;
+        |}
+      """.trimMargin())
+    val messageCode = repoBuilder.generateKotlin("Message")
+    assertThat(messageCode).contains("""* a \[b\]""")
+    assertThat(messageCode).contains("""* c \[d..e\]""")
+    val enumCode = repoBuilder.generateKotlin("Enum")
+    assertThat(enumCode).contains("""* \[f\]""")
+    assertThat(enumCode).contains("""* g \[h.i.j\] k""")
   }
 
   companion object {
