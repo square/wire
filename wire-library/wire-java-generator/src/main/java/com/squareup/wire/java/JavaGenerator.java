@@ -115,6 +115,7 @@ public final class JavaGenerator {
   static final ClassName ENUM_ADAPTER = ClassName.get(EnumAdapter.class);
   static final ClassName NULLABLE = ClassName.get("androidx.annotation", "Nullable");
   static final ClassName CREATOR = ClassName.get("android.os", "Parcelable", "Creator");
+  static final char BOX = 0x2588;
 
   private static final Ordering<Field> TAG_ORDERING = Ordering.from(new Comparator<Field>() {
     @Override public int compare(Field o1, Field o2) {
@@ -1676,7 +1677,7 @@ public final class JavaGenerator {
         result.addCode("if ($N != null) ", fieldName);
       }
       if (field.isRedacted()) {
-        result.addStatement("$N.append(\", $N=██\")", builderName, field.getName());
+        result.addStatement("$N.append(\", $N=$L$L\")", builderName, field.getName(), BOX, BOX);
       } else if (field.getType().equals(ProtoType.STRING)) {
         result.addStatement("$N.append(\", $N=\").append($T.sanitize($L))", builderName,
             field.getName(), Internal.class, fieldName);

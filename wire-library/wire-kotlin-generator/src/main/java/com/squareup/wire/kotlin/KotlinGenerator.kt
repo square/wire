@@ -1068,7 +1068,8 @@ class KotlinGenerator private constructor(
           addStatement("%N += %P", resultName, buildCodeBlock {
             add(fieldName)
             if (field.isRedacted) {
-              add("=██")
+              val box = '\u2588'
+              add("=$box$box")
             } else {
               if (field.type == ProtoType.STRING) {
                 add("=\${%M($fieldName)}", sanitizeMember)
