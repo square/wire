@@ -118,7 +118,7 @@ internal class ProtoFilePath(
   override fun allProtoFiles() = setOf(this)
 
   override fun resolve(import: String): ProtoFilePath? {
-    if (import == location.path) return this
+    if (import == location.withNormalisedPath().path) return this
     return null
   }
 
