@@ -38,13 +38,13 @@ jobs:
       - name: Check test files
         shell: bash
         run: |
-          ./gradlew clean generateTests
-          if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
+          ./gradlew clean generateTests && if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
-      - name: Test
-        run: |
-          ./gradlew -p wire-library -Dkjs=false -Dknative=false build -Pswift=false
-          ./gradlew build
+      - name: Test library
+        run: ./gradlew -p wire-library -Dkjs=false -Dknative=false build -Pswift=false
+
+      - name: Test samples
+        run: ./gradlew build
 
   multiplatform:
     runs-on: macOS-latest
