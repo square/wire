@@ -89,4 +89,5 @@ ext.deps = [
     'javaUtil': "com.google.protobuf:protobuf-java-util:${versions.protobuf}",
     'protoc': "com.google.protobuf:protoc:${versions.protobuf}",
   ],
+  'truth': 'com.google.truth:truth:1.0.1',
 ]

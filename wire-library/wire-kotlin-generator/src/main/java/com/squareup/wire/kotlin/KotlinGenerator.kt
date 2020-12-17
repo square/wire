@@ -2223,6 +2223,8 @@ class KotlinGenerator private constructor(
           .replace("\\s+$".toRegex(), "")
           .replace("\\*/".toRegex(), "&#42;/")
           .replace("/\\*".toRegex(), "/&#42;")
+          .replace("""[""", """\[""")
+          .replace("""]""", """\]""")
     }
   }
 }
