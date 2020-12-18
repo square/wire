@@ -61,9 +61,6 @@ jobs:
         with:
           java-version: 14
 
-      - name: Debug available SDKs
-        run: ls -la /Library/Developer/CommandLineTools/SDKs
-
       - name: Check test files
         run: |
           ./gradlew clean generateTests
