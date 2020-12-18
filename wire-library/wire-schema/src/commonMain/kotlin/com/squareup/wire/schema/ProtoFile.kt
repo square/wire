@@ -188,7 +188,7 @@ data class ProtoFile(
     }
 
     private fun findProtoFile(protoFiles: List<ProtoFile>, path: String): ProtoFile? {
-      return protoFiles.find { it.location.path == path }
+      return protoFiles.find { it.location.withNormalisedPath().path == Location.normalisePath(path) }
     }
   }
 }

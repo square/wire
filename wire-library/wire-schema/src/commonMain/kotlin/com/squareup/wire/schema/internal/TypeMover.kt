@@ -16,6 +16,7 @@
 package com.squareup.wire.schema.internal
 
 import com.squareup.wire.schema.Field
+import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
@@ -35,7 +36,7 @@ class TypeMover(
   private val moves: List<Move>
 ) {
   /** The working copy of proto files. This is mutated as we perform the moves. */
-  private val pathToFile = oldSchema.protoFiles.associateBy { it.location.path }.toMutableMap()
+  private val pathToFile = oldSchema.protoFiles.associateBy { it.location.withNormalisedPath().path }.toMutableMap()
 
   /** Paths that have had types added or removed. */
   private val sourceAndTargetPaths = mutableSetOf<String>()
@@ -62,7 +63,7 @@ class TypeMover(
     rebuildIndexes()
     for (move in moves) {
       val sourcePath = typeToPath.remove(move.type)!!
-      val targetPath = move.targetPath
+      val targetPath = Location.normalisePath(move.targetPath)
       val oldSourceProtoFile = pathToFile[sourcePath]!!
 
       val sourceTypes = oldSourceProtoFile.types.toMutableList()
