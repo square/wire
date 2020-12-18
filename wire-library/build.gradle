@@ -59,6 +59,20 @@ subprojects { project ->
     targetCompatibility = JavaVersion.VERSION_1_8
   }
 
+  tasks.withType(Test).configureEach {
+    testLogging {
+      events "failed"
+      events "skipped"
+      events "standard_out"
+      events "standard_error"
+
+      showExceptions true
+      showStackTraces true
+      showCauses true
+      exceptionFormat "full"
+    }
+  }
+
   if (!project.name.endsWith('-swift')) {
     // TODO this should use plugins.withId first rather than names
     if (project.name != 'wire-runtime' &&
