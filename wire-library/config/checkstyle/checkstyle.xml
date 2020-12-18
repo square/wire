@@ -5,7 +5,9 @@
 
 <module name="Checker">
   <module name="SuppressWarningsFilter"/>
-  <module name="NewlineAtEndOfFile"/>
+  <module name="NewlineAtEndOfFile">
+    <property name="lineSeparator" value="lf" />
+  </module>
   <module name="FileLength">
     <property name="max" value="5000"/>
   </module>
