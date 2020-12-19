@@ -463,11 +463,11 @@ public class TestAllTypes {
   public void testDefaults() throws Exception {
     assertThat(AllTypes.DEFAULT_DEFAULT_BOOL).isEqualTo((Object) true);
     // original: "<c-cedilla>ok\a\b\f\n\r\t\v\1\01\001\17\017\176\x1\x01\x11\X1\X01\X11g<u umlaut>zel"
-    assertThat(AllTypes.DEFAULT_DEFAULT_STRING).isEqualTo( "\u00e7ok\u0007\b\f\n\r\t\u000b\u0001\u0001"
-        + "\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011g\u00fczel");
+    assertThat(AllTypes.DEFAULT_DEFAULT_STRING).isEqualTo( "çok\u0007\b\f\n\r\t\u000b\u0001\u0001"
+        + "\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel");
     assertThat(new String(AllTypes.DEFAULT_DEFAULT_BYTES.toByteArray(), "ISO-8859-1")).isEqualTo(
-        "\u00e7ok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
-            + "\u0011g\u00fczel");
+        "çok\u0007\b\f\n\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001"
+            + "\u0011güzel");
   }
 
   @Test
