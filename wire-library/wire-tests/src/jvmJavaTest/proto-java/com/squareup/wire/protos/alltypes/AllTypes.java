@@ -121,8 +121,8 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
   public static final Double DEFAULT_DEFAULT_DOUBLE = 123.456e78d;
 
-  public static final String DEFAULT_DEFAULT_STRING = "\u00e7ok\u0007\b\f\n"
-      + "\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011g\u00fczel";
+  public static final String DEFAULT_DEFAULT_STRING = "çok\u0007\b\f\n"
+      + "\r\t\u000b\u0001\u0001\u0001\u000f\u000f~\u0001\u0001\u0011\u0001\u0001\u0011güzel";
 
   public static final ByteString DEFAULT_DEFAULT_BYTES = ByteString.decodeBase64("529rBwgMCg0JCwEBAQ8PfgEBEQEBEWf8emVs");
 
