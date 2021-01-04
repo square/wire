@@ -67,7 +67,7 @@ jobs:
       - name: Install Chrome
         run: |
           brew update
-          brew cask install google-chrome
+          brew install google-chrome
 
       - name: Test
         run: |
