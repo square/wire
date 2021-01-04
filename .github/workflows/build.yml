@@ -69,6 +69,10 @@ jobs:
           brew update
           brew install google-chrome
 
+      # See https://github.com/square/wire/issues/1875
+      - name: Use Xcode 12.0 for swift tests
+        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
+
       - name: Test
         run: |
           ./gradlew -p wire-library build
