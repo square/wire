@@ -284,6 +284,9 @@ data class KotlinTarget(
    * as defined in [OneOf][com.squareup.wire.OneOf].
    */
   val boxOneOfsMinSize: Int = 5_000,
+
+  /** True to also generate gRPC server-compatible classes. */
+  val grpcServerCompatible: Boolean = false,
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -312,7 +315,8 @@ data class KotlinTarget(
         emitKotlinSerialization = emitKotlinSerialization,
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole,
-        boxOneOfsMinSize = boxOneOfsMinSize
+        boxOneOfsMinSize = boxOneOfsMinSize,
+        grpcServerCompatible = grpcServerCompatible
     )
 
     return object : SchemaHandler {

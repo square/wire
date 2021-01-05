@@ -69,6 +69,7 @@ import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
 import com.squareup.wire.internal.camelCase
+import com.squareup.wire.kotlin.grpcserver.KotlinGrpcGenerator
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
@@ -115,6 +116,7 @@ class KotlinGenerator private constructor(
   private val rpcCallStyle: RpcCallStyle,
   private val rpcRole: RpcRole,
   private val boxOneOfsMinSize: Int,
+  private val grpcServerCompatible: Boolean,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -200,6 +202,11 @@ class KotlinGenerator private constructor(
       val (implementationName, implementationSpec) = generateService(service, onlyRpc,
           isImplementation = true)
       result[implementationName] = implementationSpec
+    }
+
+    if (grpcServerCompatible) {
+      val (grpcClassName, grpcSpec) = KotlinGrpcGenerator().generateGrpcServer(service)
+      result[grpcClassName] = grpcSpec
     }
 
     return result
@@ -2157,6 +2164,7 @@ class KotlinGenerator private constructor(
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT,
       boxOneOfsMinSize: Int = 5_000,
+      grpcServerCompatible: Boolean = false,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2204,7 +2212,8 @@ class KotlinGenerator private constructor(
           emitKotlinSerialization = emitKotlinSerialization,
           rpcCallStyle = rpcCallStyle,
           rpcRole = rpcRole,
-          boxOneOfsMinSize = boxOneOfsMinSize
+          boxOneOfsMinSize = boxOneOfsMinSize,
+          grpcServerCompatible = grpcServerCompatible
       )
     }
 
