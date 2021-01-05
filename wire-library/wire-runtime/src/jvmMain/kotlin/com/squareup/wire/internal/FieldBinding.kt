@@ -17,6 +17,7 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -29,16 +30,16 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   wireField: WireField,
   private val messageField: Field,
   builderType: Class<B>
-) {
-  val label: WireField.Label = wireField.label
-  val name: String = messageField.name
-  val declaredName: String =
+) : FieldOrOneOfBinding<M, B> {
+  override val label: WireField.Label = wireField.label
+  override val name: String = messageField.name
+  override val wireFieldJsonName: String = wireField.jsonName
+  override val declaredName: String =
       if (wireField.declaredName.isEmpty()) messageField.name else wireField.declaredName
-  val jsonName: String = if (wireField.jsonName.isEmpty()) declaredName else wireField.jsonName
-  val tag: Int = wireField.tag
+  override val tag: Int = wireField.tag
   private val keyAdapterString = wireField.keyAdapter
   private val adapterString = wireField.adapter
-  val redacted: Boolean = wireField.redacted
+  override val redacted: Boolean = wireField.redacted
   private val builderField = getBuilderField(builderType, name)
   private val builderMethod = getBuilderMethod(builderType, name, messageField.type)
 
@@ -47,7 +48,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   private var keyAdapter: ProtoAdapter<*>? = null
   private var adapter: ProtoAdapter<Any>? = null
 
-  val isMap: Boolean
+  override val isMap: Boolean
     get() = keyAdapterString.isNotEmpty()
 
   private fun getBuilderField(builderType: Class<*>, name: String): Field {
@@ -66,15 +67,15 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
     }
   }
 
-  fun singleAdapter(): ProtoAdapter<*> {
+  override fun singleAdapter(): ProtoAdapter<*> {
     return singleAdapter ?: ProtoAdapter.get(adapterString).also { singleAdapter = it }
   }
 
-  fun keyAdapter(): ProtoAdapter<*> {
+  override fun keyAdapter(): ProtoAdapter<*> {
     return keyAdapter ?: ProtoAdapter.get(keyAdapterString).also { keyAdapter = it }
   }
 
-  internal fun adapter(): ProtoAdapter<Any> {
+  override fun adapter(): ProtoAdapter<Any> {
     val result = adapter
     if (result != null) return result
     if (isMap) {
@@ -88,7 +89,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
-  internal fun value(builder: B, value: Any) {
+  override fun value(builder: B, value: Any) {
     when {
       label.isRepeated -> {
         when (val list = getFromBuilder(builder)) {
@@ -123,7 +124,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  fun set(builder: B, value: Any?) {
+  override fun set(builder: B, value: Any?) {
     if (label.isOneOf) {
       // In order to maintain the 'oneof' invariant, call the builder setter method rather
       // than setting the builder field directly.
@@ -133,7 +134,18 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
     }
   }
 
-  operator fun get(message: M): Any? = messageField.get(message)
+  override operator fun get(message: M): Any? = messageField.get(message)
 
-  internal fun getFromBuilder(builder: B): Any? = builderField.get(builder)
+  override fun getFromBuilder(builder: B): Any? = builderField.get(builder)
+
+  override fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
+    return omitIdentity(syntax) && value == adapter().identity
+  }
+
+  private fun omitIdentity(syntax: Syntax): Boolean {
+    if (label == WireField.Label.OMIT_IDENTITY) return true
+    if (label.isRepeated && syntax == Syntax.PROTO_3) return true
+    if (isMap && syntax == Syntax.PROTO_3) return true
+    return false
+  }
 }

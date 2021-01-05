@@ -18,7 +18,7 @@ package com.squareup.wire
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import com.squareup.wire.internal.FieldBinding
+import com.squareup.wire.internal.FieldOrOneOfBinding
 import com.squareup.wire.internal.RuntimeMessageAdapter
 import java.io.IOException
 
@@ -79,6 +79,6 @@ internal class MessageTypeAdapter<M : Message<M, B>, B : Message.Builder<M, B>>(
 
   data class JsonField<M : Message<M, B>, B : Message.Builder<M, B>>(
     val adapter: TypeAdapter<Any?>,
-    val fieldBinding: FieldBinding<M, B>
+    val fieldBinding: FieldOrOneOfBinding<M, B>
   )
 }

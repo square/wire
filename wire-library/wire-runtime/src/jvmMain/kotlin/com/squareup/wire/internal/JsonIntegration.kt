@@ -56,7 +56,7 @@ abstract class JsonIntegration<F, A> {
   fun <M : Message<M, B>, B : Message.Builder<M, B>> jsonAdapter(
     framework: F,
     syntax: Syntax,
-    field: FieldBinding<M, B>
+    field: FieldOrOneOfBinding<M, B>
   ): A {
     if (field.singleAdapter().isStruct) {
       return structAdapter(framework)

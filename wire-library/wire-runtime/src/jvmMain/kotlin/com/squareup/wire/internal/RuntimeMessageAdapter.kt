@@ -18,20 +18,21 @@ package com.squareup.wire.internal
 import com.squareup.wire.FieldEncoding
 import com.squareup.wire.Message
 import com.squareup.wire.Message.Builder
+import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
-import com.squareup.wire.WireField.Label.OMIT_IDENTITY
 import java.io.IOException
+import java.lang.reflect.Field
 import java.util.Collections
 import java.util.LinkedHashMap
 
 class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
   private val messageType: Class<M>,
   private val builderType: Class<B>,
-  val fieldBindings: Map<Int, FieldBinding<M, B>>,
+  val fieldBindings: Map<Int, FieldOrOneOfBinding<M, B>>,
   typeUrl: String?,
   syntax: Syntax
 ) : ProtoAdapter<M>(FieldEncoding.LENGTH_DELIMITED, messageType.kotlin, typeUrl, syntax) {
@@ -40,9 +41,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
    * Field bindings by index. The indexes are consistent across all related fields including
    * [jsonNames], [jsonAlternateNames], and the result of [jsonAdapters].
    */
-  val fieldBindingsArray: Array<FieldBinding<M, B>> = fieldBindings.values.toTypedArray()
-
-  /** When writing each field as JSON this is the name to use. */
+  val fieldBindingsArray: Array<FieldOrOneOfBinding<M, B>> = fieldBindings.values.toTypedArray()
   val jsonNames: List<String> = fieldBindingsArray.map { it.jsonName }
 
   /**
@@ -64,6 +63,10 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     }
   }
 
+  /** When writing each field as JSON this is the name to use. */
+  val FieldOrOneOfBinding<*, *>.jsonName: String
+    get() = if (wireFieldJsonName.isEmpty()) declaredName else wireFieldJsonName
+
   fun newBuilder(): B = builderType.newInstance()
 
   override fun encodedSize(value: M): Int {
@@ -72,8 +75,8 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
 
     var size = 0
     for (fieldBinding in fieldBindings.values) {
-      val binding = fieldBinding[value] ?: continue
-      size += fieldBinding.adapter().encodedSizeWithTag(fieldBinding.tag, binding)
+      val fieldValue = fieldBinding[value] ?: continue
+      size += fieldBinding.adapter().encodedSizeWithTag(fieldBinding.tag, fieldValue)
     }
     size += value.unknownFields.size
 
@@ -196,9 +199,7 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     for (index in fieldBindingsArray.indices) {
       val fieldBinding = fieldBindingsArray[index]
       val value = fieldBinding[message!!]
-      if (fieldBinding.omitIdentity() && value == fieldBinding.adapter().identity) {
-        continue
-      }
+      if (fieldBinding.omitFromJson(syntax, value)) continue
       if (fieldBinding.redacted && redactedFieldsAdapter != null && value != null) {
         // We initialize here to avoid a performance hit for non-redacted code.
         if (redactedFields == null) {
@@ -214,13 +215,6 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
     }
   }
 
-  private fun FieldBinding<M, B>.omitIdentity(): Boolean {
-    if (label == OMIT_IDENTITY) return true
-    if (label.isRepeated && syntax == Syntax.PROTO_3) return true
-    if (isMap && syntax == Syntax.PROTO_3) return true
-    return false
-  }
-
   companion object {
     private const val REDACTED = "\u2588\u2588"
 
@@ -230,18 +224,31 @@ class RuntimeMessageAdapter<M : Message<M, B>, B : Builder<M, B>>(
       syntax: Syntax
     ): RuntimeMessageAdapter<M, B> {
       val builderType = getBuilderType(messageType)
-      val fieldBindings = LinkedHashMap<Int, FieldBinding<M, B>>()
+      val fieldBindings = LinkedHashMap<Int, FieldOrOneOfBinding<M, B>>()
 
       // Create tag bindings for fields annotated with '@WireField'.
       for (messageField in messageType.declaredFields) {
         val wireField = messageField.getAnnotation(WireField::class.java)
         if (wireField != null) {
           fieldBindings[wireField.tag] = FieldBinding(wireField, messageField, builderType)
+        } else if (messageField.type == OneOf::class.java) {
+          for (key in getKeys<M, B>(messageField)) {
+            fieldBindings[key.tag] = OneOfBinding(messageField, builderType, key)
+          }
         }
       }
 
       return RuntimeMessageAdapter(messageType, builderType,
           Collections.unmodifiableMap(fieldBindings), typeUrl, syntax)
+    }
+
+    private fun <M : Message<M, B>, B : Builder<M, B>> getKeys(
+      messageField: Field
+    ): Set<OneOf.Key<*>> {
+      val messageClass = messageField.declaringClass
+      val keysField = messageClass.getDeclaredField(boxedOneOfKeysFieldName(messageField.name))
+      keysField.isAccessible = true
+      return keysField.get(null) as Set<OneOf.Key<*>>
     }
 
     @JvmStatic fun <M : Message<M, B>, B : Builder<M, B>> create(
