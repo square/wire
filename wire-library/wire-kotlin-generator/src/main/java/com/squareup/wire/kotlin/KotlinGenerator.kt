@@ -68,6 +68,7 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
+import com.squareup.wire.internal.boxedOneOfKeysFieldName
 import com.squareup.wire.internal.camelCase
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
@@ -96,12 +97,12 @@ import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
 import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
+import java.util.Locale
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
-import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -403,12 +404,15 @@ class KotlinGenerator private constructor(
               }
             }
             message.boxOneOfs().forEach { oneOf ->
-              newName(oneOf.name, oneOf)
-              newName(oneOf.name + "Keys",oneOf.name + "Keys")
+              val fieldName = newName(oneOf.name, oneOf)
+              val keysFieldName = boxedOneOfKeysFieldName(fieldName)
+              check(newName(keysFieldName) == keysFieldName) {
+                "unexpected name collision for keys set of boxed one of, ${oneOf.name}"
+              }
               newName(oneOf.name.capitalize(), oneOf.name.capitalize())
-               oneOf.fields.forEach { field ->
-                 newName(oneOf.name + field.name.capitalize(), oneOf.name + field.name.capitalize())
-               }
+              oneOf.fields.forEach { field ->
+                newName(oneOf.name + field.name.capitalize(), oneOf.name + field.name.capitalize())
+              }
             }
           }
         }
@@ -1406,7 +1410,7 @@ class KotlinGenerator private constructor(
           val choiceKey = nameAllocator.newName("choiceKey")
           for (boxOneOf in message.boxOneOfs()) {
             val fieldName = nameAllocator[boxOneOf]
-            val choiceKeys = nameAllocator[boxOneOf.name + "Keys"]
+            val choiceKeys = boxedOneOfKeysFieldName(fieldName)
             beginControlFlow("for (%L in %L)", choiceKey, choiceKeys)
             beginControlFlow("if (%L == %L.tag)", tag, choiceKey)
             addStatement("%L = %L.decode(reader)", fieldName, choiceKey)
@@ -1995,11 +1999,14 @@ class KotlinGenerator private constructor(
       companionBuilder.addProperty(oneOfKey)
     }
 
+    val fieldName = nameAllocator[oneOf]
+    val keysFieldName = boxedOneOfKeysFieldName(fieldName)
     val allKeys = PropertySpec
       .builder(
-        nameAllocator[oneOf.name + "Keys"],
+        keysFieldName,
         Set::class.asClassName().parameterizedBy(boxClassName.parameterizedBy(STAR))
       )
+      .addAnnotation(JvmStatic::class.java)
       .initializer(
         CodeBlock.of(
           """setOf(${keyFieldNames.map { "%L" }.joinToString(", ")})""",
