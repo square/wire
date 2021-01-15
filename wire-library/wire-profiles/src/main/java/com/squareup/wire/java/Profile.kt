@@ -19,6 +19,8 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.TypeName
 import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.schema.ProtoType
+import com.squareup.kotlinpoet.ClassName as KClassName
+import com.squareup.kotlinpoet.TypeName as KTypeName
 
 /**
  * Describes how to map `.proto` to `.java`. A single repository of `.proto` files
@@ -27,14 +29,19 @@ import com.squareup.wire.schema.ProtoType
 class Profile(
   private val profileFiles: List<ProfileFileElement> = emptyList()
 ) {
-  fun getTarget(type: ProtoType): TypeName? {
+  fun javaTarget(type: ProtoType): TypeName? {
     val typeConfig = typeConfig(type)
     return if (typeConfig != null) ClassName.bestGuess(typeConfig.target) else null
   }
 
+  fun kotlinTarget(type: ProtoType): KTypeName? {
+    val typeConfig = typeConfig(type)
+    return if (typeConfig != null) KClassName.bestGuess(typeConfig.target!!) else null
+  }
+
   fun getAdapter(type: ProtoType): AdapterConstant? {
     val typeConfig = typeConfig(type)
-    return if (typeConfig != null) AdapterConstant(typeConfig.adapter) else null
+    return if (typeConfig != null) AdapterConstant(typeConfig.adapter!!) else null
   }
 
   /** Returns the config for [type], or null if it is not configured.  */

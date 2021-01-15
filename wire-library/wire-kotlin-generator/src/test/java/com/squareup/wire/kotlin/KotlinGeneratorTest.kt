@@ -1273,6 +1273,81 @@ class KotlinGeneratorTest {
     assertThat(enumCode).contains("""* g \[h.i.j\] k""")
   }
 
+  @Test fun profileHonored() {
+    val expectedInterface = """
+        |package routeguide
+        |
+        |import com.squareup.wire.GrpcCall
+        |import com.squareup.wire.Service
+        |import java.lang.String
+        |import java.util.Properties
+        |
+        |/**
+        | * RouteGuide service interface.
+        | */
+        |public interface RouteGuideClient : Service {
+        |  /**
+        |   * Returns the \[Feature\] for a \[Point\].
+        |   */
+        |  public fun GetFeature(): GrpcCall<String, Properties>
+        |}
+        |""".trimMargin()
+    val expectedImplementation = """
+        |package routeguide
+        |
+        |import com.example.PropertiesFeatureAdapter
+        |import com.example.StringPointAdapter
+        |import com.squareup.wire.GrpcCall
+        |import com.squareup.wire.GrpcClient
+        |import com.squareup.wire.GrpcMethod
+        |import java.lang.String
+        |import java.util.Properties
+        |
+        |/**
+        | * RouteGuide service interface.
+        | */
+        |public class GrpcRouteGuideClient(
+        |  private val client: GrpcClient
+        |) : RouteGuideClient {
+        |  /**
+        |   * Returns the \[Feature\] for a \[Point\].
+        |   */
+        |  public override fun GetFeature(): GrpcCall<String, Properties> = client.newCall(GrpcMethod(
+        |      path = "/routeguide.RouteGuide/GetFeature",
+        |      requestAdapter = StringPointAdapter.INSTANCE,
+        |      responseAdapter = PropertiesFeatureAdapter.ADAPTER
+        |  ))
+        |}
+        |""".trimMargin()
+
+    val repoBuilder = RepoBuilder()
+      .add("routeguide.proto", """
+          |package routeguide;
+          |
+          |// RouteGuide service interface.
+          |service RouteGuide {
+          |  // Returns the [Feature] for a [Point].
+          |  rpc GetFeature(Point) returns (Feature) {}
+          |}
+          |$pointMessage
+          |$featureMessage
+          |""".trimMargin())
+      .add("java.wire", """
+          |syntax = "wire2";
+          |import "routeguide.proto";
+          |
+          |type routeguide.Point {
+          |  target java.lang.String using com.example.StringPointAdapter#INSTANCE;
+          |}
+          |
+          |type routeguide.Feature {
+          |  target java.util.Properties using com.example.PropertiesFeatureAdapter#ADAPTER;
+          |}
+          |""".trimMargin())
+    assertEquals(listOf(expectedInterface, expectedImplementation),
+      repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", profileName = "java"))
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

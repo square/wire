@@ -70,6 +70,7 @@ import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
 import com.squareup.wire.internal.camelCase
+import com.squareup.wire.java.Profile
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
@@ -108,6 +109,7 @@ class KotlinGenerator private constructor(
   val schema: Schema,
   private val typeToKotlinName: Map<ProtoType, TypeName>,
   private val memberToKotlinName: Map<ProtoMember, TypeName>,
+  private val profile: Profile,
   private val emitAndroid: Boolean,
   private val javaInterOp: Boolean,
   private val emitDeclaredOptions: Boolean,
@@ -119,8 +121,12 @@ class KotlinGenerator private constructor(
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
-  private val ProtoType.typeName
-    get() = typeToKotlinName.getValue(this)
+  private val ProtoType.typeName: TypeName
+    get() {
+      val profileTypeName = profile.kotlinTarget(this)
+      if (profileTypeName != null) return profileTypeName
+      return typeToKotlinName.getValue(this)
+    }
   private val ProtoType.isEnum
     get() = schema.getType(this) is EnumType
   private val ProtoType.isMessage
@@ -276,7 +282,6 @@ class KotlinGenerator private constructor(
     if (rpcRole == RpcRole.SERVER) {
       val wireRpcAnnotationSpec = AnnotationSpec.builder(WireRpc::class.asClassName())
           .addMember("path = %S", "/$packageName$serviceName/${rpc.name}")
-          // TODO(oldergod|jwilson) Lets' use Profile for this.
           .addMember("requestAdapter = %S", rpc.requestType!!.adapterString())
           .addMember("responseAdapter = %S", rpc.responseType!!.adapterString())
           .build()
@@ -1525,7 +1530,12 @@ class KotlinGenerator private constructor(
   }
 
   private fun ProtoType.getAdapterName(adapterFieldDelimiterName: Char = '.'): CodeBlock {
+    val adapterConstant = profile.getAdapter(this)
     return when {
+      adapterConstant != null -> {
+        CodeBlock.of("%T%L%L",
+          adapterConstant.kotlinClassName, adapterFieldDelimiterName, adapterConstant.memberName)
+      }
       isScalar -> {
         CodeBlock.of("%T$adapterFieldDelimiterName%L",
             ProtoAdapter::class, simpleName.toUpperCase(Locale.US))
@@ -1588,6 +1598,11 @@ class KotlinGenerator private constructor(
   }
 
   private fun ProtoType.adapterString(): String {
+    val adapterConstant = profile.getAdapter(this)
+    if (adapterConstant != null) {
+      return "${adapterConstant.javaClassName.reflectionName()}#${adapterConstant.memberName}"
+    }
+
     val builtInAdapterString = builtInAdapterString(this)
     if (builtInAdapterString != null) return builtInAdapterString
 
@@ -2156,6 +2171,7 @@ class KotlinGenerator private constructor(
     @JvmStatic @JvmName("get")
     operator fun invoke(
       schema: Schema,
+      profile: Profile = Profile(),
       emitAndroid: Boolean = false,
       javaInterop: Boolean = false,
       emitDeclaredOptions: Boolean = true,
@@ -2202,6 +2218,7 @@ class KotlinGenerator private constructor(
 
       return KotlinGenerator(
           schema = schema,
+          profile = profile,
           typeToKotlinName = typeToKotlinName,
           memberToKotlinName = memberToKotlinName,
           emitAndroid = emitAndroid,
