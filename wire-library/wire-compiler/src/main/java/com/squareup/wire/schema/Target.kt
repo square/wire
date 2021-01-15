@@ -293,6 +293,9 @@ data class KotlinTarget(
     logger: WireLogger,
     profileLoader: ProfileLoader
   ): SchemaHandler {
+    val profileName = if (android) "android" else "java"
+    val profile = profileLoader.loadProfile(profileName, schema)
+
     val modulePath = run {
       val outPath = fs.getPath(outDirectory)
       if (moduleName != null) {
@@ -305,6 +308,7 @@ data class KotlinTarget(
 
     val kotlinGenerator = KotlinGenerator(
         schema = schema,
+        profile = profile,
         emitAndroid = android,
         javaInterop = javaInterop,
         emitDeclaredOptions = emitDeclaredOptions,

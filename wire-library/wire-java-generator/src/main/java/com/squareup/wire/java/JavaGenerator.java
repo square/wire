@@ -344,7 +344,7 @@ public final class JavaGenerator {
    *     if that type wasn't in this generator's schema.
    */
   public TypeName typeName(ProtoType protoType) {
-    TypeName profileJavaName = profile.getTarget(protoType);
+    TypeName profileJavaName = profile.javaTarget(protoType);
     if (profileJavaName != null) return profileJavaName;
     TypeName candidate = typeToJavaName.get(protoType);
     checkArgument(candidate != null, "unexpected type %s", protoType);
@@ -356,7 +356,7 @@ public final class JavaGenerator {
    * protoType}. Returns null if {@code protoType} is not using a custom proto adapter.
    */
   public @Nullable ClassName abstractAdapterName(ProtoType protoType) {
-    TypeName profileJavaName = profile.getTarget(protoType);
+    TypeName profileJavaName = profile.javaTarget(protoType);
     if (profileJavaName == null) return null;
 
     TypeName typeName = typeToJavaName.get(protoType);
@@ -422,7 +422,7 @@ public final class JavaGenerator {
     } else {
       AdapterConstant adapterConstant = profile.getAdapter(type);
       if (adapterConstant != null) {
-        result.add("$T.$L", adapterConstant.className, adapterConstant.memberName);
+        result.add("$T.$L", adapterConstant.javaClassName, adapterConstant.memberName);
       } else {
         result.add("$T.ADAPTER", typeName(type));
       }
@@ -1361,7 +1361,7 @@ public final class JavaGenerator {
 
     AdapterConstant adapterConstant = profile.getAdapter(type);
     if (adapterConstant != null) {
-      return reflectionName(adapterConstant.className) + "#" + adapterConstant.memberName;
+      return reflectionName(adapterConstant.javaClassName) + "#" + adapterConstant.memberName;
     }
 
     return reflectionName(typeName(type)) + "#ADAPTER";
