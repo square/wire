@@ -11,12 +11,12 @@ dependencies {
     api project(':wire-schema')
     implementation project(':wire-runtime')
     implementation project(':wire-grpc-client')
-    implementation project(':wire-grpc-server')
+    implementation(project(':wire-grpc-server')) {
+        exclude(group: 'com.google.guava', module: 'guava')
+    }
     implementation deps.okio.jvm
     implementation deps.grpc.stub
     api deps.kotlinpoet
-    // TODO this should use a JRE version without forcing one.
-    api ("com.google.guava:guava:30.0-jre")
     testImplementation project(':wire-test-utils')
     testImplementation deps.kotlin.test.junit
     testImplementation deps.truth
