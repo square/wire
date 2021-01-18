@@ -205,3 +205,8 @@ fun sanitize(value: String): String {
 fun sanitize(values: List<String>): String {
   return values.map(::sanitize).joinToString(prefix = "[", postfix = "]")
 }
+
+/** Maps [fieldName] to the companion object field of type `Set` containing the eligible keys.  */
+fun boxedOneOfKeysFieldName(fieldName: String): String {
+  return "${fieldName}Keys"
+}

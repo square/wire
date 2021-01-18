@@ -22,10 +22,10 @@ import com.squareup.wire.java.AdapterConstant
 import com.squareup.wire.java.Profile
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
+import java.io.IOException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.IOException
 
 class ProfileLoaderTest {
   private val fs = Jimfs.newFileSystem(Configuration.unix())
@@ -65,12 +65,12 @@ class ProfileLoaderTest {
     val profile = loadAndLinkProfile("android")
 
     val message1 = ProtoType.get("a.b.Message1")
-    assertThat(profile.getTarget(message1)).isEqualTo(ClassName.OBJECT)
+    assertThat(profile.javaTarget(message1)).isEqualTo(ClassName.OBJECT)
     assertThat(profile.getAdapter(message1))
         .isEqualTo(AdapterConstant("com.example.Message1#OBJECT_ADAPTER"))
 
     val message2 = ProtoType.get("a.b.c.Message2")
-    assertThat(profile.getTarget(message2))
+    assertThat(profile.javaTarget(message2))
         .isEqualTo(ClassName.get(String::class.java))
     assertThat(profile.getAdapter(message2))
         .isEqualTo(AdapterConstant("com.example.Message2#STRING_ADAPTER"))
@@ -99,7 +99,7 @@ class ProfileLoaderTest {
     )
 
     val message = ProtoType.get("a.b.Message")
-    assertThat(profile.getTarget(message)).isEqualTo(ClassName.OBJECT)
+    assertThat(profile.javaTarget(message)).isEqualTo(ClassName.OBJECT)
     assertThat(profile.getAdapter(message))
         .isEqualTo(AdapterConstant("com.example.Message#ADAPTER"))
   }
@@ -121,7 +121,7 @@ class ProfileLoaderTest {
     )
     val profile = loadAndLinkProfile("android")
     val message = ProtoType.get("a.b.Message")
-    assertThat(profile.getTarget(message)).isNull()
+    assertThat(profile.javaTarget(message)).isNull()
   }
 
   @Test

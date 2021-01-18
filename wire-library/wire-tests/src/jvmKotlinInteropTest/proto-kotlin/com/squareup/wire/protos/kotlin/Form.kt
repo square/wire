@@ -22,6 +22,7 @@ import kotlin.Unit
 import kotlin.collections.Set
 import kotlin.hashCode
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
 import okio.ByteString
 
 public class Form(
@@ -220,6 +221,7 @@ public class Form(
         Choice<CurrencyConversionFlagsElement>(tag = 12, adapter =
         CurrencyConversionFlagsElement.ADAPTER, declaredName = "currency_conversion_flags_element")
 
+    @JvmStatic
     public val choiceKeys: Set<Choice<*>> = setOf(choiceButton_element, choiceLocal_image_element,
         choiceRemote_image_element, choiceMoney_element, choiceSpacer_element, choiceText_element,
         choiceCustomized_card_element, choiceAddress_element, choiceText_input_element,
@@ -250,6 +252,7 @@ public class Form(
     public val decisionH: Decision<String> = Decision<String>(tag = 108, adapter =
         ProtoAdapter.STRING, declaredName = "h")
 
+    @JvmStatic
     public val decisionKeys: Set<Decision<*>> = setOf(decisionA, decisionB, decisionC, decisionD,
         decisionE, decisionF, decisionG, decisionH)
 

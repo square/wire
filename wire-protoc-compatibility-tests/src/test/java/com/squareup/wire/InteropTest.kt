@@ -245,8 +245,23 @@ class InteropTest {
     checker.check(InteropOptionalJ3(""))
   }
 
-  @Ignore("Needs to fix JSON for boxed oneofs.")
-  @Test fun boxOneOfs() {
+  @Test fun boxOneOfsKotlin() {
+    val checker = InteropChecker(
+      protocMessage = InteropBoxOneOfP3.newBuilder()
+        .setA("Hello")
+        .build(),
+      canonicalJson = """{"a":"Hello"}""",
+    )
+    checker.check(InteropBoxOneOfK2.Builder()
+      .option(OneOf(InteropBoxOneOfK2.optionA, "Hello"))
+      .build())
+    checker.check(InteropBoxOneOfK3.Builder()
+      .option(OneOf(InteropBoxOneOfK3.optionA, "Hello"))
+      .build())
+  }
+
+  @Ignore("Needs to implement boxed oneofs in Java.")
+  @Test fun boxOneOfsJava() {
     val checker = InteropChecker(
       protocMessage = InteropBoxOneOfP3.newBuilder()
         .setA("Hello")
@@ -255,8 +270,6 @@ class InteropTest {
     )
     checker.check(InteropBoxOneOfJ2.Builder().a("Hello").build())
     checker.check(InteropBoxOneOfJ3.Builder().a("Hello").build())
-    checker.check(InteropBoxOneOfK2.Builder().option(OneOf(InteropBoxOneOfK2.optionA, "Hello")).build())
-    checker.check(InteropBoxOneOfK3.Builder().option(OneOf(InteropBoxOneOfK3.optionA, "Hello")).build())
   }
 }
 
