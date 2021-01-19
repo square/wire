@@ -15,7 +15,10 @@ dependencies {
         exclude(group: 'com.google.guava', module: 'guava')
     }
     implementation deps.okio.jvm
-    implementation deps.grpc.stub
+    implementation(deps.grpc.stub) {
+        exclude(group: 'com.google.guava', module: 'guava')
+    }
+    implementation ("com.google.guava:guava:21.0")
     api deps.kotlinpoet
     testImplementation project(':wire-test-utils')
     testImplementation deps.kotlin.test.junit
