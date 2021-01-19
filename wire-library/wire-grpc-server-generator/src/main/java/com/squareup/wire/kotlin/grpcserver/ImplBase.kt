@@ -23,13 +23,8 @@ import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
-import io.grpc.BindableService
-import io.grpc.ServerServiceDefinition
-import io.grpc.stub.ServerCalls
-import io.grpc.stub.StreamObserver
 import java.io.InputStream
 
 object ImplBase {
@@ -37,7 +32,7 @@ object ImplBase {
     .addType(
       TypeSpec.classBuilder("${service.name}ImplBase")
         .addModifiers(KModifier.ABSTRACT)
-        .addSuperinterface(BindableService::class)
+        .addSuperinterface(ClassName("io.grpc", "BindableService"))
         .apply { addImplBaseBody(this, service) }
         .build()
     )
@@ -48,18 +43,15 @@ object ImplBase {
     return when {
       rpc.requestStreaming -> builder
         .addParameter(
-          "response", StreamObserver::class.asTypeName()
-            .parameterizedBy(responseType)
+          "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
         )
         .returns(
-          StreamObserver::class.asTypeName()
-            .parameterizedBy(requestType)
+          ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(requestType)
         )
       else -> builder
         .addParameter("request", requestType)
         .addParameter(
-          "response", StreamObserver::class.asTypeName()
-            .parameterizedBy(responseType)
+          "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
         )
     }
   }
@@ -78,7 +70,7 @@ object ImplBase {
     builder.addFunction(
       FunSpec.builder("bindService")
         .addModifiers(KModifier.OVERRIDE)
-        .returns(ServerServiceDefinition::class)
+        .returns(ClassName("io.grpc", "ServerServiceDefinition"))
         .addCode(bindServiceCodeBlock(service))
         .build()
     )
@@ -127,7 +119,7 @@ object ImplBase {
           get${it.name}Method(),
           %M(this@${service.name}ImplBase::${it.name})
         )""".trimIndent(),
-        MemberName(ServerCalls::class.asTypeName(), bindServiceCallType(it))
+        MemberName(ClassName("io.grpc.stub", "ServerCalls"), bindServiceCallType(it))
       )
     }
     codeBlock.add(".build()")

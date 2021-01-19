@@ -113,9 +113,9 @@ object LegacyAdapter {
           |}
           |return requestStream
           |""".trimMargin(),
-          MessageSourceAdapter::class.asTypeName()
+          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
             .parameterizedBy(ClassName.bestGuess(rpc.requestType.toString())),
-          MessageSinkAdapter::class.asTypeName()
+          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
         )
         rpc.requestStreaming -> CodeBlock.of(
           """
@@ -126,14 +126,14 @@ object LegacyAdapter {
           |}
           |return requestStream
           |""".trimMargin(),
-          MessageSourceAdapter::class.asTypeName()
+          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
             .parameterizedBy(ClassName.bestGuess(rpc.requestType.toString()))
         )
         rpc.responseStreaming -> CodeBlock.of(
           """
           |${rpc.name}().${rpc.name}(request, %T(response))
           |""".trimMargin(),
-          MessageSinkAdapter::class.asTypeName()
+          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
         )
         else -> CodeBlock.of(
           """

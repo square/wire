@@ -15,16 +15,14 @@
  */
 package com.squareup.wire.kotlin.grpcserver
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import com.squareup.wire.schema.Service
-import io.grpc.ServiceDescriptor
 
 object ServiceDescriptor {
   internal fun addServiceDescriptor(builder: TypeSpec.Builder, service: Service) = builder
@@ -40,7 +38,7 @@ object ServiceDescriptor {
     .addProperty(
       PropertySpec.builder(
         name = "serviceDescriptor",
-        type = ServiceDescriptor::class.asTypeName().copy(nullable = true),
+        type = ClassName("io.grpc", "ServiceDescriptor").copy(nullable = true),
         modifiers = listOf(KModifier.PRIVATE),
       )
         .addAnnotation(Volatile::class)
@@ -50,7 +48,7 @@ object ServiceDescriptor {
     )
     .addFunction(
       FunSpec.builder("getServiceDescriptor")
-        .returns(ServiceDescriptor::class.asTypeName().copy(nullable = true))
+        .returns(ClassName("io.grpc", "ServiceDescriptor").copy(nullable = true))
         .addCode(serviceDescriptorCodeBlock(service))
         .build()
     )
@@ -72,11 +70,13 @@ object ServiceDescriptor {
     val builder = CodeBlock.builder()
       .addStatement("result = serviceDescriptor")
       .beginControlFlow("if (result == null)")
-      .addStatement("result = %M(SERVICE_NAME)",
+      .addStatement(
+        "result = %M(SERVICE_NAME)",
         MemberName(
-          enclosingClassName = ServiceDescriptor::class.asClassName(),
+          enclosingClassName = ClassName("io.grpc", "ServiceDescriptor"),
           simpleName = "newBuilder"
-        ))
+        )
+      )
     service.rpcs.forEach { builder.addStatement(".addMethod(get${it.name}Method())") }
     builder
       .addStatement(".build()")

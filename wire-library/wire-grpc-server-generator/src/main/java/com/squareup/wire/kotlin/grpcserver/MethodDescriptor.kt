@@ -22,10 +22,8 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
-import io.grpc.MethodDescriptor
 
 object MethodDescriptor {
   internal fun addMethodDescriptor(
@@ -94,9 +92,7 @@ object MethodDescriptor {
   private fun methodDescriptorType(
     requestType: ClassName,
     responseType: ClassName
-  ) = MethodDescriptor::class
-    .asTypeName()
-    .parameterizedBy(requestType, responseType)
+  ) = ClassName("io.grpc", "MethodDescriptor").parameterizedBy(requestType, responseType)
 
   private fun methodType(rpc: Rpc): String = when {
     rpc.requestStreaming && rpc.responseStreaming -> "BIDI_STREAMING"

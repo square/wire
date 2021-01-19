@@ -25,15 +25,13 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.wire.kotlin.grpcserver.Stub.addAbstractStubConstructor
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
-import io.grpc.Channel
-import io.grpc.stub.ClientCalls
 
 object BlockingStub {
   internal fun addBlockingStub(builder: TypeSpec.Builder, service: Service): TypeSpec.Builder =
     builder
       .addFunction(
         FunSpec.builder("newBlockingStub")
-          .addParameter("channel", Channel::class)
+          .addParameter("channel", ClassName("io.grpc", "Channel"))
           .returns(ClassName("", "${service.name}BlockingStub"))
           .addCode("return %T(channel)", ClassName("", "${service.name}BlockingStub"))
           .build()
@@ -54,7 +52,7 @@ object BlockingStub {
           return %M(channel, get${rpc.name}Method(), callOptions, request)
         """.trimIndent(),
           MemberName(
-            enclosingClassName = ClientCalls::class.asClassName(),
+            enclosingClassName = ClassName("io.grpc.stub", "ClientCalls"),
             simpleName = if (rpc.requestStreaming) "blockingServerStreamingCall"
             else "blockingUnaryCall"
           )

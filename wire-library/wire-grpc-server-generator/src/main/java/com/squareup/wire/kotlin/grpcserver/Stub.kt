@@ -22,21 +22,15 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import com.squareup.wire.kotlin.grpcserver.ImplBase.addImplBaseRpcSignature
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
-import io.grpc.CallOptions
-import io.grpc.Channel
-import io.grpc.stub.AbstractStub
-import io.grpc.stub.ClientCalls
 
 object Stub {
   internal fun addStub(builder: TypeSpec.Builder, service: Service): TypeSpec.Builder = builder
     .addFunction(
       FunSpec.builder("newStub")
-        .addParameter("channel", Channel::class)
+        .addParameter("channel", ClassName("io.grpc", "Channel"))
         .returns(ClassName("", "${service.name}Stub"))
         .addCode("return %T(channel)", ClassName("", "${service.name}Stub"))
         .build()
@@ -53,30 +47,29 @@ object Stub {
   internal fun addAbstractStubConstructor(builder: TypeSpec.Builder, service: Service) = builder
     // Really this is a superclass, just want to add secondary constructors.
     .addSuperinterface(
-      AbstractStub::class.asTypeName()
-        // TODO refer to its own class
+      ClassName("io.grpc.stub", "AbstractStub")
         .parameterizedBy(ClassName("", "${service.name}Stub"))
     )
     .addFunction(
       FunSpec.constructorBuilder()
         .addModifiers(KModifier.INTERNAL)
-        .addParameter("channel", Channel::class)
+        .addParameter("channel", ClassName("io.grpc", "Channel"))
         .callSuperConstructor("channel")
         .build()
     )
     .addFunction(
       FunSpec.constructorBuilder()
         .addModifiers(KModifier.INTERNAL)
-        .addParameter("channel", Channel::class)
-        .addParameter("callOptions", CallOptions::class)
+        .addParameter("channel", ClassName("io.grpc", "Channel"))
+        .addParameter("callOptions", ClassName("io.grpc", "CallOptions"))
         .callSuperConstructor("channel", "callOptions")
         .build()
     )
     .addFunction(
       FunSpec.builder("build")
         .addModifiers(KModifier.OVERRIDE)
-        .addParameter("channel", Channel::class)
-        .addParameter("callOptions", CallOptions::class)
+        .addParameter("channel", ClassName("io.grpc", "Channel"))
+        .addParameter("callOptions", ClassName("io.grpc", "CallOptions"))
         .addStatement("return ${service.name}Stub(channel, callOptions)")
         .build()
     )
@@ -87,12 +80,12 @@ object Stub {
         rpc.requestStreaming ->
           CodeBlock.of(
             "return %M(channel.newCall(get${rpc.name}Method(), callOptions), response)",
-            MemberName(ClientCalls::class.asClassName(), clientCallType(rpc))
+            MemberName(ClassName("io.grpc.stub", "ClientCalls"), clientCallType(rpc))
           )
         else ->
           CodeBlock.of(
             "%M(channel.newCall(get${rpc.name}Method(), callOptions), request, response)",
-            MemberName(ClientCalls::class.asClassName(), clientCallType(rpc))
+            MemberName(ClassName("io.grpc.stub", "ClientCalls"), clientCallType(rpc))
           )
       }
       builder.addFunction(

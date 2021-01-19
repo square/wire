@@ -11,14 +11,7 @@ dependencies {
     api project(':wire-schema')
     implementation project(':wire-runtime')
     implementation project(':wire-grpc-client')
-    implementation(project(':wire-grpc-server')) {
-        exclude(group: 'com.google.guava', module: 'guava')
-    }
     implementation deps.okio.jvm
-    implementation(deps.grpc.stub) {
-        exclude(group: 'com.google.guava', module: 'guava')
-    }
-    implementation ("com.google.guava:guava:21.0")
     api deps.kotlinpoet
     testImplementation project(':wire-test-utils')
     testImplementation deps.kotlin.test.junit
