@@ -48,9 +48,7 @@ object BlockingStub {
       .filter { !it.responseStreaming }
       .forEach { rpc ->
         val codeBlock = CodeBlock.of(
-          """
-          return %M(channel, get${rpc.name}Method(), callOptions, request)
-        """.trimIndent(),
+          "return %M(channel, get${rpc.name}Method(), callOptions, request)",
           MemberName(
             enclosingClassName = ClassName("io.grpc.stub", "ClientCalls"),
             simpleName = if (rpc.requestStreaming) "blockingServerStreamingCall"
