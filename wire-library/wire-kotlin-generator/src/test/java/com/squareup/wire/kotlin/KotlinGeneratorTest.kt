@@ -774,8 +774,8 @@ class KotlinGeneratorTest {
              requestAdapter = "routeguide.RouteNote#ADAPTER",
              responseAdapter = "routeguide.RouteNote#ADAPTER"
            )
-           public suspend fun RouteChat(request: SendChannel<RouteNote>,
-               response: ReceiveChannel<RouteNote>): Unit
+           public suspend fun RouteChat(request: ReceiveChannel<RouteNote>,
+               response: SendChannel<RouteNote>): Unit
          }
          
          """.trimIndent()

@@ -356,14 +356,14 @@ class KotlinGenerator private constructor(
 
   private fun writableStreamOf(typeName: TypeName): ParameterizedTypeName {
     return when (rpcCallStyle) {
-      RpcCallStyle.SUSPENDING -> ReceiveChannel::class.asClassName().parameterizedBy(typeName)
+      RpcCallStyle.SUSPENDING -> SendChannel::class.asClassName().parameterizedBy(typeName)
       RpcCallStyle.BLOCKING -> MessageSink::class.asClassName().parameterizedBy(typeName)
     }
   }
 
   private fun readableStreamOf(typeName: TypeName): ParameterizedTypeName {
     return when (rpcCallStyle) {
-      RpcCallStyle.SUSPENDING -> SendChannel::class.asClassName().parameterizedBy(typeName)
+      RpcCallStyle.SUSPENDING -> ReceiveChannel::class.asClassName().parameterizedBy(typeName)
       RpcCallStyle.BLOCKING -> MessageSource::class.asClassName().parameterizedBy(typeName)
     }
   }
