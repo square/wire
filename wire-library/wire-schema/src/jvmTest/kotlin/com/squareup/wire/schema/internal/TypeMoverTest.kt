@@ -69,8 +69,11 @@ class TypeMoverTest {
     ).move()
 
     assertThat(newSchema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo("""
-        |// cafe/cafe.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: cafe/cafe.proto
+        |
         |syntax = "proto2";
+        |
         |package cafe;
         |
         |import "cafe/espresso.proto";
@@ -83,8 +86,11 @@ class TypeMoverTest {
         |""".trimMargin()
     )
     assertThat(newSchema.protoFile("cafe/espresso.proto")!!.toSchema()).isEqualTo("""
-        |// cafe/espresso.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: cafe/espresso.proto
+        |
         |syntax = "proto2";
+        |
         |package cafe;
         |
         |import "cafe/roast.proto";
@@ -136,8 +142,11 @@ class TypeMoverTest {
     ).move()
 
     assertThat(newSchema.protoFile("cafe/cafe.proto")!!.toSchema()).isEqualTo("""
-        |// cafe/cafe.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: cafe/cafe.proto
+        |
         |syntax = "proto2";
+        |
         |package cafe;
         |
         |import "cafe/roast.proto";
@@ -150,8 +159,11 @@ class TypeMoverTest {
         |""".trimMargin()
     )
     assertThat(newSchema.protoFile("cafe/roast.proto")!!.toSchema()).isEqualTo("""
-        |// cafe/roast.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: cafe/roast.proto
+        |
         |syntax = "proto2";
+        |
         |package cafe;
         |
         |enum Roast {
@@ -198,13 +210,17 @@ class TypeMoverTest {
     ).move()
 
     assertThat(newSchema.protoFile("abc.proto")!!.toSchema()).isEqualTo("""
-        |// abc.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: abc.proto
+        |
         |syntax = "proto2";
         |""".trimMargin()
     )
 
     assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo("""
-        |// a.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: a.proto
+        |
         |syntax = "proto2";
         |
         |import "b.proto";
@@ -219,7 +235,9 @@ class TypeMoverTest {
     )
 
     assertThat(newSchema.protoFile("b.proto")!!.toSchema()).isEqualTo("""
-        |// b.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: b.proto
+        |
         |syntax = "proto2";
         |
         |import "c.proto";
@@ -231,7 +249,9 @@ class TypeMoverTest {
     )
 
     assertThat(newSchema.protoFile("c.proto")!!.toSchema()).isEqualTo("""
-        |// c.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: c.proto
+        |
         |syntax = "proto2";
         |
         |message C {}
@@ -266,7 +286,9 @@ class TypeMoverTest {
     ).move()
 
     assertThat(newSchema.protoFile("abc.proto")!!.toSchema()).isEqualTo("""
-        |// abc.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: abc.proto
+        |
         |syntax = "proto2";
         |
         |import "a.proto";
@@ -309,7 +331,9 @@ class TypeMoverTest {
     ).move()
 
     assertThat(newSchema.protoFile("b.proto")!!.toSchema()).isEqualTo("""
-        |// b.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: b.proto
+        |
         |syntax = "proto2";
         |
         |import "a.proto";
@@ -320,7 +344,9 @@ class TypeMoverTest {
         |""".trimMargin()
     )
     assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo("""
-        |// a.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: a.proto
+        |
         |syntax = "proto2";
         |
         |message B {}
@@ -353,7 +379,9 @@ class TypeMoverTest {
     ).move()
 
     assertThat(newSchema.protoFile("a.proto")!!.toSchema()).isEqualTo("""
-        |// a.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: a.proto
+        |
         |syntax = "proto2";
         |
         |import "b.proto";

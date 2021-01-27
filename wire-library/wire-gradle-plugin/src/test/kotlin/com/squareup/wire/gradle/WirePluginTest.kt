@@ -9,8 +9,10 @@ import org.junit.Before
 import org.junit.Test
 import java.io.File
 import java.io.IOException
+import java.util.zip.ZipFile
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
+import org.gradle.testkit.runner.TaskOutcome
 
 class WirePluginTest {
   private lateinit var gradleRunner: GradleRunner
@@ -882,6 +884,28 @@ class WirePluginTest {
         .contains("Writing people.OfficeManager")
         .contains("Writing locations.Office")
         .contains("Writing locations.Residence")
+  }
+
+  @Test
+  fun projectDependencies() {
+    val fixtureRoot = File("src/test/projects/project-dependencies")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("generateMainProtos", "--stacktrace").build()
+    }
+
+    assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
+      .isIn(TaskOutcome.SUCCESS, TaskOutcome.UP_TO_DATE)
+    val generatedProto1 = File(fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+    val generatedProto2 = File(fixtureRoot,
+      "geology/build/generated/source/wire/com/squareup/geology/Period.kt")
+    assertThat(generatedProto1).exists()
+    assertThat(generatedProto2).exists()
+
+    ZipFile(File(fixtureRoot, "geology/build/libs/geology.jar")).use {
+      assertThat(it.getEntry("squareup/geology/period.proto")).isNotNull()
+    }
   }
 
   private fun GradleRunner.runFixture(

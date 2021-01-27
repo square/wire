@@ -17,16 +17,19 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.kotlin.sourceRoots
+import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.UnknownConfigurationException
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
-import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 
 class WirePlugin : Plugin<Project> {
   private val android = AtomicBoolean(false)
@@ -45,10 +48,12 @@ class WirePlugin : Plugin<Project> {
     project.configurations.create("protoSource")
         .also {
           it.isCanBeConsumed = false
+          it.isTransitive = false
         }
     project.configurations.create("protoPath")
         .also {
           it.isCanBeConsumed = false
+          it.isTransitive = false
         }
 
     val androidPluginHandler = { _: Plugin<*> ->
@@ -90,6 +95,17 @@ class WirePlugin : Plugin<Project> {
       it.description = "Aggregation task which runs every generation task for every given source"
     }
 
+    if (extension.protoLibrary) {
+      val libraryProtoSources = File("${buildDir}/wire/proto-sources")
+      val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+      sourceSets.getByName("main") { main: SourceSet ->
+        main.resources.srcDir(libraryProtoSources)
+      }
+      extension.proto { protoOutput ->
+        protoOutput.out = libraryProtoSources.path
+      }
+    }
+
     val outputs = extension.outputs.toMutableList()
     if (outputs.isEmpty()) {
       outputs.add(JavaOutput())
@@ -119,6 +135,24 @@ class WirePlugin : Plugin<Project> {
     //   generatedSourcesDirectory.deleteRecursively()
     // }
 
+    val sourceInput = WireInput(project.configurations.named("protoSource"))
+    sourceInput.addTrees(project, extension.sourceTrees)
+    sourceInput.addJars(project, extension.sourceJars)
+    sourceInput.addPaths(project, extension.sourcePaths)
+    if (sourceInput.dependencies.isEmpty()) {
+      sourceInput.addPaths(project, setOf("src/main/proto"))
+    }
+
+    val protoInput = WireInput(project.configurations.named("protoPath"))
+    protoInput.addTrees(project, extension.protoTrees)
+    protoInput.addJars(project, extension.protoJars)
+    protoInput.addPaths(project, extension.protoPaths)
+
+    val targets = outputs.map { it.toTarget() }
+
+    val projectDependencies = (sourceInput.dependencies + protoInput.dependencies)
+      .filterIsInstance<ProjectDependency>()
+
     val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
     for (generatedSourcesDirectory in generatedSourcesDirectories) {
       common?.sourceDirectorySet
@@ -132,51 +166,33 @@ class WirePlugin : Plugin<Project> {
         }
       }
 
-      val sourceInput = WireInput(project.configurations.named("protoSource"))
-      if (extension.sourcePaths.isNotEmpty() ||
-          extension.sourceTrees.isNotEmpty() ||
-          extension.sourceJars.isNotEmpty()) {
-        sourceInput.addTrees(project, extension.sourceTrees)
-        sourceInput.addJars(project, extension.sourceJars)
-        sourceInput.addPaths(project, extension.sourcePaths)
-      } else {
-        sourceInput.addPaths(project, setOf("src/main/proto"))
+      val taskName = "generate${source.name.capitalize()}Protos"
+      val task = project.tasks.register(taskName, WireTask::class.java) { task: WireTask ->
+        task.group = GROUP
+        task.description = "Generate protobuf implementation for ${source.name}"
+        task.source(sourceInput.configuration)
+
+        if (task.logger.isDebugEnabled) {
+          sourceInput.debug(task.logger)
+          protoInput.debug(task.logger)
+        }
+        task.outputDirectories = outputs.map { output -> File(output.out!!) }
+        task.sourceInput.set(sourceInput.toLocations())
+        task.protoInput.set(protoInput.toLocations())
+        task.roots = extension.roots.toList()
+        task.prunes = extension.prunes.toList()
+        task.moves = extension.moves.toList()
+        task.sinceVersion = extension.sinceVersion
+        task.untilVersion = extension.untilVersion
+        task.onlyVersion = extension.onlyVersion
+        task.rules = extension.rules
+        task.targets = targets
+        task.permitPackageCycles = extension.permitPackageCycles
+
+        for (projectDependency in projectDependencies) {
+          task.dependsOn(projectDependency)
+        }
       }
-
-      val protoInput = WireInput(project.configurations.named("protoPath"))
-      if (extension.protoPaths.isNotEmpty() ||
-          extension.protoTrees.isNotEmpty() ||
-          extension.protoJars.isNotEmpty()) {
-        protoInput.addTrees(project, extension.protoTrees)
-        protoInput.addJars(project, extension.protoJars)
-        protoInput.addPaths(project, extension.protoPaths)
-      }
-
-      val targets = outputs.map { it.toTarget() }
-      val task =
-          project.tasks.register("generate${source.name.capitalize()}Protos",
-              WireTask::class.java) { task: WireTask ->
-            task.group = GROUP
-            task.description = "Generate protobuf implementation for ${source.name}"
-            task.source(sourceInput.configuration)
-
-            if (task.logger.isDebugEnabled) {
-              sourceInput.debug(task.logger)
-              protoInput.debug(task.logger)
-            }
-            task.outputDirectories = outputs.map { output -> File(output.out!!) }
-            task.sourceInput.set(sourceInput.toLocations())
-            task.protoInput.set(protoInput.toLocations())
-            task.roots = extension.roots.toList()
-            task.prunes = extension.prunes.toList()
-            task.moves = extension.moves.toList()
-            task.sinceVersion = extension.sinceVersion
-            task.untilVersion = extension.untilVersion
-            task.onlyVersion = extension.onlyVersion
-            task.rules = extension.rules
-            task.targets = targets
-            task.permitPackageCycles = extension.permitPackageCycles
-          }
 
       project.tasks.named(PARENT_TASK).configure {
         it.dependsOn(task)
