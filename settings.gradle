@@ -3,6 +3,7 @@ include ':wire-codegen-sample'
 include ':wire-grpc-sample:client'
 include ':wire-grpc-sample:protos'
 include ':wire-grpc-sample:server'
+include ':wire-grpc-sample:server-plain'
 include ':wire-grpc-tests'
 include ':wire-protoc-compatibility-tests'
 
@@ -20,6 +21,7 @@ includeBuild('wire-library') {
     substitute module('com.squareup.wire:wire-gradle-plugin') with project(':wire-gradle-plugin')
     substitute module('com.squareup.wire:wire-grpc-client') with project(':wire-grpc-client')
     substitute module('com.squareup.wire:wire-grpc-mockwebserver') with project(':wire-grpc-mockwebserver')
+    substitute module('com.squareup.wire:wire-grpc-server') with project(':wire-grpc-server')
     substitute module('com.squareup.wire:wire-gson-support') with project(':wire-gson-support')
     substitute module('com.squareup.wire:wire-java-generator') with project(':wire-java-generator')
     substitute module('com.squareup.wire:wire-kotlin-generator') with project(':wire-kotlin-generator')
