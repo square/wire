@@ -90,7 +90,9 @@ class ProtoFileTest {
     val file = ProtoFile.get(fileElement)
 
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |
         |package example.simple;
         |
         |import "example.thing";

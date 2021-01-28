@@ -30,7 +30,10 @@ class ProtoFileElementTest {
   @Test
   fun emptyToSchema() {
     val file = ProtoFileElement(location = location)
-    val expected = "// file.proto\n"
+    val expected = """
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |""".trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
   }
 
@@ -41,7 +44,9 @@ class ProtoFileElementTest {
         packageName = "example.simple"
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |
         |package example.simple;
         |""".trimMargin()
     assertThat(file.toSchema()).isEqualTo(expected)
@@ -58,7 +63,8 @@ class ProtoFileElementTest {
         types = listOf(element)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
         |
         |message Message {}
         |""".trimMargin()
@@ -77,7 +83,8 @@ class ProtoFileElementTest {
         types = listOf(element)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
         |
         |import "example.other";
         |
@@ -112,7 +119,8 @@ class ProtoFileElementTest {
         types = listOf(element)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
         |
         |import public "example.other";
         |
@@ -146,7 +154,8 @@ class ProtoFileElementTest {
         types = listOf(element)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
         |
         |import "example.thing";
         |import public "example.other";
@@ -172,7 +181,8 @@ class ProtoFileElementTest {
         services = listOf(service)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
         |
         |message Message {}
         |
@@ -211,7 +221,8 @@ class ProtoFileElementTest {
         types = listOf(element)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
         |
         |option kit = "kat";
         |
@@ -244,7 +255,8 @@ class ProtoFileElementTest {
         types = listOf(MessageElement(location = location, name = "Message"))
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
         |
         |message Message {}
         |
@@ -266,18 +278,18 @@ class ProtoFileElementTest {
 
   @Test
   fun multipleEverythingToSchema() {
-    val element1 = MessageElement(location = location.at(10, 1), name = "Message1")
-    val element2 = MessageElement(location = location.at(12, 1), name = "Message2")
-    val extend1 = ExtendElement(location = location.at(14, 1), name = "Extend1")
-    val extend2 = ExtendElement(location = location.at(16, 1), name = "Extend2")
+    val element1 = MessageElement(location = location.at(12, 1), name = "Message1")
+    val element2 = MessageElement(location = location.at(14, 1), name = "Message2")
+    val extend1 = ExtendElement(location = location.at(16, 1), name = "Extend1")
+    val extend2 = ExtendElement(location = location.at(18, 1), name = "Extend2")
     val option1 = OptionElement.create("kit", Kind.STRING, "kat")
     val option2 = OptionElement.create("foo", Kind.STRING, "bar")
     val service1 = ServiceElement(
-        location = location.at(18, 1),
+        location = location.at(20, 1),
         name = "Service1"
     )
     val service2 = ServiceElement(
-        location = location.at(20, 1),
+        location = location.at(22, 1),
         name = "Service2"
     )
     val file = ProtoFileElement(
@@ -291,7 +303,9 @@ class ProtoFileElementTest {
         options = listOf(option1, option2)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |
         |package example.simple;
         |
         |import "example.thing";
@@ -328,7 +342,9 @@ class ProtoFileElementTest {
         types = listOf(element)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |
         |syntax = "proto2";
         |
         |message Message {}
@@ -339,7 +355,7 @@ class ProtoFileElementTest {
   @Test
   fun defaultIsSetInProto2() {
     val field = FieldElement(
-        location = location.at(9, 3),
+        location = location.at(12, 3),
         label = Field.Label.REQUIRED,
         type = "string",
         name = "name",
@@ -347,7 +363,7 @@ class ProtoFileElementTest {
         defaultValue = "defaultValue"
     )
     val message =
-        MessageElement(location = location.at(8, 1), name = "Message", fields = listOf(field))
+        MessageElement(location = location.at(11, 1), name = "Message", fields = listOf(field))
     val file = ProtoFileElement(
         syntax = PROTO_2,
         location = location,
@@ -357,8 +373,11 @@ class ProtoFileElementTest {
         types = listOf(message)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |
         |syntax = "proto2";
+        |
         |package example.simple;
         |
         |import "example.thing";
@@ -378,14 +397,14 @@ class ProtoFileElementTest {
   @Test
   fun convertPackedOptionFromWireSchemaInProto2() {
     val fieldNumeric = FieldElement(
-        location = location.at(6, 3),
+        location = location.at(9, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_without_packed_option",
         tag = 1
     )
     val fieldNumericPackedTrue = FieldElement(
-        location = location.at(8, 3),
+        location = location.at(11, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_packed_true",
@@ -393,7 +412,7 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT)
     )
     val fieldNumericPackedFalse = FieldElement(
-        location = location.at(10, 3),
+        location = location.at(13, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_packed_false",
@@ -401,14 +420,14 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
     )
     val fieldString = FieldElement(
-        location = location.at(12, 3),
+        location = location.at(15, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_without_packed_option",
         tag = 4
     )
     val fieldStringPackedTrue = FieldElement(
-        location = location.at(14, 3),
+        location = location.at(17, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_packed_true",
@@ -416,7 +435,7 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT)
     )
     val fieldStringPackedFalse = FieldElement(
-        location = location.at(16, 3),
+        location = location.at(19, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_packed_false",
@@ -425,7 +444,7 @@ class ProtoFileElementTest {
     )
 
     val message = MessageElement(
-        location = location.at(5, 1),
+        location = location.at(8, 1),
         name = "Message",
         fields = listOf(fieldNumeric, fieldNumericPackedTrue, fieldNumericPackedFalse, fieldString,
             fieldStringPackedTrue, fieldStringPackedFalse))
@@ -438,8 +457,11 @@ class ProtoFileElementTest {
         types = listOf(message)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |
         |syntax = "proto2";
+        |
         |package example.simple;
         |
         |message Message {
@@ -466,14 +488,14 @@ class ProtoFileElementTest {
   @Test
   fun convertPackedOptionFromWireSchemaInProto3() {
     val fieldNumeric = FieldElement(
-        location = location.at(6, 3),
+        location = location.at(9, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_without_packed_option",
         tag = 1
     )
     val fieldNumericPackedTrue = FieldElement(
-        location = location.at(8, 3),
+        location = location.at(11, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_packed_true",
@@ -481,7 +503,7 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT)
     )
     val fieldNumericPackedFalse = FieldElement(
-        location = location.at(10, 3),
+        location = location.at(13, 3),
         label = Field.Label.REPEATED,
         type = "int32",
         name = "numeric_packed_false",
@@ -489,14 +511,14 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT.copy(value = "false"))
     )
     val fieldString = FieldElement(
-        location = location.at(12, 3),
+        location = location.at(15, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_without_packed_option",
         tag = 4
     )
     val fieldStringPackedTrue = FieldElement(
-        location = location.at(14, 3),
+        location = location.at(17, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_packed_true",
@@ -504,7 +526,7 @@ class ProtoFileElementTest {
         options = listOf(PACKED_OPTION_ELEMENT)
     )
     val fieldStringPackedFalse = FieldElement(
-        location = location.at(16, 3),
+        location = location.at(19, 3),
         label = Field.Label.REPEATED,
         type = "string",
         name = "string_packed_false",
@@ -513,7 +535,7 @@ class ProtoFileElementTest {
     )
 
     val message = MessageElement(
-        location = location.at(5, 1),
+        location = location.at(8, 1),
         name = "Message",
         fields = listOf(fieldNumeric, fieldNumericPackedTrue, fieldNumericPackedFalse, fieldString,
             fieldStringPackedTrue, fieldStringPackedFalse)
@@ -527,8 +549,11 @@ class ProtoFileElementTest {
         types = listOf(message)
     )
     val expected = """
-        |// file.proto
+        |// Proto schema formatted by Wire, do not edit.
+        |// Source: file.proto
+        |
         |syntax = "proto3";
+        |
         |package example.simple;
         |
         |message Message {

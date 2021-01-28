@@ -292,6 +292,21 @@ wire {
 }
 ```
 
+### Proto Libraries
+
+By default, `.proto` input files are not included in the generated `.jar` artifact. Use the
+`protoLibrary` option to include them:
+
+```groovy
+wire {
+  protoLibrary = true
+}
+```
+
+This is most useful when building `.jar` files for other `wire` tasks to use as dependencies. Note
+that only the true sources are included – proto messages that are pruned or not used are not
+included in the output artifact.
+
 Customizing Output
 ------------------
 
@@ -415,6 +430,47 @@ wire {
 }
 ```
 
+### Custom Handlers
+
+Wire has an unstable API to generate code or other artifacts from a proto schema.
+
+You'll need to implement the [CustomHandlerBeta] interface. See our [MarkdownHandler] for a sample
+implementation. Note that this interface is subject to change.
+
+Build that into an `jar` artifact and add that as a buildscript dependency to your Gradle project.
+
+```groovy
+buildscript {
+  dependencies {
+    classpath "com.example.my-custom-handler:my-custom-handler:1.0.0"
+  }
+}
+```
+
+Next configure the Wire plugin to call your custom handler. Here's an exhaustive custom
+configuration. Booleans and enums are shown with their non-default behavior.
+
+```groovy
+wire {
+  custom {
+   // The name of a Java class to generate code with. This class must:
+   //  * be in the buildscript dependencies for this Gradle project
+   //  * be a public class
+   //  * have a public no-arguments constructor
+   //  * implement the com.squareup.wire.schema.CustomHandlerBeta interface
+   customHandlerClass = "com.example.MyCustomHandler"
+
+   // These options work the same as the java and kotlin targets above.
+   includes = ['com.example.pizza.*']
+   excludes = ['com.example.sales.*']
+   exclusive = false
+   out "${buildDir}/custom"
+  }
+}
+```
+
+ [CustomHandlerBeta]: https://github.com/square/wire/blob/5fac94f86879fdd7e412cddbeb51e09a708b2b64/wire-library/wire-compiler/src/main/java/com/squareup/wire/schema/Target.kt#L583-L596
+ [MarkdownHandler]: https://github.com/square/wire/blob/ebacb88b1c487a7e7d97ff3729c67907e1f95616/wire-library/wire-compiler/src/test/java/com/squareup/wire/schema/MarkdownHandler.kt
  [gradle]: https://gradle.org/
  [kotlinpoet]: https://github.com/square/kotlinpoet
  [maven_coordinates]: https://maven.apache.org/pom.html#Maven_Coordinates

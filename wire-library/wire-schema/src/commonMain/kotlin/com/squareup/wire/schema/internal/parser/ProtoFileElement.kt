@@ -32,14 +32,15 @@ data class ProtoFileElement(
   val options: List<OptionElement> = emptyList()
 ) {
   fun toSchema() = buildString {
-    append("// ")
-    append(location.withPathOnly())
-    append('\n')
+    append("// Proto schema formatted by Wire, do not edit.\n")
+    append("// Source: ${location.withPathOnly()}\n")
 
     if (syntax != null) {
+      append('\n')
       append("syntax = \"$syntax\";\n")
     }
     if (packageName != null) {
+      append('\n')
       append("package $packageName;\n")
     }
     if (imports.isNotEmpty() || publicImports.isNotEmpty()) {
