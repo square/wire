@@ -16,30 +16,30 @@
 package com.squareup.wire.kotlin.grpcserver
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.wire.kotlin.grpcserver.BlockingStub.addBlockingStub
-import com.squareup.wire.kotlin.grpcserver.ImplBase.addImplBase
-import com.squareup.wire.kotlin.grpcserver.LegacyAdapter.addLegacyAdapter
-import com.squareup.wire.kotlin.grpcserver.MethodDescriptor.addMethodDescriptor
-import com.squareup.wire.kotlin.grpcserver.ServiceDescriptor.addServiceDescriptor
-import com.squareup.wire.kotlin.grpcserver.Stub.addStub
+import com.squareup.wire.kotlin.grpcserver.BlockingStubGenerator.addBlockingStub
+import com.squareup.wire.kotlin.grpcserver.ImplBaseGenerator.addImplBase
+import com.squareup.wire.kotlin.grpcserver.LegacyAdapterGenerator.addLegacyAdapter
+import com.squareup.wire.kotlin.grpcserver.MethodDescriptorGenerator.addMethodDescriptor
+import com.squareup.wire.kotlin.grpcserver.ServiceDescriptorGenerator.addServiceDescriptor
+import com.squareup.wire.kotlin.grpcserver.StubGenerator.addStub
+import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Service
 
-class KotlinGrpcGenerator {
+class KotlinGrpcGenerator(private val typeToKotlinName: Map<ProtoType, TypeName>) {
   fun generateGrpcServer(service: Service): Pair<ClassName, TypeSpec> {
-    val typeName = "${service.name}WireGrpc"
-    return ClassName(
-      packageName = service.type.enclosingTypeOrPackage ?: "",
-      simpleNames = listOf(typeName)
-    ) to TypeSpec.objectBuilder(typeName)
-      .apply {
-        addServiceDescriptor(this, service)
-        service.rpcs.forEach { addMethodDescriptor(this, service, it) }
-        addImplBase(this, service)
-        addLegacyAdapter(this, service)
-        addStub(this, service)
-        addBlockingStub(this, service)
-      }
-      .build()
+    val classNameGenerator = ClassNameGenerator(typeToKotlinName)
+    val grpcClassName = classNameGenerator.classNameFor(service.type, "WireGrpc")
+    val builder = TypeSpec.objectBuilder(grpcClassName)
+
+    addServiceDescriptor(builder, service)
+    service.rpcs.forEach { rpc -> addMethodDescriptor(classNameGenerator, builder, service, rpc) }
+    addImplBase(classNameGenerator, builder, service)
+    addLegacyAdapter(classNameGenerator, builder, service)
+    addStub(classNameGenerator, builder, service)
+    addBlockingStub(classNameGenerator, builder, service)
+
+    return grpcClassName to builder.build()
   }
 }

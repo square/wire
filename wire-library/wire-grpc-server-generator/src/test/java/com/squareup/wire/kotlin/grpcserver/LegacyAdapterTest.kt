@@ -17,7 +17,7 @@ package com.squareup.wire.kotlin.grpcserver
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.wire.kotlin.grpcserver.LegacyAdapter.addLegacyAdapter
+import com.squareup.wire.kotlin.grpcserver.LegacyAdapterGenerator.addLegacyAdapter
 import com.squareup.wire.schema.RepoBuilder
 import okio.buffer
 import okio.source
@@ -34,7 +34,13 @@ class LegacyAdapterTest {
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { addLegacyAdapter(this, service!!) }
+          .apply {
+            addLegacyAdapter(
+              generator = ClassNameGenerator(buildClassMap(repoBuilder.schema(), service!!)),
+              builder = this,
+              service
+            )
+          }
           .build()
       )
       .build()

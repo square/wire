@@ -32,7 +32,11 @@ class StubTest {
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { Stub.addStub(this, service!!) }
+          .apply { StubGenerator.addStub(
+            generator = ClassNameGenerator(buildClassMap(repoBuilder.schema(), service!!)),
+            builder = this,
+            service
+          ) }
           .build()
       )
       .build()

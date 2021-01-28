@@ -1,4 +1,4 @@
-package routeguide.kotlin
+package routeguide
 
 import com.squareup.wire.kotlin.grpcserver.MessageSinkAdapter
 import com.squareup.wire.kotlin.grpcserver.MessageSourceAdapter
@@ -24,15 +24,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Iterator
 import kotlin.jvm.Volatile
-import routeguide.Feature
-import routeguide.Point
-import routeguide.Rectangle
-import routeguide.RouteGuideGetFeatureBlockingServer
-import routeguide.RouteGuideListFeaturesBlockingServer
-import routeguide.RouteGuideRecordRouteBlockingServer
-import routeguide.RouteGuideRouteChatBlockingServer
-import routeguide.RouteNote
-import routeguide.RouteSummary
 
 public object RouteGuideWireGrpc {
   public val SERVICE_NAME: String = "routeguide.RouteGuide"

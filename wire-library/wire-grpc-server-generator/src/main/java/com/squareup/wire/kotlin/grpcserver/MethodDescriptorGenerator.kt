@@ -25,14 +25,15 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 
-object MethodDescriptor {
+object MethodDescriptorGenerator {
   internal fun addMethodDescriptor(
+    generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service,
     rpc: Rpc
   ): TypeSpec.Builder {
-    val requestType = ClassName.bestGuess(rpc.requestType.toString())
-    val responseType = ClassName.bestGuess(rpc.responseType.toString())
+    val requestType = generator.classNameFor(rpc.requestType!!)
+    val responseType = generator.classNameFor(rpc.responseType!!)
     return builder
       .addProperty(
         PropertySpec.builder(
@@ -48,14 +49,18 @@ object MethodDescriptor {
       .addFunction(
         FunSpec.builder("get${rpc.name}Method")
           .returns(methodDescriptorType(requestType, responseType))
-          .addCode(methodDescriptorCodeBlock(service, rpc))
+          .addCode(methodDescriptorCodeBlock(generator, service, rpc))
           .build()
       )
   }
 
-  private fun methodDescriptorCodeBlock(service: Service, rpc: Rpc): CodeBlock {
-    val requestType = ClassName.bestGuess(rpc.requestType.toString())
-    val responseType = ClassName.bestGuess(rpc.responseType.toString())
+  private fun methodDescriptorCodeBlock(
+    generator: ClassNameGenerator,
+    service: Service,
+    rpc: Rpc
+  ): CodeBlock {
+    val requestType = generator.classNameFor(rpc.requestType!!)
+    val responseType = generator.classNameFor(rpc.responseType!!)
     val codeBlock = CodeBlock.builder()
     codeBlock.addStatement(
       "var result: %T = get${rpc.name}Method",

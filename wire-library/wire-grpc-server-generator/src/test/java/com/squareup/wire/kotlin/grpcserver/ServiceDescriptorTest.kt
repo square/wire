@@ -33,7 +33,7 @@ class ServiceDescriptorTest {
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { ServiceDescriptor.addServiceDescriptor(this, service!!) }
+          .apply { ServiceDescriptorGenerator.addServiceDescriptor(this, service!!) }
           .build()
       )
       .build()

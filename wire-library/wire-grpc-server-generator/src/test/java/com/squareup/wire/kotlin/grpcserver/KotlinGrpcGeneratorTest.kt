@@ -29,8 +29,9 @@ internal class KotlinGrpcGeneratorTest {
     val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
     val service = repoBuilder.schema().getService("routeguide.RouteGuide")
 
-    val (_, typeSpec) = KotlinGrpcGenerator().generateGrpcServer(service!!)
-    val output = FileSpec.get("routeguide.kotlin", typeSpec)
+    val (_, typeSpec) = KotlinGrpcGenerator(buildClassMap(repoBuilder.schema(), service!!))
+      .generateGrpcServer(service)
+    val output = FileSpec.get("routeguide", typeSpec)
 
     assertThat(output.toString())
       .isEqualTo(File("src/test/golden/RouteGuideWireGrpc.kt").source().buffer().readUtf8())

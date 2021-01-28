@@ -1,6 +1,5 @@
 package routeguide
 
-import RouteGuideImplBase
 import com.squareup.wire.kotlin.grpcserver.MessageSinkAdapter
 import com.squareup.wire.kotlin.grpcserver.MessageSourceAdapter
 import io.grpc.stub.StreamObserver
@@ -14,7 +13,7 @@ public class RouteGuideWireGrpc {
     private val ListFeatures: () -> RouteGuideListFeaturesBlockingServer,
     private val RecordRoute: () -> RouteGuideRecordRouteBlockingServer,
     private val RouteChat: () -> RouteGuideRouteChatBlockingServer
-  ) : RouteGuideImplBase() {
+  ) : RouteGuideWireGrpc.RouteGuideImplBase() {
     public override fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
       response.onNext(GetFeature().GetFeature(request))
       response.onCompleted()

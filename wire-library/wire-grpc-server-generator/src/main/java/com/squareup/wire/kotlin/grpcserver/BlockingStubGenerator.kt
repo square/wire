@@ -22,26 +22,37 @@ import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import com.squareup.wire.kotlin.grpcserver.Stub.addAbstractStubConstructor
+import com.squareup.wire.kotlin.grpcserver.StubGenerator.addAbstractStubConstructor
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 
-object BlockingStub {
-  internal fun addBlockingStub(builder: TypeSpec.Builder, service: Service): TypeSpec.Builder =
-    builder
+object BlockingStubGenerator {
+  internal fun addBlockingStub(
+    generator: ClassNameGenerator,
+    builder: TypeSpec.Builder,
+    service: Service
+  ): TypeSpec.Builder {
+    val serviceClassName = generator.classNameFor(service.type)
+    val stubClassName = ClassName(
+      packageName = serviceClassName.packageName,
+      "${serviceClassName.simpleName}WireGrpc",
+      "${serviceClassName.simpleName}BlockingStub"
+    )
+    return builder
       .addFunction(
         FunSpec.builder("newBlockingStub")
           .addParameter("channel", ClassName("io.grpc", "Channel"))
-          .returns(ClassName("", "${service.name}BlockingStub"))
-          .addCode("return %T(channel)", ClassName("", "${service.name}BlockingStub"))
+          .returns(stubClassName)
+          .addCode("return %T(channel)", stubClassName)
           .build()
       )
       .addType(
-        TypeSpec.classBuilder("${service.name}BlockingStub")
-          .apply { addAbstractStubConstructor(this, service) }
+        TypeSpec.classBuilder(stubClassName)
+          .apply { addAbstractStubConstructor(generator, this, service) }
           .addBlockingStubRpcCalls(service)
           .build()
       )
+  }
 
   private fun TypeSpec.Builder.addBlockingStubRpcCalls(service: Service): TypeSpec.Builder {
     service.rpcs

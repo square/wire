@@ -24,8 +24,11 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.Service
 
-object ServiceDescriptor {
-  internal fun addServiceDescriptor(builder: TypeSpec.Builder, service: Service) = builder
+object ServiceDescriptorGenerator {
+  internal fun addServiceDescriptor(
+    builder: TypeSpec.Builder,
+    service: Service
+  ) = builder
     .addProperty(
       PropertySpec.builder(
         name = "SERVICE_NAME",

@@ -212,7 +212,8 @@ class KotlinGenerator private constructor(
     }
 
     if (grpcServerCompatible) {
-      val (grpcClassName, grpcSpec) = KotlinGrpcGenerator().generateGrpcServer(service)
+      val (grpcClassName, grpcSpec) = KotlinGrpcGenerator(typeToKotlinName)
+        .generateGrpcServer(service)
       result[grpcClassName] = grpcSpec
     }
 

@@ -27,19 +27,27 @@ import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 import java.io.InputStream
 
-object ImplBase {
-  internal fun addImplBase(builder: TypeSpec.Builder, service: Service) = builder
+object ImplBaseGenerator {
+  internal fun addImplBase(
+    generator: ClassNameGenerator,
+    builder: TypeSpec.Builder,
+    service: Service
+  ) = builder
     .addType(
       TypeSpec.classBuilder("${service.name}ImplBase")
         .addModifiers(KModifier.ABSTRACT)
         .addSuperinterface(ClassName("io.grpc", "BindableService"))
-        .apply { addImplBaseBody(this, service) }
+        .apply { addImplBaseBody(generator,this, service) }
         .build()
     )
 
-  internal fun addImplBaseRpcSignature(builder: FunSpec.Builder, rpc: Rpc): FunSpec.Builder {
-    val requestType = ClassName.bestGuess(rpc.requestType.toString())
-    val responseType = ClassName.bestGuess(rpc.responseType.toString())
+  internal fun addImplBaseRpcSignature(
+    generator: ClassNameGenerator,
+    builder: FunSpec.Builder,
+    rpc: Rpc
+  ): FunSpec.Builder {
+    val requestType = generator.classNameFor(rpc.requestType!!)
+    val responseType = generator.classNameFor(rpc.responseType!!)
     return when {
       rpc.requestStreaming -> builder
         .addParameter(
@@ -56,12 +64,16 @@ object ImplBase {
     }
   }
 
-  private fun addImplBaseBody(builder: TypeSpec.Builder, service: Service): TypeSpec.Builder {
+  private fun addImplBaseBody(
+    generator: ClassNameGenerator,
+    builder: TypeSpec.Builder,
+    service: Service
+  ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
       builder.addFunction(
         FunSpec.builder(rpc.name)
           .addModifiers(KModifier.OPEN)
-          .apply { addImplBaseRpcSignature(this, rpc) }
+          .apply { addImplBaseRpcSignature(generator, this, rpc) }
           .addCode(CodeBlock.of("TODO(\"not implemented\")"))
           .build()
       )
@@ -79,9 +91,9 @@ object ImplBase {
       .flatMap { listOf(it.requestType, it.responseType) }
       .distinct()
       .forEach {
-        val className = ClassName.bestGuess(it.toString())
+        val className = generator.classNameFor(it!!)
         builder.addType(
-          TypeSpec.classBuilder("${it!!.simpleName}Marshaller")
+          TypeSpec.classBuilder("${it.simpleName}Marshaller")
             .addSuperinterface(
               ClassName("io.grpc", "MethodDescriptor")
                 .nestedClass("Marshaller")

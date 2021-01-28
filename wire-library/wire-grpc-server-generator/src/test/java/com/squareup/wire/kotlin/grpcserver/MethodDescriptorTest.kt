@@ -21,7 +21,6 @@ import com.squareup.wire.schema.RepoBuilder
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.File
 
@@ -35,9 +34,10 @@ class MethodDescriptorTest {
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { MethodDescriptor.addMethodDescriptor(
+          .apply { MethodDescriptorGenerator.addMethodDescriptor(
+            generator = ClassNameGenerator(buildClassMap(repoBuilder.schema(), service!!)),
             builder = this,
-            service = service!!,
+            service = service,
             rpc = service.rpc("GetFeature")!!
           ) }
           .build()

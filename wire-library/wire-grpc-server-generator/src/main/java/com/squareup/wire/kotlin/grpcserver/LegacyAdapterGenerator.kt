@@ -23,29 +23,33 @@ import com.squareup.kotlinpoet.LambdaTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
-import com.squareup.wire.kotlin.grpcserver.ImplBase.addImplBaseRpcSignature
+import com.squareup.wire.kotlin.grpcserver.ImplBaseGenerator.addImplBaseRpcSignature
 import com.squareup.wire.schema.Service
 import java.util.concurrent.ExecutorService
 
-object LegacyAdapter {
-  internal fun addLegacyAdapter(builder: TypeSpec.Builder, service: Service): TypeSpec.Builder =
-    builder
+object LegacyAdapterGenerator {
+  internal fun addLegacyAdapter(
+    generator: ClassNameGenerator,
+    builder: TypeSpec.Builder,
+    service: Service
+  ): TypeSpec.Builder {
+    val serviceClassName = generator.classNameFor(service.type)
+    val implBaseClassName = ClassName(
+      serviceClassName.packageName,
+      "${service.name}WireGrpc",
+      "${service.name}ImplBase"
+    )
+    return builder
       .addType(
-        TypeSpec.classBuilder("${service.name}ImplLegacyAdapter")
-          .superclass(
-            ClassName(
-              "",
-              "${service.name}ImplBase"
-            )
-          )
+        TypeSpec.classBuilder(generator.classNameFor(service.type, "ImplLegacyAdapter"))
+          .superclass(implBaseClassName)
           .primaryConstructor(
             FunSpec.constructorBuilder()
               .addParameter(
                 name = "streamExecutor",
                 type = ExecutorService::class
               )
-              .apply { addRpcConstructorParameters(this, service) }
+              .apply { addRpcConstructorParameters(generator, this, service) }
               .build()
           )
           .addProperty(
@@ -55,13 +59,15 @@ object LegacyAdapter {
               .build()
           )
           .apply {
-            addRpcProperties(this, service)
-            addRpcAdapterCodeBlocks(this, service)
+            addRpcProperties(generator,this, service)
+            addRpcAdapterCodeBlocks(generator, this, service)
           }
           .build()
       )
+  }
 
   private fun addRpcConstructorParameters(
+    generator: ClassNameGenerator,
     builder: FunSpec.Builder,
     service: Service
   ): FunSpec.Builder {
@@ -70,7 +76,7 @@ object LegacyAdapter {
         name = rpc.name,
         type = LambdaTypeName.get(
           returnType = ClassName(
-            service.type.enclosingTypeOrPackage!!,
+            generator.classNameFor(service.type).packageName,
             "${service.name}${rpc.name}BlockingServer"
           )
         )
@@ -79,14 +85,18 @@ object LegacyAdapter {
     return builder
   }
 
-  private fun addRpcProperties(builder: TypeSpec.Builder, service: Service): TypeSpec.Builder {
+  private fun addRpcProperties(
+    generator: ClassNameGenerator,
+    builder: TypeSpec.Builder,
+    service: Service
+  ): TypeSpec.Builder {
     service.rpcs.forEach { rpc ->
       builder.addProperty(
         PropertySpec.builder(
           name = rpc.name,
           type = LambdaTypeName.get(
             returnType = ClassName(
-              service.type.enclosingTypeOrPackage!!,
+              generator.classNameFor(service.type).packageName,
               "${service.name}${rpc.name}BlockingServer"
             )
           )
@@ -100,6 +110,7 @@ object LegacyAdapter {
   }
 
   private fun addRpcAdapterCodeBlocks(
+    generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
     service: Service
   ): TypeSpec.Builder {
@@ -114,7 +125,7 @@ object LegacyAdapter {
           |return requestStream
           |""".trimMargin(),
           ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
-            .parameterizedBy(ClassName.bestGuess(rpc.requestType.toString())),
+            .parameterizedBy(generator.classNameFor(rpc.requestType!!)),
           ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
         )
         rpc.requestStreaming -> CodeBlock.of(
@@ -127,7 +138,7 @@ object LegacyAdapter {
           |return requestStream
           |""".trimMargin(),
           ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
-            .parameterizedBy(ClassName.bestGuess(rpc.requestType.toString()))
+            .parameterizedBy(generator.classNameFor(rpc.requestType!!))
         )
         rpc.responseStreaming -> CodeBlock.of(
           """
@@ -145,7 +156,7 @@ object LegacyAdapter {
       builder.addFunction(
         FunSpec.builder(rpc.name)
           .addModifiers(KModifier.OVERRIDE)
-          .apply { addImplBaseRpcSignature(this, rpc) }
+          .apply { addImplBaseRpcSignature(generator, this, rpc) }
           .addCode(codeBlock)
           .build()
       )

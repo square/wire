@@ -33,7 +33,13 @@ class ImplBaseTest {
     val code = FileSpec.builder("routeguide", "RouteGuide")
       .addType(
         TypeSpec.classBuilder("RouteGuideWireGrpc")
-          .apply { ImplBase.addImplBase(this, service!!) }
+          .apply {
+            ImplBaseGenerator.addImplBase(
+              generator = ClassNameGenerator(buildClassMap(repoBuilder.schema(), service!!)),
+              builder = this,
+              service = service
+            )
+          }
           .build()
       )
       .build()
