@@ -19,8 +19,7 @@ import com.google.common.util.concurrent.Monitor
 import com.squareup.wire.MessageSource
 import io.grpc.stub.StreamObserver
 
-// This is for adapting Google style grpc stubs to Wire style grpc stubs, in case we want to
-// allow existing Misk gRPC implementations to be plugged in.
+// This is for adapting Google style grpc stubs to Wire style grpc stubs.
 @Suppress("UnstableApiUsage")
 class MessageSourceAdapter<T : Any> : MessageSource<T>, StreamObserver<T> {
   private var value: T? = null

@@ -26,6 +26,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 import java.io.InputStream
+import java.lang.UnsupportedOperationException
 
 object ImplBaseGenerator {
   internal fun addImplBase(
@@ -74,7 +75,7 @@ object ImplBaseGenerator {
         FunSpec.builder(rpc.name)
           .addModifiers(KModifier.OPEN)
           .apply { addImplBaseRpcSignature(generator, this, rpc) }
-          .addCode(CodeBlock.of("TODO(\"not implemented\")"))
+          .addCode(CodeBlock.of("throw %T()", UnsupportedOperationException::class.java))
           .build()
       )
     }

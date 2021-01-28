@@ -9,25 +9,21 @@ import io.grpc.stub.ServerCalls.asyncServerStreamingCall
 import io.grpc.stub.ServerCalls.asyncUnaryCall
 import io.grpc.stub.StreamObserver
 import java.io.InputStream
-import kotlin.Unit
+import java.lang.UnsupportedOperationException
 
 public class RouteGuideWireGrpc {
   public abstract class RouteGuideImplBase : BindableService {
-    public open fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
-      TODO("not implemented")
-    }
+    public open fun GetFeature(request: Point, response: StreamObserver<Feature>) = throw
+        UnsupportedOperationException()
 
-    public open fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>): Unit {
-      TODO("not implemented")
-    }
+    public open fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>) = throw
+        UnsupportedOperationException()
 
-    public open fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> {
-      TODO("not implemented")
-    }
+    public open fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> =
+        throw UnsupportedOperationException()
 
-    public open fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> {
-      TODO("not implemented")
-    }
+    public open fun RouteChat(response: StreamObserver<RouteNote>): StreamObserver<RouteNote> =
+        throw UnsupportedOperationException()
 
     public override fun bindService(): ServerServiceDefinition =
         ServerServiceDefinition.builder(getServiceDescriptor()).addMethod(
