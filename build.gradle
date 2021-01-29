@@ -6,6 +6,7 @@ buildscript {
     'compiler': "com.squareup.wire:wire-compiler",
     'gradlePlugin': "com.squareup.wire:wire-gradle-plugin",
     'grpcClient': "com.squareup.wire:wire-grpc-client",
+    'grpcServer': "com.squareup.wire:wire-grpc-server",
     'grpcMockWebServer': "com.squareup.wire:wire-grpc-mockwebserver",
     'gsonSupport': "com.squareup.wire:wire-gson-support",
     'javaGenerator': "com.squareup.wire:wire-java-generator",

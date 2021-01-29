@@ -72,6 +72,15 @@ class RepoBuilder {
   }
 
   @Throws(IOException::class)
+  fun addLocal(path: String): RepoBuilder {
+    val file = File(path)
+    file.source().use { source ->
+      val protoFile = source.buffer().readUtf8()
+      return add(path, protoFile)
+    }
+  }
+
+  @Throws(IOException::class)
   fun schema(): Schema {
     var result = schema
     if (result == null) {

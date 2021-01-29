@@ -75,6 +75,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var rpcRole: String = "client"
   var singleMethodServices: Boolean = false
   var boxOneOfsMinSize: Int = 5_000
+  var grpcServerCompatible: Boolean = false
 
   override fun toTarget(): KotlinTarget {
     val rpcCallStyle = RpcCallStyle.values()
@@ -100,6 +101,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         rpcRole = rpcRole,
         singleMethodServices = singleMethodServices,
         boxOneOfsMinSize = boxOneOfsMinSize,
+        grpcServerCompatible = grpcServerCompatible,
     )
   }
 }
