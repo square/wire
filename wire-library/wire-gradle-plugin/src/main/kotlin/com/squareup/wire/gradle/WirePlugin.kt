@@ -198,7 +198,9 @@ class WirePlugin : Plugin<Project> {
         it.dependsOn(task)
       }
       if (extension.protoLibrary) {
-        tasks.getByName("processResources").dependsOn(task)
+        project.tasks.named("processResources").configure {
+          it.dependsOn(task)
+        }
       }
 
       source.registerTaskDependency(task)
