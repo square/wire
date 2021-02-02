@@ -1,6 +1,6 @@
 include ':sample'
 include ':wire-codegen-sample'
-//include ':wire-grpc-sample:client'
+include ':wire-grpc-sample:client'
 include ':wire-grpc-sample:protos'
 include ':wire-grpc-sample:server'
 include ':wire-grpc-sample:server-plain'
