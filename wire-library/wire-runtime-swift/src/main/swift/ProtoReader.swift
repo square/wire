@@ -127,10 +127,11 @@ public final class ProtoReader {
 
         state = .tag
 
-        messageStackIndex += 1
-        if messageStackIndex >= messageStackCapacity {
+        if messageStackIndex + 1 >= messageStackCapacity {
             expandMessageStack()
         }
+        
+        messageStackIndex += 1
 
         let frame = MessageFrame(
             isProto3: isProto3Message,
