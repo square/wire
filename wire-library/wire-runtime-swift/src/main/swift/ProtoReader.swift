@@ -103,6 +103,13 @@ public final class ProtoReader {
     }
 
     deinit {
+         //If decoding fails for any reason, there may be unknownFields to
+         //clean up that were not caught by the defer block in endMessage
+        if messageStackIndex > 0 {
+            for index in 0...messageStackIndex {
+                messageStack[index].unknownFields = nil
+            }
+        }
         messageStack.deallocate()
     }
 
@@ -220,6 +227,13 @@ public final class ProtoReader {
             throw ProtoDecoder.Error.invalidStructure(
                 message: "Expected to end message at at \(frame.messageEnd - buffer.start), but was at \(buffer.position)"
             )
+        }
+        
+        //nil out unknownFields to avoid memory leaks caused by
+        //UnsafeMutablePointer's inability to deallocate non-trivial types.
+        //This is caused by unknownFields type, WriteBuffer, being a class/reference type.
+        defer {
+            messageStack[token].unknownFields = nil
         }
 
         return frame.unknownFields.flatMap { Data($0, copyBytes: false) } ?? Data()
