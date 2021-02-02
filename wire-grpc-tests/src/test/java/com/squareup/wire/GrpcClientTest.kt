@@ -757,7 +757,7 @@ class GrpcClientTest {
         fail()
       } catch (expected: IOException) {
         assertThat(expected).hasMessage(
-            "gRPC call failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+            "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
         )
       }
     }
@@ -778,7 +778,7 @@ class GrpcClientTest {
       fail()
     } catch (expected: IOException) {
       assertThat(expected).hasMessage(
-          "gRPC call failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
       )
     }
   }
@@ -798,7 +798,7 @@ class GrpcClientTest {
         object : GrpcCall.Callback<Point, Feature> {
           override fun onFailure(call: GrpcCall<Point, Feature>, exception: IOException) {
             assertThat(exception).hasMessage(
-                "gRPC call failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+                "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
             )
             latch.countDown()
           }
@@ -958,9 +958,10 @@ class GrpcClientTest {
     try {
       grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
       fail()
-    } catch (expected: IOException) {
+    } catch (expected: GrpcException) {
+      assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.INTERNAL)
       assertThat(expected).hasMessage(
-          "gRPC call failure (HTTP status=200, grpc-status=13, grpc-message=boom)"
+          "grpc-status=13, grpc-status-name=INTERNAL, grpc-message=boom"
       )
     }
   }
