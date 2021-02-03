@@ -15,7 +15,9 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.GrpcException
 import com.squareup.wire.GrpcResponse
+import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.use
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -169,10 +171,13 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
   }
 
   if (grpcStatus != "0") {
-    return IOException(
-        "gRPC call failure" +
-            " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
-    )
+    val grpcStatusInt = grpcStatus?.toIntOrNull()
+      ?: throw IOException(
+          "gRPC transport failure" +
+              " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
+      )
+
+    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage)
   }
 
   return null // Success.
