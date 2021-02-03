@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Square Inc.
+ * Copyright 2021 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,6 @@ package com.squareup.wire
 
 import okio.IOException
 
-/*
-Next steps:
-use GrpcStatus field in GrpcException (and IOExceptions !)
-copyrights on open source files
-GrpcStatus in its own file
-test that uses grpcStatus of 10 and catches the right exception
- */
 class GrpcException(
     val grpcStatus: GrpcStatus,
     val grpcMessage: String?

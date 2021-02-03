@@ -176,9 +176,8 @@ internal fun GrpcResponse.grpcResponseToException(suppressed: IOException? = nul
           "gRPC transport failure" +
               " (HTTP status=$code, grpc-status=$grpcStatus, grpc-message=$grpcMessage)"
       )
-    return when (grpcStatusInt) {
-      else -> GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage)
-    }
+
+    return GrpcException(GrpcStatus.get(grpcStatusInt), grpcMessage)
   }
 
   return null // Success.
