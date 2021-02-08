@@ -1,6 +1,25 @@
 Change Log
 ==========
 
+Version 3.6.0
+-------------
+
+_2021-02-08_
+
+ * New: Automatically add a dependency when a `protoPath` or `protoSource` depends on a project.
+ * New: `protoPath` and `protoSource` dependencies are now *not* transitive by default.
+ * New: New protoLibrary option for the Wire Gradle plugin. Configuring a project as a protoLibrary
+   will cause the generated `.jar` file to include `.proto` sources.
+ * New: Code generation for plain gRPC server. The Kotlin target now has a new
+   `grpcServerCompatible` option which if set to `true` will generate gRPC server-compatible
+   classes.
+ * New: Introduce `GrpcException`.
+ * New: Add GrpcMethod tag to the request.
+ * New: Adds redacting support for Moshi JSON adapters.
+ * New: Publish plugin marker for Gradle plugin.
+ * Fix: Escape square brackets in Kotlin generated code documentation.
+ * Fix: Improved proto parsing performance.
+
 Version 3.5.0
 -------------
 
