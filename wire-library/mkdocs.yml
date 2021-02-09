@@ -39,7 +39,7 @@ nav:
   - 'Overview': index.md
   - 'Gradle Plugin': wire_compiler.md
   - 'gRPC': wire_grpc.md
-  - 'Stack Overflow ⏏': https://stackoverflow.com/questions/tagged/wire?sort=active
+  - 'Stack Overflow ⏏': https://stackoverflow.com/questions/tagged/square-wire?sort=active
   - '3.x API':
     - 'wire-grpc-client': 3.x/wire-grpc-client/com.squareup.wire/index.md
     - 'wire-moshi-adapter': 3.x/wire-moshi-adapter/com.squareup.wire/index.md
