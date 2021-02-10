@@ -68,10 +68,12 @@ import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
 import com.squareup.wire.WireRpc
+import com.squareup.wire.internal.boxedOneOfClassName
+import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
 import com.squareup.wire.internal.camelCase
-import com.squareup.wire.kotlin.grpcserver.KotlinGrpcGenerator
 import com.squareup.wire.java.Profile
+import com.squareup.wire.kotlin.grpcserver.KotlinGrpcGenerator
 import com.squareup.wire.schema.EnclosingType
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
@@ -99,12 +101,12 @@ import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
 import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
-import java.util.Locale
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
+import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -422,9 +424,10 @@ class KotlinGenerator private constructor(
               check(newName(keysFieldName) == keysFieldName) {
                 "unexpected name collision for keys set of boxed one of, ${oneOf.name}"
               }
-              newName(oneOf.name.capitalize(), oneOf.name.capitalize())
+              newName(boxedOneOfClassName(oneOf.name), boxedOneOfClassName(oneOf.name))
               oneOf.fields.forEach { field ->
-                newName(oneOf.name + field.name.capitalize(), oneOf.name + field.name.capitalize())
+                val keyFieldName = boxedOneOfKeyFieldName(oneOf.name, field.name)
+                newName(keyFieldName, keyFieldName)
               }
             }
           }
@@ -493,11 +496,11 @@ class KotlinGenerator private constructor(
     addMessageConstructor(type, classBuilder)
 
     if (type.flatOneOfs().isNotEmpty()) {
-      classBuilder.addInitializerBlock(generateInitializerOneOfBlock(type))
+      classBuilder.addInitializerBlock(generateInitializerFlatOneOfBlock(type))
     }
 
     for (oneOf in type.boxOneOfs()) {
-      val boxClassName = className.nestedClass(nameAllocator[oneOf.name.capitalize()])
+      val boxClassName = className.nestedClass(nameAllocator[boxedOneOfClassName(oneOf.name)])
       classBuilder.addType(oneOfBoxType(boxClassName, oneOf))
       addOneOfKeys(companionBuilder, oneOf, boxClassName, nameAllocator)
     }
@@ -515,7 +518,7 @@ class KotlinGenerator private constructor(
     return classBuilder.build()
   }
 
-  private fun generateInitializerOneOfBlock(type: MessageType): CodeBlock {
+  private fun generateInitializerFlatOneOfBlock(type: MessageType): CodeBlock {
     return buildCodeBlock {
       val nameAllocator = nameAllocator(type)
       type.flatOneOfs()
@@ -977,7 +980,6 @@ class KotlinGenerator private constructor(
     val boxOneOfs = message.boxOneOfs()
     for (oneOf in boxOneOfs) {
       val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
-      // Name allocator
       val fieldName = oneOf.name
 
       val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
@@ -1358,7 +1360,8 @@ class KotlinGenerator private constructor(
       }
       for (boxOneOf in message.boxOneOfs()) {
         val fieldName = nameAllocator[boxOneOf]
-        val oneOfClass = (message.typeName as ClassName).nestedClass(boxOneOf.name.capitalize())
+        val oneOfClass = (message.typeName as ClassName)
+          .nestedClass(boxedOneOfClassName(boxOneOf.name))
           .parameterizedBy(STAR)
         val fieldClass = com.squareup.wire.OneOf::class.asClassName()
           .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
@@ -1430,8 +1433,8 @@ class KotlinGenerator private constructor(
             addStatement("return@forEachTag %T", Unit::class)
             endControlFlow()
             endControlFlow()
-            addStatement("reader.readUnknownField(%L)", tag)
           }
+          addStatement("reader.readUnknownField(%L)", tag)
           endControlFlow()
         }
         add("⇤}\n⇤}\n") // close the block
@@ -1970,11 +1973,31 @@ class KotlinGenerator private constructor(
     }
   }
 
+  /**
+   * Generates a class for this boxed oneof.
+   *
+   * Example:
+   * ```
+   * public class Option<T>(
+   *   tag: Int,
+   *   adapter: ProtoAdapter<T>,
+   *   declaredName: String
+   * ) : OneOf.Key<T>(tag, adapter, declaredName) {
+   *   public fun create(value: T) = OneOf(this, value)
+   *
+   *   public fun decode(reader: ProtoReader): OneOf<Option<T>, T> = create(adapter.decode(reader))
+   * }
+   * ```
+   */
   private fun oneOfBoxType(boxClassName: ClassName, oneOf: OneOf): TypeSpec {
     val typeVariable = TypeVariableName("T")
     return TypeSpec.classBuilder(boxClassName)
       .addTypeVariable(typeVariable)
-      .addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
+      .apply {
+        if (oneOf.documentation.isNotBlank()) {
+          addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
+        }
+      }
       .primaryConstructor(
         FunSpec.constructorBuilder()
           .addParameter("tag", Int::class)
@@ -2009,6 +2032,14 @@ class KotlinGenerator private constructor(
       .build()
   }
 
+  /**
+   * Example:
+   * ```
+   * @JvmStatic
+   * public val CHOICE_KEYS: Set<Choice<*>> = setOf(CHOICE_BUTTON_ELEMENT,
+   *     CHOICE_LOCAL_IMAGE_ELEMENT, CHOICE_REMOTE_IMAGE_ELEMENT)
+   * ```
+   */
   private fun addOneOfKeys(
     companionBuilder: TypeSpec.Builder,
     oneOf: OneOf,
@@ -2040,13 +2071,20 @@ class KotlinGenerator private constructor(
     companionBuilder.addProperty(allKeys)
   }
 
+  /**
+   * Example:
+   * ```
+   * public val CHOICE_BUTTON_ELEMENT: Choice<ButtonElement> = Choice<ButtonElement>(tag = 1,
+   *     adapter = ButtonElement.ADAPTER, declaredName = "button_element")
+   * ```/Users/bquenaudon/workspace/wire/wire-library/wire-tests/src/commonTest/kotlin/com/squareup/wire/BoxOneOfTest.kt
+   */
   private fun oneOfKey(
     oneOfName: String,
     field: Field,
     boxClassName: ClassName,
     nameAllocator: NameAllocator,
   ): PropertySpec {
-    val name = nameAllocator[oneOfName + field.name.capitalize()]
+    val name = nameAllocator[boxedOneOfKeyFieldName(oneOfName, field.name)]
     return PropertySpec.builder(name, boxClassName.parameterizedBy(field.type!!.typeName))
       .apply {
         if (field.isDeprecated) {
@@ -2106,7 +2144,7 @@ class KotlinGenerator private constructor(
 
   private fun MessageType.oneOfClassFor(oneOf: OneOf, nameAllocator: NameAllocator): TypeName {
     val oneOfClass = (this.typeName as ClassName)
-      .nestedClass(nameAllocator[oneOf.name.capitalize()])
+      .nestedClass(nameAllocator[boxedOneOfClassName(oneOf.name)])
       .parameterizedBy(STAR)
     return com.squareup.wire.OneOf::class.asClassName()
       .parameterizedBy(oneOfClass, STAR).copy(nullable = true)

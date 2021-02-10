@@ -253,10 +253,10 @@ class InteropTest {
       canonicalJson = """{"a":"Hello"}""",
     )
     checker.check(InteropBoxOneOfK2.Builder()
-      .option(OneOf(InteropBoxOneOfK2.optionA, "Hello"))
+      .option(OneOf(InteropBoxOneOfK2.OPTION_A, "Hello"))
       .build())
     checker.check(InteropBoxOneOfK3.Builder()
-      .option(OneOf(InteropBoxOneOfK3.optionA, "Hello"))
+      .option(OneOf(InteropBoxOneOfK3.OPTION_A, "Hello"))
       .build())
   }
 

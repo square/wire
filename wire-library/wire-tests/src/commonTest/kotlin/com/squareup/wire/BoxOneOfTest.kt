@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 class BoxOneOfTest {
   @Test
   fun encodeDecode() {
-    val choice = OneOf(Form.choiceText_element, Form.TextElement("Hello!"))
+    val choice = OneOf(Form.CHOICE_TEXT_ELEMENT, Form.TextElement("Hello!"))
     val message = Form(choice = choice)
 
     val expectedBytes = "32080a0648656c6c6f21".decodeHex()

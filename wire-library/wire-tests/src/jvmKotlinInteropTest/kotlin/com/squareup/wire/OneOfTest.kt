@@ -75,22 +75,22 @@ class OneOfTest {
   @Test
   fun usingBoxOneOfs() {
     val viaBuilder = Form.Builder()
-      .choice(OneOf(Form.choiceText_element, Form.TextElement("Hello!")))
-      .decision(OneOf(Form.decisionD, "Hi!"))
+      .choice(OneOf(Form.CHOICE_TEXT_ELEMENT, Form.TextElement("Hello!")))
+      .decision(OneOf(Form.DECISION_D, "Hi!"))
       .build()
     val viaConstructor = Form(
-      choice = OneOf(Form.choiceText_element, Form.TextElement("Hello!")),
-      decision = OneOf(Form.decisionD, "Hi!"),
+      choice = OneOf(Form.CHOICE_TEXT_ELEMENT, Form.TextElement("Hello!")),
+      decision = OneOf(Form.DECISION_D, "Hi!"),
     )
 
     assertEquals(viaBuilder, viaConstructor)
     assertEquals(viaBuilder.toString(), viaConstructor.toString())
 
-    assertThat(viaBuilder.choice!!.getOrNull(Form.choiceAddress_element)).isNull()
-    assertThat(viaBuilder.choice.getOrNull(Form.choiceText_element))
+    assertThat(viaBuilder.choice!!.getOrNull(Form.CHOICE_ADDRESS_ELEMENT)).isNull()
+    assertThat(viaBuilder.choice.getOrNull(Form.CHOICE_TEXT_ELEMENT))
       .isEqualTo(Form.TextElement("Hello!"))
-    assertThat(viaBuilder.decision!!.getOrNull(Form.decisionA)).isNull()
-    assertThat(viaBuilder.decision.getOrNull(Form.decisionD)).isEqualTo("Hi!")
+    assertThat(viaBuilder.decision!!.getOrNull(Form.DECISION_A)).isNull()
+    assertThat(viaBuilder.decision.getOrNull(Form.DECISION_D)).isEqualTo("Hi!")
   }
 
   private fun OneOfMessage.Builder.validate(
