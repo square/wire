@@ -17,8 +17,6 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.kotlin.sourceRoots
-import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
@@ -30,6 +28,8 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
+import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 class WirePlugin : Plugin<Project> {
   private val android = AtomicBoolean(false)
@@ -39,22 +39,22 @@ class WirePlugin : Plugin<Project> {
   private lateinit var extension: WireExtension
   internal lateinit var project: Project
 
-  private val sources by lazy { this.sourceRoots(javaOnly = !kotlin.get() && java.get()) }
+  private val sources by lazy { this.sourceRoots(kotlin = kotlin.get(), java = java.get()) }
 
   override fun apply(project: Project) {
     this.extension = project.extensions.create("wire", WireExtension::class.java, project)
     this.project = project
 
     project.configurations.create("protoSource")
-        .also {
-          it.isCanBeConsumed = false
-          it.isTransitive = false
-        }
+      .also {
+        it.isCanBeConsumed = false
+        it.isTransitive = false
+      }
     project.configurations.create("protoPath")
-        .also {
-          it.isCanBeConsumed = false
-          it.isTransitive = false
-        }
+      .also {
+        it.isCanBeConsumed = false
+        it.isTransitive = false
+      }
 
     val androidPluginHandler = { _: Plugin<*> ->
       android.set(true)
@@ -156,13 +156,13 @@ class WirePlugin : Plugin<Project> {
     val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
     for (generatedSourcesDirectory in generatedSourcesDirectories) {
       common?.sourceDirectorySet
-          ?.srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
+        ?.srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
     }
     sources.forEach { source ->
       if (common == null) {
         for (generatedSourcesDirectory in generatedSourcesDirectories) {
           source.sourceDirectorySet
-              .srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
+            .srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
         }
       }
 
@@ -206,7 +206,7 @@ class WirePlugin : Plugin<Project> {
       source.registerTaskDependency(task)
       for (output in outputs) {
         // TODO(Benoit) Why do I need this?
-        if (output is JavaOutput) {
+        if (output is JavaOutput && !android.get()) {
           (project.tasks.named("compileJava") as TaskProvider<JavaCompile>).configure {
             it.source(output.out!!)
           }
@@ -224,19 +224,19 @@ class WirePlugin : Plugin<Project> {
     if (hasJavaOutput || hasKotlinOutput) {
       if (isMultiplatform) {
         val sourceSets =
-            project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
+          project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
         project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-            project.dependencies.create("com.squareup.wire:wire-runtime-multiplatform:$VERSION")
+          project.dependencies.create("com.squareup.wire:wire-runtime-multiplatform:$VERSION")
         )
       } else {
         try {
           project.configurations.getByName("api").dependencies
-              .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))
+            .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))
         } catch (_: UnknownConfigurationException) {
           // No `api` configuration on Java applications.
           project.configurations.getByName("implementation").dependencies
-              .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))
+            .add(project.dependencies.create("com.squareup.wire:wire-runtime:$VERSION"))
         }
       }
     }
