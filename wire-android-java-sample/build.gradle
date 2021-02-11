@@ -6,7 +6,7 @@ android {
   buildToolsVersion "30.0.2"
 
   defaultConfig {
-    applicationId "com.benoitquenaudon.sandbox.myapplication"
+    applicationId "com.square.wire.java.sample.myapplication"
     minSdkVersion 28
     targetSdkVersion 30
     versionCode 1
