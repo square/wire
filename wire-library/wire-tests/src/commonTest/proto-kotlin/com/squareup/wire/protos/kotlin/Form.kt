@@ -72,9 +72,6 @@ public class Form(
     unknownFields: ByteString = this.unknownFields
   ): Form = Form(choice, decision, unknownFields)
 
-  /**
-   *
-   */
   public class Choice<T>(
     tag: Int,
     adapter: ProtoAdapter<T>,
@@ -85,9 +82,6 @@ public class Form(
     public fun decode(reader: ProtoReader): OneOf<Choice<T>, T> = create(adapter.decode(reader))
   }
 
-  /**
-   *
-   */
   public class Decision<T>(
     tag: Int,
     adapter: ProtoAdapter<T>,
@@ -126,14 +120,13 @@ public class Form(
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             else -> {
-              for (choiceKey in choiceKeys) {
+              for (choiceKey in CHOICE_KEYS) {
                 if (tag == choiceKey.tag) {
                   choice = choiceKey.decode(reader)
                   return@forEachTag Unit
                 }
               }
-              reader.readUnknownField(tag)
-              for (choiceKey in decisionKeys) {
+              for (choiceKey in DECISION_KEYS) {
                 if (tag == choiceKey.tag) {
                   decision = choiceKey.decode(reader)
                   return@forEachTag Unit
@@ -155,81 +148,81 @@ public class Form(
       )
     }
 
-    public val choiceButton_element: Choice<ButtonElement> = Choice<ButtonElement>(tag = 1, adapter
+    public val CHOICE_BUTTON_ELEMENT: Choice<ButtonElement> = Choice<ButtonElement>(tag = 1, adapter
         = ButtonElement.ADAPTER, declaredName = "button_element")
 
-    public val choiceLocal_image_element: Choice<LocalImageElement> = Choice<LocalImageElement>(tag
+    public val CHOICE_LOCAL_IMAGE_ELEMENT: Choice<LocalImageElement> = Choice<LocalImageElement>(tag
         = 2, adapter = LocalImageElement.ADAPTER, declaredName = "local_image_element")
 
-    public val choiceRemote_image_element: Choice<RemoteImageElement> =
+    public val CHOICE_REMOTE_IMAGE_ELEMENT: Choice<RemoteImageElement> =
         Choice<RemoteImageElement>(tag = 3, adapter = RemoteImageElement.ADAPTER, declaredName =
         "remote_image_element")
 
-    public val choiceMoney_element: Choice<MoneyElement> = Choice<MoneyElement>(tag = 4, adapter =
+    public val CHOICE_MONEY_ELEMENT: Choice<MoneyElement> = Choice<MoneyElement>(tag = 4, adapter =
         MoneyElement.ADAPTER, declaredName = "money_element")
 
-    public val choiceSpacer_element: Choice<SpacerElement> = Choice<SpacerElement>(tag = 5, adapter
+    public val CHOICE_SPACER_ELEMENT: Choice<SpacerElement> = Choice<SpacerElement>(tag = 5, adapter
         = SpacerElement.ADAPTER, declaredName = "spacer_element")
 
-    public val choiceText_element: Choice<TextElement> = Choice<TextElement>(tag = 6, adapter =
+    public val CHOICE_TEXT_ELEMENT: Choice<TextElement> = Choice<TextElement>(tag = 6, adapter =
         TextElement.ADAPTER, declaredName = "text_element")
 
-    public val choiceCustomized_card_element: Choice<CustomizedCardElement> =
+    public val CHOICE_CUSTOMIZED_CARD_ELEMENT: Choice<CustomizedCardElement> =
         Choice<CustomizedCardElement>(tag = 7, adapter = CustomizedCardElement.ADAPTER, declaredName
         = "customized_card_element")
 
-    public val choiceAddress_element: Choice<AddressElement> = Choice<AddressElement>(tag = 8,
+    public val CHOICE_ADDRESS_ELEMENT: Choice<AddressElement> = Choice<AddressElement>(tag = 8,
         adapter = AddressElement.ADAPTER, declaredName = "address_element")
 
-    public val choiceText_input_element: Choice<TextInputElement> = Choice<TextInputElement>(tag =
+    public val CHOICE_TEXT_INPUT_ELEMENT: Choice<TextInputElement> = Choice<TextInputElement>(tag =
         9, adapter = TextInputElement.ADAPTER, declaredName = "text_input_element")
 
     @Deprecated(message = "option_picker_element is deprecated")
-    public val choiceOption_picker_element: Choice<OptionPickerElement> =
+    public val CHOICE_OPTION_PICKER_ELEMENT: Choice<OptionPickerElement> =
         Choice<OptionPickerElement>(tag = 10, adapter = OptionPickerElement.ADAPTER, declaredName =
         "option_picker_element")
 
-    public val choiceDetail_row_element: Choice<DetailRowElement> = Choice<DetailRowElement>(tag =
+    public val CHOICE_DETAIL_ROW_ELEMENT: Choice<DetailRowElement> = Choice<DetailRowElement>(tag =
         11, adapter = DetailRowElement.ADAPTER, declaredName = "detail_row_element")
 
-    public val choiceCurrency_conversion_flags_element: Choice<CurrencyConversionFlagsElement> =
+    public val CHOICE_CURRENCY_CONVERSION_FLAGS_ELEMENT: Choice<CurrencyConversionFlagsElement> =
         Choice<CurrencyConversionFlagsElement>(tag = 12, adapter =
         CurrencyConversionFlagsElement.ADAPTER, declaredName = "currency_conversion_flags_element")
 
     @JvmStatic
-    public val choiceKeys: Set<Choice<*>> = setOf(choiceButton_element, choiceLocal_image_element,
-        choiceRemote_image_element, choiceMoney_element, choiceSpacer_element, choiceText_element,
-        choiceCustomized_card_element, choiceAddress_element, choiceText_input_element,
-        choiceOption_picker_element, choiceDetail_row_element,
-        choiceCurrency_conversion_flags_element)
+    public val CHOICE_KEYS: Set<Choice<*>> = setOf(CHOICE_BUTTON_ELEMENT,
+        CHOICE_LOCAL_IMAGE_ELEMENT, CHOICE_REMOTE_IMAGE_ELEMENT, CHOICE_MONEY_ELEMENT,
+        CHOICE_SPACER_ELEMENT, CHOICE_TEXT_ELEMENT, CHOICE_CUSTOMIZED_CARD_ELEMENT,
+        CHOICE_ADDRESS_ELEMENT, CHOICE_TEXT_INPUT_ELEMENT, CHOICE_OPTION_PICKER_ELEMENT,
+        CHOICE_DETAIL_ROW_ELEMENT, CHOICE_CURRENCY_CONVERSION_FLAGS_ELEMENT)
 
-    public val decisionA: Decision<String> = Decision<String>(tag = 101, adapter =
+    public val DECISION_A: Decision<String> = Decision<String>(tag = 101, adapter =
         ProtoAdapter.STRING, declaredName = "a")
 
-    public val decisionB: Decision<String> = Decision<String>(tag = 102, adapter =
+    public val DECISION_B: Decision<String> = Decision<String>(tag = 102, adapter =
         ProtoAdapter.STRING, declaredName = "b")
 
-    public val decisionC: Decision<String> = Decision<String>(tag = 103, adapter =
+    public val DECISION_C: Decision<String> = Decision<String>(tag = 103, adapter =
         ProtoAdapter.STRING, declaredName = "c")
 
-    public val decisionD: Decision<String> = Decision<String>(tag = 104, adapter =
+    public val DECISION_D: Decision<String> = Decision<String>(tag = 104, adapter =
         ProtoAdapter.STRING, declaredName = "d")
 
-    public val decisionE: Decision<String> = Decision<String>(tag = 105, adapter =
+    public val DECISION_E: Decision<String> = Decision<String>(tag = 105, adapter =
         ProtoAdapter.STRING, declaredName = "e")
 
-    public val decisionF: Decision<String> = Decision<String>(tag = 106, adapter =
+    public val DECISION_F: Decision<String> = Decision<String>(tag = 106, adapter =
         ProtoAdapter.STRING, declaredName = "f")
 
-    public val decisionG: Decision<String> = Decision<String>(tag = 107, adapter =
+    public val DECISION_G: Decision<String> = Decision<String>(tag = 107, adapter =
         ProtoAdapter.STRING, declaredName = "g")
 
-    public val decisionH: Decision<String> = Decision<String>(tag = 108, adapter =
+    public val DECISION_H: Decision<String> = Decision<String>(tag = 108, adapter =
         ProtoAdapter.STRING, declaredName = "h")
 
     @JvmStatic
-    public val decisionKeys: Set<Decision<*>> = setOf(decisionA, decisionB, decisionC, decisionD,
-        decisionE, decisionF, decisionG, decisionH)
+    public val DECISION_KEYS: Set<Decision<*>> = setOf(DECISION_A, DECISION_B, DECISION_C,
+        DECISION_D, DECISION_E, DECISION_F, DECISION_G, DECISION_H)
 
     private const val serialVersionUID: Long = 0L
   }

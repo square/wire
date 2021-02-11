@@ -29,8 +29,8 @@ fun <T> newMutableList(): MutableList<T> = MutableOnWriteList(emptyList())
 fun <K, V> newMutableMap(): MutableMap<K, V> = LinkedHashMap()
 
 @Deprecated(
-    message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
-    replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(list)")
+  message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
+  replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(list)")
 )
 fun <T> copyOf(name: String, list: List<T>?): MutableList<T> = copyOf(list!!)
 
@@ -43,8 +43,8 @@ fun <T> copyOf(list: List<T>): MutableList<T> {
 }
 
 @Deprecated(
-    message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
-    replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(map)")
+  message = "Please regenerate code using wire-compiler version 3.0.0 or higher.",
+  replaceWith = ReplaceWith("com.squareup.internal.Internal.copyOf(map)")
 )
 fun <K, V> copyOf(name: String, map: Map<K, V>?): MutableMap<K, V> = copyOf(map!!)
 
@@ -203,10 +203,21 @@ fun sanitize(value: String): String {
 
 /** Return a string where `,[]{}\` are escaped with a `\`. */
 fun sanitize(values: List<String>): String {
-  return values.map(::sanitize).joinToString(prefix = "[", postfix = "]")
+  return values.joinToString(prefix = "[", postfix = "]", transform = ::sanitize)
 }
 
-/** Maps [fieldName] to the companion object field of type `Set` containing the eligible keys.  */
-fun boxedOneOfKeysFieldName(fieldName: String): String {
-  return "${fieldName}Keys"
+fun boxedOneOfClassName(oneOfName: String): String {
+  return oneOfName.capitalize()
+}
+
+/**
+ * Maps [oneOfName] and [fieldName] to the companion object key representing a boxed oneof field.
+ */
+fun boxedOneOfKeyFieldName(oneOfName: String, fieldName: String): String {
+  return (oneOfName + "_" + fieldName).toUpperCase()
+}
+
+/** Maps [oneOfName] to the companion object field of type `Set` containing the eligible keys.  */
+fun boxedOneOfKeysFieldName(oneOfName: String): String {
+  return "${oneOfName}_keys".toUpperCase()
 }
