@@ -215,6 +215,46 @@ The source path and proto path are linked together but only types on the source 
 
 ![Library](images/gradle_library@2x.png)
 
+Dependencies between Gradle Modules
+-----------------------------
+
+Wire provides support to define dependencies between modules within the same project.
+
+A module can include its `.proto` files into the output resources. Use this when your `.jar` file
+can be used as a library for other proto or Wire projects. Note that only the `.proto` files used
+in the library will be included.
+
+```groovy
+wire {
+  protoLibrary = true
+}
+```
+
+Wire also creates two configurations, `protoPath` and `protoSource` you can use to define a
+dependency on another proto or Wire project.
+
+```groovy
+dependencies {
+  // The task `:common-protos:jar` will be added into the dependency
+  // graph of this module for the Wire generating tasks.
+  protoPath(project(':common-protos'))
+  implementation(project(':common-protos'))
+}
+
+wire {
+  kotlin {
+  }
+}
+```
+
+Note that `protoPath` and `protoSource` dependencies are not transitive by default. If needed, you
+can change it manually.
+
+```groovy
+configurations.protoPath {
+  transitive = true
+}
+```
 
 Pruning
 -------
