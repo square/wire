@@ -528,7 +528,7 @@ class KotlinGenerator private constructor(
             // FIXME(egor): Revert back to function reference once KotlinPoet compiled with Kotlin
             // 1.4 is released. See https://youtrack.jetbrains.com/issue/KT-37435.
             val fieldNames = oneOf.fields.joinToString(", ") { field -> nameAllocator[field] }
-            beginControlFlow("require(%M(%L) <= 1)", countNonNull, fieldNames)
+            beginControlFlow("require(%M(%L)·<=·1)", countNonNull, fieldNames)
             addStatement("%S", "At most one of $fieldNames may be non-null")
             endControlFlow()
           }
