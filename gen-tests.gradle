@@ -213,6 +213,7 @@ task generateKotlinTests(type: JavaExec) {
       '--emit_applied_options',
       '--kotlin_box_oneofs_min_size=8',
       'all_types.proto',
+      'bool.proto',
       'custom_options.proto',
       'deprecated.proto',
       'deprecated_enum.proto',

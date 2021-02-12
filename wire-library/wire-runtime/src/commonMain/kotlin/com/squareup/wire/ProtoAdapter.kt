@@ -487,10 +487,10 @@ internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean
   }
 
   @Throws(IOException::class)
-  override fun decode(reader: ProtoReader): Boolean = when (val value = reader.readVarint32()) {
+  override fun decode(reader: ProtoReader): Boolean = when (reader.readVarint32()) {
     0 -> false
-    1 -> true
-    else -> throw IOException("Invalid boolean value 0x" + value.toString(16).padStart(2, '0'))
+    // We are lenient to match protoc behavior.
+    else -> true
   }
 
   override fun redact(value: Boolean): Boolean = throw UnsupportedOperationException()
