@@ -24,20 +24,14 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
 
     public init(from decoder: Decoder) throws {
         switch T.self {
-        case is Int64.Type, is Optional<Int64>.Type:
-            let container = try decoder.singleValueContainer()
-            if let value = try? container.decode(String.self) {
-                self.wrappedValue = Int64(value)! as! T
-            } else {
-                self.wrappedValue = Optional<Int64>.none as! T
-            }
-        case is UInt64.Type, is Optional<UInt64>.Type:
-            let container = try decoder.singleValueContainer()
-            if let value = try? container.decode(String.self) {
-                self.wrappedValue = UInt64(value)! as! T
-            } else {
-                self.wrappedValue = Optional<UInt64>.none as! T
-            }
+        case is Int64.Type:
+            self.wrappedValue = try decoder.decodeStringTo(Int64.self)
+        case is Optional<Int64>.Type:
+            self.wrappedValue = try decoder.decodeStringIfPresentTo(Int64.self)
+        case is UInt64.Type:
+            self.wrappedValue = try decoder.decodeStringTo(UInt64.self)
+        case is Optional<UInt64>.Type:
+            self.wrappedValue = try decoder.decodeStringIfPresentTo(UInt64.self)
         case is [Int64].Type:
             var container = try decoder.unkeyedContainer()
             var array: [Int64] = []
@@ -83,4 +77,22 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
         }
     }
 
+}
+
+private extension Decoder {
+    func decodeStringTo<T, Integer: FixedWidthInteger>(_ type: Integer.Type) throws -> T {
+        let container = try singleValueContainer()
+        let value = try container.decode(String.self)
+        return Integer(value)! as! T
+    }
+
+    func decodeStringIfPresentTo<T, Integer: FixedWidthInteger>(_ type: Integer.Type) throws -> T {
+        let container = try singleValueContainer()
+        if container.decodeNil() {
+            return Optional<Integer>.none as! T
+        } else {
+            let value = try container.decode(String.self)
+            return Integer(value)! as! T
+        }
+    }
 }
