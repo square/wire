@@ -25,13 +25,15 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
     public init(from decoder: Decoder) throws {
         switch T.self {
         case is Int64.Type:
-            self.wrappedValue = try decoder.decodeStringTo(Int64.self)
+            let container = try decoder.singleValueContainer()
+            self.wrappedValue = Int64(try container.decode(String.self))! as! T
         case is Optional<Int64>.Type:
-            self.wrappedValue = try decoder.decodeStringIfPresentTo(Int64.self)
+            self.wrappedValue = try decoder.decodeStringIfPresentToInt64()
         case is UInt64.Type:
-            self.wrappedValue = try decoder.decodeStringTo(UInt64.self)
+            let container = try decoder.singleValueContainer()
+            self.wrappedValue = UInt64(try container.decode(String.self))! as! T
         case is Optional<UInt64>.Type:
-            self.wrappedValue = try decoder.decodeStringIfPresentTo(UInt64.self)
+            self.wrappedValue = try decoder.decodeStringIfPresentToUInt64()
         case is [Int64].Type:
             var container = try decoder.unkeyedContainer()
             var array: [Int64] = []
@@ -80,19 +82,23 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
 }
 
 private extension Decoder {
-    func decodeStringTo<T, Integer: FixedWidthInteger>(_ type: Integer.Type) throws -> T {
-        let container = try singleValueContainer()
-        let value = try container.decode(String.self)
-        return Integer(value)! as! T
-    }
-
-    func decodeStringIfPresentTo<T, Integer: FixedWidthInteger>(_ type: Integer.Type) throws -> T {
+    func decodeStringIfPresentToInt64<T>() throws -> T {
         let container = try singleValueContainer()
         if container.decodeNil() {
-            return Optional<Integer>.none as! T
+            return Optional<Int64>.none as! T
         } else {
             let value = try container.decode(String.self)
-            return Integer(value)! as! T
+            return Int64(value)! as! T
+        }
+    }
+
+    func decodeStringIfPresentToUInt64<T>() throws -> T {
+        let container = try singleValueContainer()
+        if container.decodeNil() {
+            return Optional<UInt64>.none as! T
+        } else {
+            let value = try container.decode(String.self)
+            return UInt64(value)! as! T
         }
     }
 }
