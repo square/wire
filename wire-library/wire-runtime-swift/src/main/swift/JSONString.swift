@@ -28,12 +28,12 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
             let container = try decoder.singleValueContainer()
             self.wrappedValue = Int64(try container.decode(String.self))! as! T
         case is Optional<Int64>.Type:
-            self.wrappedValue = try decoder.decodeStringIfPresentToInt64()
+            self.wrappedValue = try decoder.decodeStringIfPresentToInt64() as! T
         case is UInt64.Type:
             let container = try decoder.singleValueContainer()
             self.wrappedValue = UInt64(try container.decode(String.self))! as! T
         case is Optional<UInt64>.Type:
-            self.wrappedValue = try decoder.decodeStringIfPresentToUInt64()
+            self.wrappedValue = try decoder.decodeStringIfPresentToUInt64() as! T
         case is [Int64].Type:
             var container = try decoder.unkeyedContainer()
             var array: [Int64] = []
@@ -83,23 +83,23 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
 }
 
 private extension Decoder {
-    func decodeStringIfPresentToInt64<T>() throws -> T {
+    func decodeStringIfPresentToInt64() throws -> Int64? {
         let container = try singleValueContainer()
         if container.decodeNil() {
-            return Optional<Int64>.none as! T
+            return Optional<Int64>.none
         } else {
             let value = try container.decode(String.self)
-            return Int64(value)! as! T
+            return Int64(value)!
         }
     }
 
-    func decodeStringIfPresentToUInt64<T>() throws -> T {
+    func decodeStringIfPresentToUInt64() throws -> UInt64? {
         let container = try singleValueContainer()
         if container.decodeNil() {
-            return Optional<UInt64>.none as! T
+            return Optional<UInt64>.none
         } else {
             let value = try container.decode(String.self)
-            return UInt64(value)! as! T
+            return UInt64(value)!
         }
     }
 }
