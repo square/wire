@@ -26,10 +26,18 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
         switch T.self {
         case is Int64.Type, is Optional<Int64>.Type:
             let container = try decoder.singleValueContainer()
-            self.wrappedValue = Int64(try container.decode(String.self))! as! T
+            if let value = try? container.decode(String.self) {
+                self.wrappedValue = Int64(value)! as! T
+            } else {
+                self.wrappedValue = Optional<Int64>.none as! T
+            }
         case is UInt64.Type, is Optional<UInt64>.Type:
             let container = try decoder.singleValueContainer()
-            self.wrappedValue = UInt64(try container.decode(String.self))! as! T
+            if let value = try? container.decode(String.self) {
+                self.wrappedValue = UInt64(value)! as! T
+            } else {
+                self.wrappedValue = Optional<UInt64>.none as! T
+            }
         case is [Int64].Type:
             var container = try decoder.unkeyedContainer()
             var array: [Int64] = []
@@ -66,7 +74,12 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
                 try container.encode(String(value))
             }
         default:
-            fatalError("Unsupported type \(T.self)")
+            if T.self is Optional<Int64>.Type || T.self is Optional<UInt64>.Type {
+                var container = encoder.singleValueContainer()
+                try container.encodeNil()
+            } else {
+                fatalError("Unsupported type \(T.self)")
+            }
         }
     }
 
