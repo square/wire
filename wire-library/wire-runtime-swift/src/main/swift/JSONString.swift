@@ -54,6 +54,7 @@ public struct JSONString<T : Hashable> : Hashable, Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
+        /// First check to see if there is a non-nil value of the accepted types. Otherwise, allow only optionals of Int64 and UInt64.
         switch wrappedValue {
         case let value as Int64:
             try String(value).encode(to: encoder)
