@@ -56,6 +56,7 @@ public final class ProtoDecoder {
         case unexpectedFieldNumberInMap(_: UInt32)
         case unexpectedFieldNumberInBoxedValue(_: UInt32)
         case unknownEnumCase(type: Any.Type, fieldNumber: UInt32)
+        case unknownEnumString(type: Any.Type, string: String)
         case unterminatedGroup(fieldNumber: UInt32)
 
         var localizedDescription: String {
@@ -94,6 +95,8 @@ public final class ProtoDecoder {
                 return "Map entry includes the field number \(fieldNumber), but only 1 and 2 are allowed."
             case let .unknownEnumCase(type, fieldNumber):
                 return "Unknown case with value \(fieldNumber) found for enum of type \(String(describing: type))."
+            case let .unknownEnumString(type, string):
+                return "Unknown case with string value \(string) found for enum of type \(String(describing: type))."
             case let .unterminatedGroup(fieldNumber):
                 return "The group with field number \(fieldNumber) has no matching end-group key."
             }

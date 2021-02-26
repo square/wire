@@ -64,6 +64,7 @@ public struct Person {
         /**
          * The type of phone stored here.
          */
+        @JSONEnum
         public var type: PhoneType?
         public var unknownFields: Data = .init()
 
