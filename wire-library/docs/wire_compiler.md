@@ -189,7 +189,7 @@ Large projects may span multiple modules. To support this Wire has a 'proto path
 schema files on this path are used for linking and validation, but they do not yield files in the
 generated output.
 
-The proto path supports the same inputs as the proto path: directories, `.jar` files, and Maven
+The proto path supports the same inputs as the source path: directories, `.jar` files, and Maven
 coordinates. Similarly, the proto path may be filtered with `include`.
 
 ```groovy
