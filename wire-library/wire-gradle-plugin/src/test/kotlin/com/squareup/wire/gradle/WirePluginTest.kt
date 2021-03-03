@@ -3,6 +3,7 @@ package com.squareup.wire.gradle
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
 import org.junit.After
 import org.junit.Assert.fail
 import org.junit.Before
@@ -12,7 +13,6 @@ import java.io.IOException
 import java.util.zip.ZipFile
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
-import org.gradle.testkit.runner.TaskOutcome
 
 class WirePluginTest {
   private lateinit var gradleRunner: GradleRunner
@@ -519,6 +519,33 @@ class WirePluginTest {
         File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
+  }
+
+  @Test
+  fun sourceDirInclude() {
+    val fixtureRoot = File("src/test/projects/sourcedir-include")
+
+    val result = gradleRunner.runFixture(fixtureRoot) {
+      withArguments("run", "--stacktrace").build()
+    }
+
+    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.output)
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains("src/test/projects/sourcedir-include/build/generated/source/wire")
+    assertThat(result.output)
+      .doesNotContain("Writing com.excluded.Martian")
+
+    val includedFile1 =
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+    val includedFile2 =
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
+    assertThat(includedFile1).exists()
+    assertThat(includedFile2).exists()
+    val excludedFile =
+      File(fixtureRoot, "build/generated/source/wire/com/excluded/Martian.kt")
+    assertThat(excludedFile).doesNotExist()
   }
 
   @Test

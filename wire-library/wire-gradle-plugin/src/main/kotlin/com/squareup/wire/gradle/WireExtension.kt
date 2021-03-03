@@ -206,8 +206,11 @@ open class WireExtension(project: Project) {
       // map to SourceDirectorySet which does the work for us!
       val protoTree = objectFactory.sourceDirectorySet(name, "Wire proto sources for $name.")
       protoTree.srcDirs(protoRootSet.srcDirs)
-      protoTree.filter.include("**/*.proto")
-      protoTree.filter.include(protoRootSet.includes)
+      if (protoRootSet.includes.isEmpty()) {
+        protoTree.filter.include("**/*.proto")
+      } else {
+        protoTree.filter.include(protoRootSet.includes)
+      }
       sourceTrees.add(protoTree)
     }
 
