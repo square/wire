@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+Version 3.6.1
+-------------
+
+_2021-03-09_
+
+ * Fix: The Wire Gradle plugin now supports Java only Android projects.
+ * Fix: In the Wire Gradle plugin, `sourcePath` will now include only protos defined with `include`
+   if the option is present. It used to include all existing `.proto` files even if `include` was
+   used.
+ * New: Full support Optional Int64 and UInt64 for JSONString in Swift.
+
 Version 3.6.0
 -------------
 
