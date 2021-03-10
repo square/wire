@@ -1,0 +1,34 @@
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+
+kotlin {
+  jvm {
+    withJava()
+  }
+
+  // TODO: generate grpc.reflection.v1alpha from reflect.proto
+
+  sourceSets {
+    jvmMain {
+      dependencies {
+        api project(':wire-runtime')
+        api project(':wire-grpc-client')
+        api project(':wire-schema')
+        implementation deps.okio.jvm
+        api deps.guava
+        implementation "io.grpc:grpc-protobuf:1.21.0"
+        implementation  "com.google.protobuf:protoc:3.6.1"
+
+
+      }
+    }
+    jvmTest {
+      dependencies {
+        implementation project(':wire-test-utils')
+        implementation deps.junit
+        implementation deps.kotlin.test.junit
+        implementation deps.assertj
+        implementation deps.jimfs
+      }
+    }
+  }
+}
