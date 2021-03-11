@@ -17,7 +17,6 @@
 
 package com.squareup.wire.reflector
 
-import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.squareup.wire.schema.RepoBuilder
 import grpc.reflection.v1alpha.ServerReflectionRequest
@@ -45,7 +44,7 @@ class SchemaReflectorTest {
     .schema()
 
   @Test
-  fun happyPath() {
+  fun listAllServices() {
     val reflector = SchemaReflector(schema)
     val response = reflector.process(ServerReflectionRequest.Builder()
       .list_services("*")
@@ -54,7 +53,7 @@ class SchemaReflectorTest {
   }
 
   @Test
-  fun lookupSingleType() {
+  fun fileByFilename() {
     val reflector = SchemaReflector(schema)
     val response = reflector.process(ServerReflectionRequest.Builder()
       .file_by_filename("service.proto")
@@ -62,6 +61,38 @@ class SchemaReflectorTest {
     val file = response.files[0]
     assertThat(file.serviceList.single().name).isEqualTo("Service")
     assertThat(file.serviceList.single().methodList.single().name).isEqualTo("Call")
+  }
+
+  @Test
+  fun filesForSymbolService() {
+    val reflector = SchemaReflector(schema)
+    val response = reflector.process(ServerReflectionRequest.Builder()
+      .file_containing_symbol("Service")
+      .build())
+    val file = response.files[0]
+    assertThat(file.serviceList.single().name).isEqualTo("Service")
+    assertThat(file.serviceList.single().methodList.single().name).isEqualTo("Call")
+  }
+
+  @Test
+  fun filesForSymbolCall() {
+    val reflector = SchemaReflector(schema)
+    val response = reflector.process(ServerReflectionRequest.Builder()
+      .file_containing_symbol("Service.Call")
+      .build())
+    val file = response.files[0]
+    assertThat(file.serviceList.single().name).isEqualTo("Service")
+    assertThat(file.serviceList.single().methodList.single().name).isEqualTo("Call")
+  }
+
+  @Test
+  fun filesForSymbolRequest() {
+    val reflector = SchemaReflector(schema)
+    val response = reflector.process(ServerReflectionRequest.Builder()
+      .file_containing_symbol(".Request")
+      .build())
+    val file = response.files[0]
+    assertThat(file.messageTypeList.single().name).isEqualTo("Request")
   }
 
   private val ServerReflectionResponse.files: List<FileDescriptorProto>
