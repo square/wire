@@ -15,8 +15,9 @@
  */
 package com.squareup.wire.schema.internal.parser
 
-import com.squareup.wire.Syntax
+import com.squareup.wire.*
 import com.squareup.wire.schema.Location
+import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
 /** A single `.proto` file.  */
@@ -84,5 +85,95 @@ data class ProtoFileElement(
     fun empty(path: String): ProtoFileElement {
       return ProtoFileElement(location = Location.get(path))
     }
+
+      @JvmField
+      public val ADAPTER: ProtoAdapter<ProtoFileElement> = object :
+        ProtoAdapter<ProtoFileElement>(
+          FieldEncoding.LENGTH_DELIMITED,
+          ProtoFileElement::class,
+          "type.googleapis.com/google.protobuf.FileDescriptorProto",
+          Syntax.PROTO_2,
+          null
+        ) {
+        public override fun encodedSize(value: ProtoFileElement): Int {
+          var size = 0
+          size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.location.path)
+          size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.packageName)
+//          size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(3, value.dependency)
+//          size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(10, value.public_dependency)
+//          size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(11, value.weak_dependency)
+          size += MessageElement.ADAPTER.asRepeated().encodedSizeWithTag(4, value.types.filterIsInstance<MessageElement>())
+//          size += EnumDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(5, value.enum_type)
+//          size += ServiceDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(6, value.service)
+//          size += FieldDescriptorProto.ADAPTER.asRepeated().encodedSizeWithTag(7, value.extension)
+//          size += FileOptions.ADAPTER.encodedSizeWithTag(8, value.options)
+//          size += SourceCodeInfo.ADAPTER.encodedSizeWithTag(9, value.source_code_info)
+          size += ProtoAdapter.STRING.encodedSizeWithTag(12, value.syntax?.name)
+          return size
+        }
+
+        public override fun encode(writer: ProtoWriter, value: ProtoFileElement): Unit {
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.location.path)
+          ProtoAdapter.STRING.encodeWithTag(writer, 2, value.packageName)
+//          ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 3, value.dependency)
+//          ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency)
+//          ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency)
+          MessageElement.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.types.filterIsInstance<MessageElement>())
+//          EnumDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enum_type)
+//          ServiceDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.service)
+//          FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.extension)
+//          FileOptions.ADAPTER.encodeWithTag(writer, 8, value.options)
+//          SourceCodeInfo.ADAPTER.encodeWithTag(writer, 9, value.source_code_info)
+          ProtoAdapter.STRING.encodeWithTag(writer, 12, value.syntax?.name)
+        }
+
+        public override fun decode(reader: ProtoReader): ProtoFileElement {
+          var name: String? = null
+          var package_: String? = null
+          val dependency = mutableListOf<String>()
+          val public_dependency = mutableListOf<Int>()
+          val weak_dependency = mutableListOf<Int>()
+          val message_type = mutableListOf<MessageElement>()
+//          val enum_type = mutableListOf<EnumDescriptorProto>()
+//          val service = mutableListOf<ServiceDescriptorProto>()
+//          val extension = mutableListOf<FieldDescriptorProto>()
+//          var options: FileOptions? = null
+//          var source_code_info: SourceCodeInfo? = null
+          var syntax: String? = null
+          val unknownFields = reader.forEachTag { tag ->
+            when (tag) {
+              1 -> name = ProtoAdapter.STRING.decode(reader)
+              2 -> package_ = ProtoAdapter.STRING.decode(reader)
+              3 -> dependency.add(ProtoAdapter.STRING.decode(reader))
+              10 -> public_dependency.add(ProtoAdapter.INT32.decode(reader))
+              11 -> weak_dependency.add(ProtoAdapter.INT32.decode(reader))
+              4 -> message_type.add(MessageElement.ADAPTER.decode(reader))
+//              5 -> enum_type.add(EnumDescriptorProto.ADAPTER.decode(reader))
+//              6 -> service.add(ServiceDescriptorProto.ADAPTER.decode(reader))
+//              7 -> extension.add(FieldDescriptorProto.ADAPTER.decode(reader))
+//              8 -> options = FileOptions.ADAPTER.decode(reader)
+//              9 -> source_code_info = SourceCodeInfo.ADAPTER.decode(reader)
+              12 -> syntax = ProtoAdapter.STRING.decode(reader)
+              else -> reader.readUnknownField(tag)
+            }
+          }
+          return ProtoFileElement(
+            location = Location.get(name ?: ""),
+            packageName = package_,
+//            dependency = dependency,
+//            public_dependency = public_dependency,
+//            weak_dependency = weak_dependency,
+            types = message_type,
+//            enum_type = enum_type,
+//            service = service,
+//            extension = extension,
+//            options = options,
+//            source_code_info = source_code_info,
+            syntax = syntax?.let { Syntax.get(it) }
+          )
+        }
+
+        public override fun redact(value: ProtoFileElement): ProtoFileElement = value
+      }
   }
 }

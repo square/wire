@@ -236,6 +236,17 @@ task generateKotlinTests(type: JavaExec) {
       'uses_any.proto',
   ]
 }
+task generateDescriptor(type: JavaExec) {
+  group = 'Generate Tests'
+  description = 'Generates Kotlin classes from the test protos'
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+      '--proto_path=/Users/juliao/Development/wire/wire-library/wire-schema/src/jvmMain/resources',
+      '--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin',
+          'google/protobuf/descriptor.proto'
+  ]
+}
 
 // KOTLIN PROTO3
 
