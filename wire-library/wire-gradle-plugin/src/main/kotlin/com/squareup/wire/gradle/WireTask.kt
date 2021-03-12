@@ -35,6 +35,7 @@ import java.io.File
 
 @CacheableTask
 open class WireTask : SourceTask() {
+
   @get:OutputDirectories
   var outputDirectories: List<File>? = null
 
@@ -78,6 +79,10 @@ open class WireTask : SourceTask() {
   @Input
   var permitPackageCycles: Boolean = false
 
+  @Input
+  lateinit var suspectFiles: List<File>
+
+
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -107,6 +112,14 @@ open class WireTask : SourceTask() {
       logger.debug("prunes: $prunes")
       logger.debug("rules: $rules")
       logger.debug("targets: $targets")
+    }
+
+    // Second pass validate that input sources that did not exist at configuration time
+    // still do not exist after Gradle dependencies have been resolved.
+    suspectFiles.forEach {
+      check(it.exists()) {
+        "Invalid path string: \"${it.path}\". Path does not exist."
+      }
     }
 
     val wireRun = WireRun(

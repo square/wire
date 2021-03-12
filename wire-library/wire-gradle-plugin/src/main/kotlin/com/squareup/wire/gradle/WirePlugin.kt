@@ -148,6 +148,11 @@ class WirePlugin : Plugin<Project> {
     protoInput.addJars(project, extension.protoJars)
     protoInput.addPaths(project, extension.protoPaths)
 
+
+    val suspectFiles = mutableListOf<File>()
+    suspectFiles.addAll(sourceInput.suspectFiles)
+    suspectFiles.addAll(protoInput.suspectFiles)
+
     val targets = outputs.map { it.toTarget() }
 
     val projectDependencies = (sourceInput.dependencies + protoInput.dependencies)
@@ -188,6 +193,8 @@ class WirePlugin : Plugin<Project> {
         task.rules = extension.rules
         task.targets = targets
         task.permitPackageCycles = extension.permitPackageCycles
+
+        task.suspectFiles = suspectFiles
 
         for (projectDependency in projectDependencies) {
           task.dependsOn(projectDependency)
