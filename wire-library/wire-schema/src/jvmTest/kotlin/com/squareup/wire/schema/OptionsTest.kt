@@ -149,6 +149,12 @@ class OptionsTest {
   }
 
   @Test
+  fun resolveFieldPathMatchesLeadingDotFirstSegment() {
+    assertThat(Options.resolveFieldPath(".a.b.c.d", setOf("a", "z", "y")))
+            .containsExactly("a", "b", "c", "d")
+  }
+
+  @Test
   fun resolveFieldPathMatchesFirstSegment() {
     assertThat(Options.resolveFieldPath("a.b.c.d", setOf("a", "z", "y")))
         .containsExactly("a", "b", "c", "d")
