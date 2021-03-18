@@ -43,6 +43,9 @@ internal class WireInput(var configuration: Provider<Configuration>) {
   val dependencies: DependencySet
     get() = configuration.get().dependencies
 
+  // Deferred dependency evaluation
+  val inputFiles = mutableListOf<File>()
+
   fun addPaths(project: Project, paths: Set<String>) {
     for (path in paths) {
       val dependency = resolveDependency(project, path)
@@ -62,11 +65,8 @@ internal class WireInput(var configuration: Provider<Configuration>) {
 
   fun addTrees(project: Project, trees: Set<SourceDirectorySet>) {
     for (tree in trees) {
-      // TODO: this eagerly resolves dependencies; fix this!
       tree.srcDirs.forEach {
-        check(it.exists()) {
-          "Invalid path string: \"${it.relativeTo(project.projectDir)}\". Path does not exist."
-        }
+        inputFiles.add(it)
       }
       val dependency = project.dependencies.create(tree)
       configuration.get().dependencies.add(dependency)
@@ -80,8 +80,7 @@ internal class WireInput(var configuration: Provider<Configuration>) {
 
     if (converted is File) {
       val file = if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
-
-      check(file.exists()) { "Invalid path string: \"$path\". Path does not exist." }
+      inputFiles.add(file)
 
       return when {
         file.isDirectory -> project.dependencies.create(project.files(path))

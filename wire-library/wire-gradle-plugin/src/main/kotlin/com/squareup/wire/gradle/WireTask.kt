@@ -35,6 +35,7 @@ import java.io.File
 
 @CacheableTask
 open class WireTask : SourceTask() {
+
   @get:OutputDirectories
   var outputDirectories: List<File>? = null
 
@@ -78,6 +79,10 @@ open class WireTask : SourceTask() {
   @Input
   var permitPackageCycles: Boolean = false
 
+  @Input
+  lateinit var inputFiles: List<File>
+
+
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
@@ -107,6 +112,12 @@ open class WireTask : SourceTask() {
       logger.debug("prunes: $prunes")
       logger.debug("rules: $rules")
       logger.debug("targets: $targets")
+    }
+
+    inputFiles.forEach {
+      check(it.exists()) {
+        "Invalid path string: \"${it.path}\". Path does not exist."
+      }
     }
 
     val wireRun = WireRun(
