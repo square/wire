@@ -413,15 +413,11 @@ class Options(
      * implementation detail.
      */
     fun resolveFieldPath(
-            name: String,
-            fullyQualifiedNames: Set<String?>
+      name: String,
+      fullyQualifiedNames: Set<String?>
     ): Array<String>? { // Try to resolve a local name.
       var pos = 0
-      val chompedName = if (name.startsWith('.')) {
-        name.substring(1)
-      } else {
-        name
-      }
+      val chompedName = name.removePrefix(".")
       while (pos < chompedName.length) {
         pos = chompedName.indexOf('.', pos)
         if (pos == -1) pos = chompedName.length
