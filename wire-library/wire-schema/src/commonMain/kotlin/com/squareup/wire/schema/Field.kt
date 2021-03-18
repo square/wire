@@ -27,7 +27,7 @@ data class Field(
   val location: Location,
 
   /** May be null for proto3 fields, one-of's, or maps. */
-  private val label: Label?,
+  val label: Label?,
 
   val name: String,
 

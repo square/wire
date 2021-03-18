@@ -24,7 +24,7 @@ data class EnumType(
   override val type: ProtoType,
   override val location: Location,
   override val documentation: String,
-  private val name: String,
+  val name: String,
   val constants: List<EnumConstant>,
   override val options: Options,
   override val syntax: Syntax
