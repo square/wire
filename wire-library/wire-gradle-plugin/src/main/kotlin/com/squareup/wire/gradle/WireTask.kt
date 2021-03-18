@@ -80,7 +80,7 @@ open class WireTask : SourceTask() {
   var permitPackageCycles: Boolean = false
 
   @Input
-  lateinit var suspectFiles: List<File>
+  lateinit var inputFiles: List<File>
 
 
   @TaskAction
@@ -114,9 +114,7 @@ open class WireTask : SourceTask() {
       logger.debug("targets: $targets")
     }
 
-    // Second pass validate that input sources that did not exist at configuration time
-    // still do not exist after Gradle dependencies have been resolved.
-    suspectFiles.forEach {
+    inputFiles.forEach {
       check(it.exists()) {
         "Invalid path string: \"${it.path}\". Path does not exist."
       }
