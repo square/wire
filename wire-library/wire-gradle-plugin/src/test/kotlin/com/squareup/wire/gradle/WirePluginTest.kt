@@ -48,20 +48,38 @@ class WirePluginTest {
 
     assertThat(result.task(":generateProtos")).isNull()
     assertThat(result.output).contains(
-        """Invalid path string: "src/main/proto". Path does not exist."""
-    )
+            """
+            |Invalid path string: "src/main/proto".
+            |For individual files, use the following syntax:
+            |wire {
+            |  sourcePath {
+            |    srcDir 'dirPath'
+            |    include 'relativePath'
+            |  }
+            |}
+            """.trimMargin())
   }
 
   @Test
   fun sourcePathSrcDirDoesNotExist() {
     val fixtureRoot = File("src/test/projects/sourcepath-nonexistent-srcdir")
 
-    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
-    assertThat(result.task(":generateProtos")).isNull()
-    assertThat(result.output).contains(
-        """Invalid path string: "src/main/proto". Path does not exist."""
-    )
+    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.output).contains("NO-SOURCE")
+  }
+
+  @Test
+  fun sourcePathBuildDir() {
+    val fixtureRoot = File("src/test/projects/sourcepath-build-dir")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    assertThat(result.task(":copyProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+            .contains("Writing com.squareup.geology.Period")
+            .contains("src/test/projects/sourcepath-build-dir/build/generated/source/wire")
   }
 
   @Test
