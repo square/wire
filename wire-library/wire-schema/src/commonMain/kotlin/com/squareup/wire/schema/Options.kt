@@ -101,7 +101,6 @@ class Options(
         // Retry with one upper level package to resolve relative paths.
         if (path == null) {
           packageName = packageName.substringBeforeLast(".", missingDelimiterValue = "")
-
           if (packageName.isNullOrBlank() && !checkedExtensionFields) {
             checkedExtensionFields = true
             val extensionFields = type.extensionFields.filter { it.name == option.name }
@@ -406,22 +405,30 @@ class Options(
      * field names. The first field name is an extension field; subsequent field names make a path
      * within that extension.
      *
+     * https://developers.google.com/protocol-buffers/docs/overview?hl=en#packages_and_name_resolution
+     * Names can be prefixed with a `.` when the search should start from the outermost scope.
+     *
      * Note that a single input may yield multiple possible answers, such as when package names
      * and field names collide. This method prefers shorter package names though that is an
      * implementation detail.
      */
     fun resolveFieldPath(
-      name: String,
-      fullyQualifiedNames: Set<String?>
+            name: String,
+            fullyQualifiedNames: Set<String?>
     ): Array<String>? { // Try to resolve a local name.
       var pos = 0
-      while (pos < name.length) {
-        pos = name.indexOf('.', pos)
-        if (pos == -1) pos = name.length
-        val candidate = name.substring(0, pos)
+      val chompedName = if (name.startsWith('.')) {
+        name.substring(1)
+      } else {
+        name
+      }
+      while (pos < chompedName.length) {
+        pos = chompedName.indexOf('.', pos)
+        if (pos == -1) pos = chompedName.length
+        val candidate = chompedName.substring(0, pos)
         if (fullyQualifiedNames.contains(candidate)) {
-          val path = name.substring(pos).split('.').toTypedArray()
-          path[0] = name.substring(0, pos)
+          val path = chompedName.substring(pos).split('.').toTypedArray()
+          path[0] = chompedName.substring(0, pos)
           return path
         }
         pos++
