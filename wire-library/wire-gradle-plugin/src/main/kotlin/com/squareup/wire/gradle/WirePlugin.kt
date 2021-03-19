@@ -138,6 +138,7 @@ class WirePlugin : Plugin<Project> {
     val sourceInput = WireInput(project.configurations.named("protoSource"))
     sourceInput.addTrees(project, extension.sourceTrees)
     sourceInput.addJars(project, extension.sourceJars)
+    sourceInput.addProjects(project, extension.sourceProjects)
     sourceInput.addPaths(project, extension.sourcePaths)
     if (sourceInput.dependencies.isEmpty()) {
       sourceInput.addPaths(project, setOf("src/main/proto"))
@@ -146,8 +147,8 @@ class WirePlugin : Plugin<Project> {
     val protoInput = WireInput(project.configurations.named("protoPath"))
     protoInput.addTrees(project, extension.protoTrees)
     protoInput.addJars(project, extension.protoJars)
+    protoInput.addProjects(project, extension.protoProjects)
     protoInput.addPaths(project, extension.protoPaths)
-
 
     val inputFiles = mutableListOf<File>()
     inputFiles.addAll(sourceInput.inputFiles)

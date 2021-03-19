@@ -5,6 +5,7 @@ package squareup.dinosaurs;
 option java_package = "com.squareup.dinosaurs";
 
 import "squareup/geology/period.proto";
+import "squareup/location/continent.proto";
 
 message Dinosaur {
   /** Common name of this dinosaur, like "Stegosaurus". */
@@ -16,4 +17,5 @@ message Dinosaur {
   optional double length_meters = 3;
   optional double mass_kilograms = 4;
   optional squareup.geology.Period period = 5;
+  optional squareup.location.Continent continent = 6;
 }

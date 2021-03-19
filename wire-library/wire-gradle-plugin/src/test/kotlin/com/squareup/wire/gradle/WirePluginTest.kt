@@ -1,3 +1,5 @@
+@file:Suppress("UsePropertyAccessSyntax")
+
 package com.squareup.wire.gradle
 
 import org.assertj.core.api.Assertions.assertThat
@@ -945,8 +947,15 @@ class WirePluginTest {
       "dinosaurs/build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
     val generatedProto2 = File(fixtureRoot,
       "geology/build/generated/source/wire/com/squareup/geology/Period.kt")
+    val generatedProto3 = File(fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/location/Continent.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
+    assertThat(generatedProto3).exists()
+
+    val notExpected = File(fixtureRoot,
+      "dinosaurs/build/generated/source/wire/com/squareup/location/Planet.kt")
+    assertThat(notExpected).doesNotExist()
 
     ZipFile(File(fixtureRoot, "geology/build/libs/geology.jar")).use {
       assertThat(it.getEntry("squareup/geology/period.proto")).isNotNull()

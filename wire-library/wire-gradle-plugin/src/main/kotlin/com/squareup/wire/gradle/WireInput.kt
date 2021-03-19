@@ -17,8 +17,6 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.WireExtension.ProtoRootSet
 import com.squareup.wire.schema.Location
-import java.io.File
-import java.net.URI
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
@@ -28,6 +26,8 @@ import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
+import java.io.File
+import java.net.URI
 
 /**
  * Builds Wire's inputs (expressed as [Location] lists) from Gradle's objects (expressed as
@@ -43,7 +43,7 @@ internal class WireInput(var configuration: Provider<Configuration>) {
   val dependencies: DependencySet
     get() = configuration.get().dependencies
 
-  // Deferred dependency evaluation
+  // Deferred dependency evaluation.
   val inputFiles = mutableListOf<File>()
 
   fun addPaths(project: Project, paths: Set<String>) {
@@ -60,6 +60,16 @@ internal class WireInput(var configuration: Provider<Configuration>) {
         dependencyToIncludes[dependency] = jar.includes
         configuration.get().dependencies.add(dependency)
       }
+    }
+  }
+
+  fun addProjects(project: Project, projects: Set<ProtoRootSet>) {
+    for (projectPath in projects) {
+      if (projectPath.srcProject == null) continue
+
+      val dependency = resolveDependency(project, projectPath.srcProject!!)
+      dependencyToIncludes[dependency] = projectPath.includes
+      configuration.get().dependencies.add(dependency)
     }
   }
 
@@ -80,27 +90,32 @@ internal class WireInput(var configuration: Provider<Configuration>) {
 
     if (converted is File) {
       val file = if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
-      inputFiles.add(file)
+      if (!path.mayBeProject) inputFiles.add(file)
 
       return when {
         file.isDirectory -> project.dependencies.create(project.files(path))
         file.isJar -> project.dependencies.create(project.files(file.path))
+        path.mayBeProject -> {
+          // Keys can be either `path` or `configuration`.
+          // Example: "[path: ':someProj', configuration: 'someConf']"
+          return project.dependencies.project(mutableMapOf("path" to path))
+        }
         else -> throw IllegalArgumentException(
-            """
-            |Invalid path string: "$path".
-            |For individual files, use the following syntax:
-            |wire {
-            |  sourcePath {
-            |    srcDir 'dirPath'
-            |    include 'relativePath'
-            |  }
-            |}
-            """.trimMargin()
+          """
+          |Invalid path string: "$path".
+          |For individual files, use the following syntax:
+          |wire {
+          |  sourcePath {
+          |    srcDir 'dirPath'
+          |    include 'relativePath'
+          |  }
+          |}
+          """.trimMargin()
         )
       }
     } else if (converted is URI && isURL(converted)) {
       throw IllegalArgumentException(
-          "Invalid path string: \"$path\". URL dependencies are not allowed."
+        "Invalid path string: \"$path\". URL dependencies are not allowed."
       )
     } else {
       // Assume it's a possible external dependency and let Gradle sort it out later.
@@ -109,12 +124,12 @@ internal class WireInput(var configuration: Provider<Configuration>) {
   }
 
   private fun isURL(uri: URI) =
-      try {
-        uri.toURL()
-        true
-      } catch (e: Exception) {
-        false
-      }
+    try {
+      uri.toURL()
+      true
+    } catch (e: Exception) {
+      false
+    }
 
   fun debug(logger: Logger) {
     configuration.get().dependencies.forEach { dep ->
@@ -129,9 +144,9 @@ internal class WireInput(var configuration: Provider<Configuration>) {
   fun toLocations(): Provider<List<Location>> = configuration.map {
     it.dependencies.flatMap { dep ->
       it.files(dep)
-          .flatMap { file ->
-            file.toLocations(dep)
-          }
+        .flatMap { file ->
+          file.toLocations(dep)
+        }
     }
   }
 
@@ -140,10 +155,12 @@ internal class WireInput(var configuration: Provider<Configuration>) {
       val srcDir = (dependency.files as SourceDirectorySet).srcDirs.first {
         path.startsWith(it.path + File.separator)
       }
-      return listOf(Location.get(
+      return listOf(
+        Location.get(
           base = srcDir.path,
           path = path.substring(srcDir.path.length + 1)
-      ))
+        )
+      )
     }
 
     val includes = dependencyToIncludes[dependency] ?: listOf()
@@ -159,4 +176,7 @@ internal class WireInput(var configuration: Provider<Configuration>) {
 
   private val File.isJar
     get() = path.endsWith(".jar")
+
+  private val String.mayBeProject: Boolean
+    get() = startsWith(":")
 }

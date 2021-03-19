@@ -31,6 +31,8 @@ open class WireExtension(project: Project) {
   internal val protoTrees = mutableSetOf<SourceDirectorySet>()
   internal val sourceJars = mutableSetOf<ProtoRootSet>()
   internal val protoJars = mutableSetOf<ProtoRootSet>()
+  internal val sourceProjects = mutableSetOf<ProtoRootSet>()
+  internal val protoProjects = mutableSetOf<ProtoRootSet>()
   internal val roots = mutableSetOf<String>()
   internal val prunes = mutableSetOf<String>()
   internal val moves = mutableListOf<Move>()
@@ -138,6 +140,10 @@ open class WireExtension(project: Project) {
   @Optional
   fun getSourceJars() = sourceJars.toSet()
 
+  @InputFiles
+  @Optional
+  fun getSourceProjects() = sourceProjects.toSet()
+
   /**
    * Source paths for local jars and directories, as well as remote binary dependencies
    */
@@ -150,7 +156,7 @@ open class WireExtension(project: Project) {
    * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir]
    */
   fun sourcePath(action: Action<ProtoRootSet>) {
-    populateRootSets(action, sourceTrees, sourceJars, "source-tree")
+    populateRootSets(action, sourceTrees, sourceJars, sourceProjects, "source-tree")
   }
 
   @InputFiles
@@ -183,13 +189,14 @@ open class WireExtension(project: Project) {
    * Must provide at least a [org.gradle.api.file.SourceDirectorySet.srcDir]
    */
   fun protoPath(action: Action<ProtoRootSet>) {
-    populateRootSets(action, protoTrees, protoJars, "proto-tree")
+    populateRootSets(action, protoTrees, protoJars, protoProjects, "proto-tree")
   }
 
   private fun populateRootSets(
     action: Action<ProtoRootSet>,
     sourceTrees: MutableSet<SourceDirectorySet>,
     sourceJars: MutableSet<ProtoRootSet>,
+    sourceProjects: MutableSet<ProtoRootSet>,
     name: String
   ) {
     val protoRootSet = objectFactory.newInstance(ProtoRootSet::class.java)
@@ -197,6 +204,7 @@ open class WireExtension(project: Project) {
 
     val hasSrcDirs = protoRootSet.srcDirs.isNotEmpty()
     val hasSrcJar = protoRootSet.srcJar != null
+    val hasSrcProject = protoRootSet.srcProject != null
 
     check(!hasSrcDirs || !hasSrcJar) {
       "Cannot set both srcDirs and srcJars in the same protoPath closure"
@@ -216,6 +224,10 @@ open class WireExtension(project: Project) {
 
     if (hasSrcJar) {
       sourceJars.add(protoRootSet)
+    }
+
+    if (hasSrcProject) {
+      sourceProjects.add(protoRootSet)
     }
   }
 
@@ -252,6 +264,7 @@ open class WireExtension(project: Project) {
   open class ProtoRootSet {
     val srcDirs = mutableListOf<String>()
     var srcJar: String? = null
+    var srcProject: String? = null
     val includes = mutableListOf<String>()
 
     fun srcDir(dir: String) {
@@ -264,6 +277,10 @@ open class WireExtension(project: Project) {
 
     fun srcJar(jar: String) {
       srcJar = jar
+    }
+
+    fun srcProject(projectPath: String) {
+      srcProject = projectPath
     }
 
     fun include(vararg includePaths: String) {
