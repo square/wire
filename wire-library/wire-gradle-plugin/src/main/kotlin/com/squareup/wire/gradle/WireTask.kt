@@ -82,7 +82,6 @@ open class WireTask : SourceTask() {
   @Input
   lateinit var inputFiles: List<File>
 
-
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
