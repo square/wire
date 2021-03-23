@@ -20,7 +20,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.squareup.wire.internal.EnumJsonFormatter
-import com.squareup.wire.internal.RuntimeMessageAdapter
+import com.squareup.wire.internal.createRuntimeMessageAdapter
 
 /**
  * A [TypeAdapterFactory] that allows Wire messages to be serialized and deserialized
@@ -74,8 +74,8 @@ class WireTypeAdapterFactory(
     return when {
       rawType == AnyMessage::class.java -> AnyMessageTypeAdapter(gson, typeUrlToAdapter) as TypeAdapter<T>
       Message::class.java.isAssignableFrom(rawType) -> {
-        val messageAdapter = RuntimeMessageAdapter.create<Nothing, Nothing>(rawType as Class<Nothing>)
-        val jsonAdapters = messageAdapter.jsonAdapters(GsonJsonIntegration, gson)
+        val messageAdapter = createRuntimeMessageAdapter<Nothing, Nothing>(rawType as Class<Nothing>)
+        val jsonAdapters = GsonJsonIntegration.jsonAdapters(messageAdapter, gson)
         MessageTypeAdapter(messageAdapter, jsonAdapters).nullSafe() as TypeAdapter<T>
       }
       WireEnum::class.java.isAssignableFrom(rawType) -> {

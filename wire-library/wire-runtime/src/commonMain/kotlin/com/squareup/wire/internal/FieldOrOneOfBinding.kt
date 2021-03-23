@@ -15,12 +15,11 @@
  */
 package com.squareup.wire.internal
 
-import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 
-interface FieldOrOneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> {
+interface FieldOrOneOfBinding<M, B> {
   val tag: Int
 
   val label: WireField.Label
@@ -28,6 +27,8 @@ interface FieldOrOneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> {
   val redacted: Boolean
 
   val isMap: Boolean
+
+  val isMessage: Boolean
 
   /**
    * The name of the field in generated code. If the declared name is a keyword like `fun`, this

@@ -50,6 +50,9 @@ internal class OneOfBinding<M : Message<M, B>, B : Message.Builder<M, B>> intern
   override val isMap: Boolean
     get() = false
 
+  override val isMessage: Boolean
+    get() = Message::class.java.isAssignableFrom(singleAdapter().type?.javaObjectType)
+
   override fun keyAdapter(): ProtoAdapter<*> {
     error("not a map")
   }

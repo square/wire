@@ -15,17 +15,17 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.RuntimeMessageAdapter
+import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.map.Mappy
 import com.squareup.wire.protos.kotlin.map.Thing
-import okio.ByteString
-import okio.ByteString.Companion.decodeHex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import okio.ByteString
+import okio.ByteString.Companion.decodeHex
 
 class KotlinMapTest {
-  private val adapter = RuntimeMessageAdapter.create(Mappy::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2)
+  private val adapter = createRuntimeMessageAdapter(Mappy::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2)
 
   @Test fun serialize() {
     assertEquals(BYTES, ByteString.of(*adapter.encode(THREE)))

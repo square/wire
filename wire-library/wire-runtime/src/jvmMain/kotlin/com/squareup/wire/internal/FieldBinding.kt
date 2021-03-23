@@ -51,6 +51,9 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   override val isMap: Boolean
     get() = keyAdapterString.isNotEmpty()
 
+  override val isMessage: Boolean
+    get() = Message::class.java.isAssignableFrom(singleAdapter().type?.javaObjectType)
+
   private fun getBuilderField(builderType: Class<*>, name: String): Field {
     try {
       return builderType.getField(name)

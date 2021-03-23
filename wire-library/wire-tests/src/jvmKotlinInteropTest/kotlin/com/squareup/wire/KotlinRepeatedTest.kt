@@ -15,17 +15,21 @@
 */
 package com.squareup.wire
 
-import com.squareup.wire.internal.RuntimeMessageAdapter
+import com.squareup.wire.internal.createRuntimeMessageAdapter
 import com.squareup.wire.protos.kotlin.repeated.Repeated
 import com.squareup.wire.protos.kotlin.repeated.Thing
-import okio.ByteString.Companion.decodeHex
-import okio.ByteString.Companion.toByteString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import okio.ByteString.Companion.decodeHex
+import okio.ByteString.Companion.toByteString
 
 class KotlinRepeatedTest {
-  private val adapter = RuntimeMessageAdapter.create(Repeated::class.java, "square.github.io/wire/unknown", Syntax.PROTO_2)
+  private val adapter = createRuntimeMessageAdapter(
+    Repeated::class.java,
+    "square.github.io/wire/unknown",
+    Syntax.PROTO_2
+  )
 
   @Test fun serialize() {
     assertEquals(BYTES, adapter.encode(THREE).toByteString())
