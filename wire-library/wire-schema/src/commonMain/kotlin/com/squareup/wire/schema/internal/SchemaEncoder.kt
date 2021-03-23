@@ -25,6 +25,7 @@ import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
+import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Rpc
@@ -48,12 +49,27 @@ import okio.ByteString.Companion.toByteString
  *
  * This file requires we manually keep tags and types in sync with `descriptor.proto`.
  *
- * TODO(jwilson): this class doesn't yet implement options, extension ranges, and several other
- *     fields that are commented out below.
+ * TODO(jwilson): this class doesn't yet extension ranges and several other fields that are
+ *     commented out below.
  */
 class SchemaEncoder(
   private val schema: Schema
 ) {
+  private val fileOptionsProtoAdapter =
+    schema.protoAdapter(Options.FILE_OPTIONS.toString(), false)
+  private val messageOptionsProtoAdapter =
+    schema.protoAdapter(Options.MESSAGE_OPTIONS.toString(), false)
+  private val fieldOptionsProtoAdapter =
+    schema.protoAdapter(Options.FIELD_OPTIONS.toString(), false)
+  private val enumOptionsProtoAdapter =
+    schema.protoAdapter(Options.ENUM_OPTIONS.toString(), false)
+  private val enumValueOptionsProtoAdapter =
+    schema.protoAdapter(Options.ENUM_VALUE_OPTIONS.toString(), false)
+  private val serviceOptionsProtoAdapter =
+    schema.protoAdapter(Options.SERVICE_OPTIONS.toString(), false)
+  private val rpcOptionsProtoAdapter =
+    schema.protoAdapter(Options.METHOD_OPTIONS.toString(), false)
+
   fun encode(protoFile: ProtoFile): ByteString {
     return fileEncoder.encode(protoFile).toByteString()
   }
@@ -82,7 +98,7 @@ class SchemaEncoder(
           })
       }
 
-      // FileOptions.ADAPTER.encodeWithTag(writer, 8, value.options)
+      fileOptionsProtoAdapter.encodeWithTag(writer, 8, value.options.toJsonOptions())
       // SourceCodeInfo.ADAPTER.encodeWithTag(writer, 9, value.source_code_info)
 
       if (value.syntax != Syntax.PROTO_2) {
@@ -147,7 +163,8 @@ class SchemaEncoder(
       // Real and synthetic oneofs.
       oneOfEncoder.asRepeated().encodeWithTag(writer, 8, encodedOneOfs)
 
-      // MessageOptions.ADAPTER.encodeWithTag(writer, 7, value.options)
+      messageOptionsProtoAdapter.encodeWithTag(writer, 7, value.options.toJsonOptions())
+
       // ReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 9, value.reserved_range)
       // STRING.asRepeated().encodeWithTag(writer, 10, value.reserved_name)
     }
@@ -216,7 +233,7 @@ class SchemaEncoder(
         STRING.encodeWithTag(writer, 1, value.name)
         keyFieldEncoder.encodeWithTag(writer, 2, value)
         valueFieldEncoder.encodeWithTag(writer, 2, value)
-        // TODO: option { map_entry: true }
+        messageOptionsProtoAdapter.encodeWithTag(writer, 7, mapOf("map_entry" to true))
       }
     }
 
@@ -246,7 +263,7 @@ class SchemaEncoder(
       if (value.syntax == Syntax.PROTO_2 && value.field.jsonName != value.field.name) {
         STRING.encodeWithTag(writer, 10, value.field.jsonName)
       }
-      // FieldOptions.ADAPTER.encodeWithTag(writer, 8, value.options)
+      fieldOptionsProtoAdapter.encodeWithTag(writer, 8, value.field.options.toJsonOptions())
       if (value.isProto3Optional) {
         BOOL.encodeWithTag(writer, 17, true)
       }
@@ -308,7 +325,7 @@ class SchemaEncoder(
     override fun encode(writer: ProtoWriter, value: EnumType) {
       STRING.encodeWithTag(writer, 1, value.name)
       enumConstantEncoder.asRepeated().encodeWithTag(writer, 2, value.constants)
-      // EnumOptions.ADAPTER.encodeWithTag(writer, 3, value.options)
+      enumOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
       // EnumReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.reserved_range)
       // STRING.asRepeated().encodeWithTag(writer, 5, value.reserved_name)
     }
@@ -318,7 +335,7 @@ class SchemaEncoder(
     override fun encode(writer: ProtoWriter, value: EnumConstant) {
       STRING.encodeWithTag(writer, 1, value.name)
       INT32.encodeWithTag(writer, 2, value.tag)
-      // EnumValueOptions.ADAPTER.encodeWithTag(writer, 3, value.options)
+      enumValueOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
     }
   }
 
@@ -326,7 +343,7 @@ class SchemaEncoder(
     override fun encode(writer: ProtoWriter, value: Service) {
       STRING.encodeWithTag(writer, 1, value.name)
       rpcEncoder.asRepeated().encodeWithTag(writer, 2, value.rpcs)
-      // ServiceOptions.ADAPTER.encodeWithTag(writer, 3, value.options)
+      serviceOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
     }
   }
 
@@ -335,7 +352,7 @@ class SchemaEncoder(
       STRING.encodeWithTag(writer, 1, value.name)
       STRING.encodeWithTag(writer, 2, value.requestType!!.dotName)
       STRING.encodeWithTag(writer, 3, value.responseType!!.dotName)
-      // MethodOptions.ADAPTER.encodeWithTag(writer, 4, value.options)
+      rpcOptionsProtoAdapter.encodeWithTag(writer, 4, value.options.toJsonOptions())
       if (value.requestStreaming) {
         BOOL.encodeWithTag(writer, 5, value.requestStreaming)
       }
@@ -365,6 +382,35 @@ class SchemaEncoder(
 
     override fun decode(reader: ProtoReader): T {
       throw UnsupportedOperationException()
+    }
+  }
+
+  /**
+   * Converts this options instance to a JSON-style value that the runtime adapter can process.
+   *
+   * TODO: offer an alternative to SchemaProtoAdapterFactory that uses ProtoMember or tag keys so
+   *     we don't need a clumsy conversion through JSON.
+   */
+  private fun Options.toJsonOptions(): Any? {
+    val optionsMap = map
+    if (optionsMap.isEmpty()) return null
+
+    val result = mutableMapOf<String, Any>()
+    for ((key, value) in optionsMap) {
+      val field = schema.getField(key) ?: error("unexpected options field: $key")
+      result[field.name] = toJson(field, value) ?: continue
+    }
+
+    return result
+  }
+
+  private fun toJson(field: Field, value: Any?): Any? {
+    // TODO: use optionValueToInt(value) when that's available in commonMain.
+    return when (field.type) {
+      ProtoType.INT32 -> (value as String).toInt()
+      ProtoType.BOOL -> (value as String).toBoolean()
+      ProtoType.STRING -> value as String
+      else -> error("field type not implemented: $field")
     }
   }
 }
