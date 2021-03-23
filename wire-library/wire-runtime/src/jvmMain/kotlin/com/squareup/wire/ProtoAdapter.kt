@@ -15,17 +15,17 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.RuntimeMessageAdapter
+import com.squareup.wire.internal.createRuntimeMessageAdapter
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import kotlin.reflect.KClass
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
 import okio.buffer
 import okio.sink
 import okio.source
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
@@ -175,7 +175,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
     @JvmStatic fun <M : Message<M, B>, B : Message.Builder<M, B>> newMessageAdapter(
       type: Class<M>
     ): ProtoAdapter<M> {
-      return RuntimeMessageAdapter.create(type, null, Syntax.PROTO_2)
+      return createRuntimeMessageAdapter(type, null, Syntax.PROTO_2)
     }
 
     // Obsolete; for Java classes generated before typeUrl and syntax were added.
@@ -183,7 +183,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
       type: Class<M>,
       typeUrl: String
     ): ProtoAdapter<M> {
-      return RuntimeMessageAdapter.create(type, typeUrl, Syntax.PROTO_2)
+      return createRuntimeMessageAdapter(type, typeUrl, Syntax.PROTO_2)
     }
 
     /** Creates a new proto adapter for `type`. */
@@ -192,7 +192,7 @@ actual abstract class ProtoAdapter<E> actual constructor(
       typeUrl: String,
       syntax: Syntax
     ): ProtoAdapter<M> {
-      return RuntimeMessageAdapter.create(type, typeUrl, syntax)
+      return createRuntimeMessageAdapter(type, typeUrl, syntax)
     }
 
     /** Creates a new proto adapter for `type`. */

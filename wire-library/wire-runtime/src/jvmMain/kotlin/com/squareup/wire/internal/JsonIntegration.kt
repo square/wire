@@ -16,14 +16,13 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.EnumAdapter
-import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
-import okio.ByteString
-import okio.ByteString.Companion.decodeBase64
 import java.lang.reflect.Type
 import java.math.BigDecimal
 import java.math.BigInteger
+import okio.ByteString
+import okio.ByteString.Companion.decodeBase64
 
 /**
  * Integrates a JSON library like Moshi or Gson into proto. This rigid interface attempts to make it
@@ -52,8 +51,17 @@ abstract class JsonIntegration<F, A> {
   /** Returns an adapter that applies [jsonStringAdapter] to each value. */
   abstract fun formatterAdapter(jsonStringAdapter: JsonFormatter<*>): A
 
+  /** Returns a message type that supports encoding and decoding JSON objects of type [type]. */
+  fun <M : Any, B : Any> jsonAdapters(
+    adapter: RuntimeMessageAdapter<M, B>,
+    framework: F
+  ): List<A> {
+    val fieldBindings = adapter.fields.values.toTypedArray()
+    return fieldBindings.map { jsonAdapter(framework, adapter.syntax, it) }
+  }
+
   /** Returns a JSON adapter for [field]. */
-  fun <M : Message<M, B>, B : Message.Builder<M, B>> jsonAdapter(
+  private fun <M : Any, B : Any> jsonAdapter(
     framework: F,
     syntax: Syntax,
     field: FieldOrOneOfBinding<M, B>
