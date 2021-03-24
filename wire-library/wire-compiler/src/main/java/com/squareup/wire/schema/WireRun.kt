@@ -20,9 +20,8 @@ import com.squareup.wire.WireLogger
 import com.squareup.wire.schema.PartitionedSchema.Partition
 import com.squareup.wire.schema.internal.DagChecker
 import com.squareup.wire.schema.internal.TypeMover
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
-import java.nio.file.Path
+import okio.FileSystem
+import okio.Path
 
 /**
  * An invocation of the Wire compiler. Each invocation performs the following operations:
@@ -208,7 +207,7 @@ data class WireRun(
     }
   }
 
-  fun execute(fs: FileSystem = FileSystems.getDefault(), logger: WireLogger = ConsoleWireLogger()) {
+  fun execute(fs: FileSystem = FileSystem.SYSTEM, logger: WireLogger = ConsoleWireLogger()) {
     return SchemaLoader(fs).use { schemaLoader ->
       execute(fs, logger, schemaLoader)
     }

@@ -16,11 +16,9 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.WireLogger
-import okio.buffer
-import okio.sink
-import java.nio.file.FileSystem
-import java.nio.file.Files
-import java.nio.file.Path
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
 
 /**
  * This is a sample handler that writes text files that describe types.
@@ -47,10 +45,10 @@ class MarkdownHandler : CustomHandlerBeta {
       }
 
       private fun writeMarkdownFile(protoType: ProtoType, markdown: String): Path {
-        val path = fs.getPath(outDirectory, *toPath(protoType).toTypedArray())
-        Files.createDirectories(path.parent)
-        path.sink().buffer().use { sink ->
-          sink.writeUtf8(markdown)
+        val path = outDirectory.toPath() / toPath(protoType).joinToString(separator = "/")
+        fs.createDirectories(path.parent!!)
+        fs.write(path) {
+          writeUtf8(markdown)
         }
         return path
       }

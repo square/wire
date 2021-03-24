@@ -25,15 +25,19 @@ import com.squareup.wire.schema.NullTarget
 import com.squareup.wire.schema.SwiftTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
-import okio.buffer
-import okio.source
+import com.squareup.wire.schema.toOkioFileSystem
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.Path
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toOkioPath
+import okio.Path.Companion.toPath
+import okio.buffer
+import okio.source
+import java.nio.file.FileSystem as NioFileSystem
 
 /**
  * Command line interface to the Wire Java generator.
@@ -142,7 +146,7 @@ class WireCompiler internal constructor(
     }
 
     Closer.create().use { closer ->
-      val sources = protoPaths.map { fs.getPath(it) }
+      val sources = protoPaths.map { it.toPath() }
       val directories = directoryPaths(closer, sources)
 
       val allDirectories = directories.map { Location.get(it.key.toString()) }.toList()
@@ -180,10 +184,10 @@ class WireCompiler internal constructor(
     val directories = mutableMapOf<Path, Path>()
     for (source in sources) {
       directories[source] = when {
-        Files.isRegularFile(source) -> {
-          val sourceFs = FileSystems.newFileSystem(source, javaClass.classLoader)
+        Files.isRegularFile(source.toNioPath()) -> {
+          val sourceFs = FileSystems.newFileSystem(source.toNioPath(), javaClass.classLoader)
           closer.register(sourceFs)
-          sourceFs.rootDirectories.single()
+          sourceFs.rootDirectories.single().toOkioPath()
         }
         else -> source
       }
@@ -193,7 +197,7 @@ class WireCompiler internal constructor(
 
   /** Searches [directories] trying to resolve [proto]. Returns the location if it is found. */
   private fun locationOfProto(directories: Map<Path, Path>, proto: String): Location {
-    val directoryEntry = directories.entries.find { Files.exists(it.value.resolve(proto)) }
+    val directoryEntry = directories.entries.find { fs.exists(it.value / proto) }
 
     if (directoryEntry == null) {
       if (isWireRuntimeProto(proto)) return Location.get(WIRE_RUNTIME_JAR, proto)
@@ -241,10 +245,20 @@ class WireCompiler internal constructor(
     }
 
     @Throws(WireException::class)
+    @JvmStatic
+    fun forArgs(
+      fileSystem: NioFileSystem,
+      logger: WireLogger,
+      vararg args: String
+    ): WireCompiler {
+      return forArgs(fileSystem.toOkioFileSystem(), logger, *args)
+    }
+
+    @Throws(WireException::class)
     @JvmOverloads
     @JvmStatic
     fun forArgs(
-      fileSystem: FileSystem = FileSystems.getDefault(),
+      fileSystem: FileSystem = FileSystem.SYSTEM,
       logger: WireLogger = ConsoleWireLogger(),
       vararg args: String
     ): WireCompiler {

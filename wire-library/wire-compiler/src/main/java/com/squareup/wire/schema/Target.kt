@@ -28,11 +28,9 @@ import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftGenerator
 import java.io.IOException
 import java.io.Serializable
-import java.nio.file.FileSystem
-import java.nio.file.Files
-import java.nio.file.Path
-import okio.buffer
-import okio.sink
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 sealed class Target : Serializable {
@@ -186,14 +184,14 @@ data class JavaTarget(
     val profileName = if (android) "android" else "java"
     val profile = profileLoader.loadProfile(profileName, schema)
     val modulePath = run {
-      val outPath = fs.getPath(outDirectory)
+      val outPath = outDirectory.toPath()
       if (moduleName != null) {
-        outPath.resolve(moduleName)
+        outPath / moduleName
       } else {
         outPath
       }
     }
-    Files.createDirectories(modulePath)
+    fs.createDirectories(modulePath)
 
     val javaGenerator = JavaGenerator.get(schema)
         .withProfile(profile)
@@ -230,17 +228,21 @@ data class JavaTarget(
             .addFileComment("\$L", WireCompiler.CODE_GENERATED_BY_WIRE)
             .addFileComment("\nSource: \$L in \$L", source, location.withPathOnly())
             .build()
-        val generatedFilePath = modulePath.resolve(javaFile.packageName)
-            .resolve("${javaFile.typeSpec.name}.java")
+        val filePath = modulePath /
+            javaFile.packageName.replace(".", "/") /
+            "${javaTypeName.simpleName()}.java"
 
         logger.artifact(modulePath, javaFile)
         try {
-          javaFile.writeTo(modulePath)
+          fs.createDirectories(filePath.parent!!)
+          fs.write(filePath) {
+            writeUtf8(javaFile.toString())
+          }
         } catch (e: IOException) {
           throw IOException("Error emitting ${javaFile.packageName}.${javaFile.typeSpec.name} " +
               "to $outDirectory", e)
         }
-        return generatedFilePath
+        return filePath
       }
     }
   }
@@ -300,14 +302,14 @@ data class KotlinTarget(
     val profile = profileLoader.loadProfile(profileName, schema)
 
     val modulePath = run {
-      val outPath = fs.getPath(outDirectory)
+      val outPath = outDirectory.toPath()
       if (moduleName != null) {
-        outPath.resolve(moduleName)
+        outPath / moduleName
       } else {
         outPath
       }
     }
-    Files.createDirectories(modulePath)
+    fs.createDirectories(modulePath)
 
     val kotlinGenerator = KotlinGenerator(
         schema = schema,
@@ -374,17 +376,21 @@ data class KotlinTarget(
             }
             .addType(typeSpec)
             .build()
-        val generatedFilePath = modulePath.resolve(kotlinFile.packageName)
-            .resolve("${kotlinFile.name}.kt")
-        val path = fs.getPath(outDirectory)
+        val filePath = modulePath /
+            kotlinFile.packageName.replace(".", "/") /
+            "${kotlinFile.name}.kt"
+        val path = outDirectory.toPath()
 
         logger.artifact(path, kotlinFile)
         try {
-          kotlinFile.writeTo(path)
+          fs.createDirectories(filePath.parent!!)
+          fs.write(filePath) {
+            writeUtf8(kotlinFile.toString())
+          }
         } catch (e: IOException) {
           throw IOException("Error emitting ${kotlinFile.packageName}.$source to $outDirectory", e)
         }
-        return generatedFilePath
+        return filePath
       }
     }
   }
@@ -405,14 +411,14 @@ data class SwiftTarget(
     profileLoader: ProfileLoader
   ): SchemaHandler {
     val modulePath = run {
-      val outPath = fs.getPath(outDirectory)
+      val outPath = outDirectory.toPath()
       if (moduleName != null) {
-        outPath.resolve(moduleName)
+        outPath / moduleName
       } else {
         outPath
       }
     }
-    Files.createDirectories(modulePath)
+    fs.createDirectories(modulePath)
 
     val generator = SwiftGenerator(schema, upstreamTypes)
     return object : SchemaHandler {
@@ -427,15 +433,18 @@ data class SwiftTarget(
             }
             .build()
 
+        val filePath = modulePath / "${swiftFile.name}.swift"
         try {
-          swiftFile.writeTo(modulePath)
+          fs.write(filePath) {
+            writeUtf8(swiftFile.toString())
+          }
         } catch (e: IOException) {
           throw IOException(
               "Error emitting ${swiftFile.moduleName}.${typeName.canonicalName} to $modulePath", e)
         }
 
         logger.artifact(modulePath, type.type, swiftFile)
-        return modulePath.resolve("${swiftFile.name}.swift")
+        return filePath
       }
 
       override fun handle(service: Service) = emptyList<Path>()
@@ -460,14 +469,14 @@ data class ProtoTarget(
     profileLoader: ProfileLoader
   ): SchemaHandler {
     val modulePath = run {
-      val outPath = fs.getPath(outDirectory)
+      val outPath = outDirectory.toPath()
       if (moduleName != null) {
-        outPath.resolve(moduleName)
+        outPath / moduleName
       } else {
         outPath
       }
     }
-    Files.createDirectories(modulePath)
+    fs.createDirectories(modulePath)
 
     return object : SchemaHandler {
       override fun handle(type: Type): Path? = null
@@ -482,25 +491,19 @@ data class ProtoTarget(
       ) {
         if (protoFile.isEmpty()) return
 
-        val relativePath: String = protoFile.location.path
+        val relativePath = protoFile.location.path
             .substringBeforeLast("/", missingDelimiterValue = ".")
-        val outputDirectory = modulePath.resolve(relativePath)
-
-        require(Files.notExists(outputDirectory) || Files.isDirectory(outputDirectory)) {
-          "path $outputDirectory exists but is not a directory."
-        }
-        Files.createDirectories(outputDirectory)
-
-        val outputFilePath = outputDirectory.resolve("${protoFile.name()}.proto")
-
+        val outputDirectory = modulePath / relativePath
+        val outputFilePath = outputDirectory / "${protoFile.name()}.proto"
         logger.artifact(outputDirectory, protoFile.location.path)
 
-        outputFilePath.sink().buffer().use { sink ->
-          try {
-            sink.writeUtf8(protoFile.toSchema())
-          } catch (e: IOException) {
-            throw IOException("Error emitting $outputFilePath to $outDirectory", e)
+        try {
+          fs.createDirectories(outputFilePath.parent!!)
+          fs.write(outputFilePath) {
+            writeUtf8(protoFile.toSchema())
           }
+        } catch (e: IOException) {
+          throw IOException("Error emitting $outputFilePath to $outDirectory", e)
         }
       }
     }

@@ -17,14 +17,13 @@
 
 package com.squareup.wire.schema
 
-import com.google.common.jimfs.Configuration
-import com.google.common.jimfs.Jimfs
 import com.squareup.wire.testing.add
+import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class LinkerTest {
-  private val fs = Jimfs.newFileSystem(Configuration.unix())
+  private val fs = FakeFileSystem()
 
   @Test
   fun usedProtoPathFileIncludedInSchema() {

@@ -15,19 +15,16 @@
  */
 package com.squareup.wire.testing
 
-import okio.ByteString
-import okio.buffer
-import okio.sink
+import java.io.IOException
 import java.nio.charset.Charset
-import java.nio.file.FileSystem
-import java.nio.file.FileVisitResult
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.SimpleFileVisitor
-import java.nio.file.attribute.BasicFileAttributes
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.text.Charsets.UTF_8
+import okio.ByteString
+import okio.FileSystem
+import okio.Path.Companion.toPath
+import okio.buffer
+import okio.sink
 
 fun FileSystem.add(
   pathString: String,
@@ -35,57 +32,71 @@ fun FileSystem.add(
   charset: Charset = UTF_8,
   bom: ByteString = ByteString.EMPTY
 ) {
-  val path = getPath(pathString)
+  val path = pathString.toPath()
   if (path.parent != null) {
-    Files.createDirectories(path.parent)
+    createDirectories(path.parent!!)
   }
-  Files.write(path, bom.toByteArray() + contents.toByteArray(charset))
+  write(path) {
+    write(bom.toByteArray())
+    writeString(contents, charset)
+  }
 }
 
 fun FileSystem.symlink(linkPathString: String, targetPathString: String) {
-  val linkPath = getPath(linkPathString)
-  if (linkPath.parent != null) {
-    Files.createDirectories(linkPath.parent)
-  }
-  val targetPath = getPath(targetPathString)
-  Files.createSymbolicLink(linkPath, targetPath)
+  throw UnsupportedOperationException("symlinks are not yet implemented in okio.FileSystem")
 }
 
 fun FileSystem.get(pathString: String): String {
-  val path = getPath(pathString)
-  return String(Files.readAllBytes(path), UTF_8)
+  read(pathString.toPath()) {
+    return readUtf8()
+  }
 }
 
 fun FileSystem.exists(pathString: String): Boolean {
-  val path = getPath(pathString)
-  return Files.exists(path)
+  val path = pathString.toPath()
+  return exists(path)
 }
+
+/** Visit [path] and all its children recursively, if it has any. */
+fun FileSystem.visitAll(path: okio.Path, block: (okio.Path) -> Unit) {
+  block(path)
+
+  val toVisit: List<okio.Path> = try {
+    list(path)
+  } catch (e: IOException) {
+    listOf()
+  }
+
+  for (child in toVisit) {
+    visitAll(child, block)
+  }
+}
+
 
 fun FileSystem.find(path: String): Set<String> {
   val result = mutableSetOf<String>()
-  Files.walkFileTree(getPath(path), object : SimpleFileVisitor<Path>() {
-    override fun visitFile(path: Path, attrs: BasicFileAttributes): FileVisitResult {
-      if (!Files.isDirectory(path)) {
-        result.add(path.toString())
-      }
-      return FileVisitResult.CONTINUE
+  visitAll(path.toPath()) { path ->
+    if (!metadata(path).isDirectory) {
+      result.add(path.toString())
     }
-  })
+  }
   return result
 }
 
 fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>) {
-  val path = getPath(pathString)
+  val path = pathString.toPath()
   if (path.parent != null) {
-    Files.createDirectories(path.parent)
+    createDirectories(path.parent!!)
   }
 
-  ZipOutputStream(Files.newOutputStream(path)).use { zipOut ->
-    val zipSink = zipOut.sink().buffer()
-    for ((elementPath, elementContents) in contents) {
-      zipOut.putNextEntry(ZipEntry(elementPath))
-      zipSink.writeUtf8(elementContents)
-      zipSink.flush()
+  write(path) {
+    ZipOutputStream(outputStream()).use { zipOut ->
+      val zipSink = zipOut.sink().buffer()
+      for ((elementPath, elementContents) in contents) {
+        zipOut.putNextEntry(ZipEntry(elementPath))
+        zipSink.writeUtf8(elementContents)
+        zipSink.flush()
+      }
     }
   }
 }

@@ -17,15 +17,14 @@
 
 package com.squareup.wire.schema
 
-import com.google.common.jimfs.Configuration
-import com.google.common.jimfs.Jimfs
+import okio.fakefilesystem.FakeFileSystem
 import com.squareup.wire.testing.add
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
 class CycleCheckerTest {
-  private val fs = Jimfs.newFileSystem(Configuration.unix())
+  private val fs = FakeFileSystem()
 
   @Test
   fun singleFileImportCycle() {

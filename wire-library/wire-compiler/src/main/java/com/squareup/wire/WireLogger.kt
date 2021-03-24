@@ -18,7 +18,7 @@ package com.squareup.wire
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.schema.ProtoType
-import java.nio.file.Path
+import okio.Path
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 interface WireLogger {
