@@ -18,8 +18,7 @@ package com.squareup.wire
 import com.google.protobuf.DescriptorProtos.DescriptorProto
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
-import com.google.protobuf.DescriptorProtos.MethodDescriptorProto
-import com.google.protobuf.DescriptorProtos.ServiceDescriptorProto
+import com.google.protobuf.ExtensionRegistry
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.SchemaLoader
@@ -39,6 +38,11 @@ class SchemaEncoderInteropTest {
       initRoots(sourcePath = listOf(Location.get("src/main/proto")))
     }
     .loadSchema()
+
+  private val extensionRegistry = ExtensionRegistry.newInstance()
+    .apply {
+      InteropServiceOuterClassP2.registerAllExtensions(this)
+    }
 
   @Test fun `proto2 interop_test`() {
     checkFileSchemasMatch(
@@ -84,25 +88,21 @@ class SchemaEncoderInteropTest {
     protocProtoFile: FileDescriptorProto
   ) {
     val wireBytes = SchemaEncoder(schema).encode(wireProtoFile)
-    val wireDescriptor = FileDescriptorProto.parseFrom(wireBytes.toByteArray())
+    val wireDescriptor = FileDescriptorProto.parseFrom(wireBytes.toByteArray(), extensionRegistry)
     assertThat(wireDescriptor.stripOptionsAndDefaults())
       .isEqualTo(protocProtoFile.stripOptionsAndDefaults())
   }
 
   /**
-   * TODO: this strips options and defaults as they're not yet consistent with protoc. We should fix
-   *     the implementation to not strip options or defaults and remove this.
+   * TODO: this strips defaults as they're not yet consistent with protoc. We should fix the
+   *     implementation to match protoc.
    */
   private fun FileDescriptorProto.stripOptionsAndDefaults(): FileDescriptorProto {
     val messageTypeList = messageTypeList.map { it.stripOptionsAndDefaults() }
-    val serviceList = serviceList.map { it.stripOptionsAndDefaults() }
     val extensionList = extensionList.map { it.stripOptionsAndDefaults() }
     return toBuilder()
-      .clearOptions()
       .clearMessageType()
       .addAllMessageType(messageTypeList)
-      .clearService()
-      .addAllService(serviceList)
       .clearExtension()
       .addAllExtension(extensionList)
       .build()
@@ -112,7 +112,6 @@ class SchemaEncoderInteropTest {
     val nestedTypeList = nestedTypeList.map { it.stripOptionsAndDefaults() }
     val fieldList = fieldList.map { it.stripOptionsAndDefaults() }
     return toBuilder()
-      .clearOptions()
       .clearNestedType()
       .addAllNestedType(nestedTypeList)
       .clearField()
@@ -123,23 +122,7 @@ class SchemaEncoderInteropTest {
 
   private fun FieldDescriptorProto.stripOptionsAndDefaults(): FieldDescriptorProto {
     return toBuilder()
-      .clearOptions()
       .clearDefaultValue()
-      .build()
-  }
-
-  private fun ServiceDescriptorProto.stripOptionsAndDefaults(): ServiceDescriptorProto {
-    val methodList = methodList.map { it.stripOptionsAndDefaults() }
-    return toBuilder()
-      .clearOptions()
-      .clearMethod()
-      .addAllMethod(methodList)
-      .build()
-  }
-
-  private fun MethodDescriptorProto.stripOptionsAndDefaults(): MethodDescriptorProto {
-    return toBuilder()
-      .clearOptions()
       .build()
   }
 }
