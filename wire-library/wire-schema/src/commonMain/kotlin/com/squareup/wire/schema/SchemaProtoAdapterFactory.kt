@@ -15,13 +15,18 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.FieldEncoding.LENGTH_DELIMITED
+import com.squareup.wire.FieldEncoding
 import com.squareup.wire.FieldEncoding.VARINT
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax
-import kotlin.jvm.JvmField
+import com.squareup.wire.WireField
+import com.squareup.wire.internal.FieldOrOneOfBinding
+import com.squareup.wire.internal.MessageBinding
+import com.squareup.wire.internal.RuntimeMessageAdapter
+import com.squareup.wire.schema.Field.EncodeMode
+import okio.ByteString
 
 /**
  * Creates type adapters to read and write protocol buffer data from a schema model. This doesn't
@@ -62,20 +67,24 @@ internal class SchemaProtoAdapterFactory(
       return enumAdapter
     }
     if (type is MessageType) {
-      val messageAdapter = MessageAdapter(type.type.typeUrl, type.syntax, includeUnknown)
+      val messageBinding = SchemaMessageBinding(type.type.typeUrl, type.syntax, includeUnknown)
       // Put the adapter in the map early to mitigate the recursive calls to get() made below.
+      val messageAdapter = RuntimeMessageAdapter(messageBinding)
       adapterMap[protoType] = messageAdapter
       for (field in type.fields) {
-        val fieldAdapter = Field(field.name, field.tag, field.isRepeated, get(field.type!!))
-        messageAdapter.fieldsByName[field.name] = fieldAdapter
-        messageAdapter.fieldsByTag[field.tag] = fieldAdapter
+        messageBinding.fields[field.tag] = SchemaFieldOrOneOfBinding(field, null)
+      }
+      for (oneOf in type.oneOfs) {
+        for (field in oneOf.fields) {
+          messageBinding.fields[field.tag] = SchemaFieldOrOneOfBinding(field, oneOf)
+        }
       }
       return messageAdapter as ProtoAdapter<Any>
     }
     throw IllegalArgumentException("unexpected type: $protoType")
   }
 
-  internal class EnumAdapter(
+  private class EnumAdapter(
     private val enumType: EnumType
   ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
     override fun encodedSize(value: Any): Int {
@@ -104,88 +113,93 @@ internal class SchemaProtoAdapterFactory(
     }
   }
 
-  internal class MessageAdapter(
-    typeUrl: String?,
-    syntax: Syntax,
+  private class SchemaMessageBinding(
+    override val typeUrl: String?,
+    override val syntax: Syntax,
     private val includeUnknown: Boolean
-  ) : ProtoAdapter<Map<String, Any>>(LENGTH_DELIMITED, MutableMap::class, typeUrl, syntax) {
-    @JvmField val fieldsByTag = mutableMapOf<Int, Field>()
-    @JvmField val fieldsByName = mutableMapOf<String, Field>()
+  ) : MessageBinding<Map<String, Any>, MutableMap<String, Any>> {
 
-    override fun redact(value: Map<String, Any>): Map<String, Any> {
-      throw UnsupportedOperationException()
+    override val messageType = Map::class
+
+    override val fields =
+      mutableMapOf<Int, FieldOrOneOfBinding<Map<String, Any>, MutableMap<String, Any>>>()
+
+    override fun unknownFields(message: Map<String, Any>) = ByteString.EMPTY
+
+    override fun getCachedSerializedSize(message: Map<String, Any>) = 0
+
+    override fun setCachedSerializedSize(message: Map<String, Any>, size: Int) {
     }
 
-    override fun encodedSize(value: Map<String, Any>): Int {
-      var size = 0
-      for ((key, value1) in value) {
-        val field = fieldsByName[key] ?: continue
-        // Ignore unknown values!
-        val protoAdapter = field.protoAdapter as ProtoAdapter<Any>
-        if (field.repeated) {
-          for (o in value1 as List<*>) {
-            size += protoAdapter.encodedSizeWithTag(field.tag, o)
-          }
-        } else {
-          size += protoAdapter.encodedSizeWithTag(field.tag, value1)
-        }
-      }
-      return size
+    override fun newBuilder(): MutableMap<String, Any> = mutableMapOf()
+
+    override fun build(builder: MutableMap<String, Any>) = builder.toMap()
+
+    override fun addUnknownField(
+      builder: MutableMap<String, Any>,
+      tag: Int,
+      fieldEncoding: FieldEncoding,
+      value: Any?
+    ) {
+      if (!includeUnknown|| value == null) return
+      val name = tag.toString()
+      val values = builder.getOrPut(name) { mutableListOf<Any>() } as MutableList<Any>
+      values.add(value)
     }
 
-    override fun encode(writer: ProtoWriter, value: Map<String, Any>) {
-      for ((key, value1) in value) {
-        val field = fieldsByName[key] ?: continue
-        // Ignore unknown values!
-        val protoAdapter = field.protoAdapter as ProtoAdapter<Any>
-        if (field.repeated) {
-          for (o in value1 as List<*>) {
-            protoAdapter.encodeWithTag(writer, field.tag, o)
-          }
-        } else {
-          protoAdapter.encodeWithTag(writer, field.tag, value1)
-        }
-      }
-    }
-
-    override fun decode(reader: ProtoReader): Map<String, Any> {
-      val result = mutableMapOf<String, Any>()
-      val token = reader.beginMessage()
-      while (true) {
-        val tag = reader.nextTag()
-        if (tag == -1) break
-
-        var field = fieldsByTag[tag]
-        if (field == null) {
-          field = if (includeUnknown) {
-            val name = tag.toString()
-            Field(name, tag, true, reader.peekFieldEncoding()!!.rawProtoAdapter())
-          } else {
-            reader.skip()
-            continue
-          }
-        }
-        val value = field.protoAdapter.decode(reader)!!
-        if (field.repeated) {
-          val values = result.getOrPut(field.name) { mutableListOf<Any>() } as MutableList<Any>
-          values.add(value)
-        } else {
-          result[field.name] = value
-        }
-      }
-      reader.endMessageAndGetUnknownFields(token) // Ignore return value
-      return result
-    }
-
-    override fun toString(value: Map<String, Any>): String {
-      throw UnsupportedOperationException()
+    override fun clearUnknownFields(builder: MutableMap<String, Any>) {
     }
   }
 
-  internal class Field(
-    val name: String,
-    val tag: Int,
-    val repeated: Boolean,
-    val protoAdapter: ProtoAdapter<*>
-  )
+  private inner class SchemaFieldOrOneOfBinding(
+    val field: Field,
+    val oneOf: OneOf?
+  ) : FieldOrOneOfBinding<Map<String, Any>, MutableMap<String, Any>>() {
+    override val tag: Int = field.tag
+    override val label: WireField.Label
+      get() {
+        if (oneOf != null) return WireField.Label.ONE_OF
+        return when (this.field.encodeMode!!) {
+          EncodeMode.OMIT_IDENTITY -> WireField.Label.OMIT_IDENTITY
+          EncodeMode.NULL_IF_ABSENT -> WireField.Label.OPTIONAL
+          EncodeMode.MAP, EncodeMode.PACKED, EncodeMode.REPEATED -> WireField.Label.REPEATED
+          EncodeMode.REQUIRED -> WireField.Label.REQUIRED
+        }
+      }
+
+    override val redacted: Boolean = field.isRedacted
+    override val isMap: Boolean = field.type!!.isMap
+    override val isMessage: Boolean = schema.getType(field.type!!) is MessageType
+    override val name: String = field.name
+    override val declaredName: String = field.name
+    override val wireFieldJsonName: String = field.jsonName!!
+
+    override val keyAdapter: ProtoAdapter<*>
+      get() = get(this.field.type!!.keyType!!)
+
+    override val singleAdapter: ProtoAdapter<*>
+      get() = get(this.field.type!!)
+
+    override fun value(builder: MutableMap<String, Any>, value: Any) {
+      if (isMap) {
+        val map = builder.getOrPut(field.name) { mutableMapOf<String, Any>() }
+            as MutableMap<String, Any>
+        map.putAll(value as Map<String, Any>)
+      } else if (field.isRepeated) {
+        val list = builder.getOrPut(field.name) { mutableListOf<Any>() }
+            as MutableList<Any>
+        list += value
+      } else {
+        set(builder, value)
+      }
+    }
+
+    override fun set(builder: MutableMap<String, Any>, value: Any?) {
+      builder[field.name] = value!!
+    }
+
+    override fun get(message: Map<String, Any>) = message[field.name]
+
+    override fun getFromBuilder(builder: MutableMap<String, Any>) = builder[field.name]
+  }
 }

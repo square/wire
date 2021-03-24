@@ -17,7 +17,6 @@ package com.squareup.wire.internal
 
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
-import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -30,7 +29,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   wireField: WireField,
   private val messageField: Field,
   builderType: Class<B>
-) : FieldOrOneOfBinding<M, B> {
+) : FieldOrOneOfBinding<M, B>() {
   override val label: WireField.Label = wireField.label
   override val name: String = messageField.name
   override val wireFieldJsonName: String = wireField.jsonName
@@ -43,16 +42,16 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   private val builderField = getBuilderField(builderType, name)
   private val builderMethod = getBuilderMethod(builderType, name, messageField.type)
 
-  // Delegate adapters are created lazily; otherwise we could stack overflow!
-  private var singleAdapter: ProtoAdapter<*>? = null
-  private var keyAdapter: ProtoAdapter<*>? = null
-  private var adapter: ProtoAdapter<Any>? = null
+  override val keyAdapter: ProtoAdapter<*>
+    get() = ProtoAdapter.get(keyAdapterString)
+  override val singleAdapter: ProtoAdapter<*>
+    get() = ProtoAdapter.get(adapterString)
 
   override val isMap: Boolean
     get() = keyAdapterString.isNotEmpty()
 
   override val isMessage: Boolean
-    get() = Message::class.java.isAssignableFrom(singleAdapter().type?.javaObjectType)
+    get() = Message::class.java.isAssignableFrom(singleAdapter.type?.javaObjectType)
 
   private fun getBuilderField(builderType: Class<*>, name: String): Field {
     try {
@@ -68,27 +67,6 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
     } catch (_: NoSuchMethodException) {
       throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
     }
-  }
-
-  override fun singleAdapter(): ProtoAdapter<*> {
-    return singleAdapter ?: ProtoAdapter.get(adapterString).also { singleAdapter = it }
-  }
-
-  override fun keyAdapter(): ProtoAdapter<*> {
-    return keyAdapter ?: ProtoAdapter.get(keyAdapterString).also { keyAdapter = it }
-  }
-
-  override fun adapter(): ProtoAdapter<Any> {
-    val result = adapter
-    if (result != null) return result
-    if (isMap) {
-      val keyAdapter = keyAdapter() as ProtoAdapter<Any>
-      val valueAdapter = singleAdapter() as ProtoAdapter<Any>
-      return (ProtoAdapter.newMapAdapter(keyAdapter, valueAdapter) as ProtoAdapter<Any>).also {
-        adapter = it
-      }
-    }
-    return (singleAdapter().withLabel(label) as ProtoAdapter<Any>).also { adapter = it }
   }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
@@ -140,15 +118,4 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   override operator fun get(message: M): Any? = messageField.get(message)
 
   override fun getFromBuilder(builder: B): Any? = builderField.get(builder)
-
-  override fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
-    return omitIdentity(syntax) && value == adapter().identity
-  }
-
-  private fun omitIdentity(syntax: Syntax): Boolean {
-    if (label == WireField.Label.OMIT_IDENTITY) return true
-    if (label.isRepeated && syntax == Syntax.PROTO_3) return true
-    if (isMap && syntax == Syntax.PROTO_3) return true
-    return false
-  }
 }

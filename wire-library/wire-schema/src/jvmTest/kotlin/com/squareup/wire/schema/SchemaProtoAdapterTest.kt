@@ -15,15 +15,15 @@
  */
 package com.squareup.wire.schema
 
+import java.io.EOFException
+import java.io.IOException
+import java.net.ProtocolException
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeHex
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.EOFException
-import java.io.IOException
-import java.net.ProtocolException
 
 class SchemaProtoAdapterTest {
   private val coffeeSchema = RepoBuilder()
@@ -260,7 +260,7 @@ class SchemaProtoAdapterTest {
             "right" to mapOf("value" to "G")
         )
     )
-    val encoded = "1a01440a0d1a01420a031a014112031a0143120d1a01460a031a014512031a0147".decodeHex()
+    val encoded = "0a0d0a031a014112031a01431a0142120d0a031a014512031a01471a01461a0144".decodeHex()
     assertThat(ByteString.of(*adapter.encode(value))).isEqualTo(encoded)
     assertThat(adapter.decode(Buffer().write(encoded))).isEqualTo(value)
   }

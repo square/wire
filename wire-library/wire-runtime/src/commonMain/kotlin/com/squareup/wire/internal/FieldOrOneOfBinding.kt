@@ -19,47 +19,67 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 
-interface FieldOrOneOfBinding<M, B> {
-  val tag: Int
+abstract class FieldOrOneOfBinding<M, B> {
+  abstract val tag: Int
 
-  val label: WireField.Label
+  abstract val label: WireField.Label
 
-  val redacted: Boolean
+  abstract val redacted: Boolean
 
-  val isMap: Boolean
+  abstract val isMap: Boolean
 
-  val isMessage: Boolean
+  abstract val isMessage: Boolean
 
   /**
    * The name of the field in generated code. If the declared name is a keyword like `fun`, this
    * will be a transformed name like `fun_`.
    */
-  val name: String
+  abstract val name: String
 
   /**
    * The name of the field as declared in the `.proto` file.
    */
-  val declaredName: String
+  abstract val declaredName: String
 
   /**
    * The JSON name as determined at code-generation name. This is usually camelCase even if the
    * field is declared in snake_case.
    */
-  val wireFieldJsonName: String
+  abstract val wireFieldJsonName: String
 
-  fun keyAdapter(): ProtoAdapter<*>
+  abstract val keyAdapter: ProtoAdapter<*>
 
-  fun adapter(): ProtoAdapter<Any>
+  abstract val singleAdapter: ProtoAdapter<*>
 
-  fun value(builder: B, value: Any)
+  val adapter: ProtoAdapter<Any> by lazy {
+    // Delegate adapters are created lazily; otherwise we could stack overflow!
+    if (isMap) {
+      ProtoAdapter.newMapAdapter(
+        keyAdapter as ProtoAdapter<Any>,
+        singleAdapter as ProtoAdapter<Any>
+      ) as ProtoAdapter<Any>
+    } else {
+      singleAdapter.withLabel(label) as ProtoAdapter<Any>
+    }
+  }
 
-  fun set(builder: B, value: Any?)
+  abstract fun value(builder: B, value: Any)
 
-  operator fun get(message: M): Any?
+  abstract fun set(builder: B, value: Any?)
 
-  fun getFromBuilder(builder: B): Any?
+  abstract operator fun get(message: M): Any?
 
-  fun singleAdapter(): ProtoAdapter<*>
+  abstract fun getFromBuilder(builder: B): Any?
 
-  fun omitFromJson(syntax: Syntax, value: Any?): Boolean
+  fun omitFromJson(syntax: Syntax, value: Any?): Boolean {
+    if (value == null) return true
+    return omitIdentity(syntax) && value == adapter.identity
+  }
+
+  private fun omitIdentity(syntax: Syntax): Boolean {
+    if (label == WireField.Label.OMIT_IDENTITY) return true
+    if (label.isRepeated && syntax == Syntax.PROTO_3) return true
+    if (isMap && syntax == Syntax.PROTO_3) return true
+    return false
+  }
 }

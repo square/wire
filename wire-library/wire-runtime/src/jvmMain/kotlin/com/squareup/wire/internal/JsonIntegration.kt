@@ -66,21 +66,21 @@ abstract class JsonIntegration<F, A> {
     syntax: Syntax,
     field: FieldOrOneOfBinding<M, B>
   ): A {
-    if (field.singleAdapter().isStruct) {
+    if (field.singleAdapter.isStruct) {
       return structAdapter(framework)
     }
 
-    val jsonStringAdapter = jsonFormatter(syntax, field.singleAdapter())
+    val jsonStringAdapter = jsonFormatter(syntax, field.singleAdapter)
     val singleAdapter = when {
       jsonStringAdapter != null -> formatterAdapter(jsonStringAdapter)
-      else -> frameworkAdapter(framework, field.singleAdapter().type?.javaObjectType as Type)
+      else -> frameworkAdapter(framework, field.singleAdapter.type?.javaObjectType as Type)
     }
 
     return when {
       field.label.isRepeated -> listAdapter(singleAdapter)
       field.isMap -> mapAdapter(
           framework = framework,
-          keyFormatter = mapKeyJsonFormatter(field.keyAdapter()),
+          keyFormatter = mapKeyJsonFormatter(field.keyAdapter),
           valueAdapter = singleAdapter
       )
       else -> singleAdapter
