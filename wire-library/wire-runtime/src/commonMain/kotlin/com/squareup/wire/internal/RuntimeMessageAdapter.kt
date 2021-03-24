@@ -71,7 +71,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
     var size = 0
     for (field in fields.values) {
       val fieldValue = field[value] ?: continue
-      size += field.adapter().encodedSizeWithTag(field.tag, fieldValue)
+      size += field.adapter.encodedSizeWithTag(field.tag, fieldValue)
     }
     size += binding.unknownFields(value).size
 
@@ -82,7 +82,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
   override fun encode(writer: ProtoWriter, value: M) {
     for (field in fields.values) {
       val binding = field[value] ?: continue
-      field.adapter().encodeWithTag(writer, field.tag, binding)
+      field.adapter.encodeWithTag(writer, field.tag, binding)
     }
     writer.writeBytes(binding.unknownFields(value))
   }
@@ -99,7 +99,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       if (field.redacted || isMessage && !field.label.isRepeated) {
         val builderValue = field.getFromBuilder(builder)
         if (builderValue != null) {
-          val redactedValue = field.adapter().redact(builderValue)
+          val redactedValue = field.adapter.redact(builderValue)
           field.set(builder, redactedValue)
         }
       } else if (isMessage && field.label.isRepeated) {
@@ -107,7 +107,7 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
         val values = field.getFromBuilder(builder) as List<Any>
 
         @Suppress("UNCHECKED_CAST")
-        val adapter = field.singleAdapter() as ProtoAdapter<Any>
+        val adapter = field.singleAdapter as ProtoAdapter<Any>
         field.set(builder, values.redactElements(adapter))
       }
     }
@@ -146,9 +146,9 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       try {
         if (field != null) {
           val adapter = if (field.isMap) {
-            field.adapter()
+            field.adapter
           } else {
-            field.singleAdapter()
+            field.singleAdapter
           }
           val value = adapter.decode(reader)
           field.value(builder, value!!)

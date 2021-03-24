@@ -25,7 +25,7 @@ import okio.ByteString
  * [com.squareup.wire.Message] and [com.squareup.wire.Message.Builder].
  */
 interface MessageBinding<M : Any, B : Any> {
-  val messageType: KClass<M>
+  val messageType: KClass<in M>
 
   val fields: Map<Int, FieldOrOneOfBinding<M, B>>
 
