@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 3.7.0
+-------------
+
+_2021-03-25_
+
+ * New: `srcProject(":project-name")` makes it easier to depend on `.proto` files of other projects.
+ * Fix: Don't require source that `.proto` directories exist at Gradle plugin configuration time.
+   This was preventing Wire from using other tasks' outputs as its inputs.
+ * Fix: Don't fail if options have a `.` prefix.
+
 Version 3.6.1
 -------------
 
