@@ -257,7 +257,7 @@ public final class JavaGenerator {
     this.memberToJavaName = ImmutableMap.copyOf(memberToJavaName);
     this.profile = profile;
     this.emitAndroid = emitAndroid;
-    this.emitAndroidAnnotations = emitAndroidAnnotations || emitAndroid;
+    this.emitAndroidAnnotations = emitAndroidAnnotations;
     this.emitCompact = emitCompact;
     this.emitDeclaredOptions = emitDeclaredOptions;
     this.emitAppliedOptions = emitAppliedOptions;
