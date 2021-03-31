@@ -513,9 +513,7 @@ public final class JavaGenerator {
     throw new IllegalStateException("Unknown type: " + type);
   }
 
-  /** @deprecated Use {@link #generateType(Type)} */
-  @Deprecated
-  public TypeSpec generateEnum(EnumType type) {
+  private TypeSpec generateEnum(EnumType type) {
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
     String value = nameAllocator.get("value");
     ClassName javaType = (ClassName) typeName(type.getType());
@@ -608,9 +606,7 @@ public final class JavaGenerator {
     return builder.build();
   }
 
-  /** @deprecated Use {@link #generateType(Type)} */
-  @Deprecated
-  public TypeSpec generateMessage(MessageType type) {
+  private TypeSpec generateMessage(MessageType type) {
     boolean constructorTakesAllFields = constructorTakesAllFields(type);
 
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
