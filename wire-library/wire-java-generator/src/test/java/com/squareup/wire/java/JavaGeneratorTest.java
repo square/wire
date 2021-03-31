@@ -424,7 +424,6 @@ public final class JavaGeneratorTest {
         + "        tag = 1,\n"
         + "        adapter = \"com.squareup.wire.ProtoAdapter#STRING\"\n"
         + "    )\n"
-        + "    @Nullable\n"
         + "    public final String c;")
         .contains(""
         + "public static final Parcelable.Creator<B> CREATOR = AndroidMessage.newCreator(ADAPTER)");
