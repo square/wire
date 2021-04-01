@@ -29,6 +29,8 @@ message RedactedFields {
   optional string a = 1 [(squareup.protos.kotlin.redacted_option.redacted) = true];
   optional string b = 2 [(squareup.protos.kotlin.redacted_option.redacted) = false];
   optional string c = 3;
+  string d = 4 [(squareup.protos.kotlin.redacted_option.redacted) = true];
+  string e = 5 [(squareup.protos.kotlin.redacted_option.redacted) = false];
   extensions 10 to 20;
 }
 

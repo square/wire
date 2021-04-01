@@ -1507,6 +1507,7 @@ class KotlinGenerator private constructor(
       return when {
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
+        ProtoType.STRING == type -> CodeBlock.of("")
         else -> CodeBlock.of("null")
       }
     } else if (!type!!.isScalar && !type!!.isEnum) {
