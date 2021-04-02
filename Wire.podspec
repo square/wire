@@ -1,11 +1,15 @@
+require_relative 'wire-library/wire-runtime-swift/pod_helpers.rb'
+
 Pod::Spec.new do |s|
+  version = get_version
+
   s.name          = 'Wire'
-  s.version       = "#{ENV['POD_VERSION']}"
+  s.version       = version
   s.license       = { :type => 'apache2', :file => 'LICENSE.txt' }
   s.homepage      = 'https://github.com/square/wire'
   s.authors       = { 'Eric Firestone' => '@firetweet' }
   s.summary       = 'Protocol buffers runtime for Swift.'
-  s.source        = { :git => 'https://github.com/square/wire.git', :tag => "#{ENV['POD_VERSION']}" }
+  s.source        = { :git => 'https://github.com/square/wire.git', :tag => version }
   s.module_name   = 'Wire'
   s.swift_version = '5.0'
 
