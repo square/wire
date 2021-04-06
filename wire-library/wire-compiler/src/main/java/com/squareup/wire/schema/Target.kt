@@ -331,6 +331,8 @@ data class KotlinTarget(
       }
 
       override fun handle(service: Service): List<Path> {
+        if (rpcRole === RpcRole.NONE) return emptyList()
+
         val generatedPaths = mutableListOf<Path>()
 
         if (singleMethodServices) {

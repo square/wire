@@ -447,6 +447,7 @@ wire {
 
     // `client` to generate interfaces best suited to sending outbound calls.
     // `server` to generate interfaces best suited to receiving inbound calls.
+    // `none` to not generate services.
     rpcRole = 'server'
 
     // True for emitted services to implement one interface per RPC.
