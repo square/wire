@@ -19,8 +19,53 @@ dependencies {
   wire project(':wire-compiler')
 }
 
+task generateSwiftProtos(type: JavaExec) {
+  def swiftOut = 'src/main/swift/wellknowntypes'
+  def protoPath = '../wire-schema/src/jvmMain/resources/'
+
+  doFirst {
+    def outFile = file(swiftOut)
+    outFile.deleteDir()
+    outFile.mkdir()
+  }
+
+  def includedTypes = ["Duration"].collect {
+    "google.protobuf.$it"
+  }
+
+  classpath = configurations.wire
+  main = 'com.squareup.wire.WireCompiler'
+  args = [
+    "--proto_path=$protoPath",
+    "--swift_out=$swiftOut",
+    "--includes=${includedTypes.join(",")}",
+    "--excludes=google.protobuf.*"
+  ]
+
+  // TODO(kcianfarini) this is a workaround for https://github.com/square/wire/issues/1928
+  doLast {
+    def file = [
+      "EnumOptions.swift",
+      "EnumValueOptions.swift",
+      "FieldOptions.swift",
+      "FileOptions.swift",
+      "MessageOptions.swift",
+      "MethodOptions.swift",
+      "ServiceOptions.swift"
+    ]
+
+    def actualFiles = file.collect {
+      "wire-library/wire-runtime-swift/src/main/swift/wellknowntypes/" + it
+    }
+
+    actualFiles.each {new File(it).delete() }
+  }
+}
+
 task generateTestProtos(type: JavaExec) {
   def swiftOut = 'src/test/swift/gen'
+  def protoPath = 'src/test/proto'
+
   doFirst {
     def outFile = file(swiftOut)
     outFile.deleteDir()
@@ -30,14 +75,21 @@ task generateTestProtos(type: JavaExec) {
   classpath = configurations.wire
   main = 'com.squareup.wire.WireCompiler'
   args = [
-      '--proto_path=src/test/proto',
-      "--swift_out=$swiftOut"
+    "--proto_path=$protoPath",
+    "--swift_out=$swiftOut"
   ]
 }
 
 // TODO make finding test tasks more dynamic
 afterEvaluate {
-  tasks.named('compileTestSwift').configure {
+  def swiftTasks = ["compileDebugSwift", "compileReleaseSwift"]
+  swiftTasks.each {task ->
+    tasks.named(task).configure {
+      it.dependsOn(generateSwiftProtos)
+    }
+  }
+
+  tasks.named("compileTestSwift").configure {
     it.dependsOn(generateTestProtos)
   }
 }

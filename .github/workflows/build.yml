@@ -61,7 +61,9 @@ jobs:
 
       - name: Check test files
         run: |
+          sudo xcode-select -switch "/Applications/Xcode_12.app"
           ./gradlew clean generateTests
+          ./gradlew -p wire-library/wire-runtime-swift build
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Install Chrome
