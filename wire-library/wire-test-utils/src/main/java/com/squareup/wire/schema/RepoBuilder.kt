@@ -25,12 +25,12 @@ import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import okio.buffer
+import okio.source
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.Files
-import okio.buffer
-import okio.source
 
 /**
  * Builds a repository of `.proto` and `.wire` files to create schemas, profiles, and adapters for
@@ -143,6 +143,8 @@ class RepoBuilder {
     rpcRole: RpcRole = RpcRole.CLIENT,
     profileName: String? = null
   ): List<String> {
+    if (rpcRole === RpcRole.NONE) return emptyList()
+
     val schema = schema()
     val grpcGenerator = KotlinGenerator(
         schema = schema,

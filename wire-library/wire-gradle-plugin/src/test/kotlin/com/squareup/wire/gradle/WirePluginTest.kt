@@ -649,10 +649,24 @@ class WirePluginTest {
     val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output)
-        .contains("Writing com.squareup.dinosaurs.GrpcBattleServiceClient")
+      .contains("Writing com.squareup.dinosaurs.GrpcBattleServiceClient")
 
     val outputRoot = File(fixtureRoot, "build/generated/source/wire")
     assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
+  }
+
+  @Test
+  fun dontEmitServiceIfRoleIsNone() {
+    val fixtureRoot = File("src/test/projects/emit-service-none")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull
+    assertThat(result.output).doesNotContain("Service")
+
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).doesNotExist()
   }
 
   @Test
