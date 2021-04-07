@@ -20,4 +20,5 @@ dependencies {
   implementation deps.jimfs
   implementation deps.junit
   implementation deps.okio.jvm
+  implementation deps.okio.fakefilesystem
 }

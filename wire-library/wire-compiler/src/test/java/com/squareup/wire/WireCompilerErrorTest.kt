@@ -15,29 +15,27 @@
  */
 package com.squareup.wire
 
-import com.google.common.jimfs.Configuration
-import com.google.common.jimfs.Jimfs
 import com.squareup.wire.schema.SchemaException
-import okio.buffer
-import okio.source
+import kotlin.test.assertFailsWith
+import okio.Path.Companion.toPath
+import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.nio.charset.StandardCharsets.UTF_8
-import java.nio.file.Files
-import kotlin.test.assertFailsWith
 
 class WireCompilerErrorTest {
-  private var fileSystem = Jimfs.newFileSystem(Configuration.unix())
+  private var fileSystem = FakeFileSystem()
 
   /**
    * Compile a .proto containing in a String and returns the contents of each output file,
    * indexed by class name.
    */
   private fun compile(source: String) {
-    val test = fileSystem.getPath("/source/test.proto")
-    Files.createDirectory(fileSystem.getPath("/source"))
-    Files.createDirectory(fileSystem.getPath("/target"))
-    Files.write(test, source.toByteArray(UTF_8))
+    val test = "/source/test.proto".toPath()
+    fileSystem.createDirectory("/source".toPath())
+    fileSystem.createDirectory("/target".toPath())
+    fileSystem.write(test) {
+      writeUtf8(source)
+    }
 
     val compiler = WireCompiler.forArgs(fileSystem, StringWireLogger(),
         "--proto_path=/source", "--java_out=/target", "test.proto")
@@ -152,8 +150,8 @@ class WireCompilerErrorTest {
   }
 
   private fun readFile(path: String): String {
-    return fileSystem.getPath(path).source().buffer().use {
-      it.readUtf8()
+    return fileSystem.read(path.toPath()) {
+      readUtf8()
     }
   }
 }

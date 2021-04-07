@@ -22,8 +22,9 @@ import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 import java.io.Closeable
 import java.io.IOException
-import java.nio.file.FileSystem
 import java.util.ArrayDeque
+import okio.FileSystem
+import java.nio.file.FileSystem as NioFileSystem
 
 /**
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
@@ -52,6 +53,8 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
 
   /** Keys are a [Location.base]; values are the roots that those locations loaded from. */
   private val baseToRoots: MutableMap<String, List<Root>>
+
+  constructor(fileSystem: NioFileSystem) : this(fileSystem.toOkioFileSystem())
 
   constructor(fileSystem: FileSystem) {
     this.fileSystem = fileSystem

@@ -15,8 +15,7 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.jimfs.Configuration
-import com.google.common.jimfs.Jimfs
+import okio.fakefilesystem.FakeFileSystem
 import com.squareup.javapoet.ClassName
 import com.squareup.wire.java.AdapterConstant
 import com.squareup.wire.java.Profile
@@ -28,7 +27,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 
 class ProfileLoaderTest {
-  private val fs = Jimfs.newFileSystem(Configuration.unix())
+  private val fs = FakeFileSystem()
 
   @Test @Throws(IOException::class)
   fun test() {

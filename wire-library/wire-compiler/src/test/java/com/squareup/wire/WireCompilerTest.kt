@@ -15,6 +15,10 @@
  */
 package com.squareup.wire
 
+import java.io.File
+import java.util.ArrayList
+import java.util.Collections
+import okio.FileSystem
 import okio.buffer
 import okio.source
 import org.assertj.core.api.Assertions.assertThat
@@ -22,10 +26,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-import java.nio.file.FileSystems
-import java.util.ArrayList
-import java.util.Collections
 
 class WireCompilerTest {
   @Rule @JvmField val temp = TemporaryFolder()
@@ -599,7 +599,7 @@ class WireCompilerTest {
     Collections.addAll(args, *sources)
 
     logger = StringWireLogger()
-    val fs = FileSystems.getDefault()
+    val fs = FileSystem.SYSTEM
     val compiler = WireCompiler.forArgs(fs, logger!!, *args.toTypedArray())
     compiler.compile()
   }

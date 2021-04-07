@@ -16,8 +16,7 @@
 package com.squareup.wire.schema
 
 import com.google.common.io.Closer
-import com.google.common.jimfs.Configuration
-import com.google.common.jimfs.Jimfs
+import okio.fakefilesystem.FakeFileSystem
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import org.assertj.core.api.Assertions.assertThat
@@ -26,7 +25,7 @@ import org.junit.Test
 import kotlin.test.assertFailsWith
 
 class RootTest {
-  private val fs = Jimfs.newFileSystem(Configuration.unix())
+  private val fs = FakeFileSystem()
   private val closer = Closer.create()
 
   @After fun tearDown() {

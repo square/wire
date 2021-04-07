@@ -15,15 +15,14 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.jimfs.Configuration
-import com.google.common.jimfs.Jimfs
+import okio.fakefilesystem.FakeFileSystem
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.exists
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class OptionsLinkingTest {
-  private val fs = Jimfs.newFileSystem(Configuration.unix())
+  private val fs = FakeFileSystem()
 
   @Test
   fun extensionOnTheSourcePathIsApplied() {

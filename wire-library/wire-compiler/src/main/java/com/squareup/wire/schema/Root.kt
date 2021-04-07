@@ -20,23 +20,11 @@ import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.java.internal.ProfileParser
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoParser
-import okio.BufferedSource
-import okio.ByteString.Companion.decodeHex
-import okio.Options
-import okio.buffer
-import okio.source
 import java.io.IOException
-import java.nio.charset.Charset
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
-import java.nio.file.FileVisitOption
-import java.nio.file.FileVisitResult
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.nio.file.ProviderNotFoundException
-import java.nio.file.SimpleFileVisitor
-import java.nio.file.attribute.BasicFileAttributes
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
+import okio.zipfilesystem.ZipFileSystem.Companion.openZip
 
 internal sealed class Root {
   abstract val base: String?
@@ -61,7 +49,7 @@ internal fun Location.roots(
 ): List<Root> {
   if (isWireRuntimeProto(this)) {
     // Handle descriptor.proto, etc. by returning a placeholder path.
-    return listOf(ProtoFilePath(this, Paths.get(path)))
+    return listOf(ProtoFilePath(this, fs, path.toPath()))
   } else if (base.isNotEmpty()) {
     val roots = baseToRoots.computeIfAbsent(base) {
       Location.get(it).roots(fs, closer)
@@ -72,33 +60,33 @@ internal fun Location.roots(
     }
     throw IllegalArgumentException("unable to resolve $this")
   } else {
-    val path = fs.getPath(path)
+    val path = path.toPath()
     return baseToRoots.computeIfAbsent(this.path) {
-      path.roots(closer, this)
+      path.roots(fs, closer, this)
     }
   }
 }
 
 /** Returns this path's roots. */
-private fun Path.roots(closer: Closer, location: Location): List<Root> {
+private fun Path.roots(fileSystem: FileSystem, closer: Closer, location: Location): List<Root> {
   return when {
-    Files.isDirectory(this) -> {
+    fileSystem.metadataOrNull(this)?.isDirectory == true -> {
       check(location.base.isEmpty())
-      listOf(DirectoryRoot(location.path, this))
+      listOf(DirectoryRoot(location.path, fileSystem, this))
     }
 
-    endsWithDotProto() -> listOf(ProtoFilePath(location, this))
+    endsWithDotProto() -> listOf(ProtoFilePath(location, fileSystem, this))
 
     // Handle a .zip or .jar file by adding all .proto files within.
     else -> {
-      check(location.base.isEmpty())
       try {
-        val sourceFs = FileSystems.newFileSystem(this, javaClass.classLoader)
-        closer.register(sourceFs)
-        sourceFs.rootDirectories.map { DirectoryRoot(location.path, it) }
-      } catch (e: ProviderNotFoundException) {
+        check(location.base.isEmpty())
+        val sourceFs = fileSystem.openZip(this)
+        // TODO(jwilson): register the ZipFileSystem with closer if Okio 3.0 makes that a requirement.
+        listOf(DirectoryRoot(location.path, sourceFs, "/".toPath()))
+      } catch (_: IOException) {
         throw IllegalArgumentException(
-            "expected a directory, archive (.zip / .jar / etc.), or .proto: $this")
+          "expected a directory, archive (.zip / .jar / etc.), or .proto: $this")
       }
     }
   }
@@ -110,6 +98,7 @@ private fun Path.roots(closer: Closer, location: Location): List<Root> {
  */
 internal class ProtoFilePath(
   val location: Location,
+  val fileSystem: FileSystem,
   val path: Path
 ) : Root() {
   override val base: String?
@@ -130,9 +119,9 @@ internal class ProtoFilePath(
    */
   fun parse(): ProtoFile {
     try {
-      path.source().buffer().use { source ->
-        val charset = source.readBomAsCharset()
-        val data = source.readString(charset)
+      fileSystem.read(path) {
+        val charset = readBomAsCharset()
+        val data = readString(charset)
         val element = ProtoParser.parse(location, data)
         return ProtoFile.get(element)
       }
@@ -143,10 +132,9 @@ internal class ProtoFilePath(
 
   fun parseProfile(): ProfileFileElement {
     try {
-      path.source().buffer().use { source ->
-        val data = source.readUtf8()
-        val element = ProfileParser(location, data).read()
-        return element
+      fileSystem.read(path) {
+        val data = readUtf8()
+        return ProfileParser(location, data).read()
       }
     } catch (e: IOException) {
       throw IOException("Failed to load $path", e)
@@ -160,51 +148,27 @@ internal class DirectoryRoot(
   /** The location of either a directory or .zip file. */
   override val base: String,
 
+  val fileSystem: FileSystem,
+
   /** The root to search. If this is a .zip file this is within its internal file system. */
   val rootDirectory: Path
 ) : Root() {
   override fun allProtoFiles(): Set<ProtoFilePath> {
     val result = mutableSetOf<ProtoFilePath>()
-    Files.walkFileTree(rootDirectory, setOf(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
-        object : SimpleFileVisitor<Path>() {
-          override fun visitFile(descendant: Path, attrs: BasicFileAttributes): FileVisitResult {
-            if (descendant.endsWithDotProto()) {
-              val location = Location.get(base, "${rootDirectory.relativize(descendant)}")
-              result.add(ProtoFilePath(location, descendant))
-            }
-            return FileVisitResult.CONTINUE
-          }
-        })
+    fileSystem.visitAll(rootDirectory) { descendant ->
+      if (descendant.endsWithDotProto()) {
+        val location = Location.get(base, rootDirectory.relativize(descendant))
+        result.add(ProtoFilePath(location, fileSystem, descendant))
+      }
+    }
     return result
   }
 
   override fun resolve(import: String): ProtoFilePath? {
-    val resolved = rootDirectory.resolve(import)
-    if (!Files.exists(resolved)) return null
-    return ProtoFilePath(Location.get(base, import), resolved)
+    val resolved = rootDirectory / import
+    if (!fileSystem.exists(resolved)) return null
+    return ProtoFilePath(Location.get(base, import), fileSystem, resolved)
   }
 
   override fun toString(): String = base
-}
-
-private fun Path.endsWithDotProto() = fileName.toString().endsWith(".proto")
-
-private val UNICODE_BOMS = Options.of(
-    "efbbbf".decodeHex(), // UTF-8
-    "feff".decodeHex(), // UTF-16BE
-    "fffe".decodeHex(), // UTF-16LE
-    "0000ffff".decodeHex(), // UTF-32BE
-    "ffff0000".decodeHex() // UTF-32LE
-)
-
-private fun BufferedSource.readBomAsCharset(default: Charset = Charsets.UTF_8): Charset {
-  return when (select(UNICODE_BOMS)) {
-    0 -> Charsets.UTF_8
-    1 -> Charsets.UTF_16BE
-    2 -> Charsets.UTF_16LE
-    3 -> Charsets.UTF_32BE
-    4 -> Charsets.UTF_32LE
-    -1 -> default
-    else -> throw AssertionError()
-  }
 }

@@ -9,7 +9,7 @@ ext.versions = [
   'kotlinpoet': '1.7.2',
   'jsr305': '3.0.2',
   'kotlin': '1.4.10',
-  'okio': '2.8.0',
+  'okio': '3.0.0-alpha.3',
   'okhttp': '4.2.2',
   'moshi': '1.11.0',
   'protobuf': '3.13.0',
@@ -41,7 +41,9 @@ ext.deps = [
   'guava': "com.google.guava:guava:${versions.guava}",
   'okio': [
     'jvm': "com.squareup.okio:okio:${versions.okio}",
+    'fakefilesystem': "com.squareup.okio:okio-fakefilesystem:${versions.okio}",
     'multiplatform': "com.squareup.okio:okio-multiplatform:${versions.okio}",
+    'zipfilesystem': "com.squareup.okio:okio-zipfilesystem:${versions.okio}",
   ],
   'jsr305': "com.google.code.findbugs:jsr305:${versions.jsr305}",
   'grpc': [
