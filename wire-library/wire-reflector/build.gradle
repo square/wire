@@ -51,3 +51,23 @@ task generateReflectionProtos(type: JavaExec) {
 compileKotlinJvm {
   dependsOn generateReflectionProtos
 }
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'wire-reflector')
+  }
+}
+
+apply from: "$rootDir/gradle/gradle-mvn-mpp-push.gradle"
+
+publishing {
+  // Use default artifact name for the JVM target
+  publications {
+    kotlinMultiplatform {
+      artifactId = 'wire-reflector-multiplatform'
+    }
+    jvm {
+      artifactId = 'wire-reflector'
+    }
+  }
+}
