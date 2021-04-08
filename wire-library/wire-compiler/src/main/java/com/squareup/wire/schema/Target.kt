@@ -26,11 +26,11 @@ import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftGenerator
-import java.io.IOException
-import java.io.Serializable
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
+import java.io.IOException
+import java.io.Serializable
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 sealed class Target : Serializable {
@@ -57,6 +57,11 @@ sealed class Target : Serializable {
    * to cause multiple outputs to be emitted for the same input type.
    */
   abstract val exclusive: Boolean
+
+  /**
+   * Directory where this target will write its output.
+   */
+  abstract val outDirectory: String
 
   /**
    * @param moduleName The module name for source generation which should correspond to a
@@ -153,7 +158,7 @@ data class JavaTarget(
 
   override val exclusive: Boolean = true,
 
-  val outDirectory: String,
+  override val outDirectory: String,
 
   /** True for emitted types to implement `android.os.Parcelable`. */
   val android: Boolean = false,
@@ -255,7 +260,7 @@ data class KotlinTarget(
 
   override val exclusive: Boolean = true,
 
-  val outDirectory: String,
+  override val outDirectory: String,
 
   /** True for emitted types to implement `android.os.Parcelable`. */
   val android: Boolean = false,
@@ -400,7 +405,7 @@ data class SwiftTarget(
   override val includes: List<String> = listOf("*"),
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
-  val outDirectory: String
+  override val outDirectory: String
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -454,7 +459,7 @@ data class SwiftTarget(
 }
 
 data class ProtoTarget(
-  val outDirectory: String
+  override val outDirectory: String
 ) : Target() {
   override val includes: List<String> = listOf()
   override val excludes: List<String> = listOf()
@@ -518,6 +523,7 @@ data class NullTarget(
   override val excludes: List<String> = listOf()
 ) : Target() {
   override val exclusive: Boolean = true
+  override val outDirectory = ""
 
   override fun newHandler(
     schema: Schema,
@@ -554,7 +560,7 @@ data class CustomTargetBeta(
   override val includes: List<String> = listOf("*"),
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
-  val outDirectory: String,
+  override val outDirectory: String,
   /**
    * A fully qualified class name for a class that implements [CustomHandlerBeta]. The class must
    * have a no-arguments public constructor.
