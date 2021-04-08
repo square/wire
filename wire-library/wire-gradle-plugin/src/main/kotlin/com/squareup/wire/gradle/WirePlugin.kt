@@ -16,6 +16,8 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
+import com.squareup.wire.gradle.internal.libraryProtoOutputPath
+import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.sourceRoots
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
@@ -96,7 +98,7 @@ class WirePlugin : Plugin<Project> {
     }
 
     if (extension.protoLibrary) {
-      val libraryProtoSources = File("${buildDir}/wire/proto-sources")
+      val libraryProtoSources = File(project.libraryProtoOutputPath())
       val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
       sourceSets.getByName("main") { main: SourceSet ->
         main.resources.srcDir(libraryProtoSources)
@@ -122,18 +124,11 @@ class WirePlugin : Plugin<Project> {
 
     for (output in outputs) {
       if (output.out == null) {
-        output.out = "${project.buildDir}/generated/source/wire"
+        output.out = project.targetDefaultOutputPath()
       } else {
         output.out = project.file(output.out!!).path
       }
     }
-    val generatedSourcesDirectories = outputs.map { output -> File(output.out!!) }.toSet()
-    // TODO(benoit) Do we want to delete all output directories? It creates problem if protos are
-    //  generated in a shared folder BUT there would no be any forgotten code left over code when
-    //  the proto schema shrinks.
-    // for (generatedSourcesDirectory in generatedSourcesDirectories) {
-    //   generatedSourcesDirectory.deleteRecursively()
-    // }
 
     val sourceInput = WireInput(project.configurations.named("protoSource"))
     sourceInput.addTrees(project, extension.sourceTrees)
@@ -159,6 +154,7 @@ class WirePlugin : Plugin<Project> {
     val projectDependencies = (sourceInput.dependencies + protoInput.dependencies)
       .filterIsInstance<ProjectDependency>()
 
+    val generatedSourcesDirectories = outputs.map { output -> File(output.out!!) }.toSet()
     val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
     for (generatedSourcesDirectory in generatedSourcesDirectories) {
       common?.sourceDirectorySet

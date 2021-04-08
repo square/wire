@@ -131,6 +131,12 @@ open class WireTask : SourceTask() {
         targets = targets,
         permitPackageCycles = permitPackageCycles
     )
+
+    for (target in targets) {
+      if (target.outDirectory.startsWith(project.buildDir.path)) {
+        File(target.outDirectory).deleteRecursively()
+      }
+    }
     wireRun.execute()
   }
 
