@@ -61,9 +61,7 @@ jobs:
 
       - name: Check test files
         run: |
-          sudo xcode-select -switch "/Applications/Xcode_12.app"
           ./gradlew clean generateTests
-          ./gradlew -p wire-library/wire-runtime-swift build
           if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
 
       - name: Install Chrome
@@ -71,14 +69,47 @@ jobs:
           brew update
           brew install google-chrome
 
-      # See https://github.com/square/wire/issues/1875
-      - name: Use Xcode 12.0 for swift tests
-        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
-
       - name: Test
         run: |
-          ./gradlew -p wire-library build
+          ./gradlew -p wire-library build -Pswift=false
           ./gradlew build
+
+  swift:
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Configure JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+      - name: Setup XCode
+        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
+
+      - name: Test Swift Runtime
+        # This builds the wire-swift-runtime, verifies that generated protos match what's
+        # currently checked into the repo both for the runtime itself and for its tests, and runs
+        # the tests.
+        run: |
+          ./gradlew -p wire-library :wire-runtime-swift:build
+          if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos?"; exit 1; fi
+
+      - name: Generate Swift from golden proto files
+        # This compiles the golden proto files into Swift files and
+        # ensures that those outputs match what's currently checked into the repo.
+        # These generated files are compiled during the wire-tests-swift build but should still be
+        # reviewed manually.
+        # Finally, run the associated unit tests.
+        run: |
+          ./gradlew generateSwiftTests
+          if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nGenerated files changed. Did you run ./gradlew generateSwiftProtos and generateSwiftTests?"; exit 1; fi
+          ./gradlew -p wire-library :wire-tests-swift:build
 
   publish:
     runs-on: macOS-latest
