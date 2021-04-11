@@ -10,6 +10,7 @@ import com.squareup.wire.ProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.Boolean
+import kotlin.Deprecated
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
@@ -17,6 +18,7 @@ import kotlin.Unit
 import kotlin.jvm.JvmField
 import okio.ByteString
 
+@Deprecated(message = "NoFields is deprecated")
 public class NoFields(
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<NoFields, NoFields.Builder>(ADAPTER, unknownFields) {

@@ -20,5 +20,7 @@ option java_package = "com.squareup.foobar.protos.foo";
 import "bar.proto";
 
 message Foo {
+  option deprecated = true;
+
   optional Bar.Baz.Moo moo = 1;
 }

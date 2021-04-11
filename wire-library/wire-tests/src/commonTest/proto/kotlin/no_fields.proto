@@ -18,4 +18,5 @@ package squareup.protos.kotlin;
 option java_package = "com.squareup.wire.protos.kotlin";
 
 message NoFields {
+  option deprecated = true;
 }
