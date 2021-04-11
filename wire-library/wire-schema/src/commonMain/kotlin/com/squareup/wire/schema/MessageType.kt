@@ -24,6 +24,7 @@ import com.squareup.wire.schema.Field.Companion.retainLinked
 import com.squareup.wire.schema.Field.Companion.toElements
 import com.squareup.wire.schema.OneOf.Companion.fromElements
 import com.squareup.wire.schema.OneOf.Companion.toElements
+import com.squareup.wire.schema.Options.Companion.MESSAGE_OPTIONS
 import com.squareup.wire.schema.Reserved.Companion.fromElements
 import com.squareup.wire.schema.Reserved.Companion.toElements
 import com.squareup.wire.schema.internal.parser.MessageElement
@@ -44,6 +45,11 @@ data class MessageType(
   override val options: Options,
   override val syntax: Syntax
 ) : Type() {
+  private var deprecated: Any? = null
+
+  val isDeprecated: Boolean
+    get() = "true" == deprecated
+
   @get:JvmName("fields")
   val fields get() = declaredFields + extensionFields
 
@@ -127,6 +133,8 @@ data class MessageType(
       oneOf.linkOptions(linker, syntaxRules, validate)
     }
     options.link(linker, location, validate)
+
+    deprecated = options.get(DEPRECATED)
   }
 
   override fun validate(linker: Linker, syntaxRules: SyntaxRules) {
@@ -160,20 +168,22 @@ data class MessageType(
 
     val retainedOneOfs = oneOfs.mapNotNull { it.retainAll(schema, markSet, type) }
 
-    return MessageType(
-        type = type,
-        location = location,
-        documentation = documentation,
-        name = name,
-        declaredFields = retainAll(schema, markSet, type, declaredFields),
-        extensionFields = retainAll(schema, markSet, type, extensionFields).toMutableList(),
-        oneOfs = retainedOneOfs,
-        nestedTypes = retainedNestedTypes,
-        extensionsList = extensionsList,
-        reserveds = reserveds,
-        options = options.retainAll(schema, markSet),
-        syntax = syntax
+    val result = MessageType(
+      type = type,
+      location = location,
+      documentation = documentation,
+      name = name,
+      declaredFields = retainAll(schema, markSet, type, declaredFields),
+      extensionFields = retainAll(schema, markSet, type, extensionFields).toMutableList(),
+      oneOfs = retainedOneOfs,
+      nestedTypes = retainedNestedTypes,
+      extensionsList = extensionsList,
+      reserveds = reserveds,
+      options = options.retainAll(schema, markSet),
+      syntax = syntax
     )
+    result.deprecated = deprecated
+    return result
   }
 
   override fun retainLinked(linkedTypes: Set<ProtoType>): Type? {
@@ -223,6 +233,8 @@ data class MessageType(
   }
 
   companion object {
+    internal val DEPRECATED = ProtoMember.get(MESSAGE_OPTIONS, "deprecated")
+
     @JvmStatic fun fromElement(
       packageName: String?,
       protoType: ProtoType,

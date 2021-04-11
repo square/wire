@@ -1348,6 +1348,90 @@ class KotlinGeneratorTest {
       repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", profileName = "java"))
   }
 
+  @Test fun deprecatedEnum() {
+    val repoBuilder = RepoBuilder()
+      .add(
+        "proto_package/person.proto", """
+         |package proto_package;
+         |enum Direction {
+         |  option deprecated = true;
+         |  NORTH = 1;
+         |  EAST = 2;
+         |  SOUTH = 3;
+         |  WEST = 4;
+         |}
+         |""".trimMargin()
+      )
+    val code = repoBuilder.generateKotlin("proto_package.Direction")
+    assertThat(code).contains(
+      """|@Deprecated(message = "Direction is deprecated")
+         |public enum class Direction(
+         """.trimMargin()
+    )
+  }
+
+  @Test fun deprecatedEnumConstant() {
+    val repoBuilder = RepoBuilder()
+      .add(
+        "proto_package/person.proto", """
+        |package proto_package;
+        |enum Direction {
+        |  NORTH = 1;
+        |  EAST = 2 [deprecated = true];
+        |  SOUTH = 3;
+        |  WEST = 4;
+        |}
+        |""".trimMargin()
+      )
+    val code = repoBuilder.generateKotlin("proto_package.Direction")
+    assertThat(code).contains(
+      """|  @Deprecated(message = "EAST is deprecated")
+         |  EAST(2),
+         """.trimMargin()
+    )
+  }
+
+  @Test fun deprecatedField() {
+    val repoBuilder = RepoBuilder()
+      .add(
+        "proto_package/person.proto", """
+        |package proto_package;
+        |message Person {
+        |  optional string name = 1 [deprecated = true];
+        |}
+        |""".trimMargin()
+      )
+    val code = repoBuilder.generateKotlin("proto_package.Person")
+    assertThat(code).contains(
+      """|  @Deprecated(message = "name is deprecated")
+         |  @field:WireField(
+         |    tag = 1,
+         |    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+         |  )
+         |  public val name: String? = null,
+         """.trimMargin()
+    )
+  }
+
+  @Test fun deprecatedMessage() {
+    val repoBuilder = RepoBuilder()
+      .add(
+        "proto_package/person.proto", """
+        |package proto_package;
+        |message Person {
+        |  option deprecated = true;
+        |  optional string name = 1;
+        |}
+        |""".trimMargin()
+      )
+    val code = repoBuilder.generateKotlin("proto_package.Person")
+    assertThat(code).contains(
+      """|@Deprecated(message = "Person is deprecated")
+         |public class Person(
+         """.trimMargin()
+    )
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

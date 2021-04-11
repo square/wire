@@ -466,6 +466,11 @@ class KotlinGenerator private constructor(
           for (annotation in optionAnnotations(type.options)) {
             addAnnotation(annotation)
           }
+          if (type.isDeprecated) {
+            addAnnotation(AnnotationSpec.builder(Deprecated::class)
+              .addMember("message = %S", "${className.simpleName} is deprecated")
+              .build())
+          }
           if (emitKotlinSerialization) {
             addAnnotation(AnnotationSpec.builder(SERIALIZABLE)
                 .build())
@@ -1651,6 +1656,11 @@ class KotlinGenerator private constructor(
           }
           for (annotation in optionAnnotations(enum.options)) {
             addAnnotation(annotation)
+          }
+          if (enum.isDeprecated) {
+            addAnnotation(AnnotationSpec.builder(Deprecated::class)
+              .addMember("message = %S", "${type.simpleName} is deprecated")
+              .build())
           }
         }
         .addSuperinterface(WireEnum::class)

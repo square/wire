@@ -607,4 +607,56 @@ public final class JavaGeneratorTest {
     assertThat(code).contains("package city_package");
     assertThat(code).contains("import wire_package.Person");
   }
+
+  @Test public void deprecatedEnum() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("proto_package/person.proto",
+            "package proto_package;\n"
+                + "enum Direction {\n"
+                + "  option deprecated = true;\n"
+                + "  NORTH = 1;\n"
+                + "  EAST = 2;\n"
+                + "  SOUTH = 3;\n"
+                + "  WEST = 4;\n"
+                + "}\n");
+    String code = repoBuilder.generateCode("proto_package.Direction");
+    assertThat(code).contains("@Deprecated\npublic enum Direction");
+  }
+
+  @Test public void deprecatedEnumConstant() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("proto_package/person.proto",
+            "package proto_package;\n"
+                + "enum Direction {\n"
+                + "  NORTH = 1;\n"
+                + "  EAST = 2 [deprecated = true];\n"
+                + "  SOUTH = 3;\n"
+                + "  WEST = 4;\n"
+                + "}\n");
+    String code = repoBuilder.generateCode("proto_package.Direction");
+    assertThat(code).contains("  @Deprecated\n  EAST(2)");
+  }
+
+  @Test public void deprecatedField() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("proto_package/person.proto",
+            "package proto_package;\n"
+                + "message Person {\n"
+                + "  optional string name = 1 [deprecated = true];\n"
+                + "}\n");
+    String code = repoBuilder.generateCode("proto_package.Person");
+    assertThat(code).contains("  @Deprecated\n  public final String name;");
+  }
+
+  @Test public void deprecatedMessage() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("proto_package/person.proto",
+            "package proto_package;\n"
+                + "message Person {\n"
+                + "  option deprecated = true;\n"
+                + "  optional string name = 1;\n"
+                + "}\n");
+    String code = repoBuilder.generateCode("proto_package.Person");
+    assertThat(code).contains("@Deprecated\npublic final class Person");
+  }
 }
