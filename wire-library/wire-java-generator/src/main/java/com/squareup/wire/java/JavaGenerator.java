@@ -500,11 +500,9 @@ public final class JavaGenerator {
       return generateAdapterForCustomType(type);
     }
     if (type instanceof MessageType) {
-      //noinspection deprecation: Only deprecated as a public API.
       return generateMessage((MessageType) type);
     }
     if (type instanceof EnumType) {
-      //noinspection deprecation: Only deprecated as a public API.
       return generateEnum((EnumType) type);
     }
     if (type instanceof EnclosingType) {
@@ -528,6 +526,10 @@ public final class JavaGenerator {
 
     for (AnnotationSpec annotation : optionAnnotations(type.getOptions())) {
       builder.addAnnotation(annotation);
+    }
+
+    if (type.isDeprecated()) {
+      builder.addAnnotation(Deprecated.class);
     }
 
     // Output Private tag field
@@ -627,6 +629,10 @@ public final class JavaGenerator {
 
     for (AnnotationSpec annotation : optionAnnotations(type.getOptions())) {
       builder.addAnnotation(annotation);
+    }
+
+    if (type.isDeprecated()) {
+      builder.addAnnotation(Deprecated.class);
     }
 
     ClassName messageType = emitAndroid ? ANDROID_MESSAGE : MESSAGE;

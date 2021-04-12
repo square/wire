@@ -31,10 +31,15 @@ data class EnumType(
 ) : Type() {
   private var allowAlias: Any? = null
 
+  private var deprecated: Any? = null
+
   override val nestedTypes: List<Type>
     get() = emptyList() // Enums do not allow nested type declarations.
 
   fun allowAlias() = "true" == allowAlias
+
+  val isDeprecated: Boolean
+    get() = "true" == deprecated
 
   /** Returns the constant named `name`, or null if this enum has no such constant.  */
   fun constant(name: String) = constants.find { it.name == name }
@@ -51,6 +56,7 @@ data class EnumType(
       constant.linkOptions(linker, validate)
     }
     allowAlias = options.get(ALLOW_ALIAS)
+    deprecated = options.get(DEPRECATED)
   }
 
   override fun validate(linker: Linker, syntaxRules: SyntaxRules) {
@@ -162,6 +168,7 @@ data class EnumType(
 
   companion object {
     internal val ALLOW_ALIAS = ProtoMember.get(ENUM_OPTIONS, "allow_alias")
+    internal val DEPRECATED = ProtoMember.get(ENUM_OPTIONS, "deprecated")
 
     @JvmStatic
     fun fromElement(
