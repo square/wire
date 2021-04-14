@@ -19,6 +19,8 @@ import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.sourceRoots
+import com.squareup.wire.schema.JavaTarget
+import com.squareup.wire.schema.KotlinTarget
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import org.gradle.api.Plugin
@@ -157,14 +159,20 @@ class WirePlugin : Plugin<Project> {
     val generatedSourcesDirectories = outputs.map { output -> File(output.out!!) }.toSet()
     val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
     for (generatedSourcesDirectory in generatedSourcesDirectories) {
-      common?.sourceDirectorySet
+      common?.kotlinSourceDirectorySet
         ?.srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
     }
     sources.forEach { source ->
       if (common == null) {
+        // TODO: pair up generatedSourceDirectories with their targets so we can be precise.
         for (generatedSourcesDirectory in generatedSourcesDirectories) {
-          source.sourceDirectorySet
-            .srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
+          val relativePath = generatedSourcesDirectory.toRelativeString(project.projectDir)
+          if (targets.any { it is JavaTarget }) {
+            source.javaSourceDirectorySet?.srcDir(relativePath)
+          }
+          if (targets.any { it is KotlinTarget }) {
+            source.kotlinSourceDirectorySet?.srcDir(relativePath)
+          }
         }
       }
 
