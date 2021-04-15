@@ -9,7 +9,7 @@ ext.versions = [
   'kotlinpoet': '1.7.2',
   'jsr305': '3.0.2',
   'kotlin': '1.4.10',
-  'okio': '3.0.0-alpha.3',
+  'okio': '3.0.0-alpha.4',
   'okhttp': '4.2.2',
   'moshi': '1.11.0',
   'protobuf': '3.13.0',
