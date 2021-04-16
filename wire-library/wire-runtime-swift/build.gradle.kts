@@ -44,7 +44,8 @@ val generateSwiftProtos by tasks.creating(JavaExec::class) {
 
   // TODO(kcianfarini) this is a workaround for https://github.com/square/wire/issues/1928
   doLast {
-    val file = listOf(
+    val wellKnownTypesDir = "wire-library/wire-runtime-swift/src/main/swift/wellknowntypes/"
+    val files = listOf(
       "EnumOptions.swift",
       "EnumValueOptions.swift",
       "FieldOptions.swift",
@@ -54,11 +55,17 @@ val generateSwiftProtos by tasks.creating(JavaExec::class) {
       "ServiceOptions.swift"
     )
 
-    val actualFiles = file.map {
-      "wire-library/wire-runtime-swift/src/main/swift/wellknowntypes/$it"
-    }
+    val actualFiles = files.map { wellKnownTypesDir + it }
 
     actualFiles.forEach { File(it).delete() }
+
+    File(wellKnownTypesDir)
+      .walk()
+      .filter { it.extension == "swift" }
+      .forEach { file ->
+        val content = file.readText(Charsets.UTF_8)
+        file.writeText(content.replace("import Wire\n", ""), Charsets.UTF_8)
+      }
   }
 }
 
