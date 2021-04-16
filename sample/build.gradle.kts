@@ -1,16 +1,20 @@
-apply plugin: 'application'
-apply plugin: 'com.squareup.wire'
+plugins {
+  application
+  id("com.squareup.wire")
+}
 
-mainClassName = 'com.squareup.dinosaurs.Sample'
+application {
+  mainClassName = "com.squareup.dinosaurs.Sample"
+}
 
-jar {
+val jar by tasks.getting(Jar::class) {
   manifest {
-    attributes('Automatic-Module-Name': 'wire-sample')
+    attributes("Automatic-Module-Name" to "wire-sample")
   }
 }
 
 dependencies {
-  implementation deps.wire.runtime
+  implementation(deps.wire.runtime)
 }
 
 /**
