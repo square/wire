@@ -51,6 +51,7 @@ public final class ProtoDecoder {
         case mapEntryWithoutValue(key: Any)
         case missingRequiredField(typeName: String, fieldName: String)
         case recursionLimitExceeded
+        case unexpectedCallToBeginMessage
         case unexpectedEndOfData
         case unexpectedEndGroupFieldNumber(expected: UInt32?, found: UInt32)
         case unexpectedFieldNumberInMap(_: UInt32)
@@ -96,6 +97,8 @@ public final class ProtoDecoder {
                 return "Unknown case with value \(fieldNumber) found for enum of type \(String(describing: type))."
             case let .unterminatedGroup(fieldNumber):
                 return "The group with field number \(fieldNumber) has no matching end-group key."
+            case .unexpectedCallToBeginMessage:
+                return "Unexpected call to beginMessage()."
             }
         }
     }
