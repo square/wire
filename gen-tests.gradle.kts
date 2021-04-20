@@ -346,8 +346,8 @@ val generateKotlinSerializationTests by tasks.creating(JavaExec::class) {
 
 // SWIFT
 
-val generateSwiftTests by tasks.creating(JavaExec::class) {
-  val swiftOut = "wire-library/wire-tests-swift/src/main/swift"
+val generateSwiftProto3Tests by tasks.creating(JavaExec::class) {
+  val swiftOut = "wire-library/wire-tests-proto3-swift/src/main/swift/"
   doFirst {
     val outFile = file(swiftOut)
     outFile.deleteRecursively()
@@ -359,33 +359,61 @@ val generateSwiftTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-      "--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin",
-      "--swift_out=$swiftOut",
-      "all_types.proto",
-      "custom_options.proto",
-      "deprecated.proto",
-      "deprecated_enum.proto",
+    "--proto_path=wire-library/wire-tests/src/commonTest/proto3/kotlin",
+    "--swift_out=$swiftOut",
+    "contains_duration.proto"
+  )
+}
+
+val generateSwiftProto2Tests by tasks.creating(JavaExec::class) {
+  val swiftOut = "wire-library/wire-tests-swift/src/main/swift/"
+  doFirst {
+    val outFile = file(swiftOut)
+    outFile.deleteRecursively()
+    outFile.mkdir()
+  }
+
+  group = "Generate Tests"
+  description = "Generates Swift classes from the test protos"
+  classpath = wire
+  main = "com.squareup.wire.WireCompiler"
+  args = listOf(
+    "--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin",
+    "--swift_out=$swiftOut",
+    "all_types.proto",
+    "custom_options.proto",
+    "deprecated.proto",
+    "deprecated_enum.proto",
 //      'edge_cases.proto',
-      "external_message.proto",
-      "foreign.proto",
-      "form.proto",
+    "external_message.proto",
+    "foreign.proto",
+    "form.proto",
 //      'keyword.proto',
-      "map.proto",
-      "no_fields.proto",
-      "one_of.proto",
-      "option_redacted.proto",
-      "optional_enum.proto",
-      "packed_encoding.proto",
-      "percents_in_kdoc.proto",
-      "person.proto",
-      "redacted_one_of.proto",
+    "map.proto",
+    "no_fields.proto",
+    "one_of.proto",
+    "option_redacted.proto",
+    "optional_enum.proto",
+    "packed_encoding.proto",
+    "percents_in_kdoc.proto",
+    "person.proto",
+    "redacted_one_of.proto",
 //      'redacted_test.proto',
-      "resursive_map.proto",
-      "same_name_enum.proto",
+    "resursive_map.proto",
+    "same_name_enum.proto",
 //      'simple_message.proto',
-      "to_string.proto",
-      "unknown_fields.proto"
+    "to_string.proto",
+    "unknown_fields.proto"
 //      'uses_any.proto',
+  )
+}
+
+val generateSwiftTests by tasks.creating {
+  group = "Generate Tests"
+  description = "Generates Swift classes from the test protos"
+  dependsOn(
+    generateSwiftProto2Tests,
+    generateSwiftProto3Tests
   )
 }
 
