@@ -21,4 +21,5 @@ include(":wire-tests")
 if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-runtime-swift")
   include(":wire-tests-swift")
+  include(":wire-tests-proto3-swift")
 }

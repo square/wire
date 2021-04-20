@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+package squareup.protos3.kotlin.contains_duration;
+
+option java_package = "com.squareup.wire.proto3.kotlin.containsDuration";
+
+message ContainsDuration {
+  google.protobuf.Duration duration = 1;
+}
