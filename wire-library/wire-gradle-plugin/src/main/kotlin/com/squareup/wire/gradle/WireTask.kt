@@ -16,9 +16,11 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
+import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
+import java.io.File
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
@@ -31,7 +33,6 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
-import java.io.File
 
 @CacheableTask
 open class WireTask : SourceTask() {
@@ -137,7 +138,7 @@ open class WireTask : SourceTask() {
         File(target.outDirectory).deleteRecursively()
       }
     }
-    wireRun.execute()
+    wireRun.execute(logger = GradleWireLogger)
   }
 
   @InputFiles

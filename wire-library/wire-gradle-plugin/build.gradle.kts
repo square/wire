@@ -16,6 +16,7 @@ gradlePlugin {
 dependencies {
   implementation(project(":wire-compiler"))
   implementation(project(":wire-kotlin-generator"))
+  implementation(deps.swiftpoet)
 
   compileOnly(gradleApi())
   implementation(deps.plugins.kotlin)

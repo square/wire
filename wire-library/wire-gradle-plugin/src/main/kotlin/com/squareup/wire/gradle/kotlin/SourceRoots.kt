@@ -58,15 +58,17 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
   // Java project.
   if (!kotlin && java) {
     val sourceSets = project.property("sourceSets") as SourceSetContainer
-    return listOf(Source(
-      type = KotlinPlatformType.jvm,
-      name = "main",
-      sourceSets = listOf("main"),
-      sourceDirectorySet = WireSourceDirectorySet.of(sourceSets.getByName("main").java),
-      registerTaskDependency = { task ->
-        project.tasks.named("compileJava").configure { it.dependsOn(task) }
-      }
-    ))
+    return listOf(
+      Source(
+        type = KotlinPlatformType.jvm,
+        kotlinSourceDirectorySet = null,
+        javaSourceDirectorySet = WireSourceDirectorySet.of(sourceSets.getByName("main").java),
+        name = "main",
+        registerTaskDependency = { task ->
+          project.tasks.named("compileJava").configure { it.dependsOn(task) }
+        }
+      )
+    )
   }
 
   // Android project.
@@ -76,15 +78,21 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
 
   // Kotlin project.
   val sourceSets = project.property("sourceSets") as SourceSetContainer
-  return listOf(Source(
-    type = KotlinPlatformType.jvm,
-    name = "main",
-    sourceSets = listOf("main"),
-    sourceDirectorySet = WireSourceDirectorySet.of(sourceSets.getByName("main").kotlin!!),
-    registerTaskDependency = { task ->
-      project.tasks.named("compileKotlin").configure { it.dependsOn(task) }
-    }
-  ))
+  val main = sourceSets.getByName("main")
+  return listOf(
+    Source(
+      type = KotlinPlatformType.jvm,
+      kotlinSourceDirectorySet = WireSourceDirectorySet.of(main.kotlin!!),
+      javaSourceDirectorySet = WireSourceDirectorySet.of(main.java),
+      name = "main",
+      registerTaskDependency = { task ->
+        if (java) {
+          project.tasks.named("compileJava").configure { it.dependsOn(task) }
+        }
+        project.tasks.named("compileKotlin").configure { it.dependsOn(task) }
+      }
+    )
+  )
 }
 
 private fun KotlinMultiplatformExtension.sourceRoots(project: Project): List<Source> {
@@ -101,7 +109,6 @@ private fun KotlinMultiplatformExtension.sourceRoots(project: Project): List<Sou
             val compilation = target.compilations.single { it.name == source.name }
             return@map source.copy(
               name = "${target.name}${source.name.capitalize()}",
-              sourceSets = source.sourceSets.map { "${target.name}${it.capitalize()}" } + "commonMain",
               registerTaskDependency = { task ->
                 compilation.compileKotlinTask.dependsOn(task)
               }
@@ -114,10 +121,10 @@ private fun KotlinMultiplatformExtension.sourceRoots(project: Project): List<Sou
         }
         Source(
           type = target.platformType,
+          kotlinSourceDirectorySet = WireSourceDirectorySet.of(compilation.defaultSourceSet.kotlin),
+          javaSourceDirectorySet = null,
           name = "${target.name}${compilation.name.capitalize()}",
           variantName = (compilation as? KotlinJvmAndroidCompilation)?.name,
-          sourceDirectorySet = WireSourceDirectorySet.of(compilation.defaultSourceSet.kotlin),
-          sourceSets = compilation.allKotlinSourceSets.map { it.name },
           registerTaskDependency = { task ->
             (target as? KotlinNativeTarget)?.binaries?.forEach {
               it.linkTask.dependsOn(task)
@@ -151,24 +158,26 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
     } else null
 
   return variants.map { variant ->
-    val sourceDirectSet = if (kotlin) {
-      WireSourceDirectorySet.of(
-        sourceSets!![variant.name]
+    val kotlinSourceDirectSet = when {
+      kotlin -> {
+        val sourceDirectorySet = sourceSets!![variant.name]
           ?: throw IllegalStateException("Couldn't find ${variant.name} in $sourceSets")
-      )
-    } else {
-      WireSourceDirectorySet.of(
-        androidSourceSets!![variant.name]
-          ?: throw IllegalStateException("Couldn't find ${variant.name} in $sourceSets")
-      )
+        WireSourceDirectorySet.of(sourceDirectorySet)
+      }
+      else -> null
+    }
+    val androidSourceDirectorySet = androidSourceSets!![variant.name]
+    val javaSourceDirectorySet = when {
+      androidSourceDirectorySet != null -> WireSourceDirectorySet.of(androidSourceDirectorySet)
+      else -> null
     }
 
     Source(
       type = KotlinPlatformType.androidJvm,
+      kotlinSourceDirectorySet = kotlinSourceDirectSet,
+      javaSourceDirectorySet = javaSourceDirectorySet,
       name = variant.name,
       variantName = variant.name,
-      sourceDirectorySet = sourceDirectSet,
-      sourceSets = variant.sourceSets.map { it.name },
       registerTaskDependency = { task ->
         // TODO: Lazy task configuration!!!
         variant.registerJavaGeneratingTask(task.get(), task.get().outputDirectories)
@@ -183,10 +192,10 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
 
 internal data class Source(
   val type: KotlinPlatformType,
-  val sourceDirectorySet: WireSourceDirectorySet,
+  val kotlinSourceDirectorySet: WireSourceDirectorySet?,
+  val javaSourceDirectorySet: WireSourceDirectorySet?,
   val name: String,
   val variantName: String? = null,
-  val sourceSets: List<String>,
   val registerTaskDependency: (TaskProvider<WireTask>) -> Unit
 )
 
@@ -204,7 +213,7 @@ internal class WireSourceDirectorySet private constructor(
   }
 
   /** Adds the path to this set. */
-  fun srcDir(path: String): WireSourceDirectorySet {
+  fun srcDir(path: Any): WireSourceDirectorySet {
     sourceDirectorySet?.srcDir(path)
     androidSourceDirectorySet?.srcDir(path)
 

@@ -54,7 +54,7 @@ internal class StringWireLogger : WireLogger {
     buffer.append("skipped $type\n")
   }
 
-  @Synchronized override fun info(message: String) {
+  @Synchronized override fun warn(message: String) {
     if (!quiet) {
       buffer.append("$message\n")
     }

@@ -19,19 +19,21 @@ import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.sourceRoots
-import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
+import com.squareup.wire.schema.JavaTarget
+import com.squareup.wire.schema.KotlinTarget
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 class WirePlugin : Plugin<Project> {
   private val android = AtomicBoolean(false)
@@ -155,16 +157,39 @@ class WirePlugin : Plugin<Project> {
       .filterIsInstance<ProjectDependency>()
 
     val generatedSourcesDirectories = outputs.map { output -> File(output.out!!) }.toSet()
+
+    // Both the JavaCompile and KotlinCompile tasks might already have been configured by now. Even
+    // though we add the Wire output directories into the corresponding sourceSets, the compilation
+    // tasks won't know about them so we fix that here.
+    if (targets.any { it is JavaTarget }) {
+      project.tasks.matching { it.name == "compileJava" }.configureEach {
+        (it as JavaCompile).source(generatedSourcesDirectories)
+      }
+    }
+    if (targets.any { it is KotlinTarget || it is JavaTarget }) {
+      project.tasks.matching { it.name == "compileKotlin" }.configureEach {
+        // Note that [KotlinCompile.source] will process files but will ignore strings.
+        (it as KotlinCompile).source(generatedSourcesDirectories)
+      }
+    }
+
     val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
     for (generatedSourcesDirectory in generatedSourcesDirectories) {
-      common?.sourceDirectorySet
+      common?.kotlinSourceDirectorySet
         ?.srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
     }
+
     sources.forEach { source ->
       if (common == null) {
+        // TODO: pair up generatedSourceDirectories with their targets so we can be precise.
         for (generatedSourcesDirectory in generatedSourcesDirectories) {
-          source.sourceDirectorySet
-            .srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
+          val relativePath = generatedSourcesDirectory.toRelativeString(project.projectDir)
+          if (targets.any { it is JavaTarget }) {
+            source.javaSourceDirectorySet?.srcDir(relativePath)
+          }
+          if (targets.any { it is KotlinTarget }) {
+            source.kotlinSourceDirectorySet?.srcDir(relativePath)
+          }
         }
       }
 
@@ -208,14 +233,6 @@ class WirePlugin : Plugin<Project> {
       }
 
       source.registerTaskDependency(task)
-      for (output in outputs) {
-        // TODO(Benoit) Why do I need this?
-        if (output is JavaOutput && !android.get()) {
-          (project.tasks.named("compileJava") as TaskProvider<JavaCompile>).configure {
-            it.source(output.out!!)
-          }
-        }
-      }
     }
   }
 
@@ -228,10 +245,10 @@ class WirePlugin : Plugin<Project> {
     if (hasJavaOutput || hasKotlinOutput) {
       if (isMultiplatform) {
         val sourceSets =
-            project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
+          project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
         project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-            project.dependencies.create("com.squareup.wire:wire-runtime-multiplatform:$VERSION")
+          project.dependencies.create("com.squareup.wire:wire-runtime-multiplatform:$VERSION")
         )
       } else {
         try {

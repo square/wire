@@ -28,5 +28,5 @@ interface WireLogger {
   fun artifact(outputPath: Path, kotlinFile: FileSpec)
   fun artifact(outputPath: Path, type: ProtoType, swiftFile: SwiftFileSpec)
   fun artifactSkipped(type: ProtoType)
-  fun info(message: String)
+  fun warn(message: String)
 }

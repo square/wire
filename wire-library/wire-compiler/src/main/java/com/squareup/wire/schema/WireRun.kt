@@ -282,20 +282,20 @@ data class WireRun(
 
     for (emittingRules in targetToEmittingRules.values) {
       if (emittingRules.unusedIncludes().isNotEmpty()) {
-        logger.info("""Unused includes in targets:
+        logger.warn("""Unused includes in targets:
             |  ${emittingRules.unusedIncludes().joinToString(separator = "\n  ")}
             """.trimMargin())
       }
 
       if (emittingRules.unusedExcludes().isNotEmpty()) {
-        logger.info("""Unused excludes in targets:
+        logger.warn("""Unused excludes in targets:
             |  ${emittingRules.unusedExcludes().joinToString(separator = "\n  ")}
             """.trimMargin())
       }
     }
 
     if (skippedForSyntax.isNotEmpty()) {
-      logger.info("""Skipped .proto files with unsupported syntax. Add this line to fix:
+      logger.warn("""Skipped .proto files with unsupported syntax. Add this line to fix:
           |  syntax = "proto2";
           |  ${skippedForSyntax.joinToString(separator = "\n  ") { it.toString() }}
           """.trimMargin())
@@ -323,11 +323,11 @@ data class WireRun(
     val prunedSchema = schema.prune(pruningRules)
 
     for (rule in pruningRules.unusedRoots()) {
-      logger.info("Unused element in treeShakingRoots: $rule")
+      logger.warn("Unused element in treeShakingRoots: $rule")
     }
 
     for (rule in pruningRules.unusedPrunes()) {
-      logger.info("Unused element in treeShakingRubbish: $rule")
+      logger.warn("Unused element in treeShakingRubbish: $rule")
     }
 
     return TypeMover(prunedSchema, moves).move()

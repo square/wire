@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Square Inc.
+ * Copyright 2021 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,51 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire
+package com.squareup.wire.gradle.internal
 
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.wire.WireLogger
+import com.squareup.wire.gradle.WirePlugin
 import com.squareup.wire.schema.ProtoType
 import okio.Path
+import org.slf4j.LoggerFactory
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
-internal class ConsoleWireLogger : WireLogger {
-  private var quiet: Boolean = false
+internal object GradleWireLogger : WireLogger {
+  private val slf4jLogger = LoggerFactory.getLogger(WirePlugin::class.java)
 
   override fun setQuiet(quiet: Boolean) {
-    this.quiet = quiet
   }
 
   override fun warn(message: String) {
-    if (!quiet) {
-      println(message)
-    }
+    slf4jLogger.warn(message)
   }
 
   override fun artifact(outputPath: Path, filePath: String) {
-    if (quiet) {
-      println(filePath)
-    } else {
-      println("Writing $filePath to $outputPath")
-    }
+    slf4jLogger.info("Writing $filePath to $outputPath")
   }
 
   override fun artifact(outputPath: Path, javaFile: JavaFile) {
-    if (quiet) {
-      println("${javaFile.packageName}.${javaFile.typeSpec.name}")
-    } else {
-      println("Writing ${javaFile.packageName}.${javaFile.typeSpec.name} to $outputPath")
-    }
+    slf4jLogger.info("Writing ${javaFile.packageName}.${javaFile.typeSpec.name} to $outputPath")
   }
 
   override fun artifact(outputPath: Path, kotlinFile: FileSpec) {
     val typeSpec = kotlinFile.members.first() as TypeSpec
-    if (quiet) {
-      println("${kotlinFile.packageName}.${typeSpec.name}")
-    } else {
-      println("Writing ${kotlinFile.packageName}.${typeSpec.name} to $outputPath")
-    }
+    slf4jLogger.info("Writing ${kotlinFile.packageName}.${typeSpec.name} to $outputPath")
   }
 
   override fun artifact(
@@ -65,14 +53,10 @@ internal class ConsoleWireLogger : WireLogger {
     type: ProtoType,
     swiftFile: SwiftFileSpec
   ) {
-    if (quiet) {
-      println(swiftFile.name)
-    } else {
-      println("Writing $type to $outputPath")
-    }
+    slf4jLogger.info("Writing $type to $outputPath")
   }
 
   override fun artifactSkipped(type: ProtoType) {
-    println("Skipping $type")
+    slf4jLogger.info("Skipping $type")
   }
 }
