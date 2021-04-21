@@ -23,7 +23,7 @@ class WirePluginTest {
   fun setUp() {
     gradleRunner = GradleRunner.create()
         .withPluginClasspath()
-        .withArguments("generateProtos", "--stacktrace")
+        .withArguments("generateProtos", "--stacktrace", "--info")
   }
 
   @After
@@ -458,7 +458,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/java-project-java-protos")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace").build()
+      withArguments("run", "--stacktrace", "--info").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull
@@ -480,7 +480,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/java-project-kotlin-protos")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace").build()
+      withArguments("run", "--stacktrace", "--info").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull
@@ -502,7 +502,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/kotlin-project-java-protos")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace").build()
+      withArguments("run", "--stacktrace", "--info").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull
@@ -524,7 +524,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/kotlin-project-kotlin-protos")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace").build()
+      withArguments("run", "--stacktrace", "--info").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull
@@ -546,7 +546,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/sourcedir-include")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("run", "--stacktrace").build()
+      withArguments("run", "--stacktrace", "--info").build()
     }
 
     assertThat(result.task(":generateMainProtos")).isNotNull
@@ -781,7 +781,7 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) {
       withArguments(
-          "assemble", "--stacktrace", "-Dkjs=$kmpJsEnabled", "-Dknative=$kmpNativeEnabled"
+          "assemble", "--stacktrace", "-Dkjs=$kmpJsEnabled", "-Dknative=$kmpNativeEnabled", "--info"
       ).build()
     }
 
@@ -952,7 +952,7 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/project-dependencies")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateMainProtos", "--stacktrace").build()
+      withArguments("generateMainProtos", "--stacktrace", "--info").build()
     }
 
     assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
