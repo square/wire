@@ -104,5 +104,11 @@ Cutting a Release
     git push && git push --tags
     ```
 
+7. Deploy the documentation website.
+
+    ```
+    ./deploy_website.sh
+    ```
+
  [sonatype_issues]: https://issues.sonatype.org/
  [sonatype_nexus]: https://oss.sonatype.org/
