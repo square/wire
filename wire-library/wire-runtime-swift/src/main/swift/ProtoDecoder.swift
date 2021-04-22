@@ -49,6 +49,7 @@ public final class ProtoDecoder {
         case malformedVarint
         case mapEntryWithoutKey(value: Any?)
         case mapEntryWithoutValue(key: Any)
+        case messageWithoutLength
         case missingRequiredField(typeName: String, fieldName: String)
         case recursionLimitExceeded
         case unexpectedEndOfData
@@ -74,6 +75,8 @@ public final class ProtoDecoder {
                 return "Map entry with value \(value ?? "") did not include a key."
             case let .mapEntryWithoutValue(key):
                 return "Map entry with \(key) did not include a value."
+            case .messageWithoutLength:
+                return "Attempting to decode a message without first decoding the length of that message."
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
             case let .boxedValueMissingField(type):
