@@ -121,7 +121,7 @@ public final class ProtoReader {
      */
     public func beginMessage() throws -> Int {
         guard case let .lengthDelimited(length) = state else {
-            throw ProtoDecoder.Error.unexpectedCallToBeginMessage
+            throw ProtoDecoder.Error.messageWithoutLength
         }
         if length == 0 {
             // Indicate that this is an empty message.

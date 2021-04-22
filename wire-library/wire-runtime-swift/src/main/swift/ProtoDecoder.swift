@@ -49,9 +49,9 @@ public final class ProtoDecoder {
         case malformedVarint
         case mapEntryWithoutKey(value: Any?)
         case mapEntryWithoutValue(key: Any)
+        case messageWithoutLength
         case missingRequiredField(typeName: String, fieldName: String)
         case recursionLimitExceeded
-        case unexpectedCallToBeginMessage
         case unexpectedEndOfData
         case unexpectedEndGroupFieldNumber(expected: UInt32?, found: UInt32)
         case unexpectedFieldNumberInMap(_: UInt32)
@@ -75,6 +75,8 @@ public final class ProtoDecoder {
                 return "Map entry with value \(value ?? "") did not include a key."
             case let .mapEntryWithoutValue(key):
                 return "Map entry with \(key) did not include a value."
+            case .messageWithoutLength:
+                return "Attempting to decode a message without first decoding the length of that message."
             case let .missingRequiredField(typeName, fieldName):
                 return "Required field \(fieldName) for type \(typeName) is not included in the message data."
             case let .boxedValueMissingField(type):
@@ -97,8 +99,6 @@ public final class ProtoDecoder {
                 return "Unknown case with value \(fieldNumber) found for enum of type \(String(describing: type))."
             case let .unterminatedGroup(fieldNumber):
                 return "The group with field number \(fieldNumber) has no matching end-group key."
-            case .unexpectedCallToBeginMessage:
-                return "Unexpected call to beginMessage()."
             }
         }
     }
