@@ -48,7 +48,7 @@ object GrpcClientProvider {
 
   val grpcClient = GrpcClient.Builder()
       .client(okHttpClient)
-      .encoder(GrpcEncoder.GzipGrpcEncoder) // or Identity or else define your own extending GrpcEncoder
+      .codec(GrpcEncoder.GzipGrpcEncoder) // or Identity or else define your own extending GrpcEncoder
       .baseUrl("https://10.0.2.2:8443")
       .build()
 

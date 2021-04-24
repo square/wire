@@ -101,7 +101,7 @@ actual class GrpcClient private constructor(
       this.baseUrl = url
     }
 
-    fun encoding(codec: GrpcCodec) : Builder = apply {
+    fun codec(codec: GrpcCodec) : Builder = apply {
       this.codec = codec
     }
 
