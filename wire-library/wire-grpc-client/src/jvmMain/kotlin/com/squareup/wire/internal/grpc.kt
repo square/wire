@@ -38,7 +38,8 @@ internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMedia
 /** Returns a new request body that writes [onlyMessage]. */
 internal fun <S : Any> newRequestBody(
   requestAdapter: ProtoAdapter<S>,
-  onlyMessage: S
+  onlyMessage: S,
+  encoder: GrpcEncoder
 ): RequestBody {
   return object : RequestBody() {
     override fun contentType() = APPLICATION_GRPC_MEDIA_TYPE
@@ -48,7 +49,7 @@ internal fun <S : Any> newRequestBody(
           sink = sink,
           messageAdapter = requestAdapter,
           callForCancel = null,
-          grpcEncoding = "gzip"
+          encoder = encoder
       )
       grpcMessageSink.use {
         it.write(onlyMessage)
@@ -68,12 +69,13 @@ internal fun newDuplexRequestBody(): PipeDuplexRequestBody {
 /** Writes messages to the request body. */
 internal fun <S : Any> PipeDuplexRequestBody.messageSink(
   requestAdapter: ProtoAdapter<S>,
-  callForCancel: Call
+  callForCancel: Call,
+  encoder: GrpcEncoder
 ) = GrpcMessageSink(
     sink = createSink(),
     messageAdapter = requestAdapter,
     callForCancel = callForCancel,
-    grpcEncoding = "gzip"
+    encoder = encoder
 )
 
 /** Sends the response messages to the channel. */
@@ -113,9 +115,10 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
 internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestBody: PipeDuplexRequestBody,
   requestAdapter: ProtoAdapter<S>,
-  callForCancel: Call
+  callForCancel: Call,
+  encoder: GrpcEncoder
 ) {
-  requestBody.messageSink(requestAdapter, callForCancel).use { requestWriter ->
+  requestBody.messageSink(requestAdapter, callForCancel, encoder).use { requestWriter ->
     var success = false
     try {
       consumeEach { message ->

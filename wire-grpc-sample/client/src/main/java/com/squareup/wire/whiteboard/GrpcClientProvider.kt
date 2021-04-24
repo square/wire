@@ -16,6 +16,7 @@
 package com.squareup.wire.whiteboard
 
 import com.squareup.wire.GrpcClient
+import com.squareup.wire.internal.GrpcEncoder
 import okhttp3.OkHttpClient
 import okhttp3.Protocol.HTTP_1_1
 import okhttp3.Protocol.HTTP_2
@@ -47,6 +48,7 @@ object GrpcClientProvider {
 
   val grpcClient = GrpcClient.Builder()
       .client(okHttpClient)
+      .encoder(GrpcEncoder.GzipGrpcEncoder) // or Identity or else define your own extending GrpcEncoder
       .baseUrl("https://10.0.2.2:8443")
       .build()
 

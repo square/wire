@@ -18,25 +18,15 @@ package com.squareup.wire.internal
 import okio.BufferedSink
 import okio.buffer
 
-internal sealed class GrpcEncoder(val name: String) {
+sealed class GrpcEncoder(val name: String) {
   /** Returns a stream that decodes `source`. */
   abstract fun encode(sink: BufferedSink): BufferedSink
 
-  internal object IdentityGrpcEncoder : GrpcEncoder("identity") {
+  object IdentityGrpcEncoder : GrpcEncoder("identity") {
     override fun encode(sink: BufferedSink) = sink
   }
 
-  internal object GzipGrpcEncoder : GrpcEncoder("gzip") {
+  object GzipGrpcEncoder : GrpcEncoder("gzip") {
     override fun encode(sink: BufferedSink) = sink.asGzip().buffer()
-  }
-}
-
-internal fun String.toGrpcEncoder(): GrpcEncoder {
-  return when (this) {
-    "identity" -> GrpcEncoder.IdentityGrpcEncoder
-    "gzip" -> GrpcEncoder.GzipGrpcEncoder
-    "deflate" -> throw ProtocolException("deflate not yet supported")
-    "snappy" -> throw ProtocolException("snappy not yet supported")
-    else -> throw ProtocolException("unsupported grpc-encoding: $this")
   }
 }

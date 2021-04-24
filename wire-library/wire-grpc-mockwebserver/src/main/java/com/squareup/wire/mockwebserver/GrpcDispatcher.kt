@@ -22,6 +22,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Service
 import com.squareup.wire.internal.GrpcMessageSink
 import com.squareup.wire.internal.GrpcMessageSource
+import com.squareup.wire.internal.GrpcEncoder
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers.Companion.headersOf
@@ -57,7 +58,7 @@ import java.lang.reflect.Method
  */
 class GrpcDispatcher(
   services: List<Service>,
-  val delegate: Dispatcher,
+  val delegate: Dispatcher
 ) : Dispatcher() {
   private val endpoints: Map<String, Endpoint<*, *>> = run {
     val map = mutableMapOf<String, Endpoint<*, *>>()
@@ -169,7 +170,7 @@ class GrpcDispatcher(
         sink = result,
         messageAdapter = protoAdapter,
         callForCancel = null,
-        grpcEncoding = "identity"
+        encoder = GrpcEncoder.IdentityGrpcEncoder
     ).use {
       it.write(response)
     }
