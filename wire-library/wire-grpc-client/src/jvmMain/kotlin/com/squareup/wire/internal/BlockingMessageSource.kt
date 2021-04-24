@@ -18,6 +18,7 @@ package com.squareup.wire.internal
 import com.squareup.wire.GrpcResponse
 import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.GrpcCodec
 import com.squareup.wire.use
 import okhttp3.Call
 import okhttp3.Callback
@@ -58,7 +59,7 @@ internal class BlockingMessageSource<R : Any>(
   }
 
   /** Read messages from the response body and write them to the deque. */
-  fun readFromResponseBodyCallback(): Callback {
+  fun readFromResponseBodyCallback(codec : GrpcCodec): Callback {
     return object : Callback {
       override fun onFailure(call: Call, e: IOException) {
         queue.put(Failure(e))
@@ -67,7 +68,7 @@ internal class BlockingMessageSource<R : Any>(
       override fun onResponse(call: Call, response: GrpcResponse) {
         try {
           response.use {
-            response.messageSource(responseAdapter).use { reader ->
+            response.messageSource(responseAdapter, codec).use { reader ->
               while (true) {
                 val message = reader.read() ?: break
                 queue.put(message)

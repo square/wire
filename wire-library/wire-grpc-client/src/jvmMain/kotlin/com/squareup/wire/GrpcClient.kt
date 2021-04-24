@@ -16,7 +16,7 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.*
-import com.squareup.wire.internal.GrpcEncoder
+import com.squareup.wire.GrpcCodec
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
 import okhttp3.Call
@@ -26,7 +26,7 @@ import kotlin.reflect.KClass
 actual class GrpcClient private constructor(
   internal val client: Call.Factory,
   internal val baseUrl: GrpcHttpUrl,
-  internal val encoder: GrpcEncoder
+  internal val codec: GrpcCodec
 ) {
   /** Returns a [T] that makes gRPC calls using this client. */
   inline fun <reified T : Service> create(): T = create(T::class)
@@ -69,10 +69,12 @@ actual class GrpcClient private constructor(
         .url(baseUrl.resolve(method.path)!!)
         .addHeader("te", "trailers")
         .addHeader("grpc-trace-bin", "")
-        .addHeader("grpc-accept-encoding", "gzip")
         .apply {
-          if (encoder !is GrpcEncoder.IdentityGrpcEncoder) {
-            addHeader("grpc-encoding", encoder.name)
+          if (codec !is GrpcCodec.IdentityGrpcCodec) {
+            addHeader("grpc-accept-encoding", codec.name)
+            addHeader("grpc-encoding", codec.name)
+          } else {
+            addHeader("grpc-accept-encoding", "gzip")
           }
         }
         .tag(GrpcMethod::class.java, method)
@@ -83,7 +85,7 @@ actual class GrpcClient private constructor(
   class Builder {
     private var client: Call.Factory? = null
     private var baseUrl: GrpcHttpUrl? = null
-    private var encoder: GrpcEncoder? = null
+    private var codec: GrpcCodec? = null
 
     fun client(client: OkHttpClient): Builder = callFactory(client)
 
@@ -99,14 +101,14 @@ actual class GrpcClient private constructor(
       this.baseUrl = url
     }
 
-    fun encoder(encoder: GrpcEncoder) : Builder = apply {
-      this.encoder = encoder
+    fun encoding(codec: GrpcCodec) : Builder = apply {
+      this.codec = codec
     }
 
     fun build(): GrpcClient = GrpcClient(
             client = client!!,
             baseUrl = baseUrl!!,
-            encoder = encoder ?: GrpcEncoder.IdentityGrpcEncoder
+            codec = codec ?: GrpcCodec.IdentityGrpcCodec
     )
   }
 }

@@ -70,18 +70,21 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
               requestBody = requestBody,
               requestAdapter = method.requestAdapter,
               callForCancel = call,
-              encoder = grpcClient.encoder
+              codec = grpcClient.codec
       )
     }
-    call.enqueue(responseChannel.readFromResponseBodyCallback(method.responseAdapter))
+    call.enqueue(responseChannel.readFromResponseBodyCallback(
+            responseAdapter = method.responseAdapter,
+            codec = grpcClient.codec
+    ))
 
     return requestChannel to responseChannel
   }
 
   override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
     val messageSource = BlockingMessageSource(method.responseAdapter, call)
-    val messageSink = requestBody.messageSink(method.requestAdapter, call, grpcClient.encoder)
-    call.enqueue(messageSource.readFromResponseBodyCallback())
+    val messageSink = requestBody.messageSink(method.requestAdapter, call, grpcClient.codec)
+    call.enqueue(messageSource.readFromResponseBodyCallback(grpcClient.codec))
 
     return messageSink to messageSource
   }

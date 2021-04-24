@@ -19,6 +19,7 @@ import com.squareup.wire.GrpcException
 import com.squareup.wire.GrpcResponse
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
+import com.squareup.wire.GrpcCodec
 import com.squareup.wire.use
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -39,7 +40,7 @@ internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMedia
 internal fun <S : Any> newRequestBody(
   requestAdapter: ProtoAdapter<S>,
   onlyMessage: S,
-  encoder: GrpcEncoder
+  codec: GrpcCodec
 ): RequestBody {
   return object : RequestBody() {
     override fun contentType() = APPLICATION_GRPC_MEDIA_TYPE
@@ -49,7 +50,7 @@ internal fun <S : Any> newRequestBody(
           sink = sink,
           messageAdapter = requestAdapter,
           callForCancel = null,
-          encoder = encoder
+          codec = codec
       )
       grpcMessageSink.use {
         it.write(onlyMessage)
@@ -70,17 +71,18 @@ internal fun newDuplexRequestBody(): PipeDuplexRequestBody {
 internal fun <S : Any> PipeDuplexRequestBody.messageSink(
   requestAdapter: ProtoAdapter<S>,
   callForCancel: Call,
-  encoder: GrpcEncoder
+  codec: GrpcCodec
 ) = GrpcMessageSink(
     sink = createSink(),
     messageAdapter = requestAdapter,
     callForCancel = callForCancel,
-    encoder = encoder
+    codec = codec
 )
 
 /** Sends the response messages to the channel. */
 internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
-  responseAdapter: ProtoAdapter<R>
+  responseAdapter: ProtoAdapter<R>,
+  codec : GrpcCodec
 ): Callback {
   return object : Callback {
     override fun onFailure(call: Call, e: IOException) {
@@ -91,7 +93,7 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
     override fun onResponse(call: Call, response: GrpcResponse) {
       runBlocking {
         response.use {
-          response.messageSource(responseAdapter).use { reader ->
+          response.messageSource(responseAdapter, codec).use { reader ->
             while (true) {
               val message = reader.read() ?: break
               send(message)
@@ -116,9 +118,9 @@ internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestBody: PipeDuplexRequestBody,
   requestAdapter: ProtoAdapter<S>,
   callForCancel: Call,
-  encoder: GrpcEncoder
+  codec: GrpcCodec
 ) {
-  requestBody.messageSink(requestAdapter, callForCancel, encoder).use { requestWriter ->
+  requestBody.messageSink(requestAdapter, callForCancel, codec).use { requestWriter ->
     var success = false
     try {
       consumeEach { message ->
@@ -133,12 +135,12 @@ internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
 
 /** Reads messages from the response body. */
 internal fun <R : Any> GrpcResponse.messageSource(
-  protoAdapter: ProtoAdapter<R>
+  protoAdapter: ProtoAdapter<R>,
+  codec: GrpcCodec
 ): GrpcMessageSource<R> {
   checkGrpcResponse()
-  val grpcEncoding = header("grpc-encoding")
   val responseSource = body!!.source()
-  return GrpcMessageSource(responseSource, protoAdapter, grpcEncoding)
+  return GrpcMessageSource(responseSource, protoAdapter, codec)
 }
 
 /** Returns an exception if the response does not follow the protocol. */

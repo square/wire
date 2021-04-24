@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.GrpcCodec
 import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import okio.Buffer
@@ -31,7 +32,7 @@ import okio.buffer
 class GrpcMessageSource<T : Any>(
   private val source: BufferedSource,
   private val messageAdapter: ProtoAdapter<T>,
-  private val grpcEncoding: String? = null
+  private val codec: GrpcCodec
 ) : MessageSource<T> {
   override fun read(): T? {
     if (source.exhausted()) return null
@@ -42,12 +43,9 @@ class GrpcMessageSource<T : Any>(
     //                 Message → *{binary octet}
 
     val compressedFlag = source.readByte()
-    val messageDecoding: GrpcDecoder = when {
-      compressedFlag.toInt() == 0 -> GrpcDecoder.IdentityGrpcDecoder
-      compressedFlag.toInt() == 1 -> {
-        grpcEncoding?.toGrpcDecoding() ?: throw ProtocolException(
-            "message is encoded but message-encoding header was omitted")
-      }
+    val messageDecoding: GrpcCodec = when {
+      compressedFlag.toInt() == 0 -> GrpcCodec.IdentityGrpcCodec
+      compressedFlag.toInt() == 1 -> codec
       else -> throw ProtocolException("unexpected compressed-flag: $compressedFlag")
     }
 

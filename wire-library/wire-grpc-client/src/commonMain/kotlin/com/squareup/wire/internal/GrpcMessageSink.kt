@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.GrpcCodec
 import com.squareup.wire.MessageSink
 import com.squareup.wire.ProtoAdapter
 import okio.Buffer
@@ -32,18 +33,18 @@ class GrpcMessageSink<T : Any> constructor(
   private val sink: BufferedSink,
   private val messageAdapter: ProtoAdapter<T>,
   private val callForCancel: Call?,
-  private val encoder: GrpcEncoder
+  private val codec: GrpcCodec
 ) : MessageSink<T> {
   private var closed = false
   override fun write(message: T) {
     check(!closed) { "closed" }
 
     val encodedMessage = Buffer()
-    encoder.encode(encodedMessage).use(BufferedSink::close) { encodingSink ->
+    codec.encode(encodedMessage).use(BufferedSink::close) { encodingSink ->
       messageAdapter.encode(encodingSink, message)
     }
 
-    val compressedFlag = if (encoder is GrpcEncoder.IdentityGrpcEncoder) 0 else 1
+    val compressedFlag = if (codec is GrpcCodec.IdentityGrpcCodec) 0 else 1
     sink.writeByte(compressedFlag)
     // TODO: fail if the message size is more than MAX_INT
     sink.writeInt(encodedMessage.size.toInt())

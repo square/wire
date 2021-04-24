@@ -22,7 +22,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Service
 import com.squareup.wire.internal.GrpcMessageSink
 import com.squareup.wire.internal.GrpcMessageSource
-import com.squareup.wire.internal.GrpcEncoder
+import com.squareup.wire.GrpcCodec
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers.Companion.headersOf
@@ -156,7 +156,7 @@ class GrpcDispatcher(
     val source = GrpcMessageSource(
         source = request.body,
         messageAdapter = protoAdapter,
-        grpcEncoding = request.headers["grpc-encoding"]
+        codec = GrpcCodec.IdentityGrpcCodec
     )
     return source.readExactlyOneAndClose()
   }
@@ -170,7 +170,7 @@ class GrpcDispatcher(
         sink = result,
         messageAdapter = protoAdapter,
         callForCancel = null,
-        encoder = GrpcEncoder.IdentityGrpcEncoder
+        codec = GrpcCodec.IdentityGrpcCodec
     ).use {
       it.write(response)
     }

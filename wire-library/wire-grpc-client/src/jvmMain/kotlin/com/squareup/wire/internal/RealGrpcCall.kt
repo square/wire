@@ -97,7 +97,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
   private fun Response.readExactlyOneAndClose(): R {
     use {
-      messageSource(method.responseAdapter).use { reader ->
+      messageSource(method.responseAdapter, grpcClient.codec).use { reader ->
         val result = try {
           reader.readExactlyOneAndClose()
         } catch (e: IOException) {
@@ -125,7 +125,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
   private fun initCall(request: S): Call {
     check(this.call == null) { "already executed" }
 
-    val requestBody = newRequestBody(method.requestAdapter, request, grpcClient.encoder)
+    val requestBody = newRequestBody(method.requestAdapter, request, grpcClient.codec)
     val result = grpcClient.newCall(method, requestBody)
     this.call = result
     if (canceled) result.cancel()
