@@ -15,8 +15,6 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.*
-import com.squareup.wire.GrpcCodec
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
 import okhttp3.Call
@@ -73,8 +71,6 @@ actual class GrpcClient private constructor(
           if (codec !is GrpcCodec.IdentityGrpcCodec) {
             addHeader("grpc-accept-encoding", codec.name)
             addHeader("grpc-encoding", codec.name)
-          } else {
-            addHeader("grpc-accept-encoding", "gzip")
           }
         }
         .tag(GrpcMethod::class.java, method)
@@ -108,7 +104,7 @@ actual class GrpcClient private constructor(
     fun build(): GrpcClient = GrpcClient(
             client = client!!,
             baseUrl = baseUrl!!,
-            codec = codec ?: GrpcCodec.IdentityGrpcCodec
+            codec = codec ?: GrpcCodec.GzipGrpcCodec
     )
   }
 }
