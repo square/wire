@@ -49,7 +49,8 @@ object GrpcClientProvider {
   val grpcClient = GrpcClient.Builder()
       .client(okHttpClient)
       .apply {
-        // GzipGrpcCodec used by default, use Identity or define your own extending GrpcEncoder
+        // By default GzipGrpcCodec is used, however you can use IdentityGrpcCodec
+        // or by defining your own extending GrpcEncoder.
         codec(GrpcCodec.GzipGrpcCodec)
       }
       .baseUrl("https://10.0.2.2:8443")
