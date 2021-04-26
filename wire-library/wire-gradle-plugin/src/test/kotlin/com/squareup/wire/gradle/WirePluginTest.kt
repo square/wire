@@ -68,7 +68,7 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
-    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output).contains("NO-SOURCE")
   }
 
@@ -104,7 +104,7 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
 
-    val task = result.task(":generateMainProtos")
+    val task = result.task(":generateProtos")
     assertThat(task).isNotNull
     assertThat(result.output).contains("no sources")
   }
@@ -461,7 +461,7 @@ class WirePluginTest {
       withArguments("run", "--stacktrace", "--info").build()
     }
 
-    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
@@ -483,7 +483,7 @@ class WirePluginTest {
       withArguments("run", "--stacktrace", "--info").build()
     }
 
-    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
@@ -505,7 +505,7 @@ class WirePluginTest {
       withArguments("run", "--stacktrace", "--info").build()
     }
 
-    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
@@ -527,7 +527,7 @@ class WirePluginTest {
       withArguments("run", "--stacktrace", "--info").build()
     }
 
-    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
@@ -549,7 +549,7 @@ class WirePluginTest {
       withArguments("run", "--stacktrace", "--info").build()
     }
 
-    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
       .contains("Writing com.squareup.dinosaurs.Dinosaur")
       .contains("Writing com.squareup.geology.Period")
@@ -718,7 +718,7 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { build() }
 
-    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.task(":helloWorld")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dig")
@@ -786,7 +786,7 @@ class WirePluginTest {
     }
 
     println(result.tasks.joinToString { it.toString() })
-    assertThat(result.task(":generateJvmMainProtos")).isNotNull
+    assertThat(result.task(":generateProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
@@ -863,15 +863,15 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/consecutive-runs")
 
     val firstRun = gradleRunner.runFixture(fixtureRoot) { build() }
-    assertThat(firstRun.task(":generateMainProtos")).isNotNull
+    assertThat(firstRun.task(":generateProtos")).isNotNull
     assertThat(firstRun.output)
         .contains("Writing com.squareup.geology.Period")
         .contains("src/test/projects/consecutive-runs/custom")
 
     val secondRun = gradleRunner.runFixture(fixtureRoot) { build() }
-    assertThat(secondRun.task(":generateMainProtos")).isNotNull
+    assertThat(secondRun.task(":generateProtos")).isNotNull
     assertThat(secondRun.output)
-        .contains("Task :generateMainProtos UP-TO-DATE")
+        .contains("Task :generateProtos UP-TO-DATE")
   }
 
   @Test
@@ -952,10 +952,10 @@ class WirePluginTest {
     val fixtureRoot = File("src/test/projects/project-dependencies")
 
     val result = gradleRunner.runFixture(fixtureRoot) {
-      withArguments("generateMainProtos", "--stacktrace", "--info").build()
+      withArguments("generateProtos", "--stacktrace", "--info").build()
     }
 
-    assertThat(result.task(":dinosaurs:generateMainProtos")?.outcome)
+    assertThat(result.task(":dinosaurs:generateProtos")?.outcome)
       .isIn(TaskOutcome.SUCCESS, TaskOutcome.UP_TO_DATE)
     val generatedProto1 = File(fixtureRoot,
       "dinosaurs/build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")

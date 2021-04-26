@@ -94,11 +94,6 @@ class WirePlugin : Plugin<Project> {
       "Missing either the Java, Kotlin, or Android plugin"
     }
 
-    project.tasks.register(PARENT_TASK) {
-      it.group = GROUP
-      it.description = "Aggregation task which runs every generation task for every given source"
-    }
-
     if (extension.protoLibrary) {
       val libraryProtoSources = File(project.libraryProtoOutputPath())
       val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
@@ -173,6 +168,35 @@ class WirePlugin : Plugin<Project> {
       }
     }
 
+    val wireTask = project.tasks.register(WIRE_TASK_NAME, WireTask::class.java) { task: WireTask ->
+      task.group = WIRE_TASK_GROUP
+      task.description = "Generate protobuf implementation"
+      task.source(sourceInput.configuration)
+
+      if (task.logger.isDebugEnabled) {
+        sourceInput.debug(task.logger)
+        protoInput.debug(task.logger)
+      }
+      task.outputDirectories = outputs.map { output -> File(output.out!!) }
+      task.sourceInput.set(sourceInput.toLocations())
+      task.protoInput.set(protoInput.toLocations())
+      task.roots = extension.roots.toList()
+      task.prunes = extension.prunes.toList()
+      task.moves = extension.moves.toList()
+      task.sinceVersion = extension.sinceVersion
+      task.untilVersion = extension.untilVersion
+      task.onlyVersion = extension.onlyVersion
+      task.rules = extension.rules
+      task.targets = targets
+      task.permitPackageCycles = extension.permitPackageCycles
+
+      task.inputFiles = inputFiles
+
+      for (projectDependency in projectDependencies) {
+        task.dependsOn(projectDependency)
+      }
+    }
+
     val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
     for (generatedSourcesDirectory in generatedSourcesDirectories) {
       common?.kotlinSourceDirectorySet
@@ -193,46 +217,13 @@ class WirePlugin : Plugin<Project> {
         }
       }
 
-      val taskName = "generate${source.name.capitalize()}Protos"
-      val task = project.tasks.register(taskName, WireTask::class.java) { task: WireTask ->
-        task.group = GROUP
-        task.description = "Generate protobuf implementation for ${source.name}"
-        task.source(sourceInput.configuration)
-
-        if (task.logger.isDebugEnabled) {
-          sourceInput.debug(task.logger)
-          protoInput.debug(task.logger)
-        }
-        task.outputDirectories = outputs.map { output -> File(output.out!!) }
-        task.sourceInput.set(sourceInput.toLocations())
-        task.protoInput.set(protoInput.toLocations())
-        task.roots = extension.roots.toList()
-        task.prunes = extension.prunes.toList()
-        task.moves = extension.moves.toList()
-        task.sinceVersion = extension.sinceVersion
-        task.untilVersion = extension.untilVersion
-        task.onlyVersion = extension.onlyVersion
-        task.rules = extension.rules
-        task.targets = targets
-        task.permitPackageCycles = extension.permitPackageCycles
-
-        task.inputFiles = inputFiles
-
-        for (projectDependency in projectDependencies) {
-          task.dependsOn(projectDependency)
-        }
-      }
-
-      project.tasks.named(PARENT_TASK).configure {
-        it.dependsOn(task)
-      }
       if (extension.protoLibrary) {
         project.tasks.named("processResources").configure {
-          it.dependsOn(task)
+          it.dependsOn(wireTask)
         }
       }
 
-      source.registerTaskDependency(task)
+      source.registerTaskDependency(wireTask)
     }
   }
 
@@ -264,7 +255,7 @@ class WirePlugin : Plugin<Project> {
   }
 
   internal companion object {
-    const val PARENT_TASK = "generateProtos"
-    const val GROUP = "wire"
+    const val WIRE_TASK_NAME = "generateProtos"
+    const val WIRE_TASK_GROUP = "wire"
   }
 }
