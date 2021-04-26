@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+package squareup.protos3.kotlin.contains_timestamp;
+
+option java_package = "com.squareup.wire.proto3.kotlin.containsTimestamp";
+
+message ContainsTimestamp {
+  google.protobuf.Timestamp timestamp = 1;
+}

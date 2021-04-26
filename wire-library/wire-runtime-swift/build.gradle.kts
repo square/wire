@@ -29,7 +29,7 @@ val generateSwiftProtos by tasks.creating(JavaExec::class) {
     outFile.mkdir()
   }
 
-  val includedTypes = listOf("Duration").map {
+  val includedTypes = listOf("Duration", "Timestamp").map {
     "google.protobuf.$it"
   }
 
