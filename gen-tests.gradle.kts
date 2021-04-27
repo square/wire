@@ -361,7 +361,8 @@ val generateSwiftProto3Tests by tasks.creating(JavaExec::class) {
   args = listOf(
     "--proto_path=wire-library/wire-tests/src/commonTest/proto3/kotlin",
     "--swift_out=$swiftOut",
-    "contains_duration.proto"
+    "contains_duration.proto",
+    "contains_timestamp.proto"
   )
 }
 
