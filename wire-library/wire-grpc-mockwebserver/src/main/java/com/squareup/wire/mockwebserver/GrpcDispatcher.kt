@@ -22,6 +22,7 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Service
 import com.squareup.wire.internal.GrpcMessageSink
 import com.squareup.wire.internal.GrpcMessageSource
+import java.lang.reflect.Method
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers.Companion.headersOf
@@ -31,7 +32,6 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
 import okio.Timeout
-import java.lang.reflect.Method
 
 /**
  * Serves gRPC calls using MockWebServer over HTTP/2.
@@ -166,10 +166,11 @@ class GrpcDispatcher(
   ): Buffer {
     val result = Buffer()
     GrpcMessageSink(
-        sink = result,
-        messageAdapter = protoAdapter,
-        callForCancel = null,
-        grpcEncoding = "identity"
+      sink = result,
+      minMessageToCompress = 0L,
+      messageAdapter = protoAdapter,
+      callForCancel = null,
+      grpcEncoding = "identity",
     ).use {
       it.write(response)
     }

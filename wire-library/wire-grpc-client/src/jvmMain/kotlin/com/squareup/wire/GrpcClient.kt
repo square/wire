@@ -17,13 +17,14 @@ package com.squareup.wire
 
 import com.squareup.wire.internal.RealGrpcCall
 import com.squareup.wire.internal.RealGrpcStreamingCall
+import kotlin.reflect.KClass
 import okhttp3.Call
 import okhttp3.OkHttpClient
-import kotlin.reflect.KClass
 
 actual class GrpcClient private constructor(
   internal val client: Call.Factory,
-  internal val baseUrl: GrpcHttpUrl
+  internal val baseUrl: GrpcHttpUrl,
+  internal val minMessageToCompress: Long
 ) {
   /** Returns a [T] that makes gRPC calls using this client. */
   inline fun <reified T : Service> create(): T = create(T::class)
@@ -61,21 +62,33 @@ actual class GrpcClient private constructor(
     return RealGrpcStreamingCall(this, method)
   }
 
+  fun newBuilder(): Builder {
+    return Builder()
+      .callFactory(client)
+      .baseUrl(baseUrl)
+      .minMessageToCompress(minMessageToCompress)
+  }
+
   internal fun newCall(method: GrpcMethod<*, *>, requestBody: GrpcRequestBody): Call {
     return client.newCall(GrpcRequestBuilder()
-        .url(baseUrl.resolve(method.path)!!)
-        .addHeader("te", "trailers")
-        .addHeader("grpc-trace-bin", "")
-        .addHeader("grpc-accept-encoding", "gzip")
-        .addHeader("grpc-encoding", "gzip")
-        .tag(GrpcMethod::class.java, method)
-        .method("POST", requestBody)
-        .build())
+      .url(baseUrl.resolve(method.path)!!)
+      .addHeader("te", "trailers")
+      .addHeader("grpc-trace-bin", "")
+      .addHeader("grpc-accept-encoding", "gzip")
+      .apply {
+        if (minMessageToCompress < Long.MAX_VALUE) {
+          addHeader("grpc-encoding", "gzip")
+        }
+      }
+      .tag(GrpcMethod::class.java, method)
+      .method("POST", requestBody)
+      .build())
   }
 
   class Builder {
     private var client: Call.Factory? = null
     private var baseUrl: GrpcHttpUrl? = null
+    private var minMessageToCompress: Long = 0L
 
     fun client(client: OkHttpClient): Builder = callFactory(client)
 
@@ -91,6 +104,25 @@ actual class GrpcClient private constructor(
       this.baseUrl = url
     }
 
-    fun build(): GrpcClient = GrpcClient(client = client!!, baseUrl = baseUrl!!)
+    /**
+     * Sets the minimum outbound message size (in bytes) that will be compressed.
+     *
+     * Set this to 0 to enable compression for all outbound messages. Set to [Long.MAX_VALUE] to
+     * disable compression.
+     *
+     * This is 0 by default.
+     */
+    fun minMessageToCompress(bytes: Long) = apply {
+      require(bytes >= 0) {
+        "minMessageToCompress must not be negative: $bytes"
+      }
+      this.minMessageToCompress = bytes
+    }
+
+    fun build(): GrpcClient = GrpcClient(
+      client = client ?: throw IllegalArgumentException("client is not set"),
+      baseUrl = baseUrl ?: throw IllegalArgumentException("baseUrl is not set"),
+      minMessageToCompress = minMessageToCompress
+    )
   }
 }

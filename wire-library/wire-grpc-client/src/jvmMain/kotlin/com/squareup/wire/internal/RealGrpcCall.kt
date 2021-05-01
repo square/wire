@@ -125,7 +125,11 @@ internal class RealGrpcCall<S : Any, R : Any>(
   private fun initCall(request: S): Call {
     check(this.call == null) { "already executed" }
 
-    val requestBody = newRequestBody(method.requestAdapter, request)
+    val requestBody = newRequestBody(
+      minMessageToCompress = grpcClient.minMessageToCompress,
+      requestAdapter = method.requestAdapter,
+      onlyMessage = request
+    )
     val result = grpcClient.newCall(method, requestBody)
     this.call = result
     if (canceled) result.cancel()
