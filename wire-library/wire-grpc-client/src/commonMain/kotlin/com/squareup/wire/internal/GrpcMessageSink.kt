@@ -28,8 +28,9 @@ import okio.BufferedSink
  * @param callForCancel the HTTP call that can be canceled to signal abnormal termination.
  * @param grpcEncoding the content coding for the stream body.
  */
-class GrpcMessageSink<T : Any> constructor(
+class GrpcMessageSink<T : Any>(
   private val sink: BufferedSink,
+  private val minMessageToCompress: Long,
   private val messageAdapter: ProtoAdapter<T>,
   private val callForCancel: Call?,
   private val grpcEncoding: String
@@ -39,15 +40,23 @@ class GrpcMessageSink<T : Any> constructor(
     check(!closed) { "closed" }
 
     val encodedMessage = Buffer()
-    grpcEncoding.toGrpcEncoder().encode(encodedMessage).use(BufferedSink::close) { encodingSink ->
-      messageAdapter.encode(encodingSink, message)
+    messageAdapter.encode(encodedMessage, message)
+
+    if (grpcEncoding == "identity" || encodedMessage.size < minMessageToCompress) {
+      sink.writeByte(0) // 0 = Not encoded.
+      sink.writeInt(encodedMessage.size.toInt())
+      sink.writeAll(encodedMessage)
+    } else {
+      val compressedMessage = Buffer()
+      grpcEncoding.toGrpcEncoder().encode(compressedMessage).use(BufferedSink::close) { sink ->
+        sink.writeAll(encodedMessage)
+      }
+      sink.writeByte(1) // 1 = Compressed.
+      sink.writeInt(compressedMessage.size.toInt())
+      sink.writeAll(compressedMessage)
     }
 
-    val compressedFlag = if (grpcEncoding == "identity") 0 else 1
-    sink.writeByte(compressedFlag)
     // TODO: fail if the message size is more than MAX_INT
-    sink.writeInt(encodedMessage.size.toInt())
-    sink.writeAll(encodedMessage)
     sink.flush()
   }
 

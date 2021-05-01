@@ -37,6 +37,7 @@ internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMedia
 
 /** Returns a new request body that writes [onlyMessage]. */
 internal fun <S : Any> newRequestBody(
+  minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
   onlyMessage: S
 ): RequestBody {
@@ -45,10 +46,11 @@ internal fun <S : Any> newRequestBody(
 
     override fun writeTo(sink: BufferedSink) {
       val grpcMessageSink = GrpcMessageSink(
-          sink = sink,
-          messageAdapter = requestAdapter,
-          callForCancel = null,
-          grpcEncoding = "gzip"
+        sink = sink,
+        minMessageToCompress = minMessageToCompress,
+        messageAdapter = requestAdapter,
+        callForCancel = null,
+        grpcEncoding = "gzip",
       )
       grpcMessageSink.use {
         it.write(onlyMessage)
@@ -67,13 +69,15 @@ internal fun newDuplexRequestBody(): PipeDuplexRequestBody {
 
 /** Writes messages to the request body. */
 internal fun <S : Any> PipeDuplexRequestBody.messageSink(
+  minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
   callForCancel: Call
 ) = GrpcMessageSink(
-    sink = createSink(),
-    messageAdapter = requestAdapter,
-    callForCancel = callForCancel,
-    grpcEncoding = "gzip"
+  sink = createSink(),
+  minMessageToCompress = minMessageToCompress,
+  messageAdapter = requestAdapter,
+  callForCancel = callForCancel,
+  grpcEncoding = "gzip",
 )
 
 /** Sends the response messages to the channel. */
@@ -112,20 +116,22 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
  */
 internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestBody: PipeDuplexRequestBody,
+  minMessageToCompress: Long,
   requestAdapter: ProtoAdapter<S>,
   callForCancel: Call
 ) {
-  requestBody.messageSink(requestAdapter, callForCancel).use { requestWriter ->
-    var success = false
-    try {
-      consumeEach { message ->
-        requestWriter.write(message)
+  requestBody.messageSink(minMessageToCompress, requestAdapter, callForCancel)
+    .use { requestWriter ->
+      var success = false
+      try {
+        consumeEach { message ->
+          requestWriter.write(message)
+        }
+        success = true
+      } finally {
+        if (!success) requestWriter.cancel()
       }
-      success = true
-    } finally {
-      if (!success) requestWriter.cancel()
     }
-  }
 }
 
 /** Reads messages from the response body. */

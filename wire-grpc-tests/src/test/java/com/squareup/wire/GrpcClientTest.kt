@@ -21,6 +21,10 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import io.grpc.Status
+import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -28,6 +32,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Interceptor
+import okhttp3.Interceptor.Chain
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -36,6 +41,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.Buffer
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -51,10 +57,6 @@ import routeguide.Rectangle
 import routeguide.RouteGuideClient
 import routeguide.RouteNote
 import routeguide.RouteSummary
-import java.io.IOException
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -1052,6 +1054,94 @@ class GrpcClientTest {
     val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
 
     assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+  }
+
+  @Test
+  fun messageLargerThanMinimumSizeIsCompressed() {
+    val requestBodyBuffer = Buffer()
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Chain): Response {
+        assertThat(chain.request().header("grpc-encoding")).isEqualTo("gzip")
+        chain.request().body!!.writeTo(requestBodyBuffer)
+        return chain.proceed(chain.request())
+      }
+    }
+
+    grpcClient = grpcClient.newBuilder()
+      .minMessageToCompress(1L) // Smaller than Point(5, 6).
+      .build()
+    routeGuideService = grpcClient.create(RouteGuideClient::class)
+
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+    assertThat(requestBodyBuffer.size).isEqualTo(29L) // 5-byte frame + 24-byte gzip data.
+  }
+
+  @Test
+  fun messageSmallerThanMinimumSizeIsNotCompressed() {
+    val requestBodyBuffer = Buffer()
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Chain): Response {
+        // The grpc-encoding header is sent if gzip is enabled, independent of message size.
+        assertThat(chain.request().header("grpc-encoding")).isEqualTo("gzip")
+        chain.request().body!!.writeTo(requestBodyBuffer)
+        return chain.proceed(chain.request())
+      }
+    }
+
+    grpcClient = grpcClient.newBuilder()
+      .minMessageToCompress(10L) // Larger than Point(5, 6).
+      .build()
+    routeGuideService = grpcClient.create(RouteGuideClient::class)
+
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+    assertThat(requestBodyBuffer.size).isEqualTo(9L) // 5-byte frame + 4-byte data.
+  }
+
+  @Test
+  fun maxMessageSizeToCompressDisablesCompression() {
+    val requestBodyBuffer = Buffer()
+    interceptor = object : Interceptor {
+      override fun intercept(chain: Chain): Response {
+        assertThat(chain.request().header("grpc-encoding")).isNull()
+        chain.request().body!!.writeTo(requestBodyBuffer)
+        return chain.proceed(chain.request())
+      }
+    }
+
+    grpcClient = grpcClient.newBuilder()
+      .minMessageToCompress(Long.MAX_VALUE)
+      .build()
+    routeGuideService = grpcClient.create(RouteGuideClient::class)
+
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueueSendFeature(name = "tree at 5,6")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    val feature = grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+
+    assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
+    assertThat(requestBodyBuffer.size).isEqualTo(9L) // 5-byte frame + 4-byte body.
   }
 
   private fun removeGrpcStatusInterceptor(): Interceptor {
