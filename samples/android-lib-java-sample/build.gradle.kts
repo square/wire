@@ -1,5 +1,5 @@
 plugins {
-  id("com.android.application")
+  id("com.android.library")
   id("com.squareup.wire")
 }
 
@@ -8,11 +8,8 @@ android {
   buildToolsVersion("30.0.2")
 
   defaultConfig {
-    applicationId = "com.square.wire.java.sample.myapplication"
     minSdkVersion(28)
     targetSdkVersion(30)
-    versionCode = 1
-    versionName = "1.0"
   }
 
   compileOptions {
@@ -25,11 +22,6 @@ wire {
   java {
     android = true
   }
-}
-
-dependencies {
-  implementation("androidx.appcompat:appcompat:1.2.0")
-  implementation("androidx.constraintlayout:constraintlayout:2.0.4")
 }
 
 buildscript {

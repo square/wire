@@ -166,7 +166,8 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
       }
       else -> null
     }
-    val androidSourceDirectorySet = androidSourceSets!![variant.name]
+    val androidSourceDirectorySet = androidSourceSets?.get(variant.name)
+    if (!kotlin) checkNotNull(androidSourceDirectorySet)
     val javaSourceDirectorySet = when {
       androidSourceDirectorySet != null -> WireSourceDirectorySet.of(androidSourceDirectorySet)
       else -> null

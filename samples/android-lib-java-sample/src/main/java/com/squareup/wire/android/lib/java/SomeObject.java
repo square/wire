@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.wire.javaonly;
+package com.squareup.wire.android.lib.java;
 
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-
-
-public class MainActivity extends AppCompatActivity {
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-
-    SomeText someText = new SomeText("Hi");
-    ((TextView) findViewById(R.id.text_view)).setText(someText.value);
+public final class SomeObject {
+  public SomeObject() {
+    System.out.println(new SomeText("Hi"));
   }
 }
