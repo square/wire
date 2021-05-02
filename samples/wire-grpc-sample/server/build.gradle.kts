@@ -1,7 +1,7 @@
 plugins {
+  application
   kotlin("jvm")
   id("com.squareup.wire")
-  application
 }
 
 application {
@@ -10,20 +10,17 @@ application {
 
 wire {
   sourcePath {
-    srcDir("$rootDir/wire-grpc-sample/protos/src/main/proto")
+    srcDir("$rootDir/samples/wire-grpc-sample/protos/src/main/proto")
   }
   kotlin {
     rpcCallStyle = "blocking"
     rpcRole = "server"
     singleMethodServices = true
-    grpcServerCompatible = true
   }
 }
 
 dependencies {
-  implementation(project(":wire-grpc-sample:protos"))
-  implementation(deps.wire.grpcServer)
+  implementation(project(":samples:wire-grpc-sample:protos"))
   implementation(deps.wire.runtime)
-  implementation(deps.grpc.netty)
-  implementation(deps.grpc.stub)
+  implementation(deps.misk)
 }
