@@ -1,5 +1,6 @@
 plugins {
   id("com.android.application")
+  id("org.jetbrains.kotlin.android")
   id("com.squareup.wire")
 }
 
@@ -22,7 +23,7 @@ android {
 }
 
 wire {
-  java {
+  kotlin {
     android = true
   }
 }
