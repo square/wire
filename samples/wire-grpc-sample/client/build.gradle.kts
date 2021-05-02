@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-  implementation(project(":wire-grpc-sample:protos"))
+  implementation(project(":samples:wire-grpc-sample:protos"))
   implementation(deps.kotlin.coroutines.android)
   implementation(deps.androidx.appcompat)
   implementation(deps.androidx.ktx)
