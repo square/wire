@@ -11,8 +11,9 @@ kotlin {
     val jvmMain by getting {
       kotlin.srcDir("$buildDir/wire")
       dependencies {
-        api(project(":wire-runtime"))
+        api(project(":wire-compiler"))
         api(project(":wire-grpc-client"))
+        api(project(":wire-runtime"))
         api(project(":wire-schema"))
         implementation(deps.okio.jvm)
         api(deps.guava)
