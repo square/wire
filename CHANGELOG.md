@@ -1,6 +1,41 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.1
+---------------------
+
+_2021-05-01_
+
+**Kotlin + Java**
+
+ * New: `GrpcClient.Builder.minMessageToCompress()` configures which messages are compressed.
+   This will completely disable compression if the size is `Long.MAX_VALUE`. We've seen problems
+   where some Golang gRPC servers don't support compression; setting this to `MAX_VALUE` is
+   necessary to interop with them.
+ * New: `SchemaReflector` is our initial implementation of the [gRPC Server Reflection
+   Protocol][reflect]. Note that although we implement the business logic of gRPC reflection, we
+   don't offer a gRPC server built into Wire.
+ * New: Support `rpcRole = 'none'` in the Gradle plugin to generate neither client nor server code.
+ * Fix: Generate `@Deprecated` annotations on deprecated messages, fields, enums, and enum
+   constants.
+ * Fix: Update the Wire Gradle plugin to register generated `.java` sources with the Java compiler.
+   Previously this was broken if the Kotlin plugin was installed.
+ * Fix: Use Gradle's logging mechanism to reduce output when Wire generates code.
+ * Fix: Update the Wire Gradle plugin to clear the output directory before generating code. This
+   prevents the need to do a clean build after removing a message type.
+ * Fix: Permit values other than `0` and `1` when decoding protobuf-encoded booleans. Previously we
+   threw an `IOException` for other values; now all non-zero values are true.
+ * Upgrade: [Okio 3.0.0-alpha.3][okio_3_0_0_a_3]. We now use Okio 3's `FileSystem` in
+   `SchemaLoader`, which makes it easier to load `.proto` files from the classpath.
+
+
+**Swift**:
+
+ * New: Support `Timestamp` and `Duration`.
+ * Fix: Throw an error when encountering an unexpected `ProtoReader.beginMessage()` rather
+   than calling `fatalError()`.
+
+
 Version 3.7.0
 -------------
 
@@ -804,4 +839,6 @@ Initial version.
 
  [jimfs]: https://github.com/google/jimfs
  [javapoet]: https://github.com/square/javapoet
+ [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
+ [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
