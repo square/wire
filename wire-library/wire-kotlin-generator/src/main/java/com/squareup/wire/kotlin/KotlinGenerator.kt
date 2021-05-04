@@ -294,6 +294,7 @@ class KotlinGenerator private constructor(
           .addMember("path = %S", "/$packageName$serviceName/${rpc.name}")
           .addMember("requestAdapter = %S", rpc.requestType!!.adapterString())
           .addMember("responseAdapter = %S", rpc.responseType!!.adapterString())
+          .addMember("sourceFile = %S", rpc.location.path)
           .build()
       funSpecBuilder
           .addAnnotation(wireRpcAnnotationSpec)

@@ -32,5 +32,6 @@ package com.squareup.wire
 annotation class WireRpc(
   val path: String,
   val requestAdapter: String,
-  val responseAdapter: String
+  val responseAdapter: String,
+  val sourceFile: String = ""
 )
