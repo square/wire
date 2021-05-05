@@ -200,7 +200,8 @@ class KotlinGeneratorTest {
           @WireRpc(
             path = "/routeguide.RouteGuide/GetFeature",
             requestAdapter = "routeguide.Point#ADAPTER",
-            responseAdapter = "routeguide.Feature#ADAPTER"
+            responseAdapter = "routeguide.Feature#ADAPTER",
+            sourceFile = "routeguide.proto"
           )
           public fun GetFeature(request: Point): Feature
         }
@@ -242,7 +243,8 @@ class KotlinGeneratorTest {
           @WireRpc(
             path = "/routeguide.RouteGuide/RecordRoute",
             requestAdapter = "routeguide.Point#ADAPTER",
-            responseAdapter = "routeguide.RouteSummary#ADAPTER"
+            responseAdapter = "routeguide.RouteSummary#ADAPTER",
+            sourceFile = "routeguide.proto"
           )
           public fun RecordRoute(request: MessageSource<Point>): RouteSummary
         }
@@ -285,7 +287,8 @@ class KotlinGeneratorTest {
           @WireRpc(
             path = "/routeguide.RouteGuide/ListFeatures",
             requestAdapter = "routeguide.Rectangle#ADAPTER",
-            responseAdapter = "routeguide.Feature#ADAPTER"
+            responseAdapter = "routeguide.Feature#ADAPTER",
+            sourceFile = "routeguide.proto"
           )
           public fun ListFeatures(request: Rectangle, response: MessageSink<Feature>): Unit
         }
@@ -330,7 +333,8 @@ class KotlinGeneratorTest {
           @WireRpc(
             path = "/routeguide.RouteGuide/RouteChat",
             requestAdapter = "routeguide.RouteNote#ADAPTER",
-            responseAdapter = "routeguide.RouteNote#ADAPTER"
+            responseAdapter = "routeguide.RouteNote#ADAPTER",
+            sourceFile = "routeguide.proto"
           )
           public fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>): Unit
         }
@@ -375,7 +379,8 @@ class KotlinGeneratorTest {
           @WireRpc(
             path = "/routeguide.RouteGuide/GetFeature",
             requestAdapter = "com.squareup.routeguide.Point#ADAPTER",
-            responseAdapter = "com.squareup.routeguide.Feature#ADAPTER"
+            responseAdapter = "com.squareup.routeguide.Feature#ADAPTER",
+            sourceFile = "routeguide.proto"
           )
           public fun GetFeature(request: Point): Feature
         }
@@ -702,7 +707,8 @@ class KotlinGeneratorTest {
           @WireRpc(
             path = "/routeguide.RouteGuide/RouteChat",
             requestAdapter = "routeguide.RouteNote#ADAPTER",
-            responseAdapter = "routeguide.RouteNote#ADAPTER"
+            responseAdapter = "routeguide.RouteNote#ADAPTER",
+            sourceFile = "routeguide.proto"
           )
           public fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>): Unit
         }
@@ -772,7 +778,8 @@ class KotlinGeneratorTest {
            @WireRpc(
              path = "/routeguide.RouteGuide/RouteChat",
              requestAdapter = "routeguide.RouteNote#ADAPTER",
-             responseAdapter = "routeguide.RouteNote#ADAPTER"
+             responseAdapter = "routeguide.RouteNote#ADAPTER",
+             sourceFile = "routeguide.proto"
            )
            public suspend fun RouteChat(request: ReceiveChannel<RouteNote>,
                response: SendChannel<RouteNote>): Unit
