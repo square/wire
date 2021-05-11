@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.2
+---------------------
+
+_2021-05-11_
+
+**Kotlin + Java**
+
+ * New: `@WireRpc` has a new `sourceFile` attribute.
+ * New: `wire-reflector` bundles gRPC's `reflection.proto` which it is built upon.
+
+
 Version 4.0.0-alpha.1
 ---------------------
 
