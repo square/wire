@@ -71,6 +71,8 @@ class KotlinGeneratorTest {
         |  optional double j = 10 [default = -1e-2];
         |  optional double k = 11 [default = -1.23e45];
         |  optional double l = 12 [default = 255];
+        |  optional double m = 13 [default = inf];
+        |  optional double n = 14 [default = -inf];
         |}""".trimMargin())
     val code = repoBuilder.generateKotlin("Message")
     assertTrue(code.contains("const val DEFAULT_A: Int = 10"))
@@ -85,6 +87,8 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("const val DEFAULT_J: Double = -0.01"))
     assertTrue(code.contains("const val DEFAULT_K: Double = -1.23E45"))
     assertTrue(code.contains("const val DEFAULT_L: Double = 255.0"))
+    assertTrue(code.contains("const val DEFAULT_M: Double = Double.POSITIVE_INFINITY"))
+    assertTrue(code.contains("const val DEFAULT_N: Double = Double.NEGATIVE_INFINITY"))
   }
 
   @Test fun nameAllocatorIsUsed() {
