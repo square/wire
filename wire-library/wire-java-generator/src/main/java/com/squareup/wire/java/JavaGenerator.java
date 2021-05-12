@@ -1943,6 +1943,8 @@ public final class JavaGenerator {
         return CodeBlock.of("Float.POSITIVE_INFINITY");
       } else if ("-inf".equals(value)) {
         return CodeBlock.of("Float.NEGATIVE_INFINITY");
+      } else if ("nan".equals(value) || "-nan".equals(value)) {
+        return CodeBlock.of("Float.NaN");
       } else {
         return CodeBlock.of("$Lf", String.valueOf(value));
       }
@@ -1954,6 +1956,8 @@ public final class JavaGenerator {
         return CodeBlock.of("Double.POSITIVE_INFINITY");
       } else if ("-inf".equals(value)) {
         return CodeBlock.of("Double.NEGATIVE_INFINITY");
+      } else if ("nan".equals(value) || "-nan".equals(value)) {
+        return CodeBlock.of("Double.NaN");
       } else {
         return CodeBlock.of("$Ld", String.valueOf(value));
       }

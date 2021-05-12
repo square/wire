@@ -364,6 +364,8 @@ public final class JavaGeneratorTest {
             + "  optional int64 d = 4 [default = 0x21 ];\n"
             + "  optional float e = 5 [default = inf ];\n"
             + "  optional double f = 6 [default = -inf ];\n"
+            + "  optional double g = 7 [default = nan ];\n"
+            + "  optional double h = 8 [default = -nan ];\n"
             + "}\n");
     String code = repoBuilder.generateCode("Message");
     assertThat(code).contains("  public static final Integer DEFAULT_A = 10;");
@@ -372,6 +374,8 @@ public final class JavaGeneratorTest {
     assertThat(code).contains("  public static final Long DEFAULT_D = 33L;");
     assertThat(code).contains("  public static final Float DEFAULT_E = Float.POSITIVE_INFINITY;");
     assertThat(code).contains("  public static final Double DEFAULT_F = Double.NEGATIVE_INFINITY;");
+    assertThat(code).contains("  public static final Double DEFAULT_G = Double.NaN;");
+    assertThat(code).contains("  public static final Double DEFAULT_H = Double.NaN;");
   }
 
   @Test public void defaultValuesMustNotBeOctal() throws IOException {

@@ -1216,12 +1216,16 @@ class KotlinGenerator private constructor(
   private fun Any.toFloatFieldInitializer(): CodeBlock = when(this) {
     "inf" -> CodeBlock.of("Float.POSITIVE_INFINITY")
     "-inf" -> CodeBlock.of("Float.NEGATIVE_INFINITY")
+    "nan" -> CodeBlock.of("Float.NaN")
+    "-nan" -> CodeBlock.of("Float.NaN")
     else -> CodeBlock.of("%Lf", this.toString())
   }
 
   private fun Any.toDoubleFieldInitializer(): CodeBlock = when(this) {
     "inf" -> CodeBlock.of("Double.POSITIVE_INFINITY")
     "-inf" -> CodeBlock.of("Double.NEGATIVE_INFINITY")
+    "nan" -> CodeBlock.of("Double.NaN")
+    "-nan" -> CodeBlock.of("Double.NaN")
     else -> CodeBlock.of("%L", this.toString().toDouble())
   }
 
