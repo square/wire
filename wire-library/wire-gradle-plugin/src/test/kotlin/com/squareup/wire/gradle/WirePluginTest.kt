@@ -689,6 +689,20 @@ class WirePluginTest {
         File(outputRoot, "com/squareup/dinosaurs/BattleServiceBrawlBlockingServer.kt")).exists()
   }
 
+  @Test
+  fun emitServiceWithSpecificSuffix() {
+    val fixtureRoot = File("src/test/projects/emit-service-name-suffix")
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    val task = result.task(":generateProtos")
+
+    assertThat(task).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.BattleServiceClient")
+
+    val outputRoot = File(fixtureRoot, "build/generated/source/wire")
+    assertThat(File(outputRoot, "com/squareup/dinosaurs/BattleServiceClient.kt")).exists()
+  }
+
   /**
    * This test is symmetric with [protoPathMavenCoordinates] but it manipulates the configuration
    * directly. We expect this to be useful in cases where users want to make dependency resolution
