@@ -62,7 +62,6 @@ subprojects {
   if (!project.name.endsWith("-swift")) {
     // TODO this should use plugins.withId first rather than names
     if (project.name != "wire-runtime" &&
-        project.name != "wire-kotlin-serialization" &&
         project.name != "wire-reflector" &&
         project.name != "wire-schema" &&
         project.name != "sample" &&

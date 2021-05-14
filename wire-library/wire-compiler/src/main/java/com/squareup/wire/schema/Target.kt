@@ -26,11 +26,11 @@ import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.swift.SwiftGenerator
+import java.io.IOException
+import java.io.Serializable
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
-import java.io.IOException
-import java.io.Serializable
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 sealed class Target : Serializable {
@@ -274,9 +274,6 @@ data class KotlinTarget(
   /** True to emit annotations for options applied on messages, fields, etc. */
   val emitAppliedOptions: Boolean = false,
 
-  /** True to emit annotations for kotlinx.serialization. */
-  val emitKotlinSerialization: Boolean = false,
-
   /** Blocking or suspending. */
   val rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
 
@@ -323,7 +320,6 @@ data class KotlinTarget(
         javaInterop = javaInterop,
         emitDeclaredOptions = emitDeclaredOptions,
         emitAppliedOptions = emitAppliedOptions,
-        emitKotlinSerialization = emitKotlinSerialization,
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole,
         boxOneOfsMinSize = boxOneOfsMinSize,
@@ -374,11 +370,6 @@ data class KotlinTarget(
         val kotlinFile = FileSpec.builder(name.packageName, name.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
             .addComment("\nSource: %L in %L", source, location.withPathOnly())
-            .apply {
-              for (annotation in kotlinGenerator.generateFileAnnotations()) {
-                addAnnotation(annotation)
-              }
-            }
             .addType(typeSpec)
             .build()
         val filePath = modulePath /
