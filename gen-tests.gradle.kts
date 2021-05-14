@@ -329,21 +329,6 @@ val generateKotlinJavaInteropTests by tasks.creating(JavaExec::class) {
   )
 }
 
-// KOTLIN SERIALIZATION
-
-val generateKotlinSerializationTests by tasks.creating(JavaExec::class) {
-  group = "Generate Tests"
-  description = "Generates Kotlin classes for kotlin.serialization"
-  classpath = wire
-  main = "com.squareup.wire.WireCompiler"
-  args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin-serialization",
-          "--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin-serialization",
-          "--emit_kotlin_serialization_UNSUPPORTED",
-          "cdn_resource.proto"
-  )
-}
-
 // SWIFT
 
 val generateSwiftProto3Tests by tasks.creating(JavaExec::class) {
@@ -591,8 +576,7 @@ val generateTests by tasks.creating {
     generateMoshiTests,
     generateProto3KotlinTests,
     generateProto3JavaTests,
-    generateSharedJson,
-    generateKotlinSerializationTests
+    generateSharedJson
   )
 }
 

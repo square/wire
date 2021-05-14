@@ -117,14 +117,12 @@ class RepoBuilder {
 
   fun generateKotlin(
     typeName: String,
-    emitKotlinSerialization: Boolean = false,
     profileName: String? = null
   ): String {
     val schema = schema()
     val kotlinGenerator = KotlinGenerator(
         schema,
         profile = profile(profileName),
-        emitKotlinSerialization = emitKotlinSerialization
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)

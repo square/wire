@@ -1238,31 +1238,6 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("import wire_package.Person"))
   }
 
-  @Test fun kotlinSerialization() {
-    val repoBuilder = RepoBuilder()
-        .add("message.proto", """
-        |syntax = "proto3";
-        |
-        |message CdnResource {
-        |  string url = 1;
-        |  int64 byte_count = 2;
-        |  ContentType content_type = 3;
-        |  bytes data = 4;
-        |
-        |  enum ContentType {
-        |    BINARY = 0;
-        |    IMAGE = 1;
-        |    VIDEO = 2;
-        |  }
-        |}""".trimMargin())
-    val code = repoBuilder.generateKotlin(
-        "CdnResource",
-        emitKotlinSerialization = true
-    ).replace(Regex("[\n ]+"), " ")
-    assertTrue(code.contains("@SerialName(\"data\") public val data_: ByteString"))
-    assertTrue(code.contains("@Serializable public class CdnResource"))
-  }
-
   @Test fun documentationEscapesBrackets() {
     val repoBuilder = RepoBuilder()
       .add("message.proto", """

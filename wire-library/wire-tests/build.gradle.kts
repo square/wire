@@ -71,14 +71,11 @@ kotlin {
       dependencies {
         api(project(":wire-runtime"))
         api(project(":wire-grpc-client"))
-        implementation(deps.kotlin.serializationJson)
       }
     }
     val commonTest by getting {
       kotlin.srcDir("src/commonTest/proto-kotlin")
-      kotlin.srcDir("src/commonTest/proto-kotlin-serialization")
       dependencies {
-        implementation(project(":wire-kotlin-serialization"))
         implementation(deps.kotlin.test.common)
         implementation(deps.kotlin.test.annotations)
       }
