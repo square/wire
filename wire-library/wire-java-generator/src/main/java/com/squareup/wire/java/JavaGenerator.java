@@ -1937,10 +1937,30 @@ public final class JavaGenerator {
       return CodeBlock.of("$LL", optionValueToLong(value));
 
     } else if (javaType.equals(TypeName.FLOAT)) {
-      return CodeBlock.of("$Lf", value != null ? String.valueOf(value) : 0f);
+      if (value == null) {
+        return CodeBlock.of("0.0f");
+      } else if ("inf".equals(value)) {
+        return CodeBlock.of("Float.POSITIVE_INFINITY");
+      } else if ("-inf".equals(value)) {
+        return CodeBlock.of("Float.NEGATIVE_INFINITY");
+      } else if ("nan".equals(value) || "-nan".equals(value)) {
+        return CodeBlock.of("Float.NaN");
+      } else {
+        return CodeBlock.of("$Lf", String.valueOf(value));
+      }
 
     } else if (javaType.equals(TypeName.DOUBLE)) {
-      return CodeBlock.of("$Ld", value != null ? String.valueOf(value) : 0d);
+      if (value == null) {
+        return CodeBlock.of("0.0d");
+      } else if ("inf".equals(value)) {
+        return CodeBlock.of("Double.POSITIVE_INFINITY");
+      } else if ("-inf".equals(value)) {
+        return CodeBlock.of("Double.NEGATIVE_INFINITY");
+      } else if ("nan".equals(value) || "-nan".equals(value)) {
+        return CodeBlock.of("Double.NaN");
+      } else {
+        return CodeBlock.of("$Ld", String.valueOf(value));
+      }
 
     } else if (javaType.equals(STRING)) {
       return CodeBlock.of("$S", value != null ? value : "");

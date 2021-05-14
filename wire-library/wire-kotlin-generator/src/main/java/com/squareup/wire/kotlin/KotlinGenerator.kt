@@ -1165,8 +1165,8 @@ class KotlinGenerator private constructor(
       typeName == BOOLEAN -> CodeBlock.of("%L", defaultValue)
       typeName == INT -> defaultValue.toIntFieldInitializer()
       typeName == LONG -> defaultValue.toLongFieldInitializer()
-      typeName == FLOAT -> CodeBlock.of("%Lf", defaultValue.toString())
-      typeName == DOUBLE -> CodeBlock.of("%L", defaultValue.toString().toDouble())
+      typeName == FLOAT -> defaultValue.toFloatFieldInitializer()
+      typeName == DOUBLE -> defaultValue.toDoubleFieldInitializer()
       typeName == STRING -> CodeBlock.of("%S", defaultValue)
       typeName == ByteString::class.asTypeName() -> CodeBlock.of("%S.%M()!!",
           defaultValue.toString().encode(charset = Charsets.ISO_8859_1).base64(),
@@ -1211,6 +1211,22 @@ class KotlinGenerator private constructor(
     Long.MIN_VALUE -> CodeBlock.of("%T.MIN_VALUE", LONG)
     Long.MAX_VALUE -> CodeBlock.of("%T.MAX_VALUE", LONG)
     else -> CodeBlock.of("%LL", long)
+  }
+
+  private fun Any.toFloatFieldInitializer(): CodeBlock = when(this) {
+    "inf" -> CodeBlock.of("Float.POSITIVE_INFINITY")
+    "-inf" -> CodeBlock.of("Float.NEGATIVE_INFINITY")
+    "nan" -> CodeBlock.of("Float.NaN")
+    "-nan" -> CodeBlock.of("Float.NaN")
+    else -> CodeBlock.of("%Lf", this.toString())
+  }
+
+  private fun Any.toDoubleFieldInitializer(): CodeBlock = when(this) {
+    "inf" -> CodeBlock.of("Double.POSITIVE_INFINITY")
+    "-inf" -> CodeBlock.of("Double.NEGATIVE_INFINITY")
+    "nan" -> CodeBlock.of("Double.NaN")
+    "-nan" -> CodeBlock.of("Double.NaN")
+    else -> CodeBlock.of("%L", this.toString().toDouble())
   }
 
   /**

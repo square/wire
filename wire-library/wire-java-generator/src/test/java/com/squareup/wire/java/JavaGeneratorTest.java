@@ -353,7 +353,6 @@ public final class JavaGeneratorTest {
     assertThat(repoBuilder.generateCode("A", "android")).contains(""
         + "  public abstract static class AbstractBAdapter extends ProtoAdapter<String> {\n");
   }
-
   /** https://github.com/square/wire/issues/655 */
   @Test public void defaultValues() throws IOException {
     RepoBuilder repoBuilder = new RepoBuilder()
@@ -363,12 +362,20 @@ public final class JavaGeneratorTest {
             + "  optional int32 b = 2 [default = 0x20 ];\n"
             + "  optional int64 c = 3 [default = 11 ];\n"
             + "  optional int64 d = 4 [default = 0x21 ];\n"
+            + "  optional float e = 5 [default = inf ];\n"
+            + "  optional double f = 6 [default = -inf ];\n"
+            + "  optional double g = 7 [default = nan ];\n"
+            + "  optional double h = 8 [default = -nan ];\n"
             + "}\n");
     String code = repoBuilder.generateCode("Message");
     assertThat(code).contains("  public static final Integer DEFAULT_A = 10;");
     assertThat(code).contains("  public static final Integer DEFAULT_B = 32;");
     assertThat(code).contains("  public static final Long DEFAULT_C = 11L;");
     assertThat(code).contains("  public static final Long DEFAULT_D = 33L;");
+    assertThat(code).contains("  public static final Float DEFAULT_E = Float.POSITIVE_INFINITY;");
+    assertThat(code).contains("  public static final Double DEFAULT_F = Double.NEGATIVE_INFINITY;");
+    assertThat(code).contains("  public static final Double DEFAULT_G = Double.NaN;");
+    assertThat(code).contains("  public static final Double DEFAULT_H = Double.NaN;");
   }
 
   @Test public void defaultValuesMustNotBeOctal() throws IOException {
