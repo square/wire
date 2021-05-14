@@ -450,11 +450,9 @@ wire {
     // `none` to not generate services.
     rpcRole = 'server'
 
-    // When null, generated service types will have a suffix appended to
-    // their names, inferred from rpcRole - 'Server' for 'server',
-    // 'Client' for 'client', etc. When non-null, generated service types
-    //  will have the given value for a suffix.
-    nameSuffix = null
+    // If set, the value will be appended to generated service type names. If null, their rpcRole
+    // will be used as a suffix instead.
+    nameSuffix = "Suffix"
 
     // True for emitted services to implement one interface per RPC.
     singleMethodServices = true
