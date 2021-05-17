@@ -531,7 +531,7 @@ class KotlinGenerator private constructor(
               .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
               .build())
           .returns(NOTHING)
-          .addStatement("throw %T(%S)", ClassName("kotlin", "AssertionError"), "newBuilder has been deprecated in Kotlin")
+          .addStatement("throw %T(%S)", ClassName("kotlin", "AssertionError"), "Builders are deprecated and only available in a javaInterop build; see https://square.github.io/wire/wire_compiler/#kotlin")
           .build()
     }
 
