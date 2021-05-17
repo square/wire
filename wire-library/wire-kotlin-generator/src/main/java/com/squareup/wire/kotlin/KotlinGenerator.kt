@@ -531,7 +531,7 @@ class KotlinGenerator private constructor(
               .addMember("level = %T.%L", DeprecationLevel::class, DeprecationLevel.HIDDEN)
               .build())
           .returns(NOTHING)
-          .addStatement("throw %T()", ClassName("kotlin", "AssertionError"))
+          .addStatement("throw %T(%S)", ClassName("kotlin", "AssertionError"), "newBuilder has been deprecated in Kotlin")
           .build()
     }
 
