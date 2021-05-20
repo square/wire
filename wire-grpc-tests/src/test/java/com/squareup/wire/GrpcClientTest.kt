@@ -20,6 +20,7 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveComplete
 import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
+import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import io.grpc.Status
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
@@ -55,6 +56,7 @@ import routeguide.Feature
 import routeguide.Point
 import routeguide.Rectangle
 import routeguide.RouteGuideClient
+import routeguide.RouteGuideProto
 import routeguide.RouteNote
 import routeguide.RouteSummary
 
@@ -1142,6 +1144,68 @@ class GrpcClientTest {
 
     assertThat(feature).isEqualTo(Feature(name = "tree at 5,6"))
     assertThat(requestBodyBuffer.size).isEqualTo(9L) // 5-byte frame + 4-byte body.
+  }
+
+  @Test
+  fun requestResponseMetadataOnSuccessfulCall() {
+    mockService.enqueue(
+      ReceiveCall(
+        path = "/routeguide.RouteGuide/GetFeature",
+        requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
+      )
+    )
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(
+      SendMessage(
+        message = RouteGuideProto.Feature.newBuilder()
+          .setName("tree at 5,6")
+          .build(),
+        responseHeaders = mapOf("response-lucky-animal" to "horse")
+      )
+    )
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    grpcCall.requestMetadata = mapOf("request-lucky-number" to "twenty-two")
+
+    grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+    assertThat(grpcCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("horse")
+
+    mockService.awaitSuccessBlocking()
+  }
+
+  @Test
+  fun requestResponseMetadataOnSuccessfulStreamingCall() {
+    mockService.enqueue(
+      ReceiveCall(
+        path = "/routeguide.RouteGuide/ListFeatures",
+        requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
+      )
+    )
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(
+      SendMessage(
+        message = RouteGuideProto.Feature.newBuilder()
+          .setName("tree")
+          .build(),
+        responseHeaders = mapOf("response-lucky-animal" to "horse")
+      )
+    )
+    mockService.enqueueSendFeature(name = "house")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.ListFeatures()
+    grpcCall.requestMetadata = mapOf("request-lucky-number" to "twenty-two")
+
+    val (requestChannel, responseChannel) = grpcCall.executeBlocking()
+    requestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requestChannel.close()
+    assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
+    assertThat(responseChannel.read()).isEqualTo(Feature(name = "house"))
+    assertThat(responseChannel.read()).isNull()
+    assertThat(grpcCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("horse")
   }
 
   private fun removeGrpcStatusInterceptor(): Interceptor {

@@ -35,6 +35,21 @@ interface GrpcCall<S : Any, R : Any> {
   val timeout: Timeout
 
   /**
+   * A map containing request metadata. This is initially empty; it can be assigned to any other map
+   * of metadata before the call is executed. It is an error to set this value after the call is
+   * executed.
+   */
+  var requestMetadata: Map<String, String>
+
+  /**
+   * A map containing response metadata. This is null until the call has executed, at which point
+   * it will be non-null if the call completed successfully. It may also be non-null in failure
+   * cases if the failure was not a problem of connectivity. For example, if the gRPC call fails
+   * with an HTTP 503 error, response metadata will be present.
+   */
+  val responseMetadata: Map<String, String>?
+
+  /**
    * Attempts to cancel the call. This function is safe to call concurrently with execution. When
    * canceled, execution fails with an immediate [IOException] rather than waiting to complete
    * normally.

@@ -15,9 +15,20 @@
  */
 package com.squareup.wire
 
+import com.squareup.wire.MockRouteGuideService.Action.ReceiveCall
+import io.grpc.ForwardingServerCall.SimpleForwardingServerCall
+import io.grpc.Metadata
+import io.grpc.Metadata.ASCII_STRING_MARSHALLER
+import io.grpc.Metadata.Key
 import io.grpc.Server
 import io.grpc.ServerBuilder
+import io.grpc.ServerCall
+import io.grpc.ServerCall.Listener
+import io.grpc.ServerCallHandler
+import io.grpc.ServerInterceptor
 import io.grpc.stub.StreamObserver
+import java.util.ArrayDeque
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
@@ -34,16 +45,16 @@ import routeguide.RouteGuideProto.Point
 import routeguide.RouteGuideProto.Rectangle
 import routeguide.RouteGuideProto.RouteNote
 import routeguide.RouteGuideProto.RouteSummary
-import java.util.ArrayDeque
-import java.util.concurrent.TimeUnit
 
 /**
  * An assertive scriptable implementation of the [RouteGuideGrpc] gRPC service. Receiving and
  * sending actions can be added via the [MockRouteGuideService.enqueue] method.
  */
-class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
+class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule, ServerInterceptor {
   private lateinit var server: Server
   private lateinit var streamObserver: StreamObserver<Any>
+  private var lastRequestHeaders: Metadata? = null
+  private var nextResponseHeaders: Map<String, String> = mapOf()
   private val script = ArrayDeque<Action>()
   private val scriptEmpty = Throwable("script is empty")
   private val scriptResults = Channel<Throwable>(capacity = UNLIMITED)
@@ -112,6 +123,7 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
     return object : Statement() {
       override fun evaluate() {
         server = ServerBuilder.forPort(0)
+            .intercept(this@MockRouteGuideService)
             .addService(this@MockRouteGuideService)
             .build()
         server.start()
@@ -127,102 +139,145 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
 
   override fun getFeature(point: Point, responseObserver: StreamObserver<Feature>) {
     streamObserver = responseObserver as StreamObserver<Any>
-    processScript {
-      assertThat(it).isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/GetFeature"))
+    assertNextActionAndProcessScript {
+      assertThat(it).isEqualTo(Action.ReceiveCall(
+        path = "/routeguide.RouteGuide/GetFeature",
+        requestHeaders = takeLastRequestHeaders(it),
+      ))
     }
-    processScript {
+    assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(Action.ReceiveMessage(point))
     }
-    processScript {
+    assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(Action.ReceiveComplete)
     }
   }
 
   override fun recordRoute(responseObserver: StreamObserver<RouteSummary>): StreamObserver<Point> {
     streamObserver = responseObserver as StreamObserver<Any>
-    processScript {
-      assertThat(it).isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/RecordRoute"))
+    assertNextActionAndProcessScript {
+      assertThat(it).isEqualTo(Action.ReceiveCall(
+        path = "/routeguide.RouteGuide/RecordRoute",
+        requestHeaders = takeLastRequestHeaders(it),
+      ))
     }
     return createAssertingStreamObserver()
   }
 
   override fun listFeatures(rectangle: Rectangle, responseObserver: StreamObserver<Feature>) {
     streamObserver = responseObserver as StreamObserver<Any>
-    processScript {
-      assertThat(it).isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/ListFeatures"))
+    assertNextActionAndProcessScript {
+      assertThat(it).isEqualTo(Action.ReceiveCall(
+        path = "/routeguide.RouteGuide/ListFeatures",
+        requestHeaders = takeLastRequestHeaders(it),
+      ))
     }
-    processScript {
+    assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(Action.ReceiveMessage(rectangle))
     }
-    processScript {
+    assertNextActionAndProcessScript {
       assertThat(it).isEqualTo(Action.ReceiveComplete)
     }
   }
 
   override fun routeChat(responseObserver: StreamObserver<RouteNote>): StreamObserver<RouteNote> {
     streamObserver = responseObserver as StreamObserver<Any>
-    processScript {
-      assertThat(it).isEqualTo(Action.ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    assertNextActionAndProcessScript {
+      assertThat(it).isEqualTo(Action.ReceiveCall(
+        path = "/routeguide.RouteGuide/RouteChat",
+        requestHeaders = takeLastRequestHeaders(it),
+      ))
     }
     return createAssertingStreamObserver()
+  }
+
+  /** Use an interceptor to make assertions about request and response metadata. */
+  override fun <ReqT : Any?, RespT : Any?> interceptCall(
+    call: ServerCall<ReqT, RespT>,
+    requestHeaders: Metadata,
+    next: ServerCallHandler<ReqT, RespT>
+  ): Listener<ReqT> {
+    lastRequestHeaders = requestHeaders
+    return next.startCall(object : SimpleForwardingServerCall<ReqT, RespT>(call) {
+      override fun sendHeaders(responseHeaders: Metadata) {
+        for ((key, value) in nextResponseHeaders) {
+          responseHeaders.put(key.toKey(), value)
+        }
+        nextResponseHeaders = mapOf()
+        super.sendHeaders(responseHeaders)
+      }
+    }, requestHeaders)
   }
 
   private fun <T : com.google.protobuf.Message> createAssertingStreamObserver(): StreamObserver<T> {
     return object : StreamObserver<T> {
       override fun onNext(value: T) {
-        processScript {
+        assertNextActionAndProcessScript {
           assertThat(it).isEqualTo(Action.ReceiveMessage(value))
         }
       }
 
       override fun onError(t: Throwable?) {
-        processScript {
+        assertNextActionAndProcessScript {
           assertThat(it).isEqualTo(Action.ReceiveError)
         }
       }
 
       override fun onCompleted() {
-        processScript {
+        assertNextActionAndProcessScript {
           assertThat(it).isEqualTo(Action.ReceiveComplete)
         }
       }
     }
   }
 
-  /** Execute actions that are immediately ready. */
-  private fun processScript(nextActionAssert: (Action) -> Unit) {
+  private fun assertNextActionAndProcessScript(nextActionAssert: (Action) -> Unit) {
+    assertNextAction(nextActionAssert)
+    processActions()
+  }
+
+  private fun assertNextAction(nextActionAssert: (Action) -> Unit) {
     try {
       val poll = script.poll()
       nextActionAssert(poll)
+    } catch (e: Throwable) {
+      runBlocking {
+        scriptResults.send(e)
+      }
+    }
+  }
 
-      // If other actions are executable, execute 'em immediately.
+  /** Perform any actions that are immediately executable. */
+  private fun processActions() {
+    try {
       while (true) {
         val action = script.peek()
-        if (action == null) {
-          runBlocking {
-            scriptResults.send(scriptEmpty)
+        when {
+          action == null -> {
+            // No more actions in the queue.
+            runBlocking {
+              scriptResults.send(scriptEmpty)
+            }
+            return
           }
-          return
-        }
-        when (action) {
-          is Action.SendMessage -> {
-            script.removeFirst()
+          action is Action.SendMessage -> {
+            nextResponseHeaders = action.responseHeaders
             streamObserver.onNext(action.message)
           }
-          is Action.SendError -> {
-            script.removeFirst()
+          action is Action.SendError -> {
             streamObserver.onError(action.throwable)
           }
-          is Action.SendCompleted -> {
-            script.removeFirst()
+          action is Action.SendCompleted -> {
             streamObserver.onCompleted()
           }
-          is Action.Delay -> {
-            script.removeFirst()
+          action is Action.Delay -> {
             Thread.sleep(action.timeUnit.toMillis(action.duration))
           }
-          else -> return
+          else -> {
+            return // We've run all the actions we can.
+          }
         }
+        script.removeFirst()
       }
     } catch (e: Throwable) {
       runBlocking {
@@ -231,12 +286,32 @@ class MockRouteGuideService : RouteGuideGrpc.RouteGuideImplBase(), TestRule {
     }
   }
 
+  private fun String.toKey() = Key.of(this, ASCII_STRING_MARSHALLER)
+
+  private fun takeLastRequestHeaders(expectedAction: Action): Map<String, String> {
+    val result = mutableMapOf<String, String>()
+    if (expectedAction is ReceiveCall) {
+      for (key in expectedAction.requestHeaders.keys) {
+        val value = lastRequestHeaders?.get(key.toKey()) ?: continue
+        result[key] = value
+      }
+    }
+    lastRequestHeaders = null
+    return result
+  }
+
   sealed class Action {
-    data class ReceiveCall(val path: String) : Action()
+    data class ReceiveCall(
+      val path: String,
+      val requestHeaders: Map<String, String> = mapOf()
+    ) : Action()
     data class ReceiveMessage(val message: com.google.protobuf.Message) : Action()
     object ReceiveError : Action()
     object ReceiveComplete : Action()
-    data class SendMessage(val message: com.google.protobuf.Message) : Action()
+    data class SendMessage(
+      val message: com.google.protobuf.Message,
+      val responseHeaders: Map<String, String> = mapOf()
+    ) : Action()
     data class SendError(val throwable: Throwable) : Action()
     object SendCompleted : Action()
     data class Delay(val duration: Long, val timeUnit: TimeUnit) : Action()
