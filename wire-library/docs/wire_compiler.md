@@ -390,10 +390,10 @@ wire {
     compact = true
 
     // True to emit types for options declared on messages, fields, etc.
-    emitDeclaredOptions = false,
+    emitDeclaredOptions = true,
 
     // True to emit annotations for options applied on messages, fields, etc.
-    emitAppliedOptions = true
+    emitAppliedOptions = false
   }
 }
 ```
