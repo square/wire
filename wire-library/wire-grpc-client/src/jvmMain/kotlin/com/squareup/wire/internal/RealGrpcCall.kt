@@ -20,24 +20,29 @@ import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcResponse
 import com.squareup.wire.use
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Callback
 import okhttp3.Response
 import okio.IOException
 import okio.Timeout
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 internal class RealGrpcCall<S : Any, R : Any>(
   private val grpcClient: GrpcClient,
   override val method: GrpcMethod<S, R>
 ) : GrpcCall<S, R> {
-  /** Non-null until the call is executed. */
+  /** Non-null once this is executed. */
   private var call: Call? = null
   private var canceled = false
 
   override val timeout: Timeout = LateInitTimeout()
+
+  override var requestMetadata: Map<String, String> = mapOf()
+
+  override var responseMetadata: Map<String, String>? = null
+    private set
 
   override fun cancel() {
     canceled = true
@@ -61,6 +66,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
         override fun onResponse(call: Call, response: GrpcResponse) {
           try {
+            responseMetadata = response.headers.toMap()
             val message = response.readExactlyOneAndClose()
             continuation.resume(message)
           } catch (e: IOException) {
@@ -74,6 +80,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
   override fun executeBlocking(request: S): R {
     val call = initCall(request)
     val response = call.execute()
+    responseMetadata = response.headers.toMap()
     return response.readExactlyOneAndClose()
   }
 
@@ -86,6 +93,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
 
       override fun onResponse(call: Call, response: GrpcResponse) {
         try {
+          responseMetadata = response.headers.toMap()
           val message = response.readExactlyOneAndClose()
           callback.onSuccess(this@RealGrpcCall, message)
         } catch (e: IOException) {
@@ -130,7 +138,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
       requestAdapter = method.requestAdapter,
       onlyMessage = request
     )
-    val result = grpcClient.newCall(method, requestBody)
+    val result = grpcClient.newCall(method, requestMetadata, requestBody)
     this.call = result
     if (canceled) result.cancel()
     (timeout as LateInitTimeout).init(result.timeout())

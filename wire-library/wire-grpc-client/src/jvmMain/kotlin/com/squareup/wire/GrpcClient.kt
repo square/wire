@@ -69,7 +69,11 @@ actual class GrpcClient private constructor(
       .minMessageToCompress(minMessageToCompress)
   }
 
-  internal fun newCall(method: GrpcMethod<*, *>, requestBody: GrpcRequestBody): Call {
+  internal fun newCall(
+    method: GrpcMethod<*, *>,
+    requestMetadata: Map<String, String>,
+    requestBody: GrpcRequestBody
+  ): Call {
     return client.newCall(GrpcRequestBuilder()
       .url(baseUrl.resolve(method.path)!!)
       .addHeader("te", "trailers")
@@ -78,6 +82,9 @@ actual class GrpcClient private constructor(
       .apply {
         if (minMessageToCompress < Long.MAX_VALUE) {
           addHeader("grpc-encoding", "gzip")
+        }
+        for ((key, value) in requestMetadata) {
+          addHeader(key, value)
         }
       }
       .tag(GrpcMethod::class.java, method)
