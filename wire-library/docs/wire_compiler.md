@@ -352,7 +352,7 @@ Customizing Output
 
 ### Java
 
-Here's an exhaustive Java configuration. Booleans are shown with their non-default behavior.
+Here's an exhaustive Java configuration. Booleans are shown with their default behavior.
 
 ```groovy
 wire {
@@ -374,34 +374,33 @@ wire {
     // True if types emitted for this target should not also be emitted for other
     // targets. Use this to cause multiple outputs to be emitted for the same input
     // type.
-    exclusive = false
+    exclusive = true
 
     // Directory to emit to.
     out "${buildDir}/custom"
 
     // True for emitted types to implement android.os.Parcelable.
-    android = true
+    android = false
 
     // True to enable the androidx.annotation.Nullable annotation where applicable.
-    androidAnnotations = true
+    androidAnnotations = false
 
     // True to emit code that uses reflection for reading, writing, and toString
     // methods which are normally implemented with generated code.
-    compact = true
+    compact = false
 
     // True to emit types for options declared on messages, fields, etc.
-    emitDeclaredOptions = false,
+    emitDeclaredOptions = true,
 
     // True to emit annotations for options applied on messages, fields, etc.
-    emitAppliedOptions = true
+    emitAppliedOptions = false
   }
 }
 ```
 
 ### Kotlin
 
-Here's an exhaustive Kotlin configuration. Booleans and enums are shown with their non-default
-behavior.
+Here's an exhaustive Kotlin configuration. Booleans and enums are shown with their default behavior.
 
 ```groovy
 wire {
@@ -423,23 +422,23 @@ wire {
     // True if types emitted for this target should not also be emitted for other
     // targets. Use this to cause multiple outputs to be emitted for the same input
     // type.
-    exclusive = false
+    exclusive = true
 
     // Directory to emit to.
     out "${buildDir}/custom"
 
     // True for emitted types to implement android.os.Parcelable.
-    android = true
+    android = false
 
     // True for emitted types to implement APIs for easier migration from the Java
     // target.
-    javaInterop = true
+    javaInterop = false
 
     // True to emit types for options declared on messages, fields, etc.
-    emitDeclaredOptions = false,
+    emitDeclaredOptions = true,
 
     // True to emit annotations for options applied on messages, fields, etc.
-    emitAppliedOptions = true,
+    emitAppliedOptions = false,
 
     // `suspending` to generate coroutines APIs that require a Kotlin coroutines context.
     // `blocking` to generate blocking APIs callable by Java and Kotlin.
@@ -451,7 +450,7 @@ wire {
     rpcRole = 'server'
 
     // True for emitted services to implement one interface per RPC.
-    singleMethodServices = true
+    singleMethodServices = false
   }
 }
 ```
@@ -489,7 +488,7 @@ buildscript {
 ```
 
 Next configure the Wire plugin to call your custom handler. Here's an exhaustive custom
-configuration. Booleans and enums are shown with their non-default behavior.
+configuration. Booleans and enums are shown with their default behavior.
 
 ```groovy
 wire {
@@ -504,7 +503,7 @@ wire {
    // These options work the same as the java and kotlin targets above.
    includes = ['com.example.pizza.*']
    excludes = ['com.example.sales.*']
-   exclusive = false
+   exclusive = true
    out "${buildDir}/custom"
   }
 }
