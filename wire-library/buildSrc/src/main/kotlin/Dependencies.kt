@@ -18,7 +18,7 @@ object versions {
   val okio = "3.0.0-alpha.3"
   val okhttp = "4.2.2"
   val moshi = "1.11.0"
-  val protobuf = "3.13.0"
+  val protobuf = "3.14.0"
   val protobufGradlePlugin = "0.8.13"
   val junit = "4.12"
   val assertj = "3.11.0"

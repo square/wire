@@ -15,11 +15,14 @@
  */
 package com.squareup.wire.reflector
 
+import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.RepoBuilder
+import com.squareup.wire.schema.SchemaLoader
 import grpc.reflection.v1alpha.ListServiceResponse
 import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
 import grpc.reflection.v1alpha.ServiceResponse
+import okio.FileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -28,15 +31,12 @@ internal class SchemaReflectorTest {
   fun `outputs a list of services`() {
     val repoBuilder = RepoBuilder().addLocal("src/jvmTest/proto/RouteGuideProto.proto")
     val schema = repoBuilder.schema()
-
+    val request =  ServerReflectionRequest(list_services = "*")
     assertThat(
-      SchemaReflector(schema).process(
-        ServerReflectionRequest(
-          list_services = "*"
-        )
-      )
+      SchemaReflector(schema).process(request)
     ).isEqualTo(
       ServerReflectionResponse(
+        original_request = request,
         list_services_response = ListServiceResponse(
           service = listOf(ServiceResponse(name = "routeguide.RouteGuide"))
         )
