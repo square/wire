@@ -172,12 +172,6 @@ class KotlinGenerator private constructor(
       if (rpc != null) {
         append(rpc.name)
       }
-      when (rpcCallStyle) {
-        RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
-        RpcCallStyle.BLOCKING -> {
-          if (rpcRole == RpcRole.SERVER) append("Blocking")
-        }
-      }
       append(serviceNameSuffix)
     }
     return typeName.peerClass(simpleName)
@@ -185,14 +179,24 @@ class KotlinGenerator private constructor(
 
   private val serviceNameSuffix: String
     get() {
+      // nameSuffix, if given, overrides both call-style and rpc-role suffixes.
       if (nameSuffix != null) {
         return nameSuffix
       }
 
-      return when (rpcRole) {
-        RpcRole.CLIENT -> "Client"
-        RpcRole.SERVER -> "Server"
-        RpcRole.NONE   -> ""
+      return buildString {
+        when (rpcCallStyle) {
+          RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
+          RpcCallStyle.BLOCKING -> {
+            if (rpcRole == RpcRole.SERVER) append("Blocking")
+          }
+        }
+
+        when (rpcRole) {
+          RpcRole.CLIENT -> append("Client")
+          RpcRole.SERVER -> append("Server")
+          RpcRole.NONE   -> Unit
+        }
       }
     }
 

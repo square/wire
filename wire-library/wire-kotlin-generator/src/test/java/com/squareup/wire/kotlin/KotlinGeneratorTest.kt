@@ -1006,7 +1006,7 @@ class KotlinGeneratorTest {
           |/**
           | * RouteGuide service interface.
           | */
-          |public interface RouteGuideBlockingThing : Service {
+          |public interface RouteGuideThing : Service {
           |  /**
           |   * Returns the \[Feature\] for a \[Point\].
           |   */
