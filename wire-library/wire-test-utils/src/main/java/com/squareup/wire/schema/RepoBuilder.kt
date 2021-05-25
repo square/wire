@@ -139,7 +139,8 @@ class RepoBuilder {
     rpcName: String? = null,
     rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
     rpcRole: RpcRole = RpcRole.CLIENT,
-    profileName: String? = null
+    profileName: String? = null,
+    nameSuffix: String? = null,
   ): List<String> {
     if (rpcRole === RpcRole.NONE) return emptyList()
 
@@ -150,7 +151,8 @@ class RepoBuilder {
         emitAndroid = false,
         javaInterop = false,
         rpcCallStyle = rpcCallStyle,
-        rpcRole = rpcRole
+        rpcRole = rpcRole,
+        nameSuffix = nameSuffix,
     )
     val service = schema.getService(serviceName)!!
     val rpc = rpcName?.let { service.rpc(rpcName)!! }

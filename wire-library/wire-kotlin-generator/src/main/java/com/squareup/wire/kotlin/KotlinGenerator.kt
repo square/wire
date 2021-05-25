@@ -120,6 +120,7 @@ class KotlinGenerator private constructor(
   private val rpcRole: RpcRole,
   private val boxOneOfsMinSize: Int,
   private val grpcServerCompatible: Boolean,
+  private val nameSuffix: String?,
 ) {
   private val nameAllocatorStore = mutableMapOf<Type, NameAllocator>()
 
@@ -169,19 +170,33 @@ class KotlinGenerator private constructor(
       if (rpc != null) {
         append(rpc.name)
       }
-      when (rpcCallStyle) {
-        RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
-        RpcCallStyle.BLOCKING -> {
-          if (rpcRole == RpcRole.SERVER) append("Blocking")
-        }
-      }
-      when (rpcRole) {
-        RpcRole.CLIENT -> append("Client")
-        RpcRole.SERVER -> append("Server")
-      }
+      append(serviceNameSuffix)
     }
     return typeName.peerClass(simpleName)
   }
+
+  private val serviceNameSuffix: String
+    get() {
+      // nameSuffix, if given, overrides both call-style and rpc-role suffixes.
+      if (nameSuffix != null) {
+        return nameSuffix
+      }
+
+      return buildString {
+        when (rpcCallStyle) {
+          RpcCallStyle.SUSPENDING -> Unit // Suspending is implicit.
+          RpcCallStyle.BLOCKING -> {
+            if (rpcRole == RpcRole.SERVER) append("Blocking")
+          }
+        }
+
+        when (rpcRole) {
+          RpcRole.CLIENT -> append("Client")
+          RpcRole.SERVER -> append("Server")
+          RpcRole.NONE   -> Unit
+        }
+      }
+    }
 
   fun generateType(type: Type): TypeSpec {
     check(type.type != ProtoType.ANY)
@@ -2195,6 +2210,7 @@ class KotlinGenerator private constructor(
       rpcRole: RpcRole = RpcRole.CLIENT,
       boxOneOfsMinSize: Int = 5_000,
       grpcServerCompatible: Boolean = false,
+      nameSuffix: String? = null,
     ): KotlinGenerator {
       val typeToKotlinName = mutableMapOf<ProtoType, TypeName>()
       val memberToKotlinName = mutableMapOf<ProtoMember, TypeName>()
@@ -2243,7 +2259,8 @@ class KotlinGenerator private constructor(
           rpcCallStyle = rpcCallStyle,
           rpcRole = rpcRole,
           boxOneOfsMinSize = boxOneOfsMinSize,
-          grpcServerCompatible = grpcServerCompatible
+          grpcServerCompatible = grpcServerCompatible,
+          nameSuffix = nameSuffix,
       )
     }
 

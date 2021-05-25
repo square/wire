@@ -979,6 +979,87 @@ class KotlinGeneratorTest {
         repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", "RouteChat"))
   }
 
+  @Test fun nameSuffixes() {
+    //language=kotlin
+    val suspendingInterface = """
+          |package routeguide
+          |
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |
+          |/**
+          | * RouteGuide service interface.
+          | */
+          |public interface RouteGuide : Service {
+          |  /**
+          |   * Returns the \[Feature\] for a \[Point\].
+          |   */
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/GetFeature",
+          |    requestAdapter = "routeguide.Point#ADAPTER",
+          |    responseAdapter = "routeguide.Feature#ADAPTER",
+          |    sourceFile = "routeguide.proto"
+          |  )
+          |  public suspend fun GetFeature(request: Point): Feature
+          |}
+          |""".trimMargin()
+
+    //language=kotlin
+    val blockingInterface = """
+          |package routeguide
+          |
+          |import com.squareup.wire.Service
+          |import com.squareup.wire.WireRpc
+          |
+          |/**
+          | * RouteGuide service interface.
+          | */
+          |public interface RouteGuideThing : Service {
+          |  /**
+          |   * Returns the \[Feature\] for a \[Point\].
+          |   */
+          |  @WireRpc(
+          |    path = "/routeguide.RouteGuide/GetFeature",
+          |    requestAdapter = "routeguide.Point#ADAPTER",
+          |    responseAdapter = "routeguide.Feature#ADAPTER",
+          |    sourceFile = "routeguide.proto"
+          |  )
+          |  public fun GetFeature(request: Point): Feature
+          |}
+          |""".trimMargin()
+
+    val repoBuilder = RepoBuilder()
+        .add("routeguide.proto", """
+          |package routeguide;
+          |
+          |/**
+          | * RouteGuide service interface.
+          | */
+          |service RouteGuide {
+          |  // Returns the [Feature] for a [Point].
+          |  rpc GetFeature(Point) returns (Feature);
+          |}
+          |$pointMessage
+          |$featureMessage
+          |""".trimMargin())
+
+    assertEquals(listOf(suspendingInterface),
+        repoBuilder.generateGrpcKotlin(
+            serviceName = "routeguide.RouteGuide",
+            rpcRole = RpcRole.SERVER,
+            rpcCallStyle = RpcCallStyle.SUSPENDING,
+            nameSuffix = "",
+        ))
+
+    assertEquals(listOf(blockingInterface),
+        repoBuilder.generateGrpcKotlin(
+            serviceName = "routeguide.RouteGuide",
+            rpcRole = RpcRole.SERVER,
+            rpcCallStyle = RpcCallStyle.BLOCKING,
+            nameSuffix = "Thing",
+        ))
+  }
+
   @Test fun nameAllocatorIsUsedInDecodeForReaderTag() {
     val repoBuilder = RepoBuilder()
         .add("message.proto", """

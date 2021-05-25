@@ -291,6 +291,12 @@ data class KotlinTarget(
 
   /** True to also generate gRPC server-compatible classes. */
   val grpcServerCompatible: Boolean = false,
+
+  /**
+   * If present, generated services classes will use this as a suffix instead of inferring one
+   * from the [rpcRole].
+   */
+  val nameSuffix: String? = null,
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -323,7 +329,8 @@ data class KotlinTarget(
         rpcCallStyle = rpcCallStyle,
         rpcRole = rpcRole,
         boxOneOfsMinSize = boxOneOfsMinSize,
-        grpcServerCompatible = grpcServerCompatible
+        grpcServerCompatible = grpcServerCompatible,
+        nameSuffix = nameSuffix,
     )
 
     return object : SchemaHandler {
