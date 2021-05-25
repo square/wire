@@ -15,8 +15,6 @@
  */
 package com.squareup.wire
 
-import com.google.protobuf.DescriptorProtos.DescriptorProto
-import com.google.protobuf.DescriptorProtos.FieldDescriptorProto
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.google.protobuf.ExtensionRegistry
 import com.squareup.wire.schema.Location
@@ -89,40 +87,8 @@ class SchemaEncoderInteropTest {
   ) {
     val wireBytes = SchemaEncoder(schema).encode(wireProtoFile)
     val wireDescriptor = FileDescriptorProto.parseFrom(wireBytes.toByteArray(), extensionRegistry)
-    assertThat(wireDescriptor.stripOptionsAndDefaults())
-      .isEqualTo(protocProtoFile.stripOptionsAndDefaults())
-  }
-
-  /**
-   * TODO: this strips defaults as they're not yet consistent with protoc. We should fix the
-   *     implementation to match protoc.
-   */
-  private fun FileDescriptorProto.stripOptionsAndDefaults(): FileDescriptorProto {
-    val messageTypeList = messageTypeList.map { it.stripOptionsAndDefaults() }
-    val extensionList = extensionList.map { it.stripOptionsAndDefaults() }
-    return toBuilder()
-      .clearMessageType()
-      .addAllMessageType(messageTypeList)
-      .clearExtension()
-      .addAllExtension(extensionList)
-      .build()
-  }
-
-  private fun DescriptorProto.stripOptionsAndDefaults(): DescriptorProto {
-    val nestedTypeList = nestedTypeList.map { it.stripOptionsAndDefaults() }
-    val fieldList = fieldList.map { it.stripOptionsAndDefaults() }
-    return toBuilder()
-      .clearNestedType()
-      .addAllNestedType(nestedTypeList)
-      .clearField()
-      .addAllField(fieldList)
-      .clearExtensionRange()
-      .build()
-  }
-
-  private fun FieldDescriptorProto.stripOptionsAndDefaults(): FieldDescriptorProto {
-    return toBuilder()
-      .clearDefaultValue()
-      .build()
+    val unwantedValueStripper = UnwantedValueStripper(clearJsonName = true)
+    assertThat(unwantedValueStripper.stripOptionsAndDefaults(wireDescriptor))
+      .isEqualTo(unwantedValueStripper.stripOptionsAndDefaults(protocProtoFile))
   }
 }

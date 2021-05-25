@@ -7,6 +7,7 @@ buildscript {
     classpath(deps.plugins.shadow)
     classpath(deps.plugins.japicmp)
     classpath(deps.plugins.mavenPublish)
+    classpath(deps.protobuf.gradlePlugin)
     classpath(deps.animalSniffer.gradle)
     // https://github.com/melix/japicmp-gradle-plugin/issues/36
     classpath("com.google.guava:guava:28.2-jre")

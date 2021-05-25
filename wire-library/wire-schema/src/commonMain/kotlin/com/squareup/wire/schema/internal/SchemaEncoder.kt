@@ -27,6 +27,7 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoFile
+import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
@@ -213,6 +214,7 @@ class SchemaEncoder(
           if (!value.keyType.isScalar) {
             STRING.encodeWithTag(writer, 6, value.keyType.dotName)
           }
+          STRING.encodeWithTag(writer, 10, "key")
         }
       }
 
@@ -225,6 +227,7 @@ class SchemaEncoder(
           if (!value.valueType.isScalar) {
             STRING.encodeWithTag(writer, 6, value.valueType.dotName)
           }
+          STRING.encodeWithTag(writer, 10, "value")
         }
       }
 
@@ -409,7 +412,21 @@ class SchemaEncoder(
       ProtoType.INT32 -> (value as String).toInt()
       ProtoType.BOOL -> (value as String).toBoolean()
       ProtoType.STRING -> value as String
-      else -> error("field type not implemented: $field")
+      else -> {
+        when (schema.getType(field.type!!)) {
+          is MessageType -> toJsonMap(value as Map<ProtoMember, Any?>)
+          else -> error("not implemented yet!!")
+        }
+      }
     }
+  }
+
+  private fun toJsonMap(map: Map<ProtoMember, Any?>): Map<String, Any?> {
+    val result = mutableMapOf<String, Any?>()
+    for ((key, value) in map) {
+      val field = schema.getField(key) ?: continue // TODO: warn about this??
+      result[key.simpleName] = toJson(field, value)
+    }
+    return result
   }
 }
