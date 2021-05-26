@@ -1,6 +1,7 @@
 include(":samples:simple-sample")
 include(":samples:android-app-java-sample")
 include(":samples:android-app-kotlin-sample")
+include(":samples:android-app-variants-sample")
 include(":samples:android-lib-java-sample")
 include(":samples:android-lib-kotlin-sample")
 include(":samples:wire-codegen-sample")
