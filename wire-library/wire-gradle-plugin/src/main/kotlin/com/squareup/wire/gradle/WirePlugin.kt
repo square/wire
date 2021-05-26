@@ -18,18 +18,17 @@ package com.squareup.wire.gradle
 import com.squareup.wire.VERSION
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
+import com.squareup.wire.gradle.kotlin.Source
 import com.squareup.wire.gradle.kotlin.sourceRoots
-import com.squareup.wire.schema.JavaTarget
-import com.squareup.wire.schema.KotlinTarget
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.UnknownConfigurationException
+import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
@@ -110,11 +109,7 @@ class WirePlugin : Plugin<Project> {
       }
     }
 
-    val outputs = extension.outputs.toMutableList()
-    if (outputs.isEmpty()) {
-      outputs.add(JavaOutput())
-    }
-
+    val outputs = extension.outputs.ifEmpty { listOf(JavaOutput()) }
     val hasJavaOutput = outputs.any { it is JavaOutput }
     val hasKotlinOutput = outputs.any { it is KotlinOutput }
     check(!hasKotlinOutput || kotlin.get()) {
@@ -124,72 +119,65 @@ class WirePlugin : Plugin<Project> {
 
     addWireRuntimeDependency(hasJavaOutput, hasKotlinOutput)
 
-    for (output in outputs) {
-      if (output.out == null) {
-        output.out = project.targetDefaultOutputPath()
-      } else {
-        output.out = project.file(output.out!!).path
-      }
-    }
-
-    val sourceInput = WireInput(project.configurations.named("protoSource"))
-    sourceInput.addTrees(project, extension.sourceTrees)
-    sourceInput.addJars(project, extension.sourceJars)
-    sourceInput.addProjects(project, extension.sourceProjects)
-    sourceInput.addPaths(project, extension.sourcePaths)
-    if (sourceInput.dependencies.isEmpty()) {
-      sourceInput.addPaths(project, setOf("src/main/proto"))
-    }
-
-    val protoInput = WireInput(project.configurations.named("protoPath"))
-    protoInput.addTrees(project, extension.protoTrees)
-    protoInput.addJars(project, extension.protoJars)
-    protoInput.addProjects(project, extension.protoProjects)
-    protoInput.addPaths(project, extension.protoPaths)
-
-    val inputFiles = mutableListOf<File>()
-    inputFiles.addAll(sourceInput.inputFiles)
-    inputFiles.addAll(protoInput.inputFiles)
-
-    val targets = outputs.map { it.toTarget() }
-
-    val projectDependencies = (sourceInput.dependencies + protoInput.dependencies)
-      .filterIsInstance<ProjectDependency>()
-
-    val generatedSourcesDirectories = outputs.map { output -> File(output.out!!) }.toSet()
-
-    // Both the JavaCompile and KotlinCompile tasks might already have been configured by now. Even
-    // though we add the Wire output directories into the corresponding sourceSets, the compilation
-    // tasks won't know about them so we fix that here.
-    if (targets.any { it is JavaTarget }) {
-      project.tasks.matching { it.name == "compileJava" }.configureEach {
-        (it as JavaCompile).source(generatedSourcesDirectories)
-      }
-    }
-    if (targets.any { it is KotlinTarget || it is JavaTarget }) {
-      project.tasks.matching { it.name == "compileKotlin" }.configureEach {
-        // Note that [KotlinCompile.source] will process files but will ignore strings.
-        (it as KotlinCompile).source(generatedSourcesDirectories)
-      }
-    }
-
-    val common = sources.singleOrNull { it.type == KotlinPlatformType.common }
-    for (generatedSourcesDirectory in generatedSourcesDirectories) {
-      common?.kotlinSourceDirectorySet
-        ?.srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
-    }
+    val protoPathInput = WireInput(project.configurations.getByName("protoPath"))
+    protoPathInput.addTrees(project, extension.protoTrees)
+    protoPathInput.addJars(project, extension.protoJars)
+    protoPathInput.addProjects(project, extension.protoProjects)
+    protoPathInput.addPaths(project, extension.protoPaths)
 
     sources.forEach { source ->
-      if (common == null) {
-        // TODO: pair up generatedSourceDirectories with their targets so we can be precise.
-        for (generatedSourcesDirectory in generatedSourcesDirectories) {
-          val relativePath = generatedSourcesDirectory.toRelativeString(project.projectDir)
-          if (targets.any { it is JavaTarget }) {
-            source.javaSourceDirectorySet?.srcDir(relativePath)
+      val protoSourceInput = WireInput(project.configurations.getByName("protoSource").copy())
+      protoSourceInput.addTrees(project, extension.sourceTrees)
+      protoSourceInput.addJars(project, extension.sourceJars)
+      protoSourceInput.addProjects(project, extension.sourceProjects)
+      protoSourceInput.addPaths(project, extension.sourcePaths)
+      // TODO(Benoit) Should we add our default source folders everytime? Right now, someone could
+      //  not combine a custom protoSource with our default using variants.
+      if (protoSourceInput.dependencies.isEmpty()) {
+        protoSourceInput.addPaths(project, defaultSourceFolders(source))
+      }
+
+      val inputFiles = mutableListOf<File>()
+      inputFiles.addAll(protoSourceInput.inputFiles)
+      inputFiles.addAll(protoPathInput.inputFiles)
+
+      val projectDependencies = (protoSourceInput.dependencies + protoPathInput.dependencies)
+        .filterIsInstance<ProjectDependency>()
+
+      val targets = outputs.map { output ->
+        output.toTarget(
+          if (output.out == null) {
+            source.outputDir(project).path
+          } else {
+            project.file(output.out!!).path
           }
-          if (targets.any { it is KotlinTarget }) {
-            source.kotlinSourceDirectorySet?.srcDir(relativePath)
-          }
+        )
+      }
+      val generatedSourcesDirectories = targets.map { target -> File(target.outDirectory) }.toSet()
+
+      // Both the JavaCompile and KotlinCompile tasks might already have been configured by now.
+      // Even though we add the Wire output directories into the corresponding sourceSets, the
+      // compilation tasks won't know about them so we fix that here.
+      if (hasJavaOutput) {
+        project.tasks.matching { it.name == "compileJava" }.configureEach {
+          (it as JavaCompile).source(generatedSourcesDirectories)
+        }
+      }
+      if (hasJavaOutput || hasKotlinOutput) {
+        project.tasks.matching { it.name == "compileKotlin" }.configureEach {
+          // Note that [KotlinCompile.source] will process files but will ignore strings.
+          (it as KotlinCompile).source(generatedSourcesDirectories)
+        }
+      }
+
+      // TODO: pair up generatedSourceDirectories with their targets so we can be precise.
+      for (generatedSourcesDirectory in generatedSourcesDirectories) {
+        val relativePath = generatedSourcesDirectory.toRelativeString(project.projectDir)
+        if (hasJavaOutput) {
+          source.javaSourceDirectorySet?.srcDir(relativePath)
+        }
+        if (hasKotlinOutput) {
+          source.kotlinSourceDirectorySet?.srcDir(relativePath)
         }
       }
 
@@ -197,15 +185,15 @@ class WirePlugin : Plugin<Project> {
       val task = project.tasks.register(taskName, WireTask::class.java) { task: WireTask ->
         task.group = GROUP
         task.description = "Generate protobuf implementation for ${source.name}"
-        task.source(sourceInput.configuration)
+        task.source(protoSourceInput.configuration)
 
         if (task.logger.isDebugEnabled) {
-          sourceInput.debug(task.logger)
-          protoInput.debug(task.logger)
+          protoSourceInput.debug(task.logger)
+          protoPathInput.debug(task.logger)
         }
-        task.outputDirectories = outputs.map { output -> File(output.out!!) }
-        task.sourceInput.set(sourceInput.toLocations())
-        task.protoInput.set(protoInput.toLocations())
+        task.outputDirectories = targets.map { target -> File(target.outDirectory) }
+        task.sourceInput.set(protoSourceInput.toLocations(project.providers))
+        task.protoInput.set(protoPathInput.toLocations(project.providers))
         task.roots = extension.roots.toList()
         task.prunes = extension.prunes.toList()
         task.moves = extension.moves.toList()
@@ -236,6 +224,11 @@ class WirePlugin : Plugin<Project> {
     }
   }
 
+  private fun Source.outputDir(project: Project): File {
+    return if (sources.size > 1) File(project.targetDefaultOutputPath(), name)
+    else File(project.targetDefaultOutputPath())
+  }
+
   private fun Project.addWireRuntimeDependency(
     hasJavaOutput: Boolean,
     hasKotlinOutput: Boolean
@@ -247,9 +240,8 @@ class WirePlugin : Plugin<Project> {
         val sourceSets =
           project.extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets
         val sourceSet = (sourceSets.getByName("commonMain") as DefaultKotlinSourceSet)
-        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-          project.dependencies.create("com.squareup.wire:wire-runtime-multiplatform:$VERSION")
-        )
+        project.configurations.getByName(sourceSet.apiConfigurationName).dependencies
+          .add(project.dependencies.create("com.squareup.wire:wire-runtime-multiplatform:$VERSION"))
       } else {
         try {
           project.configurations.getByName("api").dependencies
@@ -261,6 +253,19 @@ class WirePlugin : Plugin<Project> {
         }
       }
     }
+  }
+
+  private fun defaultSourceFolders(source: Source): Set<String> {
+    val parser = FileOrUriNotationConverter.parser()
+    return source.sourceSets
+      .map { "src/$it/proto" }
+      .filter { path ->
+        val converted = parser.parseNotation(path) as File
+        val file =
+          if (!converted.isAbsolute) File(project.projectDir, converted.path) else converted
+        return@filter file.exists()
+      }
+      .toSet()
   }
 
   internal companion object {
