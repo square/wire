@@ -1503,6 +1503,27 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test
+  fun redactedNonNullableFieldsForProto3() {
+    val repoBuilder = RepoBuilder()
+      .add("message.proto", """
+        |syntax = "proto3";
+        |import "option_redacted.proto";
+        |message RedactedFields {
+        |  string a = 1 [(squareup.protos.redacted_option.redacted) = true];
+        |  int32  b = 2 [(squareup.protos.redacted_option.redacted) = true];
+        |}
+        |""".trimMargin()
+      )
+      .add("option_redacted.proto")
+    val code = repoBuilder.generateKotlin("RedactedFields")
+    assertThat(code).contains("""val a: String = "",""")
+    assertThat(code).contains("""val b: Int = 0,""")
+    assertThat(code).contains("public override fun redact(value: RedactedFields): RedactedFields = value.copy(")
+    assertThat(code).contains("""a = "",""")
+    assertThat(code).contains("""b = 0,""")
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

@@ -30,3 +30,9 @@ internal val Field.keyType: ProtoType
 
 internal val Field.valueType: ProtoType
   get() = type!!.valueType!!
+
+internal val Field.isOptional: Boolean
+  get() = Field.Label.OPTIONAL == label
+
+internal val Field.isScalar: Boolean
+  get() = type!!.isScalar
