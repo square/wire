@@ -164,7 +164,9 @@ class WirePlugin : Plugin<Project> {
         }
       }
       if (hasJavaOutput || hasKotlinOutput) {
-        project.tasks.matching { it.name == "compileKotlin" }.configureEach {
+        project.tasks.matching {
+          it.name == "compileKotlin" || it.name == "compile${source.name.capitalize()}Kotlin"
+        }.configureEach {
           // Note that [KotlinCompile.source] will process files but will ignore strings.
           (it as KotlinCompile).source(generatedSourcesDirectories)
         }

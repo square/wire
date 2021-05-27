@@ -9,7 +9,7 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/Theme.MyVariantSample">
-    <activity android:name=".MainActivity">
+    <activity android:name="com.squareup.wire.android.app.variants.MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
