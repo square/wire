@@ -787,7 +787,7 @@ class WirePluginTest {
     }
 
     println(result.tasks.joinToString { it.toString() })
-    assertThat(result.task(":generateJvmMainProtos")).isNotNull
+    assertThat(result.task(":generateCommonMainProtos")).isNotNull
     assertThat(result.output)
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
