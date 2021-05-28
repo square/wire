@@ -168,7 +168,7 @@ open class WireTask : SourceTask() {
 
       val allInputsInJar = expanded.toMutableSet()
       val jarPath = Paths.get(jar)
-      FileSystems.newFileSystem(jarPath, emptyMap<String, Any?>(), null).use { jarFs ->
+      FileSystems.newFileSystem(jarPath, null as ClassLoader?).use { jarFs ->
         val matchers = toExpand.map { jarFs.getPathMatcher("glob:${it.path}") }
         val roots = jarFs.rootDirectories.toList()
 

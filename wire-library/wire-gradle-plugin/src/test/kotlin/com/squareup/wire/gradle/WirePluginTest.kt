@@ -278,7 +278,7 @@ class WirePluginTest {
         .contains("Writing com.squareup.dinosaurs.Dinosaur")
         .contains("Writing com.squareup.geology.Period")
         .contains(
-            "src/test/projects/sourcejar-remote-many-files/build/generated/source/wire"
+            "src/test/projects/sourcejar-remote-wildcards/build/generated/source/wire"
         )
   }
 
