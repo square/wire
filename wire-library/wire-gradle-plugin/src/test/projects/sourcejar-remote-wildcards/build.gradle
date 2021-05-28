@@ -12,7 +12,7 @@ repositories {
 
 wire {
   sourcePath {
-    srcJar 'com.squareup.wire.dinosaur:all-protos:+'
+    srcJar 'com.squareup.wire.dinosaur:all-protos-plus-martians:+'
     include 'squareup/geology/*.proto', '**/dinosaur.proto'
   }
 }

@@ -152,6 +152,13 @@ open class WireTask : SourceTask() {
     return super.getSource()
   }
 
+  // Expands all glob expressions occurring in [srcInputs] whose base location
+  // is a .jar file.
+  //
+  // This is happening here (that is, during the task action) and not earlier
+  // because jar-file dependencies might be remote.  We can't assume the file
+  // exists locally until Gradle has resolved all dependencies - and we don't
+  // know that until this task is running.
   private fun expandSrcJarWildcards(srcInputs: List<Location>): List<Location> {
     val (inJar, notInJar) = srcInputs.partition { it.base.endsWith(".jar") }
     val inputsByJar = inJar.groupBy { it.base }
