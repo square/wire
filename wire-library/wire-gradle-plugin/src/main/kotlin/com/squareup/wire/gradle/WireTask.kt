@@ -21,6 +21,10 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
 import java.io.File
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
@@ -33,11 +37,6 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import kotlin.streams.asSequence
 
 @CacheableTask
 open class WireTask : SourceTask() {
@@ -170,24 +169,22 @@ open class WireTask : SourceTask() {
       val jarPath = Paths.get(jar)
       FileSystems.newFileSystem(jarPath, null as ClassLoader?).use { jarFs ->
         val matchers = toExpand.map { jarFs.getPathMatcher("glob:${it.path}") }
-        val roots = jarFs.rootDirectories.toList()
 
-        // The FS API allows for multiple root directories; I think in practice there's always one?
-        for (root in roots) {
+        // The FileSystem API allows for multiple root directories; I think in practice there's only ever one for jars?
+        for (root in jarFs.rootDirectories) {
           Files.walk(root)
-            .asSequence()
-            .filter { path ->
-              // A quirk of the ZipFileProvider is that it implements glob syntax by transforming it
-              // to a regex, including anchors at each end.  The file-tree walk yields fully-rooted paths
-              // (starting with '/'), but the include syntax we use in .gradle files is _not_ rooted.
-              // We need to strip the leading in order for our matchers to make sense.
-              val rootlessPath = path.unroot()
-              matchers.any { matcher ->
-                matcher.matches(rootlessPath)
+              .filter { path ->
+                // A quirk of the ZipFileProvider is that it implements glob syntax by transforming it
+                // to a regex, including anchors at each end.  The file-tree walk yields fully-rooted paths
+                // (starting with '/'), but the include syntax we use in .gradle files is _not_ rooted.
+                // We need to strip the leading forward-slash in order for our matchers to make sense.
+                val rootlessPath = path.unroot()
+                matchers.any { matcher ->
+                  matcher.matches(rootlessPath)
+                }
               }
-            }
-            .map { Location.get(jar, it.toString().replace(Regex("^/"), "")) }
-            .forEach { allInputsInJar += it }
+              .map { Location.get(jar, it.unroot().toString()) }
+              .forEach { allInputsInJar += it }
         }
       }
 
@@ -199,7 +196,7 @@ open class WireTask : SourceTask() {
 
   private fun Path.unroot(): Path {
     return if (isAbsolute) {
-      fileSystem.getPath(toString().substring(1))
+      relativize(root)
     } else {
       this
     }
