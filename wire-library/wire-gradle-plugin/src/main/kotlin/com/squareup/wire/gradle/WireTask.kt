@@ -196,7 +196,7 @@ open class WireTask : SourceTask() {
 
   private fun Path.unroot(): Path {
     return if (isAbsolute) {
-      relativize(root)
+      fileSystem.getPath(toString().substring(1))
     } else {
       this
     }
