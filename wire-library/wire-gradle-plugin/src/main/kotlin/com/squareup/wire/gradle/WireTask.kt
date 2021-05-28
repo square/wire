@@ -33,6 +33,11 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import kotlin.streams.asSequence
 
 @CacheableTask
 open class WireTask : SourceTask() {
@@ -121,7 +126,7 @@ open class WireTask : SourceTask() {
     }
 
     val wireRun = WireRun(
-        sourcePath = sourceInput.get(),
+        sourcePath = sourceInput.map { expandSrcJarWildcards(it) }.get(),
         protoPath = protoInput.get(),
         treeShakingRoots = if (roots.isEmpty()) includes else roots,
         treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
@@ -146,5 +151,57 @@ open class WireTask : SourceTask() {
   @PathSensitive(PathSensitivity.RELATIVE)
   override fun getSource(): FileTree {
     return super.getSource()
+  }
+
+  private fun expandSrcJarWildcards(srcInputs: List<Location>): List<Location> {
+    val (inJar, notInJar) = srcInputs.partition { it.base.endsWith(".jar") }
+    val inputsByJar = inJar.groupBy { it.base }
+
+    val expandedJarInputs = mutableListOf<Location>()
+    for ((jar, inputs) in inputsByJar) {
+      if (inputs.none { it.path.contains('*') }) {
+        expandedJarInputs += inputs
+        continue
+      }
+
+      val (toExpand, expanded) = inputs.partition { it.path.contains('*') }
+
+      val allInputsInJar = expanded.toMutableSet()
+      val jarPath = Paths.get(jar)
+      FileSystems.newFileSystem(jarPath, emptyMap<String, Any?>(), null).use { jarFs ->
+        val matchers = toExpand.map { jarFs.getPathMatcher("glob:${it.path}") }
+        val roots = jarFs.rootDirectories.toList()
+
+        // The FS API allows for multiple root directories; I think in practice there's always one?
+        for (root in roots) {
+          Files.walk(root)
+            .asSequence()
+            .filter { path ->
+              // A quirk of the ZipFileProvider is that it implements glob syntax by transforming it
+              // to a regex, including anchors at each end.  The file-tree walk yields fully-rooted paths
+              // (starting with '/'), but the include syntax we use in .gradle files is _not_ rooted.
+              // We need to strip the leading in order for our matchers to make sense.
+              val rootlessPath = path.unroot()
+              matchers.any { matcher ->
+                matcher.matches(rootlessPath)
+              }
+            }
+            .map { Location.get(jar, it.toString().replace(Regex("^/"), "")) }
+            .forEach { allInputsInJar += it }
+        }
+      }
+
+      expandedJarInputs += allInputsInJar
+    }
+
+    return notInJar + expandedJarInputs
+  }
+
+  private fun Path.unroot(): Path {
+    return if (isAbsolute) {
+      fileSystem.getPath(toString().substring(1))
+    } else {
+      this
+    }
   }
 }

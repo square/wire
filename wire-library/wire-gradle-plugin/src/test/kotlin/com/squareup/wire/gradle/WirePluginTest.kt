@@ -268,6 +268,21 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourceJarRemoteWildcardIncludes() {
+    val fixtureRoot = File("src/test/projects/sourcejar-remote-wildcards")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains(
+            "src/test/projects/sourcejar-remote-many-files/build/generated/source/wire"
+        )
+  }
+
+  @Test
   fun sourceJarRemoteOneJarWithProtoPath() {
     val fixtureRoot = File("src/test/projects/sourcejar-remote-protopath")
 
