@@ -223,9 +223,6 @@ open class WireExtension(project: Project) {
     }
 
     if (hasSrcJar) {
-      // Applying wildcard filters _would_ happen here, but in the case of a remote srcJar
-      // we don't have the jar yet!  We'll have to wait until the task is running to be sure
-      // that Gradle has resolved the possibly-remote dependency and materialized it.
       sourceJars.add(protoRootSet)
     }
 
