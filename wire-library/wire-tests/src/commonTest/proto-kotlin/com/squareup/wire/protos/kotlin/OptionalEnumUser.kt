@@ -22,7 +22,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -54,7 +53,7 @@ public class OptionalEnumUser(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + optional_enum.hashCode()
+      result = result * 37 + (optional_enum?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -78,13 +77,13 @@ public class OptionalEnumUser(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: OptionalEnumUser): Int {
+      public override fun encodedSize(`value`: OptionalEnumUser): Int {
         var size = value.unknownFields.size
         size += OptionalEnum.ADAPTER.encodedSizeWithTag(1, value.optional_enum)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OptionalEnumUser): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OptionalEnumUser): Unit {
         OptionalEnum.ADAPTER.encodeWithTag(writer, 1, value.optional_enum)
         writer.writeBytes(value.unknownFields)
       }
@@ -107,7 +106,7 @@ public class OptionalEnumUser(
         )
       }
 
-      public override fun redact(value: OptionalEnumUser): OptionalEnumUser = value.copy(
+      public override fun redact(`value`: OptionalEnumUser): OptionalEnumUser = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -116,7 +115,7 @@ public class OptionalEnumUser(
   }
 
   public enum class OptionalEnum(
-    public override val value: Int
+    public override val `value`: Int
   ) : WireEnum {
     FOO(1),
     BAR(2),
@@ -129,11 +128,11 @@ public class OptionalEnumUser(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(value: Int): OptionalEnum? = OptionalEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): OptionalEnum? = OptionalEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): OptionalEnum? = when (value) {
+      public fun fromValue(`value`: Int): OptionalEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         else -> null

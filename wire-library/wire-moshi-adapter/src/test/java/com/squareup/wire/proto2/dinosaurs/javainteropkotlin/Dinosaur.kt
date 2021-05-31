@@ -21,7 +21,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -94,11 +93,11 @@ public class Dinosaur(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + name.hashCode()
+      result = result * 37 + (name?.hashCode() ?: 0)
       result = result * 37 + picture_urls.hashCode()
-      result = result * 37 + length_meters.hashCode()
-      result = result * 37 + mass_kilograms.hashCode()
-      result = result * 37 + period.hashCode()
+      result = result * 37 + (length_meters?.hashCode() ?: 0)
+      result = result * 37 + (mass_kilograms?.hashCode() ?: 0)
+      result = result * 37 + (period?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -190,7 +189,7 @@ public class Dinosaur(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: Dinosaur): Int {
+      public override fun encodedSize(`value`: Dinosaur): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(2, value.picture_urls)
@@ -200,7 +199,7 @@ public class Dinosaur(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Dinosaur): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Dinosaur): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 2, value.picture_urls)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 3, value.length_meters)
@@ -239,7 +238,7 @@ public class Dinosaur(
         )
       }
 
-      public override fun redact(value: Dinosaur): Dinosaur = value.copy(
+      public override fun redact(`value`: Dinosaur): Dinosaur = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

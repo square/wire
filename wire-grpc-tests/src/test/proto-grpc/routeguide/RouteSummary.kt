@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -87,10 +86,10 @@ public class RouteSummary(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + point_count.hashCode()
-      result = result * 37 + feature_count.hashCode()
-      result = result * 37 + distance.hashCode()
-      result = result * 37 + elapsed_time.hashCode()
+      result = result * 37 + (point_count?.hashCode() ?: 0)
+      result = result * 37 + (feature_count?.hashCode() ?: 0)
+      result = result * 37 + (distance?.hashCode() ?: 0)
+      result = result * 37 + (elapsed_time?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -122,7 +121,7 @@ public class RouteSummary(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: RouteSummary): Int {
+      public override fun encodedSize(`value`: RouteSummary): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.point_count)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.feature_count)
@@ -131,7 +130,7 @@ public class RouteSummary(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RouteSummary): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RouteSummary): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.point_count)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.feature_count)
         ProtoAdapter.INT32.encodeWithTag(writer, 3, value.distance)
@@ -162,7 +161,7 @@ public class RouteSummary(
         )
       }
 
-      public override fun redact(value: RouteSummary): RouteSummary = value.copy(
+      public override fun redact(`value`: RouteSummary): RouteSummary = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

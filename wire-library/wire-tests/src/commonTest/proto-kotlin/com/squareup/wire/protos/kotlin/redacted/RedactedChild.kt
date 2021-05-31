@@ -20,7 +20,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -63,9 +62,9 @@ public class RedactedChild(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + a.hashCode()
-      result = result * 37 + b.hashCode()
-      result = result * 37 + c.hashCode()
+      result = result * 37 + (a?.hashCode() ?: 0)
+      result = result * 37 + (b?.hashCode() ?: 0)
+      result = result * 37 + (c?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -95,7 +94,7 @@ public class RedactedChild(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: RedactedChild): Int {
+      public override fun encodedSize(`value`: RedactedChild): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         size += RedactedFields.ADAPTER.encodedSizeWithTag(2, value.b)
@@ -103,7 +102,7 @@ public class RedactedChild(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedChild): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedChild): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         RedactedFields.ADAPTER.encodeWithTag(writer, 2, value.b)
         NotRedacted.ADAPTER.encodeWithTag(writer, 3, value.c)
@@ -130,7 +129,7 @@ public class RedactedChild(
         )
       }
 
-      public override fun redact(value: RedactedChild): RedactedChild = value.copy(
+      public override fun redact(`value`: RedactedChild): RedactedChild = value.copy(
         b = value.b?.let(RedactedFields.ADAPTER::redact),
         c = value.c?.let(NotRedacted.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

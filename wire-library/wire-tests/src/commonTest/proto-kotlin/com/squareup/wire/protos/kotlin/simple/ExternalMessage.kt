@@ -22,7 +22,6 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -101,12 +100,12 @@ public class ExternalMessage(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + f.hashCode()
+      result = result * 37 + (f?.hashCode() ?: 0)
       result = result * 37 + fooext.hashCode()
-      result = result * 37 + barext.hashCode()
-      result = result * 37 + bazext.hashCode()
-      result = result * 37 + nested_message_ext.hashCode()
-      result = result * 37 + nested_enum_ext.hashCode()
+      result = result * 37 + (barext?.hashCode() ?: 0)
+      result = result * 37 + (bazext?.hashCode() ?: 0)
+      result = result * 37 + (nested_message_ext?.hashCode() ?: 0)
+      result = result * 37 + (nested_enum_ext?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -145,7 +144,7 @@ public class ExternalMessage(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: ExternalMessage): Int {
+      public override fun encodedSize(`value`: ExternalMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.FLOAT.encodedSizeWithTag(1, value.f)
         size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(125, value.fooext)
@@ -157,7 +156,7 @@ public class ExternalMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: ExternalMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: ExternalMessage): Unit {
         ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f)
         ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext)
         ProtoAdapter.INT32.encodeWithTag(writer, 126, value.barext)
@@ -200,7 +199,7 @@ public class ExternalMessage(
         )
       }
 
-      public override fun redact(value: ExternalMessage): ExternalMessage = value.copy(
+      public override fun redact(`value`: ExternalMessage): ExternalMessage = value.copy(
         nested_message_ext =
             value.nested_message_ext?.let(SimpleMessage.NestedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

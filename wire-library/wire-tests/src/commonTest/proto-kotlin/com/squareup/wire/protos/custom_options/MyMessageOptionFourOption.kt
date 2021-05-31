@@ -10,5 +10,5 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 public annotation class MyMessageOptionFourOption(
-  public val value: FooBar.FooBarBazEnum
+  public val `value`: FooBar.FooBarBazEnum
 )

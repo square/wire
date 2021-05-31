@@ -11,7 +11,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
 public enum class EnumVersionOne(
-  public override val value: Int
+  public override val `value`: Int
 ) : WireEnum {
   SHREK_V1(1),
   DONKEY_V1(2),
@@ -25,11 +25,11 @@ public enum class EnumVersionOne(
       PROTO_2, 
       null
     ) {
-      public override fun fromValue(value: Int): EnumVersionOne? = EnumVersionOne.fromValue(value)
+      public override fun fromValue(`value`: Int): EnumVersionOne? = EnumVersionOne.fromValue(value)
     }
 
     @JvmStatic
-    public fun fromValue(value: Int): EnumVersionOne? = when (value) {
+    public fun fromValue(`value`: Int): EnumVersionOne? = when (value) {
       1 -> SHREK_V1
       2 -> DONKEY_V1
       3 -> FIONA_V1

@@ -18,7 +18,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -52,7 +51,7 @@ public class FreeDrinkPromotion(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + drink.hashCode()
+      result = result * 37 + (drink?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -92,13 +91,13 @@ public class FreeDrinkPromotion(
       PROTO_3, 
       null
     ) {
-      public override fun encodedSize(value: FreeDrinkPromotion): Int {
+      public override fun encodedSize(`value`: FreeDrinkPromotion): Int {
         var size = value.unknownFields.size
         if (value.drink != Drink.UNKNOWN) size += Drink.ADAPTER.encodedSizeWithTag(1, value.drink)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: FreeDrinkPromotion): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: FreeDrinkPromotion): Unit {
         if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
         writer.writeBytes(value.unknownFields)
       }
@@ -121,7 +120,7 @@ public class FreeDrinkPromotion(
         )
       }
 
-      public override fun redact(value: FreeDrinkPromotion): FreeDrinkPromotion = value.copy(
+      public override fun redact(`value`: FreeDrinkPromotion): FreeDrinkPromotion = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -130,7 +129,7 @@ public class FreeDrinkPromotion(
   }
 
   public enum class Drink(
-    public override val value: Int
+    public override val `value`: Int
   ) : WireEnum {
     UNKNOWN(0),
     PEPSI(1),
@@ -145,11 +144,11 @@ public class FreeDrinkPromotion(
         PROTO_3, 
         Drink.UNKNOWN
       ) {
-        public override fun fromValue(value: Int): Drink? = Drink.fromValue(value)
+        public override fun fromValue(`value`: Int): Drink? = Drink.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): Drink? = when (value) {
+      public fun fromValue(`value`: Int): Drink? = when (value) {
         0 -> UNKNOWN
         1 -> PEPSI
         2 -> MOUNTAIN_DEW

@@ -14,5 +14,5 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 public annotation class ServiceOptionOneOption(
-  public val value: Int
+  public val `value`: Int
 )

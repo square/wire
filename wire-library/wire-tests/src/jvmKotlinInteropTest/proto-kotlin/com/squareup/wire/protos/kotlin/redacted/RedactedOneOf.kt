@@ -16,7 +16,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -63,8 +62,8 @@ public class RedactedOneOf(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + b.hashCode()
-      result = result * 37 + c.hashCode()
+      result = result * 37 + (b?.hashCode() ?: 0)
+      result = result * 37 + (c?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -118,14 +117,14 @@ public class RedactedOneOf(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: RedactedOneOf): Int {
+      public override fun encodedSize(`value`: RedactedOneOf): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.b)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.c)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedOneOf): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedOneOf): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.b)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.c)
         writer.writeBytes(value.unknownFields)
@@ -148,7 +147,7 @@ public class RedactedOneOf(
         )
       }
 
-      public override fun redact(value: RedactedOneOf): RedactedOneOf = value.copy(
+      public override fun redact(`value`: RedactedOneOf): RedactedOneOf = value.copy(
         c = null,
         unknownFields = ByteString.EMPTY
       )

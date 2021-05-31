@@ -25,7 +25,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -119,13 +118,13 @@ public class PizzaDelivery(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + phone_number.hashCode()
-      result = result * 37 + address.hashCode()
+      result = result * 37 + (phone_number?.hashCode() ?: 0)
+      result = result * 37 + (address?.hashCode() ?: 0)
       result = result * 37 + pizzas.hashCode()
-      result = result * 37 + promotion.hashCode()
-      result = result * 37 + delivered_within_or_free.hashCode()
-      result = result * 37 + loyalty.hashCode()
-      result = result * 37 + ordered_at.hashCode()
+      result = result * 37 + (promotion?.hashCode() ?: 0)
+      result = result * 37 + (delivered_within_or_free?.hashCode() ?: 0)
+      result = result * 37 + (loyalty?.hashCode() ?: 0)
+      result = result * 37 + (ordered_at?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -235,7 +234,7 @@ public class PizzaDelivery(
       PROTO_3, 
       null
     ) {
-      public override fun encodedSize(value: PizzaDelivery): Int {
+      public override fun encodedSize(`value`: PizzaDelivery): Int {
         var size = value.unknownFields.size
         if (value.phone_number != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1,
             value.phone_number)
@@ -252,7 +251,7 @@ public class PizzaDelivery(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: PizzaDelivery): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: PizzaDelivery): Unit {
         if (value.phone_number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1,
             value.phone_number)
         if (value.address != "") ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
@@ -298,7 +297,7 @@ public class PizzaDelivery(
         )
       }
 
-      public override fun redact(value: PizzaDelivery): PizzaDelivery = value.copy(
+      public override fun redact(`value`: PizzaDelivery): PizzaDelivery = value.copy(
         pizzas = value.pizzas.redactElements(Pizza.ADAPTER),
         promotion = value.promotion?.let(AnyMessage.ADAPTER::redact),
         delivered_within_or_free =

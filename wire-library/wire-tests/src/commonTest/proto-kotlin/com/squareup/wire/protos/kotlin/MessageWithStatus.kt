@@ -58,12 +58,12 @@ public class MessageWithStatus(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: MessageWithStatus): Int {
+      public override fun encodedSize(`value`: MessageWithStatus): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: MessageWithStatus): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: MessageWithStatus): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -74,7 +74,7 @@ public class MessageWithStatus(
         )
       }
 
-      public override fun redact(value: MessageWithStatus): MessageWithStatus = value.copy(
+      public override fun redact(`value`: MessageWithStatus): MessageWithStatus = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -83,7 +83,7 @@ public class MessageWithStatus(
   }
 
   public enum class Status(
-    public override val value: Int
+    public override val `value`: Int
   ) : WireEnum {
     A(1),
     ;
@@ -95,11 +95,11 @@ public class MessageWithStatus(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(value: Int): Status? = Status.fromValue(value)
+        public override fun fromValue(`value`: Int): Status? = Status.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): Status? = when (value) {
+      public fun fromValue(`value`: Int): Status? = when (value) {
         1 -> A
         else -> null
       }

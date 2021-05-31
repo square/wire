@@ -28,7 +28,6 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -169,18 +168,18 @@ public class SimpleMessage(
     var result_ = super.hashCode
     if (result_ == 0) {
       result_ = unknownFields.hashCode()
-      result_ = result_ * 37 + optional_int32.hashCode()
-      result_ = result_ * 37 + optional_nested_msg.hashCode()
-      result_ = result_ * 37 + optional_external_msg.hashCode()
-      result_ = result_ * 37 + default_nested_enum.hashCode()
+      result_ = result_ * 37 + (optional_int32?.hashCode() ?: 0)
+      result_ = result_ * 37 + (optional_nested_msg?.hashCode() ?: 0)
+      result_ = result_ * 37 + (optional_external_msg?.hashCode() ?: 0)
+      result_ = result_ * 37 + (default_nested_enum?.hashCode() ?: 0)
       result_ = result_ * 37 + required_int32.hashCode()
       result_ = result_ * 37 + repeated_double.hashCode()
-      result_ = result_ * 37 + default_foreign_enum.hashCode()
-      result_ = result_ * 37 + no_default_foreign_enum.hashCode()
-      result_ = result_ * 37 + package_.hashCode()
-      result_ = result_ * 37 + result.hashCode()
-      result_ = result_ * 37 + other.hashCode()
-      result_ = result_ * 37 + o.hashCode()
+      result_ = result_ * 37 + (default_foreign_enum?.hashCode() ?: 0)
+      result_ = result_ * 37 + (no_default_foreign_enum?.hashCode() ?: 0)
+      result_ = result_ * 37 + (package_?.hashCode() ?: 0)
+      result_ = result_ * 37 + (result?.hashCode() ?: 0)
+      result_ = result_ * 37 + (other?.hashCode() ?: 0)
+      result_ = result_ * 37 + (o?.hashCode() ?: 0)
       super.hashCode = result_
     }
     return result_
@@ -241,7 +240,7 @@ public class SimpleMessage(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: SimpleMessage): Int {
+      public override fun encodedSize(`value`: SimpleMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.optional_int32)
         size += NestedMessage.ADAPTER.encodedSizeWithTag(2, value.optional_nested_msg)
@@ -258,7 +257,7 @@ public class SimpleMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: SimpleMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: SimpleMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32)
         NestedMessage.ADAPTER.encodeWithTag(writer, 2, value.optional_nested_msg)
         ExternalMessage.ADAPTER.encodeWithTag(writer, 3, value.optional_external_msg)
@@ -334,7 +333,7 @@ public class SimpleMessage(
         )
       }
 
-      public override fun redact(value: SimpleMessage): SimpleMessage = value.copy(
+      public override fun redact(`value`: SimpleMessage): SimpleMessage = value.copy(
         optional_nested_msg = value.optional_nested_msg?.let(NestedMessage.ADAPTER::redact),
         optional_external_msg = value.optional_external_msg?.let(ExternalMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
@@ -374,7 +373,7 @@ public class SimpleMessage(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + bb.hashCode()
+        result = result * 37 + (bb?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -398,13 +397,13 @@ public class SimpleMessage(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: NestedMessage): Int {
+        public override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.bb)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: NestedMessage): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)
           writer.writeBytes(value.unknownFields)
         }
@@ -423,7 +422,7 @@ public class SimpleMessage(
           )
         }
 
-        public override fun redact(value: NestedMessage): NestedMessage = value.copy(
+        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -433,7 +432,7 @@ public class SimpleMessage(
   }
 
   public enum class NestedEnum(
-    public override val value: Int
+    public override val `value`: Int
   ) : WireEnum {
     FOO(1),
     BAR(2),
@@ -449,11 +448,11 @@ public class SimpleMessage(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): NestedEnum? = when (value) {
+      public fun fromValue(`value`: Int): NestedEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         3 -> BAZ

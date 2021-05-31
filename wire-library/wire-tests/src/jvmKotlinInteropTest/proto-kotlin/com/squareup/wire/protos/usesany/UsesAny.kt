@@ -20,7 +20,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -63,7 +62,7 @@ public class UsesAny(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + just_one.hashCode()
+      result = result * 37 + (just_one?.hashCode() ?: 0)
       result = result * 37 + many_anys.hashCode()
       super.hashCode = result
     }
@@ -117,14 +116,14 @@ public class UsesAny(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: UsesAny): Int {
+      public override fun encodedSize(`value`: UsesAny): Int {
         var size = value.unknownFields.size
         size += AnyMessage.ADAPTER.encodedSizeWithTag(1, value.just_one)
         size += AnyMessage.ADAPTER.asRepeated().encodedSizeWithTag(2, value.many_anys)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: UsesAny): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: UsesAny): Unit {
         AnyMessage.ADAPTER.encodeWithTag(writer, 1, value.just_one)
         AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.many_anys)
         writer.writeBytes(value.unknownFields)
@@ -147,7 +146,7 @@ public class UsesAny(
         )
       }
 
-      public override fun redact(value: UsesAny): UsesAny = value.copy(
+      public override fun redact(`value`: UsesAny): UsesAny = value.copy(
         just_one = value.just_one?.let(AnyMessage.ADAPTER::redact),
         many_anys = value.many_anys.redactElements(AnyMessage.ADAPTER),
         unknownFields = ByteString.EMPTY

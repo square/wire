@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -56,8 +55,8 @@ public class OuterMessage(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + outer_number_before.hashCode()
-      result = result * 37 + embedded_message.hashCode()
+      result = result * 37 + (outer_number_before?.hashCode() ?: 0)
+      result = result * 37 + (embedded_message?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -85,14 +84,14 @@ public class OuterMessage(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: OuterMessage): Int {
+      public override fun encodedSize(`value`: OuterMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.outer_number_before)
         size += EmbeddedMessage.ADAPTER.encodedSizeWithTag(2, value.embedded_message)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OuterMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OuterMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)
         EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message)
         writer.writeBytes(value.unknownFields)
@@ -115,7 +114,7 @@ public class OuterMessage(
         )
       }
 
-      public override fun redact(value: OuterMessage): OuterMessage = value.copy(
+      public override fun redact(`value`: OuterMessage): OuterMessage = value.copy(
         embedded_message = value.embedded_message?.let(EmbeddedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

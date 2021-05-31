@@ -14,5 +14,5 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
 public annotation class MyFieldOptionOneOption(
-  public val value: Int
+  public val `value`: Int
 )

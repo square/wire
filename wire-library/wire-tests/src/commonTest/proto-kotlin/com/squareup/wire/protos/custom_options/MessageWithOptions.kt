@@ -57,12 +57,12 @@ public class MessageWithOptions(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: MessageWithOptions): Int {
+      public override fun encodedSize(`value`: MessageWithOptions): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: MessageWithOptions): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: MessageWithOptions): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -73,7 +73,7 @@ public class MessageWithOptions(
         )
       }
 
-      public override fun redact(value: MessageWithOptions): MessageWithOptions = value.copy(
+      public override fun redact(`value`: MessageWithOptions): MessageWithOptions = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

@@ -18,7 +18,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
@@ -85,8 +84,8 @@ public class ModelEvaluation(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + name.hashCode()
-      result = result * 37 + score.hashCode()
+      result = result * 37 + (name?.hashCode() ?: 0)
+      result = result * 37 + (score?.hashCode() ?: 0)
       result = result * 37 + models.hashCode()
       super.hashCode = result
     }
@@ -153,7 +152,7 @@ public class ModelEvaluation(
       private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }
 
-      public override fun encodedSize(value: ModelEvaluation): Int {
+      public override fun encodedSize(`value`: ModelEvaluation): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.DOUBLE.encodedSizeWithTag(2, value.score)
@@ -161,7 +160,7 @@ public class ModelEvaluation(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: ModelEvaluation): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: ModelEvaluation): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 2, value.score)
         modelsAdapter.encodeWithTag(writer, 3, value.models)
@@ -188,7 +187,7 @@ public class ModelEvaluation(
         )
       }
 
-      public override fun redact(value: ModelEvaluation): ModelEvaluation = value.copy(
+      public override fun redact(`value`: ModelEvaluation): ModelEvaluation = value.copy(
         models = value.models.redactElements(ModelEvaluation.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

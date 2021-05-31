@@ -97,14 +97,14 @@ public class RedactedRepeated(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: RedactedRepeated): Int {
+      public override fun encodedSize(`value`: RedactedRepeated): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.a)
         size += RedactedFields.ADAPTER.asRepeated().encodedSizeWithTag(2, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedRepeated): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedRepeated): Unit {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
         RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
@@ -127,7 +127,7 @@ public class RedactedRepeated(
         )
       }
 
-      public override fun redact(value: RedactedRepeated): RedactedRepeated = value.copy(
+      public override fun redact(`value`: RedactedRepeated): RedactedRepeated = value.copy(
         a = emptyList(),
         b = value.b.redactElements(RedactedFields.ADAPTER),
         unknownFields = ByteString.EMPTY

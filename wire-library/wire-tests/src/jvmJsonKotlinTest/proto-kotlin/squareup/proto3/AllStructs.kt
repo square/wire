@@ -23,7 +23,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
@@ -283,15 +282,15 @@ public class AllStructs(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + struct.hashCode()
-      result = result * 37 + list.hashCode()
-      result = result * 37 + null_value.hashCode()
-      result = result * 37 + value_a.hashCode()
-      result = result * 37 + value_b.hashCode()
-      result = result * 37 + value_c.hashCode()
-      result = result * 37 + value_d.hashCode()
-      result = result * 37 + value_e.hashCode()
-      result = result * 37 + value_f.hashCode()
+      result = result * 37 + (struct?.hashCode() ?: 0)
+      result = result * 37 + (list?.hashCode() ?: 0)
+      result = result * 37 + (null_value?.hashCode() ?: 0)
+      result = result * 37 + (value_a?.hashCode() ?: 0)
+      result = result * 37 + (value_b?.hashCode() ?: 0)
+      result = result * 37 + (value_c?.hashCode() ?: 0)
+      result = result * 37 + (value_d?.hashCode() ?: 0)
+      result = result * 37 + (value_e?.hashCode() ?: 0)
+      result = result * 37 + (value_f?.hashCode() ?: 0)
       result = result * 37 + rep_struct.hashCode()
       result = result * 37 + rep_list.hashCode()
       result = result * 37 + rep_value_a.hashCode()
@@ -300,8 +299,8 @@ public class AllStructs(
       result = result * 37 + map_int32_list.hashCode()
       result = result * 37 + map_int32_value_a.hashCode()
       result = result * 37 + map_int32_null_value.hashCode()
-      result = result * 37 + oneof_struct.hashCode()
-      result = result * 37 + oneof_list.hashCode()
+      result = result * 37 + (oneof_struct?.hashCode() ?: 0)
+      result = result * 37 + (oneof_list?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -561,7 +560,7 @@ public class AllStructs(
       private val map_int32_null_valueAdapter: ProtoAdapter<Map<Int, Nothing?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_NULL) }
 
-      public override fun encodedSize(value: AllStructs): Int {
+      public override fun encodedSize(`value`: AllStructs): Int {
         var size = value.unknownFields.size
         if (value.struct != null) size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(1,
             value.struct)
@@ -593,7 +592,7 @@ public class AllStructs(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: AllStructs): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: AllStructs): Unit {
         if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
         if (value.list != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 2, value.list)
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 3,
@@ -693,7 +692,7 @@ public class AllStructs(
         )
       }
 
-      public override fun redact(value: AllStructs): AllStructs = value.copy(
+      public override fun redact(`value`: AllStructs): AllStructs = value.copy(
         struct = value.struct?.let(ProtoAdapter.STRUCT_MAP::redact),
         list = value.list?.let(ProtoAdapter.STRUCT_LIST::redact),
         value_a = value.value_a?.let(ProtoAdapter.STRUCT_VALUE::redact),

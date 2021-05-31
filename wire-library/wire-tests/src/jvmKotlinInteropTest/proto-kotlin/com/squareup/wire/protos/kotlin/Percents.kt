@@ -16,7 +16,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -51,7 +50,7 @@ public class Percents(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + text.hashCode()
+      result = result * 37 + (text?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -93,13 +92,13 @@ public class Percents(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: Percents): Int {
+      public override fun encodedSize(`value`: Percents): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Percents): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Percents): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
         writer.writeBytes(value.unknownFields)
       }
@@ -118,7 +117,7 @@ public class Percents(
         )
       }
 
-      public override fun redact(value: Percents): Percents = value.copy(
+      public override fun redact(`value`: Percents): Percents = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

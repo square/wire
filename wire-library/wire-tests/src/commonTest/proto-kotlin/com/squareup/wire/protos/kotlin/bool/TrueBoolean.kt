@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -50,7 +49,7 @@ public class TrueBoolean(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + isTrue.hashCode()
+      result = result * 37 + (isTrue?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -74,13 +73,13 @@ public class TrueBoolean(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: TrueBoolean): Int {
+      public override fun encodedSize(`value`: TrueBoolean): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.BOOL.encodedSizeWithTag(1, value.isTrue)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: TrueBoolean): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: TrueBoolean): Unit {
         ProtoAdapter.BOOL.encodeWithTag(writer, 1, value.isTrue)
         writer.writeBytes(value.unknownFields)
       }
@@ -99,7 +98,7 @@ public class TrueBoolean(
         )
       }
 
-      public override fun redact(value: TrueBoolean): TrueBoolean = value.copy(
+      public override fun redact(`value`: TrueBoolean): TrueBoolean = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

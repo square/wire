@@ -20,7 +20,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -58,8 +57,8 @@ public class RedactedExtension(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + d.hashCode()
-      result = result * 37 + e.hashCode()
+      result = result * 37 + (d?.hashCode() ?: 0)
+      result = result * 37 + (e?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -87,14 +86,14 @@ public class RedactedExtension(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: RedactedExtension): Int {
+      public override fun encodedSize(`value`: RedactedExtension): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.d)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.e)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedExtension): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedExtension): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e)
         writer.writeBytes(value.unknownFields)
@@ -117,7 +116,7 @@ public class RedactedExtension(
         )
       }
 
-      public override fun redact(value: RedactedExtension): RedactedExtension = value.copy(
+      public override fun redact(`value`: RedactedExtension): RedactedExtension = value.copy(
         d = null,
         unknownFields = ByteString.EMPTY
       )

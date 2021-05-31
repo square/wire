@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -59,8 +58,8 @@ public class MessageUsingMultipleEnums(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + a.hashCode()
-      result = result * 37 + b.hashCode()
+      result = result * 37 + (a?.hashCode() ?: 0)
+      result = result * 37 + (b?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -90,14 +89,14 @@ public class MessageUsingMultipleEnums(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: MessageUsingMultipleEnums): Int {
+      public override fun encodedSize(`value`: MessageUsingMultipleEnums): Int {
         var size = value.unknownFields.size
         size += MessageWithStatus.Status.ADAPTER.encodedSizeWithTag(1, value.a)
         size += OtherMessageWithStatus.Status.ADAPTER.encodedSizeWithTag(2, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: MessageUsingMultipleEnums): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: MessageUsingMultipleEnums): Unit {
         MessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 1, value.a)
         OtherMessageWithStatus.Status.ADAPTER.encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
@@ -128,7 +127,7 @@ public class MessageUsingMultipleEnums(
         )
       }
 
-      public override fun redact(value: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
+      public override fun redact(`value`: MessageUsingMultipleEnums): MessageUsingMultipleEnums =
           value.copy(
         unknownFields = ByteString.EMPTY
       )

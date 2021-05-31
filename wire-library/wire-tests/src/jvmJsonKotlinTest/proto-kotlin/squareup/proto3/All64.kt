@@ -20,7 +20,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
@@ -306,11 +305,11 @@ public class All64(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + my_int64.hashCode()
-      result = result * 37 + my_uint64.hashCode()
-      result = result * 37 + my_sint64.hashCode()
-      result = result * 37 + my_fixed64.hashCode()
-      result = result * 37 + my_sfixed64.hashCode()
+      result = result * 37 + (my_int64?.hashCode() ?: 0)
+      result = result * 37 + (my_uint64?.hashCode() ?: 0)
+      result = result * 37 + (my_sint64?.hashCode() ?: 0)
+      result = result * 37 + (my_fixed64?.hashCode() ?: 0)
+      result = result * 37 + (my_sfixed64?.hashCode() ?: 0)
       result = result * 37 + rep_int64.hashCode()
       result = result * 37 + rep_uint64.hashCode()
       result = result * 37 + rep_sint64.hashCode()
@@ -326,8 +325,8 @@ public class All64(
       result = result * 37 + map_int64_sint64.hashCode()
       result = result * 37 + map_int64_fixed64.hashCode()
       result = result * 37 + map_int64_sfixed64.hashCode()
-      result = result * 37 + oneof_int64.hashCode()
-      result = result * 37 + oneof_sfixed64.hashCode()
+      result = result * 37 + (oneof_int64?.hashCode() ?: 0)
+      result = result * 37 + (oneof_sfixed64?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -632,7 +631,7 @@ public class All64(
       private val map_int64_sfixed64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.SFIXED64) }
 
-      public override fun encodedSize(value: All64): Int {
+      public override fun encodedSize(`value`: All64): Int {
         var size = value.unknownFields.size
         if (value.my_int64 != 0L) size += ProtoAdapter.INT64.encodedSizeWithTag(1, value.my_int64)
         if (value.my_uint64 != 0L) size += ProtoAdapter.UINT64.encodedSizeWithTag(2,
@@ -663,7 +662,7 @@ public class All64(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: All64): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: All64): Unit {
         if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
         if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
         if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
@@ -767,7 +766,7 @@ public class All64(
         )
       }
 
-      public override fun redact(value: All64): All64 = value.copy(
+      public override fun redact(`value`: All64): All64 = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

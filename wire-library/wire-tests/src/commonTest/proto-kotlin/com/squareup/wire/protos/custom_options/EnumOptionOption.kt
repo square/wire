@@ -14,5 +14,5 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 public annotation class EnumOptionOption(
-  public val value: Boolean
+  public val `value`: Boolean
 )

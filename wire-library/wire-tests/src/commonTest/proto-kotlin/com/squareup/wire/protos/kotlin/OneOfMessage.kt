@@ -21,7 +21,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -82,9 +81,9 @@ public class OneOfMessage(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + foo.hashCode()
-      result = result * 37 + bar.hashCode()
-      result = result * 37 + baz.hashCode()
+      result = result * 37 + (foo?.hashCode() ?: 0)
+      result = result * 37 + (bar?.hashCode() ?: 0)
+      result = result * 37 + (baz?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -114,7 +113,7 @@ public class OneOfMessage(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: OneOfMessage): Int {
+      public override fun encodedSize(`value`: OneOfMessage): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
         size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.bar)
@@ -122,7 +121,7 @@ public class OneOfMessage(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OneOfMessage): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OneOfMessage): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
         ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
@@ -149,7 +148,7 @@ public class OneOfMessage(
         )
       }
 
-      public override fun redact(value: OneOfMessage): OneOfMessage = value.copy(
+      public override fun redact(`value`: OneOfMessage): OneOfMessage = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

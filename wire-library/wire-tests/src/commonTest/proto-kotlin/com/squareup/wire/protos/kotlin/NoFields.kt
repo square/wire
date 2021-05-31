@@ -55,12 +55,12 @@ public class NoFields(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: NoFields): Int {
+      public override fun encodedSize(`value`: NoFields): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: NoFields): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: NoFields): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -71,7 +71,7 @@ public class NoFields(
         )
       }
 
-      public override fun redact(value: NoFields): NoFields = value.copy(
+      public override fun redact(`value`: NoFields): NoFields = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
