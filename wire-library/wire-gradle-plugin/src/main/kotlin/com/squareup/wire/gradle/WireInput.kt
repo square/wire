@@ -26,6 +26,7 @@ import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import java.io.File
 import java.net.URI
 
@@ -34,22 +35,22 @@ import java.net.URI
  * directory trees, jars, and coordinates). This includes registering dependencies with the project
  * so they can be resolved for us.
  */
-internal class WireInput(var configuration: Provider<Configuration>) {
+internal class WireInput(var configuration: Configuration) {
   val name: String
-    get() = configuration.get().name
+    get() = configuration.name
 
   private val dependencyToIncludes = mutableMapOf<Dependency, List<String>>()
 
   val dependencies: DependencySet
-    get() = configuration.get().dependencies
+    get() = configuration.dependencies
 
   // Deferred dependency evaluation.
-  val inputFiles = mutableListOf<File>()
+  val inputFiles = mutableSetOf<File>()
 
   fun addPaths(project: Project, paths: Set<String>) {
     for (path in paths) {
       val dependency = resolveDependency(project, path)
-      configuration.get().dependencies.add(dependency)
+      configuration.dependencies.add(dependency)
     }
   }
 
@@ -58,7 +59,7 @@ internal class WireInput(var configuration: Provider<Configuration>) {
       jar.srcJar?.let { path ->
         val dependency = resolveDependency(project, path)
         dependencyToIncludes[dependency] = jar.includes
-        configuration.get().dependencies.add(dependency)
+        configuration.dependencies.add(dependency)
       }
     }
   }
@@ -69,7 +70,7 @@ internal class WireInput(var configuration: Provider<Configuration>) {
 
       val dependency = resolveDependency(project, projectPath.srcProject!!)
       dependencyToIncludes[dependency] = projectPath.includes
-      configuration.get().dependencies.add(dependency)
+      configuration.dependencies.add(dependency)
     }
   }
 
@@ -79,7 +80,7 @@ internal class WireInput(var configuration: Provider<Configuration>) {
         inputFiles.add(it)
       }
       val dependency = project.dependencies.create(tree)
-      configuration.get().dependencies.add(dependency)
+      configuration.dependencies.add(dependency)
     }
   }
 
@@ -132,21 +133,22 @@ internal class WireInput(var configuration: Provider<Configuration>) {
     }
 
   fun debug(logger: Logger) {
-    configuration.get().dependencies.forEach { dep ->
+    configuration.dependencies.forEach { dep ->
       val srcDirs = ((dep as? FileCollectionDependency)?.files as? SourceDirectorySet)?.srcDirs
       val includes = dependencyToIncludes[dep] ?: listOf()
       logger.debug("dep: $dep -> $srcDirs")
-      logger.debug("$name.files for dep: ${configuration.get().files(dep)}")
+      logger.debug("$name.files for dep: ${configuration.files(dep)}")
       logger.debug("$name.includes for dep: $includes")
     }
   }
 
-  fun toLocations(): Provider<List<Location>> = configuration.map {
-    it.dependencies.flatMap { dep ->
-      it.files(dep)
-        .flatMap { file ->
-          file.toLocations(dep)
-        }
+  fun toLocations(providerFactory: ProviderFactory): Provider<List<Location>> {
+    // We create a provider to support lazily created locations which do not exist at
+    // configuration time.
+    return providerFactory.provider {
+      configuration.dependencies.flatMap { dep ->
+        configuration.files(dep).flatMap { file -> file.toLocations(dep) }
+      }
     }
   }
 

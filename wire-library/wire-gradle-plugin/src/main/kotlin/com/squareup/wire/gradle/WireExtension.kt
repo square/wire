@@ -147,6 +147,7 @@ open class WireExtension(project: Project) {
   /**
    * Source paths for local jars and directories, as well as remote binary dependencies
    */
+  // TODO(Benoit) Delete this because it seems unused? I think the DSL only pass down ProtoRootSet.
   fun sourcePath(vararg sourcePaths: String) {
     this.sourcePaths.addAll(sourcePaths)
   }

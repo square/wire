@@ -30,8 +30,8 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMetadataTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 /**
@@ -64,6 +64,7 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
         kotlinSourceDirectorySet = null,
         javaSourceDirectorySet = WireSourceDirectorySet.of(sourceSets.getByName("main").java),
         name = "main",
+        sourceSets = listOf("main"),
         registerTaskDependency = { task ->
           project.tasks.named("compileJava").configure { it.dependsOn(task) }
         }
@@ -85,6 +86,7 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
       kotlinSourceDirectorySet = WireSourceDirectorySet.of(main.kotlin!!),
       javaSourceDirectorySet = WireSourceDirectorySet.of(main.java),
       name = "main",
+      sourceSets = listOf("main"),
       registerTaskDependency = { task ->
         if (java) {
           project.tasks.named("compileJava").configure { it.dependsOn(task) }
@@ -96,44 +98,27 @@ internal fun WirePlugin.sourceRoots(kotlin: Boolean, java: Boolean): List<Source
 }
 
 private fun KotlinMultiplatformExtension.sourceRoots(project: Project): List<Source> {
-  // TODO: Look at KotlinPlatformType when we get around to module dependencies and compatibility.
-  //  We'll probably want to include that in the source so we can tell which source to rely on
-  //  during dependency resolution.
-
-  return targets
-    .flatMap { target ->
-      if (target is KotlinAndroidTarget) {
-        val extension = project.extensions.getByType(BaseExtension::class.java)
-        return@flatMap extension.sourceRoots(project, kotlin = true)
-          .map { source ->
-            val compilation = target.compilations.single { it.name == source.name }
-            return@map source.copy(
-              name = "${target.name}${source.name.capitalize()}",
-              registerTaskDependency = { task ->
-                compilation.compileKotlinTask.dependsOn(task)
-              }
-            )
-          }
-      }
-      return@flatMap target.compilations.mapNotNull { compilation ->
-        if (compilation.name.endsWith(suffix = "Test", ignoreCase = true)) {
-          return@mapNotNull null
-        }
-        Source(
-          type = target.platformType,
-          kotlinSourceDirectorySet = WireSourceDirectorySet.of(compilation.defaultSourceSet.kotlin),
-          javaSourceDirectorySet = null,
-          name = "${target.name}${compilation.name.capitalize()}",
-          variantName = (compilation as? KotlinJvmAndroidCompilation)?.name,
-          registerTaskDependency = { task ->
-            (target as? KotlinNativeTarget)?.binaries?.forEach {
-              it.linkTask.dependsOn(task)
-            }
-            compilation.compileKotlinTask.dependsOn(task)
-          }
-        )
-      }
+  val target = targets.single { it is KotlinMetadataTarget }
+  return target.compilations.mapNotNull { compilation ->
+    if (compilation.name.endsWith(suffix = "Test", ignoreCase = true)) {
+      return@mapNotNull null
     }
+    val targetName = if (target is KotlinMetadataTarget) "common" else target.name
+    Source(
+      type = target.platformType,
+      name = "$targetName${compilation.name.capitalize()}",
+      variantName = (compilation as? KotlinJvmAndroidCompilation)?.name,
+      kotlinSourceDirectorySet = WireSourceDirectorySet.of(compilation.defaultSourceSet.kotlin),
+      javaSourceDirectorySet = null,
+      sourceSets = compilation.allKotlinSourceSets.map { it.name },
+      registerTaskDependency = { task ->
+        (target as? KotlinNativeTarget)?.binaries?.forEach {
+          it.linkTask.dependsOn(task)
+        }
+        compilation.compileKotlinTask.dependsOn(task)
+      }
+    )
+  }
 }
 
 private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<Source> {
@@ -179,6 +164,7 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
       javaSourceDirectorySet = javaSourceDirectorySet,
       name = variant.name,
       variantName = variant.name,
+      sourceSets = variant.sourceSets.map { it.name },
       registerTaskDependency = { task ->
         // TODO: Lazy task configuration!!!
         variant.registerJavaGeneratingTask(task.get(), task.get().outputDirectories)
@@ -186,7 +172,7 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
           if (kotlin) """compile${variant.name.capitalize()}Kotlin"""
           else """compile${variant.name.capitalize()}Sources"""
         project.tasks.named(compileTaskName).dependsOn(task)
-      }
+      },
     )
   }
 }
@@ -197,6 +183,7 @@ internal data class Source(
   val javaSourceDirectorySet: WireSourceDirectorySet?,
   val name: String,
   val variantName: String? = null,
+  val sourceSets: List<String>,
   val registerTaskDependency: (TaskProvider<WireTask>) -> Unit
 )
 

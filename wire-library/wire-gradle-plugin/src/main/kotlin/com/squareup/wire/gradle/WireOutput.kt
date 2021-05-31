@@ -30,11 +30,14 @@ import javax.inject.Inject
  * directories with the project so they can be compiled after they are generated.
  */
 abstract class WireOutput {
-  /** This will be set to a non-null value before [toTarget] is invoked. */
+  /** Set this to override the default output directory for this [WireOutput]. */
   var out: String? = null
 
-  /** Create a target for the WireCompiler to use when emitting sources. */
-  abstract fun toTarget(): Target
+  /**
+   * Transforms this [WireOutput] into a [Target] for which Wire will generate code. The [Target]
+   * should use [outputDirectory] instead of [WireOutput.out] in all cases for its output directory.
+   */
+  abstract fun toTarget(outputDirectory: String): Target
 }
 
 open class JavaOutput @Inject constructor() : WireOutput() {
@@ -47,12 +50,12 @@ open class JavaOutput @Inject constructor() : WireOutput() {
   var emitDeclaredOptions: Boolean = true
   var emitAppliedOptions: Boolean = false
 
-  override fun toTarget(): JavaTarget {
+  override fun toTarget(outputDirectory: String): JavaTarget {
     return JavaTarget(
         includes = includes ?: listOf("*"),
         excludes = excludes ?: listOf(),
         exclusive = exclusive,
-        outDirectory = out!!,
+        outDirectory = outputDirectory,
         android = android,
         androidAnnotations = androidAnnotations,
         compact = compact,
@@ -77,7 +80,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var grpcServerCompatible: Boolean = false
   var nameSuffix: String? = null
 
-  override fun toTarget(): KotlinTarget {
+  override fun toTarget(outputDirectory: String): KotlinTarget {
     val rpcCallStyle = RpcCallStyle.values()
         .singleOrNull { it.toString().equals(rpcCallStyle, ignoreCase = true) }
         ?: throw IllegalArgumentException(
@@ -91,7 +94,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
         includes = includes ?: listOf("*"),
         excludes = excludes ?: listOf(),
         exclusive = exclusive,
-        outDirectory = out!!,
+        outDirectory = outputDirectory,
         android = android,
         javaInterop = javaInterop,
         emitDeclaredOptions = emitDeclaredOptions,
@@ -107,8 +110,8 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
 }
 
 open class ProtoOutput @Inject constructor() : WireOutput() {
-  override fun toTarget(): ProtoTarget {
-    return ProtoTarget(outDirectory = out!!)
+  override fun toTarget(outputDirectory: String): ProtoTarget {
+    return ProtoTarget(outDirectory = outputDirectory)
   }
 }
 
@@ -118,12 +121,12 @@ open class CustomOutput @Inject constructor() : WireOutput() {
   var exclusive: Boolean = true
   var customHandlerClass: String? = null
 
-  override fun toTarget(): CustomTargetBeta {
+  override fun toTarget(outputDirectory: String): CustomTargetBeta {
     return CustomTargetBeta(
         includes = includes ?: listOf("*"),
         excludes = excludes ?: listOf(),
         exclusive = exclusive,
-        outDirectory = out!!,
+        outDirectory = outputDirectory,
         customHandlerClass = customHandlerClass
             ?: throw IllegalArgumentException("customHandlerClass required")
     )

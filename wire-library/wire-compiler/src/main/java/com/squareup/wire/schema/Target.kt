@@ -206,7 +206,7 @@ data class JavaTarget(
         .withOptions(emitDeclaredOptions, emitAppliedOptions)
 
     return object : SchemaHandler {
-      override fun handle(type: Type): Path? {
+      override fun handle(type: Type): Path {
         val typeSpec = javaGenerator.generateType(type)
         val javaTypeName = javaGenerator.generatedTypeName(type)
         return write(javaTypeName, typeSpec, type.type, type.location)
@@ -334,7 +334,7 @@ data class KotlinTarget(
     )
 
     return object : SchemaHandler {
-      override fun handle(type: Type): Path? {
+      override fun handle(type: Type): Path {
         val typeSpec = kotlinGenerator.generateType(type)
         val className = kotlinGenerator.generatedTypeName(type)
         return write(className, typeSpec, type.type, type.location)
@@ -425,7 +425,7 @@ data class SwiftTarget(
 
     val generator = SwiftGenerator(schema, upstreamTypes)
     return object : SchemaHandler {
-      override fun handle(type: Type): Path? {
+      override fun handle(type: Type): Path {
         val typeName = generator.generatedTypeName(type)
         val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
