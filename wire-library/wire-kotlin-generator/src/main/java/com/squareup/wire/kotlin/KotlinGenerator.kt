@@ -397,7 +397,6 @@ class KotlinGenerator private constructor(
       NameAllocator().apply {
         when (message) {
           is EnumType -> {
-            newName("value", "value")
             newName("ADAPTER", "ADAPTER")
             newName("ENUM_OPTIONS", "ENUM_OPTIONS")
             message.constants.forEach { constant ->
@@ -640,7 +639,6 @@ class KotlinGenerator private constructor(
       addStatement("var %N = super.hashCode", resultName)
       beginControlFlow("if (%N == 0)", resultName)
 
-      val hashCode = MemberName("kotlin", "hashCode")
       addStatement("%N = unknownFields.hashCode()", resultName)
       for (field in type.fieldsAndFlatOneOfFields()) {
         val fieldName = localNameAllocator[field]
@@ -648,13 +646,13 @@ class KotlinGenerator private constructor(
         if (field.isRepeated || field.isRequired || field.isMap) {
           addStatement("%L.hashCode()", fieldName)
         } else {
-          addStatement("%L.%M()", fieldName, hashCode)
+          addStatement("(%L?.hashCode() ?: 0)", fieldName)
         }
       }
       for (oneOf in type.boxOneOfs()) {
         val fieldName = localNameAllocator[oneOf]
         add("%1N = %1N * 37 + ", resultName)
-        addStatement("%L.%M()", fieldName, hashCode)
+        addStatement("(%L?.hashCode() ?: 0)", fieldName)
       }
 
       addStatement("super.hashCode = %N", resultName)
@@ -1632,7 +1630,7 @@ class KotlinGenerator private constructor(
     val type = enum.type
     val nameAllocator = nameAllocator(enum)
 
-    val valueName = nameAllocator["value"]
+    val valueName = "value"
 
     val primaryConstructor = FunSpec.constructorBuilder()
         .addParameter(valueName, Int::class, OVERRIDE)
@@ -1690,7 +1688,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val companionObjectBuilder = TypeSpec.companionObjectBuilder()
     val parentClassName = typeToKotlinName.getValue(message.type)
-    val valueName = nameAllocator["value"]
+    val valueName = "value"
     val fromValue = FunSpec.builder("fromValue")
         .jvmStatic()
         .addParameter(valueName, Int::class)
@@ -1724,7 +1722,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
 
     val adapterName = nameAllocator["ADAPTER"]
-    val valueName = nameAllocator["value"]
+    val valueName = "value"
 
     val adapterType = ProtoAdapter::class.asClassName().parameterizedBy(parentClassName)
     val adapterObject = TypeSpec.anonymousClassBuilder()

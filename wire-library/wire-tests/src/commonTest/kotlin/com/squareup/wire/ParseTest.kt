@@ -82,7 +82,7 @@ class ParseTest {
         + "81236123412321230122e122c122a12281226122412221220121e121c121a12181216121412121210120e120"
         + "c120a1208120612041202120008c803").decodeHex()
     val recursive = Recursive.ADAPTER.decode(data.toByteArray())
-    assertEquals(456, recursive.value!!.toInt())
+    assertEquals(456, recursive.value_!!.toInt())
   }
 
   @Test

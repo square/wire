@@ -12,7 +12,7 @@ object versions {
   val gson = "2.8.6"
   val guava = "20.0"
   val javapoet = "1.13.0"
-  val kotlinpoet = "1.7.2"
+  val kotlinpoet = "1.8.0"
   val jsr305 = "3.0.2"
   val kotlin = "1.4.10"
   val okio = "3.0.0-alpha.3"

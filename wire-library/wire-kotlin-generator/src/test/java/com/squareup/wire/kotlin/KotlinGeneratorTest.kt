@@ -49,9 +49,9 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>("))
     assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
     assertTrue(code.contains("PhoneNumber::class"))
-    assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))
-    assertTrue(code.contains("enum class PhoneType(    public override val value: Int  ) : WireEnum"))
-    assertTrue(code.contains("fun fromValue(value: Int): PhoneType?"))
+    assertTrue(code.contains("override fun encode(writer: ProtoWriter, `value`: Person)"))
+    assertTrue(code.contains("enum class PhoneType(    public override val `value`: Int  ) : WireEnum"))
+    assertTrue(code.contains("fun fromValue(`value`: Int): PhoneType?"))
     assertTrue(code.contains("WORK(1),"))
   }
 
@@ -1156,9 +1156,9 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("object : ProtoAdapter<PhoneNumber>("))
     assertTrue(code.contains("FieldEncoding.LENGTH_DELIMITED"))
     assertTrue(code.contains("PhoneNumber::class"))
-    assertTrue(code.contains("override fun encode(writer: ProtoWriter, value: Person)"))
-    assertTrue(code.contains("enum class PhoneType(    public override val value: Int  ) : WireEnum"))
-    assertTrue(code.contains("fun fromValue(value: Int): PhoneType?"))
+    assertTrue(code.contains("override fun encode(writer: ProtoWriter, `value`: Person)"))
+    assertTrue(code.contains("enum class PhoneType(    public override val `value`: Int  ) : WireEnum"))
+    assertTrue(code.contains("fun fromValue(`value`: Int): PhoneType?"))
     assertTrue(code.contains("WORK(1),"))
   }
 
