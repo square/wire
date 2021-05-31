@@ -1630,6 +1630,9 @@ class KotlinGenerator private constructor(
     val type = enum.type
     val nameAllocator = nameAllocator(enum)
 
+    // Note that we cannot use nameAllocator for `value` because if we rename it the generated code
+    // will not compile for the constructor parameter `override val value_: Int` won't be overriding
+    // anything anymore.
     val valueName = "value"
 
     val primaryConstructor = FunSpec.constructorBuilder()

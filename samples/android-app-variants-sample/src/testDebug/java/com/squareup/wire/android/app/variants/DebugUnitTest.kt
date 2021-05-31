@@ -10,8 +10,8 @@ class DebugUnitTest {
     val commonText = CommonText("name")
     val commonType = CommonType(32, "name")
 
-    if (commonText.value != commonType.name) {
-      throw AssertionError("BOOM!: ${commonText.value} != ${commonType.name}")
+    if (commonText.value_ != commonType.name) {
+      throw AssertionError("BOOM!: ${commonText.value_} != ${commonType.name}")
     }
   }
 

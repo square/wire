@@ -219,6 +219,7 @@ public final class JavaGenerator {
         }
 
       } else if (type instanceof EnumType) {
+        nameAllocator.newName("value", "value");
         nameAllocator.newName("i", "i");
         nameAllocator.newName("reader", "reader");
         nameAllocator.newName("writer", "writer");
@@ -512,7 +513,7 @@ public final class JavaGenerator {
 
   private TypeSpec generateEnum(EnumType type) {
     NameAllocator nameAllocator = nameAllocators.getUnchecked(type);
-    String value = "value";
+    String value = nameAllocator.get("value");
     ClassName javaType = (ClassName) typeName(type.getType());
 
     TypeSpec.Builder builder = TypeSpec.enumBuilder(javaType.simpleName())
@@ -822,7 +823,7 @@ public final class JavaGenerator {
    */
   private TypeSpec enumAdapter(NameAllocator nameAllocator, EnumType type, ClassName javaType,
       ClassName adapterJavaType) {
-    String value = "value";
+    String value = nameAllocator.get("value");
     String i = nameAllocator.get("i");
     String reader = nameAllocator.get("reader");
     String writer = nameAllocator.get("writer");
