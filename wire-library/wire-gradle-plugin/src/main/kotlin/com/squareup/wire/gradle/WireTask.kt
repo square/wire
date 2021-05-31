@@ -20,6 +20,7 @@ import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
+import okio.Path.Companion.toPath
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
@@ -35,8 +36,6 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 
 @CacheableTask
 open class WireTask : SourceTask() {
@@ -94,13 +93,13 @@ open class WireTask : SourceTask() {
 
     rules?.let {
       project.file(it)
-          .forEachLine { line ->
-            when (line.firstOrNull()) {
-              '+' -> includes.add(line.substring(1))
-              '-' -> excludes.add(line.substring(1))
-              else -> Unit
-            }
+        .forEachLine { line ->
+          when (line.firstOrNull()) {
+            '+' -> includes.add(line.substring(1))
+            '-' -> excludes.add(line.substring(1))
+            else -> Unit
           }
+        }
     }
 
     if (includes.isNotEmpty()) {
@@ -125,16 +124,16 @@ open class WireTask : SourceTask() {
     }
 
     val wireRun = WireRun(
-        sourcePath = sourceInput.map { expandSrcJarWildcards(it) }.get(),
-        protoPath = protoInput.get(),
-        treeShakingRoots = if (roots.isEmpty()) includes else roots,
-        treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
-        moves = moves.map { it.toTypeMoverMove() },
-        sinceVersion = sinceVersion,
-        untilVersion = untilVersion,
-        onlyVersion = onlyVersion,
-        targets = targets,
-        permitPackageCycles = permitPackageCycles
+      sourcePath = sourceInput.map { expandJarGlobs(it) }.get(),
+      protoPath = protoInput.get(),
+      treeShakingRoots = if (roots.isEmpty()) includes else roots,
+      treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
+      moves = moves.map { it.toTypeMoverMove() },
+      sinceVersion = sinceVersion,
+      untilVersion = untilVersion,
+      onlyVersion = onlyVersion,
+      targets = targets,
+      permitPackageCycles = permitPackageCycles
     )
 
     for (target in targets) {
@@ -152,60 +151,49 @@ open class WireTask : SourceTask() {
     return super.getSource()
   }
 
-  // Expands all glob expressions occurring in [srcInputs] whose base location
-  // is a .jar file.
-  //
-  // This is happening here (that is, during the task action) and not earlier
-  // because jar-file dependencies might be remote.  We can't assume the file
-  // exists locally until Gradle has resolved all dependencies - and we don't
-  // know that until this task is running.
-  private fun expandSrcJarWildcards(srcInputs: List<Location>): List<Location> {
-    val (inJar, notInJar) = srcInputs.partition { it.base.endsWith(".jar") }
-    val inputsByJar = inJar.groupBy { it.base }
+  /**
+   * Expands all glob expressions occurring in [srcInputs] whose base location is a `.jar` file.
+   *
+   * Note that we cannot do it at configuration time because some `.jar` files might be remote.
+   */
+  private fun expandJarGlobs(srcInputs: List<Location>): List<Location> {
+    val (jarInputs, nonJarInputs) = srcInputs.partition { it.base.endsWith(".jar") }
 
-    val expandedJarInputs = mutableListOf<Location>()
-    for ((jar, inputs) in inputsByJar) {
-      if (inputs.none { it.path.contains('*') }) {
-        expandedJarInputs += inputs
+    val expandedJarInputs = mutableSetOf<Location>()
+
+    val jarInputsByBase = jarInputs.groupBy { it.base }
+    for ((jar, inputs) in jarInputsByBase) {
+      val (globInputs, inlinedInputs) = inputs.partition { it.path.contains('*') }
+      expandedJarInputs += inlinedInputs
+
+      if (globInputs.isEmpty()) {
         continue
       }
 
-      val (toExpand, expanded) = inputs.partition { it.path.contains('*') }
-
-      val allInputsInJar = expanded.toMutableSet()
-      val jarPath = Paths.get(jar)
+      val jarPath = jar.toPath().toNioPath()
       FileSystems.newFileSystem(jarPath, null as ClassLoader?).use { jarFs ->
-        val matchers = toExpand.map { jarFs.getPathMatcher("glob:${it.path}") }
+        val matchers = globInputs.map { jarFs.getPathMatcher("glob:${it.path}") }
 
-        // The FileSystem API allows for multiple root directories; I think in practice there's only ever one for jars?
         for (root in jarFs.rootDirectories) {
           Files.walk(root)
-              .filter { path ->
-                // A quirk of the ZipFileProvider is that it implements glob syntax by transforming it
-                // to a regex, including anchors at each end.  The file-tree walk yields fully-rooted paths
-                // (starting with '/'), but the include syntax we use in .gradle files is _not_ rooted.
-                // We need to strip the leading forward-slash in order for our matchers to make sense.
-                val rootlessPath = path.unroot()
-                matchers.any { matcher ->
-                  matcher.matches(rootlessPath)
-                }
+            .map { path ->
+              // The ZipFileProvider implements glob syntax by transforming it to a regex, including
+              // anchors at each end. The file-tree walk yields absolute paths, but the paths we use
+              // in the Wire Gradle plugin are omitting the leading `/`. We thus need to strip the
+              // leading '/' in order for our matchers to work.
+              if (path.isAbsolute) {
+                path.fileSystem.getPath(path.toString().substring(1))
+              } else {
+                path
               }
-              .map { Location.get(jar, it.unroot().toString()) }
-              .forEach { allInputsInJar += it }
+            }
+            .filter { path -> matchers.any { matcher -> matcher.matches(path) } }
+            .map { path -> Location.get(jar, path.toString()) }
+            .forEach { expandedJarInputs += it }
         }
       }
-
-      expandedJarInputs += allInputsInJar
     }
 
-    return notInJar + expandedJarInputs
-  }
-
-  private fun Path.unroot(): Path {
-    return if (isAbsolute) {
-      fileSystem.getPath(toString().substring(1))
-    } else {
-      this
-    }
+    return nonJarInputs + expandedJarInputs
   }
 }
