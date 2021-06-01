@@ -1476,10 +1476,9 @@ class KotlinGenerator private constructor(
     }
 
     val redactedFields = mutableListOf<CodeBlock>()
-    val flattenedOneOfFields = message.flatOneOfs().flatMap { it.fields }
     for (field in message.fieldsAndFlatOneOfFields()) {
       val fieldName = nameAllocator[field]
-      val redactedField = field.redact(fieldName, flattenedOneOfFields.contains(field))
+      val redactedField = field.redact(fieldName)
       if (redactedField != null) {
         redactedFields += CodeBlock.of("%N = %L", fieldName, redactedField)
       }
@@ -1494,12 +1493,12 @@ class KotlinGenerator private constructor(
         .build()
   }
 
-  private fun Field.redact(fieldName: String, isOneOf: Boolean): CodeBlock? {
+  private fun Field.redact(fieldName: String): CodeBlock? {
     if (isRedacted) {
       return when {
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
-        isOptional || isOneOf -> CodeBlock.of("null")
+        Field.EncodeMode.NULL_IF_ABSENT == encodeMode  -> CodeBlock.of("null")
         isScalar -> PROTOTYPE_TO_IDENTITY_VALUES[type!!]
         else -> CodeBlock.of("null")
       }

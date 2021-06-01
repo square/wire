@@ -1512,6 +1512,10 @@ class KotlinGeneratorTest {
         |message RedactedFields {
         |  string a = 1 [(squareup.protos.redacted_option.redacted) = true];
         |  int32  b = 2 [(squareup.protos.redacted_option.redacted) = true];
+        |  oneof choice {
+        |    string c = 3 [(squareup.protos.redacted_option.redacted) = true];
+        |    int32  d = 4 [(squareup.protos.redacted_option.redacted) = true];
+        |  }
         |}
         |""".trimMargin()
       )
@@ -1519,9 +1523,13 @@ class KotlinGeneratorTest {
     val code = repoBuilder.generateKotlin("RedactedFields")
     assertThat(code).contains("""val a: String = "",""")
     assertThat(code).contains("""val b: Int = 0,""")
+    assertThat(code).contains("""val c: String? = null,""")
+    assertThat(code).contains("""val d: Int? = null,""")
     assertThat(code).contains("public override fun redact(value: RedactedFields): RedactedFields = value.copy(")
     assertThat(code).contains("""a = "",""")
     assertThat(code).contains("""b = 0,""")
+    assertThat(code).contains("""c = null,""")
+    assertThat(code).contains("""d = null,""")
   }
 
   companion object {
