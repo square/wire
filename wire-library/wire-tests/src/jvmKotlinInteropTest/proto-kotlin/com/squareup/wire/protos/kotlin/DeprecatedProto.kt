@@ -17,7 +17,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -50,7 +49,7 @@ public class DeprecatedProto(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + foo.hashCode()
+      result = result * 37 + (foo?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -90,13 +89,13 @@ public class DeprecatedProto(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: DeprecatedProto): Int {
+      public override fun encodedSize(`value`: DeprecatedProto): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.foo)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: DeprecatedProto): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: DeprecatedProto): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
         writer.writeBytes(value.unknownFields)
       }
@@ -115,7 +114,7 @@ public class DeprecatedProto(
         )
       }
 
-      public override fun redact(value: DeprecatedProto): DeprecatedProto = value.copy(
+      public override fun redact(`value`: DeprecatedProto): DeprecatedProto = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

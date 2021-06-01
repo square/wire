@@ -20,7 +20,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
@@ -304,11 +303,11 @@ public class All32(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + my_int32.hashCode()
-      result = result * 37 + my_uint32.hashCode()
-      result = result * 37 + my_sint32.hashCode()
-      result = result * 37 + my_fixed32.hashCode()
-      result = result * 37 + my_sfixed32.hashCode()
+      result = result * 37 + (my_int32?.hashCode() ?: 0)
+      result = result * 37 + (my_uint32?.hashCode() ?: 0)
+      result = result * 37 + (my_sint32?.hashCode() ?: 0)
+      result = result * 37 + (my_fixed32?.hashCode() ?: 0)
+      result = result * 37 + (my_sfixed32?.hashCode() ?: 0)
       result = result * 37 + rep_int32.hashCode()
       result = result * 37 + rep_uint32.hashCode()
       result = result * 37 + rep_sint32.hashCode()
@@ -324,8 +323,8 @@ public class All32(
       result = result * 37 + map_int32_sint32.hashCode()
       result = result * 37 + map_int32_fixed32.hashCode()
       result = result * 37 + map_int32_sfixed32.hashCode()
-      result = result * 37 + oneof_int32.hashCode()
-      result = result * 37 + oneof_sfixed32.hashCode()
+      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
+      result = result * 37 + (oneof_sfixed32?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -630,7 +629,7 @@ public class All32(
       private val map_int32_sfixed32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.SFIXED32) }
 
-      public override fun encodedSize(value: All32): Int {
+      public override fun encodedSize(`value`: All32): Int {
         var size = value.unknownFields.size
         if (value.my_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
         if (value.my_uint32 != 0) size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
@@ -659,7 +658,7 @@ public class All32(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: All32): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: All32): Unit {
         if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
         if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
         if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
@@ -763,7 +762,7 @@ public class All32(
         )
       }
 
-      public override fun redact(value: All32): All32 = value.copy(
+      public override fun redact(`value`: All32): All32 = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

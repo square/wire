@@ -54,12 +54,12 @@ public class SomeResponse(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: SomeResponse): Int {
+      public override fun encodedSize(`value`: SomeResponse): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: SomeResponse): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: SomeResponse): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -70,7 +70,7 @@ public class SomeResponse(
         )
       }
 
-      public override fun redact(value: SomeResponse): SomeResponse = value.copy(
+      public override fun redact(`value`: SomeResponse): SomeResponse = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

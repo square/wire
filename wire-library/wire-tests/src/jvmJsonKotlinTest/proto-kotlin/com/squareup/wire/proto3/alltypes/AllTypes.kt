@@ -27,7 +27,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.lazy
@@ -816,38 +815,38 @@ public class AllTypes(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + my_int32.hashCode()
-      result = result * 37 + my_uint32.hashCode()
-      result = result * 37 + my_sint32.hashCode()
-      result = result * 37 + my_fixed32.hashCode()
-      result = result * 37 + my_sfixed32.hashCode()
-      result = result * 37 + my_int64.hashCode()
-      result = result * 37 + my_uint64.hashCode()
-      result = result * 37 + my_sint64.hashCode()
-      result = result * 37 + my_fixed64.hashCode()
-      result = result * 37 + my_sfixed64.hashCode()
-      result = result * 37 + my_bool.hashCode()
-      result = result * 37 + my_float.hashCode()
-      result = result * 37 + my_double.hashCode()
-      result = result * 37 + my_string.hashCode()
-      result = result * 37 + my_bytes.hashCode()
-      result = result * 37 + nested_enum.hashCode()
-      result = result * 37 + nested_message.hashCode()
-      result = result * 37 + opt_int32.hashCode()
-      result = result * 37 + opt_uint32.hashCode()
-      result = result * 37 + opt_sint32.hashCode()
-      result = result * 37 + opt_fixed32.hashCode()
-      result = result * 37 + opt_sfixed32.hashCode()
-      result = result * 37 + opt_int64.hashCode()
-      result = result * 37 + opt_uint64.hashCode()
-      result = result * 37 + opt_sint64.hashCode()
-      result = result * 37 + opt_fixed64.hashCode()
-      result = result * 37 + opt_sfixed64.hashCode()
-      result = result * 37 + opt_bool.hashCode()
-      result = result * 37 + opt_float.hashCode()
-      result = result * 37 + opt_double.hashCode()
-      result = result * 37 + opt_string.hashCode()
-      result = result * 37 + opt_bytes.hashCode()
+      result = result * 37 + (my_int32?.hashCode() ?: 0)
+      result = result * 37 + (my_uint32?.hashCode() ?: 0)
+      result = result * 37 + (my_sint32?.hashCode() ?: 0)
+      result = result * 37 + (my_fixed32?.hashCode() ?: 0)
+      result = result * 37 + (my_sfixed32?.hashCode() ?: 0)
+      result = result * 37 + (my_int64?.hashCode() ?: 0)
+      result = result * 37 + (my_uint64?.hashCode() ?: 0)
+      result = result * 37 + (my_sint64?.hashCode() ?: 0)
+      result = result * 37 + (my_fixed64?.hashCode() ?: 0)
+      result = result * 37 + (my_sfixed64?.hashCode() ?: 0)
+      result = result * 37 + (my_bool?.hashCode() ?: 0)
+      result = result * 37 + (my_float?.hashCode() ?: 0)
+      result = result * 37 + (my_double?.hashCode() ?: 0)
+      result = result * 37 + (my_string?.hashCode() ?: 0)
+      result = result * 37 + (my_bytes?.hashCode() ?: 0)
+      result = result * 37 + (nested_enum?.hashCode() ?: 0)
+      result = result * 37 + (nested_message?.hashCode() ?: 0)
+      result = result * 37 + (opt_int32?.hashCode() ?: 0)
+      result = result * 37 + (opt_uint32?.hashCode() ?: 0)
+      result = result * 37 + (opt_sint32?.hashCode() ?: 0)
+      result = result * 37 + (opt_fixed32?.hashCode() ?: 0)
+      result = result * 37 + (opt_sfixed32?.hashCode() ?: 0)
+      result = result * 37 + (opt_int64?.hashCode() ?: 0)
+      result = result * 37 + (opt_uint64?.hashCode() ?: 0)
+      result = result * 37 + (opt_sint64?.hashCode() ?: 0)
+      result = result * 37 + (opt_fixed64?.hashCode() ?: 0)
+      result = result * 37 + (opt_sfixed64?.hashCode() ?: 0)
+      result = result * 37 + (opt_bool?.hashCode() ?: 0)
+      result = result * 37 + (opt_float?.hashCode() ?: 0)
+      result = result * 37 + (opt_double?.hashCode() ?: 0)
+      result = result * 37 + (opt_string?.hashCode() ?: 0)
+      result = result * 37 + (opt_bytes?.hashCode() ?: 0)
       result = result * 37 + rep_int32.hashCode()
       result = result * 37 + rep_uint32.hashCode()
       result = result * 37 + rep_sint32.hashCode()
@@ -883,9 +882,9 @@ public class AllTypes(
       result = result * 37 + map_string_string.hashCode()
       result = result * 37 + map_string_message.hashCode()
       result = result * 37 + map_string_enum.hashCode()
-      result = result * 37 + oneof_string.hashCode()
-      result = result * 37 + oneof_int32.hashCode()
-      result = result * 37 + oneof_nested_message.hashCode()
+      result = result * 37 + (oneof_string?.hashCode() ?: 0)
+      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
+      result = result * 37 + (oneof_nested_message?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -1744,7 +1743,7 @@ public class AllTypes(
       private val map_string_enumAdapter: ProtoAdapter<Map<String, NestedEnum>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, NestedEnum.ADAPTER) }
 
-      public override fun encodedSize(value: AllTypes): Int {
+      public override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
         if (value.my_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.my_int32)
         if (value.my_uint32 != 0) size += ProtoAdapter.UINT32.encodedSizeWithTag(2, value.my_uint32)
@@ -1830,7 +1829,7 @@ public class AllTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: AllTypes): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: AllTypes): Unit {
         if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
         if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
         if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
@@ -2142,7 +2141,7 @@ public class AllTypes(
         )
       }
 
-      public override fun redact(value: AllTypes): AllTypes = value.copy(
+      public override fun redact(`value`: AllTypes): AllTypes = value.copy(
         nested_message = value.nested_message?.let(NestedMessage.ADAPTER::redact),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
         map_string_message = value.map_string_message.redactElements(NestedMessage.ADAPTER),
@@ -2155,7 +2154,7 @@ public class AllTypes(
   }
 
   public enum class NestedEnum(
-    public override val value: Int
+    public override val `value`: Int
   ) : WireEnum {
     UNKNOWN(0),
     A(1),
@@ -2168,11 +2167,11 @@ public class AllTypes(
         PROTO_3, 
         NestedEnum.UNKNOWN
       ) {
-        public override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): NestedEnum? = when (value) {
+      public fun fromValue(`value`: Int): NestedEnum? = when (value) {
         0 -> UNKNOWN
         1 -> A
         else -> null
@@ -2209,7 +2208,7 @@ public class AllTypes(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + a.hashCode()
+        result = result * 37 + (a?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -2248,13 +2247,13 @@ public class AllTypes(
         PROTO_3, 
         null
       ) {
-        public override fun encodedSize(value: NestedMessage): Int {
+        public override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           if (value.a != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: NestedMessage): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
         }
@@ -2273,7 +2272,7 @@ public class AllTypes(
           )
         }
 
-        public override fun redact(value: NestedMessage): NestedMessage = value.copy(
+        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

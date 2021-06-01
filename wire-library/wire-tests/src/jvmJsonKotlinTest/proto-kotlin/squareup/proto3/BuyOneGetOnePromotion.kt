@@ -16,7 +16,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -49,7 +48,7 @@ public class BuyOneGetOnePromotion(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + coupon.hashCode()
+      result = result * 37 + (coupon?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -89,13 +88,13 @@ public class BuyOneGetOnePromotion(
       PROTO_3, 
       null
     ) {
-      public override fun encodedSize(value: BuyOneGetOnePromotion): Int {
+      public override fun encodedSize(`value`: BuyOneGetOnePromotion): Int {
         var size = value.unknownFields.size
         if (value.coupon != "") size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.coupon)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: BuyOneGetOnePromotion): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: BuyOneGetOnePromotion): Unit {
         if (value.coupon != "") ProtoAdapter.STRING.encodeWithTag(writer, 1, value.coupon)
         writer.writeBytes(value.unknownFields)
       }
@@ -114,7 +113,8 @@ public class BuyOneGetOnePromotion(
         )
       }
 
-      public override fun redact(value: BuyOneGetOnePromotion): BuyOneGetOnePromotion = value.copy(
+      public override fun redact(`value`: BuyOneGetOnePromotion): BuyOneGetOnePromotion =
+          value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

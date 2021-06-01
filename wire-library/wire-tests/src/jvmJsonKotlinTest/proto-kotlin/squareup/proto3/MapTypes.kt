@@ -381,7 +381,7 @@ public class MapTypes(
       private val map_uint64_uint64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.UINT64, ProtoAdapter.UINT64) }
 
-      public override fun encodedSize(value: MapTypes): Int {
+      public override fun encodedSize(`value`: MapTypes): Int {
         var size = value.unknownFields.size
         size += map_string_stringAdapter.encodedSizeWithTag(1, value.map_string_string)
         size += map_int32_int32Adapter.encodedSizeWithTag(2, value.map_int32_int32)
@@ -397,7 +397,7 @@ public class MapTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: MapTypes): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: MapTypes): Unit {
         map_string_stringAdapter.encodeWithTag(writer, 1, value.map_string_string)
         map_int32_int32Adapter.encodeWithTag(writer, 2, value.map_int32_int32)
         map_sint32_sint32Adapter.encodeWithTag(writer, 3, value.map_sint32_sint32)
@@ -456,7 +456,7 @@ public class MapTypes(
         )
       }
 
-      public override fun redact(value: MapTypes): MapTypes = value.copy(
+      public override fun redact(`value`: MapTypes): MapTypes = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

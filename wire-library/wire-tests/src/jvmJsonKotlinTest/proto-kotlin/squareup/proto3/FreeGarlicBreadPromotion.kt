@@ -15,7 +15,6 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -49,7 +48,7 @@ public class FreeGarlicBreadPromotion(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + is_extra_cheesey.hashCode()
+      result = result * 37 + (is_extra_cheesey?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -91,14 +90,14 @@ public class FreeGarlicBreadPromotion(
       PROTO_3, 
       null
     ) {
-      public override fun encodedSize(value: FreeGarlicBreadPromotion): Int {
+      public override fun encodedSize(`value`: FreeGarlicBreadPromotion): Int {
         var size = value.unknownFields.size
         if (value.is_extra_cheesey != false) size += ProtoAdapter.BOOL.encodedSizeWithTag(1,
             value.is_extra_cheesey)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: FreeGarlicBreadPromotion): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: FreeGarlicBreadPromotion): Unit {
         if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
             value.is_extra_cheesey)
         writer.writeBytes(value.unknownFields)
@@ -118,7 +117,7 @@ public class FreeGarlicBreadPromotion(
         )
       }
 
-      public override fun redact(value: FreeGarlicBreadPromotion): FreeGarlicBreadPromotion =
+      public override fun redact(`value`: FreeGarlicBreadPromotion): FreeGarlicBreadPromotion =
           value.copy(
         unknownFields = ByteString.EMPTY
       )

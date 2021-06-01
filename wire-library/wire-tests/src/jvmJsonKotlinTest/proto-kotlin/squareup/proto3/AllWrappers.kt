@@ -22,7 +22,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
@@ -363,15 +362,15 @@ public class AllWrappers(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + double_value.hashCode()
-      result = result * 37 + float_value.hashCode()
-      result = result * 37 + int64_value.hashCode()
-      result = result * 37 + uint64_value.hashCode()
-      result = result * 37 + int32_value.hashCode()
-      result = result * 37 + uint32_value.hashCode()
-      result = result * 37 + bool_value.hashCode()
-      result = result * 37 + string_value.hashCode()
-      result = result * 37 + bytes_value.hashCode()
+      result = result * 37 + (double_value?.hashCode() ?: 0)
+      result = result * 37 + (float_value?.hashCode() ?: 0)
+      result = result * 37 + (int64_value?.hashCode() ?: 0)
+      result = result * 37 + (uint64_value?.hashCode() ?: 0)
+      result = result * 37 + (int32_value?.hashCode() ?: 0)
+      result = result * 37 + (uint32_value?.hashCode() ?: 0)
+      result = result * 37 + (bool_value?.hashCode() ?: 0)
+      result = result * 37 + (string_value?.hashCode() ?: 0)
+      result = result * 37 + (bytes_value?.hashCode() ?: 0)
       result = result * 37 + rep_double_value.hashCode()
       result = result * 37 + rep_float_value.hashCode()
       result = result * 37 + rep_int64_value.hashCode()
@@ -766,7 +765,7 @@ public class AllWrappers(
       private val map_int32_bytes_valueAdapter: ProtoAdapter<Map<Int, ByteString?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.BYTES_VALUE) }
 
-      public override fun encodedSize(value: AllWrappers): Int {
+      public override fun encodedSize(`value`: AllWrappers): Int {
         var size = value.unknownFields.size
         if (value.double_value != null) size += ProtoAdapter.DOUBLE_VALUE.encodedSizeWithTag(1,
             value.double_value)
@@ -811,7 +810,7 @@ public class AllWrappers(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: AllWrappers): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: AllWrappers): Unit {
         if (value.double_value != null) ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1,
             value.double_value)
         if (value.float_value != null) ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2,
@@ -943,7 +942,7 @@ public class AllWrappers(
         )
       }
 
-      public override fun redact(value: AllWrappers): AllWrappers = value.copy(
+      public override fun redact(`value`: AllWrappers): AllWrappers = value.copy(
         double_value = value.double_value?.let(ProtoAdapter.DOUBLE_VALUE::redact),
         float_value = value.float_value?.let(ProtoAdapter.FLOAT_VALUE::redact),
         int64_value = value.int64_value?.let(ProtoAdapter.INT64_VALUE::redact),

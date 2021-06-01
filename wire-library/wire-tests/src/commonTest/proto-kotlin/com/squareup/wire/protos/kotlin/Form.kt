@@ -23,7 +23,6 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.Set
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -53,8 +52,8 @@ public class Form(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + choice.hashCode()
-      result = result * 37 + decision.hashCode()
+      result = result * 37 + (choice?.hashCode() ?: 0)
+      result = result * 37 + (decision?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -78,7 +77,7 @@ public class Form(
     adapter: ProtoAdapter<T>,
     declaredName: String
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(value: T) = OneOf(this, value)
+    public fun create(`value`: T) = OneOf(this, value)
 
     public fun decode(reader: ProtoReader): OneOf<Choice<T>, T> = create(adapter.decode(reader))
   }
@@ -88,7 +87,7 @@ public class Form(
     adapter: ProtoAdapter<T>,
     declaredName: String
   ) : OneOf.Key<T>(tag, adapter, declaredName) {
-    public fun create(value: T) = OneOf(this, value)
+    public fun create(`value`: T) = OneOf(this, value)
 
     public fun decode(reader: ProtoReader): OneOf<Decision<T>, T> = create(adapter.decode(reader))
   }
@@ -102,14 +101,14 @@ public class Form(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: Form): Int {
+      public override fun encodedSize(`value`: Form): Int {
         var size = value.unknownFields.size
         if (value.choice != null) size += value.choice.encodedSizeWithTag()
         if (value.decision != null) size += value.decision.encodedSizeWithTag()
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Form): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Form): Unit {
         if (value.choice != null) value.choice.encodeWithTag(writer)
         if (value.decision != null) value.decision.encodeWithTag(writer)
         writer.writeBytes(value.unknownFields)
@@ -144,7 +143,7 @@ public class Form(
         )
       }
 
-      public override fun redact(value: Form): Form = value.copy(
+      public override fun redact(`value`: Form): Form = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }
@@ -261,12 +260,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: ButtonElement): Int {
+        public override fun encodedSize(`value`: ButtonElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: ButtonElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: ButtonElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -277,7 +276,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: ButtonElement): ButtonElement = value.copy(
+        public override fun redact(`value`: ButtonElement): ButtonElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -320,12 +319,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: LocalImageElement): Int {
+        public override fun encodedSize(`value`: LocalImageElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: LocalImageElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: LocalImageElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -336,7 +335,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: LocalImageElement): LocalImageElement = value.copy(
+        public override fun redact(`value`: LocalImageElement): LocalImageElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -379,12 +378,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: RemoteImageElement): Int {
+        public override fun encodedSize(`value`: RemoteImageElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: RemoteImageElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: RemoteImageElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -395,7 +394,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: RemoteImageElement): RemoteImageElement = value.copy(
+        public override fun redact(`value`: RemoteImageElement): RemoteImageElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -437,12 +436,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: MoneyElement): Int {
+        public override fun encodedSize(`value`: MoneyElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: MoneyElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: MoneyElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -453,7 +452,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: MoneyElement): MoneyElement = value.copy(
+        public override fun redact(`value`: MoneyElement): MoneyElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -495,12 +494,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: SpacerElement): Int {
+        public override fun encodedSize(`value`: SpacerElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: SpacerElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: SpacerElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -511,7 +510,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: SpacerElement): SpacerElement = value.copy(
+        public override fun redact(`value`: SpacerElement): SpacerElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -547,7 +546,7 @@ public class Form(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + text.hashCode()
+        result = result * 37 + (text?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -571,13 +570,13 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: TextElement): Int {
+        public override fun encodedSize(`value`: TextElement): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.text)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: TextElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: TextElement): Unit {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
           writer.writeBytes(value.unknownFields)
         }
@@ -596,7 +595,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: TextElement): TextElement = value.copy(
+        public override fun redact(`value`: TextElement): TextElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -639,12 +638,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: CustomizedCardElement): Int {
+        public override fun encodedSize(`value`: CustomizedCardElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: CustomizedCardElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: CustomizedCardElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -655,7 +654,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: CustomizedCardElement): CustomizedCardElement =
+        public override fun redact(`value`: CustomizedCardElement): CustomizedCardElement =
             value.copy(
           unknownFields = ByteString.EMPTY
         )
@@ -698,12 +697,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: AddressElement): Int {
+        public override fun encodedSize(`value`: AddressElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: AddressElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: AddressElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -714,7 +713,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: AddressElement): AddressElement = value.copy(
+        public override fun redact(`value`: AddressElement): AddressElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -756,12 +755,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: TextInputElement): Int {
+        public override fun encodedSize(`value`: TextInputElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: TextInputElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: TextInputElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -772,7 +771,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: TextInputElement): TextInputElement = value.copy(
+        public override fun redact(`value`: TextInputElement): TextInputElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -815,12 +814,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: OptionPickerElement): Int {
+        public override fun encodedSize(`value`: OptionPickerElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: OptionPickerElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: OptionPickerElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -831,7 +830,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: OptionPickerElement): OptionPickerElement = value.copy(
+        public override fun redact(`value`: OptionPickerElement): OptionPickerElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -873,12 +872,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: DetailRowElement): Int {
+        public override fun encodedSize(`value`: DetailRowElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: DetailRowElement): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: DetailRowElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -889,7 +888,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: DetailRowElement): DetailRowElement = value.copy(
+        public override fun redact(`value`: DetailRowElement): DetailRowElement = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -932,12 +931,12 @@ public class Form(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: CurrencyConversionFlagsElement): Int {
+        public override fun encodedSize(`value`: CurrencyConversionFlagsElement): Int {
           var size = value.unknownFields.size
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: CurrencyConversionFlagsElement):
+        public override fun encode(writer: ProtoWriter, `value`: CurrencyConversionFlagsElement):
             Unit {
           writer.writeBytes(value.unknownFields)
         }
@@ -949,7 +948,7 @@ public class Form(
           )
         }
 
-        public override fun redact(value: CurrencyConversionFlagsElement):
+        public override fun redact(`value`: CurrencyConversionFlagsElement):
             CurrencyConversionFlagsElement = value.copy(
           unknownFields = ByteString.EMPTY
         )

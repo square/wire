@@ -28,7 +28,6 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -130,14 +129,14 @@ public class FooBar(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + foo.hashCode()
-      result = result * 37 + bar.hashCode()
-      result = result * 37 + baz.hashCode()
-      result = result * 37 + qux.hashCode()
+      result = result * 37 + (foo?.hashCode() ?: 0)
+      result = result * 37 + (bar?.hashCode() ?: 0)
+      result = result * 37 + (baz?.hashCode() ?: 0)
+      result = result * 37 + (qux?.hashCode() ?: 0)
       result = result * 37 + fred.hashCode()
-      result = result * 37 + daisy.hashCode()
+      result = result * 37 + (daisy?.hashCode() ?: 0)
       result = result * 37 + nested.hashCode()
-      result = result * 37 + ext.hashCode()
+      result = result * 37 + (ext?.hashCode() ?: 0)
       result = result * 37 + rep.hashCode()
       super.hashCode = result
     }
@@ -180,7 +179,7 @@ public class FooBar(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: FooBar): Int {
+      public override fun encodedSize(`value`: FooBar): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.foo)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.bar)
@@ -194,7 +193,7 @@ public class FooBar(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: FooBar): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: FooBar): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar)
         Nested.ADAPTER.encodeWithTag(writer, 3, value.baz)
@@ -253,7 +252,7 @@ public class FooBar(
         )
       }
 
-      public override fun redact(value: FooBar): FooBar = value.copy(
+      public override fun redact(`value`: FooBar): FooBar = value.copy(
         baz = value.baz?.let(Nested.ADAPTER::redact),
         nested = emptyList(),
         unknownFields = ByteString.EMPTY
@@ -266,9 +265,10 @@ public class FooBar(
   public class Nested(
     @field:WireField(
       tag = 1,
-      adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER"
+      adapter = "com.squareup.wire.protos.custom_options.FooBar${'$'}FooBarBazEnum#ADAPTER",
+      declaredName = "value"
     )
-    public val value: FooBarBazEnum? = null,
+    public val value_: FooBarBazEnum? = null,
     unknownFields: ByteString = ByteString.EMPTY
   ) : Message<Nested, Nothing>(ADAPTER, unknownFields) {
     @Deprecated(
@@ -282,7 +282,7 @@ public class FooBar(
       if (other === this) return true
       if (other !is Nested) return false
       if (unknownFields != other.unknownFields) return false
-      if (value != other.value) return false
+      if (value_ != other.value_) return false
       return true
     }
 
@@ -290,7 +290,7 @@ public class FooBar(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + value.hashCode()
+        result = result * 37 + (value_?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -298,12 +298,12 @@ public class FooBar(
 
     public override fun toString(): String {
       val result = mutableListOf<String>()
-      if (value != null) result += """value=$value"""
+      if (value_ != null) result += """value_=$value_"""
       return result.joinToString(prefix = "Nested{", separator = ", ", postfix = "}")
     }
 
-    public fun copy(value: FooBarBazEnum? = this.value, unknownFields: ByteString =
-        this.unknownFields): Nested = Nested(value, unknownFields)
+    public fun copy(value_: FooBarBazEnum? = this.value_, unknownFields: ByteString =
+        this.unknownFields): Nested = Nested(value_, unknownFields)
 
     public companion object {
       @JvmField
@@ -314,23 +314,23 @@ public class FooBar(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: Nested): Int {
+        public override fun encodedSize(`value`: Nested): Int {
           var size = value.unknownFields.size
-          size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value)
+          size += FooBarBazEnum.ADAPTER.encodedSizeWithTag(1, value.value_)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: Nested): Unit {
-          FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value)
+        public override fun encode(writer: ProtoWriter, `value`: Nested): Unit {
+          FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value_)
           writer.writeBytes(value.unknownFields)
         }
 
         public override fun decode(reader: ProtoReader): Nested {
-          var value: FooBarBazEnum? = null
+          var value_: FooBarBazEnum? = null
           val unknownFields = reader.forEachTag { tag ->
             when (tag) {
               1 -> try {
-                value = FooBarBazEnum.ADAPTER.decode(reader)
+                value_ = FooBarBazEnum.ADAPTER.decode(reader)
               } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
                 reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
               }
@@ -338,12 +338,12 @@ public class FooBar(
             }
           }
           return Nested(
-            value = value,
+            value_ = value_,
             unknownFields = unknownFields
           )
         }
 
-        public override fun redact(value: Nested): Nested = value.copy(
+        public override fun redact(`value`: Nested): Nested = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -406,13 +406,13 @@ public class FooBar(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: More): Int {
+        public override fun encodedSize(`value`: More): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.INT32.asRepeated().encodedSizeWithTag(1, value.serial)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: More): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: More): Unit {
           ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial)
           writer.writeBytes(value.unknownFields)
         }
@@ -431,7 +431,7 @@ public class FooBar(
           )
         }
 
-        public override fun redact(value: More): More = value.copy(
+        public override fun redact(`value`: More): More = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
@@ -442,7 +442,7 @@ public class FooBar(
 
   @EnumOptionOption(true)
   public enum class FooBarBazEnum(
-    public override val value: Int
+    public override val `value`: Int
   ) : WireEnum {
     @EnumValueOptionOption(17)
     FOO(1),
@@ -460,11 +460,11 @@ public class FooBar(
         PROTO_2, 
         null
       ) {
-        public override fun fromValue(value: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): FooBarBazEnum? = FooBarBazEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): FooBarBazEnum? = when (value) {
+      public fun fromValue(`value`: Int): FooBarBazEnum? = when (value) {
         1 -> FOO
         2 -> BAR
         3 -> BAZ

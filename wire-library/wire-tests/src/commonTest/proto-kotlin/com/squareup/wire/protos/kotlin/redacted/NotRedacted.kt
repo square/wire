@@ -20,7 +20,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -57,8 +56,8 @@ public class NotRedacted(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + a.hashCode()
-      result = result * 37 + b.hashCode()
+      result = result * 37 + (a?.hashCode() ?: 0)
+      result = result * 37 + (b?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -86,14 +85,14 @@ public class NotRedacted(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: NotRedacted): Int {
+      public override fun encodedSize(`value`: NotRedacted): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         size += ProtoAdapter.STRING.encodedSizeWithTag(2, value.b)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: NotRedacted): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: NotRedacted): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
@@ -116,7 +115,7 @@ public class NotRedacted(
         )
       }
 
-      public override fun redact(value: NotRedacted): NotRedacted = value.copy(
+      public override fun redact(`value`: NotRedacted): NotRedacted = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

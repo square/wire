@@ -77,13 +77,13 @@ public class RedactedRequired(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: RedactedRequired): Int {
+      public override fun encodedSize(`value`: RedactedRequired): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.a)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedRequired): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedRequired): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.a)
         writer.writeBytes(value.unknownFields)
       }
@@ -102,7 +102,7 @@ public class RedactedRequired(
         )
       }
 
-      public override fun redact(value: RedactedRequired): RedactedRequired = throw
+      public override fun redact(`value`: RedactedRequired): RedactedRequired = throw
           UnsupportedOperationException("Field 'a' is required and cannot be redacted.")
     }
 

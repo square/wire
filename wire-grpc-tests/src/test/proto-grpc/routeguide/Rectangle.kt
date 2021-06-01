@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -66,8 +65,8 @@ public class Rectangle(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + lo.hashCode()
-      result = result * 37 + hi.hashCode()
+      result = result * 37 + (lo?.hashCode() ?: 0)
+      result = result * 37 + (hi?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -95,14 +94,14 @@ public class Rectangle(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: Rectangle): Int {
+      public override fun encodedSize(`value`: Rectangle): Int {
         var size = value.unknownFields.size
         size += Point.ADAPTER.encodedSizeWithTag(1, value.lo)
         size += Point.ADAPTER.encodedSizeWithTag(2, value.hi)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Rectangle): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Rectangle): Unit {
         Point.ADAPTER.encodeWithTag(writer, 1, value.lo)
         Point.ADAPTER.encodeWithTag(writer, 2, value.hi)
         writer.writeBytes(value.unknownFields)
@@ -125,7 +124,7 @@ public class Rectangle(
         )
       }
 
-      public override fun redact(value: Rectangle): Rectangle = value.copy(
+      public override fun redact(`value`: Rectangle): Rectangle = value.copy(
         lo = value.lo?.let(Point.ADAPTER::redact),
         hi = value.hi?.let(Point.ADAPTER::redact),
         unknownFields = ByteString.EMPTY

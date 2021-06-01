@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -50,7 +49,7 @@ public class RedactedCycleB(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + a.hashCode()
+      result = result * 37 + (a?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -74,13 +73,13 @@ public class RedactedCycleB(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: RedactedCycleB): Int {
+      public override fun encodedSize(`value`: RedactedCycleB): Int {
         var size = value.unknownFields.size
         size += RedactedCycleA.ADAPTER.encodedSizeWithTag(1, value.a)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: RedactedCycleB): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: RedactedCycleB): Unit {
         RedactedCycleA.ADAPTER.encodeWithTag(writer, 1, value.a)
         writer.writeBytes(value.unknownFields)
       }
@@ -99,7 +98,7 @@ public class RedactedCycleB(
         )
       }
 
-      public override fun redact(value: RedactedCycleB): RedactedCycleB = value.copy(
+      public override fun redact(`value`: RedactedCycleB): RedactedCycleB = value.copy(
         a = value.a?.let(RedactedCycleA.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

@@ -93,13 +93,13 @@ public class Pizza(
       PROTO_3, 
       null
     ) {
-      public override fun encodedSize(value: Pizza): Int {
+      public override fun encodedSize(`value`: Pizza): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.asRepeated().encodedSizeWithTag(1, value.toppings)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Pizza): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Pizza): Unit {
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.toppings)
         writer.writeBytes(value.unknownFields)
       }
@@ -118,7 +118,7 @@ public class Pizza(
         )
       }
 
-      public override fun redact(value: Pizza): Pizza = value.copy(
+      public override fun redact(`value`: Pizza): Pizza = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

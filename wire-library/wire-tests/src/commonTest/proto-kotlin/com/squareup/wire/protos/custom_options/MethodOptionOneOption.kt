@@ -14,5 +14,5 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
 public annotation class MethodOptionOneOption(
-  public val value: Int
+  public val `value`: Int
 )

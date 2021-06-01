@@ -11,5 +11,5 @@ import kotlin.`annotation`.Target
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
 public annotation class MyFieldOptionTwoOption(
-  public val value: Float
+  public val `value`: Float
 )

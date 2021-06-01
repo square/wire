@@ -24,6 +24,6 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     val someText = SomeText("Hi")
-    findViewById<TextView>(R.id.text_view).setText(someText.value)
+    findViewById<TextView>(R.id.text_view).setText(someText.value_)
   }
 }

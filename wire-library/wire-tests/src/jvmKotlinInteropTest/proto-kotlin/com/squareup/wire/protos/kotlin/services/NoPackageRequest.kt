@@ -54,12 +54,12 @@ public class NoPackageRequest(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: NoPackageRequest): Int {
+      public override fun encodedSize(`value`: NoPackageRequest): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: NoPackageRequest): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: NoPackageRequest): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -70,7 +70,7 @@ public class NoPackageRequest(
         )
       }
 
-      public override fun redact(value: NoPackageRequest): NoPackageRequest = value.copy(
+      public override fun redact(`value`: NoPackageRequest): NoPackageRequest = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

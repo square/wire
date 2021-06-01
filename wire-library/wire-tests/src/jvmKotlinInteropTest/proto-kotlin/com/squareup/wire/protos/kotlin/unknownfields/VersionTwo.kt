@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -110,14 +109,14 @@ public class VersionTwo(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + i.hashCode()
-      result = result * 37 + v2_i.hashCode()
-      result = result * 37 + v2_s.hashCode()
-      result = result * 37 + v2_f32.hashCode()
-      result = result * 37 + v2_f64.hashCode()
+      result = result * 37 + (i?.hashCode() ?: 0)
+      result = result * 37 + (v2_i?.hashCode() ?: 0)
+      result = result * 37 + (v2_s?.hashCode() ?: 0)
+      result = result * 37 + (v2_f32?.hashCode() ?: 0)
+      result = result * 37 + (v2_f64?.hashCode() ?: 0)
       result = result * 37 + v2_rs.hashCode()
-      result = result * 37 + obj.hashCode()
-      result = result * 37 + en.hashCode()
+      result = result * 37 + (obj?.hashCode() ?: 0)
+      result = result * 37 + (en?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -236,7 +235,7 @@ public class VersionTwo(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: VersionTwo): Int {
+      public override fun encodedSize(`value`: VersionTwo): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.i)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.v2_i)
@@ -249,7 +248,7 @@ public class VersionTwo(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: VersionTwo): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: VersionTwo): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s)
@@ -300,7 +299,7 @@ public class VersionTwo(
         )
       }
 
-      public override fun redact(value: VersionTwo): VersionTwo = value.copy(
+      public override fun redact(`value`: VersionTwo): VersionTwo = value.copy(
         obj = value.obj?.let(NestedVersionTwo.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -50,7 +49,7 @@ public class OneField(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + opt_int32.hashCode()
+      result = result * 37 + (opt_int32?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -74,13 +73,13 @@ public class OneField(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: OneField): Int {
+      public override fun encodedSize(`value`: OneField): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.opt_int32)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: OneField): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: OneField): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.opt_int32)
         writer.writeBytes(value.unknownFields)
       }
@@ -99,7 +98,7 @@ public class OneField(
         )
       }
 
-      public override fun redact(value: OneField): OneField = value.copy(
+      public override fun redact(`value`: OneField): OneField = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

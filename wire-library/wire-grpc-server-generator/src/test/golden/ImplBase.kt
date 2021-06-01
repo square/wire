@@ -41,28 +41,28 @@ public class RouteGuideWireGrpc {
             ).build()
 
     public class PointMarshaller : MethodDescriptor.Marshaller<Point> {
-      public override fun stream(value: Point): InputStream =
+      public override fun stream(`value`: Point): InputStream =
           Point.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): Point = Point.ADAPTER.decode(stream)
     }
 
     public class FeatureMarshaller : MethodDescriptor.Marshaller<Feature> {
-      public override fun stream(value: Feature): InputStream =
+      public override fun stream(`value`: Feature): InputStream =
           Feature.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): Feature = Feature.ADAPTER.decode(stream)
     }
 
     public class RectangleMarshaller : MethodDescriptor.Marshaller<Rectangle> {
-      public override fun stream(value: Rectangle): InputStream =
+      public override fun stream(`value`: Rectangle): InputStream =
           Rectangle.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): Rectangle = Rectangle.ADAPTER.decode(stream)
     }
 
     public class RouteSummaryMarshaller : MethodDescriptor.Marshaller<RouteSummary> {
-      public override fun stream(value: RouteSummary): InputStream =
+      public override fun stream(`value`: RouteSummary): InputStream =
           RouteSummary.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): RouteSummary =
@@ -70,7 +70,7 @@ public class RouteGuideWireGrpc {
     }
 
     public class RouteNoteMarshaller : MethodDescriptor.Marshaller<RouteNote> {
-      public override fun stream(value: RouteNote): InputStream =
+      public override fun stream(`value`: RouteNote): InputStream =
           RouteNote.ADAPTER.encode(value).inputStream()
 
       public override fun parse(stream: InputStream): RouteNote = RouteNote.ADAPTER.decode(stream)

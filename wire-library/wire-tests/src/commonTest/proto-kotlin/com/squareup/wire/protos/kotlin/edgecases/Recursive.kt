@@ -19,16 +19,16 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
 public class Recursive(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    declaredName = "value"
   )
-  public val value: Int? = null,
+  public val value_: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.protos.kotlin.edgecases.Recursive#ADAPTER"
@@ -47,7 +47,7 @@ public class Recursive(
     if (other === this) return true
     if (other !is Recursive) return false
     if (unknownFields != other.unknownFields) return false
-    if (value != other.value) return false
+    if (value_ != other.value_) return false
     if (recursive != other.recursive) return false
     return true
   }
@@ -56,8 +56,8 @@ public class Recursive(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + value.hashCode()
-      result = result * 37 + recursive.hashCode()
+      result = result * 37 + (value_?.hashCode() ?: 0)
+      result = result * 37 + (recursive?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -65,16 +65,16 @@ public class Recursive(
 
   public override fun toString(): String {
     val result = mutableListOf<String>()
-    if (value != null) result += """value=$value"""
+    if (value_ != null) result += """value_=$value_"""
     if (recursive != null) result += """recursive=$recursive"""
     return result.joinToString(prefix = "Recursive{", separator = ", ", postfix = "}")
   }
 
   public fun copy(
-    value: Int? = this.value,
+    value_: Int? = this.value_,
     recursive: Recursive? = this.recursive,
     unknownFields: ByteString = this.unknownFields
-  ): Recursive = Recursive(value, recursive, unknownFields)
+  ): Recursive = Recursive(value_, recursive, unknownFields)
 
   public companion object {
     @JvmField
@@ -85,37 +85,37 @@ public class Recursive(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: Recursive): Int {
+      public override fun encodedSize(`value`: Recursive): Int {
         var size = value.unknownFields.size
-        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.value)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.value_)
         size += Recursive.ADAPTER.encodedSizeWithTag(2, value.recursive)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Recursive): Unit {
-        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value)
+      public override fun encode(writer: ProtoWriter, `value`: Recursive): Unit {
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value_)
         Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive)
         writer.writeBytes(value.unknownFields)
       }
 
       public override fun decode(reader: ProtoReader): Recursive {
-        var value: Int? = null
+        var value_: Int? = null
         var recursive: Recursive? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
-            1 -> value = ProtoAdapter.INT32.decode(reader)
+            1 -> value_ = ProtoAdapter.INT32.decode(reader)
             2 -> recursive = Recursive.ADAPTER.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
         return Recursive(
-          value = value,
+          value_ = value_,
           recursive = recursive,
           unknownFields = unknownFields
         )
       }
 
-      public override fun redact(value: Recursive): Recursive = value.copy(
+      public override fun redact(`value`: Recursive): Recursive = value.copy(
         recursive = value.recursive?.let(Recursive.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )

@@ -95,13 +95,13 @@ public class Mappy(
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }
 
-      public override fun encodedSize(value: Mappy): Int {
+      public override fun encodedSize(`value`: Mappy): Int {
         var size = value.unknownFields.size
         size += thingsAdapter.encodedSizeWithTag(1, value.things)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Mappy): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Mappy): Unit {
         thingsAdapter.encodeWithTag(writer, 1, value.things)
         writer.writeBytes(value.unknownFields)
       }
@@ -120,7 +120,7 @@ public class Mappy(
         )
       }
 
-      public override fun redact(value: Mappy): Mappy = value.copy(
+      public override fun redact(`value`: Mappy): Mappy = value.copy(
         things = value.things.redactElements(Thing.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

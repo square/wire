@@ -82,13 +82,13 @@ public class FeatureDatabase(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: FeatureDatabase): Int {
+      public override fun encodedSize(`value`: FeatureDatabase): Int {
         var size = value.unknownFields.size
         size += Feature.ADAPTER.asRepeated().encodedSizeWithTag(1, value.feature)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: FeatureDatabase): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: FeatureDatabase): Unit {
         Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
         writer.writeBytes(value.unknownFields)
       }
@@ -107,7 +107,7 @@ public class FeatureDatabase(
         )
       }
 
-      public override fun redact(value: FeatureDatabase): FeatureDatabase = value.copy(
+      public override fun redact(`value`: FeatureDatabase): FeatureDatabase = value.copy(
         feature = value.feature.redactElements(Feature.ADAPTER),
         unknownFields = ByteString.EMPTY
       )

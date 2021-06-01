@@ -21,7 +21,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.lazy
 import okio.ByteString
@@ -90,9 +89,9 @@ public class CamelCase(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + nested__message.hashCode()
+      result = result * 37 + (nested__message?.hashCode() ?: 0)
       result = result * 37 + _Rep_int32.hashCode()
-      result = result * 37 + IDitIt_my_wAy.hashCode()
+      result = result * 37 + (IDitIt_my_wAy?.hashCode() ?: 0)
       result = result * 37 + map_int32_Int32.hashCode()
       super.hashCode = result
     }
@@ -172,7 +171,7 @@ public class CamelCase(
       private val map_int32_Int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
 
-      public override fun encodedSize(value: CamelCase): Int {
+      public override fun encodedSize(`value`: CamelCase): Int {
         var size = value.unknownFields.size
         if (value.nested__message != null) size += NestedCamelCase.ADAPTER.encodedSizeWithTag(1,
             value.nested__message)
@@ -183,7 +182,7 @@ public class CamelCase(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: CamelCase): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: CamelCase): Unit {
         if (value.nested__message != null) NestedCamelCase.ADAPTER.encodeWithTag(writer, 1,
             value.nested__message)
         ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value._Rep_int32)
@@ -216,7 +215,7 @@ public class CamelCase(
         )
       }
 
-      public override fun redact(value: CamelCase): CamelCase = value.copy(
+      public override fun redact(`value`: CamelCase): CamelCase = value.copy(
         nested__message = value.nested__message?.let(NestedCamelCase.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
@@ -255,7 +254,7 @@ public class CamelCase(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + one_int32.hashCode()
+        result = result * 37 + (one_int32?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -294,14 +293,14 @@ public class CamelCase(
         PROTO_3, 
         null
       ) {
-        public override fun encodedSize(value: NestedCamelCase): Int {
+        public override fun encodedSize(`value`: NestedCamelCase): Int {
           var size = value.unknownFields.size
           if (value.one_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1,
               value.one_int32)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: NestedCamelCase): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: NestedCamelCase): Unit {
           if (value.one_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.one_int32)
           writer.writeBytes(value.unknownFields)
         }
@@ -320,7 +319,7 @@ public class CamelCase(
           )
         }
 
-        public override fun redact(value: NestedCamelCase): NestedCamelCase = value.copy(
+        public override fun redact(`value`: NestedCamelCase): NestedCamelCase = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

@@ -54,12 +54,12 @@ public class NoPackageResponse(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: NoPackageResponse): Int {
+      public override fun encodedSize(`value`: NoPackageResponse): Int {
         var size = value.unknownFields.size
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: NoPackageResponse): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: NoPackageResponse): Unit {
         writer.writeBytes(value.unknownFields)
       }
 
@@ -70,7 +70,7 @@ public class NoPackageResponse(
         )
       }
 
-      public override fun redact(value: NoPackageResponse): NoPackageResponse = value.copy(
+      public override fun redact(`value`: NoPackageResponse): NoPackageResponse = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

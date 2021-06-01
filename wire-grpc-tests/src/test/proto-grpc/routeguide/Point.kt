@@ -19,7 +19,6 @@ import kotlin.Long
 import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import okio.ByteString
 
@@ -62,8 +61,8 @@ public class Point(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + latitude.hashCode()
-      result = result * 37 + longitude.hashCode()
+      result = result * 37 + (latitude?.hashCode() ?: 0)
+      result = result * 37 + (longitude?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -91,14 +90,14 @@ public class Point(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: Point): Int {
+      public override fun encodedSize(`value`: Point): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.latitude)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.longitude)
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Point): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Point): Unit {
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.latitude)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.longitude)
         writer.writeBytes(value.unknownFields)
@@ -121,7 +120,7 @@ public class Point(
         )
       }
 
-      public override fun redact(value: Point): Point = value.copy(
+      public override fun redact(`value`: Point): Point = value.copy(
         unknownFields = ByteString.EMPTY
       )
     }

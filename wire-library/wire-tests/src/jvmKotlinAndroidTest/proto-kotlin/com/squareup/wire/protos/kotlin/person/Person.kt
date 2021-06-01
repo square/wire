@@ -28,7 +28,6 @@ import kotlin.Nothing
 import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import okio.ByteString
@@ -109,7 +108,7 @@ public class Person(
       result = unknownFields.hashCode()
       result = result * 37 + name.hashCode()
       result = result * 37 + id.hashCode()
-      result = result * 37 + email.hashCode()
+      result = result * 37 + (email?.hashCode() ?: 0)
       result = result * 37 + phone.hashCode()
       result = result * 37 + aliases.hashCode()
       super.hashCode = result
@@ -145,7 +144,7 @@ public class Person(
       PROTO_2, 
       null
     ) {
-      public override fun encodedSize(value: Person): Int {
+      public override fun encodedSize(`value`: Person): Int {
         var size = value.unknownFields.size
         size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
@@ -155,7 +154,7 @@ public class Person(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: Person): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: Person): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
@@ -190,7 +189,7 @@ public class Person(
         )
       }
 
-      public override fun redact(value: Person): Person = value.copy(
+      public override fun redact(`value`: Person): Person = value.copy(
         phone = value.phone.redactElements(PhoneNumber.ADAPTER),
         unknownFields = ByteString.EMPTY
       )
@@ -206,7 +205,7 @@ public class Person(
    * Represents the type of the phone number: mobile, home or work.
    */
   public enum class PhoneType(
-    public override val value: Int
+    public override val `value`: Int
   ) : WireEnum {
     MOBILE(0),
     HOME(1),
@@ -223,11 +222,11 @@ public class Person(
         PROTO_2, 
         PhoneType.MOBILE
       ) {
-        public override fun fromValue(value: Int): PhoneType? = PhoneType.fromValue(value)
+        public override fun fromValue(`value`: Int): PhoneType? = PhoneType.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): PhoneType? = when (value) {
+      public fun fromValue(`value`: Int): PhoneType? = when (value) {
         0 -> MOBILE
         1 -> HOME
         2 -> WORK
@@ -277,7 +276,7 @@ public class Person(
       if (result == 0) {
         result = unknownFields.hashCode()
         result = result * 37 + number.hashCode()
-        result = result * 37 + type.hashCode()
+        result = result * 37 + (type?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -308,14 +307,14 @@ public class Person(
         PROTO_2, 
         null
       ) {
-        public override fun encodedSize(value: PhoneNumber): Int {
+        public override fun encodedSize(`value`: PhoneNumber): Int {
           var size = value.unknownFields.size
           size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.number)
           size += PhoneType.ADAPTER.encodedSizeWithTag(2, value.type)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: PhoneNumber): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: PhoneNumber): Unit {
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
           PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
           writer.writeBytes(value.unknownFields)
@@ -342,7 +341,7 @@ public class Person(
           )
         }
 
-        public override fun redact(value: PhoneNumber): PhoneNumber = value.copy(
+        public override fun redact(`value`: PhoneNumber): PhoneNumber = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }

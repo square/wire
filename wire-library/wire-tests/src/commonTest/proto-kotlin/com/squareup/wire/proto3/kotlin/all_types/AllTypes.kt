@@ -35,7 +35,6 @@ import kotlin.String
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
-import kotlin.hashCode
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.lazy
@@ -175,7 +174,7 @@ public class AllTypes(
   public val duration: Duration? = null,
   struct: Map<String, *>? = null,
   list_value: List<*>? = null,
-  value: Any? = null,
+  value_: Any? = null,
   null_value: Nothing? = null,
   @field:WireField(
     tag = 24,
@@ -399,9 +398,10 @@ public class AllTypes(
   @field:WireField(
     tag = 22,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_VALUE",
-    label = WireField.Label.OMIT_IDENTITY
+    label = WireField.Label.OMIT_IDENTITY,
+    declaredName = "value"
   )
-  public val value: Any? = immutableCopyOfStruct("value", value)
+  public val value_: Any? = immutableCopyOfStruct("value_", value_)
 
   @field:WireField(
     tag = 23,
@@ -895,7 +895,7 @@ public class AllTypes(
     if (duration != other.duration) return false
     if (struct != other.struct) return false
     if (list_value != other.list_value) return false
-    if (value != other.value) return false
+    if (value_ != other.value_) return false
     if (null_value != other.null_value) return false
     if (empty != other.empty) return false
     if (timestamp != other.timestamp) return false
@@ -982,46 +982,46 @@ public class AllTypes(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + proto3_kotlin_int32.hashCode()
-      result = result * 37 + proto3_kotlin_uint32.hashCode()
-      result = result * 37 + proto3_kotlin_sint32.hashCode()
-      result = result * 37 + proto3_kotlin_fixed32.hashCode()
-      result = result * 37 + proto3_kotlin_sfixed32.hashCode()
-      result = result * 37 + proto3_kotlin_int64.hashCode()
-      result = result * 37 + proto3_kotlin_uint64.hashCode()
-      result = result * 37 + proto3_kotlin_sint64.hashCode()
-      result = result * 37 + proto3_kotlin_fixed64.hashCode()
-      result = result * 37 + proto3_kotlin_sfixed64.hashCode()
-      result = result * 37 + proto3_kotlin_bool.hashCode()
-      result = result * 37 + proto3_kotlin_float.hashCode()
-      result = result * 37 + proto3_kotlin_double.hashCode()
-      result = result * 37 + proto3_kotlin_string.hashCode()
-      result = result * 37 + proto3_kotlin_bytes.hashCode()
-      result = result * 37 + nested_enum.hashCode()
-      result = result * 37 + nested_message.hashCode()
-      result = result * 37 + any.hashCode()
-      result = result * 37 + duration.hashCode()
-      result = result * 37 + struct.hashCode()
-      result = result * 37 + list_value.hashCode()
-      result = result * 37 + value.hashCode()
-      result = result * 37 + null_value.hashCode()
-      result = result * 37 + empty.hashCode()
-      result = result * 37 + timestamp.hashCode()
-      result = result * 37 + opt_int32.hashCode()
-      result = result * 37 + opt_uint32.hashCode()
-      result = result * 37 + opt_sint32.hashCode()
-      result = result * 37 + opt_fixed32.hashCode()
-      result = result * 37 + opt_sfixed32.hashCode()
-      result = result * 37 + opt_int64.hashCode()
-      result = result * 37 + opt_uint64.hashCode()
-      result = result * 37 + opt_sint64.hashCode()
-      result = result * 37 + opt_fixed64.hashCode()
-      result = result * 37 + opt_sfixed64.hashCode()
-      result = result * 37 + opt_bool.hashCode()
-      result = result * 37 + opt_float.hashCode()
-      result = result * 37 + opt_double.hashCode()
-      result = result * 37 + opt_string.hashCode()
-      result = result * 37 + opt_bytes.hashCode()
+      result = result * 37 + (proto3_kotlin_int32?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_uint32?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_sint32?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_fixed32?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_sfixed32?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_int64?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_uint64?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_sint64?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_fixed64?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_sfixed64?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_bool?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_float?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_double?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_string?.hashCode() ?: 0)
+      result = result * 37 + (proto3_kotlin_bytes?.hashCode() ?: 0)
+      result = result * 37 + (nested_enum?.hashCode() ?: 0)
+      result = result * 37 + (nested_message?.hashCode() ?: 0)
+      result = result * 37 + (any?.hashCode() ?: 0)
+      result = result * 37 + (duration?.hashCode() ?: 0)
+      result = result * 37 + (struct?.hashCode() ?: 0)
+      result = result * 37 + (list_value?.hashCode() ?: 0)
+      result = result * 37 + (value_?.hashCode() ?: 0)
+      result = result * 37 + (null_value?.hashCode() ?: 0)
+      result = result * 37 + (empty?.hashCode() ?: 0)
+      result = result * 37 + (timestamp?.hashCode() ?: 0)
+      result = result * 37 + (opt_int32?.hashCode() ?: 0)
+      result = result * 37 + (opt_uint32?.hashCode() ?: 0)
+      result = result * 37 + (opt_sint32?.hashCode() ?: 0)
+      result = result * 37 + (opt_fixed32?.hashCode() ?: 0)
+      result = result * 37 + (opt_sfixed32?.hashCode() ?: 0)
+      result = result * 37 + (opt_int64?.hashCode() ?: 0)
+      result = result * 37 + (opt_uint64?.hashCode() ?: 0)
+      result = result * 37 + (opt_sint64?.hashCode() ?: 0)
+      result = result * 37 + (opt_fixed64?.hashCode() ?: 0)
+      result = result * 37 + (opt_sfixed64?.hashCode() ?: 0)
+      result = result * 37 + (opt_bool?.hashCode() ?: 0)
+      result = result * 37 + (opt_float?.hashCode() ?: 0)
+      result = result * 37 + (opt_double?.hashCode() ?: 0)
+      result = result * 37 + (opt_string?.hashCode() ?: 0)
+      result = result * 37 + (opt_bytes?.hashCode() ?: 0)
       result = result * 37 + rep_int32.hashCode()
       result = result * 37 + rep_uint32.hashCode()
       result = result * 37 + rep_sint32.hashCode()
@@ -1074,15 +1074,15 @@ public class AllTypes(
       result = result * 37 + map_int32_null_value.hashCode()
       result = result * 37 + map_int32_empty.hashCode()
       result = result * 37 + map_int32_timestamp.hashCode()
-      result = result * 37 + oneof_string.hashCode()
-      result = result * 37 + oneof_int32.hashCode()
-      result = result * 37 + oneof_nested_message.hashCode()
-      result = result * 37 + oneof_any.hashCode()
-      result = result * 37 + oneof_duration.hashCode()
-      result = result * 37 + oneof_struct.hashCode()
-      result = result * 37 + oneof_list_value.hashCode()
-      result = result * 37 + oneof_empty.hashCode()
-      result = result * 37 + oneof_timestamp.hashCode()
+      result = result * 37 + (oneof_string?.hashCode() ?: 0)
+      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
+      result = result * 37 + (oneof_nested_message?.hashCode() ?: 0)
+      result = result * 37 + (oneof_any?.hashCode() ?: 0)
+      result = result * 37 + (oneof_duration?.hashCode() ?: 0)
+      result = result * 37 + (oneof_struct?.hashCode() ?: 0)
+      result = result * 37 + (oneof_list_value?.hashCode() ?: 0)
+      result = result * 37 + (oneof_empty?.hashCode() ?: 0)
+      result = result * 37 + (oneof_timestamp?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -1111,7 +1111,7 @@ public class AllTypes(
     if (duration != null) result += """duration=$duration"""
     if (struct != null) result += """struct=$struct"""
     if (list_value != null) result += """list_value=$list_value"""
-    if (value != null) result += """value=$value"""
+    if (value_ != null) result += """value_=$value_"""
     if (null_value != null) result += """null_value=$null_value"""
     if (empty != null) result += """empty=$empty"""
     if (timestamp != null) result += """timestamp=$timestamp"""
@@ -1218,7 +1218,7 @@ public class AllTypes(
     duration: Duration? = this.duration,
     struct: Map<String, *>? = this.struct,
     list_value: List<*>? = this.list_value,
-    value: Any? = this.value,
+    value_: Any? = this.value_,
     null_value: Nothing? = this.null_value,
     empty: Unit? = this.empty,
     timestamp: Instant? = this.timestamp,
@@ -1303,7 +1303,7 @@ public class AllTypes(
       proto3_kotlin_fixed32, proto3_kotlin_sfixed32, proto3_kotlin_int64, proto3_kotlin_uint64,
       proto3_kotlin_sint64, proto3_kotlin_fixed64, proto3_kotlin_sfixed64, proto3_kotlin_bool,
       proto3_kotlin_float, proto3_kotlin_double, proto3_kotlin_string, proto3_kotlin_bytes,
-      nested_enum, nested_message, any, duration, struct, list_value, value, null_value, empty,
+      nested_enum, nested_message, any, duration, struct, list_value, value_, null_value, empty,
       timestamp, opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
       opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
       opt_string, opt_bytes, rep_int32, rep_uint32, rep_sint32, rep_fixed32, rep_sfixed32,
@@ -1363,7 +1363,7 @@ public class AllTypes(
       private val map_int32_timestampAdapter: ProtoAdapter<Map<Int, Instant>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INSTANT) }
 
-      public override fun encodedSize(value: AllTypes): Int {
+      public override fun encodedSize(`value`: AllTypes): Int {
         var size = value.unknownFields.size
         if (value.proto3_kotlin_int32 != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1,
             value.proto3_kotlin_int32)
@@ -1406,8 +1406,8 @@ public class AllTypes(
             value.struct)
         if (value.list_value != null) size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(21,
             value.list_value)
-        if (value.value != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22,
-            value.value)
+        if (value.value_ != null) size += ProtoAdapter.STRUCT_VALUE.encodedSizeWithTag(22,
+            value.value_)
         if (value.null_value != null) size += ProtoAdapter.STRUCT_NULL.encodedSizeWithTag(23,
             value.null_value)
         if (value.empty != null) size += ProtoAdapter.EMPTY.encodedSizeWithTag(24, value.empty)
@@ -1492,7 +1492,7 @@ public class AllTypes(
         return size
       }
 
-      public override fun encode(writer: ProtoWriter, value: AllTypes): Unit {
+      public override fun encode(writer: ProtoWriter, `value`: AllTypes): Unit {
         if (value.proto3_kotlin_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1,
             value.proto3_kotlin_int32)
         if (value.proto3_kotlin_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2,
@@ -1532,7 +1532,7 @@ public class AllTypes(
         if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 20, value.struct)
         if (value.list_value != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 21,
             value.list_value)
-        if (value.value != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value)
+        if (value.value_ != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 22, value.value_)
         if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 23,
             value.null_value)
         if (value.empty != null) ProtoAdapter.EMPTY.encodeWithTag(writer, 24, value.empty)
@@ -1638,7 +1638,7 @@ public class AllTypes(
         var duration: Duration? = null
         var struct: Map<String, *>? = null
         var list_value: List<*>? = null
-        var value: Any? = null
+        var value_: Any? = null
         var null_value: Nothing? = null
         var empty: Unit? = null
         var timestamp: Instant? = null
@@ -1745,7 +1745,7 @@ public class AllTypes(
             19 -> duration = ProtoAdapter.DURATION.decode(reader)
             20 -> struct = ProtoAdapter.STRUCT_MAP.decode(reader)
             21 -> list_value = ProtoAdapter.STRUCT_LIST.decode(reader)
-            22 -> value = ProtoAdapter.STRUCT_VALUE.decode(reader)
+            22 -> value_ = ProtoAdapter.STRUCT_VALUE.decode(reader)
             23 -> try {
               null_value = ProtoAdapter.STRUCT_NULL.decode(reader)
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
@@ -1870,7 +1870,7 @@ public class AllTypes(
           duration = duration,
           struct = struct,
           list_value = list_value,
-          value = value,
+          value_ = value_,
           null_value = null_value,
           empty = empty,
           timestamp = timestamp,
@@ -1954,13 +1954,13 @@ public class AllTypes(
         )
       }
 
-      public override fun redact(value: AllTypes): AllTypes = value.copy(
+      public override fun redact(`value`: AllTypes): AllTypes = value.copy(
         nested_message = value.nested_message?.let(NestedMessage.ADAPTER::redact),
         any = value.any?.let(AnyMessage.ADAPTER::redact),
         duration = value.duration?.let(ProtoAdapter.DURATION::redact),
         struct = value.struct?.let(ProtoAdapter.STRUCT_MAP::redact),
         list_value = value.list_value?.let(ProtoAdapter.STRUCT_LIST::redact),
-        value = value.value?.let(ProtoAdapter.STRUCT_VALUE::redact),
+        value_ = value.value_?.let(ProtoAdapter.STRUCT_VALUE::redact),
         empty = value.empty?.let(ProtoAdapter.EMPTY::redact),
         timestamp = value.timestamp?.let(ProtoAdapter.INSTANT::redact),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
@@ -1994,7 +1994,7 @@ public class AllTypes(
   }
 
   public enum class NestedEnum(
-    public override val value: Int
+    public override val `value`: Int
   ) : WireEnum {
     UNKNOWN(0),
     A(1),
@@ -2007,11 +2007,11 @@ public class AllTypes(
         PROTO_3, 
         NestedEnum.UNKNOWN
       ) {
-        public override fun fromValue(value: Int): NestedEnum? = NestedEnum.fromValue(value)
+        public override fun fromValue(`value`: Int): NestedEnum? = NestedEnum.fromValue(value)
       }
 
       @JvmStatic
-      public fun fromValue(value: Int): NestedEnum? = when (value) {
+      public fun fromValue(`value`: Int): NestedEnum? = when (value) {
         0 -> UNKNOWN
         1 -> A
         else -> null
@@ -2047,7 +2047,7 @@ public class AllTypes(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + a.hashCode()
+        result = result * 37 + (a?.hashCode() ?: 0)
         super.hashCode = result
       }
       return result
@@ -2071,13 +2071,13 @@ public class AllTypes(
         PROTO_3, 
         null
       ) {
-        public override fun encodedSize(value: NestedMessage): Int {
+        public override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size
           if (value.a != 0) size += ProtoAdapter.INT32.encodedSizeWithTag(1, value.a)
           return size
         }
 
-        public override fun encode(writer: ProtoWriter, value: NestedMessage): Unit {
+        public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
         }
@@ -2096,7 +2096,7 @@ public class AllTypes(
           )
         }
 
-        public override fun redact(value: NestedMessage): NestedMessage = value.copy(
+        public override fun redact(`value`: NestedMessage): NestedMessage = value.copy(
           unknownFields = ByteString.EMPTY
         )
       }
