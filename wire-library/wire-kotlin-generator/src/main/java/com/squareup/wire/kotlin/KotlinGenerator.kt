@@ -67,6 +67,7 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
 import com.squareup.wire.WireField
+import com.squareup.wire.WireOneOf
 import com.squareup.wire.WireRpc
 import com.squareup.wire.internal.boxedOneOfClassName
 import com.squareup.wire.internal.boxedOneOfKeyFieldName
@@ -944,6 +945,13 @@ class KotlinGenerator private constructor(
               addAnnotation(annotation)
             }
             addAnnotation(wireFieldAnnotation(message, field))
+            if (field.isOneOf) {
+              addAnnotation(
+                AnnotationSpec.builder(WireOneOf::class)
+                  .addMember("name = %S", message.oneOfs.find { it.fields.contains(field) }!!.name)
+                  .build()
+              )
+            }
             if (javaInterOp) {
               addAnnotation(JvmField::class)
             }

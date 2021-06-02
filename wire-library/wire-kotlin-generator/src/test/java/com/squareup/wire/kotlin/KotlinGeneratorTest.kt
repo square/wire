@@ -1253,9 +1253,9 @@ class KotlinGeneratorTest {
     assertTrue(code.contains("""val text: String = "","""))
     assertTrue(code.contains("""val author: Author? = null,"""))
     assertTrue(code.contains("""val enum_: Enum = Enum.UNKNOWN,"""))
-    assertTrue(code.contains("""val foo: Int? = null,"""))
-    assertTrue(code.contains("""val bar: String? = null,"""))
-    assertTrue(code.contains("""val baz: Baz? = null,"""))
+    assertTrue(code.contains("""@WireOneOf(name = "choice")${'\n'}  public val foo: Int? = null,"""))
+    assertTrue(code.contains("""@WireOneOf(name = "choice")${'\n'}  public val bar: String? = null,"""))
+    assertTrue(code.contains("""@WireOneOf(name = "choice")${'\n'}  public val baz: Baz? = null,"""))
     assertTrue(code.contains("""val count: Long = 0"""))
   }
 
