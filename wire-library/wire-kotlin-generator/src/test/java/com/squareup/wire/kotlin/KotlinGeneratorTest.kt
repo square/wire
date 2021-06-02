@@ -1503,6 +1503,45 @@ class KotlinGeneratorTest {
     )
   }
 
+  @Test
+  fun redactedNonNullableFieldsForProto3() {
+    val repoBuilder = RepoBuilder()
+      .add("message.proto", """
+        |syntax = "proto3";
+        |import "option_redacted.proto";
+        |message RedactedFields {
+        |  string a = 1 [(squareup.protos.redacted_option.redacted) = true];
+        |  int32  b = 2 [(squareup.protos.redacted_option.redacted) = true];
+        |  oneof choice {
+        |    string c = 3 [(squareup.protos.redacted_option.redacted) = true];
+        |    int32  d = 4 [(squareup.protos.redacted_option.redacted) = true];
+        |  }
+        |  SecretData secret_data = 5 [(squareup.protos.redacted_option.redacted) = true];
+        |}
+        |
+        |message SecretData {}
+        |""".trimMargin()
+      )
+      .add("option_redacted.proto")
+    val code = repoBuilder.generateKotlin("RedactedFields")
+    println(code)
+    assertThat(code).contains("""public val a: String = "",""")
+    assertThat(code).contains("""public val b: Int = 0,""")
+    assertThat(code).contains("""public val c: String? = null,""")
+    assertThat(code).contains("""public val d: Int? = null,""")
+    assertThat(code).contains("""public val secret_data: SecretData? = null,""")
+    assertThat(code).contains("""
+      |      public override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
+      |        a = "",
+      |        b = 0,
+      |        secret_data = null,
+      |        c = null,
+      |        d = null,
+      |        unknownFields = ByteString.EMPTY
+      |      )
+    """.trimMargin())
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

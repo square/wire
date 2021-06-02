@@ -1498,6 +1498,8 @@ class KotlinGenerator private constructor(
       return when {
         isRepeated -> CodeBlock.of("emptyList()")
         isMap -> CodeBlock.of("emptyMap()")
+        encodeMode!! == EncodeMode.NULL_IF_ABSENT -> CodeBlock.of("null")
+        isScalar -> PROTOTYPE_TO_IDENTITY_VALUES[type!!]
         else -> CodeBlock.of("null")
       }
     } else if (!type!!.isScalar && !type!!.isEnum) {
