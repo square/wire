@@ -16,6 +16,17 @@ class ReleaseUnitTest {
   }
 
   @Test
+  fun debugTypeIsAbsent() {
+    java.lang.Class.forName("com.squareup.wire.android.app.variants.ReleaseType")
+    try {
+      java.lang.Class.forName("com.squareup.wire.android.app.variants.DebugType")
+      fail()
+    } catch (e: ClassNotFoundException) {
+      // Expected exception.
+    }
+  }
+
+  @Test
   fun releaseType() {
     val commonType = CommonType(32, "name")
     if (commonType.id != 32) {
