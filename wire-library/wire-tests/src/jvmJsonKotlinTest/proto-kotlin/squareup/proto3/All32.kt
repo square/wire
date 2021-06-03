@@ -86,14 +86,16 @@ public class All32(
   @field:WireField(
     tag = 401,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "oneofInt32"
+    jsonName = "oneofInt32",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_int32: Int? = null,
   @field:WireField(
     tag = 402,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-    jsonName = "oneofSfixed32"
+    jsonName = "oneofSfixed32",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_sfixed32: Int? = null,

@@ -208,7 +208,8 @@ public class AllStructs(
   @field:WireField(
     tag = 201,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    jsonName = "oneofStruct"
+    jsonName = "oneofStruct",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
@@ -216,7 +217,8 @@ public class AllStructs(
   @field:WireField(
     tag = 202,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    jsonName = "oneofList"
+    jsonName = "oneofList",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_list: List<*>? = immutableCopyOfStruct("oneof_list", oneof_list)

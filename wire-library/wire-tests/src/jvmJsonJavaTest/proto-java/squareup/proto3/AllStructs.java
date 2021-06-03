@@ -158,14 +158,16 @@ public final class AllStructs extends Message<AllStructs, AllStructs.Builder> {
   @WireField(
       tag = 201,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-      jsonName = "oneofStruct"
+      jsonName = "oneofStruct",
+      oneofName = "choice"
   )
   public final Map<String, ?> oneof_struct;
 
   @WireField(
       tag = 202,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-      jsonName = "oneofList"
+      jsonName = "oneofList",
+      oneofName = "choice"
   )
   public final List<?> oneof_list;
 
