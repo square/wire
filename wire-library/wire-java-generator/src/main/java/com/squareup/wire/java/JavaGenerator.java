@@ -679,7 +679,7 @@ public final class JavaGenerator {
       for (AnnotationSpec annotation : optionAnnotations(field.getOptions())) {
         fieldBuilder.addAnnotation(annotation);
       }
-      fieldBuilder.addAnnotation(wireFieldAnnotation(nameAllocator, field));
+      fieldBuilder.addAnnotation(wireFieldAnnotation(nameAllocator, field, type));
       if (field.isExtension()) {
         fieldBuilder.addJavadoc("Extension source: $L\n", field.getLocation().withPathOnly());
       }
@@ -1280,7 +1280,8 @@ public final class JavaGenerator {
   //   type = INT32
   // )
   //
-  private AnnotationSpec wireFieldAnnotation(NameAllocator nameAllocator, Field field) {
+  private AnnotationSpec wireFieldAnnotation(NameAllocator nameAllocator, Field field,
+      MessageType message) {
     AnnotationSpec.Builder result = AnnotationSpec.builder(WireField.class);
 
     NameAllocator localNameAllocator = nameAllocator.clone();
@@ -1329,6 +1330,20 @@ public final class JavaGenerator {
 
     if (!field.getJsonName().equals(field.getName())) {
       result.addMember("jsonName", "$S", field.getJsonName());
+    }
+
+    if (field.isOneOf()) {
+      String oneofName = null;
+      for (OneOf oneOf : message.getOneOfs()) {
+        if (oneOf.getFields().contains(field)) {
+          oneofName = oneOf.getName();
+          break;
+        }
+      }
+      if (oneofName == null) {
+        throw new IllegalArgumentException("No oneof found for field: " + field.getQualifiedName());
+      }
+      result.addMember("oneofName", "$S", oneofName);
     }
 
     return result.build();

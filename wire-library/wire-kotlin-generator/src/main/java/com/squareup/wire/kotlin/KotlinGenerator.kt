@@ -1026,6 +1026,12 @@ class KotlinGenerator private constructor(
             addMember("jsonName = %S", field.jsonName!!)
           }
         }
+        .apply {
+          if (field.isOneOf) {
+            val oneofName = message.oneOfs.first { it.fields.contains(field) }.name
+            addMember("oneofName = %S", oneofName)
+          }
+        }
         .build()
   }
 
