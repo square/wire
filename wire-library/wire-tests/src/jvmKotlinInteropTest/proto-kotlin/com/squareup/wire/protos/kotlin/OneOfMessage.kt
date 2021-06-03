@@ -29,7 +29,8 @@ public class OneOfMessage(
    */
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    oneofName = "choice"
   )
   @JvmField
   public val foo: Int? = null,
@@ -38,7 +39,8 @@ public class OneOfMessage(
    */
   @field:WireField(
     tag = 3,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "choice"
   )
   @JvmField
   public val bar: String? = null,
@@ -47,7 +49,8 @@ public class OneOfMessage(
    */
   @field:WireField(
     tag = 4,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "choice"
   )
   @JvmField
   public val baz: String? = null,

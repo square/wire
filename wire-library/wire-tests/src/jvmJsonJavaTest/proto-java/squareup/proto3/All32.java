@@ -189,14 +189,16 @@ public final class All32 extends Message<All32, All32.Builder> {
   @WireField(
       tag = 401,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      jsonName = "oneofInt32"
+      jsonName = "oneofInt32",
+      oneofName = "choice"
   )
   public final Integer oneof_int32;
 
   @WireField(
       tag = 402,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED32",
-      jsonName = "oneofSfixed32"
+      jsonName = "oneofSfixed32",
+      oneofName = "choice"
   )
   public final Integer oneof_sfixed32;
 

@@ -312,21 +312,24 @@ public class AllTypes(
   @field:WireField(
     tag = 601,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "oneofString"
+    jsonName = "oneofString",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_string: String? = null,
   @field:WireField(
     tag = 602,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "oneofInt32"
+    jsonName = "oneofInt32",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_int32: Int? = null,
   @field:WireField(
     tag = 603,
     adapter = "com.squareup.wire.proto3.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
-    jsonName = "oneofNestedMessage"
+    jsonName = "oneofNestedMessage",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_nested_message: NestedMessage? = null,

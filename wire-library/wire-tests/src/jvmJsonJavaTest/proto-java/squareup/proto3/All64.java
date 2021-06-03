@@ -189,14 +189,16 @@ public final class All64 extends Message<All64, All64.Builder> {
   @WireField(
       tag = 401,
       adapter = "com.squareup.wire.ProtoAdapter#INT64",
-      jsonName = "oneofInt64"
+      jsonName = "oneofInt64",
+      oneofName = "choice"
   )
   public final Long oneof_int64;
 
   @WireField(
       tag = 402,
       adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-      jsonName = "oneofSfixed64"
+      jsonName = "oneofSfixed64",
+      oneofName = "choice"
   )
   public final Long oneof_sfixed64;
 

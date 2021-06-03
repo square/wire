@@ -34,7 +34,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
    */
   @WireField(
       tag = 1,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      oneofName = "choice"
   )
   public final Integer foo;
 
@@ -43,7 +44,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
    */
   @WireField(
       tag = 3,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      oneofName = "choice"
   )
   public final String bar;
 
@@ -52,7 +54,8 @@ public final class OneOfMessage extends Message<OneOfMessage, OneOfMessage.Build
    */
   @WireField(
       tag = 4,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      oneofName = "choice"
   )
   public final String baz;
 

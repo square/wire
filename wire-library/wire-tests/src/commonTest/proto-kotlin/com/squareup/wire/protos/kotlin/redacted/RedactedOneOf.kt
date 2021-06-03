@@ -26,13 +26,15 @@ import okio.ByteString
 public class RedactedOneOf(
   @field:WireField(
     tag = 1,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    oneofName = "a"
   )
   public val b: Int? = null,
   @field:WireField(
     tag = 2,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    redacted = true
+    redacted = true,
+    oneofName = "a"
   )
   public val c: String? = null,
   unknownFields: ByteString = ByteString.EMPTY

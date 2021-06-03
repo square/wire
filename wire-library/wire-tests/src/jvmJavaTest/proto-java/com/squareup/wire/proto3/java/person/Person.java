@@ -83,13 +83,15 @@ public final class Person extends Message<Person, Person.Builder> {
 
   @WireField(
       tag = 6,
-      adapter = "com.squareup.wire.ProtoAdapter#INT32"
+      adapter = "com.squareup.wire.ProtoAdapter#INT32",
+      oneofName = "choice"
   )
   public final Integer foo;
 
   @WireField(
       tag = 7,
-      adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      oneofName = "choice"
   )
   public final String bar;
 

@@ -776,49 +776,56 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 601,
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
-      jsonName = "oneofString"
+      jsonName = "oneofString",
+      oneofName = "choice"
   )
   public final String oneof_string;
 
   @WireField(
       tag = 602,
       adapter = "com.squareup.wire.ProtoAdapter#INT32",
-      jsonName = "oneofInt32"
+      jsonName = "oneofInt32",
+      oneofName = "choice"
   )
   public final Integer oneof_int32;
 
   @WireField(
       tag = 603,
       adapter = "com.squareup.wire.proto3.java.all_types.AllTypes$NestedMessage#ADAPTER",
-      jsonName = "oneofNestedMessage"
+      jsonName = "oneofNestedMessage",
+      oneofName = "choice"
   )
   public final NestedMessage oneof_nested_message;
 
   @WireField(
       tag = 618,
       adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-      jsonName = "oneofAny"
+      jsonName = "oneofAny",
+      oneofName = "choice"
   )
   public final AnyMessage oneof_any;
 
   @WireField(
       tag = 619,
       adapter = "com.squareup.wire.ProtoAdapter#DURATION",
-      jsonName = "oneofDuration"
+      jsonName = "oneofDuration",
+      oneofName = "choice"
   )
   public final Duration oneof_duration;
 
   @WireField(
       tag = 620,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-      jsonName = "oneofStruct"
+      jsonName = "oneofStruct",
+      oneofName = "choice"
   )
   public final Map<String, ?> oneof_struct;
 
   @WireField(
       tag = 621,
       adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-      jsonName = "oneofListValue"
+      jsonName = "oneofListValue",
+      oneofName = "choice"
   )
   public final List<?> oneof_list_value;
 
@@ -829,14 +836,16 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
   @WireField(
       tag = 624,
       adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
-      jsonName = "oneofEmpty"
+      jsonName = "oneofEmpty",
+      oneofName = "choice"
   )
   public final Unit oneof_empty;
 
   @WireField(
       tag = 625,
       adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
-      jsonName = "oneofTimestamp"
+      jsonName = "oneofTimestamp",
+      oneofName = "choice"
   )
   public final Instant oneof_timestamp;
 

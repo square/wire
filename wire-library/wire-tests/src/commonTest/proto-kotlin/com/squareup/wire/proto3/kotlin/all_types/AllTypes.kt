@@ -333,31 +333,36 @@ public class AllTypes(
   @field:WireField(
     tag = 601,
     adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    jsonName = "oneofString"
+    jsonName = "oneofString",
+    oneofName = "choice"
   )
   public val oneof_string: String? = null,
   @field:WireField(
     tag = 602,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    jsonName = "oneofInt32"
+    jsonName = "oneofInt32",
+    oneofName = "choice"
   )
   public val oneof_int32: Int? = null,
   @field:WireField(
     tag = 603,
     adapter = "com.squareup.wire.proto3.kotlin.all_types.AllTypes${'$'}NestedMessage#ADAPTER",
-    jsonName = "oneofNestedMessage"
+    jsonName = "oneofNestedMessage",
+    oneofName = "choice"
   )
   public val oneof_nested_message: NestedMessage? = null,
   @field:WireField(
     tag = 618,
     adapter = "com.squareup.wire.AnyMessage#ADAPTER",
-    jsonName = "oneofAny"
+    jsonName = "oneofAny",
+    oneofName = "choice"
   )
   public val oneof_any: AnyMessage? = null,
   @field:WireField(
     tag = 619,
     adapter = "com.squareup.wire.ProtoAdapter#DURATION",
-    jsonName = "oneofDuration"
+    jsonName = "oneofDuration",
+    oneofName = "choice"
   )
   public val oneof_duration: Duration? = null,
   oneof_struct: Map<String, *>? = null,
@@ -369,13 +374,15 @@ public class AllTypes(
   @field:WireField(
     tag = 624,
     adapter = "com.squareup.wire.ProtoAdapter#EMPTY",
-    jsonName = "oneofEmpty"
+    jsonName = "oneofEmpty",
+    oneofName = "choice"
   )
   public val oneof_empty: Unit? = null,
   @field:WireField(
     tag = 625,
     adapter = "com.squareup.wire.ProtoAdapter#INSTANT",
-    jsonName = "oneofTimestamp"
+    jsonName = "oneofTimestamp",
+    oneofName = "choice"
   )
   public val oneof_timestamp: Instant? = null,
   unknownFields: ByteString = ByteString.EMPTY
@@ -844,14 +851,16 @@ public class AllTypes(
   @field:WireField(
     tag = 620,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    jsonName = "oneofStruct"
+    jsonName = "oneofStruct",
+    oneofName = "choice"
   )
   public val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
 
   @field:WireField(
     tag = 621,
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    jsonName = "oneofListValue"
+    jsonName = "oneofListValue",
+    oneofName = "choice"
   )
   public val oneof_list_value: List<*>? = immutableCopyOfStruct("oneof_list_value",
       oneof_list_value)

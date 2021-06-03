@@ -86,14 +86,16 @@ public class All64(
   @field:WireField(
     tag = 401,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
-    jsonName = "oneofInt64"
+    jsonName = "oneofInt64",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_int64: Long? = null,
   @field:WireField(
     tag = 402,
     adapter = "com.squareup.wire.ProtoAdapter#SFIXED64",
-    jsonName = "oneofSfixed64"
+    jsonName = "oneofSfixed64",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_sfixed64: Long? = null,

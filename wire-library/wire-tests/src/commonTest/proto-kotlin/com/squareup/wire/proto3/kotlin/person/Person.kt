@@ -66,12 +66,14 @@ public class Person(
   aliases: List<String> = emptyList(),
   @field:WireField(
     tag = 6,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    oneofName = "choice"
   )
   public val foo: Int? = null,
   @field:WireField(
     tag = 7,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "choice"
   )
   public val bar: String? = null,
   unknownFields: ByteString = ByteString.EMPTY

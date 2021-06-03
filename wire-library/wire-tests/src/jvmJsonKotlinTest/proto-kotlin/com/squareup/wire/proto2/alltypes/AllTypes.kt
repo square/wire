@@ -573,19 +573,22 @@ public class AllTypes(
   ext_pack_nested_enum: List<NestedEnum> = emptyList(),
   @field:WireField(
     tag = 601,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_string: String? = null,
   @field:WireField(
     tag = 602,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32"
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_int32: Int? = null,
   @field:WireField(
     tag = 603,
-    adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedMessage#ADAPTER"
+    adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
+    oneofName = "choice"
   )
   @JvmField
   public val oneof_nested_message: NestedMessage? = null,
