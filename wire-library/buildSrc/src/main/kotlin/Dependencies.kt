@@ -15,7 +15,7 @@ object versions {
   val kotlinpoet = "1.8.0"
   val jsr305 = "3.0.2"
   val kotlin = "1.4.10"
-  val okio = "3.0.0-alpha.3"
+  val okio = "3.0.0-alpha.6"
   val okhttp = "4.2.2"
   val moshi = "1.11.0"
   val protobuf = "3.14.0"
@@ -53,7 +53,6 @@ object deps {
     val jvm = "com.squareup.okio:okio:${versions.okio}"
     val fakefilesystem = "com.squareup.okio:okio-fakefilesystem:${versions.okio}"
     val multiplatform = "com.squareup.okio:okio-multiplatform:${versions.okio}"
-    val zipfilesystem = "com.squareup.okio:okio-zipfilesystem:${versions.okio}"
   }
 
   val jsr305 = "com.google.code.findbugs:jsr305:${versions.jsr305}"

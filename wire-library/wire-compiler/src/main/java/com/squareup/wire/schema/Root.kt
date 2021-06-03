@@ -20,11 +20,11 @@ import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.java.internal.ProfileParser
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoParser
-import java.io.IOException
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
-import okio.zipfilesystem.ZipFileSystem.Companion.openZip
+import okio.openZip
+import java.io.IOException
 
 internal sealed class Root {
   abstract val base: String?
@@ -86,7 +86,8 @@ private fun Path.roots(fileSystem: FileSystem, closer: Closer, location: Locatio
         listOf(DirectoryRoot(location.path, sourceFs, "/".toPath()))
       } catch (_: IOException) {
         throw IllegalArgumentException(
-          "expected a directory, archive (.zip / .jar / etc.), or .proto: $this")
+          "expected a directory, archive (.zip / .jar / etc.), or .proto: $this"
+        )
       }
     }
   }
