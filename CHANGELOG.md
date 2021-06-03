@@ -1,6 +1,22 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.3
+---------------------
+
+_2021-06-03_
+
+**Kotlin + Java**
+
+ * New: Support for special float literals.
+ * New: Support for Android variants.
+ * New: Add 'nameSuffix' parameter for configuring generated service-class names in Kotlin.
+ * New: Support for glob syntax in srcJar includes.
+ * Fix: Redacted Kotlin scalars now respect nullability.
+ * Update: Update KotlinPoet to `1.8.0`.
+ * Bye: Drop support for emitKotlinxSerialization.
+
+
 Version 4.0.0-alpha.2
 ---------------------
 
