@@ -20,6 +20,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.SchemaLoader
 import com.squareup.wire.testing.UnwantedValueStripper
+import grpc.reflection.v1alpha.ExtensionNumberResponse
 import grpc.reflection.v1alpha.ExtensionRequest
 import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
@@ -127,20 +128,22 @@ internal class GrpcurlProto3InteropTest {
   }
 
   @Test
-  @Ignore("missing file with extension_number 1051 (maybe a dependency?)")
   fun `all_extension_numbers_of_type`() {
     val schema = loadSchema()
-    val extensionsFileDescriptorResponse = "Cg5sb2NhbGhvc3Q6OTA5MBIvCg5sb2NhbGhvc3Q6OTA5MDIdZ29vZ2xlLnByb3RvYnVmLk1ldGhvZE9wdGlvbnMqJwodZ29vZ2xlLnByb3RvYnVmLk1ldGhvZE9wdGlvbnMSBrDKvCKbCA=="
-    val expectedResponse = ServerReflectionResponse.ADAPTER.decode(extensionsFileDescriptorResponse.decodeBase64()!!)
     val response = SchemaReflector(schema).process(
       ServerReflectionRequest(
         all_extension_numbers_of_type = "google.protobuf.MethodOptions",
         host = "localhost:0"
       )
     )
+
     assertThat(response.error_response).isNull()
-    assertThat(response.all_extension_numbers_response)
-      .isEqualTo(expectedResponse.all_extension_numbers_response)
+    assertThat(response.all_extension_numbers_response).isEqualTo(
+      ExtensionNumberResponse(
+        base_type_name = "google.protobuf.MethodOptions",
+        extension_number = listOf(72295728),
+      )
+    )
   }
 
   @Test
