@@ -53,6 +53,10 @@ internal class FileLinker(
       if (sink.add(path)) {
         val fileLinker = linker.getFileLinker(path)
         addImportsRecursive(sink, fileLinker.protoFile.publicImports)
+
+        if (linker.loadExhaustively) {
+          addImportsRecursive(sink, fileLinker.protoFile.imports)
+        }
       }
     }
   }
