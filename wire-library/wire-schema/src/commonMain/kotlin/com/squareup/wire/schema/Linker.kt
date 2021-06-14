@@ -30,11 +30,17 @@ class Linker {
   private val requestedTypes: MutableSet<ProtoType>
   private val requestedFields: MutableSet<Field>
   private val permitPackageCycles: Boolean
+  val loadExhaustively: Boolean
 
   /** Errors accumulated by this load. */
   val errors: ErrorCollector
 
-  constructor(loader: Loader, errors: ErrorCollector, permitPackageCycles: Boolean) {
+  constructor(
+    loader: Loader,
+    errors: ErrorCollector,
+    permitPackageCycles: Boolean,
+    loadExhaustively: Boolean
+  ) {
     this.loader = loader
     this.fileLinkers = mutableMapOf()
     this.fileOptionsQueue = mutableQueueOf()
@@ -44,6 +50,7 @@ class Linker {
     this.requestedFields = mutableSetOf()
     this.errors = errors
     this.permitPackageCycles = permitPackageCycles
+    this.loadExhaustively = loadExhaustively
   }
 
   private constructor(enclosing: Linker, additionalContext: Any) {
@@ -56,6 +63,7 @@ class Linker {
     this.requestedFields = enclosing.requestedFields
     this.errors = enclosing.errors.at(additionalContext)
     this.permitPackageCycles = false
+    this.loadExhaustively = enclosing.loadExhaustively
   }
 
   /** Returns a linker for [path], loading the file if necessary. */
@@ -130,7 +138,7 @@ class Linker {
 
     val result = mutableListOf<ProtoFile>()
     for (fileLinker in fileLinkers.values) {
-      if (sourceFiles.contains(fileLinker)) {
+      if (loadExhaustively || sourceFiles.contains(fileLinker)) {
         result.add(fileLinker.protoFile)
         continue
       }

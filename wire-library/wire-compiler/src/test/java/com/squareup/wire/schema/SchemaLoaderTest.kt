@@ -445,4 +445,54 @@ class SchemaLoaderTest {
         Location.get("/i/j.zip", "k/l/m/android.wire")
     )
   }
+
+  @Test
+  fun exhaustiveLoad() {
+    fs.add(
+      "colors/src/main/proto/squareup/colors/red.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |import "squareup/colors/orange.proto";
+        |message Red {
+        |  optional Orange orange = 1;
+        |}
+        """.trimMargin()
+    )
+    fs.add(
+      "colors/src/main/proto/squareup/colors/orange.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |import "squareup/colors/yellow.proto";
+        |message Orange {
+        |  optional Yellow yellow = 1;
+        |}
+        """.trimMargin()
+    )
+    fs.add(
+      "colors/src/main/proto/squareup/colors/yellow.proto", """
+        |syntax = "proto2";
+        |package squareup.colors;
+        |// import "squareup/colors/green.proto";
+        |message Yellow {
+        |  // optional Green green = 1;
+        |}
+        """.trimMargin()
+    )
+
+    val schema = SchemaLoader(fs).use { loader ->
+      loader.loadExhaustively = true
+      loader.initRoots(
+        sourcePath = listOf(
+          Location.get("colors/src/main/proto", "squareup/colors/red.proto")
+        ),
+        protoPath = listOf(
+          Location.get("colors/src/main/proto")
+        )
+      )
+      loader.loadSchema()
+    }
+    assertThat(schema.getType("squareup.colors.Red")).isNotNull()
+    assertThat(schema.getType("squareup.colors.Orange")).isNotNull()
+    assertThat(schema.getType("squareup.colors.Yellow")).isNotNull()
+  }
 }
