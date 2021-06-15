@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.4
+---------------------
+
+_2021-06-15_
+
+**Kotlin + Java**
+
+ * New: Define `oneofName` in `@WireField`.
+ * New: Option in `SchemaLoader` to exhaustively load imported files. By default we only load what's
+   immediately necessary to generate code; this new option loads everything reachable into the
+   schema.
+
+
 Version 4.0.0-alpha.3
 ---------------------
 
