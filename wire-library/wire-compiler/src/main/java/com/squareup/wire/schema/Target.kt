@@ -60,8 +60,21 @@ sealed class Target : Serializable {
 
   /**
    * Directory where this target will write its output.
+   *
+   * In Gradle, when this class is serialized, this is relative to the project to improve build
+   * cacheability. Callers must use [copyTarget] to resolve it to real path prior to use.
    */
   abstract val outDirectory: String
+
+  /**
+   * Returns a new Target object that is a copy of this one, but with the given fields updated.
+   */
+  abstract fun copyTarget(
+    includes: List<String> = this.includes,
+    excludes: List<String> = this.excludes,
+    exclusive: Boolean = this.exclusive,
+    outDirectory: String = this.outDirectory,
+  ): Target
 
   /**
    * @param moduleName The module name for source generation which should correspond to a
@@ -251,6 +264,20 @@ data class JavaTarget(
       }
     }
   }
+
+  override fun copyTarget(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String
+  ): Target {
+    return copy(
+        includes = includes,
+        excludes = excludes,
+        exclusive = exclusive,
+        outDirectory = outDirectory,
+    )
+  }
 }
 
 /** Generate `.kt` sources. */
@@ -397,6 +424,20 @@ data class KotlinTarget(
       }
     }
   }
+
+  override fun copyTarget(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String
+  ): Target {
+    return copy(
+        includes = includes,
+        excludes = excludes,
+        exclusive = exclusive,
+        outDirectory = outDirectory,
+    )
+  }
 }
 
 data class SwiftTarget(
@@ -453,6 +494,20 @@ data class SwiftTarget(
       override fun handle(service: Service) = emptyList<Path>()
       override fun handle(extend: Extend, field: Field): Path? = null
     }
+  }
+
+  override fun copyTarget(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String
+  ): Target {
+    return copy(
+        includes = includes,
+        excludes = excludes,
+        exclusive = exclusive,
+        outDirectory = outDirectory,
+    )
   }
 }
 
@@ -513,6 +568,17 @@ data class ProtoTarget(
   }
 
   private fun ProtoFile.isEmpty() = types.isEmpty() && services.isEmpty() && extendList.isEmpty()
+
+  override fun copyTarget(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String
+  ): Target {
+    return copy(
+        outDirectory = outDirectory,
+    )
+  }
 }
 
 /** Omit code generation for these sources. Use this for a dry-run. */
@@ -546,6 +612,19 @@ data class NullTarget(
         return null
       }
     }
+  }
+
+
+  override fun copyTarget(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String
+  ): Target {
+    return copy(
+        includes = includes,
+        excludes = excludes,
+    )
   }
 }
 
@@ -590,6 +669,20 @@ data class CustomTargetBeta(
             "$customHandlerClass does not implement CustomHandlerBeta")
 
     return instance.newHandler(schema, fs, outDirectory, logger, profileLoader)
+  }
+
+  override fun copyTarget(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String
+  ): Target {
+    return copy(
+        includes = includes,
+        excludes = excludes,
+        exclusive = exclusive,
+        outDirectory = outDirectory,
+    )
   }
 }
 

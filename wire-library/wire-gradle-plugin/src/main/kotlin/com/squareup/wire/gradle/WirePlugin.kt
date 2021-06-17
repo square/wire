@@ -147,13 +147,13 @@ class WirePlugin : Plugin<Project> {
       val targets = outputs.map { output ->
         output.toTarget(
           if (output.out == null) {
-            source.outputDir(project).path
+            project.relativePath(source.outputDir(project))
           } else {
-            project.file(output.out!!).path
+            output.out!!
           }
         )
       }
-      val generatedSourcesDirectories = targets.map { target -> File(target.outDirectory) }.toSet()
+      val generatedSourcesDirectories = targets.map { target -> project.file(target.outDirectory) }.toSet()
 
       // Both the JavaCompile and KotlinCompile tasks might already have been configured by now.
       // Even though we add the Wire output directories into the corresponding sourceSets, the
@@ -193,7 +193,7 @@ class WirePlugin : Plugin<Project> {
           protoSourceInput.debug(task.logger)
           protoPathInput.debug(task.logger)
         }
-        task.outputDirectories = targets.map { target -> File(target.outDirectory) }
+        task.outputDirectories = targets.map { target -> project.file(target.outDirectory) }
         task.sourceInput.set(protoSourceInput.toLocations(project.providers))
         task.protoInput.set(protoPathInput.toLocations(project.providers))
         task.roots = extension.roots.toList()
