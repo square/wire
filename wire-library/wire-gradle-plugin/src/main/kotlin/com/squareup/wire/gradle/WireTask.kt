@@ -84,7 +84,7 @@ open class WireTask : SourceTask() {
   var permitPackageCycles: Boolean = false
 
   @Input
-  lateinit var inputFiles: List<File>
+  lateinit var inputFiles: List<String>
 
   @TaskAction
   fun generateWireFiles() {
@@ -118,8 +118,9 @@ open class WireTask : SourceTask() {
     }
 
     inputFiles.forEach {
-      check(it.exists()) {
-        "Invalid path string: \"${it.path}\". Path does not exist."
+      val fileObj = project.file(it)
+      check(fileObj.exists()) {
+        "Invalid path string: \"${fileObj.path}\". Path does not exist."
       }
     }
 

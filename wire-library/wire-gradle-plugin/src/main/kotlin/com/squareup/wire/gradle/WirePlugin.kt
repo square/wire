@@ -137,9 +137,9 @@ class WirePlugin : Plugin<Project> {
         protoSourceInput.addPaths(project, defaultSourceFolders(source))
       }
 
-      val inputFiles = mutableListOf<File>()
-      inputFiles.addAll(protoSourceInput.inputFiles)
-      inputFiles.addAll(protoPathInput.inputFiles)
+      val inputFiles = mutableListOf<String>()
+      inputFiles.addAll(protoSourceInput.inputFiles.map { project.relativePath(it) })
+      inputFiles.addAll(protoPathInput.inputFiles.map { project.relativePath(it) })
 
       val projectDependencies = (protoSourceInput.dependencies + protoPathInput.dependencies)
         .filterIsInstance<ProjectDependency>()
