@@ -133,13 +133,13 @@ open class WireTask : SourceTask() {
       sinceVersion = sinceVersion,
       untilVersion = untilVersion,
       onlyVersion = onlyVersion,
-      targets = targets,
+      targets = targets.map { target -> target.copyTarget(outDirectory = project.file(target.outDirectory).path) },
       permitPackageCycles = permitPackageCycles
     )
 
     for (target in targets) {
-      if (target.outDirectory.startsWith(project.buildDir.path)) {
-        File(target.outDirectory).deleteRecursively()
+      if (project.file(target.outDirectory).path.startsWith(project.buildDir.path)) {
+        project.file(target.outDirectory).deleteRecursively()
       }
     }
     wireRun.execute(logger = GradleWireLogger)
