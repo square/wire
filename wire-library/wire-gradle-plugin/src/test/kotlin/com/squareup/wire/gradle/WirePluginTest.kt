@@ -1007,6 +1007,47 @@ class WirePluginTest {
     }
   }
 
+  @Test
+  fun cacheRelocation() {
+    // Remove the build cache folder if it is leftover from a previous run
+    val buildCacheDir = File("src/test/projects/.relocation-build-cache")
+    if (buildCacheDir.exists()) {
+        buildCacheDir.deleteRecursively()
+    }
+    assertThat(buildCacheDir.exists()).isFalse
+
+    val generatedProto = "build/generated/source/wire/com/squareup/geology/Period.kt"
+
+    val fixtureRoot = File("src/test/projects/cache-relocation-1")
+    val result = gradleRunner.runFixture(fixtureRoot) {
+        withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+    }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output).contains("Writing com.squareup.geology.Period")
+    assertThat(result.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    assertThat(result.task(":generateProtos")?.outcome).isEqualTo(TaskOutcome.SUCCESS)
+    assertThat(File(fixtureRoot, generatedProto)).exists()
+
+    // After the first project, the build cache should exist. It will get used for the second
+    // project.
+    assertThat(buildCacheDir.exists()).isTrue
+
+    val relocatedRoot = File("src/test/projects/cache-relocation-2")
+    val relocatedResult = gradleRunner.runFixture(relocatedRoot) {
+        withArguments("generateProtos", "--build-cache", "--stacktrace", "--info").build()
+    }
+
+    assertThat(relocatedResult.task(":generateProtos")).isNotNull
+    assertThat(relocatedResult.output).doesNotContain("Writing com.squareup.geology.Period")
+    assertThat(relocatedResult.task(":generateMainProtos")?.outcome).isEqualTo(TaskOutcome.FROM_CACHE)
+    assertThat(relocatedResult.task(":generateProtos")?.outcome).isEqualTo(TaskOutcome.UP_TO_DATE)
+    assertThat(File(relocatedRoot, generatedProto)).exists()
+
+    // Clean up on success; leave the dir on failure for easier debugging.
+    buildCacheDir.deleteRecursively()
+  }
+
   private fun GradleRunner.runFixture(
     root: File,
     action: GradleRunner.() -> BuildResult
