@@ -387,6 +387,27 @@ public class AllTypes(
   map_string_string: Map<String, String> = emptyMap(),
   map_string_message: Map<String, NestedMessage> = emptyMap(),
   map_string_enum: Map<String, NestedEnum> = emptyMap(),
+  @field:WireField(
+    tag = 601,
+    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+    oneofName = "choice"
+  )
+  @JvmField
+  public val oneof_string: String? = null,
+  @field:WireField(
+    tag = 602,
+    adapter = "com.squareup.wire.ProtoAdapter#INT32",
+    oneofName = "choice"
+  )
+  @JvmField
+  public val oneof_int32: Int? = null,
+  @field:WireField(
+    tag = 603,
+    adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
+    oneofName = "choice"
+  )
+  @JvmField
+  public val oneof_nested_message: NestedMessage? = null,
   /**
    * Extension source: all_types_proto2.proto
    */
@@ -571,27 +592,6 @@ public class AllTypes(
   ext_pack_float: List<Float> = emptyList(),
   ext_pack_double: List<Double> = emptyList(),
   ext_pack_nested_enum: List<NestedEnum> = emptyList(),
-  @field:WireField(
-    tag = 601,
-    adapter = "com.squareup.wire.ProtoAdapter#STRING",
-    oneofName = "choice"
-  )
-  @JvmField
-  public val oneof_string: String? = null,
-  @field:WireField(
-    tag = 602,
-    adapter = "com.squareup.wire.ProtoAdapter#INT32",
-    oneofName = "choice"
-  )
-  @JvmField
-  public val oneof_int32: Int? = null,
-  @field:WireField(
-    tag = 603,
-    adapter = "com.squareup.wire.proto2.alltypes.AllTypes${'$'}NestedMessage#ADAPTER",
-    oneofName = "choice"
-  )
-  @JvmField
-  public val oneof_nested_message: NestedMessage? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<AllTypes, AllTypes.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -1316,6 +1316,9 @@ public class AllTypes(
     builder.map_string_string = map_string_string
     builder.map_string_message = map_string_message
     builder.map_string_enum = map_string_enum
+    builder.oneof_string = oneof_string
+    builder.oneof_int32 = oneof_int32
+    builder.oneof_nested_message = oneof_nested_message
     builder.ext_opt_int32 = ext_opt_int32
     builder.ext_opt_uint32 = ext_opt_uint32
     builder.ext_opt_sint32 = ext_opt_sint32
@@ -1364,9 +1367,6 @@ public class AllTypes(
     builder.ext_pack_float = ext_pack_float
     builder.ext_pack_double = ext_pack_double
     builder.ext_pack_nested_enum = ext_pack_nested_enum
-    builder.oneof_string = oneof_string
-    builder.oneof_int32 = oneof_int32
-    builder.oneof_nested_message = oneof_nested_message
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -1460,6 +1460,9 @@ public class AllTypes(
     if (map_string_string != other.map_string_string) return false
     if (map_string_message != other.map_string_message) return false
     if (map_string_enum != other.map_string_enum) return false
+    if (oneof_string != other.oneof_string) return false
+    if (oneof_int32 != other.oneof_int32) return false
+    if (oneof_nested_message != other.oneof_nested_message) return false
     if (ext_opt_int32 != other.ext_opt_int32) return false
     if (ext_opt_uint32 != other.ext_opt_uint32) return false
     if (ext_opt_sint32 != other.ext_opt_sint32) return false
@@ -1508,9 +1511,6 @@ public class AllTypes(
     if (ext_pack_float != other.ext_pack_float) return false
     if (ext_pack_double != other.ext_pack_double) return false
     if (ext_pack_nested_enum != other.ext_pack_nested_enum) return false
-    if (oneof_string != other.oneof_string) return false
-    if (oneof_int32 != other.oneof_int32) return false
-    if (oneof_nested_message != other.oneof_nested_message) return false
     return true
   }
 
@@ -1603,6 +1603,9 @@ public class AllTypes(
       result = result * 37 + map_string_string.hashCode()
       result = result * 37 + map_string_message.hashCode()
       result = result * 37 + map_string_enum.hashCode()
+      result = result * 37 + (oneof_string?.hashCode() ?: 0)
+      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
+      result = result * 37 + (oneof_nested_message?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_int32?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_uint32?.hashCode() ?: 0)
       result = result * 37 + (ext_opt_sint32?.hashCode() ?: 0)
@@ -1651,9 +1654,6 @@ public class AllTypes(
       result = result * 37 + ext_pack_float.hashCode()
       result = result * 37 + ext_pack_double.hashCode()
       result = result * 37 + ext_pack_nested_enum.hashCode()
-      result = result * 37 + (oneof_string?.hashCode() ?: 0)
-      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
-      result = result * 37 + (oneof_nested_message?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -1746,6 +1746,9 @@ public class AllTypes(
     if (map_string_string.isNotEmpty()) result += """map_string_string=$map_string_string"""
     if (map_string_message.isNotEmpty()) result += """map_string_message=$map_string_message"""
     if (map_string_enum.isNotEmpty()) result += """map_string_enum=$map_string_enum"""
+    if (oneof_string != null) result += """oneof_string=${sanitize(oneof_string)}"""
+    if (oneof_int32 != null) result += """oneof_int32=$oneof_int32"""
+    if (oneof_nested_message != null) result += """oneof_nested_message=$oneof_nested_message"""
     if (ext_opt_int32 != null) result += """ext_opt_int32=$ext_opt_int32"""
     if (ext_opt_uint32 != null) result += """ext_opt_uint32=$ext_opt_uint32"""
     if (ext_opt_sint32 != null) result += """ext_opt_sint32=$ext_opt_sint32"""
@@ -1797,9 +1800,6 @@ public class AllTypes(
     if (ext_pack_double.isNotEmpty()) result += """ext_pack_double=$ext_pack_double"""
     if (ext_pack_nested_enum.isNotEmpty()) result +=
         """ext_pack_nested_enum=$ext_pack_nested_enum"""
-    if (oneof_string != null) result += """oneof_string=${sanitize(oneof_string)}"""
-    if (oneof_int32 != null) result += """oneof_int32=$oneof_int32"""
-    if (oneof_nested_message != null) result += """oneof_nested_message=$oneof_nested_message"""
     return result.joinToString(prefix = "AllTypes{", separator = ", ", postfix = "}")
   }
 
@@ -1889,6 +1889,9 @@ public class AllTypes(
     map_string_string: Map<String, String> = this.map_string_string,
     map_string_message: Map<String, NestedMessage> = this.map_string_message,
     map_string_enum: Map<String, NestedEnum> = this.map_string_enum,
+    oneof_string: String? = this.oneof_string,
+    oneof_int32: Int? = this.oneof_int32,
+    oneof_nested_message: NestedMessage? = this.oneof_nested_message,
     ext_opt_int32: Int? = this.ext_opt_int32,
     ext_opt_uint32: Int? = this.ext_opt_uint32,
     ext_opt_sint32: Int? = this.ext_opt_sint32,
@@ -1937,9 +1940,6 @@ public class AllTypes(
     ext_pack_float: List<Float> = this.ext_pack_float,
     ext_pack_double: List<Double> = this.ext_pack_double,
     ext_pack_nested_enum: List<NestedEnum> = this.ext_pack_nested_enum,
-    oneof_string: String? = this.oneof_string,
-    oneof_int32: Int? = this.oneof_int32,
-    oneof_nested_message: NestedMessage? = this.oneof_nested_message,
     unknownFields: ByteString = this.unknownFields
   ): AllTypes = AllTypes(opt_int32, opt_uint32, opt_sint32, opt_fixed32, opt_sfixed32, opt_int64,
       opt_uint64, opt_sint64, opt_fixed64, opt_sfixed64, opt_bool, opt_float, opt_double,
@@ -1954,17 +1954,17 @@ public class AllTypes(
       default_fixed32, default_sfixed32, default_int64, default_uint64, default_sint64,
       default_fixed64, default_sfixed64, default_bool, default_float, default_double,
       default_string, default_bytes, default_nested_enum, map_int32_int32, map_string_string,
-      map_string_message, map_string_enum, ext_opt_int32, ext_opt_uint32, ext_opt_sint32,
-      ext_opt_fixed32, ext_opt_sfixed32, ext_opt_int64, ext_opt_uint64, ext_opt_sint64,
-      ext_opt_fixed64, ext_opt_sfixed64, ext_opt_bool, ext_opt_float, ext_opt_double,
-      ext_opt_string, ext_opt_bytes, ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32,
-      ext_rep_uint32, ext_rep_sint32, ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64,
-      ext_rep_uint64, ext_rep_sint64, ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool,
-      ext_rep_float, ext_rep_double, ext_rep_string, ext_rep_bytes, ext_rep_nested_enum,
-      ext_rep_nested_message, ext_pack_int32, ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32,
-      ext_pack_sfixed32, ext_pack_int64, ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64,
-      ext_pack_sfixed64, ext_pack_bool, ext_pack_float, ext_pack_double, ext_pack_nested_enum,
-      oneof_string, oneof_int32, oneof_nested_message, unknownFields)
+      map_string_message, map_string_enum, oneof_string, oneof_int32, oneof_nested_message,
+      ext_opt_int32, ext_opt_uint32, ext_opt_sint32, ext_opt_fixed32, ext_opt_sfixed32,
+      ext_opt_int64, ext_opt_uint64, ext_opt_sint64, ext_opt_fixed64, ext_opt_sfixed64,
+      ext_opt_bool, ext_opt_float, ext_opt_double, ext_opt_string, ext_opt_bytes,
+      ext_opt_nested_enum, ext_opt_nested_message, ext_rep_int32, ext_rep_uint32, ext_rep_sint32,
+      ext_rep_fixed32, ext_rep_sfixed32, ext_rep_int64, ext_rep_uint64, ext_rep_sint64,
+      ext_rep_fixed64, ext_rep_sfixed64, ext_rep_bool, ext_rep_float, ext_rep_double,
+      ext_rep_string, ext_rep_bytes, ext_rep_nested_enum, ext_rep_nested_message, ext_pack_int32,
+      ext_pack_uint32, ext_pack_sint32, ext_pack_fixed32, ext_pack_sfixed32, ext_pack_int64,
+      ext_pack_uint64, ext_pack_sint64, ext_pack_fixed64, ext_pack_sfixed64, ext_pack_bool,
+      ext_pack_float, ext_pack_double, ext_pack_nested_enum, unknownFields)
 
   public class Builder : Message.Builder<AllTypes, Builder>() {
     @JvmField
@@ -2223,6 +2223,15 @@ public class AllTypes(
     public var map_string_enum: Map<String, NestedEnum> = emptyMap()
 
     @JvmField
+    public var oneof_string: String? = null
+
+    @JvmField
+    public var oneof_int32: Int? = null
+
+    @JvmField
+    public var oneof_nested_message: NestedMessage? = null
+
+    @JvmField
     public var ext_opt_int32: Int? = null
 
     @JvmField
@@ -2365,15 +2374,6 @@ public class AllTypes(
 
     @JvmField
     public var ext_pack_nested_enum: List<NestedEnum> = emptyList()
-
-    @JvmField
-    public var oneof_string: String? = null
-
-    @JvmField
-    public var oneof_int32: Int? = null
-
-    @JvmField
-    public var oneof_nested_message: NestedMessage? = null
 
     public fun opt_int32(opt_int32: Int?): Builder {
       this.opt_int32 = opt_int32
@@ -3211,6 +3211,9 @@ public class AllTypes(
       map_string_string = map_string_string,
       map_string_message = map_string_message,
       map_string_enum = map_string_enum,
+      oneof_string = oneof_string,
+      oneof_int32 = oneof_int32,
+      oneof_nested_message = oneof_nested_message,
       ext_opt_int32 = ext_opt_int32,
       ext_opt_uint32 = ext_opt_uint32,
       ext_opt_sint32 = ext_opt_sint32,
@@ -3259,9 +3262,6 @@ public class AllTypes(
       ext_pack_float = ext_pack_float,
       ext_pack_double = ext_pack_double,
       ext_pack_nested_enum = ext_pack_nested_enum,
-      oneof_string = oneof_string,
-      oneof_int32 = oneof_int32,
-      oneof_nested_message = oneof_nested_message,
       unknownFields = buildUnknownFields()
     )
   }
@@ -3410,6 +3410,9 @@ public class AllTypes(
         size += map_string_stringAdapter.encodedSizeWithTag(502, value.map_string_string)
         size += map_string_messageAdapter.encodedSizeWithTag(503, value.map_string_message)
         size += map_string_enumAdapter.encodedSizeWithTag(504, value.map_string_enum)
+        size += ProtoAdapter.STRING.encodedSizeWithTag(601, value.oneof_string)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(602, value.oneof_int32)
+        size += NestedMessage.ADAPTER.encodedSizeWithTag(603, value.oneof_nested_message)
         size += ProtoAdapter.INT32.encodedSizeWithTag(1001, value.ext_opt_int32)
         size += ProtoAdapter.UINT32.encodedSizeWithTag(1002, value.ext_opt_uint32)
         size += ProtoAdapter.SINT32.encodedSizeWithTag(1003, value.ext_opt_sint32)
@@ -3459,9 +3462,6 @@ public class AllTypes(
         size += ProtoAdapter.FLOAT.asPacked().encodedSizeWithTag(1212, value.ext_pack_float)
         size += ProtoAdapter.DOUBLE.asPacked().encodedSizeWithTag(1213, value.ext_pack_double)
         size += NestedEnum.ADAPTER.asPacked().encodedSizeWithTag(1216, value.ext_pack_nested_enum)
-        size += ProtoAdapter.STRING.encodedSizeWithTag(601, value.oneof_string)
-        size += ProtoAdapter.INT32.encodedSizeWithTag(602, value.oneof_int32)
-        size += NestedMessage.ADAPTER.encodedSizeWithTag(603, value.oneof_nested_message)
         return size
       }
 
@@ -3691,6 +3691,9 @@ public class AllTypes(
         val map_string_string = mutableMapOf<String, String>()
         val map_string_message = mutableMapOf<String, NestedMessage>()
         val map_string_enum = mutableMapOf<String, NestedEnum>()
+        var oneof_string: String? = null
+        var oneof_int32: Int? = null
+        var oneof_nested_message: NestedMessage? = null
         var ext_opt_int32: Int? = null
         var ext_opt_uint32: Int? = null
         var ext_opt_sint32: Int? = null
@@ -3739,9 +3742,6 @@ public class AllTypes(
         val ext_pack_float = mutableListOf<Float>()
         val ext_pack_double = mutableListOf<Double>()
         val ext_pack_nested_enum = mutableListOf<NestedEnum>()
-        var oneof_string: String? = null
-        var oneof_int32: Int? = null
-        var oneof_nested_message: NestedMessage? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> opt_int32 = ProtoAdapter.INT32.decode(reader)
@@ -3849,6 +3849,9 @@ public class AllTypes(
             502 -> map_string_string.putAll(map_string_stringAdapter.decode(reader))
             503 -> map_string_message.putAll(map_string_messageAdapter.decode(reader))
             504 -> map_string_enum.putAll(map_string_enumAdapter.decode(reader))
+            601 -> oneof_string = ProtoAdapter.STRING.decode(reader)
+            602 -> oneof_int32 = ProtoAdapter.INT32.decode(reader)
+            603 -> oneof_nested_message = NestedMessage.ADAPTER.decode(reader)
             1001 -> ext_opt_int32 = ProtoAdapter.INT32.decode(reader)
             1002 -> ext_opt_uint32 = ProtoAdapter.UINT32.decode(reader)
             1003 -> ext_opt_sint32 = ProtoAdapter.SINT32.decode(reader)
@@ -3909,9 +3912,6 @@ public class AllTypes(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
-            601 -> oneof_string = ProtoAdapter.STRING.decode(reader)
-            602 -> oneof_int32 = ProtoAdapter.INT32.decode(reader)
-            603 -> oneof_nested_message = NestedMessage.ADAPTER.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -4003,6 +4003,9 @@ public class AllTypes(
           map_string_string = map_string_string,
           map_string_message = map_string_message,
           map_string_enum = map_string_enum,
+          oneof_string = oneof_string,
+          oneof_int32 = oneof_int32,
+          oneof_nested_message = oneof_nested_message,
           ext_opt_int32 = ext_opt_int32,
           ext_opt_uint32 = ext_opt_uint32,
           ext_opt_sint32 = ext_opt_sint32,
@@ -4051,9 +4054,6 @@ public class AllTypes(
           ext_pack_float = ext_pack_float,
           ext_pack_double = ext_pack_double,
           ext_pack_nested_enum = ext_pack_nested_enum,
-          oneof_string = oneof_string,
-          oneof_int32 = oneof_int32,
-          oneof_nested_message = oneof_nested_message,
           unknownFields = unknownFields
         )
       }
@@ -4063,9 +4063,9 @@ public class AllTypes(
         req_nested_message = NestedMessage.ADAPTER.redact(value.req_nested_message),
         rep_nested_message = value.rep_nested_message.redactElements(NestedMessage.ADAPTER),
         map_string_message = value.map_string_message.redactElements(NestedMessage.ADAPTER),
+        oneof_nested_message = value.oneof_nested_message?.let(NestedMessage.ADAPTER::redact),
         ext_opt_nested_message = value.ext_opt_nested_message?.let(NestedMessage.ADAPTER::redact),
         ext_rep_nested_message = value.ext_rep_nested_message.redactElements(NestedMessage.ADAPTER),
-        oneof_nested_message = value.oneof_nested_message?.let(NestedMessage.ADAPTER::redact),
         unknownFields = ByteString.EMPTY
       )
     }

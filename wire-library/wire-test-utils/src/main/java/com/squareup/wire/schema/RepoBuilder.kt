@@ -23,12 +23,12 @@ import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
-import java.io.File
-import java.io.IOException
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 import okio.source
+import java.io.File
+import java.io.IOException
 
 /**
  * Builds a repository of `.proto` and `.wire` files to create schemas, profiles, and adapters for
@@ -117,12 +117,14 @@ class RepoBuilder {
 
   fun generateKotlin(
     typeName: String,
-    profileName: String? = null
+    profileName: String? = null,
+    boxOneOfsMinSize: Int = 5_000,
   ): String {
     val schema = schema()
     val kotlinGenerator = KotlinGenerator(
-        schema,
-        profile = profile(profileName),
+      schema,
+      profile = profile(profileName),
+      boxOneOfsMinSize = boxOneOfsMinSize
     )
     val type = schema.getType(typeName)!!
     val typeSpec = kotlinGenerator.generateType(type)

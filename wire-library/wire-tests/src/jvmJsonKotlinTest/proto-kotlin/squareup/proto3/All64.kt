@@ -78,11 +78,6 @@ public class All64(
   pack_sint64: List<Long> = emptyList(),
   pack_fixed64: List<Long> = emptyList(),
   pack_sfixed64: List<Long> = emptyList(),
-  map_int64_int64: Map<Long, Long> = emptyMap(),
-  map_int64_uint64: Map<Long, Long> = emptyMap(),
-  map_int64_sint64: Map<Long, Long> = emptyMap(),
-  map_int64_fixed64: Map<Long, Long> = emptyMap(),
-  map_int64_sfixed64: Map<Long, Long> = emptyMap(),
   @field:WireField(
     tag = 401,
     adapter = "com.squareup.wire.ProtoAdapter#INT64",
@@ -99,6 +94,11 @@ public class All64(
   )
   @JvmField
   public val oneof_sfixed64: Long? = null,
+  map_int64_int64: Map<Long, Long> = emptyMap(),
+  map_int64_uint64: Map<Long, Long> = emptyMap(),
+  map_int64_sint64: Map<Long, Long> = emptyMap(),
+  map_int64_fixed64: Map<Long, Long> = emptyMap(),
+  map_int64_sfixed64: Map<Long, Long> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<All64, All64.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -263,13 +263,13 @@ public class All64(
     builder.pack_sint64 = pack_sint64
     builder.pack_fixed64 = pack_fixed64
     builder.pack_sfixed64 = pack_sfixed64
+    builder.oneof_int64 = oneof_int64
+    builder.oneof_sfixed64 = oneof_sfixed64
     builder.map_int64_int64 = map_int64_int64
     builder.map_int64_uint64 = map_int64_uint64
     builder.map_int64_sint64 = map_int64_sint64
     builder.map_int64_fixed64 = map_int64_fixed64
     builder.map_int64_sfixed64 = map_int64_sfixed64
-    builder.oneof_int64 = oneof_int64
-    builder.oneof_sfixed64 = oneof_sfixed64
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -293,13 +293,13 @@ public class All64(
     if (pack_sint64 != other.pack_sint64) return false
     if (pack_fixed64 != other.pack_fixed64) return false
     if (pack_sfixed64 != other.pack_sfixed64) return false
+    if (oneof_int64 != other.oneof_int64) return false
+    if (oneof_sfixed64 != other.oneof_sfixed64) return false
     if (map_int64_int64 != other.map_int64_int64) return false
     if (map_int64_uint64 != other.map_int64_uint64) return false
     if (map_int64_sint64 != other.map_int64_sint64) return false
     if (map_int64_fixed64 != other.map_int64_fixed64) return false
     if (map_int64_sfixed64 != other.map_int64_sfixed64) return false
-    if (oneof_int64 != other.oneof_int64) return false
-    if (oneof_sfixed64 != other.oneof_sfixed64) return false
     return true
   }
 
@@ -322,13 +322,13 @@ public class All64(
       result = result * 37 + pack_sint64.hashCode()
       result = result * 37 + pack_fixed64.hashCode()
       result = result * 37 + pack_sfixed64.hashCode()
+      result = result * 37 + (oneof_int64?.hashCode() ?: 0)
+      result = result * 37 + (oneof_sfixed64?.hashCode() ?: 0)
       result = result * 37 + map_int64_int64.hashCode()
       result = result * 37 + map_int64_uint64.hashCode()
       result = result * 37 + map_int64_sint64.hashCode()
       result = result * 37 + map_int64_fixed64.hashCode()
       result = result * 37 + map_int64_sfixed64.hashCode()
-      result = result * 37 + (oneof_int64?.hashCode() ?: 0)
-      result = result * 37 + (oneof_sfixed64?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -351,13 +351,13 @@ public class All64(
     if (pack_sint64.isNotEmpty()) result += """pack_sint64=$pack_sint64"""
     if (pack_fixed64.isNotEmpty()) result += """pack_fixed64=$pack_fixed64"""
     if (pack_sfixed64.isNotEmpty()) result += """pack_sfixed64=$pack_sfixed64"""
+    if (oneof_int64 != null) result += """oneof_int64=$oneof_int64"""
+    if (oneof_sfixed64 != null) result += """oneof_sfixed64=$oneof_sfixed64"""
     if (map_int64_int64.isNotEmpty()) result += """map_int64_int64=$map_int64_int64"""
     if (map_int64_uint64.isNotEmpty()) result += """map_int64_uint64=$map_int64_uint64"""
     if (map_int64_sint64.isNotEmpty()) result += """map_int64_sint64=$map_int64_sint64"""
     if (map_int64_fixed64.isNotEmpty()) result += """map_int64_fixed64=$map_int64_fixed64"""
     if (map_int64_sfixed64.isNotEmpty()) result += """map_int64_sfixed64=$map_int64_sfixed64"""
-    if (oneof_int64 != null) result += """oneof_int64=$oneof_int64"""
-    if (oneof_sfixed64 != null) result += """oneof_sfixed64=$oneof_sfixed64"""
     return result.joinToString(prefix = "All64{", separator = ", ", postfix = "}")
   }
 
@@ -377,18 +377,18 @@ public class All64(
     pack_sint64: List<Long> = this.pack_sint64,
     pack_fixed64: List<Long> = this.pack_fixed64,
     pack_sfixed64: List<Long> = this.pack_sfixed64,
+    oneof_int64: Long? = this.oneof_int64,
+    oneof_sfixed64: Long? = this.oneof_sfixed64,
     map_int64_int64: Map<Long, Long> = this.map_int64_int64,
     map_int64_uint64: Map<Long, Long> = this.map_int64_uint64,
     map_int64_sint64: Map<Long, Long> = this.map_int64_sint64,
     map_int64_fixed64: Map<Long, Long> = this.map_int64_fixed64,
     map_int64_sfixed64: Map<Long, Long> = this.map_int64_sfixed64,
-    oneof_int64: Long? = this.oneof_int64,
-    oneof_sfixed64: Long? = this.oneof_sfixed64,
     unknownFields: ByteString = this.unknownFields
   ): All64 = All64(my_int64, my_uint64, my_sint64, my_fixed64, my_sfixed64, rep_int64, rep_uint64,
       rep_sint64, rep_fixed64, rep_sfixed64, pack_int64, pack_uint64, pack_sint64, pack_fixed64,
-      pack_sfixed64, map_int64_int64, map_int64_uint64, map_int64_sint64, map_int64_fixed64,
-      map_int64_sfixed64, oneof_int64, oneof_sfixed64, unknownFields)
+      pack_sfixed64, oneof_int64, oneof_sfixed64, map_int64_int64, map_int64_uint64,
+      map_int64_sint64, map_int64_fixed64, map_int64_sfixed64, unknownFields)
 
   public class Builder : Message.Builder<All64, Builder>() {
     @JvmField
@@ -437,6 +437,12 @@ public class All64(
     public var pack_sfixed64: List<Long> = emptyList()
 
     @JvmField
+    public var oneof_int64: Long? = null
+
+    @JvmField
+    public var oneof_sfixed64: Long? = null
+
+    @JvmField
     public var map_int64_int64: Map<Long, Long> = emptyMap()
 
     @JvmField
@@ -450,12 +456,6 @@ public class All64(
 
     @JvmField
     public var map_int64_sfixed64: Map<Long, Long> = emptyMap()
-
-    @JvmField
-    public var oneof_int64: Long? = null
-
-    @JvmField
-    public var oneof_sfixed64: Long? = null
 
     /**
      * Prefixing so the generated code doesn't rename it weirdly.
@@ -598,13 +598,13 @@ public class All64(
       pack_sint64 = pack_sint64,
       pack_fixed64 = pack_fixed64,
       pack_sfixed64 = pack_sfixed64,
+      oneof_int64 = oneof_int64,
+      oneof_sfixed64 = oneof_sfixed64,
       map_int64_int64 = map_int64_int64,
       map_int64_uint64 = map_int64_uint64,
       map_int64_sint64 = map_int64_sint64,
       map_int64_fixed64 = map_int64_fixed64,
       map_int64_sfixed64 = map_int64_sfixed64,
-      oneof_int64 = oneof_int64,
-      oneof_sfixed64 = oneof_sfixed64,
       unknownFields = buildUnknownFields()
     )
   }
@@ -654,13 +654,13 @@ public class All64(
         size += ProtoAdapter.SINT64.asPacked().encodedSizeWithTag(303, value.pack_sint64)
         size += ProtoAdapter.FIXED64.asPacked().encodedSizeWithTag(304, value.pack_fixed64)
         size += ProtoAdapter.SFIXED64.asPacked().encodedSizeWithTag(305, value.pack_sfixed64)
+        size += ProtoAdapter.INT64.encodedSizeWithTag(401, value.oneof_int64)
+        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(402, value.oneof_sfixed64)
         size += map_int64_int64Adapter.encodedSizeWithTag(501, value.map_int64_int64)
         size += map_int64_uint64Adapter.encodedSizeWithTag(502, value.map_int64_uint64)
         size += map_int64_sint64Adapter.encodedSizeWithTag(503, value.map_int64_sint64)
         size += map_int64_fixed64Adapter.encodedSizeWithTag(504, value.map_int64_fixed64)
         size += map_int64_sfixed64Adapter.encodedSizeWithTag(505, value.map_int64_sfixed64)
-        size += ProtoAdapter.INT64.encodedSizeWithTag(401, value.oneof_int64)
-        size += ProtoAdapter.SFIXED64.encodedSizeWithTag(402, value.oneof_sfixed64)
         return size
       }
 
@@ -707,13 +707,13 @@ public class All64(
         val pack_sint64 = mutableListOf<Long>()
         val pack_fixed64 = mutableListOf<Long>()
         val pack_sfixed64 = mutableListOf<Long>()
+        var oneof_int64: Long? = null
+        var oneof_sfixed64: Long? = null
         val map_int64_int64 = mutableMapOf<Long, Long>()
         val map_int64_uint64 = mutableMapOf<Long, Long>()
         val map_int64_sint64 = mutableMapOf<Long, Long>()
         val map_int64_fixed64 = mutableMapOf<Long, Long>()
         val map_int64_sfixed64 = mutableMapOf<Long, Long>()
-        var oneof_int64: Long? = null
-        var oneof_sfixed64: Long? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> my_int64 = ProtoAdapter.INT64.decode(reader)
@@ -731,13 +731,13 @@ public class All64(
             303 -> pack_sint64.add(ProtoAdapter.SINT64.decode(reader))
             304 -> pack_fixed64.add(ProtoAdapter.FIXED64.decode(reader))
             305 -> pack_sfixed64.add(ProtoAdapter.SFIXED64.decode(reader))
+            401 -> oneof_int64 = ProtoAdapter.INT64.decode(reader)
+            402 -> oneof_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
             501 -> map_int64_int64.putAll(map_int64_int64Adapter.decode(reader))
             502 -> map_int64_uint64.putAll(map_int64_uint64Adapter.decode(reader))
             503 -> map_int64_sint64.putAll(map_int64_sint64Adapter.decode(reader))
             504 -> map_int64_fixed64.putAll(map_int64_fixed64Adapter.decode(reader))
             505 -> map_int64_sfixed64.putAll(map_int64_sfixed64Adapter.decode(reader))
-            401 -> oneof_int64 = ProtoAdapter.INT64.decode(reader)
-            402 -> oneof_sfixed64 = ProtoAdapter.SFIXED64.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -757,13 +757,13 @@ public class All64(
           pack_sint64 = pack_sint64,
           pack_fixed64 = pack_fixed64,
           pack_sfixed64 = pack_sfixed64,
+          oneof_int64 = oneof_int64,
+          oneof_sfixed64 = oneof_sfixed64,
           map_int64_int64 = map_int64_int64,
           map_int64_uint64 = map_int64_uint64,
           map_int64_sint64 = map_int64_sint64,
           map_int64_fixed64 = map_int64_fixed64,
           map_int64_sfixed64 = map_int64_sfixed64,
-          oneof_int64 = oneof_int64,
-          oneof_sfixed64 = oneof_sfixed64,
           unknownFields = unknownFields
         )
       }

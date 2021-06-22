@@ -194,10 +194,10 @@ class KotlinGeneratorTest {
     //language=kotlin
     val expected = """
         package routeguide
-        
+
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
-        
+
         /**
          * RouteGuide service interface.
          */
@@ -213,7 +213,7 @@ class KotlinGeneratorTest {
           )
           public fun GetFeature(request: Point): Feature
         }
-        
+
         """.trimIndent()
 
     val repoBuilder = RepoBuilder()
@@ -236,11 +236,11 @@ class KotlinGeneratorTest {
     //language=kotlin
     val expected = """
         package routeguide
-        
+
         import com.squareup.wire.MessageSource
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
-        
+
         /**
          * RouteGuide service interface.
          */
@@ -256,7 +256,7 @@ class KotlinGeneratorTest {
           )
           public fun RecordRoute(request: MessageSource<Point>): RouteSummary
         }
-        
+
         """.trimIndent()
 
     val repoBuilder = RepoBuilder()
@@ -279,12 +279,12 @@ class KotlinGeneratorTest {
     //language=kotlin
     val expected = """
         package routeguide
-        
+
         import com.squareup.wire.MessageSink
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
         import kotlin.Unit
-        
+
         /**
          * RouteGuide service interface.
          */
@@ -300,7 +300,7 @@ class KotlinGeneratorTest {
           )
           public fun ListFeatures(request: Rectangle, response: MessageSink<Feature>): Unit
         }
-        
+
         """.trimIndent()
 
     val repoBuilder = RepoBuilder()
@@ -324,13 +324,13 @@ class KotlinGeneratorTest {
     //language=kotlin
     val expected = """
         package routeguide
-        
+
         import com.squareup.wire.MessageSink
         import com.squareup.wire.MessageSource
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
         import kotlin.Unit
-        
+
         /**
          * RouteGuide service interface.
          */
@@ -346,7 +346,7 @@ class KotlinGeneratorTest {
           )
           public fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>): Unit
         }
-        
+
         """.trimIndent()
 
     val repoBuilder = RepoBuilder()
@@ -373,10 +373,10 @@ class KotlinGeneratorTest {
     //language=kotlin
     val expected = """
         package com.squareup.routeguide
-        
+
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
-        
+
         /**
          * RouteGuide service interface.
          */
@@ -392,7 +392,7 @@ class KotlinGeneratorTest {
           )
           public fun GetFeature(request: Point): Feature
         }
-        
+
         """.trimIndent()
 
     val repoBuilder = RepoBuilder()
@@ -654,10 +654,10 @@ class KotlinGeneratorTest {
     //language=kotlin
     val blockingClientInterface = """
         package routeguide
-        
+
         import com.squareup.wire.GrpcStreamingCall
         import com.squareup.wire.Service
-        
+
         /**
          * RouteGuide service interface.
          */
@@ -667,16 +667,16 @@ class KotlinGeneratorTest {
            */
           public fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
         }
-        
+
         """.trimIndent()
     //language=kotlin
     val blockingClientImplementation = """
         package routeguide
-        
+
         import com.squareup.wire.GrpcClient
         import com.squareup.wire.GrpcMethod
         import com.squareup.wire.GrpcStreamingCall
-        
+
         /**
          * RouteGuide service interface.
          */
@@ -693,18 +693,18 @@ class KotlinGeneratorTest {
               responseAdapter = RouteNote.ADAPTER
           ))
         }
-        
+
         """.trimIndent()
     //language=kotlin
     val blockingServer = """
         package routeguide
-        
+
         import com.squareup.wire.MessageSink
         import com.squareup.wire.MessageSource
         import com.squareup.wire.Service
         import com.squareup.wire.WireRpc
         import kotlin.Unit
-        
+
         /**
          * RouteGuide service interface.
          */
@@ -720,15 +720,15 @@ class KotlinGeneratorTest {
           )
           public fun RouteChat(request: MessageSource<RouteNote>, response: MessageSink<RouteNote>): Unit
         }
-        
+
         """.trimIndent()
     //language=kotlin
     val suspendingClientInterface = """
          package routeguide
-         
+
          import com.squareup.wire.GrpcStreamingCall
          import com.squareup.wire.Service
-         
+
          /**
           * RouteGuide service interface.
           */
@@ -738,16 +738,16 @@ class KotlinGeneratorTest {
             */
            public fun RouteChat(): GrpcStreamingCall<RouteNote, RouteNote>
          }
-         
+
          """.trimIndent()
     //language=kotlin
     val suspendingClientImplementation = """
          package routeguide
-         
+
          import com.squareup.wire.GrpcClient
          import com.squareup.wire.GrpcMethod
          import com.squareup.wire.GrpcStreamingCall
-         
+
          /**
           * RouteGuide service interface.
           */
@@ -764,18 +764,18 @@ class KotlinGeneratorTest {
                responseAdapter = RouteNote.ADAPTER
            ))
          }
-         
+
          """.trimIndent()
     //language=kotlin
     val suspendingServer = """
          package routeguide
-         
+
          import com.squareup.wire.Service
          import com.squareup.wire.WireRpc
          import kotlin.Unit
          import kotlinx.coroutines.channels.ReceiveChannel
          import kotlinx.coroutines.channels.SendChannel
-         
+
          /**
           * RouteGuide service interface.
           */
@@ -792,7 +792,7 @@ class KotlinGeneratorTest {
            public suspend fun RouteChat(request: ReceiveChannel<RouteNote>,
                response: SendChannel<RouteNote>): Unit
          }
-         
+
          """.trimIndent()
 
     val repoBuilder = RepoBuilder()
@@ -1534,12 +1534,98 @@ class KotlinGeneratorTest {
       |      public override fun redact(`value`: RedactedFields): RedactedFields = value.copy(
       |        a = "",
       |        b = 0,
-      |        secret_data = null,
       |        c = null,
       |        d = null,
+      |        secret_data = null,
       |        unknownFields = ByteString.EMPTY
       |      )
     """.trimMargin())
+  }
+
+  @Test
+  fun fieldsDeclarationOrderIsRespected() {
+    val repoBuilder = RepoBuilder()
+      .add("message.proto", """
+        |syntax = "proto2";
+        |message SomeMessage {
+        |  optional string a = 1;
+        |  optional string b = 2;
+        |  oneof choice {
+        |    string c = 3;
+        |    string d = 8;
+        |  }
+        |  optional SecretData secret_data = 4;
+        |  optional string e = 5;
+        |  oneof decision {
+        |    string f = 6;
+        |    string g = 7;
+        |    string h = 9;
+        |  }
+        |  optional string i = 10;
+        |  oneof unique {
+        |    string j = 12;
+        |  }
+        |  optional string k = 11;
+        |}
+        |
+        |message SecretData {}
+        |""".trimMargin()
+      )
+    val code = repoBuilder.generateKotlin("SomeMessage", boxOneOfsMinSize = 3)
+    println(code)
+    assertThat(code).contains("""
+      |public class SomeMessage(
+      |  @field:WireField(
+      |    tag = 1,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      |  )
+      |  public val a: String? = null,
+      |  @field:WireField(
+      |    tag = 2,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      |  )
+      |  public val b: String? = null,
+      |  @field:WireField(
+      |    tag = 3,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    oneofName = "choice"
+      |  )
+      |  public val c: String? = null,
+      |  @field:WireField(
+      |    tag = 8,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    oneofName = "choice"
+      |  )
+      |  public val d: String? = null,
+      |  @field:WireField(
+      |    tag = 4,
+      |    adapter = "SecretData#ADAPTER"
+      |  )
+      |  public val secret_data: SecretData? = null,
+      |  @field:WireField(
+      |    tag = 5,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      |  )
+      |  public val e: String? = null,
+      |  public val decision: OneOf<Decision<*>, *>? = null,
+      |  @field:WireField(
+      |    tag = 10,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      |  )
+      |  public val i: String? = null,
+      |  @field:WireField(
+      |    tag = 12,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      |    oneofName = "unique"
+      |  )
+      |  public val j: String? = null,
+      |  @field:WireField(
+      |    tag = 11,
+      |    adapter = "com.squareup.wire.ProtoAdapter#STRING"
+      |  )
+      |  public val k: String? = null,
+      |  unknownFields: ByteString = ByteString.EMPTY
+      """.trimMargin())
   }
 
   companion object {

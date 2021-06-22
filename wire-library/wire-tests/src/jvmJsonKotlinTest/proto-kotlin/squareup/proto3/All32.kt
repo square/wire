@@ -78,11 +78,6 @@ public class All32(
   pack_sint32: List<Int> = emptyList(),
   pack_fixed32: List<Int> = emptyList(),
   pack_sfixed32: List<Int> = emptyList(),
-  map_int32_int32: Map<Int, Int> = emptyMap(),
-  map_int32_uint32: Map<Int, Int> = emptyMap(),
-  map_int32_sint32: Map<Int, Int> = emptyMap(),
-  map_int32_fixed32: Map<Int, Int> = emptyMap(),
-  map_int32_sfixed32: Map<Int, Int> = emptyMap(),
   @field:WireField(
     tag = 401,
     adapter = "com.squareup.wire.ProtoAdapter#INT32",
@@ -99,6 +94,11 @@ public class All32(
   )
   @JvmField
   public val oneof_sfixed32: Int? = null,
+  map_int32_int32: Map<Int, Int> = emptyMap(),
+  map_int32_uint32: Map<Int, Int> = emptyMap(),
+  map_int32_sint32: Map<Int, Int> = emptyMap(),
+  map_int32_fixed32: Map<Int, Int> = emptyMap(),
+  map_int32_sfixed32: Map<Int, Int> = emptyMap(),
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<All32, All32.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -261,13 +261,13 @@ public class All32(
     builder.pack_sint32 = pack_sint32
     builder.pack_fixed32 = pack_fixed32
     builder.pack_sfixed32 = pack_sfixed32
+    builder.oneof_int32 = oneof_int32
+    builder.oneof_sfixed32 = oneof_sfixed32
     builder.map_int32_int32 = map_int32_int32
     builder.map_int32_uint32 = map_int32_uint32
     builder.map_int32_sint32 = map_int32_sint32
     builder.map_int32_fixed32 = map_int32_fixed32
     builder.map_int32_sfixed32 = map_int32_sfixed32
-    builder.oneof_int32 = oneof_int32
-    builder.oneof_sfixed32 = oneof_sfixed32
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -291,13 +291,13 @@ public class All32(
     if (pack_sint32 != other.pack_sint32) return false
     if (pack_fixed32 != other.pack_fixed32) return false
     if (pack_sfixed32 != other.pack_sfixed32) return false
+    if (oneof_int32 != other.oneof_int32) return false
+    if (oneof_sfixed32 != other.oneof_sfixed32) return false
     if (map_int32_int32 != other.map_int32_int32) return false
     if (map_int32_uint32 != other.map_int32_uint32) return false
     if (map_int32_sint32 != other.map_int32_sint32) return false
     if (map_int32_fixed32 != other.map_int32_fixed32) return false
     if (map_int32_sfixed32 != other.map_int32_sfixed32) return false
-    if (oneof_int32 != other.oneof_int32) return false
-    if (oneof_sfixed32 != other.oneof_sfixed32) return false
     return true
   }
 
@@ -320,13 +320,13 @@ public class All32(
       result = result * 37 + pack_sint32.hashCode()
       result = result * 37 + pack_fixed32.hashCode()
       result = result * 37 + pack_sfixed32.hashCode()
+      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
+      result = result * 37 + (oneof_sfixed32?.hashCode() ?: 0)
       result = result * 37 + map_int32_int32.hashCode()
       result = result * 37 + map_int32_uint32.hashCode()
       result = result * 37 + map_int32_sint32.hashCode()
       result = result * 37 + map_int32_fixed32.hashCode()
       result = result * 37 + map_int32_sfixed32.hashCode()
-      result = result * 37 + (oneof_int32?.hashCode() ?: 0)
-      result = result * 37 + (oneof_sfixed32?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -349,13 +349,13 @@ public class All32(
     if (pack_sint32.isNotEmpty()) result += """pack_sint32=$pack_sint32"""
     if (pack_fixed32.isNotEmpty()) result += """pack_fixed32=$pack_fixed32"""
     if (pack_sfixed32.isNotEmpty()) result += """pack_sfixed32=$pack_sfixed32"""
+    if (oneof_int32 != null) result += """oneof_int32=$oneof_int32"""
+    if (oneof_sfixed32 != null) result += """oneof_sfixed32=$oneof_sfixed32"""
     if (map_int32_int32.isNotEmpty()) result += """map_int32_int32=$map_int32_int32"""
     if (map_int32_uint32.isNotEmpty()) result += """map_int32_uint32=$map_int32_uint32"""
     if (map_int32_sint32.isNotEmpty()) result += """map_int32_sint32=$map_int32_sint32"""
     if (map_int32_fixed32.isNotEmpty()) result += """map_int32_fixed32=$map_int32_fixed32"""
     if (map_int32_sfixed32.isNotEmpty()) result += """map_int32_sfixed32=$map_int32_sfixed32"""
-    if (oneof_int32 != null) result += """oneof_int32=$oneof_int32"""
-    if (oneof_sfixed32 != null) result += """oneof_sfixed32=$oneof_sfixed32"""
     return result.joinToString(prefix = "All32{", separator = ", ", postfix = "}")
   }
 
@@ -375,18 +375,18 @@ public class All32(
     pack_sint32: List<Int> = this.pack_sint32,
     pack_fixed32: List<Int> = this.pack_fixed32,
     pack_sfixed32: List<Int> = this.pack_sfixed32,
+    oneof_int32: Int? = this.oneof_int32,
+    oneof_sfixed32: Int? = this.oneof_sfixed32,
     map_int32_int32: Map<Int, Int> = this.map_int32_int32,
     map_int32_uint32: Map<Int, Int> = this.map_int32_uint32,
     map_int32_sint32: Map<Int, Int> = this.map_int32_sint32,
     map_int32_fixed32: Map<Int, Int> = this.map_int32_fixed32,
     map_int32_sfixed32: Map<Int, Int> = this.map_int32_sfixed32,
-    oneof_int32: Int? = this.oneof_int32,
-    oneof_sfixed32: Int? = this.oneof_sfixed32,
     unknownFields: ByteString = this.unknownFields
   ): All32 = All32(my_int32, my_uint32, my_sint32, my_fixed32, my_sfixed32, rep_int32, rep_uint32,
       rep_sint32, rep_fixed32, rep_sfixed32, pack_int32, pack_uint32, pack_sint32, pack_fixed32,
-      pack_sfixed32, map_int32_int32, map_int32_uint32, map_int32_sint32, map_int32_fixed32,
-      map_int32_sfixed32, oneof_int32, oneof_sfixed32, unknownFields)
+      pack_sfixed32, oneof_int32, oneof_sfixed32, map_int32_int32, map_int32_uint32,
+      map_int32_sint32, map_int32_fixed32, map_int32_sfixed32, unknownFields)
 
   public class Builder : Message.Builder<All32, Builder>() {
     @JvmField
@@ -435,6 +435,12 @@ public class All32(
     public var pack_sfixed32: List<Int> = emptyList()
 
     @JvmField
+    public var oneof_int32: Int? = null
+
+    @JvmField
+    public var oneof_sfixed32: Int? = null
+
+    @JvmField
     public var map_int32_int32: Map<Int, Int> = emptyMap()
 
     @JvmField
@@ -448,12 +454,6 @@ public class All32(
 
     @JvmField
     public var map_int32_sfixed32: Map<Int, Int> = emptyMap()
-
-    @JvmField
-    public var oneof_int32: Int? = null
-
-    @JvmField
-    public var oneof_sfixed32: Int? = null
 
     /**
      * Prefixing so the generated code doesn't rename it weirdly.
@@ -596,13 +596,13 @@ public class All32(
       pack_sint32 = pack_sint32,
       pack_fixed32 = pack_fixed32,
       pack_sfixed32 = pack_sfixed32,
+      oneof_int32 = oneof_int32,
+      oneof_sfixed32 = oneof_sfixed32,
       map_int32_int32 = map_int32_int32,
       map_int32_uint32 = map_int32_uint32,
       map_int32_sint32 = map_int32_sint32,
       map_int32_fixed32 = map_int32_fixed32,
       map_int32_sfixed32 = map_int32_sfixed32,
-      oneof_int32 = oneof_int32,
-      oneof_sfixed32 = oneof_sfixed32,
       unknownFields = buildUnknownFields()
     )
   }
@@ -650,13 +650,13 @@ public class All32(
         size += ProtoAdapter.SINT32.asPacked().encodedSizeWithTag(303, value.pack_sint32)
         size += ProtoAdapter.FIXED32.asPacked().encodedSizeWithTag(304, value.pack_fixed32)
         size += ProtoAdapter.SFIXED32.asPacked().encodedSizeWithTag(305, value.pack_sfixed32)
+        size += ProtoAdapter.INT32.encodedSizeWithTag(401, value.oneof_int32)
+        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(402, value.oneof_sfixed32)
         size += map_int32_int32Adapter.encodedSizeWithTag(501, value.map_int32_int32)
         size += map_int32_uint32Adapter.encodedSizeWithTag(502, value.map_int32_uint32)
         size += map_int32_sint32Adapter.encodedSizeWithTag(503, value.map_int32_sint32)
         size += map_int32_fixed32Adapter.encodedSizeWithTag(504, value.map_int32_fixed32)
         size += map_int32_sfixed32Adapter.encodedSizeWithTag(505, value.map_int32_sfixed32)
-        size += ProtoAdapter.INT32.encodedSizeWithTag(401, value.oneof_int32)
-        size += ProtoAdapter.SFIXED32.encodedSizeWithTag(402, value.oneof_sfixed32)
         return size
       }
 
@@ -703,13 +703,13 @@ public class All32(
         val pack_sint32 = mutableListOf<Int>()
         val pack_fixed32 = mutableListOf<Int>()
         val pack_sfixed32 = mutableListOf<Int>()
+        var oneof_int32: Int? = null
+        var oneof_sfixed32: Int? = null
         val map_int32_int32 = mutableMapOf<Int, Int>()
         val map_int32_uint32 = mutableMapOf<Int, Int>()
         val map_int32_sint32 = mutableMapOf<Int, Int>()
         val map_int32_fixed32 = mutableMapOf<Int, Int>()
         val map_int32_sfixed32 = mutableMapOf<Int, Int>()
-        var oneof_int32: Int? = null
-        var oneof_sfixed32: Int? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> my_int32 = ProtoAdapter.INT32.decode(reader)
@@ -727,13 +727,13 @@ public class All32(
             303 -> pack_sint32.add(ProtoAdapter.SINT32.decode(reader))
             304 -> pack_fixed32.add(ProtoAdapter.FIXED32.decode(reader))
             305 -> pack_sfixed32.add(ProtoAdapter.SFIXED32.decode(reader))
+            401 -> oneof_int32 = ProtoAdapter.INT32.decode(reader)
+            402 -> oneof_sfixed32 = ProtoAdapter.SFIXED32.decode(reader)
             501 -> map_int32_int32.putAll(map_int32_int32Adapter.decode(reader))
             502 -> map_int32_uint32.putAll(map_int32_uint32Adapter.decode(reader))
             503 -> map_int32_sint32.putAll(map_int32_sint32Adapter.decode(reader))
             504 -> map_int32_fixed32.putAll(map_int32_fixed32Adapter.decode(reader))
             505 -> map_int32_sfixed32.putAll(map_int32_sfixed32Adapter.decode(reader))
-            401 -> oneof_int32 = ProtoAdapter.INT32.decode(reader)
-            402 -> oneof_sfixed32 = ProtoAdapter.SFIXED32.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -753,13 +753,13 @@ public class All32(
           pack_sint32 = pack_sint32,
           pack_fixed32 = pack_fixed32,
           pack_sfixed32 = pack_sfixed32,
+          oneof_int32 = oneof_int32,
+          oneof_sfixed32 = oneof_sfixed32,
           map_int32_int32 = map_int32_int32,
           map_int32_uint32 = map_int32_uint32,
           map_int32_sint32 = map_int32_sint32,
           map_int32_fixed32 = map_int32_fixed32,
           map_int32_sfixed32 = map_int32_sfixed32,
-          oneof_int32 = oneof_int32,
-          oneof_sfixed32 = oneof_sfixed32,
           unknownFields = unknownFields
         )
       }

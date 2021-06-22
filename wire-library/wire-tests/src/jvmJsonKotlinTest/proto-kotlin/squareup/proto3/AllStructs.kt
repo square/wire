@@ -41,12 +41,12 @@ public class AllStructs(
   rep_list: List<List<*>?> = emptyList(),
   rep_value_a: List<Any?> = emptyList(),
   rep_null_value: List<Nothing?> = emptyList(),
+  oneof_struct: Map<String, *>? = null,
+  oneof_list: List<*>? = null,
   map_int32_struct: Map<Int, Map<String, *>?> = emptyMap(),
   map_int32_list: Map<Int, List<*>?> = emptyMap(),
   map_int32_value_a: Map<Int, Any?> = emptyMap(),
   map_int32_null_value: Map<Int, Nothing?> = emptyMap(),
-  oneof_struct: Map<String, *>? = null,
-  oneof_list: List<*>? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<AllStructs, AllStructs.Builder>(ADAPTER, unknownFields) {
   @field:WireField(
@@ -166,6 +166,24 @@ public class AllStructs(
       rep_null_value)
 
   @field:WireField(
+    tag = 201,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
+    jsonName = "oneofStruct",
+    oneofName = "choice"
+  )
+  @JvmField
+  public val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
+
+  @field:WireField(
+    tag = 202,
+    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
+    jsonName = "oneofList",
+    oneofName = "choice"
+  )
+  @JvmField
+  public val oneof_list: List<*>? = immutableCopyOfStruct("oneof_list", oneof_list)
+
+  @field:WireField(
     tag = 301,
     keyAdapter = "com.squareup.wire.ProtoAdapter#INT32",
     adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
@@ -205,24 +223,6 @@ public class AllStructs(
   public val map_int32_null_value: Map<Int, Nothing?> =
       immutableCopyOfMapWithStructValues("map_int32_null_value", map_int32_null_value)
 
-  @field:WireField(
-    tag = 201,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_MAP",
-    jsonName = "oneofStruct",
-    oneofName = "choice"
-  )
-  @JvmField
-  public val oneof_struct: Map<String, *>? = immutableCopyOfStruct("oneof_struct", oneof_struct)
-
-  @field:WireField(
-    tag = 202,
-    adapter = "com.squareup.wire.ProtoAdapter#STRUCT_LIST",
-    jsonName = "oneofList",
-    oneofName = "choice"
-  )
-  @JvmField
-  public val oneof_list: List<*>? = immutableCopyOfStruct("oneof_list", oneof_list)
-
   init {
     require(countNonNull(oneof_struct, oneof_list) <= 1) {
       "At most one of oneof_struct, oneof_list may be non-null"
@@ -244,12 +244,12 @@ public class AllStructs(
     builder.rep_list = rep_list
     builder.rep_value_a = rep_value_a
     builder.rep_null_value = rep_null_value
+    builder.oneof_struct = oneof_struct
+    builder.oneof_list = oneof_list
     builder.map_int32_struct = map_int32_struct
     builder.map_int32_list = map_int32_list
     builder.map_int32_value_a = map_int32_value_a
     builder.map_int32_null_value = map_int32_null_value
-    builder.oneof_struct = oneof_struct
-    builder.oneof_list = oneof_list
     builder.addUnknownFields(unknownFields)
     return builder
   }
@@ -271,12 +271,12 @@ public class AllStructs(
     if (rep_list != other.rep_list) return false
     if (rep_value_a != other.rep_value_a) return false
     if (rep_null_value != other.rep_null_value) return false
+    if (oneof_struct != other.oneof_struct) return false
+    if (oneof_list != other.oneof_list) return false
     if (map_int32_struct != other.map_int32_struct) return false
     if (map_int32_list != other.map_int32_list) return false
     if (map_int32_value_a != other.map_int32_value_a) return false
     if (map_int32_null_value != other.map_int32_null_value) return false
-    if (oneof_struct != other.oneof_struct) return false
-    if (oneof_list != other.oneof_list) return false
     return true
   }
 
@@ -297,12 +297,12 @@ public class AllStructs(
       result = result * 37 + rep_list.hashCode()
       result = result * 37 + rep_value_a.hashCode()
       result = result * 37 + rep_null_value.hashCode()
+      result = result * 37 + (oneof_struct?.hashCode() ?: 0)
+      result = result * 37 + (oneof_list?.hashCode() ?: 0)
       result = result * 37 + map_int32_struct.hashCode()
       result = result * 37 + map_int32_list.hashCode()
       result = result * 37 + map_int32_value_a.hashCode()
       result = result * 37 + map_int32_null_value.hashCode()
-      result = result * 37 + (oneof_struct?.hashCode() ?: 0)
-      result = result * 37 + (oneof_list?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -323,13 +323,13 @@ public class AllStructs(
     if (rep_list.isNotEmpty()) result += """rep_list=$rep_list"""
     if (rep_value_a.isNotEmpty()) result += """rep_value_a=$rep_value_a"""
     if (rep_null_value.isNotEmpty()) result += """rep_null_value=$rep_null_value"""
+    if (oneof_struct != null) result += """oneof_struct=$oneof_struct"""
+    if (oneof_list != null) result += """oneof_list=$oneof_list"""
     if (map_int32_struct.isNotEmpty()) result += """map_int32_struct=$map_int32_struct"""
     if (map_int32_list.isNotEmpty()) result += """map_int32_list=$map_int32_list"""
     if (map_int32_value_a.isNotEmpty()) result += """map_int32_value_a=$map_int32_value_a"""
     if (map_int32_null_value.isNotEmpty()) result +=
         """map_int32_null_value=$map_int32_null_value"""
-    if (oneof_struct != null) result += """oneof_struct=$oneof_struct"""
-    if (oneof_list != null) result += """oneof_list=$oneof_list"""
     return result.joinToString(prefix = "AllStructs{", separator = ", ", postfix = "}")
   }
 
@@ -347,16 +347,16 @@ public class AllStructs(
     rep_list: List<List<*>?> = this.rep_list,
     rep_value_a: List<Any?> = this.rep_value_a,
     rep_null_value: List<Nothing?> = this.rep_null_value,
+    oneof_struct: Map<String, *>? = this.oneof_struct,
+    oneof_list: List<*>? = this.oneof_list,
     map_int32_struct: Map<Int, Map<String, *>?> = this.map_int32_struct,
     map_int32_list: Map<Int, List<*>?> = this.map_int32_list,
     map_int32_value_a: Map<Int, Any?> = this.map_int32_value_a,
     map_int32_null_value: Map<Int, Nothing?> = this.map_int32_null_value,
-    oneof_struct: Map<String, *>? = this.oneof_struct,
-    oneof_list: List<*>? = this.oneof_list,
     unknownFields: ByteString = this.unknownFields
   ): AllStructs = AllStructs(struct, list, null_value, value_a, value_b, value_c, value_d, value_e,
-      value_f, rep_struct, rep_list, rep_value_a, rep_null_value, map_int32_struct, map_int32_list,
-      map_int32_value_a, map_int32_null_value, oneof_struct, oneof_list, unknownFields)
+      value_f, rep_struct, rep_list, rep_value_a, rep_null_value, oneof_struct, oneof_list,
+      map_int32_struct, map_int32_list, map_int32_value_a, map_int32_null_value, unknownFields)
 
   public class Builder : Message.Builder<AllStructs, Builder>() {
     @JvmField
@@ -399,6 +399,12 @@ public class AllStructs(
     public var rep_null_value: List<Nothing?> = emptyList()
 
     @JvmField
+    public var oneof_struct: Map<String, *>? = null
+
+    @JvmField
+    public var oneof_list: List<*>? = null
+
+    @JvmField
     public var map_int32_struct: Map<Int, Map<String, *>?> = emptyMap()
 
     @JvmField
@@ -409,12 +415,6 @@ public class AllStructs(
 
     @JvmField
     public var map_int32_null_value: Map<Int, Nothing?> = emptyMap()
-
-    @JvmField
-    public var oneof_struct: Map<String, *>? = null
-
-    @JvmField
-    public var oneof_list: List<*>? = null
 
     public fun struct(struct: Map<String, *>?): Builder {
       this.struct = struct
@@ -531,12 +531,12 @@ public class AllStructs(
       rep_list = rep_list,
       rep_value_a = rep_value_a,
       rep_null_value = rep_null_value,
+      oneof_struct = oneof_struct,
+      oneof_list = oneof_list,
       map_int32_struct = map_int32_struct,
       map_int32_list = map_int32_list,
       map_int32_value_a = map_int32_value_a,
       map_int32_null_value = map_int32_null_value,
-      oneof_struct = oneof_struct,
-      oneof_list = oneof_list,
       unknownFields = buildUnknownFields()
     )
   }
@@ -585,12 +585,12 @@ public class AllStructs(
         size += ProtoAdapter.STRUCT_LIST.asRepeated().encodedSizeWithTag(102, value.rep_list)
         size += ProtoAdapter.STRUCT_VALUE.asRepeated().encodedSizeWithTag(103, value.rep_value_a)
         size += ProtoAdapter.STRUCT_NULL.asRepeated().encodedSizeWithTag(104, value.rep_null_value)
+        size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(201, value.oneof_struct)
+        size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(202, value.oneof_list)
         size += map_int32_structAdapter.encodedSizeWithTag(301, value.map_int32_struct)
         size += map_int32_listAdapter.encodedSizeWithTag(302, value.map_int32_list)
         size += map_int32_value_aAdapter.encodedSizeWithTag(303, value.map_int32_value_a)
         size += map_int32_null_valueAdapter.encodedSizeWithTag(304, value.map_int32_null_value)
-        size += ProtoAdapter.STRUCT_MAP.encodedSizeWithTag(201, value.oneof_struct)
-        size += ProtoAdapter.STRUCT_LIST.encodedSizeWithTag(202, value.oneof_list)
         return size
       }
 
@@ -632,12 +632,12 @@ public class AllStructs(
         val rep_list = mutableListOf<List<*>?>()
         val rep_value_a = mutableListOf<Any?>()
         val rep_null_value = mutableListOf<Nothing?>()
+        var oneof_struct: Map<String, *>? = null
+        var oneof_list: List<*>? = null
         val map_int32_struct = mutableMapOf<Int, Map<String, *>?>()
         val map_int32_list = mutableMapOf<Int, List<*>?>()
         val map_int32_value_a = mutableMapOf<Int, Any?>()
         val map_int32_null_value = mutableMapOf<Int, Nothing?>()
-        var oneof_struct: Map<String, *>? = null
-        var oneof_list: List<*>? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> struct = ProtoAdapter.STRUCT_MAP.decode(reader)
@@ -661,12 +661,12 @@ public class AllStructs(
             } catch (e: ProtoAdapter.EnumConstantNotFoundException) {
               reader.addUnknownField(tag, FieldEncoding.VARINT, e.value.toLong())
             }
+            201 -> oneof_struct = ProtoAdapter.STRUCT_MAP.decode(reader)
+            202 -> oneof_list = ProtoAdapter.STRUCT_LIST.decode(reader)
             301 -> map_int32_struct.putAll(map_int32_structAdapter.decode(reader))
             302 -> map_int32_list.putAll(map_int32_listAdapter.decode(reader))
             303 -> map_int32_value_a.putAll(map_int32_value_aAdapter.decode(reader))
             304 -> map_int32_null_value.putAll(map_int32_null_valueAdapter.decode(reader))
-            201 -> oneof_struct = ProtoAdapter.STRUCT_MAP.decode(reader)
-            202 -> oneof_list = ProtoAdapter.STRUCT_LIST.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -684,12 +684,12 @@ public class AllStructs(
           rep_list = rep_list,
           rep_value_a = rep_value_a,
           rep_null_value = rep_null_value,
+          oneof_struct = oneof_struct,
+          oneof_list = oneof_list,
           map_int32_struct = map_int32_struct,
           map_int32_list = map_int32_list,
           map_int32_value_a = map_int32_value_a,
           map_int32_null_value = map_int32_null_value,
-          oneof_struct = oneof_struct,
-          oneof_list = oneof_list,
           unknownFields = unknownFields
         )
       }
@@ -706,11 +706,11 @@ public class AllStructs(
         rep_struct = value.rep_struct.redactElements(ProtoAdapter.STRUCT_MAP),
         rep_list = value.rep_list.redactElements(ProtoAdapter.STRUCT_LIST),
         rep_value_a = value.rep_value_a.redactElements(ProtoAdapter.STRUCT_VALUE),
+        oneof_struct = value.oneof_struct?.let(ProtoAdapter.STRUCT_MAP::redact),
+        oneof_list = value.oneof_list?.let(ProtoAdapter.STRUCT_LIST::redact),
         map_int32_struct = value.map_int32_struct.redactElements(ProtoAdapter.STRUCT_MAP),
         map_int32_list = value.map_int32_list.redactElements(ProtoAdapter.STRUCT_LIST),
         map_int32_value_a = value.map_int32_value_a.redactElements(ProtoAdapter.STRUCT_VALUE),
-        oneof_struct = value.oneof_struct?.let(ProtoAdapter.STRUCT_MAP::redact),
-        oneof_list = value.oneof_list?.let(ProtoAdapter.STRUCT_LIST::redact),
         unknownFields = ByteString.EMPTY
       )
     }
