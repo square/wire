@@ -101,11 +101,11 @@ import com.squareup.wire.schema.internal.eligibleAsAnnotationMember
 import com.squareup.wire.schema.internal.javaPackage
 import com.squareup.wire.schema.internal.optionValueToInt
 import com.squareup.wire.schema.internal.optionValueToLong
-import java.util.Locale
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import okio.ByteString
 import okio.ByteString.Companion.encode
+import java.util.Locale
 
 class KotlinGenerator private constructor(
   val schema: Schema,
@@ -415,25 +415,30 @@ class KotlinGenerator private constructor(
             if (emitAndroid) {
               newName("CREATOR", "CREATOR")
             }
-            message.fieldsAndFlatOneOfFields().forEach { field ->
-              if (field.name == field.type!!.simpleName ||
-                schema.getType(field.qualifiedName) != null
-              ) {
-                newName(field.qualifiedName, field)
-              } else {
-                newName(field.name, field)
-              }
-            }
-            message.boxOneOfs().forEach { oneOf ->
-              val fieldName = newName(oneOf.name, oneOf)
-              val keysFieldName = boxedOneOfKeysFieldName(fieldName)
-              check(newName(keysFieldName) == keysFieldName) {
-                "unexpected name collision for keys set of boxed one of, ${oneOf.name}"
-              }
-              newName(boxedOneOfClassName(oneOf.name), boxedOneOfClassName(oneOf.name))
-              oneOf.fields.forEach { field ->
-                val keyFieldName = boxedOneOfKeyFieldName(oneOf.name, field.name)
-                newName(keyFieldName, keyFieldName)
+            for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+              when (fieldOrOneOf) {
+                is Field -> {
+                  if (fieldOrOneOf.name == fieldOrOneOf.type!!.simpleName ||
+                    schema.getType(fieldOrOneOf.qualifiedName) != null
+                  ) {
+                    newName(fieldOrOneOf.qualifiedName, fieldOrOneOf)
+                  } else {
+                    newName(fieldOrOneOf.name, fieldOrOneOf)
+                  }
+                }
+                is OneOf -> {
+                  val fieldName = newName(fieldOrOneOf.name, fieldOrOneOf)
+                  val keysFieldName = boxedOneOfKeysFieldName(fieldName)
+                  check(newName(keysFieldName) == keysFieldName) {
+                    "unexpected name collision for keys set of boxed one of, ${fieldOrOneOf.name}"
+                  }
+                  newName(boxedOneOfClassName(fieldOrOneOf.name), boxedOneOfClassName(fieldOrOneOf.name))
+                  fieldOrOneOf.fields.forEach { field ->
+                    val keyFieldName = boxedOneOfKeyFieldName(fieldOrOneOf.name, field.name)
+                    newName(keyFieldName, keyFieldName)
+                  }
+                }
+                else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
               }
             }
           }
@@ -555,13 +560,18 @@ class KotlinGenerator private constructor(
 
     funBuilder.addStatement("val builder = Builder()")
 
-    type.fieldsAndFlatOneOfFields().forEach { field ->
-      val fieldName = nameAllocator[field]
-      funBuilder.addStatement("builder.%1L = %1L", fieldName)
-    }
-    type.boxOneOfs().forEach { oneOf ->
-      val fieldName = nameAllocator[oneOf]
-      funBuilder.addStatement("builder.%1L = %1L", fieldName)
+    for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          funBuilder.addStatement("builder.%1L = %1L", fieldName)
+        }
+        is OneOf -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          funBuilder.addStatement("builder.%1L = %1L", fieldName)
+        }
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+      }
     }
 
     return funBuilder
@@ -593,13 +603,18 @@ class KotlinGenerator private constructor(
       addStatement("if (%N !is %T) return·false", otherName, kotlinType)
       addStatement("if (unknownFields != %N.unknownFields) return·false", otherName)
 
-      for (field in type.fieldsAndFlatOneOfFields()) {
-        val fieldName = localNameAllocator[field]
-        addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
-      }
-      for (oneOf in type.boxOneOfs()) {
-        val fieldName = localNameAllocator[oneOf]
-        addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
+      for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
+          }
+          is OneOf -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            addStatement("if (%1L != %2N.%1L) return·false", fieldName, otherName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+        }
       }
       addStatement("return true")
     }
@@ -640,19 +655,25 @@ class KotlinGenerator private constructor(
       beginControlFlow("if (%N == 0)", resultName)
 
       addStatement("%N = unknownFields.hashCode()", resultName)
-      for (field in type.fieldsAndFlatOneOfFields()) {
-        val fieldName = localNameAllocator[field]
-        add("%1N = %1N * 37 + ", resultName)
-        if (field.isRepeated || field.isRequired || field.isMap) {
-          addStatement("%L.hashCode()", fieldName)
-        } else {
-          addStatement("(%L?.hashCode() ?: 0)", fieldName)
+
+      for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            add("%1N = %1N * 37 + ", resultName)
+            if (fieldOrOneOf.isRepeated || fieldOrOneOf.isRequired || fieldOrOneOf.isMap) {
+              addStatement("%L.hashCode()", fieldName)
+            } else {
+              addStatement("(%L?.hashCode() ?: 0)", fieldName)
+            }
+          }
+          is OneOf -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            add("%1N = %1N * 37 + ", resultName)
+            addStatement("(%L?.hashCode() ?: 0)", fieldName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
-      }
-      for (oneOf in type.boxOneOfs()) {
-        val fieldName = localNameAllocator[oneOf]
-        add("%1N = %1N * 37 + ", resultName)
-        addStatement("(%L?.hashCode() ?: 0)", fieldName)
       }
 
       addStatement("super.hashCode = %N", resultName)
@@ -680,24 +701,29 @@ class KotlinGenerator private constructor(
     val result = FunSpec.builder("copy")
         .returns(type.typeName)
     val fieldNames = mutableListOf<String>()
-    for (field in type.fieldsAndFlatOneOfFields()) {
-      val fieldName = nameAllocator[field]
-      result.addParameter(
-        ParameterSpec.builder(fieldName, field.typeNameForMessageField)
-          .defaultValue("this.%N", fieldName)
-          .build()
-      )
-      fieldNames += fieldName
-    }
-    for (oneOf in type.boxOneOfs()) {
-      val fieldName = nameAllocator[oneOf]
-      val fieldClass = type.oneOfClassFor(oneOf, nameAllocator)
-      result.addParameter(
-        ParameterSpec.builder(fieldName, fieldClass)
-          .defaultValue("this.%N", fieldName)
-          .build()
-      )
-      fieldNames += fieldName
+    for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          result.addParameter(
+            ParameterSpec.builder(fieldName, fieldOrOneOf.typeNameForMessageField)
+              .defaultValue("this.%N", fieldName)
+              .build()
+          )
+          fieldNames += fieldName
+        }
+        is OneOf -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          val fieldClass = type.oneOfClassFor(fieldOrOneOf, nameAllocator)
+          result.addParameter(
+            ParameterSpec.builder(fieldName, fieldClass)
+              .defaultValue("this.%N", fieldName)
+              .build()
+          )
+          fieldNames += fieldName
+        }
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+      }
     }
     result.addParameter(ParameterSpec.builder("unknownFields", ByteString::class)
         .defaultValue("this.unknownFields")
@@ -741,53 +767,64 @@ class KotlinGenerator private constructor(
       add("return %T(⇥\n", className)
 
       val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
-      type.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = nameAllocator[field]
+      for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
 
-        val throwExceptionBlock = if (!field.isRepeated && field.isRequired) {
-          CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, nameAllocator[field])
-        } else {
-          CodeBlock.of("")
+            val throwExceptionBlock = if (!fieldOrOneOf.isRepeated && fieldOrOneOf.isRequired) {
+              CodeBlock.of(" ?: throw %1M(%2L, %2S)", missingRequiredFields, nameAllocator[fieldOrOneOf])
+            } else {
+              CodeBlock.of("")
+            }
+
+            addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+          }
+          is OneOf -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
+            addStatement("%1L = %1L,", fieldName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
-
-        addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
-      }
-      for (oneOf in type.boxOneOfs()) {
-        val fieldName = nameAllocator[oneOf]
-        addStatement("%1L = %1L,", fieldName)
       }
       add("unknownFields = buildUnknownFields()")
       add("⇤\n)\n") // close the block
     }
 
-    type.fieldsAndFlatOneOfFields().forEach { field ->
-      val fieldName = nameAllocator[field]
+    for (fieldOrOneOf in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
 
-      val propertyBuilder = PropertySpec.builder(fieldName, field.typeNameForBuilderField)
-          .mutable(true)
-          .initializer(field.identityValue)
+          val propertyBuilder = PropertySpec.builder(fieldName, fieldOrOneOf.typeNameForBuilderField)
+            .mutable(true)
+            .initializer(fieldOrOneOf.identityValue)
 
-      if (javaInterOp) {
-        propertyBuilder.addAnnotation(JvmField::class)
+          if (javaInterOp) {
+            propertyBuilder.addAnnotation(JvmField::class)
+          }
+
+          builder.addProperty(propertyBuilder.build())
+        }
+        is OneOf -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          val fieldClass = type.oneOfClassFor(fieldOrOneOf, nameAllocator)
+
+          val propertyBuilder = PropertySpec.builder(fieldName, fieldClass)
+            .mutable(true)
+            .initializer(CodeBlock.of("null"))
+
+          if (javaInterOp) {
+            propertyBuilder.addAnnotation(JvmField::class)
+          }
+
+          builder.addProperty(propertyBuilder.build())
+        }
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
-
-      builder.addProperty(propertyBuilder.build())
-    }
-    for (oneOf in type.boxOneOfs()) {
-      val fieldName = nameAllocator[oneOf]
-      val fieldClass = type.oneOfClassFor(oneOf, nameAllocator)
-
-      val propertyBuilder = PropertySpec.builder(fieldName, fieldClass)
-        .mutable(true)
-        .initializer(CodeBlock.of("null"))
-
-      if (javaInterOp) {
-        propertyBuilder.addAnnotation(JvmField::class)
-      }
-
-      builder.addProperty(propertyBuilder.build())
     }
 
+    // TODO(Benoit) Order builder setters in the same order as the fields.
     type.fields.forEach { field ->
       builder.addFunction(builderSetter(field, nameAllocator, builderClass, oneOf = null))
     }
@@ -894,89 +931,10 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message)
     val byteClass = ProtoType.BYTES.typeName
 
-    val fields = message.fieldsAndFlatOneOfFields()
-    fields.forEach { field ->
-      val fieldClass = field.typeNameForMessageField
-      val fieldName = nameAllocator[field]
-
-      val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      if (!field.isRequired) {
-        parameterSpec.defaultValue(field.identityValue)
-      }
-
-      val initializer = when {
-        field.type!!.valueType?.isStruct == true -> {
-          CodeBlock.of("%M(%S, %N)",
-              MemberName("com.squareup.wire.internal", "immutableCopyOfMapWithStructValues"),
-              fieldName,
-              fieldName
-          )
-        }
-        field.type!!.isStruct -> {
-          CodeBlock.of("%M(%S, %N)",
-              MemberName("com.squareup.wire.internal", "immutableCopyOfStruct"),
-              fieldName,
-              fieldName
-          )
-        }
-        field.isRepeated || field.isMap -> {
-          CodeBlock.of("%M(%S, %N)",
-              MemberName("com.squareup.wire.internal", "immutableCopyOf"),
-              fieldName,
-              fieldName
-          )
-        }
-        else -> CodeBlock.of("%N", fieldName)
-      }
-
-      constructorBuilder.addParameter(parameterSpec.build())
-      classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
-          .initializer(initializer)
-          .apply {
-            if (field.isDeprecated) {
-              addAnnotation(
-                AnnotationSpec.builder(Deprecated::class)
-                  .addMember("message = %S", "$fieldName is deprecated")
-                  .build()
-              )
-            }
-            for (annotation in optionAnnotations(field.options)) {
-              addAnnotation(annotation)
-            }
-            addAnnotation(wireFieldAnnotation(message, field))
-            if (javaInterOp) {
-              addAnnotation(JvmField::class)
-            }
-            if (field.documentation.isNotBlank()) {
-              addKdoc("%L\n", field.documentation.sanitizeKdoc())
-            }
-            if (field.isExtension) {
-              addKdoc("Extension source: %L\n", field.location.withPathOnly())
-            }
-          }
-          .build())
-    }
-
-    val boxOneOfs = message.boxOneOfs()
-    for (oneOf in boxOneOfs) {
-      val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
-      val fieldName = oneOf.name
-
-      val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
-      parameterSpec.defaultValue(CodeBlock.of("null"))
-
-      constructorBuilder.addParameter(parameterSpec.build())
-      classBuilder.addProperty(PropertySpec.builder(fieldName, fieldClass)
-        .initializer(CodeBlock.of("%N", fieldName))
-        .apply {
-          if (javaInterOp) {
-            addAnnotation(JvmField::class)
-          }
-          if (oneOf.documentation.isNotBlank()) {
-            addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
-          }
-        }
-        .build())
+    val parametersAndProperties = parametersAndProperties(message, nameAllocator)
+    for ((parameter, property) in parametersAndProperties) {
+      constructorBuilder.addParameter(parameter)
+      classBuilder.addProperty(property)
     }
 
     val unknownFields = nameAllocator["unknownFields"]
@@ -986,6 +944,127 @@ class KotlinGenerator private constructor(
             .build())
 
     classBuilder.primaryConstructor(constructorBuilder.build())
+  }
+
+  private fun parametersAndProperties(
+    message: MessageType, nameAllocator: NameAllocator
+  ): List<Pair<ParameterSpec, PropertySpec>> {
+    val result = mutableListOf<Pair<ParameterSpec, PropertySpec>>()
+
+    for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> result.add(
+          constructorParameterAndProperty(
+            message,
+            fieldOrOneOf,
+            nameAllocator
+          )
+        )
+        is OneOf -> result.add(
+          constructorParameterAndProperty(
+            message,
+            fieldOrOneOf,
+            nameAllocator
+          )
+        )
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+      }
+    }
+
+    return result
+  }
+
+  private fun constructorParameterAndProperty(
+    message: MessageType,
+    field: Field,
+    nameAllocator: NameAllocator
+  ): Pair<ParameterSpec, PropertySpec> {
+    val fieldClass = field.typeNameForMessageField
+    val fieldName = nameAllocator[field]
+
+    val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
+    if (!field.isRequired) {
+      parameterSpec.defaultValue(field.identityValue)
+    }
+
+    val initializer = when {
+      field.type!!.valueType?.isStruct == true -> {
+        CodeBlock.of(
+          "%M(%S, %N)",
+          MemberName("com.squareup.wire.internal", "immutableCopyOfMapWithStructValues"),
+          fieldName,
+          fieldName
+        )
+      }
+      field.type!!.isStruct -> {
+        CodeBlock.of(
+          "%M(%S, %N)",
+          MemberName("com.squareup.wire.internal", "immutableCopyOfStruct"),
+          fieldName,
+          fieldName
+        )
+      }
+      field.isRepeated || field.isMap -> {
+        CodeBlock.of(
+          "%M(%S, %N)",
+          MemberName("com.squareup.wire.internal", "immutableCopyOf"),
+          fieldName,
+          fieldName
+        )
+      }
+      else -> CodeBlock.of("%N", fieldName)
+    }
+
+    val propertySpec = PropertySpec.builder(fieldName, fieldClass)
+      .initializer(initializer)
+      .apply {
+        if (field.isDeprecated) {
+          addAnnotation(
+            AnnotationSpec.builder(Deprecated::class)
+              .addMember("message = %S", "$fieldName is deprecated")
+              .build()
+          )
+        }
+        for (annotation in optionAnnotations(field.options)) {
+          addAnnotation(annotation)
+        }
+        addAnnotation(wireFieldAnnotation(message, field))
+        if (javaInterOp) {
+          addAnnotation(JvmField::class)
+        }
+        if (field.documentation.isNotBlank()) {
+          addKdoc("%L\n", field.documentation.sanitizeKdoc())
+        }
+        if (field.isExtension) {
+          addKdoc("Extension source: %L\n", field.location.withPathOnly())
+        }
+      }
+    return parameterSpec.build() to propertySpec.build()
+  }
+
+  private fun constructorParameterAndProperty(
+    message: MessageType,
+    oneOf: OneOf,
+    nameAllocator: NameAllocator
+  ): Pair<ParameterSpec, PropertySpec> {
+    val fieldClass = message.oneOfClassFor(oneOf, nameAllocator)
+    val fieldName = oneOf.name
+
+    val parameterSpec = ParameterSpec.builder(fieldName, fieldClass)
+    parameterSpec.defaultValue(CodeBlock.of("null"))
+
+    val propertySpec = PropertySpec.builder(fieldName, fieldClass)
+      .initializer(CodeBlock.of("%N", fieldName))
+      .apply {
+        if (javaInterOp) {
+          addAnnotation(JvmField::class)
+        }
+        if (oneOf.documentation.isNotBlank()) {
+          addKdoc("%L\n", oneOf.documentation.sanitizeKdoc())
+        }
+      }
+
+    return parameterSpec.build() to propertySpec.build()
   }
 
   private fun wireFieldAnnotation(message: MessageType, field: Field): AnnotationSpec {
@@ -1050,45 +1129,50 @@ class KotlinGenerator private constructor(
     val sanitizeMember = MemberName("com.squareup.wire.internal", "sanitize")
     val localNameAllocator = nameAllocator.copy()
     val className = generatedTypeName(type)
-    val fields = type.fieldsAndFlatOneOfFields()
-    val boxOneOfs = type.boxOneOfs()
+        val fieldsAndOneOfs = type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()
     val body = buildCodeBlock {
-      if (fields.isEmpty() && boxOneOfs.isEmpty()) {
+      if (fieldsAndOneOfs.isEmpty()) {
         addStatement("return %S", className.simpleName + "{}")
       } else {
         val resultName = localNameAllocator.newName("result")
         addStatement("val %N = mutableListOf<%T>()", resultName, STRING)
-        for (field in fields) {
-          val fieldName = localNameAllocator[field]
-          if (field.isRepeated || field.isMap) {
-            add("if (%N.isNotEmpty()) ", fieldName)
-          } else if (field.acceptsNull) {
-            add("if (%N != null) ", fieldName)
-          }
-          addStatement("%N += %P", resultName, buildCodeBlock {
-            add(fieldName)
-            if (field.isRedacted) {
-              add("=██")
-            } else {
-              if (field.type == ProtoType.STRING) {
-                add("=\${%M($fieldName)}", sanitizeMember)
-              } else {
+
+        for (fieldOrOneOf in fieldsAndOneOfs) {
+          when (fieldOrOneOf) {
+            is Field -> {
+              val fieldName = localNameAllocator[fieldOrOneOf]
+              if (fieldOrOneOf.isRepeated || fieldOrOneOf.isMap) {
+                add("if (%N.isNotEmpty()) ", fieldName)
+              } else if (fieldOrOneOf.acceptsNull) {
+                add("if (%N != null) ", fieldName)
+              }
+              addStatement("%N += %P", resultName, buildCodeBlock {
+                add(fieldName)
+                if (fieldOrOneOf.isRedacted) {
+                  add("=██")
+                } else {
+                  if (fieldOrOneOf.type == ProtoType.STRING) {
+                    add("=\${%M($fieldName)}", sanitizeMember)
+                  } else {
+                    add("=\$")
+                    add(fieldName)
+                  }
+                }
+              })
+            }
+            is OneOf -> {
+              val fieldName = localNameAllocator[fieldOrOneOf]
+              add("if (%N != null) ", fieldName)
+              addStatement("%N += %P", resultName, buildCodeBlock {
+                add(fieldName)
+                // TODO(Benoit) Do we redact if one of the field is redacted?
                 add("=\$")
                 add(fieldName)
               }
+              )
             }
-          })
-        }
-        for (oneOf in boxOneOfs) {
-          val fieldName = localNameAllocator[oneOf]
-          add("if (%N != null) ", fieldName)
-          addStatement("%N += %P", resultName, buildCodeBlock {
-            add(fieldName)
-            // TODO(Benoit) Do we redact if one of the field is redacted?
-            add("=\$")
-            add(fieldName)
+            else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
           }
-          )
         }
 
         addStatement(
@@ -1112,7 +1196,7 @@ class KotlinGenerator private constructor(
     companionBuilder: TypeSpec.Builder,
     nameAllocator: NameAllocator
   ) {
-    for (field in type.fieldsAndFlatOneOfFields()) {
+    for (field in type.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()) {
       val default = field.default ?: continue
 
       val fieldName = "DEFAULT_" + nameAllocator[field].toUpperCase(Locale.US)
@@ -1282,18 +1366,23 @@ class KotlinGenerator private constructor(
 
     val body = buildCodeBlock {
       addStatement("var %N = value.unknownFields.size", sizeName)
-      message.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = localNameAllocator[field]
-        if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
-          add("if (value.%1L != %2L) ", fieldName, field.identityValue)
+      for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            if (fieldOrOneOf.encodeMode == EncodeMode.OMIT_IDENTITY) {
+              add("if (value.%1L != %2L) ", fieldName, fieldOrOneOf.identityValue)
+            }
+            addStatement("%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(fieldOrOneOf),
+              fieldOrOneOf.tag, fieldName)
+          }
+          is OneOf -> {
+            val fieldName = localNameAllocator[fieldOrOneOf]
+            add("if (value.%1L != %2L) ", fieldName, "null")
+            addStatement("%N += value.%L.encodedSizeWithTag()", sizeName, fieldName)
         }
-        addStatement("%N += %L.encodedSizeWithTag(%L, value.%L)", sizeName, adapterFor(field),
-            field.tag, fieldName)
-      }
-      for (boxOneOf in message.boxOneOfs()) {
-        val fieldName = localNameAllocator[boxOneOf]
-        add("if (value.%1L != %2L) ", fieldName, "null")
-        addStatement("%N += value.%L.encodedSizeWithTag()", sizeName, fieldName)
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+        }
       }
       addStatement("return %N", sizeName)
     }
@@ -1319,15 +1408,17 @@ class KotlinGenerator private constructor(
     val body = buildCodeBlock {
       val nameAllocator = nameAllocator(message)
 
-      message.fieldsAndFlatOneOfFields().forEach { field ->
+      for (field in message.fields + message.flatOneOfs().flatMap { it.fields }) {
         val fieldName = nameAllocator[field]
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           add("if (value.%L != %L) ", fieldName, field.identityValue)
         }
-        addStatement("%L.encodeWithTag(writer, %L, value.%L)",
+        addStatement(
+          "%L.encodeWithTag(writer, %L, value.%L)",
           adapterFor(field),
           field.tag,
-          fieldName)
+          fieldName
+        )
       }
       for (boxOneOf in message.boxOneOfs()) {
         val fieldName = nameAllocator[boxOneOf]
@@ -1350,20 +1441,25 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(message).copy()
 
     val declarationBody = buildCodeBlock {
-      message.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = nameAllocator[field]
-        val fieldDeclaration: CodeBlock = field.getDeclaration(fieldName)
-        addStatement("%L", fieldDeclaration)
-      }
-      for (boxOneOf in message.boxOneOfs()) {
-        val fieldName = nameAllocator[boxOneOf]
-        val oneOfClass = (message.typeName as ClassName)
-          .nestedClass(boxedOneOfClassName(boxOneOf.name))
-          .parameterizedBy(STAR)
-        val fieldClass = com.squareup.wire.OneOf::class.asClassName()
-          .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
-        val fieldDeclaration = CodeBlock.of("var $fieldName: %T = %L", fieldClass, "null")
-        addStatement("%L", fieldDeclaration)
+      for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
+            val fieldDeclaration: CodeBlock = fieldOrOneOf.getDeclaration(fieldName)
+            addStatement("%L", fieldDeclaration)
+          }
+          is OneOf -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
+            val oneOfClass = (message.typeName as ClassName)
+              .nestedClass(boxedOneOfClassName(fieldOrOneOf.name))
+              .parameterizedBy(STAR)
+            val fieldClass = com.squareup.wire.OneOf::class.asClassName()
+              .parameterizedBy(oneOfClass, STAR).copy(nullable = true)
+            val fieldDeclaration = CodeBlock.of("var $fieldName: %T = %L", fieldClass, "null")
+            addStatement("%L", fieldDeclaration)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+        }
       }
     }
 
@@ -1371,20 +1467,31 @@ class KotlinGenerator private constructor(
       addStatement("return·%T(⇥", className)
 
       val missingRequiredFields = MemberName("com.squareup.wire.internal", "missingRequiredFields")
-      message.fieldsAndFlatOneOfFields().forEach { field ->
-        val fieldName = nameAllocator[field]
+      for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+        when (fieldOrOneOf) {
+          is Field -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
 
-        val throwExceptionBlock = if (!field.isRepeated && !field.isMap && field.isRequired) {
-          CodeBlock.of(" ?: throw %1M(%2L, %3S)", missingRequiredFields, fieldName, field.name)
-        } else {
-          CodeBlock.of("")
+            val throwExceptionBlock =
+              if (!fieldOrOneOf.isRepeated && !fieldOrOneOf.isMap && fieldOrOneOf.isRequired) {
+                CodeBlock.of(
+                  " ?: throw %1M(%2L, %3S)",
+                  missingRequiredFields,
+                  fieldName,
+                  fieldOrOneOf.name
+                )
+              } else {
+                CodeBlock.of("")
+              }
+
+            addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
+          }
+          is OneOf -> {
+            val fieldName = nameAllocator[fieldOrOneOf]
+            addStatement("%1L = %1L,", fieldName)
+          }
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
         }
-
-        addStatement("%1L = %1L%2L,", fieldName, throwExceptionBlock)
-      }
-      for (boxOneOf in message.boxOneOfs()) {
-        val fieldName = nameAllocator[boxOneOf]
-        addStatement("%1L = %1L,", fieldName)
       }
 
       add("unknownFields = unknownFields")
@@ -1392,7 +1499,7 @@ class KotlinGenerator private constructor(
     }
 
     val decodeBlock = buildCodeBlock {
-      val fields = message.fieldsAndFlatOneOfFields()
+      val fields = message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()
       val boxOneOfs = message.boxOneOfs()
       if (fields.isEmpty() && boxOneOfs.isEmpty()) {
         addStatement("val unknownFields = reader.forEachTag(reader::readUnknownField)")
@@ -1401,7 +1508,7 @@ class KotlinGenerator private constructor(
         addStatement("val unknownFields = reader.forEachTag { %L ->", tag)
         addStatement("⇥when (%L) {⇥", tag)
 
-        message.fieldsAndFlatOneOfFields().forEach { field ->
+        fields.forEach { field ->
           val fieldName = nameAllocator[field]
           val adapterName = field.getAdapterName()
 
@@ -1482,7 +1589,7 @@ class KotlinGenerator private constructor(
     }
 
     val redactedFields = mutableListOf<CodeBlock>()
-    for (field in message.fieldsAndFlatOneOfFields()) {
+    for (field in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()) {
       val fieldName = nameAllocator[field]
       val redactedField = field.redact(fieldName)
       if (redactedField != null) {
@@ -2111,22 +2218,20 @@ class KotlinGenerator private constructor(
       .build()
   }
 
-  private fun MessageType.fieldsAndFlatOneOfFields(): List<Field> {
-    val result = mutableListOf<Field>()
-    result.addAll(this.declaredFields)
-    result.addAll(this.extensionFields)
-    result.addAll(this.flatOneOfs().flatMap { it.fields })
-    return result
-  }
+  private fun MessageType.fieldsAndFlatOneOfFieldsAndBoxedOneOfs(): List<Any> {
+    val fieldsAndFlatOneOfFields: List<Field> =
+      declaredFields + extensionFields + flatOneOfs().flatMap { it.fields }
 
-  private fun MessageType.boxOneOfs(): List<OneOf> {
-    val result = mutableListOf<OneOf>()
-    for (oneOf in this.oneOfs) {
-      if (oneOf.fields.size >= boxOneOfsMinSize) {
-        result.add(oneOf)
+    return (fieldsAndFlatOneOfFields + boxOneOfs())
+      .sortedBy { fieldOrOneOf ->
+        when (fieldOrOneOf) {
+          is Field -> fieldOrOneOf.location.line
+          // TODO(Benoit) If boxed oneofs without fields become a problem, we can add location to
+          //  oneofs and use that.
+          is OneOf -> fieldOrOneOf.fields.getOrNull(0)?.location?.line ?: 0
+          else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
+        }
       }
-    }
-    return result
   }
 
   private fun MessageType.flatOneOfs(): List<OneOf> {
@@ -2137,6 +2242,10 @@ class KotlinGenerator private constructor(
       }
     }
     return result
+  }
+
+  private fun MessageType.boxOneOfs(): List<OneOf> {
+    return oneOfs.filter { it.fields.size >= boxOneOfsMinSize }
   }
 
   private fun MessageType.oneOfClassFor(oneOf: OneOf, nameAllocator: NameAllocator): TypeName {
