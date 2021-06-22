@@ -609,12 +609,12 @@ public class AllStructs(
         ProtoAdapter.STRUCT_LIST.asRepeated().encodeWithTag(writer, 102, value.rep_list)
         ProtoAdapter.STRUCT_VALUE.asRepeated().encodeWithTag(writer, 103, value.rep_value_a)
         ProtoAdapter.STRUCT_NULL.asRepeated().encodeWithTag(writer, 104, value.rep_null_value)
-        ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 201, value.oneof_struct)
-        ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 202, value.oneof_list)
         map_int32_structAdapter.encodeWithTag(writer, 301, value.map_int32_struct)
         map_int32_listAdapter.encodeWithTag(writer, 302, value.map_int32_list)
         map_int32_value_aAdapter.encodeWithTag(writer, 303, value.map_int32_value_a)
         map_int32_null_valueAdapter.encodeWithTag(writer, 304, value.map_int32_null_value)
+        ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 201, value.oneof_struct)
+        ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 202, value.oneof_list)
         writer.writeBytes(value.unknownFields)
       }
 

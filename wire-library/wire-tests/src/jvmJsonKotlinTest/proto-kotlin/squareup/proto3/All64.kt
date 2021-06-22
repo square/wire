@@ -681,13 +681,13 @@ public class All64(
         ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 303, value.pack_sint64)
         ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 304, value.pack_fixed64)
         ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 305, value.pack_sfixed64)
-        ProtoAdapter.INT64.encodeWithTag(writer, 401, value.oneof_int64)
-        ProtoAdapter.SFIXED64.encodeWithTag(writer, 402, value.oneof_sfixed64)
         map_int64_int64Adapter.encodeWithTag(writer, 501, value.map_int64_int64)
         map_int64_uint64Adapter.encodeWithTag(writer, 502, value.map_int64_uint64)
         map_int64_sint64Adapter.encodeWithTag(writer, 503, value.map_int64_sint64)
         map_int64_fixed64Adapter.encodeWithTag(writer, 504, value.map_int64_fixed64)
         map_int64_sfixed64Adapter.encodeWithTag(writer, 505, value.map_int64_sfixed64)
+        ProtoAdapter.INT64.encodeWithTag(writer, 401, value.oneof_int64)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 402, value.oneof_sfixed64)
         writer.writeBytes(value.unknownFields)
       }
 

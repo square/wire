@@ -3551,9 +3551,6 @@ public class AllTypes(
         map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
         map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
         map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
-        ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string)
-        ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
-        NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
         ProtoAdapter.INT32.encodeWithTag(writer, 1001, value.ext_opt_int32)
         ProtoAdapter.UINT32.encodeWithTag(writer, 1002, value.ext_opt_uint32)
         ProtoAdapter.SINT32.encodeWithTag(writer, 1003, value.ext_opt_sint32)
@@ -3602,6 +3599,9 @@ public class AllTypes(
         ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 1212, value.ext_pack_float)
         ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 1213, value.ext_pack_double)
         NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 1216, value.ext_pack_nested_enum)
+        ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string)
+        ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
+        NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
         writer.writeBytes(value.unknownFields)
       }
 

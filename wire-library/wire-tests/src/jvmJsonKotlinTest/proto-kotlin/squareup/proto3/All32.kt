@@ -677,13 +677,13 @@ public class All32(
         ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32)
         ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 304, value.pack_fixed32)
         ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 305, value.pack_sfixed32)
-        ProtoAdapter.INT32.encodeWithTag(writer, 401, value.oneof_int32)
-        ProtoAdapter.SFIXED32.encodeWithTag(writer, 402, value.oneof_sfixed32)
         map_int32_int32Adapter.encodeWithTag(writer, 501, value.map_int32_int32)
         map_int32_uint32Adapter.encodeWithTag(writer, 502, value.map_int32_uint32)
         map_int32_sint32Adapter.encodeWithTag(writer, 503, value.map_int32_sint32)
         map_int32_fixed32Adapter.encodeWithTag(writer, 504, value.map_int32_fixed32)
         map_int32_sfixed32Adapter.encodeWithTag(writer, 505, value.map_int32_sfixed32)
+        ProtoAdapter.INT32.encodeWithTag(writer, 401, value.oneof_int32)
+        ProtoAdapter.SFIXED32.encodeWithTag(writer, 402, value.oneof_sfixed32)
         writer.writeBytes(value.unknownFields)
       }
 
