@@ -37,10 +37,11 @@ kotlin {
     val jvmTest by getting {
       dependencies {
         implementation(project(":wire-test-utils"))
-        implementation(deps.junit)
-        implementation(deps.kotlin.test.junit)
         implementation(deps.assertj)
         implementation(deps.jimfs)
+        implementation(deps.junit)
+        implementation(deps.kotlin.test.junit)
+        implementation(deps.protobuf.java)
       }
     }
     if (kmpJsEnabled) {

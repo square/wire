@@ -410,11 +410,13 @@ class SchemaEncoder(
     // TODO: use optionValueToInt(value) when that's available in commonMain.
     return when (field.type) {
       ProtoType.INT32 -> (value as String).toInt()
+      ProtoType.DOUBLE -> (value as String).toDouble()
       ProtoType.BOOL -> (value as String).toBoolean()
       ProtoType.STRING -> value as String
       else -> {
         when (schema.getType(field.type!!)) {
           is MessageType -> toJsonMap(value as Map<ProtoMember, Any?>)
+          is EnumType -> value as String
           else -> error("not implemented yet!!")
         }
       }

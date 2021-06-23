@@ -15,15 +15,15 @@
  */
 package com.squareup.wire.schema
 
-import java.io.EOFException
-import java.io.IOException
-import java.net.ProtocolException
 import okio.Buffer
-import okio.ByteString
 import okio.ByteString.Companion.decodeHex
+import okio.ByteString.Companion.toByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
+import java.io.EOFException
+import java.io.IOException
+import java.net.ProtocolException
 
 class SchemaProtoAdapterTest {
   private val coffeeSchema = RepoBuilder()
@@ -92,8 +92,10 @@ class SchemaProtoAdapterTest {
   @Throws(IOException::class)
   fun encode() {
     val adapter = coffeeSchema.protoAdapter("CafeDrink", true)
-    assertThat(ByteString.of(*adapter.encode(dansCoffee))).isEqualTo(dansCoffeeEncoded)
-    assertThat(ByteString.of(*adapter.encode(jessesCoffee))).isEqualTo(jessesCoffeeEncoded)
+    assertThat(adapter.encode(dansCoffee).toByteString()).isEqualTo(dansCoffeeEncoded)
+    assertThat(adapter.encode(jessesCoffee).toByteString()).isEqualTo(jessesCoffeeEncoded)
+    assertThat(adapter.encodedSize(dansCoffee)).isEqualTo(dansCoffeeEncoded.size)
+    assertThat(adapter.encodedSize(jessesCoffee)).isEqualTo(jessesCoffeeEncoded.size)
   }
 
   @Test
@@ -261,7 +263,7 @@ class SchemaProtoAdapterTest {
         )
     )
     val encoded = "0a0d0a031a014112031a01431a0142120d0a031a014512031a01471a01461a0144".decodeHex()
-    assertThat(ByteString.of(*adapter.encode(value))).isEqualTo(encoded)
+    assertThat(adapter.encode(value).toByteString()).isEqualTo(encoded)
     assertThat(adapter.decode(Buffer().write(encoded))).isEqualTo(value)
   }
 
