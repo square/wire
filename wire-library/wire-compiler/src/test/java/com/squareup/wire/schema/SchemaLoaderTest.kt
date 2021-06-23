@@ -491,8 +491,14 @@ class SchemaLoaderTest {
       )
       loader.loadSchema()
     }
-    assertThat(schema.getType("squareup.colors.Red")).isNotNull()
-    assertThat(schema.getType("squareup.colors.Orange")).isNotNull()
-    assertThat(schema.getType("squareup.colors.Yellow")).isNotNull()
+    val redMessage = schema.getType("squareup.colors.Red") as MessageType
+    assertThat(redMessage.field("orange")!!.type).isEqualTo(ProtoType.get("squareup.colors.Orange"))
+
+    val orangeMessage = schema.getType("squareup.colors.Orange") as MessageType
+    assertThat(orangeMessage.field("yellow")!!.type)
+      .isEqualTo(ProtoType.get("squareup.colors.Yellow"))
+
+    val yellowMessage = schema.getType("squareup.colors.Yellow") as MessageType
+    assertThat(yellowMessage.fields).isEmpty()
   }
 }
