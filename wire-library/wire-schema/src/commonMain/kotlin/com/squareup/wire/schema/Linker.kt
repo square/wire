@@ -91,6 +91,22 @@ class Linker {
       sourceFiles += fileLinker
     }
 
+    // When loading exhaustively, every import (and transitive import!) is a source file.
+    if (loadExhaustively) {
+      val queue = mutableQueueOf<FileLinker>()
+      queue += fileLinkers.values
+      while (true) {
+        val fileLinker = queue.poll() ?: break
+        for (importPath in fileLinker.protoFile.imports + fileLinker.protoFile.publicImports) {
+          if (importPath !in fileLinkers) {
+            val imported = withContext(fileLinker.protoFile).getFileLinker(importPath)
+            sourceFiles += imported
+            queue += imported
+          }
+        }
+      }
+    }
+
     for (fileLinker in sourceFiles) {
       fileLinker.requireTypesRegistered()
     }
@@ -138,7 +154,7 @@ class Linker {
 
     val result = mutableListOf<ProtoFile>()
     for (fileLinker in fileLinkers.values) {
-      if (loadExhaustively || sourceFiles.contains(fileLinker)) {
+      if (fileLinker in sourceFiles) {
         result.add(fileLinker.protoFile)
         continue
       }
