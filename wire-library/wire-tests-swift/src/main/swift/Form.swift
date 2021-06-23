@@ -207,6 +207,16 @@ extension Form.Decision : Hashable {
 }
 #endif
 
+#if !WIRE_REMOVE_REDACTABLE
+extension Form.Decision : Redactable {
+    public enum RedactedKeys : String, RedactedKey {
+
+        case e
+
+    }
+}
+#endif
+
 #if !WIRE_REMOVE_EQUATABLE
 extension Form.ButtonElement : Equatable {
 }
