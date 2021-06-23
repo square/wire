@@ -88,7 +88,14 @@ internal class SchemaProtoAdapterFactory(
     private val enumType: EnumType
   ) : ProtoAdapter<Any>(VARINT, Any::class, null, enumType.syntax) {
     override fun encodedSize(value: Any): Int {
-      throw UnsupportedOperationException()
+      if (value is String) {
+        val constant = enumType.constant(value)!!
+        return INT32.encodedSize(constant.tag)
+      } else if (value is Int) {
+        return INT32.encodedSize(value)
+      } else {
+        throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
+      }
     }
 
     override fun encode(writer: ProtoWriter, value: Any) {
