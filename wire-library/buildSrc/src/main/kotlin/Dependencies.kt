@@ -12,12 +12,12 @@ object versions {
   val gson = "2.8.6"
   val guava = "20.0"
   val javapoet = "1.13.0"
-  val kotlinpoet = "1.8.0"
+  val kotlinpoet = "1.9.0"
   val jsr305 = "3.0.2"
   val kotlin = "1.4.10"
   val okio = "3.0.0-alpha.6"
-  val okhttp = "4.2.2"
-  val moshi = "1.11.0"
+  val okhttp = "4.9.1"
+  val moshi = "1.12.0"
   val protobuf = "3.14.0"
   val protobufGradlePlugin = "0.8.13"
   val junit = "4.12"
@@ -85,7 +85,6 @@ object deps {
     }
 
     val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.1"
-    val serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
     val reflect = "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
     val stdlib = "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
   }
@@ -110,7 +109,7 @@ object deps {
     val protoc = "com.google.protobuf:protoc:${versions.protobuf}"
   }
 
-  val truth = "com.google.truth:truth:1.0.1"
+  val truth = "com.google.truth:truth:1.1.3"
 
   object wire {
     val compiler = "com.squareup.wire:wire-compiler"
