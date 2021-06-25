@@ -14,7 +14,7 @@ object versions {
   val javapoet = "1.13.0"
   val kotlinpoet = "1.9.0"
   val jsr305 = "3.0.2"
-  val kotlin = "1.4.10"
+  val kotlin = "1.5.20"
   val okio = "3.0.0-alpha.6"
   val okhttp = "4.9.1"
   val moshi = "1.12.0"
