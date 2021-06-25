@@ -1,6 +1,27 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.5
+---------------------
+
+_2021-06-24_
+
+**Kotlin + Java**
+
+ * New: Generate Kotlin code whose members match the declaration order of the corresponding `.proto`
+   files. In previous releases, generated members were sorted by kind (fields, oneofs), then by
+   declaration order. With this update only declaration order is used. **Note that this will change
+   the encoded-bytes of these messages.** This change is both forwards and backwards-compatible.
+   Identical encoding of equal messages across Wire releases is typical but not guaranteed, and this
+   is a rare release that changes that encoding. If you do cryptographic hashes on encoded proto
+   messages, you will notice that the hashes are different in this release.
+ * Fix: Redact boxed `OneOf` fields.
+ * Fix: Don't crash encoding schemas when an option contains a repeated field, an enum, or a double.
+ * Fix: Be more aggressive about loading transitive files with `SchemaLoader.loadExhaustively`.
+ * Fix: Don't break task caching by using absolute paths in the Gradle plugin. Wire now uses
+   project-relative paths in any attribute that is used as a cache key.
+
+
 Version 4.0.0-alpha.4
 ---------------------
 
