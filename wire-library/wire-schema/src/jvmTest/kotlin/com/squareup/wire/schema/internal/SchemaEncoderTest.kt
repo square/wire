@@ -30,6 +30,7 @@ class SchemaEncoderTest {
             |extend google.protobuf.MethodOptions {
             |  optional double timeout = 22000;
             |  optional GreekLetter greek_letter = 22001;
+            |  repeated GreekLetter fraternity = 22002;
             |}
             |
             |message HandleRequest {
@@ -42,6 +43,7 @@ class SchemaEncoderTest {
             |  rpc Handle ( HandleRequest ) returns ( HandleResponse ) {
             |    option (timeout) = 2.1;
             |    option (greek_letter) = BETA;
+            |    option (fraternity) = [ALPHA, BETA, ALPHA];
             |  }
             |}
             |""".trimMargin()
@@ -86,6 +88,11 @@ class SchemaEncoderTest {
               .addField(22001, UnknownFieldSet.Field.newBuilder()
                 .addVarint(2L)
                 .build())
+              .addField(22002, UnknownFieldSet.Field.newBuilder()
+                .addVarint(1L)
+                .addVarint(2L)
+                .addVarint(1L)
+                .build())
               .build())
           .build())
         .build()))
@@ -101,6 +108,14 @@ class SchemaEncoderTest {
         .setExtendee(".google.protobuf.MethodOptions")
         .setNumber(22001)
         .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+        .setType(FieldDescriptorProto.Type.TYPE_ENUM)
+        .setTypeName(".GreekLetter")
+        .build())
+      .addExtension(FieldDescriptorProto.newBuilder()
+        .setName("fraternity")
+        .setExtendee(".google.protobuf.MethodOptions")
+        .setNumber(22002)
+        .setLabel(FieldDescriptorProto.Label.LABEL_REPEATED)
         .setType(FieldDescriptorProto.Type.TYPE_ENUM)
         .setTypeName(".GreekLetter")
         .build())

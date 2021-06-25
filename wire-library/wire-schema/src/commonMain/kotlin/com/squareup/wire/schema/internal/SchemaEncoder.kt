@@ -400,22 +400,29 @@ class SchemaEncoder(
     val result = mutableMapOf<String, Any>()
     for ((key, value) in optionsMap) {
       val field = schema.getField(key) ?: error("unexpected options field: $key")
-      result[field.name] = toJson(field, value) ?: continue
+      result[field.name] = toJson(field, value!!)
     }
 
     return result
   }
 
-  private fun toJson(field: Field, value: Any?): Any? {
+  private fun toJson(field: Field, value: Any): Any {
+    return when {
+      field.isRepeated -> (value as List<*>).map { toJsonSingle(field.type!!, it!!) }
+      else -> toJsonSingle(field.type!!, value)
+    }
+  }
+
+  private fun toJsonSingle(type: ProtoType, value: Any): Any {
     // TODO: use optionValueToInt(value) when that's available in commonMain.
-    return when (field.type) {
+    return when (type) {
       ProtoType.INT32 -> (value as String).toInt()
       ProtoType.DOUBLE -> (value as String).toDouble()
       ProtoType.BOOL -> (value as String).toBoolean()
       ProtoType.STRING -> value as String
       else -> {
-        when (schema.getType(field.type!!)) {
-          is MessageType -> toJsonMap(value as Map<ProtoMember, Any?>)
+        when (schema.getType(type)) {
+          is MessageType -> toJsonMap(value as Map<ProtoMember, Any>)
           is EnumType -> value as String
           else -> error("not implemented yet!!")
         }
@@ -423,7 +430,7 @@ class SchemaEncoder(
     }
   }
 
-  private fun toJsonMap(map: Map<ProtoMember, Any?>): Map<String, Any?> {
+  private fun toJsonMap(map: Map<ProtoMember, Any>): Map<String, Any?> {
     val result = mutableMapOf<String, Any?>()
     for ((key, value) in map) {
       val field = schema.getField(key) ?: continue // TODO: warn about this??
