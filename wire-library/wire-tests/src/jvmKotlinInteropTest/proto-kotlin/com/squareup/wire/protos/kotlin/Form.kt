@@ -62,7 +62,7 @@ public class Form(
   public override fun toString(): String {
     val result = mutableListOf<String>()
     if (choice != null) result += """choice=$choice"""
-    if (decision != null) result += """decision=$decision"""
+    if (decision != null) result += """decision=██"""
     return result.joinToString(prefix = "Form{", separator = ", ", postfix = "}")
   }
 
@@ -168,6 +168,7 @@ public class Form(
       }
 
       public override fun redact(`value`: Form): Form = value.copy(
+        decision = null,
         unknownFields = ByteString.EMPTY
       )
     }

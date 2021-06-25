@@ -1165,9 +1165,12 @@ class KotlinGenerator private constructor(
               add("if (%N != null) ", fieldName)
               addStatement("%N += %P", resultName, buildCodeBlock {
                 add(fieldName)
-                // TODO(Benoit) Do we redact if one of the field is redacted?
-                add("=\$")
-                add(fieldName)
+                if (fieldOrOneOf.fields.any { it.isRedacted }) {
+                  add("=██")
+                } else {
+                  add("=\$")
+                  add(fieldName)
+                }
               }
               )
             }
@@ -1589,14 +1592,23 @@ class KotlinGenerator private constructor(
     }
 
     val redactedFields = mutableListOf<CodeBlock>()
-    for (field in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs().filterIsInstance<Field>()) {
-      val fieldName = nameAllocator[field]
-      val redactedField = field.redact(fieldName)
-      if (redactedField != null) {
-        redactedFields += CodeBlock.of("%N = %L", fieldName, redactedField)
+    for (fieldOrOneOf in message.fieldsAndFlatOneOfFieldsAndBoxedOneOfs()) {
+      when (fieldOrOneOf) {
+        is Field -> {
+          val fieldName = nameAllocator[fieldOrOneOf]
+          val redactedField = fieldOrOneOf.redact(fieldName)
+          if (redactedField != null) {
+            redactedFields += CodeBlock.of("%N = %L", fieldName, redactedField)
+          }
+        }
+        is OneOf -> {
+          if (fieldOrOneOf.fields.none { it.isRedacted }) continue
+          val fieldName = nameAllocator[fieldOrOneOf]
+          redactedFields += CodeBlock.of("%N = %L", fieldName, CodeBlock.of("null"))
+        }
+        else -> throw IllegalArgumentException("Unexpected element: $fieldOrOneOf")
       }
     }
-    // TODO(benoit) How do we deal with redacted oneof fields !?
     redactedFields += CodeBlock.of("unknownFields = %T.EMPTY", ByteString::class)
     return result
         .addStatement(
