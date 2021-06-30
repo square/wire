@@ -21,6 +21,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
 import okio.Path.Companion.toPath
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
@@ -83,8 +84,9 @@ open class WireTask : SourceTask() {
   @Input
   var permitPackageCycles: Boolean = false
 
-  @Input
-  lateinit var inputFiles: List<String>
+  @InputFiles
+  @PathSensitive(PathSensitivity.RELATIVE)
+  lateinit var inputFiles: FileCollection
 
   @TaskAction
   fun generateWireFiles() {
@@ -117,8 +119,7 @@ open class WireTask : SourceTask() {
       logger.debug("targets: $targets")
     }
 
-    inputFiles.forEach {
-      val fileObj = project.file(it)
+    inputFiles.forEach { fileObj ->
       check(fileObj.exists()) {
         "Invalid path string: \"${fileObj.path}\". Path does not exist."
       }
