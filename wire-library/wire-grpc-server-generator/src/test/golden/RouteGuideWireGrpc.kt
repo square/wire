@@ -161,11 +161,11 @@ public object RouteGuideWireGrpc {
       RouteGuideBlockingStub(channel)
 
   public abstract class RouteGuideImplBase : BindableService {
-    public open fun GetFeature(request: Point, response: StreamObserver<Feature>) = throw
+    public open fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit = throw
         UnsupportedOperationException()
 
-    public open fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>) = throw
-        UnsupportedOperationException()
+    public open fun ListFeatures(request: Rectangle, response: StreamObserver<Feature>): Unit =
+        throw UnsupportedOperationException()
 
     public open fun RecordRoute(response: StreamObserver<RouteSummary>): StreamObserver<Point> =
         throw UnsupportedOperationException()
