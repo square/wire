@@ -1826,7 +1826,9 @@ class KotlinGenerator private constructor(
         .apply {
           addCode("return when (value) {\n⇥")
           message.constants.forEach { constant ->
-            addCode("%L -> %L\n", constant.tag, nameAllocator[constant])
+            addCode("%L -> ", constant.tag)
+            if (constant.isDeprecated) addCode("@Suppress(\"DEPRECATION\") ")
+            addCode("%L\n", nameAllocator[constant])
           }
           addCode("else -> null")
           addCode("\n⇤}\n") // close the block
