@@ -23,6 +23,7 @@ import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.UNIT
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
 import java.io.InputStream
@@ -62,6 +63,7 @@ object ImplBaseGenerator {
         .addParameter(
           "response", ClassName("io.grpc.stub", "StreamObserver").parameterizedBy(responseType)
         )
+        .returns(UNIT)
     }
   }
 
