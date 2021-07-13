@@ -1460,6 +1460,10 @@ class KotlinGeneratorTest {
          |  EAST(2),
          """.trimMargin()
     )
+    assertThat(code).contains(
+      """|  2 -> @Suppress("DEPRECATION") EAST
+         """.trimMargin()
+    )
   }
 
   @Test fun deprecatedField() {

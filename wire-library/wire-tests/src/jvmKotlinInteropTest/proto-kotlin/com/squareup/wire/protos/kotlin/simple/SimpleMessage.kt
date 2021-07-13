@@ -647,7 +647,7 @@ public class SimpleMessage(
         1 -> FOO
         2 -> BAR
         3 -> BAZ
-        3 -> BUZ
+        3 -> @Suppress("DEPRECATION") BUZ
         else -> null
       }
     }

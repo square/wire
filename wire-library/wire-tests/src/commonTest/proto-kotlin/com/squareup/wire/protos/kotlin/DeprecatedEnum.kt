@@ -34,8 +34,8 @@ public enum class DeprecatedEnum(
 
     @JvmStatic
     public fun fromValue(`value`: Int): DeprecatedEnum? = when (value) {
-      1 -> DISABLED
-      2 -> ENABLED
+      1 -> @Suppress("DEPRECATION") DISABLED
+      2 -> @Suppress("DEPRECATION") ENABLED
       3 -> ON
       4 -> OFF
       else -> null
