@@ -316,7 +316,7 @@ data class KotlinTarget(
    */
   val boxOneOfsMinSize: Int = 5_000,
 
-  /** True to also generate gRPC server-compatible classes. */
+  /** True to also generate gRPC server-compatible classes. Experimental feature. */
   val grpcServerCompatible: Boolean = false,
 
   /**
