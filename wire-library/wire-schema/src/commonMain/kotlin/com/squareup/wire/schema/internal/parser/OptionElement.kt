@@ -85,6 +85,20 @@ data class OptionElement(
       is String -> {
         append(""""$value"""")
       }
+      is Pair<*,*> -> {
+        if (value.first is Kind) {
+           when (value.first as Kind) {
+             BOOLEAN,
+             NUMBER,
+             ENUM -> {
+               append("${value.second}")
+             }
+             else -> append(formatOptionMapValue(value.second as Any))
+           }
+        } else {
+          append(formatOptionMapValue(value.second as Any))
+        }
+      }
       is Map<*, *> -> {
         append("{\n")
         formatOptionMap(this, value as Map<String, *>)
