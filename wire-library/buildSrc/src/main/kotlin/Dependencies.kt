@@ -10,12 +10,12 @@ object versions {
   val errorprone = "2.0.21"
   val grpc = "1.38.1"
   val gson = "2.8.6"
-  val guava = "20.0"
+  val guava = "30.1.1-jre"
   val javapoet = "1.13.0"
   val kotlinpoet = "1.9.0"
   val jsr305 = "3.0.2"
-  val kotlin = "1.4.10"
-  val okio = "3.0.0-alpha.6"
+  val kotlin = "1.5.21"
+  val okio = "3.0.0-alpha.8"
   val okhttp = "4.9.1"
   val moshi = "1.12.0"
   val protobuf = "3.17.3"
@@ -25,7 +25,7 @@ object versions {
   val jimfs = "1.0"
   val animalSniffer = "1.16"
   val animalSnifferGradle = "1.5.0"
-  val mavenPublish = "0.8.0"
+  val mavenPublish = "0.17.0"
 }
 
 object deps {
