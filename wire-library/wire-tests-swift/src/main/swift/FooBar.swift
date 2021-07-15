@@ -13,7 +13,9 @@ public struct FooBar {
     public var fred: [Float]
     public var daisy: Double?
     public var nested: [FooBar]
+    @JSONEnum
     public var ext: FooBarBazEnum?
+    @JSONEnum
     public var rep: [FooBarBazEnum]
     public var unknownFields: Data = .init()
 
@@ -41,6 +43,7 @@ public struct FooBar {
 
     public struct Nested {
 
+        @JSONEnum
         public var value: FooBarBazEnum?
         public var unknownFields: Data = .init()
 

@@ -631,6 +631,10 @@ class SwiftGenerator private constructor(
       if (!forStorageType && field.isDeprecated) {
         property.addAttribute(deprecated)
       }
+      val prototype = field.type
+      if (prototype != null && schema.getType(prototype) is EnumType) {
+        property.addAttribute("JSONEnum")
+      }
       if (field.typeName.needsJsonString()) {
         property.addAttribute("JSONString")
       }
