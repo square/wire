@@ -201,6 +201,10 @@ class Options(
         return coerceValueForField(context, value)
       }
 
+      is Pair<*,*> -> {
+        return canonicalizeValue(linker, context, value.second!!)
+      }
+
       else -> {
         throw IllegalArgumentException("Unexpected option value: $value")
       }
