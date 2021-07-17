@@ -29,6 +29,7 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
@@ -152,6 +153,14 @@ class WirePlugin : Plugin<Project> {
         )
       }
       val generatedSourcesDirectories = targets.map { target -> project.file(target.outDirectory) }.toSet()
+
+      // We always add our generated directories for commons in case custom targets rely on it.
+      if (source.type == KotlinPlatformType.common) {
+        for (generatedSourcesDirectory in generatedSourcesDirectories) {
+          source.kotlinSourceDirectorySet
+            ?.srcDir(generatedSourcesDirectory.toRelativeString(project.projectDir))
+        }
+      }
 
       // Both the JavaCompile and KotlinCompile tasks might already have been configured by now.
       // Even though we add the Wire output directories into the corresponding sourceSets, the
