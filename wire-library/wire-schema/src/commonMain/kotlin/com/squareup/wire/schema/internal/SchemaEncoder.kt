@@ -23,12 +23,14 @@ import com.squareup.wire.Syntax
 import com.squareup.wire.internal.camelCase
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
+import com.squareup.wire.schema.Extensions
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
+import com.squareup.wire.schema.ProtoType.Companion
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
@@ -158,7 +160,8 @@ class SchemaEncoder(
 
       enumEncoder.asRepeated()
         .encodeWithTag(writer, 4, value.nestedTypes.filterIsInstance<EnumType>())
-      // ExtensionRange.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.extension_range)
+      extensionRangeEncoder.asRepeated()
+        .encodeWithTag(writer, 5, value.extensionsList.flatMap { it.values })
 
       // Real and synthetic oneofs.
       oneOfEncoder.asRepeated().encodeWithTag(writer, 8, encodedOneOfs)
@@ -330,6 +333,22 @@ class SchemaEncoder(
       enumOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
       // EnumReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.reserved_range)
       // STRING.asRepeated().encodeWithTag(writer, 5, value.reserved_name)
+    }
+  }
+
+  private val extensionRangeEncoder : Encoder<Any> = object : Encoder<Any>() {
+    override fun encode(writer: ProtoWriter, value: Any) {
+      when (value) {
+        is IntRange -> {
+          INT32.encodeWithTag(writer, 1, value.first) // Inclusive.
+          INT32.encodeWithTag(writer, 2, value.last + 1) // Exclusive.
+        }
+        is Int -> {
+          INT32.encodeWithTag(writer, 1, value) // Inclusive.
+          INT32.encodeWithTag(writer, 2, value + 1) // Exclusive.
+        }
+        else -> error("unexpected extension range: $value")
+      }
     }
   }
 

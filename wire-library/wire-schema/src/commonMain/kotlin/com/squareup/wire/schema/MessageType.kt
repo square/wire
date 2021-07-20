@@ -40,7 +40,7 @@ data class MessageType(
   val extensionFields: MutableList<Field>,
   val oneOfs: List<OneOf>,
   override val nestedTypes: List<Type>,
-  private val extensionsList: List<Extensions>,
+  val extensionsList: List<Extensions>,
   private val reserveds: List<Reserved>,
   override val options: Options,
   override val syntax: Syntax
