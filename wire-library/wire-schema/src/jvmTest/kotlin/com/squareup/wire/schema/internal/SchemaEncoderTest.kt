@@ -1,6 +1,7 @@
 package com.squareup.wire.schema.internal
 
 import com.google.protobuf.DescriptorProtos.DescriptorProto
+import com.google.protobuf.DescriptorProtos.DescriptorProto.ExtensionRange
 import com.google.protobuf.DescriptorProtos.EnumDescriptorProto
 import com.google.protobuf.DescriptorProtos.EnumValueDescriptorProto
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto
@@ -118,6 +119,39 @@ class SchemaEncoderTest {
         .setLabel(FieldDescriptorProto.Label.LABEL_REPEATED)
         .setType(FieldDescriptorProto.Type.TYPE_ENUM)
         .setTypeName(".GreekLetter")
+        .build())
+      .build())
+  }
+
+  @Test fun `encode extension range`() {
+    val schema = RepoBuilder()
+      .add(
+        "test.proto", """
+            |syntax = "proto2";
+            |
+            |message TestMessage {
+            |  extensions 5, 1000 to max;
+            |}
+            |""".trimMargin()
+      )
+      .schema()
+
+    val handleServiceProto = schema.protoFile("test.proto")!!
+    val encoded = SchemaEncoder(schema).encode(handleServiceProto)
+
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    assertThat(fileDescriptorProto).isEqualTo(FileDescriptorProto.newBuilder()
+      .setName("test.proto")
+      .addMessageType(DescriptorProto.newBuilder()
+        .setName("TestMessage")
+        .addExtensionRange(ExtensionRange.newBuilder()
+          .setStart(5)
+          .setEnd(6)
+          .build())
+        .addExtensionRange(ExtensionRange.newBuilder()
+          .setStart(1000)
+          .setEnd(MAX_TAG_VALUE + 1)
+          .build())
         .build())
       .build())
   }
