@@ -33,6 +33,9 @@ expect abstract class EnumAdapter<E : WireEnum> protected constructor(
   override fun encode(writer: ProtoWriter, value: E)
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: E)
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): E
 
   override fun redact(value: E): E
@@ -51,6 +54,11 @@ internal inline fun <E : WireEnum> commonEncodedSize(value: E): Int {
 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun <E : WireEnum> commonEncode(writer: ProtoWriter, value: E) {
+  writer.writeVarint32(value.value)
+}
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <E : WireEnum> commonEncode(writer: ReverseProtoWriter, value: E) {
   writer.writeVarint32(value.value)
 }
 

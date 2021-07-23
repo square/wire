@@ -16,16 +16,16 @@
 package com.squareup.wire
 
 import com.squareup.wire.internal.createRuntimeMessageAdapter
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import kotlin.reflect.KClass
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
 import okio.buffer
 import okio.sink
 import okio.source
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import kotlin.reflect.KClass
 
 actual abstract class ProtoAdapter<E> actual constructor(
   internal actual val fieldEncoding: FieldEncoding,
@@ -87,7 +87,17 @@ actual abstract class ProtoAdapter<E> actual constructor(
   actual abstract fun encode(writer: ProtoWriter, value: E)
 
   @Throws(IOException::class)
+  actual open fun encode(writer: ReverseProtoWriter, value: E) {
+    delegateEncode(writer, value)
+  }
+
+  @Throws(IOException::class)
   actual open fun encodeWithTag(writer: ProtoWriter, tag: Int, value: E?) {
+    commonEncodeWithTag(writer, tag, value)
+  }
+
+  @Throws(IOException::class)
+  actual open fun encodeWithTag(writer: ReverseProtoWriter, tag: Int, value: E?) {
     commonEncodeWithTag(writer, tag, value)
   }
 
