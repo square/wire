@@ -149,7 +149,7 @@ class SchemaEncoder(
       STRING.encodeWithTag(writer, 1, value.type.simpleName)
 
       val fieldsAndOneOfFields = (encodedFields + encodedOneOfs.flatMap { it.fields })
-        .sortedBy { it.field.tag }
+        .sortedWith(compareBy({ it.field.location.line }, { it.field.location.column }))
       fieldEncoder.asRepeated().encodeWithTag(writer, 2, fieldsAndOneOfFields)
 
       // FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension)

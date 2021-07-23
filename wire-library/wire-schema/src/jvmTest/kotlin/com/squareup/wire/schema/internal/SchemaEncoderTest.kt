@@ -1,5 +1,6 @@
 package com.squareup.wire.schema.internal
 
+import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.DescriptorProtos.DescriptorProto
 import com.google.protobuf.DescriptorProtos.DescriptorProto.ExtensionRange
 import com.google.protobuf.DescriptorProtos.EnumDescriptorProto
@@ -151,6 +152,60 @@ class SchemaEncoderTest {
         .addExtensionRange(ExtensionRange.newBuilder()
           .setStart(1000)
           .setEnd(MAX_TAG_VALUE + 1)
+          .build())
+        .build())
+      .build())
+  }
+
+  @Test fun `oneof tag order`() {
+    val schema = RepoBuilder()
+      .add(
+        "test.proto", """
+            |syntax = "proto3";
+            |
+            |message AMessage {
+            |  string two = 2;
+            |
+            |  oneof a_oneof {
+            |    string one = 1;
+            |    string three = 3;
+            |  }
+            |}
+            |""".trimMargin()
+      )
+      .schema()
+    val handleServiceProto = schema.protoFile("test.proto")!!
+    val encoded = SchemaEncoder(schema).encode(handleServiceProto)
+
+    val fileDescriptorProto = FileDescriptorProto.parseFrom(encoded.toByteArray())
+    assertThat(fileDescriptorProto).isNotNull
+    assertThat(fileDescriptorProto).isEqualTo(FileDescriptorProto.newBuilder()
+      .setName("test.proto")
+      .setSyntax("proto3")
+      .addMessageType(DescriptorProto.newBuilder()
+        .setName("AMessage")
+        .addField(FieldDescriptorProto.newBuilder()
+          .setType(FieldDescriptorProto.Type.TYPE_STRING)
+          .setName("two")
+          .setNumber(2)
+          .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+          .build())
+        .addField(FieldDescriptorProto.newBuilder()
+          .setType(FieldDescriptorProto.Type.TYPE_STRING)
+          .setName("one")
+          .setNumber(1)
+          .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+          .setOneofIndex(0)
+          .build())
+        .addField(FieldDescriptorProto.newBuilder()
+          .setType(FieldDescriptorProto.Type.TYPE_STRING)
+          .setName("three")
+          .setNumber(3)
+          .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
+          .setOneofIndex(0)
+          .build())
+        .addOneofDecl(DescriptorProtos.OneofDescriptorProto.newBuilder()
+          .setName("a_oneof")
           .build())
         .build())
       .build())
