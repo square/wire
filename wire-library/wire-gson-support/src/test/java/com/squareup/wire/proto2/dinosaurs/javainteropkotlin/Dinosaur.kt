@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -206,6 +207,15 @@ public class Dinosaur(
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 4, value.mass_kilograms)
         Period.ADAPTER.encodeWithTag(writer, 5, value.period)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Dinosaur): Unit {
+        writer.writeBytes(value.unknownFields)
+        Period.ADAPTER.encodeWithTag(writer, 5, value.period)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 4, value.mass_kilograms)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 3, value.length_meters)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 2, value.picture_urls)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
       public override fun decode(reader: ProtoReader): Dinosaur {

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -204,6 +205,12 @@ public final class E extends Message<E, E.Builder> {
       }
 
       @Override
+      public void encode(ReverseProtoWriter writer, F value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
+      }
+
+      @Override
       public F decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
@@ -247,6 +254,13 @@ public final class E extends Message<E, E.Builder> {
       F.ADAPTER.encodeWithTag(writer, 1, value.f);
       G.ADAPTER.encodeWithTag(writer, 2, value.g);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, E value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      G.ADAPTER.encodeWithTag(writer, 2, value.g);
+      F.ADAPTER.encodeWithTag(writer, 1, value.f);
     }
 
     @Override

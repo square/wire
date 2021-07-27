@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import java.io.IOException;
 import java.lang.Object;
@@ -78,6 +79,11 @@ public final class TheRequest extends Message<TheRequest, TheRequest.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, TheRequest value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, TheRequest value) throws IOException {
       writer.writeBytes(value.unknownFields());
     }
 

@@ -10,6 +10,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -263,6 +264,20 @@ public class PizzaDelivery(
         if (value.ordered_at != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 7,
             value.ordered_at)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: PizzaDelivery): Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.ordered_at != null) ProtoAdapter.INSTANT.encodeWithTag(writer, 7,
+            value.ordered_at)
+        if (value.loyalty != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 6, value.loyalty)
+        if (value.delivered_within_or_free != null) ProtoAdapter.DURATION.encodeWithTag(writer, 5,
+            value.delivered_within_or_free)
+        if (value.promotion != null) AnyMessage.ADAPTER.encodeWithTag(writer, 4, value.promotion)
+        Pizza.ADAPTER.asRepeated().encodeWithTag(writer, 3, value.pizzas)
+        if (value.address != "") ProtoAdapter.STRING.encodeWithTag(writer, 2, value.address)
+        if (value.phone_number != "") ProtoAdapter.STRING.encodeWithTag(writer, 1,
+            value.phone_number)
       }
 
       public override fun decode(reader: ProtoReader): PizzaDelivery {

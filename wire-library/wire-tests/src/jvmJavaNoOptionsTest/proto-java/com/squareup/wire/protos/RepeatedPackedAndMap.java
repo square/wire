@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -162,6 +163,14 @@ public final class RepeatedPackedAndMap extends Message<RepeatedPackedAndMap, Re
       ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
       map_int32_int32Adapter().encodeWithTag(writer, 401, value.map_int32_int32);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, RepeatedPackedAndMap value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      map_int32_int32Adapter().encodeWithTag(writer, 401, value.map_int32_int32);
+      ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32);
+      ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -616,6 +617,30 @@ public class AllStructs(
         ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 201, value.oneof_struct)
         ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 202, value.oneof_list)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: AllStructs): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 202, value.oneof_list)
+        ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 201, value.oneof_struct)
+        map_int32_null_valueAdapter.encodeWithTag(writer, 304, value.map_int32_null_value)
+        map_int32_value_aAdapter.encodeWithTag(writer, 303, value.map_int32_value_a)
+        map_int32_listAdapter.encodeWithTag(writer, 302, value.map_int32_list)
+        map_int32_structAdapter.encodeWithTag(writer, 301, value.map_int32_struct)
+        ProtoAdapter.STRUCT_NULL.asRepeated().encodeWithTag(writer, 104, value.rep_null_value)
+        ProtoAdapter.STRUCT_VALUE.asRepeated().encodeWithTag(writer, 103, value.rep_value_a)
+        ProtoAdapter.STRUCT_LIST.asRepeated().encodeWithTag(writer, 102, value.rep_list)
+        ProtoAdapter.STRUCT_MAP.asRepeated().encodeWithTag(writer, 101, value.rep_struct)
+        if (value.value_f != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 9, value.value_f)
+        if (value.value_e != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 8, value.value_e)
+        if (value.value_d != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 7, value.value_d)
+        if (value.value_c != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 6, value.value_c)
+        if (value.value_b != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 5, value.value_b)
+        if (value.value_a != null) ProtoAdapter.STRUCT_VALUE.encodeWithTag(writer, 4, value.value_a)
+        if (value.null_value != null) ProtoAdapter.STRUCT_NULL.encodeWithTag(writer, 3,
+            value.null_value)
+        if (value.list != null) ProtoAdapter.STRUCT_LIST.encodeWithTag(writer, 2, value.list)
+        if (value.struct != null) ProtoAdapter.STRUCT_MAP.encodeWithTag(writer, 1, value.struct)
       }
 
       public override fun decode(reader: ProtoReader): AllStructs {

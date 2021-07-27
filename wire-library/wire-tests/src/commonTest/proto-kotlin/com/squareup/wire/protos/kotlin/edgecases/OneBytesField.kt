@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -82,6 +83,11 @@ public class OneBytesField(
       public override fun encode(writer: ProtoWriter, `value`: OneBytesField): Unit {
         ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OneBytesField): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 1, value.opt_bytes)
       }
 
       public override fun decode(reader: ProtoReader): OneBytesField {

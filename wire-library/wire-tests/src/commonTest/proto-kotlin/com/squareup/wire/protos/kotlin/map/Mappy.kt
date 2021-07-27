@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -92,6 +93,11 @@ public class Mappy(
       public override fun encode(writer: ProtoWriter, `value`: Mappy): Unit {
         thingsAdapter.encodeWithTag(writer, 1, value.things)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Mappy): Unit {
+        writer.writeBytes(value.unknownFields)
+        thingsAdapter.encodeWithTag(writer, 1, value.things)
       }
 
       public override fun decode(reader: ProtoReader): Mappy {

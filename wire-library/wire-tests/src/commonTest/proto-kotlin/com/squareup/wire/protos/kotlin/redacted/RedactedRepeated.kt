@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -108,6 +109,12 @@ public class RedactedRepeated(
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
         RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedRepeated): Unit {
+        writer.writeBytes(value.unknownFields)
+        RedactedFields.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.b)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 1, value.a)
       }
 
       public override fun decode(reader: ProtoReader): RedactedRepeated {

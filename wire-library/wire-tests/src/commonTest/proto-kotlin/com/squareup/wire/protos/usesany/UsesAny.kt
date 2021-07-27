@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -102,6 +103,12 @@ public class UsesAny(
         AnyMessage.ADAPTER.encodeWithTag(writer, 1, value.just_one)
         AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.many_anys)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: UsesAny): Unit {
+        writer.writeBytes(value.unknownFields)
+        AnyMessage.ADAPTER.asRepeated().encodeWithTag(writer, 2, value.many_anys)
+        AnyMessage.ADAPTER.encodeWithTag(writer, 1, value.just_one)
       }
 
       public override fun decode(reader: ProtoReader): UsesAny {

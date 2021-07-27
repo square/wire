@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -238,6 +239,17 @@ public final class ExternalMessage extends Message<ExternalMessage, ExternalMess
       SimpleMessage.NestedMessage.ADAPTER.encodeWithTag(writer, 128, value.nested_message_ext);
       SimpleMessage.NestedEnum.ADAPTER.encodeWithTag(writer, 129, value.nested_enum_ext);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, ExternalMessage value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      SimpleMessage.NestedEnum.ADAPTER.encodeWithTag(writer, 129, value.nested_enum_ext);
+      SimpleMessage.NestedMessage.ADAPTER.encodeWithTag(writer, 128, value.nested_message_ext);
+      ProtoAdapter.INT32.encodeWithTag(writer, 127, value.bazext);
+      ProtoAdapter.INT32.encodeWithTag(writer, 126, value.barext);
+      ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 125, value.fooext);
+      ProtoAdapter.FLOAT.encodeWithTag(writer, 1, value.f);
     }
 
     @Override

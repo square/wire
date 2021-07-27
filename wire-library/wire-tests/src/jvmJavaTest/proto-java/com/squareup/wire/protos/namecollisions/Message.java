@@ -6,6 +6,7 @@ import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -313,6 +314,21 @@ public final class Message extends com.squareup.wire.Message<Message, Message.Bu
       ProtoAdapter.STRING.encodeWithTag(writer, 9, value.this_);
       ProtoAdapter.STRING.encodeWithTag(writer, 10, value.message);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, Message value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.STRING.encodeWithTag(writer, 10, value.message);
+      ProtoAdapter.STRING.encodeWithTag(writer, 9, value.this_);
+      ProtoAdapter.STRING.encodeWithTag(writer, 8, value.MESSAGE_OPTIONS_);
+      ProtoAdapter.STRING.encodeWithTag(writer, 7, value.ADAPTER_);
+      ProtoAdapter.STRING.encodeWithTag(writer, 6, value.serialVersionUID_);
+      ProtoAdapter.STRING.encodeWithTag(writer, 5, value.hashCode);
+      ProtoAdapter.STRING.encodeWithTag(writer, 4, value.result);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.o);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.other);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.unknownFields);
     }
 
     @Override

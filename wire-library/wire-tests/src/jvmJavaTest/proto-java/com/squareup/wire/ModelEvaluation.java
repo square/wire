@@ -154,6 +154,14 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
     }
 
     @Override
+    public void encode(ReverseProtoWriter writer, ModelEvaluation value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      modelsAdapter().encodeWithTag(writer, 3, value.models);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 2, value.score);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+    }
+
+    @Override
     public ModelEvaluation decode(ProtoReader reader) throws IOException {
       Builder builder = new Builder();
       long token = reader.beginMessage();

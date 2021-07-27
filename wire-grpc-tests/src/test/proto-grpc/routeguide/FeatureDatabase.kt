@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -91,6 +92,11 @@ public class FeatureDatabase(
       public override fun encode(writer: ProtoWriter, `value`: FeatureDatabase): Unit {
         Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: FeatureDatabase): Unit {
+        writer.writeBytes(value.unknownFields)
+        Feature.ADAPTER.asRepeated().encodeWithTag(writer, 1, value.feature)
       }
 
       public override fun decode(reader: ProtoReader): FeatureDatabase {

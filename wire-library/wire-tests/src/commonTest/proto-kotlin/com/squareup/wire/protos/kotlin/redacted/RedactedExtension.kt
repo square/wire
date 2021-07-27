@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -97,6 +98,12 @@ public class RedactedExtension(
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: RedactedExtension): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.e)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.d)
       }
 
       public override fun decode(reader: ProtoReader): RedactedExtension {

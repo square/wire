@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
@@ -1911,6 +1912,85 @@ public class AllTypes(
         writer.writeBytes(value.unknownFields)
       }
 
+      public override fun encode(writer: ReverseProtoWriter, `value`: AllTypes): Unit {
+        writer.writeBytes(value.unknownFields)
+        NestedMessage.ADAPTER.encodeWithTag(writer, 603, value.oneof_nested_message)
+        ProtoAdapter.INT32.encodeWithTag(writer, 602, value.oneof_int32)
+        ProtoAdapter.STRING.encodeWithTag(writer, 601, value.oneof_string)
+        map_string_enumAdapter.encodeWithTag(writer, 504, value.map_string_enum)
+        map_string_messageAdapter.encodeWithTag(writer, 503, value.map_string_message)
+        map_string_stringAdapter.encodeWithTag(writer, 502, value.map_string_string)
+        map_int32_int32Adapter.encodeWithTag(writer, 501, value.map_int32_int32)
+        NestedEnum.ADAPTER.asPacked().encodeWithTag(writer, 316, value.pack_nested_enum)
+        ProtoAdapter.DOUBLE.asPacked().encodeWithTag(writer, 313, value.pack_double)
+        ProtoAdapter.FLOAT.asPacked().encodeWithTag(writer, 312, value.pack_float)
+        ProtoAdapter.BOOL.asPacked().encodeWithTag(writer, 311, value.pack_bool)
+        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 310, value.pack_sfixed64)
+        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 309, value.pack_fixed64)
+        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 308, value.pack_sint64)
+        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 307, value.pack_uint64)
+        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 306, value.pack_int64)
+        ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 305, value.pack_sfixed32)
+        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 304, value.pack_fixed32)
+        ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32)
+        ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32)
+        NestedMessage.ADAPTER.asRepeated().encodeWithTag(writer, 217, value.rep_nested_message)
+        NestedEnum.ADAPTER.asRepeated().encodeWithTag(writer, 216, value.rep_nested_enum)
+        ProtoAdapter.BYTES.asRepeated().encodeWithTag(writer, 215, value.rep_bytes)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 214, value.rep_string)
+        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 213, value.rep_double)
+        ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 212, value.rep_float)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 211, value.rep_bool)
+        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 210, value.rep_sfixed64)
+        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 209, value.rep_fixed64)
+        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 208, value.rep_sint64)
+        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 207, value.rep_uint64)
+        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 206, value.rep_int64)
+        ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed32)
+        ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 204, value.rep_fixed32)
+        ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32)
+        ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32)
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32)
+        ProtoAdapter.BYTES.encodeWithTag(writer, 115, value.opt_bytes)
+        ProtoAdapter.STRING.encodeWithTag(writer, 114, value.opt_string)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 113, value.opt_double)
+        ProtoAdapter.FLOAT.encodeWithTag(writer, 112, value.opt_float)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 111, value.opt_bool)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 110, value.opt_sfixed64)
+        ProtoAdapter.FIXED64.encodeWithTag(writer, 109, value.opt_fixed64)
+        ProtoAdapter.SINT64.encodeWithTag(writer, 108, value.opt_sint64)
+        ProtoAdapter.UINT64.encodeWithTag(writer, 107, value.opt_uint64)
+        ProtoAdapter.INT64.encodeWithTag(writer, 106, value.opt_int64)
+        ProtoAdapter.SFIXED32.encodeWithTag(writer, 105, value.opt_sfixed32)
+        ProtoAdapter.FIXED32.encodeWithTag(writer, 104, value.opt_fixed32)
+        ProtoAdapter.SINT32.encodeWithTag(writer, 103, value.opt_sint32)
+        ProtoAdapter.UINT32.encodeWithTag(writer, 102, value.opt_uint32)
+        ProtoAdapter.INT32.encodeWithTag(writer, 101, value.opt_int32)
+        if (value.nested_message != null) NestedMessage.ADAPTER.encodeWithTag(writer, 17,
+            value.nested_message)
+        if (value.nested_enum != NestedEnum.UNKNOWN) NestedEnum.ADAPTER.encodeWithTag(writer, 16,
+            value.nested_enum)
+        if (value.my_bytes != ByteString.EMPTY) ProtoAdapter.BYTES.encodeWithTag(writer, 15,
+            value.my_bytes)
+        if (value.my_string != "") ProtoAdapter.STRING.encodeWithTag(writer, 14, value.my_string)
+        if (value.my_double != 0.0) ProtoAdapter.DOUBLE.encodeWithTag(writer, 13, value.my_double)
+        if (value.my_float != 0f) ProtoAdapter.FLOAT.encodeWithTag(writer, 12, value.my_float)
+        if (value.my_bool != false) ProtoAdapter.BOOL.encodeWithTag(writer, 11, value.my_bool)
+        if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 10,
+            value.my_sfixed64)
+        if (value.my_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 9, value.my_fixed64)
+        if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 8, value.my_sint64)
+        if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 7, value.my_uint64)
+        if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 6, value.my_int64)
+        if (value.my_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
+            value.my_sfixed32)
+        if (value.my_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
+        if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
+        if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
+        if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
+      }
+
       public override fun decode(reader: ProtoReader): AllTypes {
         var my_int32: Int = 0
         var my_uint32: Int = 0
@@ -2259,6 +2339,11 @@ public class AllTypes(
         public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
           if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+          writer.writeBytes(value.unknownFields)
+          if (value.a != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.a)
         }
 
         public override fun decode(reader: ProtoReader): NestedMessage {

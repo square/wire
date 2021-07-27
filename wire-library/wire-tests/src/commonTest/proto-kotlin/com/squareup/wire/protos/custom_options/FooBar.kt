@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -206,6 +207,19 @@ public class FooBar(
         writer.writeBytes(value.unknownFields)
       }
 
+      public override fun encode(writer: ReverseProtoWriter, `value`: FooBar): Unit {
+        writer.writeBytes(value.unknownFields)
+        FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep)
+        FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext)
+        FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.daisy)
+        ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 5, value.fred)
+        ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.qux)
+        Nested.ADAPTER.encodeWithTag(writer, 3, value.baz)
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
+      }
+
       public override fun decode(reader: ProtoReader): FooBar {
         var foo: Int? = null
         var bar: String? = null
@@ -325,6 +339,11 @@ public class FooBar(
           writer.writeBytes(value.unknownFields)
         }
 
+        public override fun encode(writer: ReverseProtoWriter, `value`: Nested): Unit {
+          writer.writeBytes(value.unknownFields)
+          FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value_)
+        }
+
         public override fun decode(reader: ProtoReader): Nested {
           var value_: FooBarBazEnum? = null
           val unknownFields = reader.forEachTag { tag ->
@@ -415,6 +434,11 @@ public class FooBar(
         public override fun encode(writer: ProtoWriter, `value`: More): Unit {
           ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: More): Unit {
+          writer.writeBytes(value.unknownFields)
+          ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial)
         }
 
         public override fun decode(reader: ProtoReader): More {

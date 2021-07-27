@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -134,6 +135,13 @@ public final class ForeignMessage extends Message<ForeignMessage, ForeignMessage
       ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
       ProtoAdapter.INT32.encodeWithTag(writer, 100, value.j);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, ForeignMessage value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.INT32.encodeWithTag(writer, 100, value.j);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i);
     }
 
     @Override

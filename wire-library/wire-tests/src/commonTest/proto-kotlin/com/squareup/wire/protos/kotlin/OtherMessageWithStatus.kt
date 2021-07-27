@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -65,6 +66,11 @@ public class OtherMessageWithStatus(
       }
 
       public override fun encode(writer: ProtoWriter, `value`: OtherMessageWithStatus): Unit {
+        writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OtherMessageWithStatus):
+          Unit {
         writer.writeBytes(value.unknownFields)
       }
 

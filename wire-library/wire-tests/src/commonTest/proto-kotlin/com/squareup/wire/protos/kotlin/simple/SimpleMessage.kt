@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -273,6 +274,22 @@ public class SimpleMessage(
         writer.writeBytes(value.unknownFields)
       }
 
+      public override fun encode(writer: ReverseProtoWriter, `value`: SimpleMessage): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 12, value.o)
+        ProtoAdapter.STRING.encodeWithTag(writer, 11, value.other)
+        ProtoAdapter.STRING.encodeWithTag(writer, 10, value.result)
+        ProtoAdapter.STRING.encodeWithTag(writer, 9, value.package_)
+        ForeignEnum.ADAPTER.encodeWithTag(writer, 8, value.no_default_foreign_enum)
+        ForeignEnum.ADAPTER.encodeWithTag(writer, 7, value.default_foreign_enum)
+        ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 6, value.repeated_double)
+        ProtoAdapter.INT32.encodeWithTag(writer, 5, value.required_int32)
+        NestedEnum.ADAPTER.encodeWithTag(writer, 4, value.default_nested_enum)
+        ExternalMessage.ADAPTER.encodeWithTag(writer, 3, value.optional_external_msg)
+        NestedMessage.ADAPTER.encodeWithTag(writer, 2, value.optional_nested_msg)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32)
+      }
+
       public override fun decode(reader: ProtoReader): SimpleMessage {
         var optional_int32: Int? = null
         var optional_nested_msg: NestedMessage? = null
@@ -406,6 +423,11 @@ public class SimpleMessage(
         public override fun encode(writer: ProtoWriter, `value`: NestedMessage): Unit {
           ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: NestedMessage): Unit {
+          writer.writeBytes(value.unknownFields)
+          ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb)
         }
 
         public override fun decode(reader: ProtoReader): NestedMessage {

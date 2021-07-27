@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -689,6 +690,33 @@ public class All64(
         ProtoAdapter.INT64.encodeWithTag(writer, 401, value.oneof_int64)
         ProtoAdapter.SFIXED64.encodeWithTag(writer, 402, value.oneof_sfixed64)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: All64): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.SFIXED64.encodeWithTag(writer, 402, value.oneof_sfixed64)
+        ProtoAdapter.INT64.encodeWithTag(writer, 401, value.oneof_int64)
+        map_int64_sfixed64Adapter.encodeWithTag(writer, 505, value.map_int64_sfixed64)
+        map_int64_fixed64Adapter.encodeWithTag(writer, 504, value.map_int64_fixed64)
+        map_int64_sint64Adapter.encodeWithTag(writer, 503, value.map_int64_sint64)
+        map_int64_uint64Adapter.encodeWithTag(writer, 502, value.map_int64_uint64)
+        map_int64_int64Adapter.encodeWithTag(writer, 501, value.map_int64_int64)
+        ProtoAdapter.SFIXED64.asPacked().encodeWithTag(writer, 305, value.pack_sfixed64)
+        ProtoAdapter.FIXED64.asPacked().encodeWithTag(writer, 304, value.pack_fixed64)
+        ProtoAdapter.SINT64.asPacked().encodeWithTag(writer, 303, value.pack_sint64)
+        ProtoAdapter.UINT64.asPacked().encodeWithTag(writer, 302, value.pack_uint64)
+        ProtoAdapter.INT64.asPacked().encodeWithTag(writer, 301, value.pack_int64)
+        ProtoAdapter.SFIXED64.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed64)
+        ProtoAdapter.FIXED64.asRepeated().encodeWithTag(writer, 204, value.rep_fixed64)
+        ProtoAdapter.SINT64.asRepeated().encodeWithTag(writer, 203, value.rep_sint64)
+        ProtoAdapter.UINT64.asRepeated().encodeWithTag(writer, 202, value.rep_uint64)
+        ProtoAdapter.INT64.asRepeated().encodeWithTag(writer, 201, value.rep_int64)
+        if (value.my_sfixed64 != 0L) ProtoAdapter.SFIXED64.encodeWithTag(writer, 5,
+            value.my_sfixed64)
+        if (value.my_fixed64 != 0L) ProtoAdapter.FIXED64.encodeWithTag(writer, 4, value.my_fixed64)
+        if (value.my_sint64 != 0L) ProtoAdapter.SINT64.encodeWithTag(writer, 3, value.my_sint64)
+        if (value.my_uint64 != 0L) ProtoAdapter.UINT64.encodeWithTag(writer, 2, value.my_uint64)
+        if (value.my_int64 != 0L) ProtoAdapter.INT64.encodeWithTag(writer, 1, value.my_int64)
       }
 
       public override fun decode(reader: ProtoReader): All64 {

@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireEnumConstant;
@@ -276,6 +277,16 @@ public final class KeywordJava extends Message<KeywordJava, KeywordJava.Builder>
       ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_);
       KeywordJavaEnum.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enums);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, KeywordJava value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      KeywordJavaEnum.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enums);
+      ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_);
+      package_Adapter().encodeWithTag(writer, 3, value.package_);
+      ProtoAdapter.BOOL.encodeWithTag(writer, 2, value.public_);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.final_);
     }
 
     @Override

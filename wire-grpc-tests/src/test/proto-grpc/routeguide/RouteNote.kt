@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -105,6 +106,12 @@ public class RouteNote(
         Point.ADAPTER.encodeWithTag(writer, 1, value.location)
         ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: RouteNote): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 2, value.message)
+        Point.ADAPTER.encodeWithTag(writer, 1, value.location)
       }
 
       public override fun decode(reader: ProtoReader): RouteNote {
