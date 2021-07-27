@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -134,6 +135,13 @@ public final class EmbeddedMessage extends Message<EmbeddedMessage, EmbeddedMess
       ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number);
       ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, EmbeddedMessage value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.inner_number_after);
+      ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 1, value.inner_repeated_number);
     }
 
     @Override

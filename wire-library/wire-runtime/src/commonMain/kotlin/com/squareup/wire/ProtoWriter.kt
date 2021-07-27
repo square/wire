@@ -126,7 +126,7 @@ class ProtoWriter(private val sink: BufferedSink) {
   companion object {
 
     /** Makes a tag value given a field number and wire type. */
-    private fun makeTag(fieldNumber: Int, fieldEncoding: FieldEncoding): Int {
+    internal fun makeTag(fieldNumber: Int, fieldEncoding: FieldEncoding): Int {
       return (fieldNumber shl ProtoReader.TAG_FIELD_ENCODING_BITS) or fieldEncoding.value
     }
 

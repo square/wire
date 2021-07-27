@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -118,6 +119,12 @@ public class OuterMessage(
         ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)
         EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OuterMessage): Unit {
+        writer.writeBytes(value.unknownFields)
+        EmbeddedMessage.ADAPTER.encodeWithTag(writer, 2, value.embedded_message)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.outer_number_before)
       }
 
       public override fun decode(reader: ProtoReader): OuterMessage {

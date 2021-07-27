@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -370,6 +371,12 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       }
 
       @Override
+      public void encode(ReverseProtoWriter writer, Nested value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        FooBarBazEnum.ADAPTER.encodeWithTag(writer, 1, value.value);
+      }
+
+      @Override
       public Nested decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
@@ -496,6 +503,12 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       }
 
       @Override
+      public void encode(ReverseProtoWriter writer, More value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 1, value.serial);
+      }
+
+      @Override
       public More decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
@@ -602,6 +615,20 @@ public final class FooBar extends Message<FooBar, FooBar.Builder> {
       FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
       FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, FooBar value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      FooBarBazEnum.ADAPTER.asRepeated().encodeWithTag(writer, 102, value.rep);
+      FooBarBazEnum.ADAPTER.encodeWithTag(writer, 101, value.ext);
+      FooBar.ADAPTER.asRepeated().encodeWithTag(writer, 7, value.nested);
+      ProtoAdapter.DOUBLE.encodeWithTag(writer, 6, value.daisy);
+      ProtoAdapter.FLOAT.asRepeated().encodeWithTag(writer, 5, value.fred);
+      ProtoAdapter.UINT64.encodeWithTag(writer, 4, value.qux);
+      Nested.ADAPTER.encodeWithTag(writer, 3, value.baz);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.bar);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo);
     }
 
     @Override

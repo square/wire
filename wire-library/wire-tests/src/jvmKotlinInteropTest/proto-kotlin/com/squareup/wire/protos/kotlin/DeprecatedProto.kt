@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.sanitize
@@ -98,6 +99,11 @@ public class DeprecatedProto(
       public override fun encode(writer: ProtoWriter, `value`: DeprecatedProto): Unit {
         ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: DeprecatedProto): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.foo)
       }
 
       public override fun decode(reader: ProtoReader): DeprecatedProto {

@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.countNonNull
@@ -178,6 +179,13 @@ public class OneOfMessage(
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
         ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: OneOfMessage): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.encodeWithTag(writer, 4, value.baz)
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.bar)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.foo)
       }
 
       public override fun decode(reader: ProtoReader): OneOfMessage {

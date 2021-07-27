@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -410,6 +411,21 @@ public class MapTypes(
         map_fixed64_fixed64Adapter.encodeWithTag(writer, 10, value.map_fixed64_fixed64)
         map_uint64_uint64Adapter.encodeWithTag(writer, 11, value.map_uint64_uint64)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: MapTypes): Unit {
+        writer.writeBytes(value.unknownFields)
+        map_uint64_uint64Adapter.encodeWithTag(writer, 11, value.map_uint64_uint64)
+        map_fixed64_fixed64Adapter.encodeWithTag(writer, 10, value.map_fixed64_fixed64)
+        map_sint64_sint64Adapter.encodeWithTag(writer, 9, value.map_sint64_sint64)
+        map_sfixed64_sfixed64Adapter.encodeWithTag(writer, 8, value.map_sfixed64_sfixed64)
+        map_int64_int64Adapter.encodeWithTag(writer, 7, value.map_int64_int64)
+        map_uint32_uint32Adapter.encodeWithTag(writer, 6, value.map_uint32_uint32)
+        map_fixed32_fixed32Adapter.encodeWithTag(writer, 5, value.map_fixed32_fixed32)
+        map_sfixed32_sfixed32Adapter.encodeWithTag(writer, 4, value.map_sfixed32_sfixed32)
+        map_sint32_sint32Adapter.encodeWithTag(writer, 3, value.map_sint32_sint32)
+        map_int32_int32Adapter.encodeWithTag(writer, 2, value.map_int32_int32)
+        map_string_stringAdapter.encodeWithTag(writer, 1, value.map_string_string)
       }
 
       public override fun decode(reader: ProtoReader): MapTypes {

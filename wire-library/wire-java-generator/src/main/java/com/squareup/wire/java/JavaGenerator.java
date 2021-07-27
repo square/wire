@@ -40,6 +40,7 @@ import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoAdapter.EnumConstantNotFoundException;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireEnumConstant;
@@ -886,17 +887,8 @@ public final class JavaGenerator {
         .addStatement("return $T.UINT32.encodedSize(toValue($N))", ProtoAdapter.class, value)
         .build());
 
-    builder.addMethod(MethodSpec.methodBuilder("encode")
-        .addAnnotation(Override.class)
-        .addModifiers(PUBLIC)
-        .addParameter(ProtoWriter.class, writer)
-        .addParameter(javaType, value)
-        .addException(IOException.class)
-        .addStatement("int $N = toValue($N)", i, value)
-        .addStatement("if ($N == $L) throw new $T($S + $N)",
-            i, -1, ProtocolException.class, "Unexpected enum constant: ", value)
-        .addStatement("$N.writeVarint32($N)", writer, i)
-        .build());
+    builder.addMethod(enumEncode(javaType, value, i, writer, false));
+    builder.addMethod(enumEncode(javaType, value, i, writer, true));
 
     builder.addMethod(MethodSpec.methodBuilder("decode")
         .addAnnotation(Override.class)
@@ -917,6 +909,21 @@ public final class JavaGenerator {
         .build());
 
     return builder.build();
+  }
+
+  private MethodSpec enumEncode(
+      ClassName javaType, String value, String localInt, String localWriter, boolean reverse) {
+    return MethodSpec.methodBuilder("encode")
+        .addAnnotation(Override.class)
+        .addModifiers(PUBLIC)
+        .addParameter(reverse ? ReverseProtoWriter.class : ProtoWriter.class, localWriter)
+        .addParameter(javaType, value)
+        .addException(IOException.class)
+        .addStatement("int $N = toValue($N)", localInt, value)
+        .addStatement("if ($N == $L) throw new $T($S + $N)",
+            localInt, -1, ProtocolException.class, "Unexpected enum constant: ", value)
+        .addStatement("$N.writeVarint32($N)", localWriter, localInt)
+        .build();
   }
 
   private TypeSpec enumAdapter(ClassName javaType, ClassName adapterJavaType, EnumType enumType) {
@@ -976,7 +983,8 @@ public final class JavaGenerator {
     }
 
     adapter.addMethod(messageAdapterEncodedSize(nameAllocator, type, javaType, useBuilder));
-    adapter.addMethod(messageAdapterEncode(nameAllocator, type, javaType, useBuilder));
+    adapter.addMethod(messageAdapterEncode(nameAllocator, type, javaType, useBuilder, false));
+    adapter.addMethod(messageAdapterEncode(nameAllocator, type, javaType, useBuilder, true));
     adapter.addMethod(messageAdapterDecode(nameAllocator, type, javaType, useBuilder, builderType));
     adapter.addMethod(messageAdapterRedact(nameAllocator, type, javaType, useBuilder, builderType));
 
@@ -1030,29 +1038,43 @@ public final class JavaGenerator {
   }
 
   private MethodSpec messageAdapterEncode(NameAllocator nameAllocator, MessageType type,
-      TypeName javaType, boolean useBuilder) {
+      TypeName javaType, boolean useBuilder, boolean reverse) {
     MethodSpec.Builder result = MethodSpec.methodBuilder("encode")
         .addAnnotation(Override.class)
         .addModifiers(PUBLIC)
-        .addParameter(ProtoWriter.class, "writer")
+        .addParameter(reverse ? ReverseProtoWriter.class : ProtoWriter.class, "writer")
         .addParameter(javaType, "value")
         .addException(IOException.class);
+
+    List<CodeBlock> encodeCalls = new ArrayList<>();
 
     for (Field field : type.getFieldsAndOneOfFields()) {
       int fieldTag = field.getTag();
       CodeBlock adapter = adapterFor(field, nameAllocator);
       String fieldName = nameAllocator.get(field);
+      CodeBlock.Builder encodeCall = CodeBlock.builder();
       if (field.getEncodeMode().equals(Field.EncodeMode.OMIT_IDENTITY)) {
-        result.addCode("if (!$T.equals(value.$L, $L)) ", ClassName.get(Objects.class),
+        encodeCall.add("if (!$T.equals(value.$L, $L)) ", ClassName.get(Objects.class),
             fieldName, identityValue(field));
       }
-      result.addCode("$L.encodeWithTag(writer, $L, ", adapter, fieldTag)
-          .addCode((useBuilder ? "value.$L" : "$L(value)"), fieldName)
-          .addCode(");\n");
+      encodeCall.add("$L.encodeWithTag(writer, $L, ", adapter, fieldTag)
+          .add((useBuilder ? "value.$L" : "$L(value)"), fieldName)
+          .add(");\n");
+      encodeCalls.add(encodeCall.build());
     }
 
     if (useBuilder) {
-      result.addStatement("writer.writeBytes(value.unknownFields())");
+      encodeCalls.add(CodeBlock.builder()
+          .addStatement("writer.writeBytes(value.unknownFields())")
+          .build());
+    }
+
+    if (reverse) {
+      Collections.reverse(encodeCalls);
+    }
+
+    for (CodeBlock encodeCall : encodeCalls) {
+      result.addCode(encodeCall);
     }
 
     return result.build();

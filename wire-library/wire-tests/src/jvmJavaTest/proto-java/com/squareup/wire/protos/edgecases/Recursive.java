@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -129,6 +130,13 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
       ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value);
       Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, Recursive value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      Recursive.ADAPTER.encodeWithTag(writer, 2, value.recursive);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.value);
     }
 
     @Override

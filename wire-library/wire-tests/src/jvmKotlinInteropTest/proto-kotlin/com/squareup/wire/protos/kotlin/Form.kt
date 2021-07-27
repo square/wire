@@ -8,6 +8,7 @@ import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
@@ -136,6 +137,12 @@ public class Form(
         if (value.choice != null) value.choice.encodeWithTag(writer)
         if (value.decision != null) value.decision.encodeWithTag(writer)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Form): Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.decision != null) value.decision.encodeWithTag(writer)
+        if (value.choice != null) value.choice.encodeWithTag(writer)
       }
 
       public override fun decode(reader: ProtoReader): Form {
@@ -299,6 +306,10 @@ public class Form(
           writer.writeBytes(value.unknownFields)
         }
 
+        public override fun encode(writer: ReverseProtoWriter, `value`: ButtonElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
         public override fun decode(reader: ProtoReader): ButtonElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return ButtonElement(
@@ -360,6 +371,10 @@ public class Form(
         }
 
         public override fun encode(writer: ProtoWriter, `value`: LocalImageElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: LocalImageElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -427,6 +442,10 @@ public class Form(
           writer.writeBytes(value.unknownFields)
         }
 
+        public override fun encode(writer: ReverseProtoWriter, `value`: RemoteImageElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
         public override fun decode(reader: ProtoReader): RemoteImageElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return RemoteImageElement(
@@ -490,6 +509,10 @@ public class Form(
           writer.writeBytes(value.unknownFields)
         }
 
+        public override fun encode(writer: ReverseProtoWriter, `value`: MoneyElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
         public override fun decode(reader: ProtoReader): MoneyElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return MoneyElement(
@@ -550,6 +573,10 @@ public class Form(
         }
 
         public override fun encode(writer: ProtoWriter, `value`: SpacerElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: SpacerElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -647,6 +674,11 @@ public class Form(
           writer.writeBytes(value.unknownFields)
         }
 
+        public override fun encode(writer: ReverseProtoWriter, `value`: TextElement): Unit {
+          writer.writeBytes(value.unknownFields)
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.text)
+        }
+
         public override fun decode(reader: ProtoReader): TextElement {
           var text: String? = null
           val unknownFields = reader.forEachTag { tag ->
@@ -718,6 +750,11 @@ public class Form(
           writer.writeBytes(value.unknownFields)
         }
 
+        public override fun encode(writer: ReverseProtoWriter, `value`: CustomizedCardElement):
+            Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
         public override fun decode(reader: ProtoReader): CustomizedCardElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return CustomizedCardElement(
@@ -782,6 +819,10 @@ public class Form(
           writer.writeBytes(value.unknownFields)
         }
 
+        public override fun encode(writer: ReverseProtoWriter, `value`: AddressElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
         public override fun decode(reader: ProtoReader): AddressElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return AddressElement(
@@ -842,6 +883,10 @@ public class Form(
         }
 
         public override fun encode(writer: ProtoWriter, `value`: TextInputElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: TextInputElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -909,6 +954,10 @@ public class Form(
           writer.writeBytes(value.unknownFields)
         }
 
+        public override fun encode(writer: ReverseProtoWriter, `value`: OptionPickerElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
         public override fun decode(reader: ProtoReader): OptionPickerElement {
           val unknownFields = reader.forEachTag(reader::readUnknownField)
           return OptionPickerElement(
@@ -969,6 +1018,10 @@ public class Form(
         }
 
         public override fun encode(writer: ProtoWriter, `value`: DetailRowElement): Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: DetailRowElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 
@@ -1035,6 +1088,11 @@ public class Form(
 
         public override fun encode(writer: ProtoWriter, `value`: CurrencyConversionFlagsElement):
             Unit {
+          writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter,
+            `value`: CurrencyConversionFlagsElement): Unit {
           writer.writeBytes(value.unknownFields)
         }
 

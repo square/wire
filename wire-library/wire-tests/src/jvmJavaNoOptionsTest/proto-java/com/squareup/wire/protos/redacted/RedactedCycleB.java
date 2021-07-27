@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -106,6 +107,12 @@ public final class RedactedCycleB extends Message<RedactedCycleB, RedactedCycleB
     public void encode(ProtoWriter writer, RedactedCycleB value) throws IOException {
       RedactedCycleA.ADAPTER.encodeWithTag(writer, 1, value.a);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, RedactedCycleB value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      RedactedCycleA.ADAPTER.encodeWithTag(writer, 1, value.a);
     }
 
     @Override

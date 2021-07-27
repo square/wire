@@ -10,6 +10,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -395,6 +396,13 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       }
 
       @Override
+      public void encode(ReverseProtoWriter writer, PhoneNumber value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
+      }
+
+      @Override
       public PhoneNumber decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
@@ -452,6 +460,16 @@ public final class Person extends AndroidMessage<Person, Person.Builder> {
       PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
       ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, Person value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
+      PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone);
+      ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
+      ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
@@ -209,6 +210,12 @@ public final class Bar extends Message<Bar, Bar.Builder> {
         }
 
         @Override
+        public void encode(ReverseProtoWriter writer, Moo value) throws IOException {
+          writer.writeBytes(value.unknownFields());
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.boo);
+        }
+
+        @Override
         public Moo decode(ProtoReader reader) throws IOException {
           Builder builder = new Builder();
           long token = reader.beginMessage();
@@ -251,6 +258,11 @@ public final class Bar extends Message<Bar, Bar.Builder> {
       }
 
       @Override
+      public void encode(ReverseProtoWriter writer, Baz value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+      }
+
+      @Override
       public Baz decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
@@ -288,6 +300,11 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     @Override
     public void encode(ProtoWriter writer, Bar value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, Bar value) throws IOException {
       writer.writeBytes(value.unknownFields());
     }
 

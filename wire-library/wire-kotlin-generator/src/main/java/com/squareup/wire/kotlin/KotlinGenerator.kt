@@ -63,6 +63,7 @@ import com.squareup.wire.MessageSource
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireEnum
 import com.squareup.wire.WireEnumConstant
@@ -1326,7 +1327,8 @@ class KotlinGenerator private constructor(
             MemberName(Syntax::class.asClassName(), type.syntax.name))
         .addSuperclassConstructorParameter("\nnull\n⇤")
         .addFunction(encodedSizeFun(type))
-        .addFunction(encodeFun(type))
+        .addFunction(encodeFun(type, reverse = false))
+        .addFunction(encodeFun(type, reverse = true))
         .addFunction(decodeFun(type))
         .addFunction(redactFun(type))
 
@@ -1406,13 +1408,14 @@ class KotlinGenerator private constructor(
     }
   }
 
-  private fun encodeFun(message: MessageType): FunSpec {
+  private fun encodeFun(message: MessageType, reverse: Boolean): FunSpec {
     val className = generatedTypeName(message)
-    val body = buildCodeBlock {
-      val nameAllocator = nameAllocator(message)
+    val encodeCalls = mutableListOf<CodeBlock>()
+    val nameAllocator = nameAllocator(message)
 
-      for (field in message.fields + message.flatOneOfs().flatMap { it.fields }) {
-        val fieldName = nameAllocator[field]
+    for (field in message.fields + message.flatOneOfs().flatMap { it.fields }) {
+      val fieldName = nameAllocator[field]
+      encodeCalls += buildCodeBlock {
         if (field.encodeMode == EncodeMode.OMIT_IDENTITY) {
           add("if (value.%L != %L) ", fieldName, field.identityValue)
         }
@@ -1423,16 +1426,28 @@ class KotlinGenerator private constructor(
           fieldName
         )
       }
-      for (boxOneOf in message.boxOneOfs()) {
-        val fieldName = nameAllocator[boxOneOf]
+    }
+    for (boxOneOf in message.boxOneOfs()) {
+      val fieldName = nameAllocator[boxOneOf]
+      encodeCalls += buildCodeBlock {
         add("if (value.%L != %L) ", fieldName, "null")
         addStatement("value.%L.encodeWithTag(writer)", fieldName)
       }
+    }
+    encodeCalls += buildCodeBlock {
       addStatement("writer.writeBytes(value.unknownFields)")
+    }
+    if (reverse) {
+      encodeCalls.reverse()
+    }
+    val body = buildCodeBlock {
+      for (encodeCall in encodeCalls) {
+        add(encodeCall)
+      }
     }
 
     return FunSpec.builder("encode")
-        .addParameter("writer", ProtoWriter::class)
+        .addParameter("writer", if (reverse) ReverseProtoWriter::class else ProtoWriter::class)
         .addParameter("value", className)
         .addCode(body)
         .addModifiers(OVERRIDE)

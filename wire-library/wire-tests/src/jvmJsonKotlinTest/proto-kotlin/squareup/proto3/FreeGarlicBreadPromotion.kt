@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import kotlin.Any
@@ -101,6 +102,13 @@ public class FreeGarlicBreadPromotion(
         if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
             value.is_extra_cheesey)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: FreeGarlicBreadPromotion):
+          Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.is_extra_cheesey != false) ProtoAdapter.BOOL.encodeWithTag(writer, 1,
+            value.is_extra_cheesey)
       }
 
       public override fun decode(reader: ProtoReader): FreeGarlicBreadPromotion {

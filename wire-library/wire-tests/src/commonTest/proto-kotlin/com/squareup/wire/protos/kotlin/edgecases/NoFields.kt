@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import kotlin.Any
 import kotlin.AssertionError
@@ -60,6 +61,10 @@ public class NoFields(
       }
 
       public override fun encode(writer: ProtoWriter, `value`: NoFields): Unit {
+        writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: NoFields): Unit {
         writer.writeBytes(value.unknownFields)
       }
 

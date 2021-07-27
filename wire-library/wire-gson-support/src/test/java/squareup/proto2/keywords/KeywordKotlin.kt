@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -215,6 +216,15 @@ public class KeywordKotlin(
         ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_)
         KeywordKotlinEnum.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enums)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: KeywordKotlin): Unit {
+        writer.writeBytes(value.unknownFields)
+        KeywordKotlinEnum.ADAPTER.asRepeated().encodeWithTag(writer, 5, value.enums)
+        ProtoAdapter.BOOL.asRepeated().encodeWithTag(writer, 4, value.return_)
+        funAdapter.encodeWithTag(writer, 3, value.fun_)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.when_)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.object_)
       }
 
       public override fun decode(reader: ProtoReader): KeywordKotlin {

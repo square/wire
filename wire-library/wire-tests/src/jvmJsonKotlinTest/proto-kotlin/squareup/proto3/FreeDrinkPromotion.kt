@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireEnum
@@ -100,6 +101,11 @@ public class FreeDrinkPromotion(
       public override fun encode(writer: ProtoWriter, `value`: FreeDrinkPromotion): Unit {
         if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: FreeDrinkPromotion): Unit {
+        writer.writeBytes(value.unknownFields)
+        if (value.drink != Drink.UNKNOWN) Drink.ADAPTER.encodeWithTag(writer, 1, value.drink)
       }
 
       public override fun decode(reader: ProtoReader): FreeDrinkPromotion {

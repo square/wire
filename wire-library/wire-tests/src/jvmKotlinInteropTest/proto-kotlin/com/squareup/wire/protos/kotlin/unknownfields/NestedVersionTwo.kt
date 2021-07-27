@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -214,6 +215,16 @@ public class NestedVersionTwo(
         ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64)
         ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: NestedVersionTwo): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 6, value.v2_rs)
+        ProtoAdapter.FIXED64.encodeWithTag(writer, 5, value.v2_f64)
+        ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.v2_f32)
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.v2_s)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.v2_i)
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.i)
       }
 
       public override fun decode(reader: ProtoReader): NestedVersionTwo {

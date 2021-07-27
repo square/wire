@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -500,6 +501,12 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       }
 
       @Override
+      public void encode(ReverseProtoWriter writer, NestedMessage value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        ProtoAdapter.INT32.encodeWithTag(writer, 1, value.bb);
+      }
+
+      @Override
       public NestedMessage decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
@@ -610,6 +617,23 @@ public final class SimpleMessage extends Message<SimpleMessage, SimpleMessage.Bu
       ProtoAdapter.STRING.encodeWithTag(writer, 11, value.other);
       ProtoAdapter.STRING.encodeWithTag(writer, 12, value.o);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, SimpleMessage value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.STRING.encodeWithTag(writer, 12, value.o);
+      ProtoAdapter.STRING.encodeWithTag(writer, 11, value.other);
+      ProtoAdapter.STRING.encodeWithTag(writer, 10, value.result);
+      ProtoAdapter.STRING.encodeWithTag(writer, 9, value.package_);
+      ForeignEnum.ADAPTER.encodeWithTag(writer, 8, value.no_default_foreign_enum);
+      ForeignEnum.ADAPTER.encodeWithTag(writer, 7, value.default_foreign_enum);
+      ProtoAdapter.DOUBLE.asRepeated().encodeWithTag(writer, 6, value.repeated_double);
+      ProtoAdapter.INT32.encodeWithTag(writer, 5, value.required_int32);
+      NestedEnum.ADAPTER.encodeWithTag(writer, 4, value.default_nested_enum);
+      ExternalMessage.ADAPTER.encodeWithTag(writer, 3, value.optional_external_msg);
+      NestedMessage.ADAPTER.encodeWithTag(writer, 2, value.optional_nested_msg);
+      ProtoAdapter.INT32.encodeWithTag(writer, 1, value.optional_int32);
     }
 
     @Override

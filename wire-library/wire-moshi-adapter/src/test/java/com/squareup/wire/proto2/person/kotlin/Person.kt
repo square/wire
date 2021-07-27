@@ -8,6 +8,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireEnum
@@ -146,6 +147,14 @@ public class Person(
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: Person): Unit {
+        writer.writeBytes(value.unknownFields)
+        PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
+        ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
+        ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
       public override fun decode(reader: ProtoReader): Person {
@@ -297,6 +306,12 @@ public class Person(
           ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
           PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: PhoneNumber): Unit {
+          writer.writeBytes(value.unknownFields)
+          PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type)
+          ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number)
         }
 
         public override fun decode(reader: ProtoReader): PhoneNumber {

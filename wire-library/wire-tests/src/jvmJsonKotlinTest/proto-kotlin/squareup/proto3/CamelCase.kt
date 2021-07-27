@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
@@ -192,6 +193,16 @@ public class CamelCase(
         writer.writeBytes(value.unknownFields)
       }
 
+      public override fun encode(writer: ReverseProtoWriter, `value`: CamelCase): Unit {
+        writer.writeBytes(value.unknownFields)
+        map_int32_Int32Adapter.encodeWithTag(writer, 4, value.map_int32_Int32)
+        if (value.IDitIt_my_wAy != "") ProtoAdapter.STRING.encodeWithTag(writer, 3,
+            value.IDitIt_my_wAy)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 2, value._Rep_int32)
+        if (value.nested__message != null) NestedCamelCase.ADAPTER.encodeWithTag(writer, 1,
+            value.nested__message)
+      }
+
       public override fun decode(reader: ProtoReader): CamelCase {
         var nested__message: NestedCamelCase? = null
         val _Rep_int32 = mutableListOf<Int>()
@@ -303,6 +314,11 @@ public class CamelCase(
         public override fun encode(writer: ProtoWriter, `value`: NestedCamelCase): Unit {
           if (value.one_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.one_int32)
           writer.writeBytes(value.unknownFields)
+        }
+
+        public override fun encode(writer: ReverseProtoWriter, `value`: NestedCamelCase): Unit {
+          writer.writeBytes(value.unknownFields)
+          if (value.one_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.one_int32)
         }
 
         public override fun decode(reader: ProtoReader): NestedCamelCase {

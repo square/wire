@@ -5,6 +5,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_2
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.immutableCopyOf
@@ -165,6 +166,13 @@ public class ModelEvaluation(
         ProtoAdapter.DOUBLE.encodeWithTag(writer, 2, value.score)
         modelsAdapter.encodeWithTag(writer, 3, value.models)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: ModelEvaluation): Unit {
+        writer.writeBytes(value.unknownFields)
+        modelsAdapter.encodeWithTag(writer, 3, value.models)
+        ProtoAdapter.DOUBLE.encodeWithTag(writer, 2, value.score)
+        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
       }
 
       public override fun decode(reader: ProtoReader): ModelEvaluation {

@@ -8,6 +8,7 @@ import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
 import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
+import com.squareup.wire.ReverseProtoWriter;
 import com.squareup.wire.Syntax;
 import com.squareup.wire.WireEnum;
 import com.squareup.wire.WireField;
@@ -448,6 +449,13 @@ public final class Person extends Message<Person, Person.Builder> {
       }
 
       @Override
+      public void encode(ReverseProtoWriter writer, PhoneNumber value) throws IOException {
+        writer.writeBytes(value.unknownFields());
+        if (!Objects.equals(value.type, PhoneType.MOBILE)) PhoneType.ADAPTER.encodeWithTag(writer, 2, value.type);
+        if (!Objects.equals(value.number, "")) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.number);
+      }
+
+      @Override
       public PhoneNumber decode(ProtoReader reader) throws IOException {
         Builder builder = new Builder();
         long token = reader.beginMessage();
@@ -515,6 +523,18 @@ public final class Person extends Message<Person, Person.Builder> {
       ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo);
       ProtoAdapter.STRING.encodeWithTag(writer, 7, value.bar);
       writer.writeBytes(value.unknownFields());
+    }
+
+    @Override
+    public void encode(ReverseProtoWriter writer, Person value) throws IOException {
+      writer.writeBytes(value.unknownFields());
+      ProtoAdapter.STRING.encodeWithTag(writer, 7, value.bar);
+      ProtoAdapter.INT32.encodeWithTag(writer, 6, value.foo);
+      ProtoAdapter.STRING.asRepeated().encodeWithTag(writer, 5, value.aliases);
+      PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phones);
+      if (!Objects.equals(value.email, "")) ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email);
+      if (!Objects.equals(value.id, 0)) ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id);
+      if (!Objects.equals(value.name, "")) ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
     }
 
     @Override

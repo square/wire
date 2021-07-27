@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -685,6 +686,33 @@ public class All32(
         ProtoAdapter.INT32.encodeWithTag(writer, 401, value.oneof_int32)
         ProtoAdapter.SFIXED32.encodeWithTag(writer, 402, value.oneof_sfixed32)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: All32): Unit {
+        writer.writeBytes(value.unknownFields)
+        ProtoAdapter.SFIXED32.encodeWithTag(writer, 402, value.oneof_sfixed32)
+        ProtoAdapter.INT32.encodeWithTag(writer, 401, value.oneof_int32)
+        map_int32_sfixed32Adapter.encodeWithTag(writer, 505, value.map_int32_sfixed32)
+        map_int32_fixed32Adapter.encodeWithTag(writer, 504, value.map_int32_fixed32)
+        map_int32_sint32Adapter.encodeWithTag(writer, 503, value.map_int32_sint32)
+        map_int32_uint32Adapter.encodeWithTag(writer, 502, value.map_int32_uint32)
+        map_int32_int32Adapter.encodeWithTag(writer, 501, value.map_int32_int32)
+        ProtoAdapter.SFIXED32.asPacked().encodeWithTag(writer, 305, value.pack_sfixed32)
+        ProtoAdapter.FIXED32.asPacked().encodeWithTag(writer, 304, value.pack_fixed32)
+        ProtoAdapter.SINT32.asPacked().encodeWithTag(writer, 303, value.pack_sint32)
+        ProtoAdapter.UINT32.asPacked().encodeWithTag(writer, 302, value.pack_uint32)
+        ProtoAdapter.INT32.asPacked().encodeWithTag(writer, 301, value.pack_int32)
+        ProtoAdapter.SFIXED32.asRepeated().encodeWithTag(writer, 205, value.rep_sfixed32)
+        ProtoAdapter.FIXED32.asRepeated().encodeWithTag(writer, 204, value.rep_fixed32)
+        ProtoAdapter.SINT32.asRepeated().encodeWithTag(writer, 203, value.rep_sint32)
+        ProtoAdapter.UINT32.asRepeated().encodeWithTag(writer, 202, value.rep_uint32)
+        ProtoAdapter.INT32.asRepeated().encodeWithTag(writer, 201, value.rep_int32)
+        if (value.my_sfixed32 != 0) ProtoAdapter.SFIXED32.encodeWithTag(writer, 5,
+            value.my_sfixed32)
+        if (value.my_fixed32 != 0) ProtoAdapter.FIXED32.encodeWithTag(writer, 4, value.my_fixed32)
+        if (value.my_sint32 != 0) ProtoAdapter.SINT32.encodeWithTag(writer, 3, value.my_sint32)
+        if (value.my_uint32 != 0) ProtoAdapter.UINT32.encodeWithTag(writer, 2, value.my_uint32)
+        if (value.my_int32 != 0) ProtoAdapter.INT32.encodeWithTag(writer, 1, value.my_int32)
       }
 
       public override fun decode(reader: ProtoReader): All32 {

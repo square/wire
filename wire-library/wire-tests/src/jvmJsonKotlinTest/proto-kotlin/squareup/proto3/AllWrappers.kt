@@ -7,6 +7,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax.PROTO_3
 import com.squareup.wire.WireField
 import com.squareup.wire.`internal`.checkElementsNotNull
@@ -848,6 +849,46 @@ public class AllWrappers(
         map_int32_string_valueAdapter.encodeWithTag(writer, 308, value.map_int32_string_value)
         map_int32_bytes_valueAdapter.encodeWithTag(writer, 309, value.map_int32_bytes_value)
         writer.writeBytes(value.unknownFields)
+      }
+
+      public override fun encode(writer: ReverseProtoWriter, `value`: AllWrappers): Unit {
+        writer.writeBytes(value.unknownFields)
+        map_int32_bytes_valueAdapter.encodeWithTag(writer, 309, value.map_int32_bytes_value)
+        map_int32_string_valueAdapter.encodeWithTag(writer, 308, value.map_int32_string_value)
+        map_int32_bool_valueAdapter.encodeWithTag(writer, 307, value.map_int32_bool_value)
+        map_int32_uint32_valueAdapter.encodeWithTag(writer, 306, value.map_int32_uint32_value)
+        map_int32_int32_valueAdapter.encodeWithTag(writer, 305, value.map_int32_int32_value)
+        map_int32_uint64_valueAdapter.encodeWithTag(writer, 304, value.map_int32_uint64_value)
+        map_int32_int64_valueAdapter.encodeWithTag(writer, 303, value.map_int32_int64_value)
+        map_int32_float_valueAdapter.encodeWithTag(writer, 302, value.map_int32_float_value)
+        map_int32_double_valueAdapter.encodeWithTag(writer, 301, value.map_int32_double_value)
+        ProtoAdapter.BYTES_VALUE.asRepeated().encodeWithTag(writer, 109, value.rep_bytes_value)
+        ProtoAdapter.STRING_VALUE.asRepeated().encodeWithTag(writer, 108, value.rep_string_value)
+        ProtoAdapter.BOOL_VALUE.asRepeated().encodeWithTag(writer, 107, value.rep_bool_value)
+        ProtoAdapter.UINT32_VALUE.asRepeated().encodeWithTag(writer, 106, value.rep_uint32_value)
+        ProtoAdapter.INT32_VALUE.asRepeated().encodeWithTag(writer, 105, value.rep_int32_value)
+        ProtoAdapter.UINT64_VALUE.asRepeated().encodeWithTag(writer, 104, value.rep_uint64_value)
+        ProtoAdapter.INT64_VALUE.asRepeated().encodeWithTag(writer, 103, value.rep_int64_value)
+        ProtoAdapter.FLOAT_VALUE.asRepeated().encodeWithTag(writer, 102, value.rep_float_value)
+        ProtoAdapter.DOUBLE_VALUE.asRepeated().encodeWithTag(writer, 101, value.rep_double_value)
+        if (value.bytes_value != null) ProtoAdapter.BYTES_VALUE.encodeWithTag(writer, 9,
+            value.bytes_value)
+        if (value.string_value != null) ProtoAdapter.STRING_VALUE.encodeWithTag(writer, 8,
+            value.string_value)
+        if (value.bool_value != null) ProtoAdapter.BOOL_VALUE.encodeWithTag(writer, 7,
+            value.bool_value)
+        if (value.uint32_value != null) ProtoAdapter.UINT32_VALUE.encodeWithTag(writer, 6,
+            value.uint32_value)
+        if (value.int32_value != null) ProtoAdapter.INT32_VALUE.encodeWithTag(writer, 5,
+            value.int32_value)
+        if (value.uint64_value != null) ProtoAdapter.UINT64_VALUE.encodeWithTag(writer, 4,
+            value.uint64_value)
+        if (value.int64_value != null) ProtoAdapter.INT64_VALUE.encodeWithTag(writer, 3,
+            value.int64_value)
+        if (value.float_value != null) ProtoAdapter.FLOAT_VALUE.encodeWithTag(writer, 2,
+            value.float_value)
+        if (value.double_value != null) ProtoAdapter.DOUBLE_VALUE.encodeWithTag(writer, 1,
+            value.double_value)
       }
 
       public override fun decode(reader: ProtoReader): AllWrappers {
