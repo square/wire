@@ -299,6 +299,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
           throw IllegalStateException("Operation not supported.")
       override fun encode(writer: ProtoWriter, value: Nothing) =
           throw IllegalStateException("Operation not supported.")
+      override fun encode(writer: ReverseProtoWriter, value: Nothing) =
+        throw IllegalStateException("Operation not supported.")
       override fun decode(reader: ProtoReader): Nothing =
           throw IllegalStateException("Operation not supported.")
     }

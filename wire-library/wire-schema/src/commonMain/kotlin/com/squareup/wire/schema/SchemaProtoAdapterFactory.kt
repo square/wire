@@ -20,6 +20,7 @@ import com.squareup.wire.FieldEncoding.VARINT
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 import com.squareup.wire.internal.FieldOrOneOfBinding
@@ -69,8 +70,8 @@ internal class SchemaProtoAdapterFactory(
     if (type is MessageType) {
       val messageBinding = SchemaMessageBinding(type.type.typeUrl, type.syntax, includeUnknown)
       // Put the adapter in the map early to mitigate the recursive calls to get() made below.
-      val messageAdapter = RuntimeMessageAdapter(messageBinding)
-      adapterMap[protoType] = messageAdapter
+      val deferredAdapter = DeferredAdapter<Map<String, Any>>(messageBinding)
+      adapterMap[protoType] = deferredAdapter
       for (field in type.fields) {
         messageBinding.fields[field.tag] = SchemaFieldOrOneOfBinding(field, null)
       }
@@ -79,9 +80,34 @@ internal class SchemaProtoAdapterFactory(
           messageBinding.fields[field.tag] = SchemaFieldOrOneOfBinding(field, oneOf)
         }
       }
+      val messageAdapter = RuntimeMessageAdapter(messageBinding)
+      deferredAdapter.delegate = messageAdapter
+      adapterMap[protoType] = messageAdapter
       return messageAdapter as ProtoAdapter<Any>
     }
     throw IllegalArgumentException("unexpected type: $protoType")
+  }
+
+  /** We prevent cycles by linking against while we're still building the graph of adapters. */
+  private class DeferredAdapter<T>(
+    binding: SchemaMessageBinding
+  ) : ProtoAdapter<T>(
+    fieldEncoding = FieldEncoding.LENGTH_DELIMITED,
+    type = binding.messageType,
+    typeUrl = binding.typeUrl,
+    syntax = binding.syntax
+  ) {
+    lateinit var delegate: ProtoAdapter<T>
+
+    override fun decode(reader: ProtoReader) = delegate.decode(reader)
+
+    override fun encode(writer: ProtoWriter, value: T) = delegate.encode(writer, value)
+
+    override fun encode(writer: ReverseProtoWriter, value: T) = delegate.encode(writer, value)
+
+    override fun encodedSize(value: T): Int = delegate.encodedSize(value)
+
+    override fun redact(value: T): T = delegate.redact(value)
   }
 
   private class EnumAdapter(
@@ -99,6 +125,17 @@ internal class SchemaProtoAdapterFactory(
     }
 
     override fun encode(writer: ProtoWriter, value: Any) {
+      if (value is String) {
+        val constant = enumType.constant(value)
+        writer.writeVarint32(constant!!.tag)
+      } else if (value is Int) {
+        writer.writeVarint32(value)
+      } else {
+        throw IllegalArgumentException("unexpected " + enumType.type + ": " + value)
+      }
+    }
+
+    override fun encode(writer: ReverseProtoWriter, value: Any) {
       if (value is String) {
         val constant = enumType.constant(value)
         writer.writeVarint32(constant!!.tag)
