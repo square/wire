@@ -19,22 +19,20 @@ import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.Syntax
 import com.squareup.wire.internal.camelCase
 import com.squareup.wire.schema.EnumConstant
 import com.squareup.wire.schema.EnumType
-import com.squareup.wire.schema.Extensions
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.ProtoMember
 import com.squareup.wire.schema.ProtoType
-import com.squareup.wire.schema.ProtoType.Companion
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
-import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 
@@ -78,19 +76,16 @@ class SchemaEncoder(
   }
 
   private val fileEncoder : Encoder<ProtoFile> = object : Encoder<ProtoFile>() {
-    override fun encode(writer: ProtoWriter, value: ProtoFile) {
-      STRING.encodeWithTag(writer, 1, value.location.path)
-      STRING.encodeWithTag(writer, 2, value.packageName)
-      STRING.asRepeated().encodeWithTag(writer, 3, value.imports)
-      // INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency)
-      // INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency)
-      messageEncoder.asRepeated()
-        .encodeWithTag(writer, 4, value.types.filterIsInstance<MessageType>())
-      enumEncoder.asRepeated().encodeWithTag(writer, 5, value.types.filterIsInstance<EnumType>())
-      serviceEncoder.asRepeated().encodeWithTag(writer, 6, value.services)
+    override fun encode(writer: ReverseProtoWriter, value: ProtoFile) {
+      if (value.syntax != Syntax.PROTO_2) {
+        STRING.encodeWithTag(writer, 12, value.syntax?.toString())
+      }
+
+      // SourceCodeInfo.ADAPTER.encodeWithTag(writer, 9, value.source_code_info)
+      fileOptionsProtoAdapter.encodeWithTag(writer, 8, value.options.toJsonOptions())
 
       // TODO(jwilson): can extension fields be maps?
-      for (extend in value.extendList) {
+      for (extend in value.extendList.reversed()) {
         fieldEncoder.asRepeated().encodeWithTag(writer, 7,
           extend.fields.map {
             EncodedField(
@@ -101,17 +96,20 @@ class SchemaEncoder(
           })
       }
 
-      fileOptionsProtoAdapter.encodeWithTag(writer, 8, value.options.toJsonOptions())
-      // SourceCodeInfo.ADAPTER.encodeWithTag(writer, 9, value.source_code_info)
-
-      if (value.syntax != Syntax.PROTO_2) {
-        STRING.encodeWithTag(writer, 12, value.syntax?.toString())
-      }
+      serviceEncoder.asRepeated().encodeWithTag(writer, 6, value.services)
+      enumEncoder.asRepeated().encodeWithTag(writer, 5, value.types.filterIsInstance<EnumType>())
+      messageEncoder.asRepeated()
+        .encodeWithTag(writer, 4, value.types.filterIsInstance<MessageType>())
+      // INT32.asRepeated().encodeWithTag(writer, 11, value.weak_dependency)
+      // INT32.asRepeated().encodeWithTag(writer, 10, value.public_dependency)
+      STRING.asRepeated().encodeWithTag(writer, 3, value.imports)
+      STRING.encodeWithTag(writer, 2, value.packageName)
+      STRING.encodeWithTag(writer, 1, value.location.path)
     }
   }
 
   private val messageEncoder : Encoder<MessageType> = object : Encoder<MessageType>() {
-    override fun encode(writer: ProtoWriter, value: MessageType) {
+    override fun encode(writer: ReverseProtoWriter, value: MessageType) {
       val syntax = schema.protoFile(value.type)!!.syntax
 
       val syntheticMaps = collectSyntheticMapEntries(value.type.toString(), value.declaredFields)
@@ -146,30 +144,30 @@ class SchemaEncoder(
         encodedFields += encodedField
       }
 
-      STRING.encodeWithTag(writer, 1, value.type.simpleName)
+      // STRING.asRepeated().encodeWithTag(writer, 10, value.reserved_name)
+      // ReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 9, value.reserved_range)
+
+      messageOptionsProtoAdapter.encodeWithTag(writer, 7, value.options.toJsonOptions())
+
+      // Real and synthetic oneofs.
+      oneOfEncoder.asRepeated().encodeWithTag(writer, 8, encodedOneOfs)
+
+      extensionRangeEncoder.asRepeated()
+        .encodeWithTag(writer, 5, value.extensionsList.flatMap { it.values })
+      enumEncoder.asRepeated()
+        .encodeWithTag(writer, 4, value.nestedTypes.filterIsInstance<EnumType>())
+
+      // Real and synthetic nested types.
+      syntheticMapEntryEncoder.asRepeated().encodeWithTag(writer, 3, syntheticMaps.values.toList())
+      this.asRepeated().encodeWithTag(writer, 3, value.nestedTypes.filterIsInstance<MessageType>())
+
+      // FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension)
 
       val fieldsAndOneOfFields = (encodedFields + encodedOneOfs.flatMap { it.fields })
         .sortedWith(compareBy({ it.field.location.line }, { it.field.location.column }))
       fieldEncoder.asRepeated().encodeWithTag(writer, 2, fieldsAndOneOfFields)
 
-      // FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension)
-
-      // Real and synthetic nested types.
-      this.asRepeated().encodeWithTag(writer, 3, value.nestedTypes.filterIsInstance<MessageType>())
-      syntheticMapEntryEncoder.asRepeated().encodeWithTag(writer, 3, syntheticMaps.values.toList())
-
-      enumEncoder.asRepeated()
-        .encodeWithTag(writer, 4, value.nestedTypes.filterIsInstance<EnumType>())
-      extensionRangeEncoder.asRepeated()
-        .encodeWithTag(writer, 5, value.extensionsList.flatMap { it.values })
-
-      // Real and synthetic oneofs.
-      oneOfEncoder.asRepeated().encodeWithTag(writer, 8, encodedOneOfs)
-
-      messageOptionsProtoAdapter.encodeWithTag(writer, 7, value.options.toJsonOptions())
-
-      // ReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 9, value.reserved_range)
-      // STRING.asRepeated().encodeWithTag(writer, 10, value.reserved_name)
+      STRING.encodeWithTag(writer, 1, value.type.simpleName)
     }
   }
 
@@ -209,36 +207,36 @@ class SchemaEncoder(
   private val syntheticMapEntryEncoder: Encoder<SyntheticMapEntry> =
     object : Encoder<SyntheticMapEntry>() {
       val keyFieldEncoder = object : Encoder<SyntheticMapEntry>() {
-        override fun encode(writer: ProtoWriter, value: SyntheticMapEntry) {
-          STRING.encodeWithTag(writer, 1, "key")
-          INT32.encodeWithTag(writer, 3, 1)
-          INT32.encodeWithTag(writer, 4, 1) // 1 = Field.Label.OPTIONAL
-          INT32.encodeWithTag(writer, 5, value.keyType.typeTag)
+        override fun encode(writer: ReverseProtoWriter, value: SyntheticMapEntry) {
+          STRING.encodeWithTag(writer, 10, "key")
           if (!value.keyType.isScalar) {
             STRING.encodeWithTag(writer, 6, value.keyType.dotName)
           }
-          STRING.encodeWithTag(writer, 10, "key")
+          INT32.encodeWithTag(writer, 5, value.keyType.typeTag)
+          INT32.encodeWithTag(writer, 4, 1) // 1 = Field.Label.OPTIONAL
+          INT32.encodeWithTag(writer, 3, 1)
+          STRING.encodeWithTag(writer, 1, "key")
         }
       }
 
       val valueFieldEncoder = object : Encoder<SyntheticMapEntry>() {
-        override fun encode(writer: ProtoWriter, value: SyntheticMapEntry) {
-          STRING.encodeWithTag(writer, 1, "value")
-          INT32.encodeWithTag(writer, 3, 2)
-          INT32.encodeWithTag(writer, 4, 1) // 1 = Field.Label.OPTIONAL
-          INT32.encodeWithTag(writer, 5, value.valueType.typeTag)
+        override fun encode(writer: ReverseProtoWriter, value: SyntheticMapEntry) {
+          STRING.encodeWithTag(writer, 10, "value")
           if (!value.valueType.isScalar) {
             STRING.encodeWithTag(writer, 6, value.valueType.dotName)
           }
-          STRING.encodeWithTag(writer, 10, "value")
+          INT32.encodeWithTag(writer, 5, value.valueType.typeTag)
+          INT32.encodeWithTag(writer, 4, 1) // 1 = Field.Label.OPTIONAL
+          INT32.encodeWithTag(writer, 3, 2)
+          STRING.encodeWithTag(writer, 1, "value")
         }
       }
 
-      override fun encode(writer: ProtoWriter, value: SyntheticMapEntry) {
-        STRING.encodeWithTag(writer, 1, value.name)
-        keyFieldEncoder.encodeWithTag(writer, 2, value)
-        valueFieldEncoder.encodeWithTag(writer, 2, value)
+      override fun encode(writer: ReverseProtoWriter, value: SyntheticMapEntry) {
         messageOptionsProtoAdapter.encodeWithTag(writer, 7, mapOf("map_entry" to true))
+        valueFieldEncoder.encodeWithTag(writer, 2, value)
+        keyFieldEncoder.encodeWithTag(writer, 2, value)
+        STRING.encodeWithTag(writer, 1, value.name)
       }
     }
 
@@ -255,24 +253,24 @@ class SchemaEncoder(
   }
 
   private val fieldEncoder : Encoder<EncodedField> = object : Encoder<EncodedField>() {
-    override fun encode(writer: ProtoWriter, value: EncodedField) {
-      STRING.encodeWithTag(writer, 1, value.field.name)
-      INT32.encodeWithTag(writer, 3, value.field.tag)
-      INT32.encodeWithTag(writer, 4, value.field.labelTag)
-      INT32.encodeWithTag(writer, 5, value.field.type!!.typeTag)
-      if (!value.type.isScalar) {
-        STRING.encodeWithTag(writer, 6, value.type.dotName)
-      }
-      STRING.encodeWithTag(writer, 2, value.extendee)
-      STRING.encodeWithTag(writer, 7, value.field.default)
-      if (value.syntax == Syntax.PROTO_2 && value.field.jsonName != value.field.name) {
-        STRING.encodeWithTag(writer, 10, value.field.jsonName)
-      }
-      fieldOptionsProtoAdapter.encodeWithTag(writer, 8, value.field.options.toJsonOptions())
+    override fun encode(writer: ReverseProtoWriter, value: EncodedField) {
+      INT32.encodeWithTag(writer, 9, value.oneOfIndex)
       if (value.isProto3Optional) {
         BOOL.encodeWithTag(writer, 17, true)
       }
-      INT32.encodeWithTag(writer, 9, value.oneOfIndex)
+      fieldOptionsProtoAdapter.encodeWithTag(writer, 8, value.field.options.toJsonOptions())
+      if (value.syntax == Syntax.PROTO_2 && value.field.jsonName != value.field.name) {
+        STRING.encodeWithTag(writer, 10, value.field.jsonName)
+      }
+      STRING.encodeWithTag(writer, 7, value.field.default)
+      STRING.encodeWithTag(writer, 2, value.extendee)
+      if (!value.type.isScalar) {
+        STRING.encodeWithTag(writer, 6, value.type.dotName)
+      }
+      INT32.encodeWithTag(writer, 5, value.field.type!!.typeTag)
+      INT32.encodeWithTag(writer, 4, value.field.labelTag)
+      INT32.encodeWithTag(writer, 3, value.field.tag)
+      STRING.encodeWithTag(writer, 1, value.field.name)
     }
   }
 
@@ -320,32 +318,32 @@ class SchemaEncoder(
   )
 
   private val oneOfEncoder : Encoder<EncodedOneOf> = object : Encoder<EncodedOneOf>() {
-    override fun encode(writer: ProtoWriter, value: EncodedOneOf) {
-      STRING.encodeWithTag(writer, 1, value.name)
+    override fun encode(writer: ReverseProtoWriter, value: EncodedOneOf) {
       // OneofOptions.ADAPTER.encodeWithTag(writer, 2, value.options)
+      STRING.encodeWithTag(writer, 1, value.name)
     }
   }
 
   private val enumEncoder : Encoder<EnumType> = object : Encoder<EnumType>() {
-    override fun encode(writer: ProtoWriter, value: EnumType) {
-      STRING.encodeWithTag(writer, 1, value.name)
-      enumConstantEncoder.asRepeated().encodeWithTag(writer, 2, value.constants)
-      enumOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
-      // EnumReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.reserved_range)
+    override fun encode(writer: ReverseProtoWriter, value: EnumType) {
       // STRING.asRepeated().encodeWithTag(writer, 5, value.reserved_name)
+      // EnumReservedRange.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.reserved_range)
+      enumOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
+      enumConstantEncoder.asRepeated().encodeWithTag(writer, 2, value.constants)
+      STRING.encodeWithTag(writer, 1, value.name)
     }
   }
 
   private val extensionRangeEncoder : Encoder<Any> = object : Encoder<Any>() {
-    override fun encode(writer: ProtoWriter, value: Any) {
+    override fun encode(writer: ReverseProtoWriter, value: Any) {
       when (value) {
         is IntRange -> {
-          INT32.encodeWithTag(writer, 1, value.first) // Inclusive.
           INT32.encodeWithTag(writer, 2, value.last + 1) // Exclusive.
+          INT32.encodeWithTag(writer, 1, value.first) // Inclusive.
         }
         is Int -> {
-          INT32.encodeWithTag(writer, 1, value) // Inclusive.
           INT32.encodeWithTag(writer, 2, value + 1) // Exclusive.
+          INT32.encodeWithTag(writer, 1, value) // Inclusive.
         }
         else -> error("unexpected extension range: $value")
       }
@@ -353,33 +351,33 @@ class SchemaEncoder(
   }
 
   private val enumConstantEncoder : Encoder<EnumConstant> = object : Encoder<EnumConstant>() {
-    override fun encode(writer: ProtoWriter, value: EnumConstant) {
-      STRING.encodeWithTag(writer, 1, value.name)
-      INT32.encodeWithTag(writer, 2, value.tag)
+    override fun encode(writer: ReverseProtoWriter, value: EnumConstant) {
       enumValueOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
+      INT32.encodeWithTag(writer, 2, value.tag)
+      STRING.encodeWithTag(writer, 1, value.name)
     }
   }
 
   private val serviceEncoder : Encoder<Service> = object : Encoder<Service>() {
-    override fun encode(writer: ProtoWriter, value: Service) {
-      STRING.encodeWithTag(writer, 1, value.name)
-      rpcEncoder.asRepeated().encodeWithTag(writer, 2, value.rpcs)
+    override fun encode(writer: ReverseProtoWriter, value: Service) {
       serviceOptionsProtoAdapter.encodeWithTag(writer, 3, value.options.toJsonOptions())
+      rpcEncoder.asRepeated().encodeWithTag(writer, 2, value.rpcs)
+      STRING.encodeWithTag(writer, 1, value.name)
     }
   }
 
   private val rpcEncoder : Encoder<Rpc> = object : Encoder<Rpc>() {
-    override fun encode(writer: ProtoWriter, value: Rpc) {
-      STRING.encodeWithTag(writer, 1, value.name)
-      STRING.encodeWithTag(writer, 2, value.requestType!!.dotName)
-      STRING.encodeWithTag(writer, 3, value.responseType!!.dotName)
-      rpcOptionsProtoAdapter.encodeWithTag(writer, 4, value.options.toJsonOptions())
-      if (value.requestStreaming) {
-        BOOL.encodeWithTag(writer, 5, value.requestStreaming)
-      }
+    override fun encode(writer: ReverseProtoWriter, value: Rpc) {
       if (value.responseStreaming) {
         BOOL.encodeWithTag(writer, 6, value.responseStreaming)
       }
+      if (value.requestStreaming) {
+        BOOL.encodeWithTag(writer, 5, value.requestStreaming)
+      }
+      rpcOptionsProtoAdapter.encodeWithTag(writer, 4, value.options.toJsonOptions())
+      STRING.encodeWithTag(writer, 3, value.responseType!!.dotName)
+      STRING.encodeWithTag(writer, 2, value.requestType!!.dotName)
+      STRING.encodeWithTag(writer, 1, value.name)
     }
   }
 
@@ -388,22 +386,9 @@ class SchemaEncoder(
     FieldEncoding.LENGTH_DELIMITED, null, null, Syntax.PROTO_2
   ) {
     override fun redact(value: T) = value
-
-    /**
-     * Rather than implementing encodedSize we take a shortcut and double encode. Ths is a good
-     * strategy but an inefficient implementation; it's quadratic in the depth of message nesting.
-     */
-    override fun encodedSize(value: T): Int {
-      val buffer = Buffer()
-      val writer = ProtoWriter(buffer)
-      encode(writer, value)
-      return buffer.size.toInt()
-        .also { buffer.clear() }
-    }
-
-    override fun decode(reader: ProtoReader): T {
-      throw UnsupportedOperationException()
-    }
+    override fun encodedSize(value: T): Int = throw UnsupportedOperationException()
+    override fun encode(writer: ProtoWriter, value: T) = throw UnsupportedOperationException()
+    override fun decode(reader: ProtoReader): T = throw UnsupportedOperationException()
   }
 
   /**

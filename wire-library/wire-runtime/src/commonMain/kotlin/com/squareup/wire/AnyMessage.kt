@@ -100,6 +100,11 @@ class AnyMessage(
         BYTES.encodeWithTag(writer, 2, value.value)
       }
 
+      override fun encode(writer: ReverseProtoWriter, value: AnyMessage) {
+        BYTES.encodeWithTag(writer, 2, value.value)
+        STRING.encodeWithTag(writer, 1, value.typeUrl)
+      }
+
       override fun decode(reader: ProtoReader): AnyMessage {
         var typeUrl = ""
         var value = ByteString.EMPTY

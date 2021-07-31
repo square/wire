@@ -19,6 +19,7 @@ import com.squareup.wire.FieldEncoding
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.ProtoReader
 import com.squareup.wire.ProtoWriter
+import com.squareup.wire.ReverseProtoWriter
 import com.squareup.wire.WireField
 
 class RuntimeMessageAdapter<M : Any, B : Any>(
@@ -85,6 +86,15 @@ class RuntimeMessageAdapter<M : Any, B : Any>(
       field.adapter.encodeWithTag(writer, field.tag, binding)
     }
     writer.writeBytes(binding.unknownFields(value))
+  }
+
+  override fun encode(writer: ReverseProtoWriter, value: M) {
+    writer.writeBytes(binding.unknownFields(value))
+    for (f in fieldBindingsArray.size - 1 downTo 0) {
+      val field = fieldBindingsArray[f]
+      val binding = field[value] ?: continue
+      field.adapter.encodeWithTag(writer, field.tag, binding)
+    }
   }
 
   override fun redact(value: M): M {

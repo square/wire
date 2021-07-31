@@ -403,6 +403,10 @@ internal class RepeatedProtoAdapter<E>(
     throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
   }
 
+  override fun encode(writer: ReverseProtoWriter, value: List<E>) {
+    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
+  }
+
   @Throws(IOException::class)
   override fun encodeWithTag(writer: ProtoWriter, tag: Int, value: List<E>?) {
     if (value == null) return
@@ -451,6 +455,10 @@ internal class MapProtoAdapter<K, V> internal constructor(
   }
 
   override fun encode(writer: ProtoWriter, value: Map<K, V>) {
+    throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
+  }
+
+  override fun encode(writer: ReverseProtoWriter, value: Map<K, V>) {
     throw UnsupportedOperationException("Repeated values can only be encoded with a tag.")
   }
 
@@ -558,6 +566,11 @@ internal fun commonBool(): ProtoAdapter<Boolean> = object : ProtoAdapter<Boolean
   }
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Boolean) {
+    writer.writeVarint32(if (value) 1 else 0)
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Boolean = when (reader.readVarint32()) {
     0 -> false
     // We are lenient to match protoc behavior.
@@ -607,6 +620,11 @@ internal fun commonUint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
   }
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Int) {
+    writer.writeVarint32(value)
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Int = reader.readVarint32()
 
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
@@ -627,6 +645,11 @@ internal fun commonSint32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
   }
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Int) {
+    writer.writeVarint32(encodeZigZag32(value))
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Int = decodeZigZag32(reader.readVarint32())
 
   override fun redact(value: Int): Int = throw UnsupportedOperationException()
@@ -643,6 +666,11 @@ internal fun commonFixed32(): ProtoAdapter<Int> = object : ProtoAdapter<Int>(
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Int) {
+    writer.writeFixed32(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Int) {
     writer.writeFixed32(value)
   }
 
@@ -692,6 +720,11 @@ internal fun commonUint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
   }
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Long) {
+    writer.writeVarint64(value)
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Long = reader.readVarint64()
 
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
@@ -712,6 +745,11 @@ internal fun commonSint64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
   }
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Long) {
+    writer.writeVarint64(encodeZigZag64(value))
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Long = decodeZigZag64(reader.readVarint64())
 
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
@@ -728,6 +766,11 @@ internal fun commonFixed64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Long) {
+    writer.writeFixed64(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Long) {
     writer.writeFixed64(value)
   }
 
@@ -753,6 +796,11 @@ internal fun commonFloat(): ProtoAdapter<Float> = object : ProtoAdapter<Float>(
   }
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Float) {
+    writer.writeFixed32(value.toBits())
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Float {
     return Float.fromBits(reader.readFixed32())
   }
@@ -771,6 +819,11 @@ internal fun commonDouble(): ProtoAdapter<Double> = object : ProtoAdapter<Double
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: Double) {
+    writer.writeFixed64(value.toBits())
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Double) {
     writer.writeFixed64(value.toBits())
   }
 
@@ -818,6 +871,11 @@ internal fun commonBytes(): ProtoAdapter<ByteString> = object : ProtoAdapter<Byt
 
   @Throws(IOException::class)
   override fun encode(writer: ProtoWriter, value: ByteString) {
+    writer.writeBytes(value)
+  }
+
+  @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: ByteString) {
     writer.writeBytes(value)
   }
 
@@ -951,6 +1009,8 @@ internal fun commonEmpty(): ProtoAdapter<Unit> = object : ProtoAdapter<Unit>(
 
   override fun encode(writer: ProtoWriter, value: Unit) = Unit
 
+  override fun encode(writer: ReverseProtoWriter, value: Unit) = Unit
+
   override fun decode(reader: ProtoReader) {
     reader.forEachTag { tag -> reader.readUnknownField(tag) }
   }
@@ -1042,7 +1102,6 @@ internal fun commonStructList(): ProtoAdapter<List<*>?> = object : ProtoAdapter<
 
   override fun encode(writer: ProtoWriter, value: List<*>?) {
     if (value == null) return
-
     for (v in value) {
       STRUCT_VALUE.encodeWithTag(writer, 1, v)
     }
@@ -1081,6 +1140,10 @@ internal fun commonStructNull(): ProtoAdapter<Nothing?> = object : ProtoAdapter<
   }
 
   override fun encode(writer: ProtoWriter, value: Nothing?) {
+    writer.writeVarint32(0)
+  }
+
+  override fun encode(writer: ReverseProtoWriter, value: Nothing?) {
     writer.writeVarint32(0)
   }
 
@@ -1132,6 +1195,19 @@ internal fun commonStructValue(): ProtoAdapter<Any?> = object : ProtoAdapter<Any
   }
 
   override fun encode(writer: ProtoWriter, value: Any?) {
+    @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
+    return when (value) {
+      null -> STRUCT_NULL.encodeWithTag(writer, 1, value)
+      is Number -> DOUBLE.encodeWithTag(writer, 2, value.toDouble())
+      is String -> STRING.encodeWithTag(writer, 3, value)
+      is Boolean -> BOOL.encodeWithTag(writer, 4, value)
+      is Map<*, *> -> STRUCT_MAP.encodeWithTag(writer, 5, value as Map<String, *>)
+      is List<*> -> STRUCT_LIST.encodeWithTag(writer, 6, value)
+      else -> throw IllegalArgumentException("unexpected struct value: $value")
+    }
+  }
+
+  override fun encode(writer: ReverseProtoWriter, value: Any?) {
     @Suppress("UNCHECKED_CAST") // Assume map keys are strings.
     return when (value) {
       null -> STRUCT_NULL.encodeWithTag(writer, 1, value)
@@ -1209,6 +1285,12 @@ internal fun <T : Any> commonWrapper(delegate: ProtoAdapter<T>, typeUrl: String)
     }
 
     override fun encode(writer: ProtoWriter, value: T?) {
+      if (value != null) {
+        delegate.encodeWithTag(writer, 1, value)
+      }
+    }
+
+    override fun encode(writer: ReverseProtoWriter, value: T?) {
       if (value != null) {
         delegate.encodeWithTag(writer, 1, value)
       }
