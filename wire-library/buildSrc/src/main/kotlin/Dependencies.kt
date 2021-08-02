@@ -15,7 +15,7 @@ object versions {
   val kotlinpoet = "1.9.0"
   val jsr305 = "3.0.2"
   val kotlin = "1.4.10"
-  val okio = "3.0.0-alpha.6"
+  val okio = "3.0.0-alpha.9"
   val okhttp = "4.9.1"
   val moshi = "1.12.0"
   val protobuf = "3.17.3"

@@ -65,6 +65,7 @@ class ReverseProtoWriter {
   val byteCount: Int
     get() = tail.size.toInt() + (array.size - arrayLimit)
 
+  @Throws(IOException::class)
   fun writeTo(sink: BufferedSink) {
     emitCurrentSegment()
     sink.writeAll(tail)
@@ -75,8 +76,7 @@ class ReverseProtoWriter {
     emitCurrentSegment()
     head.readAndWriteUnsafe(cursor)
     cursor.expandBuffer(minByteCount)
-    check(cursor.offset == 0L)
-    check(cursor.end == cursor.data!!.size)
+    check(cursor.offset == 0L && cursor.end == cursor.data!!.size)
     array = cursor.data!!
     arrayLimit = cursor.end
   }
@@ -104,27 +104,24 @@ class ReverseProtoWriter {
    * When a forward-writable message needs to be written while we're writing in reverse, write that
    * message forwards then copy its bytes into this.
    */
+  @Throws(IOException::class)
   internal fun writeForward(block: (forwardWriter: ProtoWriter) -> Unit) {
     block(forwardWriter)
     writeBytes(forwardBuffer.readByteString())
   }
 
-  @Throws(IOException::class)
   fun writeBytes(value: ByteString) {
-    // TODO(jwilson): use Okio's new ByteString.copyInto().
-    val value = value.toByteArray()
     var valueLimit = value.size
     while (valueLimit != 0) {
       require(1)
       val copyByteCount = minOf(arrayLimit, valueLimit)
       arrayLimit -= copyByteCount
       val valuePos = valueLimit - copyByteCount
-      value.copyInto(array, destinationOffset = arrayLimit, valuePos, valueLimit)
+      value.copyInto(valuePos, array, arrayLimit, copyByteCount)
       valueLimit = valuePos
     }
   }
 
-  @Throws(IOException::class)
   fun writeString(value: String) {
     // This is derived from Okio's Buffer.writeUtf8(), modified to write back-to-front. Like that
     // function, malformed UTF-16 surrogates are encoded as '?' in UTF-8.
@@ -202,14 +199,12 @@ class ReverseProtoWriter {
     }
   }
 
-  /** Encode and write a tag.  */
-  @Throws(IOException::class)
+  /** Encode and write a tag. */
   fun writeTag(fieldNumber: Int, fieldEncoding: FieldEncoding) {
     writeVarint32(ProtoWriter.makeTag(fieldNumber, fieldEncoding))
   }
 
-  /** Write an `int32` field to the stream.  */
-  @Throws(IOException::class)
+  /** Write an `int32` field to the stream. */
   internal fun writeSignedVarint32(value: Int) {
     if (value >= 0) {
       writeVarint32(value)
@@ -223,7 +218,6 @@ class ReverseProtoWriter {
    * Encode and write a varint. `value` is treated as unsigned, so it won't be sign-extended
    * if negative.
    */
-  @Throws(IOException::class)
   fun writeVarint32(value: Int) {
     val varint32Size = varint32Size(value)
     require(varint32Size)
@@ -237,8 +231,7 @@ class ReverseProtoWriter {
     array[offset] = value.toByte()
   }
 
-  /** Encode and write a varint.  */
-  @Throws(IOException::class)
+  /** Encode and write a varint. */
   fun writeVarint64(value: Long) {
     val varint64Size = varint64Size(value)
     require(varint64Size)
@@ -252,8 +245,7 @@ class ReverseProtoWriter {
     array[offset] = value.toByte()
   }
 
-  /** Write a little-endian 32-bit integer.  */
-  @Throws(IOException::class)
+  /** Write a little-endian 32-bit integer. */
   fun writeFixed32(value: Int) {
     require(4)
     arrayLimit -= 4
@@ -264,8 +256,7 @@ class ReverseProtoWriter {
     array[offset  ] = (value ushr 24 and 0xff).toByte() // ktlint-disable no-multi-spaces
   }
 
-  /** Write a little-endian 64-bit integer.  */
-  @Throws(IOException::class)
+  /** Write a little-endian 64-bit integer. */
   fun writeFixed64(value: Long) {
     require(8)
     arrayLimit -= 8
