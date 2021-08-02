@@ -9,6 +9,7 @@ include(":samples:wire-grpc-sample:client")
 include(":samples:wire-grpc-sample:protos")
 include(":samples:wire-grpc-sample:server")
 include(":samples:wire-grpc-sample:server-plain")
+include(":wire-benchmarks")
 include(":wire-grpc-tests")
 include(":wire-protoc-compatibility-tests")
 
