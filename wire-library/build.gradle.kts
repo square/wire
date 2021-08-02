@@ -6,7 +6,6 @@ buildscript {
     classpath(deps.plugins.kotlinSerialization)
     classpath(deps.plugins.shadow)
     classpath(deps.plugins.japicmp)
-    classpath(deps.plugins.mavenPublish)
     classpath(deps.protobuf.gradlePlugin)
     classpath(deps.animalSniffer.gradle)
     // https://github.com/melix/japicmp-gradle-plugin/issues/36
@@ -61,23 +60,6 @@ subprojects {
   }
 
   if (!project.name.endsWith("-swift")) {
-    // TODO this should use plugins.withId first rather than names
-    if (project.name != "wire-runtime" &&
-        project.name != "wire-reflector" &&
-        project.name != "wire-schema" &&
-        project.name != "sample" &&
-        project.name != "wire-codegen-sample" &&
-        project.name != "japicmp" &&
-        project.name != "wire-tests" &&
-        project.name != "wire-grpc-client") {
-      apply(plugin = "com.vanniktech.maven.publish")
-    } else {
-      tasks.create("uploadArchives") {
-        // TODO(egorand): Find out why this became a problem.
-        // No-op task to prevent Gradle from calling a real uploadArchives task which is added by an
-        // unknown plugin (or Gradle itself) and fails for multiplatform projects.
-      }
-    }
     apply(plugin = "checkstyle")
 
     afterEvaluate {

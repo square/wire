@@ -16,8 +16,8 @@ object versions {
   val jmhPlugin = "0.5.0"
   val kotlinpoet = "1.9.0"
   val jsr305 = "3.0.2"
-  val kotlin = "1.4.10"
-  val okio = "3.0.0-alpha.6"
+  val kotlin = "1.5.20"
+  val okio = "3.0.0-alpha.9"
   val okhttp = "4.9.1"
   val moshi = "1.12.0"
   val protobuf = "3.17.3"
@@ -27,7 +27,6 @@ object versions {
   val jimfs = "1.0"
   val animalSniffer = "1.16"
   val animalSnifferGradle = "1.5.0"
-  val mavenPublish = "0.8.0"
 }
 
 object deps {
@@ -38,7 +37,6 @@ object deps {
     val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     val shadow = "com.github.jengelman.gradle.plugins:shadow:4.0.1"
     val japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.2.8"
-    val mavenPublish = "com.vanniktech:gradle-maven-publish-plugin:${versions.mavenPublish}"
   }
 
   val android = "com.google.android:android:${versions.android}"

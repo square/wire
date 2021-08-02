@@ -6,7 +6,6 @@ buildscript {
     classpath(deps.plugins.shadow)
     classpath(deps.wire.gradlePlugin)
     classpath(deps.plugins.japicmp)
-    classpath(deps.plugins.mavenPublish)
     classpath(deps.animalSniffer.gradle)
     classpath(deps.plugins.android)
     classpath(deps.protobuf.gradlePlugin)
