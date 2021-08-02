@@ -134,6 +134,7 @@ class AnyMessageTest {
       ) {
         override fun encodedSize(value: NoTypeUrlMessage) = TODO()
         override fun encode(writer: ProtoWriter, value: NoTypeUrlMessage) = TODO()
+        override fun encode(writer: ReverseProtoWriter, value: NoTypeUrlMessage) = TODO()
         override fun decode(reader: ProtoReader): NoTypeUrlMessage = TODO()
         override fun redact(value: NoTypeUrlMessage): NoTypeUrlMessage = TODO()
       }

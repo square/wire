@@ -95,6 +95,7 @@ class ProtoAdapterIdentityTest {
       override fun redact(value: Person) = error("not implemented")
       override fun encodedSize(value: Person) = error("not implemented")
       override fun encode(writer: ProtoWriter, value: Person) = error("not implemented")
+      override fun encode(writer: ReverseProtoWriter, value: Person) = error("not implemented")
       override fun decode(reader: ProtoReader) = error("not implemented")
     }
     assertThat(protoAdapter.identity).isNull()
