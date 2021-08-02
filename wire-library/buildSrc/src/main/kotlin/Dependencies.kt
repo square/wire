@@ -12,6 +12,8 @@ object versions {
   val gson = "2.8.6"
   val guava = "20.0"
   val javapoet = "1.13.0"
+  val jmh = "1.23"
+  val jmhPlugin = "0.5.0"
   val kotlinpoet = "1.9.0"
   val jsr305 = "3.0.2"
   val kotlin = "1.4.10"
@@ -31,6 +33,7 @@ object versions {
 object deps {
   object plugins {
     val android = "com.android.tools.build:gradle:4.0.1"
+    val jmh = "me.champeau.gradle:jmh-gradle-plugin:${versions.jmhPlugin}"
     val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     val shadow = "com.github.jengelman.gradle.plugins:shadow:4.0.1"
@@ -70,6 +73,11 @@ object deps {
   val mockwebserver = "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
   val swiftpoet = "io.outfoxx:swiftpoet:1.0.0"
   val okhttp = "com.squareup.okhttp3:okhttp:${versions.okhttp}"
+
+  object jmh {
+    val core = "org.openjdk.jmh:jmh-core:${versions.jmh}"
+    val generator = "org.openjdk.jmh:jmh-generator-annprocess:${versions.jmh}"
+  }
 
   object kotlin {
     object test {

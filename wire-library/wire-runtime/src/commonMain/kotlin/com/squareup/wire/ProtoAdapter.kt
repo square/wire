@@ -696,6 +696,11 @@ internal fun commonInt64(): ProtoAdapter<Long> = object : ProtoAdapter<Long>(
   }
 
   @Throws(IOException::class)
+  override fun encode(writer: ReverseProtoWriter, value: Long) {
+    writer.writeVarint64(value)
+  }
+
+  @Throws(IOException::class)
   override fun decode(reader: ProtoReader): Long = reader.readVarint64()
 
   override fun redact(value: Long): Long = throw UnsupportedOperationException()
