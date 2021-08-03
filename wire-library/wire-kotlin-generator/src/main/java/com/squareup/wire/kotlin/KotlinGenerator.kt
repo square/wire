@@ -127,9 +127,12 @@ class KotlinGenerator private constructor(
 
   private val ProtoType.typeName: TypeName
     get() {
-      val profileTypeName = profile.kotlinTarget(this)
-      if (profileTypeName != null) return profileTypeName
-      return typeToKotlinName.getValue(this)
+      return if (isMap) {
+        Map::class.asTypeName()
+          .parameterizedBy(keyType!!.typeName, valueType!!.typeName)
+      } else {
+        profile.kotlinTarget(this) ?: typeToKotlinName.getValue(this)
+      }
     }
   private val ProtoType.isEnum
     get() = schema.getType(this) is EnumType
@@ -1664,7 +1667,6 @@ class KotlinGenerator private constructor(
     return null
   }
 
-  // TODO add support for custom adapters.
   private fun Field.getAdapterName(nameDelimiter: Char = '.'): CodeBlock {
     return if (type!!.isMap) {
       CodeBlock.of("%N", "${name}Adapter")
@@ -1984,12 +1986,6 @@ class KotlinGenerator private constructor(
       }
     }
 
-  private fun ProtoType.asTypeName(): TypeName = when {
-    isMap -> Map::class.asTypeName()
-        .parameterizedBy(keyType!!.asTypeName(), valueType!!.asTypeName())
-    else -> typeToKotlinName.getValue(this)
-  }
-
   private fun EnumType.identity(): CodeBlock {
     val enumConstant = constant(0) ?: return CodeBlock.of("null")
     return CodeBlock.of("%T.%L", type.typeName, nameAllocator(this)[enumConstant])
@@ -1997,7 +1993,7 @@ class KotlinGenerator private constructor(
 
   private fun Field.typeNameForBuilderSetter(): TypeName {
     val type = type!!
-    val baseClass = type.asTypeName()
+    val baseClass = type.typeName
     return when (encodeMode!!) {
       EncodeMode.REPEATED,
       EncodeMode.PACKED -> List::class.asClassName().parameterizedBy(baseClass)
@@ -2235,7 +2231,7 @@ class KotlinGenerator private constructor(
         CodeBlock.of(
           "%T<%T>(%L = %L, %L = %L, %L = %S)",
           boxClassName,
-          field.type!!.asTypeName(),
+          field.type!!.typeName,
           "tag",
           field.tag,
           "adapter",

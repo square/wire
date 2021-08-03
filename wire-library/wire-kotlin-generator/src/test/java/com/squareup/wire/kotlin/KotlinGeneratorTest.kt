@@ -1344,7 +1344,7 @@ class KotlinGeneratorTest {
     assertThat(enumCode).contains("""* g \[h.i.j\] k""")
   }
 
-  @Test fun profileHonored() {
+  @Test fun profileHonoredInRpcInterface() {
     val expectedInterface = """
         |package routeguide
         |
@@ -1417,6 +1417,66 @@ class KotlinGeneratorTest {
           |""".trimMargin())
     assertEquals(listOf(expectedInterface, expectedImplementation),
       repoBuilder.generateGrpcKotlin("routeguide.RouteGuide", profileName = "java"))
+  }
+
+  @Test fun profileHonoredInMessage() {
+    val repoBuilder = RepoBuilder()
+      .add("routeguide.proto", """
+          |package routeguide;
+          |
+          |$pointMessage
+          |$featureMessage
+          |""".trimMargin())
+      .add("java.wire", """
+          |syntax = "wire2";
+          |import "routeguide.proto";
+          |
+          |type routeguide.Point {
+          |  target kotlin.String using com.example.StringPointAdapter#INSTANCE;
+          |}
+          |""".trimMargin())
+
+    val kotlin = repoBuilder.generateKotlin("routeguide.Feature", profileName = "java")
+    assertThat(kotlin).contains("""
+        |  @field:WireField(
+        |    tag = 2,
+        |    adapter = "com.example.StringPointAdapter#INSTANCE"
+        |  )
+        |  public val location: String? = null,
+        """.trimMargin())
+    assertThat(kotlin).contains("""
+        |      public override fun encodedSize(`value`: Feature): Int {
+        |        var size = value.unknownFields.size
+        |        size += ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+        |        size += StringPointAdapter.INSTANCE.encodedSizeWithTag(2, value.location)
+        |        return size
+        |      }
+        """.trimMargin())
+      assertThat(kotlin).contains("""
+        |      public override fun encode(writer: ProtoWriter, `value`: Feature): Unit {
+        |        ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name)
+        |        StringPointAdapter.INSTANCE.encodeWithTag(writer, 2, value.location)
+        |        writer.writeBytes(value.unknownFields)
+        |      }
+        """.trimMargin())
+    assertThat(kotlin).contains("""
+        |      public override fun decode(reader: ProtoReader): Feature {
+        |        var name: String? = null
+        |        var location: String? = null
+        |        val unknownFields = reader.forEachTag { tag ->
+        |          when (tag) {
+        |            1 -> name = ProtoAdapter.STRING.decode(reader)
+        |            2 -> location = StringPointAdapter.INSTANCE.decode(reader)
+        |            else -> reader.readUnknownField(tag)
+        |          }
+        |        }
+        |        return Feature(
+        |          name = name,
+        |          location = location,
+        |          unknownFields = unknownFields
+        |        )
+        |      }
+        |""".trimMargin())
   }
 
   @Test fun deprecatedEnum() {
