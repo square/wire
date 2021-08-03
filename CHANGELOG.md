@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.6
+---------------------
+
+_2021-08-03_
+
+ * Fix: Explicitely defined Wire gRPC server generation as experimental: the feature isn't complete.
+ * Fix: Suppress deprecation warnings on generated enum's `fromValue` method in Kotlin.
+ * Fix: Use relative path sensitivity and file collection.
+
 Version 4.0.0-alpha.5
 ---------------------
 
