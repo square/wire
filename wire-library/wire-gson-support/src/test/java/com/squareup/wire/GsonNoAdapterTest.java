@@ -94,11 +94,11 @@ public class GsonNoAdapterTest {
         .picture_urls(Arrays.asList("http://goo.gl/LD5KY5", "http://goo.gl/VYRM67"))
         .build();
     String json = "{"
-        + "\"picture_urls\":[\"http://goo.gl/LD5KY5\",\"http://goo.gl/VYRM67\"],"
         + "\"name\":\"Stegosaurus\","
         + "\"length_meters\":9.0,"
         + "\"mass_kilograms\":5000.0,"
-        + "\"period\":\"JURASSIC\""
+        + "\"period\":\"JURASSIC\","
+        + "\"picture_urls\":[\"http://goo.gl/LD5KY5\",\"http://goo.gl/VYRM67\"]"
         + "}";
     assertThat(gson.toJson(value)).isEqualTo(json);
     com.squareup.wire.proto2.dinosaurs.javainteropkotlin.Dinosaur decoded = gson.fromJson(json, com.squareup.wire.proto2.dinosaurs.javainteropkotlin.Dinosaur.class);
@@ -142,11 +142,11 @@ public class GsonNoAdapterTest {
             ByteString.EMPTY
         );
     String json = "{"
-        + "\"picture_urls\":[\"http://goo.gl/LD5KY5\",\"http://goo.gl/VYRM67\"],"
         + "\"name\":\"Stegosaurus\","
         + "\"length_meters\":9.0,"
         + "\"mass_kilograms\":5000.0,"
-        + "\"period\":\"JURASSIC\""
+        + "\"period\":\"JURASSIC\","
+        + "\"picture_urls\":[\"http://goo.gl/LD5KY5\",\"http://goo.gl/VYRM67\"]"
         + "}";
     assertThat(gson.toJson(value)).isEqualTo(json);
     com.squareup.wire.proto2.dinosaurs.kotlin.Dinosaur decoded =

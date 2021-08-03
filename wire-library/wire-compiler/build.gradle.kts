@@ -5,6 +5,7 @@ plugins {
   kotlin("jvm")
   id("org.jetbrains.kotlin.plugin.serialization")
   id("com.github.johnrengelman.shadow")
+  id("internal-publishing")
 }
 
 application {

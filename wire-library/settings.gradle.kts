@@ -1,3 +1,5 @@
+includeBuild("internal-plugins")
+
 include(":wire-compiler")
 include(":wire-gradle-plugin")
 include(":wire-grpc-client")

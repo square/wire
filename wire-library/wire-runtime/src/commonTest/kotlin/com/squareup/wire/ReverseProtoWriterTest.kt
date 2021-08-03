@@ -19,6 +19,7 @@ import com.squareup.wire.FieldEncoding.LENGTH_DELIMITED
 import com.squareup.wire.ProtoAdapter.Companion.newMapAdapter
 import com.squareup.wire.Syntax.PROTO_2
 import okio.Buffer
+import okio.ByteString.Companion.decodeHex
 import okio.ByteString.Companion.encodeUtf8
 import okio.utf8Size
 import kotlin.test.Test
@@ -55,7 +56,7 @@ class ReverseProtoWriterTest {
     assertUtf8("\udc00", "3f") // Unexpected, dangling low surrogate.
   }
 
-  @Test fun consistentWithRegularProtoWriter() {
+  @Test fun consistentWithRegularProtoWriterStrings() {
     val forwardBuffer = Buffer()
     ProtoWriter(forwardBuffer).apply {
       writeTag(3, LENGTH_DELIMITED)
@@ -67,6 +68,26 @@ class ReverseProtoWriterTest {
     ReverseProtoWriter().apply {
       val byteCountBefore = byteCount
       writeString("hello world")
+      writeVarint32(byteCount - byteCountBefore)
+      writeTag(3, LENGTH_DELIMITED)
+      writeTo(reverseBuffer)
+    }
+
+    assertEquals(forwardBuffer, reverseBuffer)
+  }
+
+  @Test fun consistentWithRegularProtoWriterByteStrings() {
+    val forwardBuffer = Buffer()
+    ProtoWriter(forwardBuffer).apply {
+      writeTag(3, LENGTH_DELIMITED)
+      writeVarint32(11)
+      writeBytes("hello world".encodeUtf8())
+    }
+
+    val reverseBuffer = Buffer()
+    ReverseProtoWriter().apply {
+      val byteCountBefore = byteCount
+      writeBytes("hello world".encodeUtf8())
       writeVarint32(byteCount - byteCountBefore)
       writeTag(3, LENGTH_DELIMITED)
       writeTo(reverseBuffer)

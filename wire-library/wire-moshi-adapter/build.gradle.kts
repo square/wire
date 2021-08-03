@@ -1,9 +1,8 @@
-import org.jetbrains.dokka.gradle.DokkaTask
-
 plugins {
   id("java-library")
   id("ru.vyarus.animalsniffer")
   kotlin("jvm")
+  id("internal-publishing")
 }
 
 val jar by tasks.getting(Jar::class) {
@@ -24,11 +23,4 @@ dependencies {
   testImplementation(project(":wire-test-utils"))
   testImplementation(deps.junit)
   testImplementation(deps.assertj)
-}
-
-afterEvaluate {
-  val dokka by tasks.getting(DokkaTask::class) {
-    outputDirectory = "$rootDir/docs/3.x"
-    outputFormat = "gfm"
-  }
 }
