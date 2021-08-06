@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UsePropertyAccessSyntax")
+
 package com.squareup.wire
 
 import com.squareup.wire.MockRouteGuideService.Action.Delay
@@ -22,10 +24,7 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import io.grpc.Status
-import java.io.IOException
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -59,6 +58,10 @@ import routeguide.RouteGuideClient
 import routeguide.RouteGuideProto
 import routeguide.RouteNote
 import routeguide.RouteSummary
+import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -74,7 +77,7 @@ class GrpcClientTest {
 
   /** This is a pass through interceptor that tests can replace without extra plumbing. */
   private var interceptor: Interceptor = object : Interceptor {
-    override fun intercept(chain: Interceptor.Chain) = chain.proceed(chain.request())
+    override fun intercept(chain: Chain) = chain.proceed(chain.request())
   }
 
   @Before
@@ -345,6 +348,63 @@ class GrpcClientTest {
       requestChannel.close()
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "lacoste"))
       assertThat(responseChannel.receiveOrNull()).isNull()
+    }
+  }
+
+  @Test
+  fun duplexSuspend_errorsAreBubbledUpWhenSendingFailed() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendError(Status.INTERNAL.withDescription("boom").asException())
+    mockService.enqueueReceiveNote(message = "marco")
+
+    runBlocking {
+      val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+
+      var requestChannelClosedWithCause = false
+      requestChannel.invokeOnClose { expected ->
+        assertThat(expected).isOfAnyClassIn(CancellationException::class.java)
+        requestChannelClosedWithCause = true
+      }
+
+      requestChannel.send(RouteNote(message = "marco"))
+      // We give time to the server to close the connection.
+      delay(250)
+      try{
+        requestChannel.send(RouteNote(message = "léo"))
+        fail()
+      } catch (expected: Throwable) {
+        assertThat(expected).isOfAnyClassIn(CancellationException::class.java)
+      }
+      assertThat(requestChannelClosedWithCause).isTrue()
+    }
+  }
+
+  // Note that this test is asserting that we can actually catch the exception within our try/catch.
+  @Test
+  fun duplexSuspend_errorsAreBubbledUpWhenReceivingFailed() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendNote(message = "polo")
+    // Delay so we have time to cancel the call.
+    mockService.enqueue(Delay(500, TimeUnit.MILLISECONDS))
+    mockService.enqueueSendNote(message = "jango")
+    mockService.enqueue(SendCompleted)
+
+    runBlocking {
+      val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+
+      requestChannel.send(RouteNote(message = "marco"))
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
+      callReference.get()!!.cancel()
+      try {
+        responseChannel.receive()
+        fail()
+      } catch (expected: Throwable) {
+        assertThat(expected).hasMessage(
+          "gRPC transport failure (HTTP status=200, grpc-status=null, grpc-message=null)"
+        )
+      }
     }
   }
 

@@ -20,6 +20,7 @@ import com.squareup.wire.GrpcResponse
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.use
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
@@ -96,12 +97,20 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
       runBlocking {
         response.use {
           response.messageSource(responseAdapter).use { reader ->
-            while (true) {
-              val message = reader.read() ?: break
-              send(message)
+            var exception: Exception? = null
+            try {
+              while (true) {
+                val message = reader.read() ?: break
+                send(message)
+              }
+              exception = response.grpcResponseToException()
+            } catch (e: IOException) {
+              exception = response.grpcResponseToException(e)
+            } catch (e: Exception) {
+              exception = e
+            } finally {
+              close(exception)
             }
-
-            close(response.grpcResponseToException())
           }
         }
       }
@@ -124,14 +133,16 @@ internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
 ) {
   requestBody.messageSink(minMessageToCompress, requestAdapter, callForCancel)
     .use { requestWriter ->
-      var success = false
       try {
         consumeEach { message ->
           requestWriter.write(message)
         }
-        success = true
-      } finally {
-        if (!success) requestWriter.cancel()
+      } catch (e: Throwable) {
+        cancel(CancellationException("Could not write message", e))
+        requestWriter.cancel()
+        if (e !is IOException) {
+          throw e
+        }
       }
     }
 }
