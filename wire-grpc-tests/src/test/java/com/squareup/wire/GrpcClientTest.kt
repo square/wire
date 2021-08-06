@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UsePropertyAccessSyntax")
+
 package com.squareup.wire
 
 import com.squareup.wire.MockRouteGuideService.Action.Delay
@@ -22,15 +24,15 @@ import com.squareup.wire.MockRouteGuideService.Action.ReceiveError
 import com.squareup.wire.MockRouteGuideService.Action.SendCompleted
 import com.squareup.wire.MockRouteGuideService.Action.SendMessage
 import io.grpc.Status
-import java.io.IOException
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
+import io.grpc.StatusException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.Call
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
@@ -59,6 +61,10 @@ import routeguide.RouteGuideClient
 import routeguide.RouteGuideProto
 import routeguide.RouteNote
 import routeguide.RouteSummary
+import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -74,7 +80,7 @@ class GrpcClientTest {
 
   /** This is a pass through interceptor that tests can replace without extra plumbing. */
   private var interceptor: Interceptor = object : Interceptor {
-    override fun intercept(chain: Interceptor.Chain) = chain.proceed(chain.request())
+    override fun intercept(chain: Chain) = chain.proceed(chain.request())
   }
 
   @Before
@@ -345,6 +351,145 @@ class GrpcClientTest {
       requestChannel.close()
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "lacoste"))
       assertThat(responseChannel.receiveOrNull()).isNull()
+    }
+  }
+
+  @Test
+  fun duplexSuspend_requestChannelThrowsWhenResponseChannelExhausted() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueue(SendCompleted)
+
+    runBlocking {
+      val (requestChannel, _) = routeGuideService.RouteChat().executeIn(this)
+
+      val latch = Mutex(locked = true)
+      requestChannel.invokeOnClose { expected ->
+        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        latch.unlock()
+      }
+
+      requestChannel.send(RouteNote(message = "marco"))
+
+      latch.withLock {
+        // Wait for requestChannel to be closed.
+      }
+
+      try {
+        requestChannel.send(RouteNote(message = "léo"))
+        fail()
+      } catch (expected: Throwable) {
+        assertThat(expected).isInstanceOf(CancellationException::class.java)
+      }
+    }
+  }
+
+  @Test
+  fun duplexSuspend_requestChannelThrowsWhenWhenCanceledByServer() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendError(StatusException(Status.FAILED_PRECONDITION))
+
+    runBlocking {
+      val (requestChannel, _) = routeGuideService.RouteChat().executeIn(this)
+
+      val latch = Mutex(locked = true)
+      requestChannel.invokeOnClose { expected ->
+        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        latch.unlock()
+      }
+
+      requestChannel.send(RouteNote(message = "marco"))
+
+      latch.withLock {
+        // Wait for requestChannel to be closed.
+      }
+
+      try {
+        requestChannel.send(RouteNote(message = "léo"))
+        fail()
+      } catch (expected: Throwable) {
+        assertThat(expected).isInstanceOf(CancellationException::class.java)
+      }
+    }
+  }
+
+  @Test
+  fun duplexSuspend_requestChannelThrowsWhenCallCanceledByClient() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "marco")
+    mockService.enqueueReceiveNote(message = "léo")
+
+    runBlocking {
+      val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+
+      val latch = Mutex(locked = true)
+      requestChannel.invokeOnClose { expected ->
+        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        latch.unlock()
+      }
+
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "marco"))
+      requestChannel.send(RouteNote(message = "léo"))
+
+      callReference.get().cancel()
+
+      latch.withLock {
+        // Wait for requestChannel to be closed.
+      }
+
+      try {
+        requestChannel.send(RouteNote(message = "rené"))
+        fail()
+      } catch (expected: Throwable) {
+        assertThat(expected).isInstanceOf(CancellationException::class.java)
+      }
+    }
+  }
+
+  // Note that this test is asserting that we can actually catch the exception within our try/catch.
+  @Test
+  fun duplexSuspend_responseChannelThrowsWhenCanceledByServer() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "marco")
+    mockService.enqueueSendError(StatusException(Status.FAILED_PRECONDITION))
+
+    runBlocking {
+      val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "marco"))
+
+      try {
+        responseChannel.receive()
+        fail()
+      } catch (expected: GrpcException) {
+        assertThat(expected.grpcStatus).isEqualTo(GrpcStatus.FAILED_PRECONDITION)
+      }
+
+      assertThat(responseChannel.isClosedForReceive).isTrue()
+    }
+  }
+
+  @Test
+  fun duplexSuspend_responseChannelThrowsWhenCallCanceledByClient() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueSendNote(message = "marco")
+
+    runBlocking {
+      val (_, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+
+      assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "marco"))
+
+      callReference.get().cancel()
+
+      try {
+        responseChannel.receive()
+        fail()
+      } catch (expected: IOException) {
+        assertThat(expected.message).startsWith("gRPC transport failure")
+      }
+
+      assertThat(responseChannel.isClosedForReceive).isTrue()
     }
   }
 

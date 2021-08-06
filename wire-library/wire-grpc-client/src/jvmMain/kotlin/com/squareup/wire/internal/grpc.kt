@@ -20,6 +20,7 @@ import com.squareup.wire.GrpcResponse
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.use
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
@@ -32,6 +33,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.IOException
+import java.io.Closeable
 
 internal val APPLICATION_GRPC_MEDIA_TYPE: MediaType = "application/grpc".toMediaType()
 
@@ -96,12 +98,24 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
       runBlocking {
         response.use {
           response.messageSource(responseAdapter).use { reader ->
-            while (true) {
-              val message = reader.read() ?: break
-              send(message)
+            var exception: Exception? = null
+            try {
+              while (true) {
+                val message = reader.read() ?: break
+                send(message)
+              }
+              exception = response.grpcResponseToException()
+            } catch (e: IOException) {
+              exception = response.grpcResponseToException(e)
+            } catch (e: Exception) {
+              exception = e
+            } finally {
+              try {
+                close(exception)
+              } catch (_: CancellationException) {
+                // If it's already canceled, there's nothing more to do.
+              }
             }
-
-            close(response.grpcResponseToException())
           }
         }
       }
@@ -115,6 +129,12 @@ internal fun <R : Any> SendChannel<R>.readFromResponseBodyCallback(
  * 1. read a message (non blocking, suspending code)
  * 2. write it to the stream (blocking)
  * 3. repeat. We also have to wait for all 2s to end before closing the writer
+ *
+ * If this fails reading a message from the channel, we need to call [MessageSink.cancel]. If it
+ * fails writing a message to the network, we shouldn't call that method.
+ *
+ * If it fails either reading or writing we need to call [MessageSink.close] (via [Closeable.use])
+ * and [ReceiveChannel.cancel].
  */
 internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestBody: PipeDuplexRequestBody,
@@ -122,18 +142,27 @@ internal suspend fun <S : Any> ReceiveChannel<S>.writeToRequestBody(
   requestAdapter: ProtoAdapter<S>,
   callForCancel: Call
 ) {
-  requestBody.messageSink(minMessageToCompress, requestAdapter, callForCancel)
-    .use { requestWriter ->
-      var success = false
+  val requestWriter = requestBody.messageSink(minMessageToCompress, requestAdapter, callForCancel)
+  try {
+    requestWriter.use {
+      var channelReadFailed = true
       try {
         consumeEach { message ->
+          channelReadFailed = false
           requestWriter.write(message)
+          channelReadFailed = true
         }
-        success = true
+        channelReadFailed = false
       } finally {
-        if (!success) requestWriter.cancel()
+        if (channelReadFailed) requestWriter.cancel()
       }
     }
+  } catch (e: Throwable) {
+    cancel(CancellationException("Could not write message", e))
+    if (e !is IOException && e !is CancellationException) {
+      throw e
+    }
+  }
 }
 
 /** Reads messages from the response body. */
