@@ -32,7 +32,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
   actual val type: KClass<*>?,
   actual val typeUrl: String?,
   actual val syntax: Syntax,
-  actual val identity: E?
+  actual val identity: E?,
+  actual val sourceFile: String?,
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
     this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
@@ -72,8 +73,9 @@ actual abstract class ProtoAdapter<E> actual constructor(
     type: Class<*>,
     typeUrl: String?,
     syntax: Syntax,
-    identity: E?
-  ) : this(fieldEncoding, type.kotlin, typeUrl, syntax, identity)
+    identity: E?,
+    sourceFile: String?,
+  ) : this(fieldEncoding, type.kotlin, typeUrl, syntax, identity, sourceFile)
 
   actual abstract fun redact(value: E): E
 

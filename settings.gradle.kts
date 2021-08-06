@@ -9,6 +9,9 @@ include(":samples:wire-grpc-sample:client")
 include(":samples:wire-grpc-sample:protos")
 include(":samples:wire-grpc-sample:server")
 include(":samples:wire-grpc-sample:server-plain")
+include(":samples:wire-descriptorgen-sample:protos")
+include(":samples:wire-descriptorgen-sample:point-protos")
+include(":samples:wire-descriptorgen-sample")
 include(":wire-benchmarks")
 include(":wire-grpc-tests")
 include(":wire-protoc-compatibility-tests")
@@ -38,5 +41,7 @@ includeBuild("wire-library") {
     substitute(module("com.squareup.wire:wire-runtime")).with(project(":wire-runtime"))
     substitute(module("com.squareup.wire:wire-schema")).with(project(":wire-schema"))
     substitute(module("com.squareup.wire:wire-test-utils")).with(project(":wire-test-utils"))
+    substitute(module("com.squareup.wire:wire-descriptor")).with(project(":wire-descriptor"))
+    substitute(module("com.squareup.wire:wire-kafka")).with(project(":wire-kafka"))
   }
 }

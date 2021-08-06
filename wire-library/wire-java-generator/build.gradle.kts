@@ -16,6 +16,7 @@ dependencies {
   implementation(project(":wire-profiles"))
   implementation(deps.okio.jvm)
   implementation(deps.guava)
+  implementation(deps.protobuf.java)
   api(deps.javapoet)
   compileOnly(deps.jsr305)
   testImplementation(project(":wire-test-utils"))

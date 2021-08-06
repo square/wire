@@ -1305,7 +1305,8 @@ class KotlinGenerator private constructor(
    *    Person::class,
    *    "square.github.io/wire/unknown",
    *    Syntax.PROTO_3,
-   *    null
+   *    null,
+   *    "com/squareup/wire/path.desc",
    *  ) {
    *    override fun encodedSize(value: Person): Int { .. }
    *    override fun encode(writer: ProtoWriter, value: Person) { .. }
@@ -1319,6 +1320,7 @@ class KotlinGenerator private constructor(
     val nameAllocator = nameAllocator(type)
     val parentClassName = generatedTypeName(type)
     val adapterName = nameAllocator["ADAPTER"]
+    val path = type.location.path.removeSuffix(".proto").plus(".desc")
 
     val adapterObject = TypeSpec.anonymousClassBuilder()
         .superclass(ProtoAdapter::class.asClassName().parameterizedBy(parentClassName))
@@ -1329,6 +1331,7 @@ class KotlinGenerator private constructor(
         .addSuperclassConstructorParameter("\n%M",
             MemberName(Syntax::class.asClassName(), type.syntax.name))
         .addSuperclassConstructorParameter("\nnull\n⇤")
+        .addSuperclassConstructorParameter("\n%S", path)
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type, reverse = false))
         .addFunction(encodeFun(type, reverse = true))

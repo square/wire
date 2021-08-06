@@ -129,6 +129,15 @@ open class WireExtension(project: Project) {
   @get:Optional
   var protoLibrary = false
 
+  /**
+   * True to generate `.proto` files descriptors into the output resources. Use this when you need
+   * file descriptors generated for your protos.
+   *
+   */
+  @get:Input
+  @get:Optional
+  var includeDescriptors = false
+
   @InputFiles
   @Optional
   fun getSourcePaths() = sourcePaths.toSet()
@@ -262,6 +271,12 @@ open class WireExtension(project: Project) {
     val move = objectFactory.newInstance(Move::class.java)
     action.execute(move)
     moves += move
+  }
+
+  fun fileDescriptor(action: Action<FileDescriptorOutput>) {
+    val fileDescriptorOutput = objectFactory.newInstance(FileDescriptorOutput::class.java)
+    action.execute(fileDescriptorOutput)
+    outputs += fileDescriptorOutput
   }
 
   open class ProtoRootSet {

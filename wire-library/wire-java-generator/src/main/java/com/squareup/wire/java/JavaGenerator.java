@@ -956,11 +956,12 @@ public final class JavaGenerator {
       adapter.addModifiers(PUBLIC, ABSTRACT);
     }
 
+    String path = type.getLocation().getPath().replace(".proto", ".desc");
     adapter.addMethod(MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L, null)",
+        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L, null, $S)",
             FieldEncoding.class, javaType, type.getType().getTypeUrl(), Syntax.class,
-            type.getSyntax().name())
+            type.getSyntax().name(), path)
         .build());
 
     if (!useBuilder) {

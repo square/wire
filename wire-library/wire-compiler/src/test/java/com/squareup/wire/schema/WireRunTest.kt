@@ -972,6 +972,28 @@ class WireRunTest {
     }
   }
 
+  @Test
+  fun generateMessageDescriptor() {
+    writeDocumentationProto()
+    writeTriangleProto()
+    writeNestedPolygon()
+
+    val wireRun = WireRun(
+        sourcePath = listOf(Location.get("polygons/src/main/proto")),
+        protoPath = listOf(Location.get("docs/src/main/proto")),
+        targets = listOf(
+            JavaTarget(outDirectory = "generated/java", exclusive = false),
+            FileDescriptorTarget(outDirectory = "wire/message-descriptors", exclusive = false)
+        )
+    )
+    wireRun.execute(fs, logger)
+
+    assertThat(fs.find("wire/message-descriptors")).containsExactlyInAnyOrder(
+        "wire/message-descriptors/squareup/polygons/nested_polygon.desc",
+        "wire/message-descriptors/squareup/polygons/triangle.desc",
+    )
+  }
+
   private fun writeOrangeProto() {
     fs.add("colors/src/main/proto/squareup/colors/orange.proto", """
           |syntax = "proto2";
@@ -1069,6 +1091,36 @@ class WireRunTest {
         |message Octagon {
         |  option (documentation_url) = "https://en.wikipedia.org/wiki/Octagon";
         |  optional bool stop = 1;
+        |}
+        """.trimMargin())
+  }
+
+  private fun writeNestedPolygon() {
+    fs.add("polygons/src/main/proto/squareup/polygons/nested_polygon.proto", """
+        |syntax = "proto2";
+        |
+        |option java_package = "com.squareup.polygons";
+        |
+        |package squareup.polygons;
+        |import "squareup/options/documentation.proto";
+        |import "squareup/polygons/triangle.proto";
+        |
+        |message SquareTriangle {
+        |  option (documentation_url) = "https://en.wikipedia.org/wiki/NestedPolygon";
+        |  optional uint64 length = 1;
+        |  optional NestedTriangle nested_triangle = 2;
+        |  optional Format format = 3;
+        |  
+        |  message NestedTriangle {
+        |    optional uint32 level = 1;
+        |    optional Triangle triangle = 2;
+        |    optional Format format = 3;
+        |  }
+        |}
+        |
+        |message Format {
+        |  optional uint32 line_width = 1;
+        |  optional uint32 color = 2;
         |}
         """.trimMargin())
   }

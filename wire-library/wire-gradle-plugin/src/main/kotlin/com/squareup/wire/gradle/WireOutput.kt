@@ -18,6 +18,7 @@ package com.squareup.wire.gradle
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.CustomTargetBeta
+import com.squareup.wire.schema.FileDescriptorTarget
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.ProtoTarget
@@ -130,5 +131,11 @@ open class CustomOutput @Inject constructor() : WireOutput() {
         customHandlerClass = customHandlerClass
             ?: throw IllegalArgumentException("customHandlerClass required")
     )
+  }
+}
+
+open class FileDescriptorOutput @Inject constructor() : WireOutput() {
+  override fun toTarget(outputDirectory: String): FileDescriptorTarget {
+    return FileDescriptorTarget(outDirectory = outputDirectory)
   }
 }

@@ -18,6 +18,8 @@ include(":wire-schema")
 include(":wire-swift-generator")
 include(":wire-test-utils")
 include(":wire-tests")
+include(":wire-descriptor")
+include(":wire-kafka")
 
 if (startParameter.projectProperties.get("swift") != "false") {
   include(":wire-runtime-swift")

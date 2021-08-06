@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.protos.FileDescriptorGenerator
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -699,5 +700,49 @@ interface CustomHandlerBeta {
     logger: WireLogger,
     profileLoader: ProfileLoader
   ): Target.SchemaHandler
+}
+
+data class FileDescriptorTarget(
+  override val includes: List<String> = listOf("*"),
+  override val excludes: List<String> = listOf(),
+  override val exclusive: Boolean = false,
+  override val outDirectory: String,
+) : Target() {
+  override fun copyTarget(
+    includes: List<String>,
+    excludes: List<String>,
+    exclusive: Boolean,
+    outDirectory: String
+  ): Target {
+    return copy(
+        includes = includes,
+        excludes = excludes,
+    )
+  }
+
+  override fun newHandler(
+    schema: Schema,
+    moduleName: String?,
+    upstreamTypes: Map<ProtoType, String>,
+    fs: FileSystem,
+    logger: WireLogger,
+    profileLoader: ProfileLoader
+  ): SchemaHandler {
+    return object : SchemaHandler {
+      val fileDescriptor = FileDescriptorGenerator(schema, fs, outDirectory)
+      override fun handle(type: Type): Path? {
+        return fileDescriptor.generate(type)
+      }
+
+      override fun handle(service: Service): List<Path> {
+        logger.artifactSkipped(service.type)
+        return emptyList()
+      }
+
+      override fun handle(extend: Extend, field: Field): Path? {
+        return null
+      }
+    }
+  }
 }
 

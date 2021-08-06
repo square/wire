@@ -9,3 +9,7 @@ internal fun Project.targetDefaultOutputPath(): String {
 internal fun Project.libraryProtoOutputPath(): String {
   return "${buildDir}/wire/proto-sources"
 }
+
+internal fun Project.descriptorsOutputPath(): String {
+  return "${buildDir}/wire/proto-descriptors"
+}

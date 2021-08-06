@@ -24,6 +24,7 @@ dependencies {
   implementation(project(":wire-java-generator"))
   implementation(project(":wire-swift-generator"))
   implementation(project(":wire-profiles"))
+  implementation(project(":wire-descriptor"))
   implementation(deps.okio.jvm)
   implementation(deps.guava)
   implementation(deps.kotlin.serialization)

@@ -16,6 +16,7 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.VERSION
+import com.squareup.wire.gradle.internal.descriptorsOutputPath
 import com.squareup.wire.gradle.internal.libraryProtoOutputPath
 import com.squareup.wire.gradle.internal.targetDefaultOutputPath
 import com.squareup.wire.gradle.kotlin.Source
@@ -106,6 +107,17 @@ class WirePlugin : Plugin<Project> {
       }
       extension.proto { protoOutput ->
         protoOutput.out = libraryProtoSources.path
+      }
+    }
+
+    if (extension.includeDescriptors) {
+      val descriptorsSources = File(project.descriptorsOutputPath())
+      val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+      sourceSets.getByName("main") { main: SourceSet ->
+        main.resources.srcDir(descriptorsSources)
+      }
+      extension.fileDescriptor() { descriptorOutput ->
+        descriptorOutput.out = descriptorsSources.path
       }
     }
 
@@ -214,7 +226,7 @@ class WirePlugin : Plugin<Project> {
       project.tasks.named(PARENT_TASK).configure {
         it.dependsOn(task)
       }
-      if (extension.protoLibrary) {
+      if (extension.protoLibrary || extension.includeDescriptors) {
         project.tasks.named("processResources").configure {
           it.dependsOn(task)
         }
