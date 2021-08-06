@@ -361,7 +361,7 @@ class GrpcClientTest {
     mockService.enqueue(SendCompleted)
 
     runBlocking {
-      val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+      val (requestChannel, _) = routeGuideService.RouteChat().executeIn(this)
 
       val latch = Mutex(locked = true)
       requestChannel.invokeOnClose { expected ->
@@ -377,6 +377,37 @@ class GrpcClientTest {
 
       try {
         requestChannel.send(RouteNote(message = "léo"))
+        fail()
+      } catch (expected: Throwable) {
+        assertThat(expected).isInstanceOf(CancellationException::class.java)
+      }
+    }
+  }
+
+  @Test
+  fun duplexSuspend_requestChannelThrowsWhenWhenCanceledByServer() {
+    mockService.enqueue(ReceiveCall("/routeguide.RouteGuide/RouteChat"))
+    mockService.enqueueReceiveNote(message = "marco")
+    mockService.enqueueSendError(StatusException(Status.FAILED_PRECONDITION))
+
+    runBlocking {
+      val (requestChannel, _) = routeGuideService.RouteChat().executeIn(this)
+
+      val latch = Mutex(locked = true)
+      requestChannel.invokeOnClose { expected ->
+        assertThat(expected).isInstanceOf(CancellationException::class.java)
+        latch.unlock()
+      }
+
+      requestChannel.send(RouteNote(message = "marco"))
+
+      latch.withLock {
+        // Wait for requestChannel to be closed.
+      }
+
+      try {
+        requestChannel.send(RouteNote(message = "léo"))
+        fail()
       } catch (expected: Throwable) {
         assertThat(expected).isInstanceOf(CancellationException::class.java)
       }
@@ -445,7 +476,7 @@ class GrpcClientTest {
     mockService.enqueueSendNote(message = "marco")
 
     runBlocking {
-      val (requestChannel, responseChannel) = routeGuideService.RouteChat().executeIn(this)
+      val (_, responseChannel) = routeGuideService.RouteChat().executeIn(this)
 
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "marco"))
 
