@@ -1,12 +1,20 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.7
+---------------------
+
+_2021-08-09_
+
+ * Fix: Use correct type when referencing a custom adapter in Kotlin generated code.
+ * Fix: Handle writing/reading exceptions for duplex calls in Wire gRPC.
+
 Version 4.0.0-alpha.6
 ---------------------
 
 _2021-08-03_
 
- * Fix: Explicitely defined Wire gRPC server generation as experimental: the feature isn't complete.
+ * Fix: Explicitly defined Wire gRPC server generation as experimental: the feature isn't complete.
  * Fix: Suppress deprecation warnings on generated enum's `fromValue` method in Kotlin.
  * Fix: Use relative path sensitivity and file collection.
 

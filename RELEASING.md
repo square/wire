@@ -86,7 +86,7 @@ Cutting a JVM Release
     sed -i "" \
       "s/\<version\>\([^<]*\)\<\/version\>/\<version\>$RELEASE_VERSION\<\/version\>/g" \
       `find . -name "README.md"`
-    ./gradlew -p wire-library clean publish uploadArchives
+    ./gradlew -p wire-library clean publish uploadArchives --no-daemon --no-parallel
     ```
 
 5. Visit [Sonatype Nexus][sonatype_nexus] to promote (close then release) the artifact. Or drop it
