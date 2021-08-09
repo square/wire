@@ -1,5 +1,6 @@
 plugins {
   kotlin("multiplatform")
+  id("internal-publishing")
 }
 
 kotlin {
@@ -18,7 +19,8 @@ kotlin {
         }
       }
       nodejs()
-      browser()
+      // TODO(jwilson): fix Okio for JS to support browser() by polyfilling OS.
+      // browser()
     }
   }
 
@@ -59,8 +61,6 @@ val jar by tasks.getting(Jar::class) {
     attributes("Automatic-Module-Name" to "wire-schema")
   }
 }
-
-apply(from = "$rootDir/gradle/gradle-mvn-mpp-push.gradle")
 
 configure<PublishingExtension> {
   // Use default artifact name for the JVM target

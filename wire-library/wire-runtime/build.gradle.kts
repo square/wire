@@ -2,6 +2,7 @@ plugins {
   kotlin("multiplatform")
   id("java-library")
   id("ru.vyarus.animalsniffer")
+  id("internal-publishing")
 }
 
 kotlin {
@@ -20,7 +21,8 @@ kotlin {
         }
       }
       nodejs()
-      browser()
+      // TODO(jwilson): fix Okio for JS to support browser() by polyfilling OS.
+      // browser()
     }
   }
   if (kmpNativeEnabled) {
@@ -101,7 +103,6 @@ kotlin {
 afterEvaluate {
   val installLocally by tasks.creating {
     dependsOn("publishKotlinMultiplatformPublicationToTestRepository")
-    dependsOn("publishMetadataPublicationToTestRepository")
     dependsOn("publishJvmPublicationToTestRepository")
     if (kmpJsEnabled) {
       dependsOn("publishJsPublicationToTestRepository")
@@ -117,8 +118,6 @@ repositories.whenObjectAdded {
     }
   }
 }
-
-apply(from = "$rootDir/gradle/gradle-mvn-mpp-push.gradle")
 
 configure<PublishingExtension> {
   // Use default artifact name for the JVM target

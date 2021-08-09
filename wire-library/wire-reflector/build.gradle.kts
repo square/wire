@@ -1,5 +1,6 @@
 plugins {
   kotlin("multiplatform")
+  id("internal-publishing")
 }
 
 kotlin {
@@ -58,8 +59,6 @@ val jar by tasks.getting(Jar::class) {
     attributes("Automatic-Module-Name" to "wire-reflector")
   }
 }
-
-apply(from = "$rootDir/gradle/gradle-mvn-mpp-push.gradle")
 
 configure<PublishingExtension> {
   // Use default artifact name for the JVM target

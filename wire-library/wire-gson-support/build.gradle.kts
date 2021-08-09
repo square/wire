@@ -2,6 +2,7 @@ plugins {
   id("java-library")
   id("ru.vyarus.animalsniffer")
   kotlin("jvm")
+  id("internal-publishing")
 }
 
 val jar by tasks.getting(Jar::class) {
