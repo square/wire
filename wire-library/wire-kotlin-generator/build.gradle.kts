@@ -1,7 +1,6 @@
 plugins {
   id("java-library")
   kotlin("jvm")
-  id("internal-publishing")
 }
 
 val jar by tasks.getting(Jar::class) {

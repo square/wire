@@ -1,7 +1,7 @@
 plugins {
   kotlin("jvm")
   id("java-gradle-plugin")
-  id("internal-publishing")
+  id("maven-publish")
 }
 
 gradlePlugin {

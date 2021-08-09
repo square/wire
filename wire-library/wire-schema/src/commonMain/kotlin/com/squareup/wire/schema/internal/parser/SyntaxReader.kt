@@ -195,7 +195,7 @@ class SyntaxReader(
       }
     }
     expect(start < pos) { "expected a word" }
-    return data.concatToString(start, pos)
+    return String(data, start, pos - start)
   }
 
   /** Reads an integer and returns it. */
@@ -285,7 +285,7 @@ class SyntaxReader(
             break
           }
         }
-        return data.concatToString(start, pos - 1)
+        return String(data, start, pos - 1 - start)
       }
 
       else -> throw unexpected("unexpected '/'")
@@ -369,7 +369,7 @@ class SyntaxReader(
 
     if (end == start) return documentation
 
-    val trailingDocumentation = data.concatToString(start, end + 1)
+    val trailingDocumentation = String(data, start, end - start + 1)
     if (documentation.isEmpty()) return trailingDocumentation
     return "$documentation\n$trailingDocumentation"
   }
