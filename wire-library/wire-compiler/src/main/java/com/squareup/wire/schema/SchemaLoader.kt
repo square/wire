@@ -20,10 +20,10 @@ import com.squareup.wire.java.Profile
 import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
+import okio.FileSystem
 import java.io.Closeable
 import java.io.IOException
 import java.util.ArrayDeque
-import okio.FileSystem
 import java.nio.file.FileSystem as NioFileSystem
 
 /**
@@ -165,8 +165,9 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
     // If the .proto was specified as a full path without a separate base directory that it's
     // relative to, confirm that the import path and file system path agree.
     if (protoFilePath.location.base.isEmpty()
-        && protoFilePath.location.path != importPath
-        && !protoFilePath.location.path.endsWith("/$importPath")) {
+      && protoFilePath.location.path != importPath
+      && !protoFilePath.location.path.endsWith("/$importPath")
+    ) {
       errors += "expected ${protoFilePath.location.path} to have a path ending with $importPath"
     }
 
@@ -280,5 +281,8 @@ internal fun ProtoFile.importPath(location: Location): String {
 
 internal fun ProtoFile.canonicalImportPath(location: Location): String {
   val filename = location.path.substringAfterLast('/')
-  return packageName!!.replace('.', '/') + "/" + filename
+  return when (val packageName = packageName) {
+    null -> filename
+    else -> packageName.replace('.', '/') + "/" + filename
+  }
 }

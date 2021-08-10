@@ -15,12 +15,13 @@
  */
 package com.squareup.wire.schema
 
-import okio.fakefilesystem.FakeFileSystem
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import com.squareup.wire.testing.symlink
 import okio.ByteString.Companion.decodeHex
+import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertFailsWith
 import kotlin.text.Charsets.UTF_16BE
@@ -28,7 +29,6 @@ import kotlin.text.Charsets.UTF_16LE
 import kotlin.text.Charsets.UTF_32BE
 import kotlin.text.Charsets.UTF_32LE
 import kotlin.text.Charsets.UTF_8
-import org.junit.Ignore
 
 class SchemaLoaderTest {
   private val fs = FakeFileSystem()
@@ -192,6 +192,40 @@ class SchemaLoaderTest {
           .isEqualTo(Location.get("google/protobuf/descriptor.proto"))
       assertThat(loader.load("squareup/curves/circle.proto").location)
           .isEqualTo(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
+    }
+  }
+
+  @Test
+  fun emptyPackagedProtoMessage() {
+    fs.add("address.proto", """
+      |syntax = "proto3";
+      |option java_package ="address";
+      |
+      |message Address {
+      |  string street = 1;
+      |  int32 zip = 2;
+      |  string city = 3;
+      |}""".trimMargin())
+
+    fs.add("customer.proto", """
+      |syntax = "proto3";
+      |option java_package ="customer";
+      |
+      |import "address.proto";
+      |
+      |message Customer {
+      |  string name = 1;
+      |  Address address = 3;
+      |}""".trimMargin())
+
+    SchemaLoader(fs).use { loader ->
+      loader.initRoots(
+        sourcePath = listOf(Location.get("/")),
+        protoPath = listOf(Location.get("/")),
+      )
+      val schema = loader.loadSchema()
+      assertThat(schema.getType(ProtoType.get("Address"))).isInstanceOf(MessageType::class.java)
+      assertThat(schema.getType(ProtoType.get("Customer"))).isInstanceOf(MessageType::class.java)
     }
   }
 
