@@ -1929,7 +1929,7 @@ class KotlinGenerator private constructor(
    * Example
    * ```
    * @Retention(AnnotationRetention.RUNTIME)
-   * @Target(AnnotationTarget.FIELD)
+   * @Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
    * annotation class MyFieldOption(val value: String)
    * ```
    */
@@ -1938,7 +1938,8 @@ class KotlinGenerator private constructor(
     field: Field
   ): TypeSpec? {
     require(field in extend.fields)
-    val annotationTarget = extend.annotationTarget ?: return null
+    val annotationTargets = extend.annotationTargets
+    if (annotationTargets.isEmpty()) return null
 
     if (!emitDeclaredOptions) return null
 
@@ -1953,8 +1954,13 @@ class KotlinGenerator private constructor(
             .addMember("%T.%L", AnnotationRetention::class, AnnotationRetention.RUNTIME)
             .build())
         .addAnnotation(AnnotationSpec.builder(Target::class)
-            .addMember("%T.%L", AnnotationTarget::class, annotationTarget)
-            .build())
+          .run {
+            for (annotationTarget in annotationTargets) {
+              addMember("%T.%L", AnnotationTarget::class, annotationTarget)
+            }
+            this
+          }
+          .build())
     if (field.documentation.isNotEmpty()) {
       builder.addKdoc("%L\n", field.documentation)
     }
@@ -2377,7 +2383,7 @@ class KotlinGenerator private constructor(
         }
 
         for (extend in protoFile.extendList) {
-          if (extend.annotationTarget == null) continue
+          if (extend.annotationTargets.isEmpty()) continue
           for (field in extend.fields) {
             if (!eligibleAsAnnotationMember(schema, field)) continue
             val protoMember = field.member
@@ -2407,12 +2413,12 @@ class KotlinGenerator private constructor(
       )
     }
 
-    private val Extend.annotationTarget: AnnotationTarget?
+    private val Extend.annotationTargets: List<AnnotationTarget>
       get() = when (type) {
-        MESSAGE_OPTIONS, ENUM_OPTIONS, SERVICE_OPTIONS -> AnnotationTarget.CLASS
-        FIELD_OPTIONS, ENUM_VALUE_OPTIONS -> AnnotationTarget.PROPERTY
-        METHOD_OPTIONS -> AnnotationTarget.FUNCTION
-        else -> null
+        MESSAGE_OPTIONS, ENUM_OPTIONS, SERVICE_OPTIONS -> listOf(AnnotationTarget.CLASS)
+        FIELD_OPTIONS, ENUM_VALUE_OPTIONS -> listOf(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
+        METHOD_OPTIONS -> listOf(AnnotationTarget.FUNCTION)
+        else -> emptyList()
       }
 
     internal fun String.sanitizeKdoc(): String {
