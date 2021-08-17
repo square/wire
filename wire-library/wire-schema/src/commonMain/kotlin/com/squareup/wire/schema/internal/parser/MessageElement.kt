@@ -52,17 +52,17 @@ data class MessageElement(
 
     val getOneOfForField = { field: FieldElement -> oneOfs.find { it.fields.contains(field) } }
 
-    val addedOneOfs = setOf<OneOfElement>()
+    val addedOneOfs = mutableSetOf<OneOfElement>()
 
     if (allFieldsSorted.isNotEmpty()) {
       for (field in allFieldsSorted) {
-        append('\n')
         val oneOf = getOneOfForField(field)
         if (addedOneOfs.contains(oneOf)) {
           continue
         }
+        append('\n')
         if (oneOf != null) {
-          addedOneOfs.plus(oneOf)
+          addedOneOfs.add(oneOf)
           appendIndented(oneOf.toSchema())
         } else {
           appendIndented(field.toSchema())

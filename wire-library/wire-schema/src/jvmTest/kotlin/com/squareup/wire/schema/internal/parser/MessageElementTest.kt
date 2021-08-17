@@ -465,17 +465,22 @@ class MessageElementTest {
         name = "name",
         tag = 2
       )
-    val oneOf1Field = FieldElement(
+    val oneOf1Field1 = FieldElement(
         location = location.at(1, 1),
         type = "string",
         name = "namey",
         tag = 1
     )
-
+    val oneOf1Field2 = FieldElement(
+        location = location.at(2, 1),
+        type = "int32",
+        name = "aField",
+        tag = 5
+     )
 
     val oneOf1 = OneOfElement(
         name = "thingy",
-        fields = listOf(oneOf1Field)
+        fields = listOf(oneOf1Field1, oneOf1Field2)
     )
     val field2 = FieldElement(
         location = location.at(2, 3),
@@ -517,6 +522,7 @@ class MessageElementTest {
         |
         |  oneof thingy {
         |    string namey = 1;
+        |    int32 aField = 5;
         |  }
         |
         |  required string name = 2;
