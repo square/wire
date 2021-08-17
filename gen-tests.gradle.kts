@@ -307,8 +307,10 @@ val generateKotlinJavaInteropTests by tasks.creating(JavaExec::class) {
       "--kotlin_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
       "--java_interop",
       "--kotlin_box_oneofs_min_size=8",
+      "--emit_applied_options",
       "all_types.proto",
       "deprecated.proto",
+      "custom_options.proto",
       "external_message.proto",
       "foreign.proto",
       "form.proto",
@@ -326,6 +328,21 @@ val generateKotlinJavaInteropTests by tasks.creating(JavaExec::class) {
       "simple_message.proto",
       "unknown_fields.proto",
       "uses_any.proto"
+  )
+}
+
+// ONE JAVA CLASS WHICH WILL BE USING A KOTLIN OPTION
+
+val generateJavaForKotlinJavaInteropTests by tasks.creating(JavaExec::class) {
+  group = "Generate Tests"
+  description = "Generates one Java class which will depend on a Kotlin generated annotation"
+  classpath = wire
+  main = "com.squareup.wire.WireCompiler"
+  args = listOf(
+    "--proto_path=wire-library/wire-tests/src/commonTest/proto/java",
+    "--java_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
+    "--emit_applied_options",
+    "depend_on_kotlin_option.proto"
   )
 }
 
@@ -571,6 +588,7 @@ val generateTests by tasks.creating {
     generateKotlinServicesTests,
     generateKotlinAndroidTests,
     generateKotlinJavaInteropTests,
+    generateJavaForKotlinJavaInteropTests,
     generateSwiftTests,
     generateGrpcTests,
     generateMoshiTests,
