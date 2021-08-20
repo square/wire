@@ -254,6 +254,22 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourceJarMixedWithConflictingProtos() {
+    val fixtureRoot = File("src/test/projects/sourcejar-mixed-conflicts")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .doesNotContain("Writing com.excluded.Martian")
+      .contains(
+        "src/test/projects/sourcejar-mixed-conflicts/build/generated/source/wire"
+      )
+  }
+
+  @Test
   fun sourceJarRemoteOneJarMultipleFiles() {
     val fixtureRoot = File("src/test/projects/sourcejar-remote-many-files")
 
@@ -556,6 +572,31 @@ class WirePluginTest {
         File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
     assertThat(generatedProto1).exists()
     assertThat(generatedProto2).exists()
+  }
+
+  @Test
+  fun sourceDirExclude() {
+    val fixtureRoot = File("src/test/projects/sourcedir-exclude")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.output)
+      .contains("Writing com.squareup.dinosaurs.Dinosaur")
+      .contains("Writing com.squareup.geology.Period")
+      .contains("src/test/projects/sourcedir-exclude/build/generated/source/wire")
+    assertThat(result.output)
+      .doesNotContain("Writing com.excluded.Martian")
+
+    val includedFile1 =
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/dinosaurs/Dinosaur.kt")
+    val includedFile2 =
+      File(fixtureRoot, "build/generated/source/wire/com/squareup/geology/Period.kt")
+    assertThat(includedFile1).exists()
+    assertThat(includedFile2).exists()
+    val excludedFile =
+      File(fixtureRoot, "build/generated/source/wire/com/excluded/Martian.kt")
+    assertThat(excludedFile).doesNotExist()
   }
 
   @Test

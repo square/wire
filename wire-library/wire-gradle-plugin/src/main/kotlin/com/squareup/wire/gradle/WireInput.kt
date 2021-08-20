@@ -39,7 +39,7 @@ internal class WireInput(var configuration: Configuration) {
   val name: String
     get() = configuration.name
 
-  private val dependencyToIncludes = mutableMapOf<Dependency, List<String>>()
+  private val dependencyFilters = mutableMapOf<Dependency, Collection<WireExtension.Filter>>()
 
   val dependencies: DependencySet
     get() = configuration.dependencies
@@ -58,7 +58,7 @@ internal class WireInput(var configuration: Configuration) {
     for (jar in jars) {
       jar.srcJar?.let { path ->
         val dependency = resolveDependency(project, path)
-        dependencyToIncludes[dependency] = jar.includes
+        dependencyFilters[dependency] = jar.filters
         configuration.dependencies.add(dependency)
       }
     }
@@ -69,7 +69,7 @@ internal class WireInput(var configuration: Configuration) {
       if (projectPath.srcProject == null) continue
 
       val dependency = resolveDependency(project, projectPath.srcProject!!)
-      dependencyToIncludes[dependency] = projectPath.includes
+      dependencyFilters[dependency] = projectPath.filters
       configuration.dependencies.add(dependency)
     }
   }
@@ -135,46 +135,43 @@ internal class WireInput(var configuration: Configuration) {
   fun debug(logger: Logger) {
     configuration.dependencies.forEach { dep ->
       val srcDirs = ((dep as? FileCollectionDependency)?.files as? SourceDirectorySet)?.srcDirs
-      val includes = dependencyToIncludes[dep] ?: listOf()
+      val includes = dependencyFilters[dep] ?: listOf()
       logger.debug("dep: $dep -> $srcDirs")
       logger.debug("$name.files for dep: ${configuration.files(dep)}")
       logger.debug("$name.includes for dep: $includes")
     }
   }
 
-  fun toLocations(providerFactory: ProviderFactory): Provider<List<Location>> {
+  fun toLocations(project: Project): Provider<List<Location>> {
     // We create a provider to support lazily created locations which do not exist at
     // configuration time.
-    return providerFactory.provider {
+    return project.provider {
       configuration.dependencies.flatMap { dep ->
-        configuration.files(dep).flatMap { file -> file.toLocations(dep) }
+        configuration.files(dep).flatMap { file -> file.toLocations(project, dep) }
       }
     }
   }
 
-  private fun File.toLocations(dependency: Dependency): List<Location> {
+  private fun File.toLocations(project: Project, dependency: Dependency) =
     if (dependency is FileCollectionDependency && dependency.files is SourceDirectorySet) {
       val srcDir = (dependency.files as SourceDirectorySet).srcDirs.first {
-        path.startsWith(it.path + File.separator)
+        startsWith(it.path)
       }
-      return listOf(
+      listOf(
         Location.get(
           base = srcDir.path,
-          path = path.substring(srcDir.path.length + 1)
+          path = relativeTo(srcDir).toString()
         )
       )
-    }
+    } else if (isJar) {
+      val filters = dependencyFilters.getOrDefault(dependency, listOf())
 
-    val includes = dependencyToIncludes[dependency] ?: listOf()
-
-    if (includes.isEmpty()) {
-      return listOf(Location.get(path))
-    }
-
-    return includes.map { include ->
-      Location.get(base = path, path = include)
-    }
-  }
+      mutableListOf<Location>().apply {
+        project.zipTree(path)
+          .matching { pattern -> filters.forEach { it.act(pattern) } }
+          .visit { if (!it.isDirectory) add(Location.get(path, it.path)) }
+      }
+    } else listOf(Location.get(path))
 
   private val File.isJar
     get() = path.endsWith(".jar")
