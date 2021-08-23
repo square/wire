@@ -21,6 +21,7 @@ import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.util.PatternFilterable
 
 open class WireExtension(project: Project) {
   private val objectFactory = project.objects
@@ -213,13 +214,14 @@ open class WireExtension(project: Project) {
 
     if (hasSrcDirs) {
       // map to SourceDirectorySet which does the work for us!
-      val protoTree = objectFactory.sourceDirectorySet(name, "Wire proto sources for $name.")
-      protoTree.srcDirs(protoRootSet.srcDirs)
-      if (protoRootSet.includes.isEmpty()) {
-        protoTree.filter.include("**/*.proto")
-      } else {
-        protoTree.filter.include(protoRootSet.includes)
-      }
+      val protoTree = objectFactory
+        .sourceDirectorySet(name, "Wire proto sources for $name.")
+        .srcDirs(protoRootSet.srcDirs)
+
+      protoRootSet.filters
+        .ifEmpty { listOf(Include("**/*.proto")) }
+        .forEach { it.act(protoTree.filter) }
+
       sourceTrees.add(protoTree)
     }
 
@@ -267,6 +269,10 @@ open class WireExtension(project: Project) {
     var srcJar: String? = null
     var srcProject: String? = null
     val includes = mutableListOf<String>()
+    val excludes = mutableListOf<String>()
+
+    internal val filters: Collection<Filter>
+      get() = includes.map(::Include) + excludes.map(::Exclude)
 
     fun srcDir(dir: String) {
       srcDirs += dir
@@ -286,6 +292,26 @@ open class WireExtension(project: Project) {
 
     fun include(vararg includePaths: String) {
       includes += includePaths
+    }
+
+    fun exclude(vararg excludePaths: String) {
+      excludes += excludePaths
+    }
+  }
+
+  internal sealed class Filter(val glob: String) {
+    abstract fun act(filter: PatternFilterable)
+  }
+
+  internal class Exclude(glob: String) : Filter(glob) {
+    override fun act(filter: PatternFilterable) {
+      filter.exclude(glob)
+    }
+  }
+
+  internal class Include(glob: String) : Filter(glob) {
+    override fun act(filter: PatternFilterable) {
+      filter.include(glob)
     }
   }
 }

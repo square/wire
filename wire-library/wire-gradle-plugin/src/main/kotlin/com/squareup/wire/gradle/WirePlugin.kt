@@ -192,8 +192,8 @@ class WirePlugin : Plugin<Project> {
           protoPathInput.debug(task.logger)
         }
         task.outputDirectories = targets.map { target -> project.file(target.outDirectory) }
-        task.sourceInput.set(protoSourceInput.toLocations(project.providers))
-        task.protoInput.set(protoPathInput.toLocations(project.providers))
+        task.sourceInput.set(protoSourceInput.toLocations(project))
+        task.protoInput.set(protoPathInput.toLocations(project))
         task.roots = extension.roots.toList()
         task.prunes = extension.prunes.toList()
         task.moves = extension.moves.toList()
