@@ -218,9 +218,7 @@ open class WireExtension(project: Project) {
         .sourceDirectorySet(name, "Wire proto sources for $name.")
         .srcDirs(protoRootSet.srcDirs)
 
-      protoRootSet.filters
-        .ifEmpty { listOf(Include("**/*.proto")) }
-        .forEach { it.act(protoTree.filter) }
+      protoRootSet.filters.forEach { it.act(protoTree.filter) }
 
       sourceTrees.add(protoTree)
     }
@@ -272,7 +270,8 @@ open class WireExtension(project: Project) {
     val excludes = mutableListOf<String>()
 
     internal val filters: Collection<Filter>
-      get() = includes.map(::Include) + excludes.map(::Exclude)
+      get() = (includes.map(::Include) + excludes.map(::Exclude))
+        .ifEmpty { listOf(Include("**/*.proto")) }
 
     fun srcDir(dir: String) {
       srcDirs += dir
