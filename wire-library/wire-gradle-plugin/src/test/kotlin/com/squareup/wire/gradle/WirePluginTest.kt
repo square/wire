@@ -239,6 +239,21 @@ class WirePluginTest {
   }
 
   @Test
+  fun sourceJarLocalOneJarMultipleFilesIncludingNonProtos() {
+    val fixtureRoot = File("src/test/projects/sourcejar-local-nonproto-file")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    assertThat(result.task(":generateProtos")).isNotNull
+    assertThat(result.output)
+        .contains("Writing com.squareup.dinosaurs.Dinosaur")
+        .contains("Writing com.squareup.geology.Period")
+        .contains(
+            "src/test/projects/sourcejar-local-nonproto-file/build/generated/source/wire"
+        )
+  }
+
+  @Test
   fun sourceJarLocalOneJarSingleFile() {
     val fixtureRoot = File("src/test/projects/sourcejar-local-single-file")
 

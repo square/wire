@@ -165,6 +165,7 @@ internal class WireInput(var configuration: Configuration) {
       )
     } else if (isJar) {
       val filters = dependencyFilters.getOrDefault(dependency, listOf())
+        .ifEmpty { return@toLocations listOf(Location.get(path)) }
 
       mutableListOf<Location>().apply {
         project.zipTree(path)
