@@ -42,6 +42,7 @@ data class OptionElement(
     LIST,
     OPTION
   }
+
   /** An internal representation of the Option primitive types */
   data class OptionPrimitive(val kind: Kind, val value: Any)
 
