@@ -209,8 +209,6 @@ class OptionsTest {
         .isEqualTo(mapOf(moreOptions to mapOf(evenMoreOptions to mapOf(stringOption to "foo"))))
   }
 
-
-
   @Test
   fun resolveFieldPathMatchesLeadingDotFirstSegment() {
     assertThat(Options.resolveFieldPath(".a.b.c.d", setOf("a", "z", "y")))

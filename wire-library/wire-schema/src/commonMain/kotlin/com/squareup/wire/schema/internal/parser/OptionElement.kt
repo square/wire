@@ -43,7 +43,7 @@ data class OptionElement(
     OPTION
   }
 
-  /** An internal representation of the Option primitive types */
+  /** An internal representation of the Option primitive types. */
   data class OptionPrimitive(val kind: Kind, val value: Any)
 
   private val formattedName = if (isParenthesized) "($name)" else name
@@ -98,7 +98,6 @@ data class OptionElement(
              }
              else -> append(formatOptionMapValue(value.value))
            }
-
       }
       is Map<*, *> -> {
         append("{\n")

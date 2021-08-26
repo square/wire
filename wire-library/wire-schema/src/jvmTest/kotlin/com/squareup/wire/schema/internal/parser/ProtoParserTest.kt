@@ -1232,8 +1232,6 @@ class ProtoParserTest {
     assertThat(ProtoParser.parse(location, proto)).isEqualTo(expected)
   }
 
-
-
   @Test
   fun packageDeclaration() {
     val proto = """
@@ -1919,7 +1917,7 @@ class ProtoParserTest {
     option_two_b_map["names"] = Arrays.asList("Foo", "Bar")
     val option_three_map = LinkedHashMap<String, Map<String, *>>()
     val option_three_nested_map = LinkedHashMap<String, Any>()
-    option_three_nested_map["y"] = Arrays.asList( OptionElement.OptionPrimitive(Kind.NUMBER, "1"), OptionElement.OptionPrimitive(Kind.NUMBER, "2"))
+    option_three_nested_map["y"] = Arrays.asList(OptionElement.OptionPrimitive(Kind.NUMBER, "1"), OptionElement.OptionPrimitive(Kind.NUMBER, "2"))
     option_three_map["x"] = option_three_nested_map
 
     val option_four_map = LinkedHashMap<String, Map<String, *>>()
