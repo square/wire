@@ -47,18 +47,29 @@ data class MessageElement(
         appendIndented(option.toSchemaDeclaration())
       }
     }
-    if (fields.isNotEmpty()) {
-      for (field in fields) {
+
+    val allFieldsSorted = (fields + oneOfs.flatMap { it.fields }).sortedWith(compareBy({ it.location.line }, { it.location.column }))
+
+    val getOneOfForField = { field: FieldElement -> oneOfs.find { it.fields.contains(field) } }
+
+    val addedOneOfs = mutableSetOf<OneOfElement>()
+
+    if (allFieldsSorted.isNotEmpty()) {
+      for (field in allFieldsSorted) {
+        val oneOf = getOneOfForField(field)
+        if (addedOneOfs.contains(oneOf)) {
+          continue
+        }
         append('\n')
-        appendIndented(field.toSchema())
+        if (oneOf != null) {
+          addedOneOfs.add(oneOf)
+          appendIndented(oneOf.toSchema())
+        } else {
+          appendIndented(field.toSchema())
+        }
       }
     }
-    if (oneOfs.isNotEmpty()) {
-      for (oneOf in oneOfs) {
-        append('\n')
-        appendIndented(oneOf.toSchema())
-      }
-    }
+
     if (groups.isNotEmpty()) {
       for (group in groups) {
         append('\n')

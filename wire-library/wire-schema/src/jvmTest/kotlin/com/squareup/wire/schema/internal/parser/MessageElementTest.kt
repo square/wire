@@ -459,31 +459,38 @@ class MessageElementTest {
   @Test
   fun multipleEverythingToSchema() {
     val field1 = FieldElement(
-        location = location,
+        location = location.at(1, 2),
         label = REQUIRED,
         type = "string",
         name = "name",
+        tag = 2
+      )
+    val oneOf1Field1 = FieldElement(
+        location = location.at(1, 1),
+        type = "string",
+        name = "namey",
         tag = 1
     )
+    val oneOf1Field2 = FieldElement(
+        location = location.at(2, 1),
+        type = "int32",
+        name = "aField",
+        tag = 5
+     )
+
+    val oneOf1 = OneOfElement(
+        name = "thingy",
+        fields = listOf(oneOf1Field1, oneOf1Field2)
+    )
     val field2 = FieldElement(
-        location = location,
+        location = location.at(2, 3),
         label = REQUIRED,
         type = "bool",
         name = "other_name",
-        tag = 2
-    )
-    val oneOf1Field = FieldElement(
-        location = location,
-        type = "string",
-        name = "namey",
         tag = 3
     )
-    val oneOf1 = OneOfElement(
-        name = "thingy",
-        fields = listOf(oneOf1Field)
-    )
     val oneOf2Field = FieldElement(
-        location = location,
+        location = location.at(3, 0),
         type = "string",
         name = "namer",
         tag = 4
@@ -492,16 +499,16 @@ class MessageElementTest {
         name = "thinger",
         fields = listOf(oneOf2Field)
     )
-    val extensions1 = ExtensionsElement(location = location, values = listOf(500..501))
-    val extensions2 = ExtensionsElement(location = location, values = listOf(503))
+    val extensions1 = ExtensionsElement(location = location.at(5, 0), values = listOf(500..501))
+    val extensions2 = ExtensionsElement(location = location.at(6, 2), values = listOf(503))
     val nested = MessageElement(
-        location = location,
+        location = location.at(7, 1),
         name = "Nested",
         fields = listOf(field1)
     )
     val option = OptionElement.create("kit", Kind.STRING, "kat")
     val element = MessageElement(
-        location = location,
+        location = location.at(0, 0),
         name = "Message",
         fields = listOf(field1, field2),
         oneOfs = listOf(oneOf1, oneOf2),
@@ -513,13 +520,14 @@ class MessageElementTest {
         |message Message {
         |  option kit = "kat";
         |
-        |  required string name = 1;
-        |
-        |  required bool other_name = 2;
-        |
         |  oneof thingy {
-        |    string namey = 3;
+        |    string namey = 1;
+        |    int32 aField = 5;
         |  }
+        |
+        |  required string name = 2;
+        |
+        |  required bool other_name = 3;
         |
         |  oneof thinger {
         |    string namer = 4;
@@ -529,7 +537,7 @@ class MessageElementTest {
         |  extensions 503;
         |
         |  message Nested {
-        |    required string name = 1;
+        |    required string name = 2;
         |  }
         |}
         |""".trimMargin()
