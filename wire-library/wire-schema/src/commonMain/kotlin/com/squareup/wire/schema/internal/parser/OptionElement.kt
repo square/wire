@@ -42,6 +42,9 @@ data class OptionElement(
     LIST,
     OPTION
   }
+  /** An internal representation of the Option primitive types */
+  data class OptionPrimitive(val kind: Kind, val value: Any)
+
   private val formattedName = if (isParenthesized) "($name)" else name
 
   fun toSchema(): String = buildString {
@@ -85,19 +88,16 @@ data class OptionElement(
       is String -> {
         append(""""$value"""")
       }
-      is Pair<*,*> -> {
-        if (value.first is Kind) {
-           when (value.first as Kind) {
+      is OptionPrimitive -> {
+           when (value.kind) {
              BOOLEAN,
              NUMBER,
              ENUM -> {
-               append("${value.second}")
+               append("${value.value}")
              }
-             else -> append(formatOptionMapValue(value.second as Any))
+             else -> append(formatOptionMapValue(value.value))
            }
-        } else {
-          append(formatOptionMapValue(value.second as Any))
-        }
+
       }
       is Map<*, *> -> {
         append("{\n")

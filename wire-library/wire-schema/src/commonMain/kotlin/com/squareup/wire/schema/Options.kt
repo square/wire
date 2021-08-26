@@ -201,8 +201,8 @@ class Options(
         return coerceValueForField(context, value)
       }
 
-      is Pair<*,*> -> {
-        return canonicalizeValue(linker, context, value.second!!)
+      is OptionElement.OptionPrimitive -> {
+        return canonicalizeValue(linker, context, value.value)
       }
 
       else -> {

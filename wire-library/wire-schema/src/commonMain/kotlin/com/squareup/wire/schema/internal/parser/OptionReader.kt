@@ -115,7 +115,7 @@ class OptionReader(internal val reader: SyntaxReader) {
       val option = readOption(keyValueSeparator)
       val name = option.name
       val value = if ( option.kind == BOOLEAN || option.kind == ENUM || option.kind == NUMBER) {
-        Pair(option.kind, option.value)
+        OptionElement.OptionPrimitive(option.kind, option.value)
       } else {
         option.value
       }
