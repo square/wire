@@ -22,7 +22,7 @@ import com.squareup.wire.schema.internal.mutableQueueOf
  * Creates a new schema that contains only the types selected by the pruning rules, including their
  * transitive dependencies.
  */
-internal class Pruner(
+class Pruner(
   private val schema: Schema,
   private val pruningRules: PruningRules
 ) {
