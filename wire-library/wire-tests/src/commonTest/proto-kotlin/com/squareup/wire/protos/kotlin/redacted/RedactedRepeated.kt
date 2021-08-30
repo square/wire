@@ -96,7 +96,8 @@ public class RedactedRepeated(
       RedactedRepeated::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRepeated", 
       PROTO_2, 
-      null
+      null, 
+      "redacted_test.proto"
     ) {
       public override fun encodedSize(`value`: RedactedRepeated): Int {
         var size = value.unknownFields.size

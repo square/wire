@@ -126,7 +126,8 @@ public class VersionOne(
       VersionOne::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.VersionOne", 
       PROTO_2, 
-      null
+      null, 
+      "unknown_fields.proto"
     ) {
       public override fun encodedSize(`value`: VersionOne): Int {
         var size = value.unknownFields.size

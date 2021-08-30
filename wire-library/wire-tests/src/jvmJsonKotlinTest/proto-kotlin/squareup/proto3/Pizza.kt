@@ -92,7 +92,8 @@ public class Pizza(
       Pizza::class, 
       "type.googleapis.com/squareup.proto3.Pizza", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
       public override fun encodedSize(`value`: Pizza): Int {
         var size = value.unknownFields.size

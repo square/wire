@@ -95,7 +95,8 @@ public class Feature(
       Feature::class, 
       "type.googleapis.com/routeguide.Feature", 
       PROTO_2, 
-      null
+      null, 
+      "routeguide/RouteGuideProto.proto"
     ) {
       public override fun encodedSize(`value`: Feature): Int {
         var size = value.unknownFields.size

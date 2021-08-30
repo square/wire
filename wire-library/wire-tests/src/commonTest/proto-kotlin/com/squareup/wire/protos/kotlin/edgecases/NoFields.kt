@@ -53,7 +53,8 @@ public class NoFields(
       NoFields::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.NoFields", 
       PROTO_2, 
-      null
+      null, 
+      "edge_cases.proto"
     ) {
       public override fun encodedSize(`value`: NoFields): Int {
         var size = value.unknownFields.size

@@ -87,7 +87,8 @@ public class BuyOneGetOnePromotion(
       BuyOneGetOnePromotion::class, 
       "type.googleapis.com/squareup.proto3.BuyOneGetOnePromotion", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
       public override fun encodedSize(`value`: BuyOneGetOnePromotion): Int {
         var size = value.unknownFields.size

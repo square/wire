@@ -93,7 +93,8 @@ public class RouteNote(
       RouteNote::class, 
       "type.googleapis.com/routeguide.RouteNote", 
       PROTO_2, 
-      null
+      null, 
+      "routeguide/RouteGuideProto.proto"
     ) {
       public override fun encodedSize(`value`: RouteNote): Int {
         var size = value.unknownFields.size

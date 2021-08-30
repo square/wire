@@ -3310,7 +3310,8 @@ public class AllTypes(
       AllTypes::class, 
       "type.googleapis.com/squareup.proto2.AllTypes", 
       PROTO_2, 
-      null
+      null, 
+      "all_types_proto2.proto"
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }
@@ -4305,7 +4306,8 @@ public class AllTypes(
         NestedMessage::class, 
         "type.googleapis.com/squareup.proto2.AllTypes.NestedMessage", 
         PROTO_2, 
-        null
+        null, 
+        "all_types_proto2.proto"
       ) {
         public override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size

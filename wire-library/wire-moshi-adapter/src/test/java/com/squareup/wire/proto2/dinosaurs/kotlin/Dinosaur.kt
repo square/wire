@@ -124,7 +124,8 @@ public class Dinosaur(
       Dinosaur::class, 
       "type.googleapis.com/squareup.dinosaurs.kotlin.Dinosaur", 
       PROTO_2, 
-      null
+      null, 
+      "dinosaur_kotlin.proto"
     ) {
       public override fun encodedSize(`value`: Dinosaur): Int {
         var size = value.unknownFields.size

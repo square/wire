@@ -615,7 +615,8 @@ public class All32(
       All32::class, 
       "type.googleapis.com/squareup.proto3.All32", 
       PROTO_3, 
-      null
+      null, 
+      "all32.proto"
     ) {
       private val map_int32_int32Adapter: ProtoAdapter<Map<Int, Int>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.INT32) }

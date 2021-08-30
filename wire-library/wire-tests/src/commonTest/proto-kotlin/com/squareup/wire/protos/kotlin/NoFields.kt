@@ -54,7 +54,8 @@ public class NoFields(
       NoFields::class, 
       "type.googleapis.com/squareup.protos.kotlin.NoFields", 
       PROTO_2, 
-      null
+      null, 
+      "no_fields.proto"
     ) {
       public override fun encodedSize(`value`: NoFields): Int {
         var size = value.unknownFields.size

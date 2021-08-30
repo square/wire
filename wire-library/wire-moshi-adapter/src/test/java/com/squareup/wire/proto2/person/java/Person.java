@@ -354,7 +354,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
     private static final class ProtoAdapter_PhoneNumber extends ProtoAdapter<PhoneNumber> {
       public ProtoAdapter_PhoneNumber() {
-        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.proto2.person.java.Person.PhoneNumber", Syntax.PROTO_2, null);
+        super(FieldEncoding.LENGTH_DELIMITED, PhoneNumber.class, "type.googleapis.com/squareup.proto2.person.java.Person.PhoneNumber", Syntax.PROTO_2, null, "person_java.proto");
       }
 
       @Override
@@ -415,7 +415,7 @@ public final class Person extends Message<Person, Person.Builder> {
 
   private static final class ProtoAdapter_Person extends ProtoAdapter<Person> {
     public ProtoAdapter_Person() {
-      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.proto2.person.java.Person", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Person.class, "type.googleapis.com/squareup.proto2.person.java.Person", Syntax.PROTO_2, null, "person_java.proto");
     }
 
     @Override

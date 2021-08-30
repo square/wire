@@ -212,7 +212,8 @@ public class ExternalMessage(
       ExternalMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.ExternalMessage", 
       PROTO_2, 
-      null
+      null, 
+      "external_message.proto"
     ) {
       public override fun encodedSize(`value`: ExternalMessage): Int {
         var size = value.unknownFields.size

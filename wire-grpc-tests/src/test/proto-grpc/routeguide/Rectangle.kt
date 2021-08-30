@@ -93,7 +93,8 @@ public class Rectangle(
       Rectangle::class, 
       "type.googleapis.com/routeguide.Rectangle", 
       PROTO_2, 
-      null
+      null, 
+      "routeguide/RouteGuideProto.proto"
     ) {
       public override fun encodedSize(`value`: Rectangle): Int {
         var size = value.unknownFields.size

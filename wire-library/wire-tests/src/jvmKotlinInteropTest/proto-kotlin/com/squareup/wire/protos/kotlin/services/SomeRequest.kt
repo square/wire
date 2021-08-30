@@ -53,7 +53,8 @@ public class SomeRequest(
       SomeRequest::class, 
       "type.googleapis.com/squareup.protos.kotlin.SomeRequest", 
       PROTO_2, 
-      null
+      null, 
+      "service_kotlin.proto"
     ) {
       public override fun encodedSize(`value`: SomeRequest): Int {
         var size = value.unknownFields.size

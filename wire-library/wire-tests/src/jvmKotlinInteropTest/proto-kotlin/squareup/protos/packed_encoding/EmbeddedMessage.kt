@@ -115,7 +115,8 @@ public class EmbeddedMessage(
       EmbeddedMessage::class, 
       "type.googleapis.com/squareup.protos.packed_encoding.EmbeddedMessage", 
       PROTO_2, 
-      null
+      null, 
+      "packed_encoding.proto"
     ) {
       public override fun encodedSize(`value`: EmbeddedMessage): Int {
         var size = value.unknownFields.size

@@ -737,7 +737,8 @@ public class AllWrappers(
       AllWrappers::class, 
       "type.googleapis.com/squareup.proto3.AllWrappers", 
       PROTO_3, 
-      null
+      null, 
+      "all_wrappers.proto"
     ) {
       private val map_int32_double_valueAdapter: ProtoAdapter<Map<Int, Double?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.DOUBLE_VALUE) }

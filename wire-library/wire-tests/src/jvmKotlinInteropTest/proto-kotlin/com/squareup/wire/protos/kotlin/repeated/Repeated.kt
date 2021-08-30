@@ -92,7 +92,8 @@ public class Repeated(
       Repeated::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.repeated.Repeated", 
       PROTO_2, 
-      null
+      null, 
+      "repeated.proto"
     ) {
       public override fun encodedSize(`value`: Repeated): Int {
         var size = value.unknownFields.size

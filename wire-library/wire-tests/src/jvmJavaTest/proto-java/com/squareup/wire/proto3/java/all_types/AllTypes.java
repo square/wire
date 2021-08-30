@@ -2432,7 +2432,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
 
     private static final class ProtoAdapter_NestedMessage extends ProtoAdapter<NestedMessage> {
       public ProtoAdapter_NestedMessage() {
-        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/proto3.java.AllTypes.NestedMessage", Syntax.PROTO_3, null);
+        super(FieldEncoding.LENGTH_DELIMITED, NestedMessage.class, "type.googleapis.com/proto3.java.AllTypes.NestedMessage", Syntax.PROTO_3, null, "all_types.proto");
       }
 
       @Override
@@ -2508,7 +2508,7 @@ public final class AllTypes extends Message<AllTypes, AllTypes.Builder> {
     private ProtoAdapter<Map<Integer, Instant>> map_int32_timestamp;
 
     public ProtoAdapter_AllTypes() {
-      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/proto3.java.AllTypes", Syntax.PROTO_3, null);
+      super(FieldEncoding.LENGTH_DELIMITED, AllTypes.class, "type.googleapis.com/proto3.java.AllTypes", Syntax.PROTO_3, null, "all_types.proto");
     }
 
     @Override

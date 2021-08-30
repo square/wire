@@ -96,7 +96,7 @@ public final class Foos extends Message<Foos, Foos.Builder> {
 
   private static final class ProtoAdapter_Foos extends ProtoAdapter<Foos> {
     public ProtoAdapter_Foos() {
-      super(FieldEncoding.LENGTH_DELIMITED, Foos.class, "type.googleapis.com/single_level.Foos", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Foos.class, "type.googleapis.com/single_level.Foos", Syntax.PROTO_2, null, "single_level.proto");
     }
 
     @Override

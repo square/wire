@@ -94,7 +94,7 @@ public final class LetsDataRequest extends Message<LetsDataRequest, LetsDataRequ
 
   private static final class ProtoAdapter_LetsDataRequest extends ProtoAdapter<LetsDataRequest> {
     public ProtoAdapter_LetsDataRequest() {
-      super(FieldEncoding.LENGTH_DELIMITED, LetsDataRequest.class, "type.googleapis.com/com.squareup.services.LetsDataRequest", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, LetsDataRequest.class, "type.googleapis.com/com.squareup.services.LetsDataRequest", Syntax.PROTO_2, null, "simple_service2.proto");
     }
 
     @Override

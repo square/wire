@@ -192,7 +192,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
       private static final class ProtoAdapter_Moo extends ProtoAdapter<Moo> {
         public ProtoAdapter_Moo() {
-          super(FieldEncoding.LENGTH_DELIMITED, Moo.class, "type.googleapis.com/squareup.differentpackage.bar.Bar.Baz.Moo", Syntax.PROTO_2, null);
+          super(FieldEncoding.LENGTH_DELIMITED, Moo.class, "type.googleapis.com/squareup.differentpackage.bar.Bar.Baz.Moo", Syntax.PROTO_2, null, "differentpackage/bar.proto");
         }
 
         @Override
@@ -242,7 +242,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
     private static final class ProtoAdapter_Baz extends ProtoAdapter<Baz> {
       public ProtoAdapter_Baz() {
-        super(FieldEncoding.LENGTH_DELIMITED, Baz.class, "type.googleapis.com/squareup.differentpackage.bar.Bar.Baz", Syntax.PROTO_2, null);
+        super(FieldEncoding.LENGTH_DELIMITED, Baz.class, "type.googleapis.com/squareup.differentpackage.bar.Bar.Baz", Syntax.PROTO_2, null, "differentpackage/bar.proto");
       }
 
       @Override
@@ -288,7 +288,7 @@ public final class Bar extends Message<Bar, Bar.Builder> {
 
   private static final class ProtoAdapter_Bar extends ProtoAdapter<Bar> {
     public ProtoAdapter_Bar() {
-      super(FieldEncoding.LENGTH_DELIMITED, Bar.class, "type.googleapis.com/squareup.differentpackage.bar.Bar", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Bar.class, "type.googleapis.com/squareup.differentpackage.bar.Bar", Syntax.PROTO_2, null, "differentpackage/bar.proto");
     }
 
     @Override

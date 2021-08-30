@@ -411,7 +411,8 @@ public class SimpleMessage(
       SimpleMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage", 
       PROTO_2, 
-      null
+      null, 
+      "simple_message.proto"
     ) {
       public override fun encodedSize(`value`: SimpleMessage): Int {
         var size = value.unknownFields.size
@@ -603,7 +604,8 @@ public class SimpleMessage(
         NestedMessage::class, 
         "type.googleapis.com/squareup.protos.kotlin.simple.SimpleMessage.NestedMessage", 
         PROTO_2, 
-        null
+        null, 
+        "simple_message.proto"
       ) {
         public override fun encodedSize(`value`: NestedMessage): Int {
           var size = value.unknownFields.size

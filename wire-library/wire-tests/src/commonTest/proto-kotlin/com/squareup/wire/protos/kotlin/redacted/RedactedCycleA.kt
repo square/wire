@@ -72,7 +72,8 @@ public class RedactedCycleA(
       RedactedCycleA::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedCycleA", 
       PROTO_2, 
-      null
+      null, 
+      "redacted_test.proto"
     ) {
       public override fun encodedSize(`value`: RedactedCycleA): Int {
         var size = value.unknownFields.size

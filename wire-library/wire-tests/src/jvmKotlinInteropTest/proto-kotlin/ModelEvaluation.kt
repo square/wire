@@ -148,7 +148,8 @@ public class ModelEvaluation(
       ModelEvaluation::class, 
       "type.googleapis.com/ModelEvaluation", 
       PROTO_2, 
-      null
+      null, 
+      "resursive_map.proto"
     ) {
       private val modelsAdapter: ProtoAdapter<Map<String, ModelEvaluation>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ModelEvaluation.ADAPTER) }

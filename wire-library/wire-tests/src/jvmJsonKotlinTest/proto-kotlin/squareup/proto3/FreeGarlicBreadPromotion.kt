@@ -89,7 +89,8 @@ public class FreeGarlicBreadPromotion(
       FreeGarlicBreadPromotion::class, 
       "type.googleapis.com/squareup.proto3.FreeGarlicBreadPromotion", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
       public override fun encodedSize(`value`: FreeGarlicBreadPromotion): Int {
         var size = value.unknownFields.size

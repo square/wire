@@ -617,7 +617,8 @@ public class All64(
       All64::class, 
       "type.googleapis.com/squareup.proto3.All64", 
       PROTO_3, 
-      null
+      null, 
+      "all64.proto"
     ) {
       private val map_int64_int64Adapter: ProtoAdapter<Map<Long, Long>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT64, ProtoAdapter.INT64) }

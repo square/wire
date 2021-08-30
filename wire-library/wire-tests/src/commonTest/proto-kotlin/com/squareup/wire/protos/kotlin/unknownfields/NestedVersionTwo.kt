@@ -125,7 +125,8 @@ public class NestedVersionTwo(
       NestedVersionTwo::class, 
       "type.googleapis.com/squareup.protos.kotlin.unknownfields.NestedVersionTwo", 
       PROTO_2, 
-      null
+      null, 
+      "unknown_fields.proto"
     ) {
       public override fun encodedSize(`value`: NestedVersionTwo): Int {
         var size = value.unknownFields.size

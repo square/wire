@@ -73,7 +73,8 @@ public class Thing(
       Thing::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Thing", 
       PROTO_2, 
-      null
+      null, 
+      "map.proto"
     ) {
       public override fun encodedSize(`value`: Thing): Int {
         var size = value.unknownFields.size
