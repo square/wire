@@ -70,8 +70,8 @@ Cutting a JVM Release
 3. Set environment variables with your [Sonatype credentials][sonatype_issues].
 
     ```
-    export SONATYPE_NEXUS_USERNAME=johnbarber
-    export SONATYPE_NEXUS_PASSWORD=`pbpaste`
+    export ORG_GRADLE_PROJECT_mavenCentralRepositoryUsername=johnbarber
+    export ORG_GRADLE_PROJECT_mavenCentralRepositoryPassword=`pbpaste`
     ```
 
 4. Update, build, and upload:
@@ -86,7 +86,7 @@ Cutting a JVM Release
     sed -i "" \
       "s/\<version\>\([^<]*\)\<\/version\>/\<version\>$RELEASE_VERSION\<\/version\>/g" \
       `find . -name "README.md"`
-    ./gradlew -p wire-library clean publish uploadArchives --no-daemon --no-parallel
+    ./gradlew -p wire-library clean publish --no-daemon --no-parallel
     ```
 
 5. Visit [Sonatype Nexus][sonatype_nexus] to promote (close then release) the artifact. Or drop it

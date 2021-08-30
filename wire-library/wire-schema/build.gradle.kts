@@ -61,15 +61,3 @@ val jar by tasks.getting(Jar::class) {
     attributes("Automatic-Module-Name" to "wire-schema")
   }
 }
-
-configure<PublishingExtension> {
-  // Use default artifact name for the JVM target
-  publications {
-    val kotlinMultiplatform by getting(MavenPublication::class) {
-      artifactId = "wire-schema-multiplatform"
-    }
-    val jvm by getting(MavenPublication::class) {
-      artifactId = "wire-schema"
-    }
-  }
-}

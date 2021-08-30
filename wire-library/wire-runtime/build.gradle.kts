@@ -119,18 +119,6 @@ repositories.whenObjectAdded {
   }
 }
 
-configure<PublishingExtension> {
-  // Use default artifact name for the JVM target
-  publications {
-    val kotlinMultiplatform by getting(MavenPublication::class) {
-      artifactId = "wire-runtime-multiplatform"
-    }
-    val jvm by getting(MavenPublication::class) {
-      artifactId = "wire-runtime"
-    }
-  }
-}
-
 for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
   val jar by tasks.getting(Jar::class) {
     manifest {
