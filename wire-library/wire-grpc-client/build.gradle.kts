@@ -77,18 +77,6 @@ repositories.whenObjectAdded {
   }
 }
 
-configure<PublishingExtension> {
-  // Use default artifact name for the JVM target
-  publications {
-    val kotlinMultiplatform by getting(MavenPublication::class) {
-      artifactId = "wire-grpc-client-multiplatform"
-    }
-    val jvm by getting(MavenPublication::class) {
-      artifactId = "wire-grpc-client"
-    }
-  }
-}
-
 for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
   val jar by tasks.getting(Jar::class) {
     manifest {

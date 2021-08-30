@@ -94,18 +94,7 @@ class InternalPublishingPlugin : Plugin<Project> {
               }
             }
           }
-        }
-
-        // Use default artifact name for the JVM target.
-        findByName("kotlinMultiplatform")?.apply {
-          if (this is MavenPublication) {
-            artifactId = "$pomArtifactId-multiplatform"
-          }
-        }
-        findByName("jvm")?.apply {
-          if (this is MavenPublication) {
-            artifactId = pomArtifactId
-          }
+          artifactId = pomArtifactId
         }
       }
 
