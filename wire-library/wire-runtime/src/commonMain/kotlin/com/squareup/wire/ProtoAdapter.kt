@@ -41,7 +41,8 @@ expect abstract class ProtoAdapter<E>(
   type: KClass<*>?,
   typeUrl: String?,
   syntax: Syntax,
-  identity: E? = null
+  identity: E? = null,
+  sourceFile: String? = null,
 ) {
   internal val fieldEncoding: FieldEncoding
   val type: KClass<*>?
@@ -74,6 +75,11 @@ expect abstract class ProtoAdapter<E>(
    * | Lists (repeated types)                         | empty list: listOf()          |
    */
   val identity: E?
+
+  /**
+   * Path to the file containing the protobuf definition of this type.
+   */
+  val sourceFile: String?
 
   internal val packedAdapter: ProtoAdapter<List<E>>?
   internal val repeatedAdapter: ProtoAdapter<List<E>>?
