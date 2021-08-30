@@ -32,7 +32,8 @@ actual abstract class ProtoAdapter<E> actual constructor(
   actual val type: KClass<*>?,
   actual val typeUrl: String?,
   actual val syntax: Syntax,
-  actual val identity: E?
+  actual val identity: E?,
+  actual val sourceFile: String?,
 ) {
   internal actual val packedAdapter: ProtoAdapter<List<E>>? = when {
     this is PackedProtoAdapter<*> || this is RepeatedProtoAdapter<*> -> null
@@ -55,6 +56,10 @@ actual abstract class ProtoAdapter<E> actual constructor(
   constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?, syntax: Syntax) :
       this(fieldEncoding, type.kotlin, typeUrl, syntax)
 
+  // Obsolete; for Java classes generated before sourceFile was added.
+  constructor(fieldEncoding: FieldEncoding, type: Class<*>, typeUrl: String?, syntax: Syntax, identity: E?) :
+      this(fieldEncoding, type.kotlin, typeUrl, syntax, identity, null)
+
   // Obsolete; for Kotlin classes generated before typeUrl was added.
   constructor(fieldEncoding: FieldEncoding, type: KClass<*>?) :
       this(fieldEncoding, type, null, Syntax.PROTO_2)
@@ -67,13 +72,24 @@ actual abstract class ProtoAdapter<E> actual constructor(
   constructor(fieldEncoding: FieldEncoding, type: KClass<*>?, typeUrl: String?, syntax: Syntax) :
       this(fieldEncoding, type, typeUrl, syntax, null)
 
+  // Obsolete; for Kotlin classes generated before sourceFile was added.
+  constructor(
+    fieldEncoding: FieldEncoding,
+    type: KClass<*>?,
+    typeUrl: String?,
+    syntax: Syntax,
+    identity: E?
+  ) :
+      this(fieldEncoding, type, typeUrl, syntax, identity, null)
+
   constructor(
     fieldEncoding: FieldEncoding,
     type: Class<*>,
     typeUrl: String?,
     syntax: Syntax,
-    identity: E?
-  ) : this(fieldEncoding, type.kotlin, typeUrl, syntax, identity)
+    identity: E?,
+    sourceFile: String?,
+  ) : this(fieldEncoding, type.kotlin, typeUrl, syntax, identity, sourceFile)
 
   actual abstract fun redact(value: E): E
 

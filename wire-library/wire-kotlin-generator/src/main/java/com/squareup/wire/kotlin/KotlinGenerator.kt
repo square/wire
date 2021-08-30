@@ -1305,7 +1305,8 @@ class KotlinGenerator private constructor(
    *    Person::class,
    *    "square.github.io/wire/unknown",
    *    Syntax.PROTO_3,
-   *    null
+   *    null,
+   *    "com/squareup/wire/path.proto",
    *  ) {
    *    override fun encodedSize(value: Person): Int { .. }
    *    override fun encode(writer: ProtoWriter, value: Person) { .. }
@@ -1328,7 +1329,8 @@ class KotlinGenerator private constructor(
         .addSuperclassConstructorParameter("\n%S", type.type.typeUrl!!)
         .addSuperclassConstructorParameter("\n%M",
             MemberName(Syntax::class.asClassName(), type.syntax.name))
-        .addSuperclassConstructorParameter("\nnull\n⇤")
+        .addSuperclassConstructorParameter("\nnull")
+        .addSuperclassConstructorParameter("\n%S\n⇤", type.location.path)
         .addFunction(encodedSizeFun(type))
         .addFunction(encodeFun(type, reverse = false))
         .addFunction(encodeFun(type, reverse = true))

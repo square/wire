@@ -94,7 +94,7 @@ public final class Letter extends Message<Letter, Letter.Builder> {
 
   private static final class ProtoAdapter_Letter extends ProtoAdapter<Letter> {
     public ProtoAdapter_Letter() {
-      super(FieldEncoding.LENGTH_DELIMITED, Letter.class, "type.googleapis.com/squareup.protos.depend_on_kotlin_option.Letter", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Letter.class, "type.googleapis.com/squareup.protos.depend_on_kotlin_option.Letter", Syntax.PROTO_2, null, "depend_on_kotlin_option.proto");
     }
 
     @Override

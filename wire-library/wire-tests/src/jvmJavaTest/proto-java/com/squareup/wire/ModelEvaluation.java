@@ -132,7 +132,7 @@ public final class ModelEvaluation extends Message<ModelEvaluation, ModelEvaluat
     private ProtoAdapter<Map<String, ModelEvaluation>> models;
 
     public ProtoAdapter_ModelEvaluation() {
-      super(FieldEncoding.LENGTH_DELIMITED, ModelEvaluation.class, "type.googleapis.com/com.squareup.wire.ModelEvaluation", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, ModelEvaluation.class, "type.googleapis.com/com.squareup.wire.ModelEvaluation", Syntax.PROTO_2, null, "resursive_map.proto");
     }
 
     @Override

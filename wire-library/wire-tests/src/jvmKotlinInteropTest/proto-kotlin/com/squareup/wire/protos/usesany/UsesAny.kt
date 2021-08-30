@@ -115,7 +115,8 @@ public class UsesAny(
       UsesAny::class, 
       "type.googleapis.com/squareup.protos.usesany.UsesAny", 
       PROTO_2, 
-      null
+      null, 
+      "uses_any.proto"
     ) {
       public override fun encodedSize(`value`: UsesAny): Int {
         var size = value.unknownFields.size

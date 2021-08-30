@@ -958,9 +958,9 @@ public final class JavaGenerator {
 
     adapter.addMethod(MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L, null)",
+        .addStatement("super($T.LENGTH_DELIMITED, $T.class, $S, $T.$L, null, $S)",
             FieldEncoding.class, javaType, type.getType().getTypeUrl(), Syntax.class,
-            type.getSyntax().name())
+            type.getSyntax().name(), type.getLocation().getPath())
         .build());
 
     if (!useBuilder) {

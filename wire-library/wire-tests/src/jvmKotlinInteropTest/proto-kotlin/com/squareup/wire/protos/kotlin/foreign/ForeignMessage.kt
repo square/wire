@@ -109,7 +109,8 @@ public class ForeignMessage(
       ForeignMessage::class, 
       "type.googleapis.com/squareup.protos.kotlin.foreign.ForeignMessage", 
       PROTO_2, 
-      null
+      null, 
+      "foreign.proto"
     ) {
       public override fun encodedSize(`value`: ForeignMessage): Int {
         var size = value.unknownFields.size

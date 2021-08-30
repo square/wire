@@ -58,7 +58,8 @@ public class OtherMessageWithStatus(
       OtherMessageWithStatus::class, 
       "type.googleapis.com/squareup.protos.kotlin.OtherMessageWithStatus", 
       PROTO_2, 
-      null
+      null, 
+      "same_name_enum.proto"
     ) {
       public override fun encodedSize(`value`: OtherMessageWithStatus): Int {
         var size = value.unknownFields.size

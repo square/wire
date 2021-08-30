@@ -72,7 +72,8 @@ public class OneField(
       OneField::class, 
       "type.googleapis.com/squareup.protos.kotlin.edgecases.OneField", 
       PROTO_2, 
-      null
+      null, 
+      "edge_cases.proto"
     ) {
       public override fun encodedSize(`value`: OneField): Int {
         var size = value.unknownFields.size

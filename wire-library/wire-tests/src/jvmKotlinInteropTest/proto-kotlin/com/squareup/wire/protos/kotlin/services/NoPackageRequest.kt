@@ -53,7 +53,8 @@ public class NoPackageRequest(
       NoPackageRequest::class, 
       "type.googleapis.com/NoPackageRequest", 
       PROTO_2, 
-      null
+      null, 
+      "service_without_package.proto"
     ) {
       public override fun encodedSize(`value`: NoPackageRequest): Int {
         var size = value.unknownFields.size

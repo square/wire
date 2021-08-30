@@ -169,7 +169,8 @@ public class Person(
       Person::class, 
       "type.googleapis.com/squareup.protos3.kotlin.person.Person", 
       PROTO_3, 
-      null
+      null, 
+      "person.proto"
     ) {
       public override fun encodedSize(`value`: Person): Int {
         var size = value.unknownFields.size
@@ -348,7 +349,8 @@ public class Person(
         PhoneNumber::class, 
         "type.googleapis.com/squareup.protos3.kotlin.person.Person.PhoneNumber", 
         PROTO_3, 
-        null
+        null, 
+        "person.proto"
       ) {
         public override fun encodedSize(`value`: PhoneNumber): Int {
           var size = value.unknownFields.size

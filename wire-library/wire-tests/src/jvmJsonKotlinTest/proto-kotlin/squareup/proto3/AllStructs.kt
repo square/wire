@@ -549,7 +549,8 @@ public class AllStructs(
       AllStructs::class, 
       "type.googleapis.com/squareup.proto3.AllStructs", 
       PROTO_3, 
-      null
+      null, 
+      "all_structs.proto"
     ) {
       private val map_int32_structAdapter: ProtoAdapter<Map<Int, Map<String, *>?>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.INT32, ProtoAdapter.STRUCT_MAP) }

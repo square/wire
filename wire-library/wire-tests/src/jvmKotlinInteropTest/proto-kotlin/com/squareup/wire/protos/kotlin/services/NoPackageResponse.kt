@@ -53,7 +53,8 @@ public class NoPackageResponse(
       NoPackageResponse::class, 
       "type.googleapis.com/NoPackageResponse", 
       PROTO_2, 
-      null
+      null, 
+      "service_without_package.proto"
     ) {
       public override fun encodedSize(`value`: NoPackageResponse): Int {
         var size = value.unknownFields.size

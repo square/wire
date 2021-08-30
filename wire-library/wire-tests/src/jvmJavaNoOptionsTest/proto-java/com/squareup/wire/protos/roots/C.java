@@ -95,7 +95,7 @@ public final class C extends Message<C, C.Builder> {
 
   private static final class ProtoAdapter_C extends ProtoAdapter<C> {
     public ProtoAdapter_C() {
-      super(FieldEncoding.LENGTH_DELIMITED, C.class, "type.googleapis.com/squareup.protos.roots.C", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, C.class, "type.googleapis.com/squareup.protos.roots.C", Syntax.PROTO_2, null, "roots.proto");
     }
 
     @Override

@@ -91,7 +91,8 @@ public class Mappy(
       Mappy::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.map.Mappy", 
       PROTO_2, 
-      null
+      null, 
+      "map.proto"
     ) {
       private val thingsAdapter: ProtoAdapter<Map<String, Thing>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, Thing.ADAPTER) }

@@ -81,7 +81,8 @@ public class FeatureDatabase(
       FeatureDatabase::class, 
       "type.googleapis.com/routeguide.FeatureDatabase", 
       PROTO_2, 
-      null
+      null, 
+      "routeguide/RouteGuideProto.proto"
     ) {
       public override fun encodedSize(`value`: FeatureDatabase): Int {
         var size = value.unknownFields.size

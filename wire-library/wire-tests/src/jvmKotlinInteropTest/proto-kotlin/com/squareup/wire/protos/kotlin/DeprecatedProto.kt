@@ -88,7 +88,8 @@ public class DeprecatedProto(
       DeprecatedProto::class, 
       "type.googleapis.com/squareup.protos.kotlin.DeprecatedProto", 
       PROTO_2, 
-      null
+      null, 
+      "deprecated.proto"
     ) {
       public override fun encodedSize(`value`: DeprecatedProto): Int {
         var size = value.unknownFields.size

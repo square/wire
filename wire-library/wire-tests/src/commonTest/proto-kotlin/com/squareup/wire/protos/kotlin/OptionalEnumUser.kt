@@ -76,7 +76,8 @@ public class OptionalEnumUser(
       OptionalEnumUser::class, 
       "type.googleapis.com/squareup.protos.kotlin.OptionalEnumUser", 
       PROTO_2, 
-      null
+      null, 
+      "optional_enum.proto"
     ) {
       public override fun encodedSize(`value`: OptionalEnumUser): Int {
         var size = value.unknownFields.size

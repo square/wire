@@ -94,7 +94,7 @@ public final class HeresAllTheDataResponse extends Message<HeresAllTheDataRespon
 
   private static final class ProtoAdapter_HeresAllTheDataResponse extends ProtoAdapter<HeresAllTheDataResponse> {
     public ProtoAdapter_HeresAllTheDataResponse() {
-      super(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataResponse.class, "type.googleapis.com/com.squareup.services.HeresAllTheDataResponse", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, HeresAllTheDataResponse.class, "type.googleapis.com/com.squareup.services.HeresAllTheDataResponse", Syntax.PROTO_2, null, "simple_service2.proto");
     }
 
     @Override

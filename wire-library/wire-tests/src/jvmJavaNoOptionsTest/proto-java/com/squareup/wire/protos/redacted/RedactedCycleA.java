@@ -92,7 +92,7 @@ public final class RedactedCycleA extends Message<RedactedCycleA, RedactedCycleA
 
   private static final class ProtoAdapter_RedactedCycleA extends ProtoAdapter<RedactedCycleA> {
     public ProtoAdapter_RedactedCycleA() {
-      super(FieldEncoding.LENGTH_DELIMITED, RedactedCycleA.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedCycleA", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedCycleA.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedCycleA", Syntax.PROTO_2, null, "redacted_test.proto");
     }
 
     @Override

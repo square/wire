@@ -113,7 +113,7 @@ public final class Recursive extends Message<Recursive, Recursive.Builder> {
 
   private static final class ProtoAdapter_Recursive extends ProtoAdapter<Recursive> {
     public ProtoAdapter_Recursive() {
-      super(FieldEncoding.LENGTH_DELIMITED, Recursive.class, "type.googleapis.com/squareup.protos.edgecases.Recursive", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, Recursive.class, "type.googleapis.com/squareup.protos.edgecases.Recursive", Syntax.PROTO_2, null, "edge_cases.proto");
     }
 
     @Override

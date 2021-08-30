@@ -115,7 +115,7 @@ public final class RedactedExtension extends Message<RedactedExtension, Redacted
 
   private static final class ProtoAdapter_RedactedExtension extends ProtoAdapter<RedactedExtension> {
     public ProtoAdapter_RedactedExtension() {
-      super(FieldEncoding.LENGTH_DELIMITED, RedactedExtension.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedExtension", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, RedactedExtension.class, "type.googleapis.com/squareup.protos.redacted_test.RedactedExtension", Syntax.PROTO_2, null, "redacted_test.proto");
     }
 
     @Override

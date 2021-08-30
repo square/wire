@@ -95,7 +95,7 @@ public final class ChildPackage extends Message<ChildPackage, ChildPackage.Build
 
   private static final class ProtoAdapter_ChildPackage extends ProtoAdapter<ChildPackage> {
     public ProtoAdapter_ChildPackage() {
-      super(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class, "type.googleapis.com/squareup.protos.ChildPackage", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, ChildPackage.class, "type.googleapis.com/squareup.protos.ChildPackage", Syntax.PROTO_2, null, "child_pkg.proto");
     }
 
     @Override

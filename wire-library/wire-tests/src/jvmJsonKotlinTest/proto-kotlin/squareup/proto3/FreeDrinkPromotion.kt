@@ -90,7 +90,8 @@ public class FreeDrinkPromotion(
       FreeDrinkPromotion::class, 
       "type.googleapis.com/squareup.proto3.FreeDrinkPromotion", 
       PROTO_3, 
-      null
+      null, 
+      "pizza.proto"
     ) {
       public override fun encodedSize(`value`: FreeDrinkPromotion): Int {
         var size = value.unknownFields.size

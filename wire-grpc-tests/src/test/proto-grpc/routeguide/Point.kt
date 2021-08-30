@@ -89,7 +89,8 @@ public class Point(
       Point::class, 
       "type.googleapis.com/routeguide.Point", 
       PROTO_2, 
-      null
+      null, 
+      "routeguide/RouteGuideProto.proto"
     ) {
       public override fun encodedSize(`value`: Point): Int {
         var size = value.unknownFields.size

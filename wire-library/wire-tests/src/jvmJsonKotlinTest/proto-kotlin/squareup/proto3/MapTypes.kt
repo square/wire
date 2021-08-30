@@ -347,7 +347,8 @@ public class MapTypes(
       MapTypes::class, 
       "type.googleapis.com/squareup.proto3.MapTypes", 
       PROTO_3, 
-      null
+      null, 
+      "map_types.proto"
     ) {
       private val map_string_stringAdapter: ProtoAdapter<Map<String, String>> by lazy {
           ProtoAdapter.newMapAdapter(ProtoAdapter.STRING, ProtoAdapter.STRING) }

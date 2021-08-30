@@ -57,7 +57,8 @@ public class MessageWithOptions(
       MessageWithOptions::class, 
       "type.googleapis.com/squareup.protos.custom_options.MessageWithOptions", 
       PROTO_2, 
-      null
+      null, 
+      "custom_options.proto"
     ) {
       public override fun encodedSize(`value`: MessageWithOptions): Int {
         var size = value.unknownFields.size

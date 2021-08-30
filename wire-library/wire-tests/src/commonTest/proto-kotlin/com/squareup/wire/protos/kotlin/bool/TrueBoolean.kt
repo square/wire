@@ -72,7 +72,8 @@ public class TrueBoolean(
       TrueBoolean::class, 
       "type.googleapis.com/com.squareup.wire.protos.kotlin.bool.TrueBoolean", 
       PROTO_2, 
-      null
+      null, 
+      "bool.proto"
     ) {
       public override fun encodedSize(`value`: TrueBoolean): Int {
         var size = value.unknownFields.size

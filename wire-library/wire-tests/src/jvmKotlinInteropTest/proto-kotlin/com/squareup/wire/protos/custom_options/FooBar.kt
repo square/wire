@@ -282,7 +282,8 @@ public class FooBar(
       FooBar::class, 
       "type.googleapis.com/squareup.protos.custom_options.FooBar", 
       PROTO_2, 
-      null
+      null, 
+      "custom_options.proto"
     ) {
       public override fun encodedSize(`value`: FooBar): Int {
         var size = value.unknownFields.size
@@ -446,7 +447,8 @@ public class FooBar(
         Nested::class, 
         "type.googleapis.com/squareup.protos.custom_options.FooBar.Nested", 
         PROTO_2, 
-        null
+        null, 
+        "custom_options.proto"
       ) {
         public override fun encodedSize(`value`: Nested): Int {
           var size = value.unknownFields.size
@@ -560,7 +562,8 @@ public class FooBar(
         More::class, 
         "type.googleapis.com/squareup.protos.custom_options.FooBar.More", 
         PROTO_2, 
-        null
+        null, 
+        "custom_options.proto"
       ) {
         public override fun encodedSize(`value`: More): Int {
           var size = value.unknownFields.size

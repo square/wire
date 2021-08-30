@@ -120,7 +120,8 @@ public class RouteSummary(
       RouteSummary::class, 
       "type.googleapis.com/routeguide.RouteSummary", 
       PROTO_2, 
-      null
+      null, 
+      "routeguide/RouteGuideProto.proto"
     ) {
       public override fun encodedSize(`value`: RouteSummary): Int {
         var size = value.unknownFields.size

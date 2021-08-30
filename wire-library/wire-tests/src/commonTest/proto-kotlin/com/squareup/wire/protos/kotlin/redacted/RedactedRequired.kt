@@ -76,7 +76,8 @@ public class RedactedRequired(
       RedactedRequired::class, 
       "type.googleapis.com/squareup.protos.kotlin.redacted_test.RedactedRequired", 
       PROTO_2, 
-      null
+      null, 
+      "redacted_test.proto"
     ) {
       public override fun encodedSize(`value`: RedactedRequired): Int {
         var size = value.unknownFields.size

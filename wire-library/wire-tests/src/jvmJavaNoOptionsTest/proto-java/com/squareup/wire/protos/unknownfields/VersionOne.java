@@ -133,7 +133,7 @@ public final class VersionOne extends Message<VersionOne, VersionOne.Builder> {
 
   private static final class ProtoAdapter_VersionOne extends ProtoAdapter<VersionOne> {
     public ProtoAdapter_VersionOne() {
-      super(FieldEncoding.LENGTH_DELIMITED, VersionOne.class, "type.googleapis.com/squareup.protos.unknownfields.VersionOne", Syntax.PROTO_2, null);
+      super(FieldEncoding.LENGTH_DELIMITED, VersionOne.class, "type.googleapis.com/squareup.protos.unknownfields.VersionOne", Syntax.PROTO_2, null, "unknown_fields.proto");
     }
 
     @Override
