@@ -1,6 +1,23 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.8
+---------------------
+
+_2021-08-30_
+
+This release drops the `-multiplatform` suffix on Kotlin Multiplatform artifacts. All artifacts now
+share the same name (like `com.squareup.wire:wire-runtime:4.0.0-alpha.8`) for both Kotlin/JVM and
+Kotlin Multiplatform.
+
+ * New: Programmatic API to prune schemas. See `Pruner` in wire-schema.
+ * New: Expose the source `.proto` file at `ProtoAdaper.sourceFile`. This is null for built-in types
+   and types generated prior to this release.
+ * Fix: Retain field order when emitting a schema as `.proto` files.
+ * Fix: Support Kotlin-generated annotations on Java fields.
+ * Fix: Locate files in the root package when importing.
+
+
 Version 4.0.0-alpha.7
 ---------------------
 
