@@ -70,3 +70,22 @@ val test by tasks.getting(Test::class) {
   systemProperty("kjs", System.getProperty("kjs"))
   systemProperty("knative", System.getProperty("knative"))
 }
+
+// The plugin marker artifacts don't conform to Maven Central's requirements. Disable publishing
+// them until we fix that. https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_markers
+tasks.withType<AbstractPublishToMaven>().configureEach {
+  if (name == "publishWirePluginMarkerMavenPublicationToMavenRepository") {
+    enabled = false
+  }
+}
+
+// Kotlin sources are inexplicably omitted when publishing plugins. Add 'em manually.
+val kotlinSourcesJar: Task = project.tasks.getByName("kotlinSourcesJar")
+project.extensions.getByType<PublishingExtension>().apply {
+  publications {
+    all {
+      if (this !is MavenPublication) return@all
+      artifact(kotlinSourcesJar)
+    }
+  }
+}
