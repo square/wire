@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
   s.module_name   = 'WireCompiler'
 
   s.prepare_command = <<-CMD
+    JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
     ./gradlew -p wire-library :wire-compiler:assemble
     MOST_RECENT_ARTIFACT="$(ls -t ./wire-library/wire-compiler/build/libs/wire-compiler-*-jar-with-dependencies.jar | head -n1)"
     cp "$MOST_RECENT_ARTIFACT" ./compiler.jar
