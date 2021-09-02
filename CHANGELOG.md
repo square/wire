@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.9
+---------------------
+
+_2021-09-02_
+
+ * New: change the Gradle plugin so that (unstable) custom handlers can be configured with instance
+   instead of with a class name.
+
+
 Version 4.0.0-alpha.8
 ---------------------
 
