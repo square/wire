@@ -17,11 +17,13 @@ package com.squareup.wire.gradle
 
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.schema.CustomHandlerBeta
 import com.squareup.wire.schema.CustomTargetBeta
 import com.squareup.wire.schema.JavaTarget
 import com.squareup.wire.schema.KotlinTarget
 import com.squareup.wire.schema.ProtoTarget
 import com.squareup.wire.schema.Target
+import com.squareup.wire.schema.newCustomHandler
 import javax.inject.Inject
 
 /**
@@ -119,16 +121,27 @@ open class CustomOutput @Inject constructor() : WireOutput() {
   var includes: List<String>? = null
   var excludes: List<String>? = null
   var exclusive: Boolean = true
+  /**
+   * Assign the custom handler instance. If you use this, your custom handler should implement
+   * [java.io.Serializable] (which Gradle uses as a cache key).
+   */
+  var customHandler: CustomHandlerBeta? = null
+  /**
+   * Assign the custom handler by name. If you use a class name, that class must have a no-arguments
+   * constructor.
+   */
   var customHandlerClass: String? = null
 
   override fun toTarget(outputDirectory: String): CustomTargetBeta {
+    check((customHandlerClass == null) != (customHandler == null)) {
+      "customHandlerClass or customHandler required"
+    }
     return CustomTargetBeta(
         includes = includes ?: listOf("*"),
         excludes = excludes ?: listOf(),
         exclusive = exclusive,
         outDirectory = outputDirectory,
-        customHandlerClass = customHandlerClass
-            ?: throw IllegalArgumentException("customHandlerClass required")
+        customHandler = customHandler ?: newCustomHandler(customHandlerClass!!)
     )
   }
 }
