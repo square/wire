@@ -638,11 +638,7 @@ data class CustomTargetBeta(
   override val excludes: List<String> = listOf(),
   override val exclusive: Boolean = true,
   override val outDirectory: String,
-  /**
-   * A fully qualified class name for a class that implements [CustomHandlerBeta]. The class must
-   * have a no-arguments public constructor.
-   */
-  val customHandlerClass: String
+  val customHandler: CustomHandlerBeta,
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -652,23 +648,7 @@ data class CustomTargetBeta(
     logger: WireLogger,
     profileLoader: ProfileLoader
   ): SchemaHandler {
-    val customHandlerType = try {
-      Class.forName(customHandlerClass)
-    } catch (exception: ClassNotFoundException) {
-      throw IllegalArgumentException("Couldn't find CustomHandlerClass '$customHandlerClass'")
-    }
-
-    val constructor = try {
-      customHandlerType.getConstructor()
-    } catch (exception: NoSuchMethodException) {
-      throw IllegalArgumentException("No public constructor on $customHandlerClass")
-    }
-
-    val instance = constructor.newInstance() as? CustomHandlerBeta
-        ?: throw IllegalArgumentException(
-            "$customHandlerClass does not implement CustomHandlerBeta")
-
-    return instance.newHandler(schema, fs, outDirectory, logger, profileLoader)
+    return customHandler.newHandler(schema, fs, outDirectory, logger, profileLoader)
   }
 
   override fun copyTarget(
@@ -701,3 +681,26 @@ interface CustomHandlerBeta {
   ): Target.SchemaHandler
 }
 
+/**
+ * Create and return an instance of [customHandlerClass].
+ *
+ * @param customHandlerClass a fully qualified class name for a class that implements
+ *     [CustomHandlerBeta]. The class must have a no-arguments public constructor.
+ */
+fun newCustomHandler(customHandlerClass: String): CustomHandlerBeta {
+  val customHandlerType = try {
+    Class.forName(customHandlerClass)
+  } catch (exception: ClassNotFoundException) {
+    throw IllegalArgumentException("Couldn't find CustomHandlerClass '$customHandlerClass'")
+  }
+
+  val constructor = try {
+    customHandlerType.getConstructor()
+  } catch (exception: NoSuchMethodException) {
+    throw IllegalArgumentException("No public constructor on $customHandlerClass")
+  }
+
+  return constructor.newInstance() as? CustomHandlerBeta
+    ?: throw IllegalArgumentException(
+      "$customHandlerClass does not implement CustomHandlerBeta")
+}

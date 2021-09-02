@@ -1,12 +1,27 @@
+import java.io.Serializable
+import com.squareup.wire.WireLogger
+import com.squareup.wire.schema.CustomHandlerBeta
+import com.squareup.wire.schema.ProfileLoader
+import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.Target
+import okio.FileSystem
+
 plugins {
   id 'application'
   id 'com.squareup.wire'
+}
+
+class MyCustomHandler implements CustomHandlerBeta, Serializable {
+  public Target.SchemaHandler newHandler(Schema schema, FileSystem fs,
+          String outDirectory, WireLogger logger, ProfileLoader profileLoader) {
+    throw new RuntimeException("custom handler is running!!")
+  }
 }
 
 wire {
   sourcePath 'src/main/proto'
 
   custom {
-    customHandlerClass = "NoSuchClass"
+    customHandler = new MyCustomHandler()
   }
 }

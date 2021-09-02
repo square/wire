@@ -502,7 +502,7 @@ class WireRunTest {
         protoPath = listOf(Location.get("polygons/src/main/proto")),
         targets = listOf(CustomTargetBeta(
             outDirectory = "generated/markdown",
-            customHandlerClass = MarkdownHandler::class.qualifiedName!!
+            customHandler = MarkdownHandler()
         ))
     )
     wireRun.execute(fs, logger)
@@ -524,17 +524,8 @@ class WireRunTest {
 
   @Test
   fun noSuchClass() {
-    writeTriangleProto()
-
-    val wireRun = WireRun(
-        sourcePath = listOf(Location.get("polygons/src/main/proto")),
-        targets = listOf(CustomTargetBeta(
-            outDirectory = "generated/markdown",
-            customHandlerClass = "foo"
-        ))
-    )
     try {
-      wireRun.execute(fs, logger)
+      newCustomHandler("foo")
       fail()
     } catch (expected: IllegalArgumentException) {
       assertThat(expected).hasMessage("Couldn't find CustomHandlerClass 'foo'")
@@ -543,17 +534,8 @@ class WireRunTest {
 
   @Test
   fun noPublicConstructor() {
-    writeTriangleProto()
-
-    val wireRun = WireRun(
-        sourcePath = listOf(Location.get("polygons/src/main/proto")),
-        targets = listOf(CustomTargetBeta(
-            outDirectory = "generated/markdown",
-            customHandlerClass = "java.lang.Void"
-        ))
-    )
     try {
-      wireRun.execute(fs, logger)
+      newCustomHandler("java.lang.Void")
       fail()
     } catch (expected: IllegalArgumentException) {
       assertThat(expected).hasMessage("No public constructor on java.lang.Void")
@@ -562,17 +544,8 @@ class WireRunTest {
 
   @Test
   fun classDoesNotImplementCustomHandlerInterface() {
-    writeTriangleProto()
-
-    val wireRun = WireRun(
-        sourcePath = listOf(Location.get("polygons/src/main/proto")),
-        targets = listOf(CustomTargetBeta(
-            outDirectory = "generated/markdown",
-            customHandlerClass = "java.lang.Object"
-        ))
-    )
     try {
-      wireRun.execute(fs, logger)
+      newCustomHandler("java.lang.Object")
       fail()
     } catch (expected: IllegalArgumentException) {
       assertThat(expected).hasMessage("java.lang.Object does not implement CustomHandlerBeta")

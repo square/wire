@@ -819,6 +819,15 @@ class WirePluginTest {
 
     val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
     assertThat(result.output)
+        .contains("custom handler is running!!")
+  }
+
+  @Test
+  fun customOutputNoSuchClass() {
+    val fixtureRoot = File("src/test/projects/custom-output-no-such-class")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { buildAndFail() }
+    assertThat(result.output)
         .contains("Couldn't find CustomHandlerClass 'NoSuchClass'")
   }
 
