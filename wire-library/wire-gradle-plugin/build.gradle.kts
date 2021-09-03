@@ -78,14 +78,3 @@ tasks.withType<AbstractPublishToMaven>().configureEach {
     enabled = false
   }
 }
-
-// Kotlin sources are inexplicably omitted when publishing plugins. Add 'em manually.
-val kotlinSourcesJar: Task = project.tasks.getByName("kotlinSourcesJar")
-project.extensions.getByType<PublishingExtension>().apply {
-  publications {
-    all {
-      if (this !is MavenPublication) return@all
-      artifact(kotlinSourcesJar)
-    }
-  }
-}
