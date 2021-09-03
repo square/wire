@@ -67,6 +67,16 @@ class InternalPublishingPlugin : Plugin<Project> {
 
     project.extensions.getByType<PublishingExtension>().apply {
       publications {
+        project.afterEvaluate {
+          // Multiplatform projects get publications automatically, but JVM-only do not. Add 'em.
+          if (this@publications.isEmpty()) {
+            create("maven", MavenPublication::class.java) {
+              artifact(project.tasks.named("jar"))
+              artifact(project.tasks.named("kotlinSourcesJar"))
+            }
+          }
+        }
+
         all {
           if (this !is MavenPublication) return@all
 
