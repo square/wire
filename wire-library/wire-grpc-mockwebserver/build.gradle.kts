@@ -1,5 +1,6 @@
+import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
+
 plugins {
-  id("java-library")
   id("ru.vyarus.animalsniffer")
   kotlin("jvm")
 }
@@ -11,7 +12,7 @@ val jar by tasks.getting(Jar::class) {
 }
 
 val main by sourceSets.getting
-animalsniffer {
+configure<AnimalSnifferExtension> {
   sourceSets = listOf(main)
 }
 

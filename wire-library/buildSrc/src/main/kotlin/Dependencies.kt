@@ -6,27 +6,28 @@ val kmpNativeEnabled = System.getProperty("knative", "true").toBoolean()
 
 object versions {
   val android = "4.1.1.4"
+  val animalSniffer = "1.16"
+  val animalSnifferGradle = "1.5.0"
+  val assertj = "3.11.0"
   val coroutines = "1.3.9"
+  val dokka = "1.4.20"
   val errorprone = "2.0.21"
   val grpc = "1.38.1"
   val gson = "2.8.6"
   val guava = "20.0"
   val javapoet = "1.13.0"
+  val jimfs = "1.0"
   val jmh = "1.23"
   val jmhPlugin = "0.5.0"
-  val kotlinpoet = "1.9.0"
   val jsr305 = "3.0.2"
+  val junit = "4.12"
   val kotlin = "1.5.20"
-  val okio = "3.0.0-alpha.9"
-  val okhttp = "4.9.1"
+  val kotlinpoet = "1.9.0"
   val moshi = "1.12.0"
+  val okhttp = "4.9.1"
+  val okio = "3.0.0-alpha.9"
   val protobuf = "3.17.3"
   val protobufGradlePlugin = "0.8.16"
-  val junit = "4.12"
-  val assertj = "3.11.0"
-  val jimfs = "1.0"
-  val animalSniffer = "1.16"
-  val animalSnifferGradle = "1.5.0"
 }
 
 object deps {
@@ -48,6 +49,8 @@ object deps {
     val ktx = "androidx.core:core-ktx:1.0.2"
   }
 
+  val dokkaGradlePlugin = "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokka}"
+  val dokkaCore = "org.jetbrains.dokka:dokka-core:${versions.dokka}"
   val guava = "com.google.guava:guava:${versions.guava}"
 
   object okio {
@@ -116,6 +119,7 @@ object deps {
   }
 
   val truth = "com.google.truth:truth:1.1.3"
+  val vanniktechPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.17.0"
 
   object wire {
     val compiler = "com.squareup.wire:wire-compiler"

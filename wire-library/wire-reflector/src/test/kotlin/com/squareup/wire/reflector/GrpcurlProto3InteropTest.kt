@@ -178,11 +178,11 @@ private fun loadSchema(): Schema {
     .apply {
       initRoots(
         sourcePath = listOf(
-          Location.get("src/jvmMain/resources", "grpc/reflection/v1alpha/reflection.proto"),
-          Location.get("src/jvmTest/proto", "echo3/echo3.proto"),
-          Location.get("src/jvmTest/proto", "google/api/annotations.proto"),
-          Location.get("src/jvmTest/proto", "google/api/http.proto"),
-          Location.get("src/jvmTest/proto", "google/protobuf/any.proto"),
+          Location.get("src/main/resources", "grpc/reflection/v1alpha/reflection.proto"),
+          Location.get("src/test/proto", "echo3/echo3.proto"),
+          Location.get("src/test/proto", "google/api/annotations.proto"),
+          Location.get("src/test/proto", "google/api/http.proto"),
+          Location.get("src/test/proto", "google/protobuf/any.proto"),
         ),
         protoPath = listOf()
       )

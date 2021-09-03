@@ -70,8 +70,8 @@ Cutting a JVM Release
 3. Set environment variables with your [Sonatype credentials][sonatype_issues].
 
     ```
-    export ORG_GRADLE_PROJECT_mavenCentralRepositoryUsername=johnbarber
-    export ORG_GRADLE_PROJECT_mavenCentralRepositoryPassword=`pbpaste`
+    export ORG_GRADLE_PROJECT_mavenCentralUsername=johnbarber
+    export ORG_GRADLE_PROJECT_mavenCentralPassword=`pbpaste`
     ```
 
 4. Update, build, and upload:

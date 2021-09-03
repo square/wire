@@ -1,11 +1,15 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
   application
   kotlin("jvm")
   id("org.jetbrains.kotlin.plugin.serialization")
   id("com.github.johnrengelman.shadow")
-  id("internal-publishing")
+  id("org.jetbrains.dokka")
+  id("com.vanniktech.maven.publish.base")
 }
 
 application {
@@ -52,4 +56,10 @@ tasks.findByName("shadowDistZip")?.enabled = false
 configurations["archives"].artifacts.removeAll {
   val file: File = it.file
   file.name.contains("tar") || file.name.contains("zip")
+}
+
+configure<MavenPublishBaseExtension> {
+  configure(
+    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+  )
 }

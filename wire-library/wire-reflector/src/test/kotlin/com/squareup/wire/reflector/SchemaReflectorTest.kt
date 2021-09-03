@@ -29,7 +29,7 @@ import org.junit.Test
 internal class SchemaReflectorTest {
   @Test
   fun `outputs a list of services`() {
-    val repoBuilder = RepoBuilder().addLocal("src/jvmTest/proto/RouteGuideProto.proto")
+    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
     val schema = repoBuilder.schema()
     val request =  ServerReflectionRequest(list_services = "*")
     assertThat(
@@ -46,13 +46,13 @@ internal class SchemaReflectorTest {
 
   @Test
   fun `gets a file descriptor for a filename`() {
-    val repoBuilder = RepoBuilder().addLocal("src/jvmTest/proto/RouteGuideProto.proto")
+    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
     val schema = repoBuilder.schema()
 
     assertThat(
       SchemaReflector(schema).process(
         ServerReflectionRequest(
-          file_by_filename = "src/jvmTest/proto/RouteGuideProto.proto"
+          file_by_filename = "src/test/proto/RouteGuideProto.proto"
         )
       )
     ).extracting { it.file_descriptor_response }.isNotNull
@@ -60,7 +60,7 @@ internal class SchemaReflectorTest {
 
   @Test
   fun `gets a file descriptor for a specific symbol`() {
-    val repoBuilder = RepoBuilder().addLocal("src/jvmTest/proto/RouteGuideProto.proto")
+    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
     val schema = repoBuilder.schema()
 
     assertThat(
