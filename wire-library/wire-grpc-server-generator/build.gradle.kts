@@ -1,6 +1,12 @@
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+
 plugins {
   id("java-library")
   kotlin("jvm")
+  id("org.jetbrains.dokka")
+  id("com.vanniktech.maven.publish.base")
 }
 
 val jar by tasks.getting(Jar::class) {
@@ -26,4 +32,10 @@ sourceSets {
   val test by getting {
     java.srcDir("src/test/proto")
   }
+}
+
+configure<MavenPublishBaseExtension> {
+  configure(
+    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+  )
 }

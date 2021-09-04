@@ -1,8 +1,13 @@
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
+
 plugins {
-  id("java-library")
   id("ru.vyarus.animalsniffer")
   kotlin("jvm")
-  id("internal-publishing")
+  id("org.jetbrains.dokka")
+  id("com.vanniktech.maven.publish.base")
 }
 
 val jar by tasks.getting(Jar::class) {
@@ -12,7 +17,7 @@ val jar by tasks.getting(Jar::class) {
 }
 
 val main by sourceSets.getting
-animalsniffer {
+configure<AnimalSnifferExtension> {
   sourceSets = listOf(main)
 }
 
@@ -23,4 +28,10 @@ dependencies {
   testImplementation(deps.junit)
   testImplementation(deps.assertj)
   testImplementation(project(":wire-test-utils"))
+}
+
+configure<MavenPublishBaseExtension> {
+  configure(
+    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+  )
 }

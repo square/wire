@@ -1,7 +1,12 @@
+import com.vanniktech.maven.publish.GradlePlugin
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+
 plugins {
   kotlin("jvm")
   id("java-gradle-plugin")
-  id("internal-publishing")
+  id("org.jetbrains.dokka")
+  id("com.vanniktech.maven.publish.base")
 }
 
 gradlePlugin {
@@ -74,7 +79,13 @@ val test by tasks.getting(Test::class) {
 // The plugin marker artifacts don't conform to Maven Central's requirements. Disable publishing
 // them until we fix that. https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_markers
 tasks.withType<AbstractPublishToMaven>().configureEach {
-  if (name == "publishWirePluginMarkerMavenPublicationToMavenRepository") {
+  if (name == "publishWirePluginMarkerMavenPublicationToMavenCentralRepository") {
     enabled = false
   }
+}
+
+configure<MavenPublishBaseExtension> {
+  configure(
+    GradlePlugin(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+  )
 }

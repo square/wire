@@ -121,11 +121,11 @@ private fun loadSchema(): Schema {
       initRoots(
         // TODO(juliaogris): Can we derive dependencies transitively?
         sourcePath = listOf(
-          Location.get("src/jvmMain/resources", "grpc/reflection/v1alpha/reflection.proto"),
-          Location.get("src/jvmTest/proto", "echo2/echo2.proto"),
-          Location.get("src/jvmTest/proto", "google/api/annotations.proto"),
-          Location.get("src/jvmTest/proto", "google/api/http.proto"),
-          Location.get("src/jvmTest/proto", "google/protobuf/any.proto"),
+          Location.get("src/main/resources", "grpc/reflection/v1alpha/reflection.proto"),
+          Location.get("src/test/proto", "echo2/echo2.proto"),
+          Location.get("src/test/proto", "google/api/annotations.proto"),
+          Location.get("src/test/proto", "google/api/http.proto"),
+          Location.get("src/test/proto", "google/protobuf/any.proto"),
         ),
         protoPath = listOf()
       )

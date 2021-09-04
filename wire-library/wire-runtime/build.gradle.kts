@@ -1,8 +1,13 @@
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
+
 plugins {
   kotlin("multiplatform")
-  id("java-library")
   id("ru.vyarus.animalsniffer")
-  id("internal-publishing")
+  id("org.jetbrains.dokka")
+  id("com.vanniktech.maven.publish.base")
 }
 
 kotlin {
@@ -128,7 +133,21 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
 }
 
 val main by sourceSets.getting
-animalsniffer {
+configure<AnimalSnifferExtension> {
   sourceSets = listOf(main)
   ignore("com.squareup.wire.internal")
+}
+
+// https://github.com/vanniktech/gradle-maven-publish-plugin/issues/301
+val metadataJar by tasks.getting(Jar::class)
+configure<PublishingExtension> {
+  publications.withType<MavenPublication>().named("kotlinMultiplatform").configure {
+    artifact(metadataJar)
+  }
+}
+
+configure<MavenPublishBaseExtension> {
+  configure(
+    KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
+  )
 }

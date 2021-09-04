@@ -65,6 +65,7 @@ expect abstract class ProtoAdapter<E>(
    * A special value that is used when a field is absent from an encoded proto3 message. When
    * encoding a proto3 message, fields that hold this value will be omitted.
    *
+   * ```
    * | TYPE                                           | IDENTITY                      |
    * | :--------------------------------------------- | :---------------------------- |
    * | All numeric types (int32, float, double, etc.) | 0                             |
@@ -73,6 +74,7 @@ expect abstract class ProtoAdapter<E>(
    * | Bytes                                          | empty bytes: ByteString.EMPTY |
    * | Enums                                          | enum constant with tag 0      |
    * | Lists (repeated types)                         | empty list: listOf()          |
+   * ```
    */
   val identity: E?
 

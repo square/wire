@@ -1,7 +1,12 @@
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+
 plugins {
   id("java-library")
   kotlin("jvm")
-  id("internal-publishing")
+  id("org.jetbrains.dokka")
+  id("com.vanniktech.maven.publish.base")
 }
 
 val jar by tasks.getting(Jar::class) {
@@ -23,4 +28,10 @@ dependencies {
   testImplementation(deps.kotlin.test.junit)
   testImplementation(deps.assertj)
   testImplementation(deps.jimfs)
+}
+
+configure<MavenPublishBaseExtension> {
+  configure(
+    KotlinJvm(javadocJar = Dokka("dokkaGfm"), sourcesJar = true)
+  )
 }

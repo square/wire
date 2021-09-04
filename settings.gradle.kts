@@ -13,8 +13,6 @@ include(":wire-benchmarks")
 include(":wire-grpc-tests")
 include(":wire-protoc-compatibility-tests")
 
-includeBuild("wire-library/internal-plugins")
-
 includeBuild("wire-library") {
   // Declaring dependency substitutions explicitly ensures that references to types declared inside
   // wire-library are resolved properly by the IDE. It's unclear to me why this is the case: it

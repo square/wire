@@ -1,6 +1,11 @@
+import com.vanniktech.maven.publish.JavadocJar.Dokka
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+
 plugins {
   kotlin("multiplatform")
-  id("internal-publishing")
+  id("org.jetbrains.dokka")
+  id("com.vanniktech.maven.publish.base")
 }
 
 kotlin {
@@ -60,4 +65,18 @@ val jar by tasks.getting(Jar::class) {
   manifest {
     attributes("Automatic-Module-Name" to "wire-schema")
   }
+}
+
+// https://github.com/vanniktech/gradle-maven-publish-plugin/issues/301
+val metadataJar by tasks.getting(Jar::class)
+configure<PublishingExtension> {
+  publications.withType<MavenPublication>().named("kotlinMultiplatform").configure {
+    artifact(metadataJar)
+  }
+}
+
+configure<MavenPublishBaseExtension> {
+  configure(
+    KotlinMultiplatform(javadocJar = Dokka("dokkaGfm"))
+  )
 }
