@@ -1,14 +1,16 @@
 Change Log
 ==========
 
-Version 4.0.0-alpha.10
----------------------
+Version 4.0.0-alpha.11
+----------------------
 
 _2021-09-02_
 
  * New: change the Gradle plugin so that (unstable) custom handlers can be configured with instance
    instead of with a class name.
 
+Note that releases `4.0.0-alpha.9` and `4.0.0-alpha.10` were published incorrectly and should not be
+used.
 
 Version 4.0.0-alpha.8
 ---------------------
