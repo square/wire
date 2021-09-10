@@ -7,12 +7,6 @@ application {
   mainClassName = "com.squareup.dinosaurs.Sample"
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-sample")
-  }
-}
-
 dependencies {
   implementation(deps.wire.runtime)
 }

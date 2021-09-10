@@ -251,10 +251,4 @@ for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
       add("jvmJavaTestImplementation", deps.moshiKotlin)
     }
   }
-
-  val jar by tasks.getting(Jar::class) {
-    manifest {
-      attributes("Automatic-Module-Name" to "wire-tests")
-    }
-  }
 }

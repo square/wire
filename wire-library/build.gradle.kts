@@ -80,6 +80,14 @@ subprojects {
 }
 
 allprojects {
+  tasks.withType<Jar>().configureEach {
+    if (name == "jar") {
+      manifest {
+        attributes("Automatic-Module-Name" to project.name)
+      }
+    }
+  }
+
   tasks.withType<DokkaTask>().configureEach {
     dokkaSourceSets.configureEach {
       reportUndocumented.set(false)

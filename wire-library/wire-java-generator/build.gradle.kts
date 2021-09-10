@@ -9,12 +9,6 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-java-generator")
-  }
-}
-
 dependencies {
   api(project(":wire-schema"))
   implementation(project(":wire-runtime"))

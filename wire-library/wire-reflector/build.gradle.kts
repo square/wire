@@ -9,12 +9,6 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-reflector")
-  }
-}
-
 val main by sourceSets.getting {
   java.srcDir("$buildDir/wire")
 }

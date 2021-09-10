@@ -56,12 +56,6 @@ sourceSets {
   }
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-grpc-tests")
-  }
-}
-
 val main by sourceSets.getting
 animalsniffer {
   sourceSets = listOf(main)

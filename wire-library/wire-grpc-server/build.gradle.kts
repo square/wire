@@ -9,12 +9,6 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-grpc-server")
-  }
-}
-
 dependencies {
   implementation(project(":wire-runtime"))
   // io.grpc.stub relies on guava-android. This module relies on a -jre version of guava.

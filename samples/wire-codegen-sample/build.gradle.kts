@@ -2,12 +2,6 @@ plugins {
   kotlin("jvm")
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-codegen-sample")
-  }
-}
-
 dependencies {
   implementation(deps.wire.runtime)
   implementation(deps.wire.schema)
