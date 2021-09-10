@@ -22,12 +22,6 @@ plugins {
   id("com.google.protobuf")
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-test-utils")
-  }
-}
-
 protobuf {
   protoc {
     artifact = deps.protobuf.protoc

@@ -61,12 +61,6 @@ kotlin {
   }
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-schema")
-  }
-}
-
 // https://github.com/vanniktech/gradle-maven-publish-plugin/issues/301
 val metadataJar by tasks.getting(Jar::class)
 configure<PublishingExtension> {

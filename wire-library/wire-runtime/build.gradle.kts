@@ -124,14 +124,6 @@ repositories.whenObjectAdded {
   }
 }
 
-for (target in kotlin.targets.matching { it.platformType.name == "jvm" }) {
-  val jar by tasks.getting(Jar::class) {
-    manifest {
-      attributes("Automatic-Module-Name" to "wire-runtime")
-    }
-  }
-}
-
 val main by sourceSets.getting
 configure<AnimalSnifferExtension> {
   sourceSets = listOf(main)

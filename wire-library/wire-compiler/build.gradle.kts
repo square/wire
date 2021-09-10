@@ -16,12 +16,6 @@ application {
   mainClassName = "com.squareup.wire.WireCompiler"
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-compiler")
-  }
-}
-
 dependencies {
   api(project(":wire-schema"))
   api(project(":wire-kotlin-generator"))

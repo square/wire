@@ -5,12 +5,6 @@ plugins {
   kotlin("jvm")
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-grpc-mockwebserver")
-  }
-}
-
 val main by sourceSets.getting
 configure<AnimalSnifferExtension> {
   sourceSets = listOf(main)

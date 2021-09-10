@@ -10,12 +10,6 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
-val jar by tasks.getting(Jar::class) {
-  manifest {
-    attributes("Automatic-Module-Name" to "wire-gson-support")
-  }
-}
-
 val main by sourceSets.getting
 configure<AnimalSnifferExtension> {
   sourceSets = listOf(main)
