@@ -201,6 +201,10 @@ class Options(
         return coerceValueForField(context, value)
       }
 
+      is OptionElement.OptionPrimitive -> {
+        return canonicalizeValue(linker, context, value.value)
+      }
+
       else -> {
         throw IllegalArgumentException("Unexpected option value: $value")
       }

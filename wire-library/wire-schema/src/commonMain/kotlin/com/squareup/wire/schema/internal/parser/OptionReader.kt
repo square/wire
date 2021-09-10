@@ -114,7 +114,12 @@ class OptionReader(internal val reader: SyntaxReader) {
 
       val option = readOption(keyValueSeparator)
       val name = option.name
-      val value = option.value
+      val value = if (option.kind == BOOLEAN || option.kind == ENUM || option.kind == NUMBER) {
+        OptionElement.OptionPrimitive(option.kind, option.value)
+      } else {
+        option.value
+      }
+
       if (value is OptionElement) {
         var nested = result[name] as? MutableMap<String, Any>
         if (nested == null) {

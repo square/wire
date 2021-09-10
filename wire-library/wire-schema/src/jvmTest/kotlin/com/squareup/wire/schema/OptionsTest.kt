@@ -88,6 +88,67 @@ class OptionsTest {
   }
 
   @Test
+  fun testOptionsToSchema() {
+    val schema = RepoBuilder()
+        .add("foo.proto",
+            """
+            |import "google/protobuf/descriptor.proto";
+            |enum FooParameterType {
+            |   NUMBER = 1;
+            |   STRING = 2;
+            |}
+            | 
+            |message FooOptions {
+            |  optional string name = 1;
+            |  optional FooParameterType type = 2; 
+            |} 
+            |extend google.protobuf.MessageOptions {
+            |  repeated FooOptions foo = 12345;
+            |}
+            |
+            |message Message {
+            |  option (foo) = {
+            |    name: "test"
+            |    type: STRING
+            |  };
+            |  
+            |  option (foo) = {
+            |    name: "test2"
+            |    type: NUMBER
+            |  };
+            |  
+            |  optional int32 b = 2;
+            |}
+            """.trimMargin()
+        )
+        .schema()
+
+    val protoFile = schema.protoFile("foo.proto")
+
+    val optionElements = protoFile!!.types.stream().filter { it is MessageType && it.toElement().name == "Message" }
+        .findFirst().get().options.elements
+
+    assertThat(optionElements[0].toSchema())
+        .isEqualTo("""|(foo) = {
+                      |  name: "test",
+                      |  type: STRING
+                      |}""".trimMargin())
+
+    val foo = ProtoMember.get(Options.MESSAGE_OPTIONS, "foo")
+
+    val name = ProtoMember.get(ProtoType.get("FooOptions"), "name")
+    val type = ProtoMember.get(ProtoType.get("FooOptions"), "type")
+
+    val message = schema.getType("Message") as MessageType
+    message.toElement().name
+
+    assertThat(message.options.map)
+        .isEqualTo(mapOf( foo to
+            arrayListOf(mapOf(name to "test", type to "STRING" ),
+            mapOf ( name to "test2", type to "NUMBER" ) )))
+  }
+
+  @Test
   fun fullyQualifiedOptionFields() {
     val schema = RepoBuilder()
         .add("a/b/more_options.proto",

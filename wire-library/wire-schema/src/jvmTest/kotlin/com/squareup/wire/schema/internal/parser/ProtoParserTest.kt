@@ -1912,20 +1912,20 @@ class ProtoParserTest {
     option_one_map["name"] = "Name"
     option_one_map["class_name"] = "ClassName"
     val option_two_a_map = LinkedHashMap<String, Any>()
-    option_two_a_map["[squareup.options.type]"] = "EXOTIC"
+    option_two_a_map["[squareup.options.type]"] = OptionElement.OptionPrimitive(Kind.ENUM,"EXOTIC")
     val option_two_b_map = LinkedHashMap<String, List<String>>()
     option_two_b_map["names"] = Arrays.asList("Foo", "Bar")
     val option_three_map = LinkedHashMap<String, Map<String, *>>()
     val option_three_nested_map = LinkedHashMap<String, Any>()
-    option_three_nested_map["y"] = Arrays.asList("1", "2")
+    option_three_nested_map["y"] = Arrays.asList(OptionElement.OptionPrimitive(Kind.NUMBER, "1"), OptionElement.OptionPrimitive(Kind.NUMBER, "2"))
     option_three_map["x"] = option_three_nested_map
 
     val option_four_map = LinkedHashMap<String, Map<String, *>>()
     val option_four_map_1 = LinkedHashMap<String, Any>()
     val option_four_map_2_a = LinkedHashMap<String, Any>()
-    option_four_map_2_a["z"] = "1"
+    option_four_map_2_a["z"] = OptionElement.OptionPrimitive(Kind.NUMBER, "1")
     val option_four_map_2_b = LinkedHashMap<String, Any>()
-    option_four_map_2_b["z"] = "2"
+    option_four_map_2_b["z"] = OptionElement.OptionPrimitive(Kind.NUMBER, "2")
     option_four_map_1["y"] = listOf(option_four_map_2_a, option_four_map_2_b)
     option_four_map["x"] = option_four_map_1
 
@@ -2930,7 +2930,7 @@ class ProtoParserTest {
                     OptionElement(
                         "custom_rule",
                         Kind.MAP,
-                        mapOf("my_string" to "abc", "my_int" to "3",
+                        mapOf("my_string" to "abc", "my_int" to OptionElement.OptionPrimitive(Kind.NUMBER,"3"),
                             "my_list" to listOf("a", "b", "c")),
                         isParenthesized = true
                     )
