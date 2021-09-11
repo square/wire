@@ -31,6 +31,7 @@ includeBuild("wire-library") {
     substitute(module("com.squareup.wire:wire-gson-support")).with(project(":wire-gson-support"))
     substitute(module("com.squareup.wire:wire-java-generator")).with(project(":wire-java-generator"))
     substitute(module("com.squareup.wire:wire-kotlin-generator")).with(project(":wire-kotlin-generator"))
+    substitute(module("com.squareup.wire:wire-kotlinx-serialization")).with(project(":wire-kotlinx-serialization"))
     substitute(module("com.squareup.wire:wire-moshi-adapter")).with(project(":wire-moshi-adapter"))
     substitute(module("com.squareup.wire:wire-profiles")).with(project(":wire-profiles"))
     substitute(module("com.squareup.wire:wire-runtime")).with(project(":wire-runtime"))

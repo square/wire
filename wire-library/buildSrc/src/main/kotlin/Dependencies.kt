@@ -96,7 +96,9 @@ object deps {
       val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
     }
 
-    val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.1"
+    val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.2"
+    val serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+    val serializationProtobuf = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.2"
     val reflect = "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
     val stdlib = "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
   }

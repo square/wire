@@ -77,8 +77,11 @@ kotlin {
     val commonTest by getting {
       kotlin.srcDir("src/commonTest/proto-kotlin")
       dependencies {
+        implementation(project(":wire-kotlinx-serialization"))
         implementation(deps.kotlin.test.common)
         implementation(deps.kotlin.test.annotations)
+        implementation(deps.kotlin.serializationJson)
+        implementation(deps.kotlin.serializationProtobuf)
       }
     }
     val jvmTest by getting {
