@@ -112,7 +112,7 @@ jobs:
 
   publish:
     runs-on: macOS-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'
     needs: [jvm, multiplatform]
 
     steps:
