@@ -24,7 +24,7 @@ class MoshiPersonTest {
     assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
   }
 
-  @Test @Ignore("The adapter doesn't support idiomatic Kotlin yet.")
+  @Test
   fun kotlinClobberNonNullWithNull() {
     val personWithName = moshi.adapter(KotlinPerson::class.java)
         .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com"}""")

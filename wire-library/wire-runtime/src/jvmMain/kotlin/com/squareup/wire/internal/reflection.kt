@@ -16,6 +16,7 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.FieldEncoding
+import com.squareup.wire.KotlinConstructorBuilder
 import com.squareup.wire.Message
 import com.squareup.wire.OneOf
 import com.squareup.wire.ProtoAdapter
@@ -32,6 +33,14 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   syntax: Syntax
 ): RuntimeMessageAdapter<M, B> {
   val builderType = getBuilderType(messageType)
+  val newBuilderInstance: () -> B = {
+    if (builderType.isAssignableFrom(KotlinConstructorBuilder::class.java)) {
+      KotlinConstructorBuilder(messageType) as B
+    } else {
+      builderType.newInstance()
+    }
+  }
+
   val fields = LinkedHashMap<Int, FieldOrOneOfBinding<M, B>>()
 
   // Create tag bindings for fields annotated with '@WireField'.
@@ -50,6 +59,7 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
     RuntimeMessageBinding(
       messageType.kotlin,
       builderType,
+      newBuilderInstance,
       Collections.unmodifiableMap(fields),
       typeUrl,
       syntax
@@ -80,17 +90,16 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
 private fun <M : Message<M, B>, B : Message.Builder<M, B>> getBuilderType(
   messageType: Class<M>
 ): Class<B> {
-  try {
-    return Class.forName("${messageType.name}\$Builder") as Class<B>
-  } catch (_: ClassNotFoundException) {
-    throw IllegalArgumentException(
-      "No builder class found for message type ${messageType.name}")
+  return runCatching {
+    Class.forName("${messageType.name}\$Builder") as Class<B>
   }
+      .getOrNull() ?: KotlinConstructorBuilder::class.java as Class<B>
 }
 
 private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>>(
   override val messageType: KClass<M>,
   private val builderType: Class<B>,
+  private val createBuilder: () -> B,
   override val fields: Map<Int, FieldOrOneOfBinding<M, B>>,
   override val typeUrl: String?,
   override val syntax: Syntax
@@ -104,7 +113,7 @@ private class RuntimeMessageBinding<M : Message<M, B>, B : Message.Builder<M, B>
     message.cachedSerializedSize = size
   }
 
-  override fun newBuilder(): B = builderType.newInstance()
+  override fun newBuilder(): B = createBuilder()
 
   override fun build(builder: B): M {
     return builder.build()

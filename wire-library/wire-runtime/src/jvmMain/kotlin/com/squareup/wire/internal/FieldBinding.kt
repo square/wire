@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.internal
 
+import com.squareup.wire.KotlinConstructorBuilder
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.WireField
@@ -39,8 +40,8 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   private val keyAdapterString = wireField.keyAdapter
   private val adapterString = wireField.adapter
   override val redacted: Boolean = wireField.redacted
-  private val builderField = getBuilderField(builderType, name)
-  private val builderMethod = getBuilderMethod(builderType, name, messageField.type)
+  private val builderSetter = getBuilderSetter(builderType, wireField)
+  private val builderGetter = getBuilderGetter(builderType, wireField)
 
   override val keyAdapter: ProtoAdapter<*>
     get() = ProtoAdapter.get(keyAdapterString)
@@ -53,19 +54,49 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   override val isMessage: Boolean
     get() = Message::class.java.isAssignableFrom(singleAdapter.type?.javaObjectType)
 
-  private fun getBuilderField(builderType: Class<*>, name: String): Field {
-    try {
-      return builderType.getField(name)
-    } catch (_: NoSuchFieldException) {
-      throw AssertionError("No builder field ${builderType.name}.$name")
+  private fun getBuilderSetter(builderType: Class<*>, wireField: WireField): (B, Any?) -> Unit {
+    return when {
+      builderType.isAssignableFrom(KotlinConstructorBuilder::class.java) -> { builder, value ->
+        (builder as KotlinConstructorBuilder<*, *>).set(wireField, value)
+      }
+      wireField.label.isOneOf -> {
+        val type = messageField.type
+        val method = try {
+          builderType.getMethod(name, type)
+        } catch (_: NoSuchMethodException) {
+          throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
+        }
+        { builder, value ->
+          method.invoke(builder, value)
+        }
+      }
+      else -> {
+        val field = try {
+          builderType.getField(name)
+        } catch (_: NoSuchFieldException) {
+          throw AssertionError("No builder field ${builderType.name}.$name")
+        }
+        { builder, value ->
+          field.set(builder, value)
+        }
+      }
     }
   }
 
-  private fun getBuilderMethod(builderType: Class<*>, name: String, type: Class<*>): Method {
-    try {
-      return builderType.getMethod(name, type)
-    } catch (_: NoSuchMethodException) {
-      throw AssertionError("No builder method ${builderType.name}.$name(${type.name})")
+  private fun getBuilderGetter(builderType: Class<*>, wireField: WireField): (B) -> Any? {
+    return if (builderType.isAssignableFrom(KotlinConstructorBuilder::class.java)) {
+      { builder ->
+        (builder as KotlinConstructorBuilder<*, *>).get(wireField)
+      }
+    } else {
+      val field = try {
+        builderType.getField(name)
+      } catch (_: NoSuchFieldException) {
+        throw AssertionError("No builder field ${builderType.name}.$name")
+      }
+      { builder ->
+        field.get(builder)
+      }
     }
   }
 
@@ -105,17 +136,9 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   }
 
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
-  override fun set(builder: B, value: Any?) {
-    if (label.isOneOf) {
-      // In order to maintain the 'oneof' invariant, call the builder setter method rather
-      // than setting the builder field directly.
-      builderMethod.invoke(builder, value)
-    } else {
-      builderField.set(builder, value)
-    }
-  }
+  override fun set(builder: B, value: Any?) = builderSetter(builder, value)
 
   override operator fun get(message: M): Any? = messageField.get(message)
 
-  override fun getFromBuilder(builder: B): Any? = builderField.get(builder)
+  override fun getFromBuilder(builder: B): Any? = builderGetter(builder)
 }
