@@ -992,22 +992,22 @@ public class AllTypes(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (proto3_kotlin_int32?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_uint32?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_sint32?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_fixed32?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_sfixed32?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_int64?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_uint64?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_sint64?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_fixed64?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_sfixed64?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_bool?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_float?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_double?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_string?.hashCode() ?: 0)
-      result = result * 37 + (proto3_kotlin_bytes?.hashCode() ?: 0)
-      result = result * 37 + (nested_enum?.hashCode() ?: 0)
+      result = result * 37 + proto3_kotlin_int32.hashCode()
+      result = result * 37 + proto3_kotlin_uint32.hashCode()
+      result = result * 37 + proto3_kotlin_sint32.hashCode()
+      result = result * 37 + proto3_kotlin_fixed32.hashCode()
+      result = result * 37 + proto3_kotlin_sfixed32.hashCode()
+      result = result * 37 + proto3_kotlin_int64.hashCode()
+      result = result * 37 + proto3_kotlin_uint64.hashCode()
+      result = result * 37 + proto3_kotlin_sint64.hashCode()
+      result = result * 37 + proto3_kotlin_fixed64.hashCode()
+      result = result * 37 + proto3_kotlin_sfixed64.hashCode()
+      result = result * 37 + proto3_kotlin_bool.hashCode()
+      result = result * 37 + proto3_kotlin_float.hashCode()
+      result = result * 37 + proto3_kotlin_double.hashCode()
+      result = result * 37 + proto3_kotlin_string.hashCode()
+      result = result * 37 + proto3_kotlin_bytes.hashCode()
+      result = result * 37 + nested_enum.hashCode()
       result = result * 37 + (nested_message?.hashCode() ?: 0)
       result = result * 37 + (any?.hashCode() ?: 0)
       result = result * 37 + (duration?.hashCode() ?: 0)
@@ -2182,7 +2182,7 @@ public class AllTypes(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + (a?.hashCode() ?: 0)
+        result = result * 37 + a.hashCode()
         super.hashCode = result
       }
       return result

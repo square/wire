@@ -52,7 +52,7 @@ public class FreeDrinkPromotion(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (drink?.hashCode() ?: 0)
+      result = result * 37 + drink.hashCode()
       super.hashCode = result
     }
     return result

@@ -308,11 +308,11 @@ public class All64(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (my_int64?.hashCode() ?: 0)
-      result = result * 37 + (my_uint64?.hashCode() ?: 0)
-      result = result * 37 + (my_sint64?.hashCode() ?: 0)
-      result = result * 37 + (my_fixed64?.hashCode() ?: 0)
-      result = result * 37 + (my_sfixed64?.hashCode() ?: 0)
+      result = result * 37 + my_int64.hashCode()
+      result = result * 37 + my_uint64.hashCode()
+      result = result * 37 + my_sint64.hashCode()
+      result = result * 37 + my_fixed64.hashCode()
+      result = result * 37 + my_sfixed64.hashCode()
       result = result * 37 + rep_int64.hashCode()
       result = result * 37 + rep_uint64.hashCode()
       result = result * 37 + rep_sint64.hashCode()

@@ -119,8 +119,8 @@ public class PizzaDelivery(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (phone_number?.hashCode() ?: 0)
-      result = result * 37 + (address?.hashCode() ?: 0)
+      result = result * 37 + phone_number.hashCode()
+      result = result * 37 + address.hashCode()
       result = result * 37 + pizzas.hashCode()
       result = result * 37 + (promotion?.hashCode() ?: 0)
       result = result * 37 + (delivered_within_or_free?.hashCode() ?: 0)

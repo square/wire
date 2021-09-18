@@ -92,7 +92,7 @@ public class CamelCase(
       result = unknownFields.hashCode()
       result = result * 37 + (nested__message?.hashCode() ?: 0)
       result = result * 37 + _Rep_int32.hashCode()
-      result = result * 37 + (IDitIt_my_wAy?.hashCode() ?: 0)
+      result = result * 37 + IDitIt_my_wAy.hashCode()
       result = result * 37 + map_int32_Int32.hashCode()
       super.hashCode = result
     }
@@ -266,7 +266,7 @@ public class CamelCase(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + (one_int32?.hashCode() ?: 0)
+        result = result * 37 + one_int32.hashCode()
         super.hashCode = result
       }
       return result

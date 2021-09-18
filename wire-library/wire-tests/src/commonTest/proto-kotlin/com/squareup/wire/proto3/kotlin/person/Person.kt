@@ -127,9 +127,9 @@ public class Person(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (name?.hashCode() ?: 0)
-      result = result * 37 + (id?.hashCode() ?: 0)
-      result = result * 37 + (email?.hashCode() ?: 0)
+      result = result * 37 + name.hashCode()
+      result = result * 37 + id.hashCode()
+      result = result * 37 + email.hashCode()
       result = result * 37 + phones.hashCode()
       result = result * 37 + aliases.hashCode()
       result = result * 37 + (foo?.hashCode() ?: 0)
@@ -322,8 +322,8 @@ public class Person(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + (number?.hashCode() ?: 0)
-        result = result * 37 + (type?.hashCode() ?: 0)
+        result = result * 37 + number.hashCode()
+        result = result * 37 + type.hashCode()
         super.hashCode = result
       }
       return result
