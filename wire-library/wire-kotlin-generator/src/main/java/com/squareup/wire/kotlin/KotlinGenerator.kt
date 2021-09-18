@@ -665,7 +665,7 @@ class KotlinGenerator private constructor(
           is Field -> {
             val fieldName = localNameAllocator[fieldOrOneOf]
             add("%1N = %1N * 37 + ", resultName)
-            if (fieldOrOneOf.isRepeated || fieldOrOneOf.isRequired || fieldOrOneOf.isMap) {
+            if (fieldOrOneOf.isRepeated || fieldOrOneOf.isRequired || fieldOrOneOf.isMap || !fieldOrOneOf.acceptsNull) {
               addStatement("%L.hashCode()", fieldName)
             } else {
               addStatement("(%L?.hashCode() ?: 0)", fieldName)
