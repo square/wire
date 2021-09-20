@@ -272,7 +272,7 @@ class GrpcClientTest {
       requestChannel.close()
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "tree"))
       assertThat(responseChannel.receive()).isEqualTo(Feature(name = "house"))
-      assertThat(responseChannel.receiveOrNull()).isNull()
+      assertThat(responseChannel.receiveCatching().getOrNull()).isNull()
     }
   }
 
@@ -350,7 +350,7 @@ class GrpcClientTest {
       requestChannel.send(RouteNote(message = "rené"))
       requestChannel.close()
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "lacoste"))
-      assertThat(responseChannel.receiveOrNull()).isNull()
+      assertThat(responseChannel.receiveCatching().getOrNull()).isNull()
     }
   }
 
@@ -530,7 +530,7 @@ class GrpcClientTest {
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "polo"))
       requestChannel.send(RouteNote(message = "rené"))
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "lacoste"))
-      assertThat(responseChannel.receiveOrNull()).isNull()
+      assertThat(responseChannel.receiveCatching().getOrNull()).isNull()
       requestChannel.close()
     }
   }
@@ -636,7 +636,7 @@ class GrpcClientTest {
       requestChannel.send(RouteNote(message = "rené"))
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "lacoste"))
       requestChannel.close()
-      assertThat(responseChannel.receiveOrNull()).isNull()
+      assertThat(responseChannel.receiveCatching().getOrNull()).isNull()
 
       // We wait for mockService to process our actions.
       delay(500)
@@ -731,7 +731,7 @@ class GrpcClientTest {
     runBlocking {
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "welcome"))
       requestChannel.close()
-      assertThat(responseChannel.receiveOrNull()).isNull()
+      assertThat(responseChannel.receiveCatching().getOrNull()).isNull()
     }
   }
 
@@ -867,7 +867,7 @@ class GrpcClientTest {
     runBlocking {
       assertThat(responseChannel.receive()).isEqualTo(RouteNote(message = "welcome"))
       requestChannel.close()
-      assertThat(responseChannel.receiveOrNull()).isNull()
+      assertThat(responseChannel.receiveCatching().getOrNull()).isNull()
     }
   }
 
