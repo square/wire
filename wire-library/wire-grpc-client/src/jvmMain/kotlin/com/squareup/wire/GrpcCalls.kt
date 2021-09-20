@@ -17,18 +17,18 @@
 
 package com.squareup.wire
 
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.receiveOrNull
+import kotlinx.coroutines.channels.onClosed
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import okio.Timeout
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Returns a new instance of [GrpcCall] that can be used for a single call to
@@ -207,7 +207,9 @@ internal fun <E : Any> Channel<E>.toMessageSource() = object : MessageSource<E> 
   override fun read(): E? {
     return runBlocking {
       try {
-        receiveOrNull()
+        receiveCatching()
+          .onClosed { if (it != null) throw it }
+          .getOrNull()
       } catch (e: Exception) {
         throw IOException(e)
       }

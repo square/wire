@@ -22,7 +22,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.channels.receiveOrNull
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import org.assertj.core.api.Assertions.assertThat
@@ -43,7 +42,7 @@ class GrpcStreamingCallsTest {
       requests.send("hello")
       requests.close()
       assertThat(responses.receive()).isEqualTo("HELLO")
-      assertThat(responses.receiveOrNull()).isNull()
+      assertThat(responses.receiveCatching().getOrNull()).isNull()
     }
   }
 
@@ -203,7 +202,7 @@ class GrpcStreamingCallsTest {
       requests2.send("hello")
       requests2.close()
       assertThat(responses2.receive()).isEqualTo("HELLO")
-      assertThat(responses2.receiveOrNull()).isNull()
+      assertThat(responses2.receiveCatching().getOrNull()).isNull()
     }
   }
 

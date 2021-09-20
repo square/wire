@@ -9,8 +9,8 @@ object versions {
   val animalSniffer = "1.16"
   val animalSnifferGradle = "1.5.0"
   val assertj = "3.11.0"
-  val coroutines = "1.3.9"
-  val dokka = "1.4.20"
+  val coroutines = "1.5.2"
+  val dokka = "1.5.30"
   val errorprone = "2.0.21"
   val grpc = "1.38.1"
   val gson = "2.8.6"
@@ -21,7 +21,7 @@ object versions {
   val jmhPlugin = "0.5.0"
   val jsr305 = "3.0.2"
   val junit = "4.12"
-  val kotlin = "1.5.20"
+  val kotlin = "1.5.31"
   val kotlinpoet = "1.9.0"
   val moshi = "1.12.0"
   val okhttp = "4.9.1"
@@ -119,7 +119,7 @@ object deps {
   }
 
   val truth = "com.google.truth:truth:1.1.3"
-  val vanniktechPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.17.0"
+  val vanniktechPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
 
   object wire {
     val compiler = "com.squareup.wire:wire-compiler"
