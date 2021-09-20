@@ -18,6 +18,7 @@ package com.squareup.wire.reflector
 import com.squareup.wire.GrpcStatus
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.MessageType
+import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.internal.SchemaEncoder
 import grpc.reflection.v1alpha.ErrorResponse
@@ -34,7 +35,8 @@ import okio.ByteString
  * This converts a Wire Schema model to a protobuf DescriptorProtos model and serves that.
  */
 class SchemaReflector(
-  private val schema: Schema
+  private val schema: Schema,
+  private val includeDependencies: Boolean = true
 ) {
   fun process(request: ServerReflectionRequest): ServerReflectionResponse {
     val response = when {
@@ -107,9 +109,10 @@ class SchemaReflector(
     val location = field.location
 
     val protoFile = schema.protoFile(location.path)!!
-    val result = SchemaEncoder(schema).encode(protoFile).toFileDescriptorResponse()
+    val allProtoFiles = allDependencies(protoFile)
+    val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = result
+      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
     )
   }
 
@@ -135,9 +138,10 @@ class SchemaReflector(
 
   private fun fileByFilename(request: ServerReflectionRequest): ServerReflectionResponse {
     val protoFile = schema.protoFile(request.file_by_filename!!)!!
-
+    val allProtoFiles = allDependencies(protoFile)
+    val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = SchemaEncoder(schema).encode(protoFile).toFileDescriptorResponse()
+      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
     )
   }
 
@@ -153,9 +157,10 @@ class SchemaReflector(
       )
 
     val protoFile = schema.protoFile(location.path)!!
-    val result = SchemaEncoder(schema).encode(protoFile).toFileDescriptorResponse()
+    val allProtoFiles = allDependencies(protoFile)
+    val schemaEncoder = SchemaEncoder(schema)
     return ServerReflectionResponse(
-      file_descriptor_response = result
+      file_descriptor_response = FileDescriptorResponse(allProtoFiles.map { schemaEncoder.encode(it) })
     )
   }
 
@@ -182,9 +187,26 @@ class SchemaReflector(
     return null
   }
 
-  private fun ByteString.toFileDescriptorResponse(): FileDescriptorResponse {
-    return FileDescriptorResponse(
-      file_descriptor_proto = listOf(this)
-    )
+  // allDependencies returns protoFile and all its transitive dependencies in topographical order such that files always
+  // appear after their dependencies.
+  private fun allDependencies(protoFile: ProtoFile): List<ProtoFile> {
+    if (!includeDependencies) return listOf(protoFile)
+
+    val result = mutableListOf<ProtoFile>()
+    collectAllDependencies(protoFile, mutableSetOf(), result)
+    return result
+  }
+
+  private fun collectAllDependencies(protoFile: ProtoFile, visited: MutableSet<String>, result: MutableList<ProtoFile>) {
+    if (visited.add(protoFile.name())) {
+      protoFile.imports.forEach {
+        collectAllDependencies(schema.protoFile(it)!!, visited, result)
+      }
+      protoFile.publicImports.forEach {
+        collectAllDependencies(schema.protoFile(it)!!, visited, result)
+      }
+      result.add(protoFile)
+    }
   }
 }
+

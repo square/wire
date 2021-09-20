@@ -15,6 +15,8 @@
  */
 package com.squareup.wire.reflector
 
+import com.google.protobuf.DescriptorProtos
+import com.google.protobuf.Descriptors
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.RepoBuilder
 import com.squareup.wire.schema.SchemaLoader
@@ -27,48 +29,161 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 internal class SchemaReflectorTest {
-  @Test
-  fun `outputs a list of services`() {
-    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
-    val schema = repoBuilder.schema()
-    val request =  ServerReflectionRequest(list_services = "*")
-    assertThat(
-      SchemaReflector(schema).process(request)
-    ).isEqualTo(
-      ServerReflectionResponse(
-        original_request = request,
-        list_services_response = ListServiceResponse(
-          service = listOf(ServiceResponse(name = "routeguide.RouteGuide"))
+    @Test
+    fun `outputs a list of services`() {
+        val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
+        val schema = repoBuilder.schema()
+        val request = ServerReflectionRequest(list_services = "*")
+        assertThat(
+                SchemaReflector(schema, includeDependencies = true).process(request)
+        ).isEqualTo(
+                ServerReflectionResponse(
+                        original_request = request,
+                        list_services_response = ListServiceResponse(
+                                service = listOf(ServiceResponse(name = "routeguide.RouteGuide"))
+                        )
+                )
         )
-      )
-    )
-  }
+    }
 
-  @Test
-  fun `gets a file descriptor for a filename`() {
-    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
-    val schema = repoBuilder.schema()
+    @Test
+    fun `gets a file descriptor for a filename`() {
+        val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
+        val schema = repoBuilder.schema()
 
-    assertThat(
-      SchemaReflector(schema).process(
-        ServerReflectionRequest(
-          file_by_filename = "src/test/proto/RouteGuideProto.proto"
-        )
-      )
-    ).extracting { it.file_descriptor_response }.isNotNull
-  }
+        assertThat(
+                SchemaReflector(schema, includeDependencies = true).process(
+                        ServerReflectionRequest(
+                                file_by_filename = "src/test/proto/RouteGuideProto.proto"
+                        )
+                )
+        ).extracting { it.file_descriptor_response }.isNotNull
+    }
 
-  @Test
-  fun `gets a file descriptor for a specific symbol`() {
-    val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
-    val schema = repoBuilder.schema()
+    @Test
+    fun `gets a file descriptor for a specific symbol`() {
+        val repoBuilder = RepoBuilder().addLocal("src/test/proto/RouteGuideProto.proto")
+        val schema = repoBuilder.schema()
 
-    assertThat(
-      SchemaReflector(schema).process(
-        ServerReflectionRequest(
-          file_containing_symbol = "routeguide.RouteGuide"
-        )
-      )
-    ).extracting { it.file_descriptor_response }.isNotNull
-  }
+        assertThat(
+                SchemaReflector(schema, includeDependencies = true).process(
+                        ServerReflectionRequest(
+                                file_containing_symbol = "routeguide.RouteGuide"
+                        )
+                )
+        ).extracting { it.file_descriptor_response }.isNotNull
+    }
+
+    @Test
+    fun `transitive dependencies included`() {
+        val repoBuilder = RepoBuilder()
+                .add("/source/a.proto", """
+                |import "b.proto";
+                |message A {
+                |  optional B b = 1;
+                |}
+                |""".trimMargin())
+                .add("/source/b.proto", """
+                |message B { }
+                |""".trimMargin())
+        val schema = repoBuilder.schema()
+
+        val response = SchemaReflector(schema, includeDependencies = true)
+                .process(ServerReflectionRequest(file_containing_symbol = ".A"))
+        assertThat(response.file_descriptor_response!!.file_descriptor_proto.map {
+            DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
+        }.map { it.name }).containsExactly("b.proto", "a.proto")
+
+        val responseB = SchemaReflector(schema, includeDependencies = true)
+                .process(ServerReflectionRequest(file_containing_symbol = ".B"))
+        assertThat(responseB.file_descriptor_response!!.file_descriptor_proto.map {
+            DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
+        }.map { it.name }).containsExactly("b.proto")
+    }
+
+    @Test
+    fun `transitive dependencies included once`() {
+        val repoBuilder = RepoBuilder()
+                .add("/source/a.proto", """
+                |import "b.proto";
+                |import "c.proto";
+                |message A {
+                |  optional B b = 1;
+                |  optional C c = 2;
+                |}
+                |""".trimMargin())
+                .add("/source/b.proto", """
+                |message B { }
+                |""".trimMargin())
+                .add("/source/c.proto", """
+                |message C { }
+                |""".trimMargin())
+        val schema = repoBuilder.schema()
+
+        val response = SchemaReflector(schema, includeDependencies = true)
+                .process(ServerReflectionRequest(file_containing_symbol = ".A"))
+        assertThat(response.file_descriptor_response!!.file_descriptor_proto.map {
+            DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
+        }.map { it.name }).containsExactly("b.proto", "c.proto", "a.proto")
+    }
+
+    @Test
+    fun `transitive dependencies included ordered`() {
+        val repoBuilder = RepoBuilder()
+                .add("/source/a.proto", """
+                |import "b.proto";
+                |import "c.proto";
+                |message A {
+                |  optional B b = 1;
+                |  optional C c = 2;
+                |}
+                |""".trimMargin())
+                .add("/source/b.proto", """
+                |import "c.proto";
+                |message B {
+                |  optional C c = 1;
+                | }
+                |""".trimMargin())
+                .add("/source/c.proto", """
+                |message C { }
+                |""".trimMargin())
+        val schema = repoBuilder.schema()
+
+        val response = SchemaReflector(schema, includeDependencies = true)
+                .process(ServerReflectionRequest(file_containing_symbol = ".A"))
+        assertThat(response.file_descriptor_response!!.file_descriptor_proto.map {
+            DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
+        }.map { it.name }).containsExactly("c.proto", "b.proto", "a.proto")
+    }
+
+    @Test
+    fun `transitive dependencies with public import`() {
+        val repoBuilder = RepoBuilder()
+                .add("/source/a.proto", """
+                |import "b.proto";
+                |message A {
+                |  optional B b = 1;
+                |}
+                |""".trimMargin())
+                .add("/source/b.proto", """
+                |import public "b-new.proto";
+                |""".trimMargin())
+                .add("/source/b-new.proto", """
+                |import "c.proto";
+                |message B {
+                |  optional C c = 1;
+                | }
+                |""".trimMargin())
+                .add("/source/c.proto", """
+                |message C { }
+                |""".trimMargin())
+        val schema = repoBuilder.schema()
+
+        val response = SchemaReflector(schema, includeDependencies = true)
+                .process(ServerReflectionRequest(file_containing_symbol = ".A"))
+        assertThat(response.file_descriptor_response!!.file_descriptor_proto.map {
+            DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
+        }.map { it.name }).containsExactly("c.proto", "b-new.proto", "b.proto", "a.proto")
+    }
+
 }
