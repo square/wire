@@ -37,7 +37,7 @@ internal class GrpcurlProto2InteropTest {
     val respBase64 = "Cgtsb2NhbGhvc3Q6MBIPCgtsb2NhbGhvc3Q6MDoAMjoKDAoKZWNobzIuRWNobwoqCihncnBjLnJlZmxlY3Rpb24udjFhbHBoYS5TZXJ2ZXJSZWZsZWN0aW9u=="
     val expectedResponse = ServerReflectionResponse.ADAPTER.decode(respBase64.decodeBase64()!!)
     assertThat(
-      SchemaReflector(schema).process(
+      SchemaReflector(schema, includeDependencies = false).process(
         ServerReflectionRequest(
           list_services = "",
           host = "localhost:0"
@@ -51,7 +51,7 @@ internal class GrpcurlProto2InteropTest {
   fun `file_containing_symbol service`() {
     val schema = loadSchema()
     val expectedResponse = ServerReflectionResponse.ADAPTER.decode(ECHO2_FILEDESCRIPTOR_RESPONSE.decodeBase64()!!)
-    val response = SchemaReflector(schema).process(
+    val response = SchemaReflector(schema, includeDependencies = false).process(
       ServerReflectionRequest(
         file_containing_symbol = "echo2.Echo",
         host = "localhost:0"
@@ -66,7 +66,7 @@ internal class GrpcurlProto2InteropTest {
   fun `file_containing_symbol message`() {
     val schema = loadSchema()
     val expectedResponse = ServerReflectionResponse.ADAPTER.decode(ECHO2_FILEDESCRIPTOR_RESPONSE.decodeBase64()!!)
-    val response = SchemaReflector(schema).process(
+    val response = SchemaReflector(schema, includeDependencies = false).process(
       ServerReflectionRequest(
         file_containing_symbol = "echo2.HelloRequest",
         host = "localhost:0"
@@ -81,7 +81,7 @@ internal class GrpcurlProto2InteropTest {
   fun `file_containing_symbol rpc`() {
     val schema = loadSchema()
     val expectedResponse = ServerReflectionResponse.ADAPTER.decode(ECHO2_FILEDESCRIPTOR_RESPONSE.decodeBase64()!!)
-    val response = SchemaReflector(schema).process(
+    val response = SchemaReflector(schema, includeDependencies = false).process(
       ServerReflectionRequest(
         file_containing_symbol = "echo2.Echo.HelloStream",
         host = "localhost:0"
@@ -96,7 +96,7 @@ internal class GrpcurlProto2InteropTest {
   fun `file_by_filename`() {
     val schema = loadSchema()
     val expectedResponse = ServerReflectionResponse.ADAPTER.decode(ECHO2_FILEDESCRIPTOR_RESPONSE.decodeBase64()!!)
-    val response = SchemaReflector(schema).process(
+    val response = SchemaReflector(schema, includeDependencies = false).process(
       ServerReflectionRequest(
         file_by_filename = "echo2/echo2.proto",
         host = "localhost:0"
