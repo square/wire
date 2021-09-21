@@ -132,8 +132,17 @@ wire {
     srcDir 'src/main/protos'
     include 'com/example/pizza/**'
   }
+}
+```
 
-  ...
+You can also do the opposite and exclude some files:
+```groovy
+wire {
+  sourcePath {
+    srcDir 'src/main/protos'
+    exclude 'com/example/juice/**'
+    exclude 'com/example/pizza/toppings.proto'
+  }
 }
 ```
 
@@ -205,6 +214,11 @@ wire {
   protoPath {
     srcJar 'com.example:countries:1.0.0'
     include 'com/example/geo/country.proto'
+  }
+
+  protoPath {
+    srcDir 'src/main/extra-protos'
+    exclude 'com/example/**'
   }
 
   ...
