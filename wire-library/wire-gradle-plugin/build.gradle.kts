@@ -3,6 +3,7 @@ import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
+  id("com.gradle.plugin-publish") version "0.16.0"
   kotlin("jvm")
   id("java-gradle-plugin")
   id("org.jetbrains.dokka")
