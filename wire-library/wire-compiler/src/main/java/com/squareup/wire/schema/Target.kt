@@ -25,6 +25,7 @@ import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.schema.Target.SchemaHandler
 import com.squareup.wire.swift.SwiftGenerator
 import java.io.IOException
 import java.io.Serializable
@@ -688,19 +689,47 @@ interface CustomHandlerBeta {
  *     [CustomHandlerBeta]. The class must have a no-arguments public constructor.
  */
 fun newCustomHandler(customHandlerClass: String): CustomHandlerBeta {
-  val customHandlerType = try {
-    Class.forName(customHandlerClass)
-  } catch (exception: ClassNotFoundException) {
-    throw IllegalArgumentException("Couldn't find CustomHandlerClass '$customHandlerClass'")
-  }
+  return ClassNameCustomHandlerBeta(customHandlerClass)
+}
 
-  val constructor = try {
-    customHandlerType.getConstructor()
-  } catch (exception: NoSuchMethodException) {
-    throw IllegalArgumentException("No public constructor on $customHandlerClass")
-  }
+/**
+ * This custom handler is serializable (so Gradle can cache targets that use it). It works even if
+ * the delegate handler class is itself not serializable.
+ */
+private class ClassNameCustomHandlerBeta(
+  val customHandlerClass: String
+) : CustomHandlerBeta, Serializable {
+  @Transient private var cachedDelegate: CustomHandlerBeta? = null
 
-  return constructor.newInstance() as? CustomHandlerBeta
-    ?: throw IllegalArgumentException(
-      "$customHandlerClass does not implement CustomHandlerBeta")
+  private val delegate: CustomHandlerBeta
+    get() {
+      val cachedResult = cachedDelegate
+      if (cachedResult != null) return cachedResult
+
+      val customHandlerType = try {
+        Class.forName(customHandlerClass)
+      } catch (exception: ClassNotFoundException) {
+        throw IllegalArgumentException("Couldn't find CustomHandlerClass '$customHandlerClass'")
+      }
+
+      val constructor = try {
+        customHandlerType.getConstructor()
+      } catch (exception: NoSuchMethodException) {
+        throw IllegalArgumentException("No public constructor on $customHandlerClass")
+      }
+
+      val result = constructor.newInstance() as? CustomHandlerBeta
+        ?: throw IllegalArgumentException(
+          "$customHandlerClass does not implement CustomHandlerBeta")
+      this.cachedDelegate = result
+      return result
+    }
+
+  override fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    outDirectory: String,
+    logger: WireLogger,
+    profileLoader: ProfileLoader
+  ): SchemaHandler = delegate.newHandler(schema, fs, outDirectory, logger, profileLoader)
 }
