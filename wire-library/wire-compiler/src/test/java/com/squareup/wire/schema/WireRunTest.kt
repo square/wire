@@ -16,12 +16,19 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.StringWireLogger
+import com.squareup.wire.WireLogger
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import com.squareup.wire.schema.Target.SchemaHandler
 import com.squareup.wire.schema.WireRun.Module
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.find
 import com.squareup.wire.testing.get
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import kotlin.test.assertFailsWith
+import okio.Buffer
+import okio.FileSystem
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
@@ -524,32 +531,68 @@ class WireRunTest {
 
   @Test
   fun noSuchClass() {
-    try {
-      newCustomHandler("foo")
-      fail()
-    } catch (expected: IllegalArgumentException) {
-      assertThat(expected).hasMessage("Couldn't find CustomHandlerClass 'foo'")
-    }
+    assertThat(assertFailsWith<IllegalArgumentException> {
+      callCustomHandler(newCustomHandler("foo"))
+    }).hasMessage("Couldn't find CustomHandlerClass 'foo'")
   }
 
   @Test
   fun noPublicConstructor() {
-    try {
-      newCustomHandler("java.lang.Void")
-      fail()
-    } catch (expected: IllegalArgumentException) {
-      assertThat(expected).hasMessage("No public constructor on java.lang.Void")
-    }
+    assertThat(assertFailsWith<IllegalArgumentException> {
+      callCustomHandler(newCustomHandler("java.lang.Void"))
+    }).hasMessage("No public constructor on java.lang.Void")
   }
 
   @Test
   fun classDoesNotImplementCustomHandlerInterface() {
-    try {
-      newCustomHandler("java.lang.Object")
-      fail()
-    } catch (expected: IllegalArgumentException) {
-      assertThat(expected).hasMessage("java.lang.Object does not implement CustomHandlerBeta")
+    assertThat(assertFailsWith<IllegalArgumentException> {
+      callCustomHandler(newCustomHandler("java.lang.Object"))
+    }).hasMessage("java.lang.Object does not implement CustomHandlerBeta")
+  }
+
+  class NotSerializableCustomHandler : CustomHandlerBeta {
+    override fun newHandler(
+      schema: Schema,
+      fs: FileSystem,
+      outDirectory: String,
+      logger: WireLogger,
+      profileLoader: ProfileLoader
+    ): SchemaHandler {
+      throw Exception("hello! this was not serialized")
     }
+  }
+
+  /** Confirm that custom handlers don't have to be serialized. */
+  @Test
+  fun newCustomHandlerIsSerializableEvenIfTargetClassIsNot() {
+    val customHandlerA = newCustomHandler(
+      "${WireRunTest::class.qualifiedName}${"$"}NotSerializableCustomHandler"
+    )
+    val customHandlerB = reserialize(customHandlerA)
+
+    assertThat(assertFailsWith<Exception> {
+      callCustomHandler(customHandlerB)
+    }).hasMessage("hello! this was not serialized")
+  }
+
+  private fun <T> reserialize(value: T): T {
+    val buffer = Buffer()
+    ObjectOutputStream(buffer.outputStream()).use {
+      it.writeObject(value)
+    }
+    return ObjectInputStream(buffer.inputStream()).use {
+      it.readObject() as T
+    }
+  }
+
+  private fun callCustomHandler(customHandler: CustomHandlerBeta) {
+    writeTriangleProto()
+    val schemaLoader = SchemaLoader(fs)
+    schemaLoader.initRoots(listOf(Location.get("polygons/src/main/proto")))
+    val schema = schemaLoader.loadSchema()
+    customHandler.newHandler(
+      schema, fs, "out", StringWireLogger(), schemaLoader
+    )
   }
 
   private fun writeRedProto() {
