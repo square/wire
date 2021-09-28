@@ -306,11 +306,11 @@ public class All32(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (my_int32?.hashCode() ?: 0)
-      result = result * 37 + (my_uint32?.hashCode() ?: 0)
-      result = result * 37 + (my_sint32?.hashCode() ?: 0)
-      result = result * 37 + (my_fixed32?.hashCode() ?: 0)
-      result = result * 37 + (my_sfixed32?.hashCode() ?: 0)
+      result = result * 37 + my_int32.hashCode()
+      result = result * 37 + my_uint32.hashCode()
+      result = result * 37 + my_sint32.hashCode()
+      result = result * 37 + my_fixed32.hashCode()
+      result = result * 37 + my_sfixed32.hashCode()
       result = result * 37 + rep_int32.hashCode()
       result = result * 37 + rep_uint32.hashCode()
       result = result * 37 + rep_sint32.hashCode()

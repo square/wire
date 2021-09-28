@@ -49,7 +49,7 @@ public class BuyOneGetOnePromotion(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (coupon?.hashCode() ?: 0)
+      result = result * 37 + coupon.hashCode()
       super.hashCode = result
     }
     return result

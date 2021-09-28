@@ -49,7 +49,7 @@ public class FreeGarlicBreadPromotion(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (is_extra_cheesey?.hashCode() ?: 0)
+      result = result * 37 + is_extra_cheesey.hashCode()
       super.hashCode = result
     }
     return result

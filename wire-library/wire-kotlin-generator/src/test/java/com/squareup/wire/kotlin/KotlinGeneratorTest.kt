@@ -21,6 +21,7 @@ import com.squareup.wire.kotlin.KotlinGenerator.Companion.sanitizeKdoc
 import com.squareup.wire.schema.PruningRules
 import com.squareup.wire.schema.RepoBuilder
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
@@ -1690,6 +1691,40 @@ class KotlinGeneratorTest {
       |  public val k: String? = null,
       |  unknownFields: ByteString = ByteString.EMPTY
       """.trimMargin())
+  }
+
+  @Test fun hashCodeFunctionImplementation() {
+    val repoBuilder = RepoBuilder()
+      .add("text.proto","""
+        |syntax = "proto3";
+        |
+        |message SomeText {
+        |  string stringValue = 1;
+        |  int32 intValue=2;
+        |  bool boolValue=3;
+        |  OtherText other_text = 4;
+        |  oneof test_oneof {
+        |    string string_oneof = 5;
+        |    int32 int_oneof = 6;
+        |  }
+        |  
+        |  repeated string list = 7;
+        |}
+        |
+        |message OtherText {
+        |  string otherValue = 1;
+        |}
+        """.trimMargin())
+
+    val code = repoBuilder.generateKotlin("SomeText")
+    assertContains(code, "result = result * 37 + stringValue.hashCode()")
+    assertContains(code, "result = result * 37 + intValue.hashCode()")
+    assertContains(code, "result = result * 37 + boolValue.hashCode()")
+    assertContains(code, "result = result * 37 + (other_text?.hashCode() ?: 0)")
+    assertContains(code, "result = result * 37 + (string_oneof?.hashCode() ?: 0)")
+    assertContains(code, "result = result * 37 + (string_oneof?.hashCode() ?: 0)")
+    assertContains(code, "result = result * 37 + (int_oneof?.hashCode() ?: 0)")
+    assertContains(code, "result = result * 37 + list.hashCode()")
   }
 
   companion object {

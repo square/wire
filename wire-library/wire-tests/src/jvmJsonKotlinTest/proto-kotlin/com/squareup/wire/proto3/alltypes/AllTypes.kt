@@ -819,22 +819,22 @@ public class AllTypes(
     var result = super.hashCode
     if (result == 0) {
       result = unknownFields.hashCode()
-      result = result * 37 + (my_int32?.hashCode() ?: 0)
-      result = result * 37 + (my_uint32?.hashCode() ?: 0)
-      result = result * 37 + (my_sint32?.hashCode() ?: 0)
-      result = result * 37 + (my_fixed32?.hashCode() ?: 0)
-      result = result * 37 + (my_sfixed32?.hashCode() ?: 0)
-      result = result * 37 + (my_int64?.hashCode() ?: 0)
-      result = result * 37 + (my_uint64?.hashCode() ?: 0)
-      result = result * 37 + (my_sint64?.hashCode() ?: 0)
-      result = result * 37 + (my_fixed64?.hashCode() ?: 0)
-      result = result * 37 + (my_sfixed64?.hashCode() ?: 0)
-      result = result * 37 + (my_bool?.hashCode() ?: 0)
-      result = result * 37 + (my_float?.hashCode() ?: 0)
-      result = result * 37 + (my_double?.hashCode() ?: 0)
-      result = result * 37 + (my_string?.hashCode() ?: 0)
-      result = result * 37 + (my_bytes?.hashCode() ?: 0)
-      result = result * 37 + (nested_enum?.hashCode() ?: 0)
+      result = result * 37 + my_int32.hashCode()
+      result = result * 37 + my_uint32.hashCode()
+      result = result * 37 + my_sint32.hashCode()
+      result = result * 37 + my_fixed32.hashCode()
+      result = result * 37 + my_sfixed32.hashCode()
+      result = result * 37 + my_int64.hashCode()
+      result = result * 37 + my_uint64.hashCode()
+      result = result * 37 + my_sint64.hashCode()
+      result = result * 37 + my_fixed64.hashCode()
+      result = result * 37 + my_sfixed64.hashCode()
+      result = result * 37 + my_bool.hashCode()
+      result = result * 37 + my_float.hashCode()
+      result = result * 37 + my_double.hashCode()
+      result = result * 37 + my_string.hashCode()
+      result = result * 37 + my_bytes.hashCode()
+      result = result * 37 + nested_enum.hashCode()
       result = result * 37 + (nested_message?.hashCode() ?: 0)
       result = result * 37 + (opt_int32?.hashCode() ?: 0)
       result = result * 37 + (opt_uint32?.hashCode() ?: 0)
@@ -2292,7 +2292,7 @@ public class AllTypes(
       var result = super.hashCode
       if (result == 0) {
         result = unknownFields.hashCode()
-        result = result * 37 + (a?.hashCode() ?: 0)
+        result = result * 37 + a.hashCode()
         super.hashCode = result
       }
       return result
