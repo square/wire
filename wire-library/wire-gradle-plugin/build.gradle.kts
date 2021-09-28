@@ -14,6 +14,7 @@ gradlePlugin {
   plugins {
     create("wire") {
       id = "com.squareup.wire"
+      displayName = "Wire"
       implementationClass = "com.squareup.wire.gradle.WirePlugin"
       description = "generate code from .proto files"
     }
