@@ -1,6 +1,20 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.12
+----------------------
+
+_2021-09-28_
+
+ * Fix: Don't crash attempting to serialize custom handlers in the Gradle plugin.
+ * Fix: Don't generate hashCode() functions that trigger unnecessary null warnings.
+ * Fix: Don't require `javaInterop = true` for JSON-encoding Kotlin classes. This option adds a
+   builder to the generated code. We fixed the JSON adapters to build objects using their
+   constructors instead.
+ * New: Option to include all transitive dependencies in `SchemaReflector`.
+ * New: Kotlin 1.5.31
+
+
 Version 4.0.0-alpha.11
 ----------------------
 
