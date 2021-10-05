@@ -244,11 +244,12 @@ data class WireRun(
 
     val skippedForSyntax = mutableSetOf<Location>()
     val claimedPaths = mutableMapOf<Path, String>()
+    val errorCollector = ErrorCollector()
     for ((moduleName, partition) in partitions) {
       val targetToSchemaHandler = targets.associateWith {
         it.newHandler(
             partition.schema, moduleName, partition.transitiveUpstreamTypes, fs, logger,
-            schemaLoader
+            schemaLoader, errorCollector
         )
       }
 
@@ -279,6 +280,8 @@ data class WireRun(
         }
       }
     }
+
+    errorCollector.throwIfNonEmpty()
 
     for (emittingRules in targetToEmittingRules.values) {
       if (emittingRules.unusedIncludes().isNotEmpty()) {

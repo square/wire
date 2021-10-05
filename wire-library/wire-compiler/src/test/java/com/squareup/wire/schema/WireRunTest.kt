@@ -15,6 +15,7 @@
  */
 package com.squareup.wire.schema
 
+import com.squareup.wire.Message
 import com.squareup.wire.StringWireLogger
 import com.squareup.wire.WireLogger
 import com.squareup.wire.kotlin.RpcCallStyle
@@ -29,6 +30,7 @@ import java.io.ObjectOutputStream
 import kotlin.test.assertFailsWith
 import okio.Buffer
 import okio.FileSystem
+import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
@@ -575,6 +577,61 @@ class WireRunTest {
     }).hasMessage("hello! this was not serialized")
   }
 
+  class ErrorReportingCustomHandler : CustomHandlerBeta {
+    override fun newHandler(
+      schema: Schema,
+      fs: FileSystem,
+      outDirectory: String,
+      logger: WireLogger,
+      profileLoader: ProfileLoader
+    ): SchemaHandler {
+      error("unexpected call")
+    }
+
+    override fun newHandler(
+      schema: Schema,
+      fs: FileSystem,
+      outDirectory: String,
+      logger: WireLogger,
+      profileLoader: ProfileLoader,
+      errorCollector: ErrorCollector,
+    ): SchemaHandler {
+      return object : SchemaHandler {
+        override fun handle(type: Type): Path? {
+          if ("descriptor.proto" in type.location.path) return null // Don't report errors on built-in stuff.
+          if (type is MessageType) {
+            for (field in type.fields) {
+              if (field.name.startsWith("a")) {
+                errorCollector.at(field) += "field starts with 'a'"
+              }
+            }
+          }
+          return null
+        }
+
+        override fun handle(service: Service): List<Path> = listOf()
+
+        override fun handle(extend: Extend, field: Field): Path? = null
+      }
+    }
+  }
+
+  @Test
+  fun errorReportingCustomHandler() {
+    val customHandler = newCustomHandler(
+      "${WireRunTest::class.qualifiedName}${"$"}ErrorReportingCustomHandler"
+    )
+
+    assertThat(assertFailsWith<SchemaException> {
+      callCustomHandler(customHandler)
+    }).hasMessage(
+      """
+      |field starts with 'a'
+      |  for field angles (polygons/src/main/proto/squareup/polygons/triangle.proto:4:3)
+      """.trimMargin()
+    )
+  }
+
   private fun <T> reserialize(value: T): T {
     val buffer = Buffer()
     ObjectOutputStream(buffer.outputStream()).use {
@@ -590,9 +647,15 @@ class WireRunTest {
     val schemaLoader = SchemaLoader(fs)
     schemaLoader.initRoots(listOf(Location.get("polygons/src/main/proto")))
     val schema = schemaLoader.loadSchema()
-    customHandler.newHandler(
-      schema, fs, "out", StringWireLogger(), schemaLoader
+    val errorCollector = ErrorCollector()
+    val schemaHandler = customHandler.newHandler(
+            schema, fs, "out", StringWireLogger(), schemaLoader, errorCollector
     )
+    for (type in schema.types) {
+      schemaHandler.handle(schema.getType(type)!!)
+    }
+
+    errorCollector.throwIfNonEmpty()
   }
 
   private fun writeRedProto() {

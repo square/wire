@@ -90,7 +90,8 @@ sealed class Target : Serializable {
     upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
-    profileLoader: ProfileLoader
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
   ): SchemaHandler
 
   interface SchemaHandler {
@@ -198,7 +199,8 @@ data class JavaTarget(
     upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
-    profileLoader: ProfileLoader
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
   ): SchemaHandler {
     val profileName = if (android) "android" else "java"
     val profile = profileLoader.loadProfile(profileName, schema)
@@ -332,7 +334,8 @@ data class KotlinTarget(
     upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
-    profileLoader: ProfileLoader
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
   ): SchemaHandler {
     val profileName = if (android) "android" else "java"
     val profile = profileLoader.loadProfile(profileName, schema)
@@ -453,7 +456,8 @@ data class SwiftTarget(
     upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
-    profileLoader: ProfileLoader
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
   ): SchemaHandler {
     val modulePath = run {
       val outPath = outDirectory.toPath()
@@ -525,7 +529,8 @@ data class ProtoTarget(
     upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
-    profileLoader: ProfileLoader
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
   ): SchemaHandler {
     val modulePath = run {
       val outPath = outDirectory.toPath()
@@ -596,7 +601,8 @@ data class NullTarget(
     upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
-    profileLoader: ProfileLoader
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
   ): SchemaHandler {
     return object : SchemaHandler {
       override fun handle(type: Type): Path? {
@@ -647,9 +653,10 @@ data class CustomTargetBeta(
     upstreamTypes: Map<ProtoType, String>,
     fs: FileSystem,
     logger: WireLogger,
-    profileLoader: ProfileLoader
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
   ): SchemaHandler {
-    return customHandler.newHandler(schema, fs, outDirectory, logger, profileLoader)
+    return customHandler.newHandler(schema, fs, outDirectory, logger, profileLoader, errorCollector)
   }
 
   override fun copyTarget(
@@ -680,6 +687,16 @@ interface CustomHandlerBeta {
     logger: WireLogger,
     profileLoader: ProfileLoader
   ): Target.SchemaHandler
+
+  // TODO: move to SchemaHandler as part of https://github.com/square/wire/issues/2077
+  fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    outDirectory: String,
+    logger: WireLogger,
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
+  ): Target.SchemaHandler = newHandler(schema, fs, outDirectory, logger, profileLoader)
 }
 
 /**
@@ -731,5 +748,16 @@ private class ClassNameCustomHandlerBeta(
     outDirectory: String,
     logger: WireLogger,
     profileLoader: ProfileLoader
-  ): SchemaHandler = delegate.newHandler(schema, fs, outDirectory, logger, profileLoader)
+  ): SchemaHandler {
+    error("unexpected call")
+  }
+
+  override fun newHandler(
+    schema: Schema,
+    fs: FileSystem,
+    outDirectory: String,
+    logger: WireLogger,
+    profileLoader: ProfileLoader,
+    errorCollector: ErrorCollector,
+  ): SchemaHandler = delegate.newHandler(schema, fs, outDirectory, logger, profileLoader, errorCollector)
 }
