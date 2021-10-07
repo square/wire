@@ -140,7 +140,7 @@ final class ProtoWriterTests: XCTestCase {
         )
         try writer.encode(tag: 1, value: proto)
 
-        // All values are encoded in proto2, even defaults.
+        // All values are encoded in proto2, including defaults.
         assertBufferEqual(writer, """
             0A1C                // Message tag and length
             0800                // tag 1 and value: opt_int32
