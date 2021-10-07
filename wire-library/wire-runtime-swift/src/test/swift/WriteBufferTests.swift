@@ -41,4 +41,23 @@ final class WriteBufferTests: XCTestCase {
 
         XCTAssertEqual(Data(buffer, copyBytes: true), Data())
     }
+
+    func testRemoveAtMiddle() {
+        let buffer = WriteBuffer()
+        buffer.append(Data(hexEncoded: "001122")!)
+
+        buffer.remove(count: 1, at: 1)
+
+        XCTAssertEqual(Data(buffer, copyBytes: true), Data(hexEncoded: "0022"))
+    }
+
+    func testRemoveAtEnd() {
+        let buffer = WriteBuffer()
+        buffer.append(Data(hexEncoded: "001122")!)
+
+        buffer.remove(count: 1, at: 2)
+
+        XCTAssertEqual(Data(buffer, copyBytes: true), Data(hexEncoded: "0011"))
+    }
+
 }
