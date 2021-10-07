@@ -715,7 +715,9 @@ public final class ProtoWriter {
             messageStackIndex -= 1
 
             // We popped the stack, so update the quick-access ivar.
-            isProto3 = messageStack[messageStackIndex].isProto3
+            if messageStackIndex >= 0 {
+                isProto3 = messageStack[messageStackIndex].isProto3
+            }
         }
     }
 
