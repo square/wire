@@ -167,7 +167,7 @@ private fun BaseExtension.sourceRoots(project: Project, kotlin: Boolean): List<S
       sourceSets = variant.sourceSets.map { it.name },
       registerTaskDependency = { task ->
         // TODO: Lazy task configuration!!!
-        variant.registerJavaGeneratingTask(task.get(), task.get().outputDirectories)
+        variant.registerJavaGeneratingTask(task.get(), task.get().outputDirectories.files)
         val compileTaskName =
           if (kotlin) """compile${variant.name.capitalize()}Kotlin"""
           else """compile${variant.name.capitalize()}Sources"""
