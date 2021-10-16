@@ -191,20 +191,23 @@ class WirePlugin : Plugin<Project> {
           protoSourceInput.debug(task.logger)
           protoPathInput.debug(task.logger)
         }
-        task.outputDirectories = targets.map { target -> project.file(target.outDirectory) }
+        task.outputDirectories.setFrom(targets.map { it.outDirectory })
         task.sourceInput.set(protoSourceInput.toLocations(project))
         task.protoInput.set(protoPathInput.toLocations(project))
-        task.roots = extension.roots.toList()
-        task.prunes = extension.prunes.toList()
-        task.moves = extension.moves.toList()
-        task.sinceVersion = extension.sinceVersion
-        task.untilVersion = extension.untilVersion
-        task.onlyVersion = extension.onlyVersion
-        task.rules = extension.rules
-        task.targets = targets
-        task.permitPackageCycles = extension.permitPackageCycles
+        task.roots.set(extension.roots.toList())
+        task.prunes.set(extension.prunes.toList())
+        task.moves.set(extension.moves.toList())
+        task.sinceVersion.set(extension.sinceVersion)
+        task.untilVersion.set(extension.untilVersion)
+        task.onlyVersion.set(extension.onlyVersion)
+        task.rules.set(extension.rules)
+        task.targets.set(targets)
+        task.permitPackageCycles.set(extension.permitPackageCycles)
 
-        task.inputFiles = inputFiles
+        task.inputFiles.setFrom(inputFiles)
+
+        task.projectDirProperty.set(project.layout.projectDirectory)
+        task.buildDirProperty.set(project.layout.buildDirectory)
 
         for (projectDependency in projectDependencies) {
           task.dependsOn(projectDependency)

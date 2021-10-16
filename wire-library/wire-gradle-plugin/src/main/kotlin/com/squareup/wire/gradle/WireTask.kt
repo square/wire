@@ -20,8 +20,12 @@ import com.squareup.wire.gradle.internal.GradleWireLogger
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
-import org.gradle.api.file.FileCollection
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -33,65 +37,76 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
-import java.io.File
+import javax.inject.Inject
 
 @CacheableTask
-open class WireTask : SourceTask() {
+abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask() {
 
   @get:OutputDirectories
-  var outputDirectories: List<File>? = null
+  abstract val outputDirectories: ConfigurableFileCollection
 
   @get:Input
-  var pluginVersion: String = VERSION
+  val pluginVersion: Property<String> = objects.property(String::class.java)
+    .convention(VERSION)
 
   @get:Internal
-  internal val sourceInput = project.objects.listProperty(Location::class.java)
+  internal abstract val sourceInput: ListProperty<Location>
 
   @get:Internal
-  internal val protoInput = project.objects.listProperty(Location::class.java)
+  internal abstract val protoInput: ListProperty<Location>
 
-  @Input
-  lateinit var roots: List<String>
+  @get:Input
+  abstract val roots: ListProperty<String>
 
-  @Input
-  lateinit var prunes: List<String>
+  @get:Input
+  abstract val prunes: ListProperty<String>
 
-  @Input
-  lateinit var moves: List<Move>
+  @get:Input
+  abstract val moves: ListProperty<Move>
 
-  @Input
-  @Optional
-  var sinceVersion: String? = null
+  @get:Input
+  @get:Optional
+  abstract val sinceVersion: Property<String>
 
-  @Input
-  @Optional
-  var untilVersion: String? = null
+  @get:Input
+  @get:Optional
+  abstract val untilVersion: Property<String>
 
-  @Input
-  @Optional
-  var onlyVersion: String? = null
+  @get:Input
+  @get:Optional
+  abstract val onlyVersion: Property<String>
 
-  @Input
-  @Optional
-  var rules: String? = null
+  @get:Input
+  @get:Optional
+  abstract val rules: Property<String>
 
-  @Input
-  lateinit var targets: List<Target>
+  @get:Input
+  abstract val targets: ListProperty<Target>
 
-  @Input
-  var permitPackageCycles: Boolean = false
+  @get:Input
+  val permitPackageCycles: Property<Boolean> = objects.property(Boolean::class.java)
+    .convention(false)
 
-  @InputFiles
-  @PathSensitive(PathSensitivity.RELATIVE)
-  lateinit var inputFiles: FileCollection
+  @get:InputFiles
+  @get:PathSensitive(PathSensitivity.RELATIVE)
+  abstract val inputFiles: ConfigurableFileCollection
+
+  @get:Internal
+  abstract val projectDirProperty: DirectoryProperty
+
+  @get:Internal
+  abstract val buildDirProperty: DirectoryProperty
 
   @TaskAction
   fun generateWireFiles() {
     val includes = mutableListOf<String>()
     val excludes = mutableListOf<String>()
 
-    rules?.let {
-      project.file(it)
+    val projectDir = projectDirProperty.get()
+    rules.orNull?.let {
+      projectDir
+        .file(it)
+        .asFile
         .forEachLine { line ->
           when (line.firstOrNull()) {
             '+' -> includes.add(line.substring(1))
@@ -110,10 +125,10 @@ open class WireTask : SourceTask() {
     if (includes.isEmpty() && excludes.isEmpty()) logger.info("NO INCLUDES OR EXCLUDES")
 
     if (logger.isDebugEnabled) {
-      logger.debug("roots: $roots")
-      logger.debug("prunes: $prunes")
-      logger.debug("rules: $rules")
-      logger.debug("targets: $targets")
+      logger.debug("roots: ${roots.orNull}")
+      logger.debug("prunes: ${prunes.orNull}")
+      logger.debug("rules: ${rules.orNull}")
+      logger.debug("targets: ${targets.orNull}")
     }
 
     inputFiles.forEach { fileObj ->
@@ -122,22 +137,26 @@ open class WireTask : SourceTask() {
       }
     }
 
+    val allTargets = targets.get()
     val wireRun = WireRun(
       sourcePath = sourceInput.get(),
       protoPath = protoInput.get(),
-      treeShakingRoots = if (roots.isEmpty()) includes else roots,
-      treeShakingRubbish = if (prunes.isEmpty()) excludes else prunes,
-      moves = moves.map { it.toTypeMoverMove() },
-      sinceVersion = sinceVersion,
-      untilVersion = untilVersion,
-      onlyVersion = onlyVersion,
-      targets = targets.map { target -> target.copyTarget(outDirectory = project.file(target.outDirectory).path) },
-      permitPackageCycles = permitPackageCycles
+      treeShakingRoots = roots.get().ifEmpty { includes },
+      treeShakingRubbish = prunes.get().ifEmpty { excludes },
+      moves = moves.get().map { it.toTypeMoverMove() },
+      sinceVersion = sinceVersion.orNull,
+      untilVersion = untilVersion.orNull,
+      onlyVersion = onlyVersion.orNull,
+      targets = allTargets.map { target ->
+        target.copyTarget(outDirectory = projectDir.file(target.outDirectory).asFile.path)
+      },
+      permitPackageCycles = permitPackageCycles.get()
     )
 
-    for (target in targets) {
-      if (project.file(target.outDirectory).path.startsWith(project.buildDir.path)) {
-        project.file(target.outDirectory).deleteRecursively()
+    val buildDir = buildDirProperty.get()
+    for (target in allTargets) {
+      if (projectDir.file(target.outDirectory).asFile.path.startsWith(buildDir.asFile.path)) {
+        projectDir.file(target.outDirectory).asFile.deleteRecursively()
       }
     }
     wireRun.execute(logger = GradleWireLogger)
