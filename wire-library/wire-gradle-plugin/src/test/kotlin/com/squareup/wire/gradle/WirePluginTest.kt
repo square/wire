@@ -8,8 +8,9 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.After
 import org.junit.Assert.fail
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import java.io.File
 import java.io.IOException
 import java.util.zip.ZipFile
@@ -17,15 +18,25 @@ import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 
 class WirePluginTest {
-  private lateinit var gradleRunner: GradleRunner
 
-  @Before
-  fun setUp() {
-    gradleRunner = GradleRunner.create()
-        .withPluginClasspath()
-        .withArguments("generateProtos", "--stacktrace", "--info")
-        .withDebug(true)
-  }
+  @JvmField
+  @Rule
+  val tmpFolder = TemporaryFolder()
+
+  private val gradleRunner: GradleRunner = GradleRunner.create()
+    .withPluginClasspath()
+    // Ensure individual tests are isolated and not reusing each other's previous outputs
+    // by setting project dir and gradle home directly.
+    .withProjectDir(tmpFolder.newFolder("project-dir"))
+    .withArguments(
+      "-g",
+      tmpFolder.newFolder("gradle-home").absolutePath,
+      "generateProtos",
+      "--stacktrace",
+      "--info",
+      "--configuration-cache",
+    )
+    .withDebug(true)
 
   @After
   fun clearOutputs() {
