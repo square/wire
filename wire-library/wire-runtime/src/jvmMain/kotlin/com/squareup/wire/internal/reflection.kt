@@ -23,6 +23,8 @@ import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Syntax
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.util.Collections
 import java.util.LinkedHashMap
 import kotlin.reflect.KClass
@@ -47,7 +49,7 @@ fun <M : Message<M, B>, B : Message.Builder<M, B>> createRuntimeMessageAdapter(
   for (messageField in messageType.declaredFields) {
     val wireField = messageField.getAnnotation(WireField::class.java)
     if (wireField != null) {
-      fields[wireField.tag] = FieldBinding(wireField, messageField, builderType)
+      fields[wireField.tag] = FieldBinding(wireField, messageType, messageField, builderType)
     } else if (messageField.type == OneOf::class.java) {
       for (key in getKeys<M, B>(messageField)) {
         fields[key.tag] = OneOfBinding(messageField, builderType, key)
