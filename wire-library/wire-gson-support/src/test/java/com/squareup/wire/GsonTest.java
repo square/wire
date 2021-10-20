@@ -17,21 +17,22 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.wire.json.JsonUtils;
 import com.squareup.wire.proto2.RepeatedPackedAndMap;
 import com.squareup.wire.proto2.alltypes.AllTypes;
+import com.squareup.wire.proto2.person.kotlin.Person;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import okio.ByteString;
 import okio.Okio;
-import org.junit.Ignore;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
 import squareup.proto2.keywords.KeywordJava.KeywordJavaEnum;
 import squareup.proto2.keywords.KeywordKotlin;
 import squareup.proto2.keywords.KeywordKotlin.KeywordKotlinEnum;
 
+import static com.squareup.wire.json.JsonUtils.assertJsonEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GsonTest {
@@ -85,7 +86,7 @@ public class GsonTest {
         )
         .build();
     String json = gson.toJson(keyword);
-    JsonUtils.assertJsonEquals(
+    assertJsonEquals(
         "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[], \"enums\":[\"object\", "
             + "\"when\", \"fun\", \"return\", \"open\"]}",
         json);
@@ -111,7 +112,7 @@ public class GsonTest {
         )
         .build();
     String json = gson.toJson(keyword);
-    JsonUtils.assertJsonEquals(
+    assertJsonEquals(
         "{\"final\":\"final\", \"public\":true, \"package\":{}, \"return\":[], "
             + "\"enums\":[\"final\", \"public\", \"package\", \"return\"]}",
         json);
@@ -126,7 +127,7 @@ public class GsonTest {
   @Test public void enumKeywordsAtRootInKotlin() {
     KeywordKotlinEnum constant = KeywordKotlinEnum.object_;
     String json = gson.toJson(constant);
-    JsonUtils.assertJsonEquals("\"object\"", json);
+    assertJsonEquals("\"object\"", json);
     KeywordKotlinEnum parseKeyword = gson.fromJson(json, KeywordKotlinEnum.class);
     assertThat(parseKeyword).isEqualTo(constant);
 
@@ -137,11 +138,24 @@ public class GsonTest {
   @Test public void enumKeywordsAtRootInJava() {
     KeywordJavaEnum constant = KeywordJavaEnum.final_;
     String json = gson.toJson(constant);
-    JsonUtils.assertJsonEquals("\"final\"", json);
+    assertJsonEquals("\"final\"", json);
     KeywordJavaEnum parseKeyword = gson.fromJson(json, KeywordJavaEnum.class);
     assertThat(parseKeyword).isEqualTo(constant);
 
     String generatedNamedJson = "\"final_\"";
     assertThat(gson.fromJson(generatedNamedJson, KeywordJavaEnum.class)).isEqualTo(constant);
+  }
+
+  @Test public void kotlinWithoutBuilderFromJson() {
+    Person person = gson.fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\"}", Person.class);
+    assertThat(person).isEqualTo(
+        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), ByteString.EMPTY));
+  }
+
+  @Test public void kotlinWithoutBuilderToJson() {
+    Person person =
+        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), ByteString.EMPTY);
+    String json = gson.toJson(person);
+    assertJsonEquals("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\", \"phone\":[]}", json);
   }
 }

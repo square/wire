@@ -135,7 +135,8 @@ val generateGsonAdapterKotlinTests by tasks.creating(JavaExec::class) {
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
           "--kotlin_out=wire-library/wire-gson-support/src/test/java",
           "dinosaur_kotlin.proto",
-          "period_kotlin.proto"
+          "period_kotlin.proto",
+          "person_kotlin.proto"
   )
 }
 

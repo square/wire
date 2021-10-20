@@ -1,8 +1,8 @@
 package com.squareup.wire
 
 import com.squareup.moshi.Moshi
+import com.squareup.wire.json.assertJsonEquals
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 import com.squareup.wire.proto2.person.java.Person as JavaPerson
 import com.squareup.wire.proto2.person.javainteropkotlin.Person as JavaInteropKotlinPerson
@@ -33,6 +33,21 @@ class MoshiPersonTest {
     val personWithNameClobberedWithNull = moshi.adapter(KotlinPerson::class.java)
         .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com","email":null}""")
     assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
+  }
+
+  @Test
+  fun kotlinWithoutBuilderFromJson() {
+    val personWithName = moshi.adapter(KotlinPerson::class.java)
+        .fromJson("""{"id":1,"name":"Jo","email":"foo@square.com"}""")
+    assertThat(personWithName)
+        .isEqualTo(KotlinPerson(id = 1, name = "Jo", email = "foo@square.com"))
+  }
+
+  @Test
+  fun kotlinWithoutBuilderToJson() {
+    val json = moshi.adapter(KotlinPerson::class.java)
+        .toJson(KotlinPerson(id = 1, name = "Jo", email = "foo@square.com"))
+    assertJsonEquals("""{"id":1,"name":"Jo","email":"foo@square.com", "phone":[]}""", json)
   }
 
   @Test

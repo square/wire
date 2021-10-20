@@ -20,7 +20,7 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
-import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 /**
  * Read, write, and describe a tag within a message. This class knows how to assign fields to a
@@ -28,6 +28,7 @@ import java.lang.reflect.Method
  */
 class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constructor(
   wireField: WireField,
+  messageType: Class<M>,
   private val messageField: Field,
   builderType: Class<B>
 ) : FieldOrOneOfBinding<M, B>() {
@@ -42,6 +43,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   override val redacted: Boolean = wireField.redacted
   private val builderSetter = getBuilderSetter(builderType, wireField)
   private val builderGetter = getBuilderGetter(builderType, wireField)
+  private val instanceGetter = getInstanceGetter(messageType)
 
   override val keyAdapter: ProtoAdapter<*>
     get() = ProtoAdapter.get(keyAdapterString)
@@ -100,6 +102,16 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
     }
   }
 
+  private fun getInstanceGetter(messageType: Class<M>): (M) -> Any? {
+    if (Modifier.isPrivate(messageField.modifiers)) {
+      val getterName = "get" + messageField.name.replaceFirstChar { it.uppercase() }
+      val getter = messageType.getMethod(getterName)
+      return { instance -> getter.invoke(instance) }
+    } else {
+      return { instance -> messageField.get(instance) }
+    }
+  }
+
   /** Accept a single value, independent of whether this value is single or repeated. */
   override fun value(builder: B, value: Any) {
     when {
@@ -138,7 +150,7 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   /** Assign a single value for required/optional fields, or a list for repeated/packed fields. */
   override fun set(builder: B, value: Any?) = builderSetter(builder, value)
 
-  override operator fun get(message: M): Any? = messageField.get(message)
+  override operator fun get(message: M): Any? = instanceGetter(message)
 
   override fun getFromBuilder(builder: B): Any? = builderGetter(builder)
 }
