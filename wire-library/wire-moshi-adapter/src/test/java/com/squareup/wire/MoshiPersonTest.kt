@@ -3,7 +3,6 @@ package com.squareup.wire
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 import com.squareup.wire.proto2.person.java.Person as JavaPerson
 import com.squareup.wire.proto2.person.javainteropkotlin.Person as JavaInteropKotlinPerson

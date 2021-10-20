@@ -20,7 +20,6 @@ import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.WireField
 import java.lang.reflect.Field
-import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
@@ -103,14 +102,15 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
     }
   }
 
-  private fun getInstanceGetter(messageType: Class<M>): (M)->Any? =
+  private fun getInstanceGetter(messageType: Class<M>): (M) -> Any? {
     if (Modifier.isPrivate(messageField.modifiers)) {
       val getterName = "get" + messageField.name.replaceFirstChar { it.uppercase() }
-      val getter: Method = messageType.getMethod(getterName)
-      ({ instance -> getter.invoke(instance) })
+      val getter = messageType.getMethod(getterName)
+      return { instance -> getter.invoke(instance) }
     } else {
-      { instance -> messageField.get(instance) }
+      return { instance -> messageField.get(instance) }
     }
+  }
 
   /** Accept a single value, independent of whether this value is single or repeated. */
   override fun value(builder: B, value: Any) {

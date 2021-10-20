@@ -17,8 +17,6 @@ package com.squareup.wire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.wire.json.JsonUtils;
 import com.squareup.wire.proto2.RepeatedPackedAndMap;
 import com.squareup.wire.proto2.alltypes.AllTypes;
 import com.squareup.wire.proto2.person.kotlin.Person;
@@ -28,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import okio.ByteString;
 import okio.Okio;
-import org.junit.Ignore;
 import org.junit.Test;
 import squareup.proto2.keywords.KeywordJava;
 import squareup.proto2.keywords.KeywordJava.KeywordJavaEnum;
