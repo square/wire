@@ -227,10 +227,10 @@ public object RouteGuideWireGrpc {
 
   public class RouteGuideImplLegacyAdapter(
     private val streamExecutor: ExecutorService,
-    private val GetFeature: () -> RouteGuideGetFeatureBlockingServer,
-    private val ListFeatures: () -> RouteGuideListFeaturesBlockingServer,
-    private val RecordRoute: () -> RouteGuideRecordRouteBlockingServer,
-    private val RouteChat: () -> RouteGuideRouteChatBlockingServer
+    private val GetFeature: () -> RouteGuideBlockingServer,
+    private val ListFeatures: () -> RouteGuideBlockingServer,
+    private val RecordRoute: () -> RouteGuideRouteBlockingServer,
+    private val RouteChat: () -> RouteGuideBlockingServer
   ) : RouteGuideImplBase() {
     public override fun GetFeature(request: Point, response: StreamObserver<Feature>): Unit {
       response.onNext(GetFeature().GetFeature(request))
