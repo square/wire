@@ -77,7 +77,7 @@ object LegacyAdapterGenerator {
         type = LambdaTypeName.get(
           returnType = ClassName(
             generator.classNameFor(service.type).packageName,
-            "${service.name}${rpc.name}BlockingServer"
+            "${service.name}BlockingServer"
           )
         )
       )
@@ -97,7 +97,7 @@ object LegacyAdapterGenerator {
           type = LambdaTypeName.get(
             returnType = ClassName(
               generator.classNameFor(service.type).packageName,
-              "${service.name}${rpc.name}BlockingServer"
+              "${service.name}BlockingServer"
             )
           )
         )
