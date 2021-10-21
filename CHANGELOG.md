@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.14
+----------------------
+
+_2021-10-21_
+
+ * Fix: Support for serializing builder-less Kotlin generated classes to JSON.
+ * Fix: Wire Gradle plugin tasks have been modernized with configuration caching support.
+
 Version 4.0.0-alpha.13
 ----------------------
 
