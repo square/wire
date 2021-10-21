@@ -214,6 +214,22 @@ public class FakeRouteGuideClient implements RouteGuideClient {
 
 These similarly interact nicely with Java lambdas.
 
+Plain gRPC Server Support
+------
+
+**Note: Plain gRPC server support is currently experimental.**
+
+By configuring `grpcServerCompatible` as `true`, wire would generate classes for plain gRPC server and client.
+```groovy
+wire{
+ rpcRole = "server"
+ rpcCallStyle = "blocking"
+ grpcServerCompatible = true
+}
+```
+Currently, wire does not support `rpcCallStyle = "suspending`. Only blocking stubs are generated.
+
+For every service defined, wire will generate a corresponding `${serviceName}WireGrpc` class. It provides abstract `${serviceName}ImplBase` class for servers and `newStub` method for client side.
 
 Sample
 ------
