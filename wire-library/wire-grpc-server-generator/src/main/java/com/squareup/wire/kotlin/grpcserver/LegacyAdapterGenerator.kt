@@ -28,6 +28,7 @@ import com.squareup.wire.schema.Service
 import java.util.concurrent.ExecutorService
 
 object LegacyAdapterGenerator {
+  private const val SERVER_PACKAGE_NAME: String = "com.squareup.wire.kotlin.grpcserver"
   internal fun addLegacyAdapter(
     generator: ClassNameGenerator,
     builder: TypeSpec.Builder,
@@ -124,9 +125,9 @@ object LegacyAdapterGenerator {
           |}
           |return requestStream
           |""".trimMargin(),
-          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
+          ClassName(SERVER_PACKAGE_NAME, "MessageSourceAdapter")
             .parameterizedBy(generator.classNameFor(rpc.requestType!!)),
-          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
+          ClassName(SERVER_PACKAGE_NAME, "MessageSinkAdapter")
         )
         rpc.requestStreaming -> CodeBlock.of(
           """
@@ -137,14 +138,14 @@ object LegacyAdapterGenerator {
           |}
           |return requestStream
           |""".trimMargin(),
-          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSourceAdapter")
+          ClassName(SERVER_PACKAGE_NAME, "MessageSourceAdapter")
             .parameterizedBy(generator.classNameFor(rpc.requestType!!))
         )
         rpc.responseStreaming -> CodeBlock.of(
           """
           |${rpc.name}().${rpc.name}(request, %T(response))
           |""".trimMargin(),
-          ClassName("com.squareup.wire.kotlin.grpcserver", "MessageSinkAdapter")
+          ClassName(SERVER_PACKAGE_NAME, "MessageSinkAdapter")
         )
         else -> CodeBlock.of(
           """
