@@ -1,6 +1,7 @@
 import java.io.Serializable
 import com.squareup.wire.WireLogger
 import com.squareup.wire.schema.CustomHandlerBeta
+import com.squareup.wire.schema.ErrorCollector
 import com.squareup.wire.schema.ProfileLoader
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Target
@@ -14,6 +15,11 @@ plugins {
 class MyCustomHandler implements CustomHandlerBeta, Serializable {
   public Target.SchemaHandler newHandler(Schema schema, FileSystem fs,
           String outDirectory, WireLogger logger, ProfileLoader profileLoader) {
+    throw new RuntimeException("custom handler is running!!")
+  }
+  public Target.SchemaHandler newHandler(Schema schema, FileSystem fs,
+          String outDirectory, WireLogger logger, ProfileLoader profileLoader,
+          ErrorCollector errorCollector) {
     throw new RuntimeException("custom handler is running!!")
   }
 }
