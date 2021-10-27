@@ -6,8 +6,8 @@ let package = Package(
     name: "Wire",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v11),
-        .watchOS(.v4),
+        .iOS(.v10),
+        .watchOS(.v3),
         .macOS(.v10_15)
     ],
     products: [

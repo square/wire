@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target  = '10.0'
   s.osx.deployment_target  = '10.15'
-  s.watchos.deployment_target = '4.0'
+  s.watchos.deployment_target = '3.0'
 
   s.source_files  = 'wire-library/wire-runtime-swift/src/main/swift/**/*.swift'
 
