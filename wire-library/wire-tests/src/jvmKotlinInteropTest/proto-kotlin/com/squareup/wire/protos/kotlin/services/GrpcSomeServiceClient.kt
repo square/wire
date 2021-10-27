@@ -3,8 +3,8 @@
 package com.squareup.wire.protos.kotlin.services
 
 import com.squareup.wire.GrpcCall
-import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
+import com.squareup.wire.GrpcClient
 
 public class GrpcSomeServiceClient(
   private val client: GrpcClient

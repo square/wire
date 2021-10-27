@@ -16,21 +16,21 @@
 package com.squareup.wire.internal
 
 import com.squareup.wire.GrpcCall
-import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcClientImpl
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcResponse
 import com.squareup.wire.use
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Callback
 import okhttp3.Response
 import okio.IOException
 import okio.Timeout
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 internal class RealGrpcCall<S : Any, R : Any>(
-  private val grpcClient: GrpcClient,
+  private val grpcClient: GrpcClientImpl,
   override val method: GrpcMethod<S, R>
 ) : GrpcCall<S, R> {
   /** Non-null once this is executed. */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Square Inc.
+ * Copyright 2020 Square Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,14 @@
  */
 package com.squareup.wire
 
-interface GrpcClient {
-  fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R>
-  fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R>
+actual class GrpcClientImpl: GrpcClient {
+  actual override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
+    throw UnsupportedOperationException("wire-grpc-client doesn't support JS yet.")
+  }
+
+  actual override fun <S : Any, R : Any> newStreamingCall(
+    method: GrpcMethod<S, R>
+  ): GrpcStreamingCall<S, R> {
+    throw UnsupportedOperationException("wire-grpc-client doesn't support JS yet.")
+  }
 }

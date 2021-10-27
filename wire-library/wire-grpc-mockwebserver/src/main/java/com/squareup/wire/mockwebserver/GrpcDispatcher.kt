@@ -16,7 +16,7 @@
 package com.squareup.wire.mockwebserver
 
 import com.squareup.wire.GrpcCall
-import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcClientImpl
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.ProtoAdapter
 import com.squareup.wire.Service
@@ -202,7 +202,7 @@ class GrpcDispatcher(
      * We need a [GrpcClient] to create instances to inspect metadata. We never execute the
      * corresponding calls.
      */
-    private val nullGrpcClient = GrpcClient.Builder()
+    private val nullGrpcClient = GrpcClientImpl.Builder()
         .callFactory(object : Call.Factory {
           override fun newCall(it: Request) = NullCall
         })

@@ -28,6 +28,7 @@ object versions {
   val okio = "3.0.0-alpha.9"
   val protobuf = "3.17.3"
   val protobufGradlePlugin = "0.8.16"
+  val ktor = "1.6.4"
 }
 
 object deps {
@@ -57,6 +58,11 @@ object deps {
     val jvm = "com.squareup.okio:okio:${versions.okio}"
     val fakefilesystem = "com.squareup.okio:okio-fakefilesystem:${versions.okio}"
     val multiplatform = "com.squareup.okio:okio-multiplatform:${versions.okio}"
+  }
+
+  object ktor {
+    val core = "io.ktor:ktor-client-core:${versions.ktor}"
+    val cio = "io.ktor:ktor-client-cio:${versions.ktor}"
   }
 
   val jsr305 = "com.google.code.findbugs:jsr305:${versions.jsr305}"

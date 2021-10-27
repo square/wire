@@ -43,6 +43,7 @@ kotlin {
         api(project(":wire-runtime"))
         api(deps.okio.multiplatform)
         api(deps.kotlin.coroutines.core)
+        implementation(deps.ktor.core)
       }
     }
     val jvmMain by getting {

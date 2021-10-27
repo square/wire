@@ -3,8 +3,8 @@
 package com.squareup.wire.protos.custom_options
 
 import com.squareup.wire.GrpcCall
-import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
+import com.squareup.wire.GrpcClient
 
 public class GrpcServiceWithOptionsClient(
   private val client: GrpcClient

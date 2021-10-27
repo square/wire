@@ -15,12 +15,11 @@
  */
 package com.squareup.wire.internal
 
-import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcClientImpl
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,9 +28,10 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
 import okio.Timeout
+import java.util.concurrent.TimeUnit
 
 internal class RealGrpcStreamingCall<S : Any, R : Any>(
-  private val grpcClient: GrpcClient,
+  private val grpcClient: GrpcClientImpl,
   override val method: GrpcMethod<S, R>
 ) : GrpcStreamingCall<S, R> {
   private val requestBody = newDuplexRequestBody()

@@ -21,11 +21,11 @@ import kotlin.reflect.KClass
 import okhttp3.Call
 import okhttp3.OkHttpClient
 
-actual class GrpcClient private constructor(
+actual class GrpcClientImpl private constructor(
   internal val client: Call.Factory,
   internal val baseUrl: GrpcHttpUrl,
   internal val minMessageToCompress: Long
-) {
+): GrpcClient {
   /** Returns a [T] that makes gRPC calls using this client. */
   inline fun <reified T : Service> create(): T = create(T::class)
 
@@ -52,11 +52,11 @@ actual class GrpcClient private constructor(
     return Class.forName(implementationName)
   }
 
-  actual fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
+  actual override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
     return RealGrpcCall(this, method)
   }
 
-  actual fun <S : Any, R : Any> newStreamingCall(
+  actual override fun <S : Any, R : Any> newStreamingCall(
     method: GrpcMethod<S, R>
   ): GrpcStreamingCall<S, R> {
     return RealGrpcStreamingCall(this, method)
@@ -126,7 +126,7 @@ actual class GrpcClient private constructor(
       this.minMessageToCompress = bytes
     }
 
-    fun build(): GrpcClient = GrpcClient(
+    fun build(): GrpcClientImpl = GrpcClientImpl(
       client = client ?: throw IllegalArgumentException("client is not set"),
       baseUrl = baseUrl ?: throw IllegalArgumentException("baseUrl is not set"),
       minMessageToCompress = minMessageToCompress
