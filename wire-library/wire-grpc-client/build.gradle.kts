@@ -41,7 +41,7 @@ kotlin {
     val commonMain by getting {
       dependencies {
         api(project(":wire-runtime"))
-        api(deps.okio.multiplatform)
+        api(deps.okio.core)
         api(deps.kotlin.coroutines.core)
       }
     }

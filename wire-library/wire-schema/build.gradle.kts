@@ -37,7 +37,7 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
-        implementation(deps.okio.jvm)
+        implementation(deps.okio.core)
         api(deps.guava)
       }
     }

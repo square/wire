@@ -37,7 +37,7 @@ dependencies {
 
   protobuf(deps.wire.schema)
   implementation(deps.wire.runtime)
-  implementation(deps.okio.jvm)
+  implementation(deps.okio.core)
   implementation(deps.protobuf.java)
 }
 

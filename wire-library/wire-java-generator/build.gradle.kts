@@ -13,7 +13,7 @@ dependencies {
   api(project(":wire-schema"))
   implementation(project(":wire-runtime"))
   implementation(project(":wire-profiles"))
-  implementation(deps.okio.jvm)
+  implementation(deps.okio.core)
   implementation(deps.guava)
   api(deps.javapoet)
   compileOnly(deps.jsr305)

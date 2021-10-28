@@ -24,8 +24,6 @@ object versions {
   val kotlin = "1.5.31"
   val kotlinpoet = "1.9.0"
   val moshi = "1.12.0"
-  val okhttp = "4.9.1"
-  val okio = "3.0.0-alpha.9"
   val protobuf = "3.17.3"
   val protobufGradlePlugin = "0.8.16"
 }
@@ -54,9 +52,9 @@ object deps {
   val guava = "com.google.guava:guava:${versions.guava}"
 
   object okio {
-    val jvm = "com.squareup.okio:okio:${versions.okio}"
-    val fakefilesystem = "com.squareup.okio:okio-fakefilesystem:${versions.okio}"
-    val multiplatform = "com.squareup.okio:okio-multiplatform:${versions.okio}"
+    val bom = "com.squareup.okio:okio-bom:3.0.0"
+    val core = "com.squareup.okio:okio"
+    val fakefilesystem = "com.squareup.okio:okio-fakefilesystem"
   }
 
   val jsr305 = "com.google.code.findbugs:jsr305:${versions.jsr305}"
@@ -71,9 +69,10 @@ object deps {
   val gson = "com.google.code.gson:gson:${versions.gson}"
   val javapoet = "com.squareup:javapoet:${versions.javapoet}"
   val kotlinpoet = "com.squareup:kotlinpoet:${versions.kotlinpoet}"
-  val mockwebserver = "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
+  val mockwebserver = "com.squareup.okhttp3:mockwebserver"
   val swiftpoet = "io.outfoxx:swiftpoet:1.0.0"
-  val okhttp = "com.squareup.okhttp3:okhttp:${versions.okhttp}"
+  val okhttp = "com.squareup.okhttp3:okhttp"
+  val okhttpBom = "com.squareup.okhttp3:okhttp-bom:4.9.1"
 
   object jmh {
     val core = "org.openjdk.jmh:jmh-core:${versions.jmh}"

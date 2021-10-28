@@ -18,7 +18,7 @@ configure<AnimalSnifferExtension> {
 dependencies {
   implementation(project(":wire-runtime"))
   api(deps.gson)
-  api(deps.okio.jvm)
+  api(deps.okio.core)
   testImplementation(deps.junit)
   testImplementation(deps.assertj)
   testImplementation(project(":wire-test-utils"))
