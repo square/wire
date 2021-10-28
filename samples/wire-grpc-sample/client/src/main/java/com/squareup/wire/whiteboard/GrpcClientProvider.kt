@@ -15,7 +15,7 @@
  */
 package com.squareup.wire.whiteboard
 
-import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcClientImpl
 import okhttp3.OkHttpClient
 import okhttp3.Protocol.HTTP_1_1
 import okhttp3.Protocol.HTTP_2
@@ -45,7 +45,7 @@ object GrpcClientProvider {
       .protocols(listOf(HTTP_1_1, HTTP_2))
       .build()
 
-  val grpcClient = GrpcClient.Builder()
+  val grpcClient = GrpcClientImpl.Builder()
       .client(okHttpClient)
       .baseUrl("https://10.0.2.2:8443")
       .build()
