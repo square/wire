@@ -1474,7 +1474,7 @@ class KotlinGenerator private constructor(
           is OneOf -> {
             val fieldName = nameAllocator[fieldOrOneOf]
             val oneOfClass = (message.typeName as ClassName)
-              .nestedClass(boxedOneOfClassName(fieldOrOneOf.name))
+              .nestedClass(nameAllocator[boxedOneOfClassName(fieldOrOneOf.name)])
               .parameterizedBy(STAR)
             val fieldClass = com.squareup.wire.OneOf::class.asClassName()
               .parameterizedBy(oneOfClass, STAR).copy(nullable = true)

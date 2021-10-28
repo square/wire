@@ -212,6 +212,7 @@ val generateKotlinTests by tasks.creating(JavaExec::class) {
       "--kotlin_box_oneofs_min_size=8",
       "all_types.proto",
       "bool.proto",
+      "boxed_oneofs.proto",
       "custom_options.proto",
       "deprecated.proto",
       "deprecated_enum.proto",
