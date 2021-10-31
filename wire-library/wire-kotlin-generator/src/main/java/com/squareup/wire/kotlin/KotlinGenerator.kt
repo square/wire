@@ -73,6 +73,7 @@ import com.squareup.wire.internal.boxedOneOfClassName
 import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
 import com.squareup.wire.internal.camelCase
+import com.squareup.wire.internal.safeEnumConstantName
 import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.grpcserver.KotlinGrpcGenerator
 import com.squareup.wire.schema.EnclosingType
@@ -404,7 +405,7 @@ class KotlinGenerator private constructor(
             newName("ADAPTER", "ADAPTER")
             newName("ENUM_OPTIONS", "ENUM_OPTIONS")
             message.constants.forEach { constant ->
-              newName(constant.name, constant)
+              newName(safeEnumConstantName(constant.name), constant)
             }
           }
           is MessageType -> {

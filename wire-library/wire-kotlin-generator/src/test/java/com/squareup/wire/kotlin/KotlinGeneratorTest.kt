@@ -1727,6 +1727,42 @@ class KotlinGeneratorTest {
     assertContains(code, "result = result * 37 + list.hashCode()")
   }
 
+  @Test
+  fun enumConstantConflictingDeclaration() {
+    val repoBuilder = RepoBuilder().add("text.proto", """
+        |enum ConflictingEnumConstants {
+        |  hello = 0;
+        |  name = 1;
+        |  ordinal = 2;
+        |  open = 3;
+        |}
+        """.trimMargin())
+
+    val code = repoBuilder.generateKotlin("ConflictingEnumConstants")
+    assertThat(code).contains("""
+       |public enum class ConflictingEnumConstants(
+       |  public override val `value`: Int
+       |) : WireEnum {
+       |  hello(0),
+       |  @WireEnumConstant(declaredName = "name")
+       |  name_(1),
+       |  @WireEnumConstant(declaredName = "ordinal")
+       |  ordinal_(2),
+       |  @WireEnumConstant(declaredName = "open")
+       |  open_(3),
+       |  ;
+       """.trimMargin())
+    assertThat(code).contains("""
+       |    public fun fromValue(`value`: Int): ConflictingEnumConstants? = when (value) {
+       |      0 -> hello
+       |      1 -> name_
+       |      2 -> ordinal_
+       |      3 -> open_
+       |      else -> null
+       |    }
+       """.trimMargin())
+  }
+
   companion object {
     private val pointMessage = """
           |message Point {

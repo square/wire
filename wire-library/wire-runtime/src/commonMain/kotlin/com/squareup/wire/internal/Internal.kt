@@ -221,3 +221,14 @@ fun boxedOneOfKeyFieldName(oneOfName: String, fieldName: String): String {
 fun boxedOneOfKeysFieldName(oneOfName: String): String {
   return "${oneOfName}_keys".toUpperCase()
 }
+
+/**
+ * Returns a name for [enumConstantName] which avoids conflicting with the `final val` declarations
+ * in [kotlin.Enum].
+ * */
+fun safeEnumConstantName(enumConstantName: String): String {
+  return when (enumConstantName) {
+    "name", "ordinal" -> enumConstantName + "_"
+    else -> enumConstantName
+  }
+}
