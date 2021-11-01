@@ -43,7 +43,7 @@ kotlin {
     }
     val commonMain by getting {
       dependencies {
-        api(deps.okio.multiplatform)
+        api(deps.okio.core)
       }
     }
     val commonTest by getting {

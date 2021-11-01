@@ -13,6 +13,6 @@ configure<AnimalSnifferExtension> {
 dependencies {
   implementation(project(":wire-runtime"))
   implementation(project(":wire-grpc-client"))
-  implementation(deps.okio.jvm)
+  implementation(deps.okio.core)
   api(deps.okhttp.mockwebserver)
 }
