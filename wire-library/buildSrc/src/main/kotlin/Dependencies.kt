@@ -37,7 +37,7 @@ object deps {
     val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     val shadow = "com.github.jengelman.gradle.plugins:shadow:4.0.1"
-    val japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.2.8"
+    val japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.3.0"
   }
 
   val android = "com.google.android:android:${versions.android}"
