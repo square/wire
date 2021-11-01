@@ -14,5 +14,5 @@ dependencies {
   implementation(project(":wire-runtime"))
   implementation(project(":wire-grpc-client"))
   implementation(deps.okio.jvm)
-  api(deps.mockwebserver)
+  api(deps.okhttp.mockwebserver)
 }
