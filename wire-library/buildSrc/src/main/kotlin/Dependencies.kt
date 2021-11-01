@@ -37,7 +37,7 @@ object deps {
     val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     val shadow = "com.github.jengelman.gradle.plugins:shadow:4.0.1"
-    val japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.2.8"
+    val japicmp = "me.champeau.gradle:japicmp-gradle-plugin:0.3.0"
   }
 
   val android = "com.google.android:android:${versions.android}"
@@ -71,9 +71,13 @@ object deps {
   val gson = "com.google.code.gson:gson:${versions.gson}"
   val javapoet = "com.squareup:javapoet:${versions.javapoet}"
   val kotlinpoet = "com.squareup:kotlinpoet:${versions.kotlinpoet}"
-  val mockwebserver = "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
   val swiftpoet = "io.outfoxx:swiftpoet:1.0.0"
-  val okhttp = "com.squareup.okhttp3:okhttp:${versions.okhttp}"
+
+  object okhttp {
+    val mockwebserver = "com.squareup.okhttp3:mockwebserver"
+    val core = "com.squareup.okhttp3:okhttp"
+    val bom = "com.squareup.okhttp3:okhttp-bom:4.9.1"
+  }
 
   object jmh {
     val core = "org.openjdk.jmh:jmh-core:${versions.jmh}"

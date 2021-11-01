@@ -41,11 +41,11 @@ val japicmp by tasks.creating(JapicmpTask::class) {
   dependsOn("jar")
   oldClasspath = baseline
   newClasspath = latest
-  onlyBinaryIncompatibleModified = true
-  failOnModification = true
+  isOnlyBinaryIncompatibleModified = true
+  isFailOnModification = true
   txtOutputFile = file("$buildDir/reports/japi.txt")
-  ignoreMissingClasses = true
-  includeSynthetic = true
+  isIgnoreMissingClasses = true
+  isIncludeSynthetic = true
   packageExcludes = listOf(
       "com.squareup.wire.internal"
   )
