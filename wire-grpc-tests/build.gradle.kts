@@ -66,7 +66,7 @@ dependencies {
   implementation(deps.wire.runtime)
   implementation(deps.wire.grpcClient)
   implementation(deps.wire.grpcMockWebServer)
-  implementation(deps.okio.jvm)
+  implementation(deps.okio.core)
   if (JavaVersion.current().isJava9Compatible()) {
     // Workaround for @javax.annotation.Generated
     // see: https://github.com/grpc/grpc-java/issues/3633

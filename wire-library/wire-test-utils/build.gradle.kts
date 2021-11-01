@@ -41,6 +41,6 @@ dependencies {
   implementation(deps.jimfs)
   implementation(deps.junit)
   implementation(deps.protobuf.java)
-  implementation(deps.okio.jvm)
+  implementation(deps.okio.core)
   implementation(deps.okio.fakefilesystem)
 }

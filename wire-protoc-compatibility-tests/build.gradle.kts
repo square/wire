@@ -58,7 +58,7 @@ sourceSets {
 dependencies {
   protobuf(deps.wire.schema)
   implementation(deps.wire.grpcClient)
-  implementation(deps.okio.jvm)
+  implementation(deps.okio.core)
   implementation(deps.protobuf.java)
   testImplementation(deps.wire.compiler)
   testImplementation(deps.wire.gsonSupport)
