@@ -47,7 +47,7 @@ kotlin {
     }
     val jvmMain by getting {
       dependencies {
-        api(deps.okhttp)
+        api(deps.okhttp.core)
       }
     }
     if (kmpNativeEnabled) {
