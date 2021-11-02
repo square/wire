@@ -188,17 +188,22 @@ class GrpcStreamingCallsTest {
 
   @Test
   fun cloneIsIndependent() {
+    val requestMetadata = mutableMapOf("1" to "one")
     val grpcCall = GrpcStreamingCall<String, String> { requests, responses ->
       requests.consumeEach { responses.send(it.toUpperCase()) }
       responses.close()
     }
+    grpcCall.requestMetadata = requestMetadata
 
     runBlocking {
       val (requests1, responses1) = grpcCall.executeIn(this)
       requests1.close()
       responses1.cancel()
 
-      val (requests2, responses2) = grpcCall.clone().executeIn(this)
+      val clonedGrpcStreamingCall = grpcCall.clone()
+      requestMetadata["2"] = "two"
+      assertThat(clonedGrpcStreamingCall.requestMetadata).isEqualTo(mapOf("1" to "one"))
+      val (requests2, responses2) = clonedGrpcStreamingCall.executeIn(this)
       requests2.send("hello")
       requests2.close()
       assertThat(responses2.receive()).isEqualTo("HELLO")

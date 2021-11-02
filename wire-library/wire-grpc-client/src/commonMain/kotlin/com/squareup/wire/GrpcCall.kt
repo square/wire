@@ -15,7 +15,6 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.Throws
 import okio.IOException
 import okio.Timeout
 

@@ -228,11 +228,15 @@ class GrpcCallsTest {
 
   @Test
   fun cloneIsIndependent() {
-    val grpcCall = GrpcCall<String, String> { request ->
-      request.toUpperCase()
-    }
+    val grpcCall = GrpcCall(String::toUpperCase)
+    val requestMetadata = mutableMapOf("1" to "one")
+    grpcCall.requestMetadata = requestMetadata
     assertThat(grpcCall.executeBlocking("hello")).isEqualTo("HELLO")
     grpcCall.cancel()
-    assertThat(grpcCall.clone().executeBlocking("world")).isEqualTo("WORLD")
+
+    val clonedGrpcCall = grpcCall.clone()
+    requestMetadata["2"] = "two"
+    assertThat(clonedGrpcCall.requestMetadata).isEqualTo(mapOf("1" to "one"))
+    assertThat(clonedGrpcCall.executeBlocking("world")).isEqualTo("WORLD")
   }
 }
