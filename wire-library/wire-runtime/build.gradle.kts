@@ -42,7 +42,7 @@ kotlin {
   }
   sourceSets {
     all {
-      languageSettings.useExperimentalAnnotation("kotlin.Experimental")
+      languageSettings.optIn("kotlin.Experimental")
     }
     val commonMain by getting {
       kotlin.srcDir(versionWriterTaskProvider)

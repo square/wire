@@ -77,7 +77,7 @@ subprojects {
     }
   }
 
-  if (!project.name.endsWith("-swift")) {
+  if (!(project.name.endsWith("-swift") || project.name.endsWith("-bom"))) {
     apply(plugin = "checkstyle")
 
     afterEvaluate {
