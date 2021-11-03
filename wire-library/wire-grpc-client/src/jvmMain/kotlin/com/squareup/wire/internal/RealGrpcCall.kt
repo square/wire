@@ -127,6 +127,7 @@ internal class RealGrpcCall<S : Any, R : Any>(
       newTimeout.timeout(oldTimeout.timeoutNanos(), TimeUnit.NANOSECONDS)
       if (oldTimeout.hasDeadline()) newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
     }
+    result.requestMetadata += this.requestMetadata
     return result
   }
 

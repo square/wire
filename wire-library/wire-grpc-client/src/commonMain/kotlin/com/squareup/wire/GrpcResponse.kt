@@ -17,10 +17,8 @@
 
 package com.squareup.wire
 
-import com.squareup.wire.internal.Throws
 import com.squareup.wire.internal.addSuppressed
 import okio.IOException
-import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 
