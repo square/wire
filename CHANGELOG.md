@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 3.7.1
+-------------
+
+_2021-11-03_
+
+ * Fix: Properly load schema located at root without packages.
+
 Version 4.0.0-alpha.15
 ----------------------
 
