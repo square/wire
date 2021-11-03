@@ -16,7 +16,9 @@
 package com.squareup.wire.schema
 
 import com.google.common.jimfs.Configuration
+import com.google.common.jimfs.Feature
 import com.google.common.jimfs.Jimfs
+import com.google.common.jimfs.PathType
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import com.squareup.wire.testing.symlink
@@ -31,7 +33,16 @@ import kotlin.text.Charsets.UTF_32LE
 import kotlin.text.Charsets.UTF_8
 
 class SchemaLoaderTest {
-  private val fs = Jimfs.newFileSystem(Configuration.unix())
+  // Jimfs adds a `work` directory at its roots by default. It's messing up with our tests so we
+  // make sure there's nothing at the root.
+  // See https://github.com/google/jimfs/issues/74
+  private val fs = Jimfs.newFileSystem(
+    Configuration.builder(PathType.unix())
+      .setRoots("/")
+      .setWorkingDirectory("/")
+      .setAttributeViews("basic")
+      .setSupportedFeatures(Feature.SYMBOLIC_LINKS)
+      .build())
 
   @Test
   fun happyPath() {
@@ -442,5 +453,39 @@ class SchemaLoaderTest {
         Location.get("/i/j.zip", "android.wire"),
         Location.get("/i/j.zip", "k/l/m/android.wire")
     )
+  }
+
+  @Test
+  fun emptyPackagedProtoMessage() {
+    fs.add("address.proto", """
+      |syntax = "proto3";
+      |option java_package ="address";
+      |
+      |message Address {
+      |  string street = 1;
+      |  int32 zip = 2;
+      |  string city = 3;
+      |}""".trimMargin())
+
+    fs.add("customer.proto", """
+      |syntax = "proto3";
+      |option java_package ="customer";
+      |
+      |import "address.proto";
+      |
+      |message Customer {
+      |  string name = 1;
+      |  Address address = 3;
+      |}""".trimMargin())
+
+    SchemaLoader(fs).use { loader ->
+      loader.initRoots(
+        sourcePath = listOf(Location.get("/")),
+        protoPath = listOf(Location.get("/")),
+      )
+      val schema = loader.loadSchema()
+      assertThat(schema.getType(ProtoType.get("Address"))).isInstanceOf(MessageType::class.java)
+      assertThat(schema.getType(ProtoType.get("Customer"))).isInstanceOf(MessageType::class.java)
+    }
   }
 }
