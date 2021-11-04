@@ -81,20 +81,23 @@ public class GsonTest {
                 KeywordKotlinEnum.when_,
                 KeywordKotlinEnum.fun_,
                 KeywordKotlinEnum.return_,
-                KeywordKotlinEnum.open_
+                KeywordKotlinEnum.open_,
+                KeywordKotlinEnum.name_,
+                KeywordKotlinEnum.ordinal_
             )
         )
         .build();
     String json = gson.toJson(keyword);
     assertJsonEquals(
         "{\"object\":\"object\",\"when\":1, \"fun\":{}, \"return\":[], \"enums\":[\"object\", "
-            + "\"when\", \"fun\", \"return\", \"open\"]}",
+            + "\"when\", \"fun\", \"return\", \"open\", \"name\", \"ordinal\"]}",
         json);
     KeywordKotlin parseKeyword = gson.fromJson(json, KeywordKotlin.class);
     assertThat(parseKeyword).isEqualTo(keyword);
 
     String generatedNamedJson = "{\"object_\":\"object\",\"when_\":1, \"fun_\":{}, \"return_\":[], "
-        + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\", \"open_\"]}";
+        + "\"enums\":[\"object_\", \"when_\", \"fun_\", \"return_\", \"open_\", \"name_\", "
+        + "\"ordinal_\"]}";
     assertThat(gson.fromJson(generatedNamedJson, KeywordKotlin.class)).isEqualTo(keyword);
   }
 

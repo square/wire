@@ -73,7 +73,6 @@ import com.squareup.wire.internal.boxedOneOfClassName
 import com.squareup.wire.internal.boxedOneOfKeyFieldName
 import com.squareup.wire.internal.boxedOneOfKeysFieldName
 import com.squareup.wire.internal.camelCase
-import com.squareup.wire.internal.safeEnumConstantName
 import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.grpcserver.KotlinGrpcGenerator
 import com.squareup.wire.schema.EnclosingType
@@ -405,7 +404,13 @@ class KotlinGenerator private constructor(
             newName("ADAPTER", "ADAPTER")
             newName("ENUM_OPTIONS", "ENUM_OPTIONS")
             message.constants.forEach { constant ->
-              newName(safeEnumConstantName(constant.name), constant)
+              val constantName = when (constant.name) {
+                // `name` and `ordinal` are private fields of all Kotlin enums. We are escaping them
+                // manually because KotlinPoet does not escape them.
+                "name", "ordinal" -> constant.name + "_"
+                else -> constant.name
+              }
+              newName(constantName, constant)
             }
           }
           is MessageType -> {
