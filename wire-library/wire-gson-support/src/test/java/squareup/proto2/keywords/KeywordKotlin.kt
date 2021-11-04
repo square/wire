@@ -279,6 +279,10 @@ public class KeywordKotlin(
     return_(3),
     @WireEnumConstant(declaredName = "open")
     open_(4),
+    @WireEnumConstant(declaredName = "name")
+    name_(5),
+    @WireEnumConstant(declaredName = "ordinal")
+    ordinal_(6),
     ;
 
     public companion object {
@@ -299,6 +303,8 @@ public class KeywordKotlin(
         2 -> fun_
         3 -> return_
         4 -> open_
+        5 -> name_
+        6 -> ordinal_
         else -> null
       }
     }

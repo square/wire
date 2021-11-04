@@ -30,5 +30,7 @@ message KeywordKotlin {
     fun = 2;
     return = 3;
     open = 4;
+    name = 5;
+    ordinal = 6;
   }
 }
