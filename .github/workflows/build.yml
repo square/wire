@@ -93,7 +93,7 @@ jobs:
         with:
           java-version: 14
 
-      - name: Setup XCode
+      - name: Setup Xcode
         run: sudo xcode-select -switch "/Applications/Xcode_12.app"
 
       - name: Test Swift Runtime
@@ -129,6 +129,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 14
+
+      - name: Setup Xcode
+        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
 
       - name: Upload Artifacts
         run: ./gradlew -p wire-library clean publish --stacktrace
