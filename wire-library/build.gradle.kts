@@ -58,7 +58,6 @@ subprojects {
       jvmTarget = "1.8"
       // Disable optimized callable references. See https://youtrack.jetbrains.com/issue/KT-37435
       freeCompilerArgs += "-Xno-optimized-callable-references"
-      freeCompilerArgs += "-Xuse-experimental=okio.ExperimentalFileSystem"
     }
   }
 
