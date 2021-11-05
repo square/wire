@@ -45,7 +45,7 @@ jobs:
           ./gradlew build
 
   multiplatform:
-    runs-on: macOS-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout
@@ -59,6 +59,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 14
+
+      - name: Setup Xcode
+        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
 
       - name: Check test files
         run: |
@@ -76,7 +79,7 @@ jobs:
           ./gradlew build
 
   swift:
-    runs-on: macOS-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout
@@ -113,7 +116,7 @@ jobs:
           ./gradlew -p wire-library :wire-tests-swift:build
 
   publish:
-    runs-on: macOS-latest
+    runs-on: macos-latest
     if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'
     needs: [jvm, multiplatform]
 
