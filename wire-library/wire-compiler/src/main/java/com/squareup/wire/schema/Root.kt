@@ -21,10 +21,10 @@ import com.squareup.wire.java.internal.ProfileParser
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoParser
 import okio.FileSystem
+import okio.IOException
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.openZip
-import java.io.IOException
 
 internal sealed class Root {
   abstract val base: String?
@@ -155,14 +155,13 @@ internal class DirectoryRoot(
   val rootDirectory: Path
 ) : Root() {
   override fun allProtoFiles(): Set<ProtoFilePath> {
-    val result = mutableSetOf<ProtoFilePath>()
-    fileSystem.visitAll(rootDirectory) { descendant ->
-      if (descendant.endsWithDotProto()) {
-        val location = Location.get(base, rootDirectory.relativize(descendant))
-        result.add(ProtoFilePath(location, fileSystem, descendant))
-      }
-    }
-    return result
+    return fileSystem.listRecursively(rootDirectory)
+        .filter { it.endsWithDotProto() }
+        .map { descendant ->
+          val location = Location.get(base, descendant.relativeTo(rootDirectory).toString())
+          ProtoFilePath(location, fileSystem, descendant)
+        }
+        .toSet()
   }
 
   override fun resolve(import: String): ProtoFilePath? {
