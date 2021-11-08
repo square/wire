@@ -33,8 +33,6 @@ import java.nio.file.FileSystem as NioFileSystem
 class SchemaLoader : Closeable, Loader, ProfileLoader {
   private val fileSystem: FileSystem
 
-  private val closer: Closer
-
   /** Errors accumulated by this load. */
   private val errors: ErrorCollector
 
@@ -64,7 +62,6 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
 
   constructor(fileSystem: FileSystem) {
     this.fileSystem = fileSystem
-    this.closer = Closer.create()
     this.errors = ErrorCollector()
     this.sourcePathRoots = null
     this.protoPathRoots = null
@@ -74,7 +71,6 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
 
   private constructor(enclosing: SchemaLoader, errors: ErrorCollector) {
     this.fileSystem = enclosing.fileSystem
-    this.closer = enclosing.closer
     this.errors = errors
     this.sourcePathRoots = enclosing.sourcePathRoots
     this.protoPathRoots = enclosing.protoPathRoots
@@ -90,8 +86,8 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
     protoPath: List<Location> = listOf()
   ) {
     check(sourcePathRoots == null && protoPathRoots == null)
-    sourcePathRoots = allRoots(closer, sourcePath)
-    protoPathRoots = allRoots(closer, protoPath)
+    sourcePathRoots = allRoots(sourcePath)
+    protoPathRoots = allRoots(protoPath)
   }
 
   @Throws(IOException::class)
@@ -175,11 +171,11 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
   }
 
   /** Convert `pathStrings` into roots that can be searched. */
-  private fun allRoots(closer: Closer, locations: List<Location>): List<Root> {
+  private fun allRoots(locations: List<Location>): List<Root> {
     val result = mutableListOf<Root>()
     for (location in locations) {
       try {
-        result += location.roots(fileSystem, closer, baseToRoots)
+        result += location.roots(fileSystem, baseToRoots)
       } catch (e: IllegalArgumentException) {
         errors += e.message!!
       }
@@ -191,9 +187,7 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
     errors.throwIfNonEmpty()
   }
 
-  override fun close() {
-    return closer.close()
-  }
+  override fun close() = Unit
 
   override fun loadProfile(name: String, schema: Schema): Profile {
     val allLocations = schema.protoFiles.map { it.location }
