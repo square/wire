@@ -13,36 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UsePropertyAccessSyntax")
+
 package com.squareup.wire
 
-import java.io.File
-import java.util.ArrayList
-import java.util.Collections
 import okio.FileSystem
-import okio.buffer
-import okio.source
+import okio.Path
+import okio.Path.Companion.toOkioPath
+import okio.Path.Companion.toPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.util.Collections
 
 class WireCompilerTest {
   @Rule @JvmField val temp = TemporaryFolder()
+  private val fileSystem = FileSystem.SYSTEM
 
   private var logger: StringWireLogger? = null
-  private lateinit var testDir: File
+  private lateinit var testDir: Path
 
   /** Returns all paths within `root`, and relative to `root`.  */
-  private val paths: List<String>
+  private val paths: List<Path>
     get() {
-      val paths = mutableListOf<String>()
-      getPathsRecursive(testDir.absoluteFile, "", paths)
-      return paths
+      return fileSystem.listRecursively("/".toPath() / testDir)
+          .filter { fileSystem.metadata(it).isRegularFile }
+          .toList()
     }
 
   @Before fun setUp() {
-    testDir = temp.root
+    testDir = temp.root.toOkioPath()
   }
 
   @Test
@@ -406,11 +408,11 @@ class WireCompilerTest {
     val sources = arrayOf("squareup/geology/period.proto", "squareup/dinosaurs/dinosaur.proto")
     val args = ArrayList<String>()
     args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
-    args.add(TargetLanguage.KOTLIN.outArg(testDir.absolutePath))
+    args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
     Collections.addAll(args)
     Collections.addAll(args, *sources)
     logger = StringWireLogger()
-    val compiler = WireCompiler.forArgs(FileSystem.SYSTEM, logger!!, *args.toTypedArray())
+    val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
     compiler.compile()
 
     val outputs = arrayOf(
@@ -426,11 +428,11 @@ class WireCompilerTest {
     val sources = arrayOf("squareup/dinosaurs/dinosaur.proto")
     val args = ArrayList<String>()
     args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
-    args.add(TargetLanguage.KOTLIN.outArg(testDir.absolutePath))
+    args.add(TargetLanguage.KOTLIN.outArg("/".toPath() / testDir))
     Collections.addAll(args)
     Collections.addAll(args, *sources)
     logger = StringWireLogger()
-    val compiler = WireCompiler.forArgs(FileSystem.SYSTEM, logger!!, *args.toTypedArray())
+    val compiler = WireCompiler.forArgs(fileSystem, logger!!, *args.toTypedArray())
     compiler.compile()
 
     val outputs = arrayOf("com/squareup/dinosaurs/Dinosaur.kt")
@@ -631,12 +633,12 @@ class WireCompilerTest {
   ) {
     val args = ArrayList<String>()
     args.add(target.protoPathArg())
-    args.add(target.outArg(testDir.absolutePath))
+    args.add(target.outArg("/".toPath() / testDir))
     Collections.addAll(args, *extraArgs)
     Collections.addAll(args, *sources)
 
     logger = StringWireLogger()
-    val fs = FileSystem.SYSTEM
+    val fs = fileSystem
     val compiler = WireCompiler.forArgs(fs, logger!!, *args.toTypedArray())
     compiler.compile()
   }
@@ -658,36 +660,21 @@ class WireCompilerTest {
     }
   }
 
-  private fun getPathsRecursive(base: File, path: String, paths: MutableList<String>) {
-    val file = File(base, path)
-
-    val children = file.list() ?: return
-
-    for (child in children) {
-      val childFile = File(file, child)
-      if (childFile.isFile) {
-        paths.add(path + child)
-      } else {
-        getPathsRecursive(base, "$path$child/", paths)
-      }
-    }
-  }
-
   private fun assertFilesMatch(
     target: TargetLanguage,
-    outputDir: File,
+    outputDir: Path,
     path: String,
     suffix: String
   ) {
-    // Compare against file with suffix if present
+    // Compare against file with suffix if present.
     val expectedFile = target.expectedFile(path, suffix)
-    val actualFile = File(outputDir, path)
+    val actualFile = outputDir / path
     assertFilesMatch(expectedFile, actualFile)
   }
 
-  private fun assertFilesMatch(expectedFile: File, actualFile: File) {
-    var expected = expectedFile.source().use { it.buffer().readUtf8() }
-    var actual = actualFile.source().use { it.buffer().readUtf8() }
+  private fun assertFilesMatch(expectedFile: Path, actualFile: Path) {
+    var expected = fileSystem.read(expectedFile) { readUtf8() }
+    var actual = fileSystem.read(actualFile) { readUtf8() }
 
     // Normalize CRLF -> LF.
     expected = expected.replace("\r\n", "\n")
@@ -698,20 +685,20 @@ class WireCompilerTest {
   private enum class TargetLanguage {
     JAVA {
       override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/java"
-      override fun outArg(testDirPath: String) = "--java_out=$testDirPath"
+      override fun outArg(testDirPath: Path) = "--java_out=$testDirPath"
       override fun protoFolderSuffix() = "java"
     },
     KOTLIN {
       override fun protoPathArg() = "--proto_path=../wire-tests/src/commonTest/proto/kotlin"
-      override fun outArg(testDirPath: String) = "--kotlin_out=$testDirPath"
+      override fun outArg(testDirPath: Path) = "--kotlin_out=$testDirPath"
       override fun protoFolderSuffix() = "kotlin"
     };
 
-    internal abstract fun protoPathArg(): String
-    internal abstract fun outArg(testDirPath: String): String
-    internal abstract fun protoFolderSuffix(): String
+    abstract fun protoPathArg(): String
+    abstract fun outArg(testDirPath: Path): String
+    abstract fun protoFolderSuffix(): String
 
-    internal fun expectedFile(path: String, suffix: String): File {
+    fun expectedFile(path: String, suffix: String): Path {
       val sourceSet = when (val protoFolderSuffix = protoFolderSuffix()) {
         "kotlin" -> when (suffix) {
           "" -> if (path.contains("kotlin/services/")) "jvmKotlinInteropTest" else "commonTest"
@@ -730,7 +717,7 @@ class WireCompilerTest {
         }
         else -> throw AssertionError("Unknown proto folder suffix: $protoFolderSuffix")
       }
-      val expectedFile = File("../wire-tests/src/$sourceSet/proto-${protoFolderSuffix()}/$path")
+      val expectedFile = "../wire-tests/src/$sourceSet/proto-${protoFolderSuffix()}/$path".toPath()
       return expectedFile.also {
         println("Comparing against expected output $name")
       }
