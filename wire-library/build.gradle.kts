@@ -1,5 +1,10 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -64,6 +69,14 @@ subprojects {
   tasks.withType<JavaCompile>().configureEach {
     sourceCompatibility = JavaVersion.VERSION_1_8.toString()
     targetCompatibility = JavaVersion.VERSION_1_8.toString()
+  }
+
+  tasks.withType<Test> {
+    testLogging {
+      events(STARTED, PASSED, SKIPPED, FAILED)
+      exceptionFormat = TestExceptionFormat.FULL
+      showStandardStreams = false
+    }
   }
 
   if (!project.name.endsWith("-swift")) {
