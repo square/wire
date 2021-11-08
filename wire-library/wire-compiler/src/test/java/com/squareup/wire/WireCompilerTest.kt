@@ -414,8 +414,8 @@ class WireCompilerTest {
     compiler.compile()
 
     val outputs = arrayOf(
-        "com/squareup/geology/period.kt",
-        "com/squareup/dinosaurs/dinosaur.kt"
+        "com/squareup/geology/Period.kt",
+        "com/squareup/dinosaurs/Dinosaur.kt"
     )
     assertKotlinOutputs(outputs)
   }
@@ -433,7 +433,7 @@ class WireCompilerTest {
     val compiler = WireCompiler.forArgs(FileSystem.SYSTEM, logger!!, *args.toTypedArray())
     compiler.compile()
 
-    val outputs = arrayOf("com/squareup/dinosaurs/dinosaur.kt")
+    val outputs = arrayOf("com/squareup/dinosaurs/Dinosaur.kt")
     assertKotlinOutputs(outputs)
   }
 
