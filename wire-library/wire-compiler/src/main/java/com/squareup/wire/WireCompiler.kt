@@ -341,26 +341,26 @@ class WireCompiler internal constructor(
       }
 
       return WireCompiler(
-        fs = fileSystem,
-        log = logger,
-        protoPaths = protoPaths,
-        javaOut = javaOut,
-        kotlinOut = kotlinOut,
-        swiftOut = swiftOut,
-        sourceFileNames = sourceFileNames,
-        treeShakingRoots = treeShakingRoots,
-        treeShakingRubbish = treeShakingRubbish,
-        modules = modules,
-        dryRun = dryRun,
-        namedFilesOnly = namedFilesOnly,
-        emitAndroid = emitAndroid,
-        emitAndroidAnnotations = emitAndroidAnnotations,
-        emitCompact = emitCompact,
-        emitDeclaredOptions = emitDeclaredOptions,
-        emitAppliedOptions = emitAppliedOptions,
-        permitPackageCycles = permitPackageCycles,
-        javaInterop = javaInterop,
-        kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize
+          fs = fileSystem,
+          log = logger,
+          protoPaths = protoPaths,
+          javaOut = javaOut,
+          kotlinOut = kotlinOut,
+          swiftOut = swiftOut,
+          sourceFileNames = sourceFileNames,
+          treeShakingRoots = treeShakingRoots,
+          treeShakingRubbish = treeShakingRubbish,
+          modules = modules,
+          dryRun = dryRun,
+          namedFilesOnly = namedFilesOnly,
+          emitAndroid = emitAndroid,
+          emitAndroidAnnotations = emitAndroidAnnotations,
+          emitCompact = emitCompact,
+          emitDeclaredOptions = emitDeclaredOptions,
+          emitAppliedOptions = emitAppliedOptions,
+          permitPackageCycles = permitPackageCycles,
+          javaInterop = javaInterop,
+          kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize
       )
     }
   }
