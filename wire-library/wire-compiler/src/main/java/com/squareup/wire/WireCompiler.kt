@@ -166,10 +166,18 @@ class WireCompiler internal constructor(
 
   /** Searches [sources] trying to resolve [proto]. Returns the location if it is found. */
   private fun locationOfProto(sources: List<Path>, proto: String): Location {
+    // We cache ZIP openings because they are expensive.
+    val sourceToZipFileSystem = mutableMapOf<Path, FileSystem>()
+    for (source in sources) {
+      if (fs.metadataOrNull(source)?.isRegularFile == true) {
+        sourceToZipFileSystem[source] = fs.openZip(source)
+      }
+    }
+
     val directoryEntry = sources.find { source ->
-      when (fs.metadataOrNull(source)?.isRegularFile) {
-        true -> fs.openZip(source).exists("/".toPath() / proto)
-        else -> fs.exists(source / proto)
+      when (val zip = sourceToZipFileSystem[source]) {
+        null -> fs.exists(source / proto)
+        else -> zip.exists("/".toPath() / proto)
       }
     }
 
@@ -333,26 +341,26 @@ class WireCompiler internal constructor(
       }
 
       return WireCompiler(
-          fs = fileSystem,
-          log = logger,
-          protoPaths = protoPaths,
-          javaOut = javaOut,
-          kotlinOut = kotlinOut,
-          swiftOut = swiftOut,
-          sourceFileNames = sourceFileNames,
-          treeShakingRoots = treeShakingRoots,
-          treeShakingRubbish = treeShakingRubbish,
-          modules = modules,
-          dryRun = dryRun,
-          namedFilesOnly = namedFilesOnly,
-          emitAndroid = emitAndroid,
-          emitAndroidAnnotations = emitAndroidAnnotations,
-          emitCompact = emitCompact,
-          emitDeclaredOptions = emitDeclaredOptions,
-          emitAppliedOptions = emitAppliedOptions,
-          permitPackageCycles = permitPackageCycles,
-          javaInterop = javaInterop,
-          kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize
+        fs = fileSystem,
+        log = logger,
+        protoPaths = protoPaths,
+        javaOut = javaOut,
+        kotlinOut = kotlinOut,
+        swiftOut = swiftOut,
+        sourceFileNames = sourceFileNames,
+        treeShakingRoots = treeShakingRoots,
+        treeShakingRubbish = treeShakingRubbish,
+        modules = modules,
+        dryRun = dryRun,
+        namedFilesOnly = namedFilesOnly,
+        emitAndroid = emitAndroid,
+        emitAndroidAnnotations = emitAndroidAnnotations,
+        emitCompact = emitCompact,
+        emitDeclaredOptions = emitDeclaredOptions,
+        emitAppliedOptions = emitAppliedOptions,
+        permitPackageCycles = permitPackageCycles,
+        javaInterop = javaInterop,
+        kotlinBoxOneOfsMinSize = kotlinBoxOneOfsMinSize
       )
     }
   }
