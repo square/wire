@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.16
+----------------------
+
+_2021-11-09_
+
+ * Fix: Don't generate invalid code when an enum constant is named `name` or `ordinal`.
+ * Fix: Deep copy metadata on `GrpcCall.clone()`.
+ * Fix: Support reporting errors in `CustomHandlerBeta`.
+ * Upgrade: [Okio 3.0.0][okio_3_0_0]. This is binary-incompatible with the Okio 3.0 alpha releases.
+
 Version 3.7.1
 -------------
 
@@ -967,6 +977,7 @@ Initial version.
 
  [jimfs]: https://github.com/google/jimfs
  [javapoet]: https://github.com/square/javapoet
+ [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
