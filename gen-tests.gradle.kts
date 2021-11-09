@@ -237,6 +237,19 @@ val generateKotlinTests by tasks.creating(JavaExec::class) {
   )
 }
 
+val generateKotlinZipTests by tasks.creating(JavaExec::class) {
+  group = "Generate Tests"
+  description = "Generates Kotlin classes from the test jar"
+  classpath = wire
+  main = "com.squareup.wire.WireCompiler"
+  args = listOf(
+      "--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin/protos.jar",
+      "--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin",
+      "squareup/geology/period.proto",
+      "squareup/dinosaurs/dinosaur.proto"
+  )
+}
+
 // KOTLIN PROTO3
 
 val generateProto3KotlinTests by tasks.creating(JavaExec::class) {
@@ -587,6 +600,7 @@ val generateTests by tasks.creating {
     generateAndroidTests,
     generateAndroidCompactTests,
     generateKotlinTests,
+    generateKotlinZipTests,
     generateKotlinServicesTests,
     generateKotlinAndroidTests,
     generateKotlinJavaInteropTests,

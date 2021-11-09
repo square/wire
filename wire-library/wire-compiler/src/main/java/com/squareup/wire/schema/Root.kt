@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.io.Closer
 import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.java.internal.ProfileParser
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
@@ -44,7 +43,6 @@ internal sealed class Root {
 // TODO(jwilson): rework this API to combine baseToRoots and Closer.
 internal fun Location.roots(
   fs: FileSystem,
-  closer: Closer,
   baseToRoots: MutableMap<String, List<Root>> = mutableMapOf()
 ): List<Root> {
   if (isWireRuntimeProto(this)) {
@@ -52,7 +50,7 @@ internal fun Location.roots(
     return listOf(ProtoFilePath(this, fs, path.toPath()))
   } else if (base.isNotEmpty()) {
     val roots = baseToRoots.computeIfAbsent(base) {
-      Location.get(it).roots(fs, closer)
+      Location.get(it).roots(fs)
     }
     for (root in roots) {
       val resolved = root.resolve(path) ?: continue
@@ -62,13 +60,13 @@ internal fun Location.roots(
   } else {
     val path = path.toPath()
     return baseToRoots.computeIfAbsent(this.path) {
-      path.roots(fs, closer, this)
+      path.roots(fs, this)
     }
   }
 }
 
 /** Returns this path's roots. */
-private fun Path.roots(fileSystem: FileSystem, closer: Closer, location: Location): List<Root> {
+private fun Path.roots(fileSystem: FileSystem, location: Location): List<Root> {
   return when {
     fileSystem.metadataOrNull(this)?.isDirectory == true -> {
       check(location.base.isEmpty())
@@ -82,7 +80,6 @@ private fun Path.roots(fileSystem: FileSystem, closer: Closer, location: Locatio
       try {
         check(location.base.isEmpty())
         val sourceFs = fileSystem.openZip(this)
-        // TODO(jwilson): register the ZipFileSystem with closer if Okio 3.0 makes that a requirement.
         listOf(DirectoryRoot(location.path, sourceFs, "/".toPath()))
       } catch (_: IOException) {
         throw IllegalArgumentException(

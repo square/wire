@@ -15,7 +15,6 @@
  */
 package com.squareup.wire
 
-import com.google.common.io.Closer
 import com.squareup.wire.schema.CoreLoader.WIRE_RUNTIME_JAR
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.JavaTarget
@@ -26,17 +25,12 @@ import com.squareup.wire.schema.SwiftTarget
 import com.squareup.wire.schema.Target
 import com.squareup.wire.schema.WireRun
 import com.squareup.wire.schema.toOkioFileSystem
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.nio.file.FileSystems
-import java.nio.file.Files
+import okio.FileNotFoundException
 import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toOkioPath
 import okio.Path.Companion.toPath
-import okio.buffer
-import okio.source
+import okio.openZip
+import java.io.IOException
 import java.nio.file.FileSystem as NioFileSystem
 
 /**
@@ -143,66 +137,56 @@ class WireCompiler internal constructor(
       )
     }
 
-    Closer.create().use { closer ->
-      val sources = protoPaths.map { it.toPath() }
-      val directories = directoryPaths(closer, sources)
+    val sources = protoPaths.map { it.toPath() }
 
-      val allDirectories = directories.map { Location.get(it.key.toString()) }.toList()
-      val sourcePath: List<Location>
-      val protoPath: List<Location>
+    val allDirectories = sources.map { Location.get(it.toString()) }.toList()
+    val sourcePath: List<Location>
+    val protoPath: List<Location>
 
-      if (sourceFileNames.isNotEmpty()) {
-        sourcePath = sourceFileNames.map { locationOfProto(directories, it) }
-        protoPath = allDirectories
-      } else {
-        sourcePath = allDirectories
-        protoPath = listOf()
-      }
-
-      val wireRun = WireRun(
-          sourcePath = sourcePath,
-          protoPath = protoPath,
-          treeShakingRoots = treeShakingRoots,
-          treeShakingRubbish = treeShakingRubbish,
-          targets = targets,
-          modules = modules,
-          permitPackageCycles = permitPackageCycles
-      )
-
-      wireRun.execute(fs, log)
+    if (sourceFileNames.isNotEmpty()) {
+      sourcePath = sourceFileNames.map { locationOfProto(sources, it) }
+      protoPath = allDirectories
+    } else {
+      sourcePath = allDirectories
+      protoPath = listOf()
     }
+
+    val wireRun = WireRun(
+        sourcePath = sourcePath,
+        protoPath = protoPath,
+        treeShakingRoots = treeShakingRoots,
+        treeShakingRubbish = treeShakingRubbish,
+        targets = targets,
+        modules = modules,
+        permitPackageCycles = permitPackageCycles
+    )
+
+    wireRun.execute(fs, log)
   }
 
-  /**
-   * Map the physical path to the file system root. For regular directories the key and the
-   * value are equal. For ZIP files the key is the path to the .zip, and the value is the root
-   * of the file system within it.
-   */
-  private fun directoryPaths(closer: Closer, sources: List<Path>): Map<Path, Path> {
-    val directories = mutableMapOf<Path, Path>()
+  /** Searches [sources] trying to resolve [proto]. Returns the location if it is found. */
+  private fun locationOfProto(sources: List<Path>, proto: String): Location {
+    // We cache ZIP openings because they are expensive.
+    val sourceToZipFileSystem = mutableMapOf<Path, FileSystem>()
     for (source in sources) {
-      directories[source] = when {
-        Files.isRegularFile(source.toNioPath()) -> {
-          val sourceFs = FileSystems.newFileSystem(source.toNioPath(), javaClass.classLoader)
-          closer.register(sourceFs)
-          sourceFs.rootDirectories.single().toOkioPath()
-        }
-        else -> source
+      if (fs.metadataOrNull(source)?.isRegularFile == true) {
+        sourceToZipFileSystem[source] = fs.openZip(source)
       }
     }
-    return directories
-  }
 
-  /** Searches [directories] trying to resolve [proto]. Returns the location if it is found. */
-  private fun locationOfProto(directories: Map<Path, Path>, proto: String): Location {
-    val directoryEntry = directories.entries.find { fs.exists(it.value / proto) }
+    val directoryEntry = sources.find { source ->
+      when (val zip = sourceToZipFileSystem[source]) {
+        null -> fs.exists(source / proto)
+        else -> zip.exists("/".toPath() / proto)
+      }
+    }
 
     if (directoryEntry == null) {
       if (isWireRuntimeProto(proto)) return Location.get(WIRE_RUNTIME_JAR, proto)
-      throw FileNotFoundException("Failed to locate $proto in ${directories.keys}")
+      throw FileNotFoundException("Failed to locate $proto in $sources")
     }
 
-    return Location.get(directoryEntry.key.toString(), proto)
+    return Location.get(directoryEntry.toString(), proto)
   }
 
   companion object {
@@ -232,7 +216,7 @@ class WireCompiler internal constructor(
     @Throws(IOException::class)
     @JvmStatic fun main(args: Array<String>) {
       try {
-        val wireCompiler = forArgs(args = *args)
+        val wireCompiler = forArgs(args = args)
         wireCompiler.compile()
       } catch (e: WireException) {
         System.err.print("Fatal: ")
@@ -304,11 +288,11 @@ class WireCompiler internal constructor(
           }
 
           arg.startsWith(FILES_FLAG) -> {
-            val files = File(arg.substring(FILES_FLAG.length))
+            val files = arg.substring(FILES_FLAG.length).toPath()
             try {
-              files.source().buffer().use { source ->
+              fileSystem.read(files) {
                 while (true) {
-                  val line = source.readUtf8Line() ?: break
+                  val line = readUtf8Line() ?: break
                   sourceFileNames.add(line)
                 }
               }
@@ -326,7 +310,7 @@ class WireCompiler internal constructor(
           }
 
           arg.startsWith(MANIFEST_FLAG) -> {
-            val yaml = File(arg.substring(MANIFEST_FLAG.length)).readText()
+            val yaml = fileSystem.read(arg.substring(MANIFEST_FLAG.length).toPath()) { readUtf8() }
             modules = parseManifestModules(yaml)
           }
 
@@ -338,7 +322,7 @@ class WireCompiler internal constructor(
           arg == COMPACT -> emitCompact = true
           arg == SKIP_DECLARED_OPTIONS -> emitDeclaredOptions = false
           arg == EMIT_APPLIED_OPTIONS -> emitAppliedOptions = true
-          arg == EMIT_APPLIED_OPTIONS -> permitPackageCycles = true
+          arg == PERMIT_PACKAGE_CYCLES_OPTIONS -> permitPackageCycles = true
           arg == JAVA_INTEROP -> javaInterop = true
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")
           else -> sourceFileNames.add(arg)

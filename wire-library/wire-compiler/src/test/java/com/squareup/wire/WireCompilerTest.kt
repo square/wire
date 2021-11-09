@@ -344,7 +344,7 @@ class WireCompilerTest {
   }
 
   @Test
-  fun serviceAreIgnoredForJava(){
+  fun serviceAreIgnoredForJava() {
     val sources = arrayOf("service_root.proto")
     compileToJava(sources, "--includes=squareup.wire.protos.roots.TheService")
 
@@ -398,6 +398,42 @@ class WireCompilerTest {
     compileToKotlin(sources)
 
     val outputs = arrayOf("com/squareup/wire/protos/kotlin/alltypes/AllTypes.kt")
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun sourceInJar() {
+    val sources = arrayOf("squareup/geology/period.proto", "squareup/dinosaurs/dinosaur.proto")
+    val args = ArrayList<String>()
+    args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
+    args.add(TargetLanguage.KOTLIN.outArg(testDir.absolutePath))
+    Collections.addAll(args)
+    Collections.addAll(args, *sources)
+    logger = StringWireLogger()
+    val compiler = WireCompiler.forArgs(FileSystem.SYSTEM, logger!!, *args.toTypedArray())
+    compiler.compile()
+
+    val outputs = arrayOf(
+        "com/squareup/geology/Period.kt",
+        "com/squareup/dinosaurs/Dinosaur.kt"
+    )
+    assertKotlinOutputs(outputs)
+  }
+
+  @Test
+  fun sourceDependsOnJar() {
+    // `dinosaur.proto` depends on `period.proto` which both are in `protos.jar`.
+    val sources = arrayOf("squareup/dinosaurs/dinosaur.proto")
+    val args = ArrayList<String>()
+    args.add("--proto_path=../wire-tests/src/commonTest/proto/kotlin/protos.jar")
+    args.add(TargetLanguage.KOTLIN.outArg(testDir.absolutePath))
+    Collections.addAll(args)
+    Collections.addAll(args, *sources)
+    logger = StringWireLogger()
+    val compiler = WireCompiler.forArgs(FileSystem.SYSTEM, logger!!, *args.toTypedArray())
+    compiler.compile()
+
+    val outputs = arrayOf("com/squareup/dinosaurs/Dinosaur.kt")
     assertKotlinOutputs(outputs)
   }
 
@@ -577,7 +613,8 @@ class WireCompilerTest {
     val sources = arrayOf("to_string.proto")
     compileToKotlin(sources)
 
-    val outputs = arrayOf("com/squareup/wire/protos/kotlin/VeryLongProtoNameCausingBrokenLineBreaks.kt")
+    val outputs =
+        arrayOf("com/squareup/wire/protos/kotlin/VeryLongProtoNameCausingBrokenLineBreaks.kt")
     assertKotlinOutputs(outputs)
   }
 
