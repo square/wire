@@ -164,8 +164,6 @@ internal class FileLinker(
   }
 
   fun validate(syntaxRules: SyntaxRules) {
-    protoFile.validate(linker)
-
     for (type in protoFile.types) {
       type.validate(linker, syntaxRules)
     }

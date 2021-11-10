@@ -99,8 +99,8 @@ val generateGsonAdapterJavaTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--java_out=wire-library/wire-gson-support/src/test/java",
           "collection_types.proto",
           "dinosaur_java.proto",
@@ -115,8 +115,8 @@ val generateGsonAdapterInteropKotlinTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-library/wire-gson-support/src/test/java",
           "--java_interop",
           "dinosaur_java_interop_kotlin.proto",
@@ -131,8 +131,8 @@ val generateGsonAdapterKotlinTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-library/wire-gson-support/src/test/java",
           "dinosaur_kotlin.proto",
           "period_kotlin.proto",
@@ -479,8 +479,8 @@ val generateMoshiAdapterJavaTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--java_out=wire-library/wire-moshi-adapter/src/test/java",
           "collection_types.proto",
           "person_java.proto",
@@ -496,8 +496,8 @@ val generateMoshiAdapterInteropKotlinTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-library/wire-moshi-adapter/src/test/java",
           "--java_interop",
           "person_java_interop_kotlin.proto",
@@ -513,8 +513,8 @@ val generateMoshiAdapterKotlinTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-library/wire-moshi-adapter/src/test/java",
           "person_kotlin.proto",
           "dinosaur_kotlin.proto",

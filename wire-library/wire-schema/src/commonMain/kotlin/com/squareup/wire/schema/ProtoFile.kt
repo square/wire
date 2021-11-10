@@ -162,10 +162,6 @@ data class ProtoFile(
     return toElement().toSchema()
   }
 
-  fun validate(linker: Linker) {
-    linker.validateEnumConstantNameUniqueness(types)
-  }
-
   companion object {
     val JAVA_PACKAGE = ProtoMember.get(Options.FILE_OPTIONS, "java_package")
     val WIRE_PACKAGE = ProtoMember.get(Options.FILE_OPTIONS, "wire.wire_package")

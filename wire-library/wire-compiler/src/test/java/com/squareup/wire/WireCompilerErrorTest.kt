@@ -16,29 +16,34 @@
 package com.squareup.wire
 
 import com.squareup.wire.schema.SchemaException
-import kotlin.test.assertFailsWith
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.test.assertFailsWith
 
 class WireCompilerErrorTest {
   private var fileSystem = FakeFileSystem()
+  private var nextFileIndex = 1
 
   /**
    * Compile a .proto containing in a String and returns the contents of each output file,
    * indexed by class name.
    */
-  private fun compile(source: String) {
-    val test = "/source/test.proto".toPath()
+  private fun compile(vararg files: String) {
     fileSystem.createDirectory("/source".toPath())
     fileSystem.createDirectory("/target".toPath())
-    fileSystem.write(test) {
-      writeUtf8(source)
+    val fileNames = mutableListOf<String>()
+    for (fileContent in files) {
+      val fileName = "test_${nextFileIndex++}.proto"
+      fileSystem.write("/source/$fileName".toPath()) {
+        writeUtf8(fileContent)
+      }
+      fileNames += fileName
     }
 
     val compiler = WireCompiler.forArgs(fileSystem, StringWireLogger(),
-        "--proto_path=/source", "--java_out=/target", "test.proto")
+        "--proto_path=/source", "--java_out=/target", *fileNames.toTypedArray())
     compiler.compile()
   }
 
@@ -67,8 +72,8 @@ class WireCompilerErrorTest {
     }
     assertThat(e).hasMessage("""
           |tag is out of range: 0
-          |  for field f (/source/test.proto:3:3)
-          |  in message com.squareup.protos.test.Simple (/source/test.proto:2:1)
+          |  for field f (/source/test_1.proto:3:3)
+          |  in message com.squareup.protos.test.Simple (/source/test_1.proto:2:1)
           """.trimMargin())
   }
 
@@ -85,9 +90,9 @@ class WireCompilerErrorTest {
     }
     assertThat(e).hasMessage("""
           |multiple fields share tag 1:
-          |  1. f (/source/test.proto:3:3)
-          |  2. g (/source/test.proto:4:3)
-          |  for message com.squareup.protos.test.Simple (/source/test.proto:2:1)
+          |  1. f (/source/test_1.proto:3:3)
+          |  2. g (/source/test_1.proto:4:3)
+          |  for message com.squareup.protos.test.Simple (/source/test_1.proto:2:1)
           """.trimMargin())
   }
 
@@ -111,10 +116,38 @@ class WireCompilerErrorTest {
     }
     assertThat(e).hasMessage("""
           |multiple enums share constant QUIX:
-          |  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test.proto:4:5)
-          |  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test.proto:10:5)
-          |  for message com.squareup.protos.test.Foo (/source/test.proto:2:1)
+          |  1. com.squareup.protos.test.Foo.Bar.QUIX (/source/test_1.proto:4:5)
+          |  2. com.squareup.protos.test.Foo.Bar2.QUIX (/source/test_1.proto:10:5)
+          |  for message com.squareup.protos.test.Foo (/source/test_1.proto:2:1)
           """.trimMargin())
+  }
+
+  @Test
+  fun testEnumNamespaceTypeSplitAcrossTwoFiles() {
+    val e = assertFailsWith<SchemaException> {
+      compile("""
+          |package com.squareup.protos.test;
+          |
+          |enum Bar {
+          |  QUIX = 0;
+          |  FOO = 1;
+          |}
+          """.trimMargin(),
+          """
+          |package com.squareup.protos.test;
+          |
+          |enum Bar2 {
+          |  BAZ = 0;
+          |  QUIX = 1;
+          |}
+          """.trimMargin())
+    }
+    assertThat(e).hasMessage("""
+        |multiple enums share constant QUIX:
+        |  1. com.squareup.protos.test.Bar.QUIX (/source/test_1.proto:4:3)
+        |  2. com.squareup.protos.test.Bar2.QUIX (/source/test_2.proto:5:3)
+        |  for file /source/test_1.proto
+        """.trimMargin())
   }
 
   @Test
@@ -136,9 +169,9 @@ class WireCompilerErrorTest {
     }
     assertThat(e).hasMessage("""
           |multiple enums share constant QUIX:
-          |  1. com.squareup.protos.test.Bar.QUIX (/source/test.proto:4:3)
-          |  2. com.squareup.protos.test.Bar2.QUIX (/source/test.proto:10:3)
-          |  for file /source/test.proto
+          |  1. com.squareup.protos.test.Bar.QUIX (/source/test_1.proto:4:3)
+          |  2. com.squareup.protos.test.Bar2.QUIX (/source/test_1.proto:10:3)
+          |  for file /source/test_1.proto
           """.trimMargin())
   }
 
