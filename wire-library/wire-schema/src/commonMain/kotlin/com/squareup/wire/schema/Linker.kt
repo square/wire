@@ -139,6 +139,8 @@ class Linker {
       fileLinker.requireFileOptionsLinked(validate = false)
     }
 
+    validatePackages()
+
     for (fileLinker in sourceFiles) {
       val syntaxRules = SyntaxRules.get(fileLinker.protoFile.syntax)
       fileLinker.validate(syntaxRules)
@@ -445,6 +447,17 @@ class Linker {
           errors += error.toString()
         }
       }
+    }
+  }
+
+  private fun validatePackages() {
+    val filesByPackageName: Map<String?, List<FileLinker>> =
+      fileLinkers.values.groupBy { it.protoFile.packageName }
+
+    // Enum constants must be unique within each package.
+    for (fileLinkers in filesByPackageName.values) {
+      val types = fileLinkers.flatMap { it.protoFile.types }
+      withContext(fileLinkers[0].protoFile).validateEnumConstantNameUniqueness(types)
     }
   }
 
