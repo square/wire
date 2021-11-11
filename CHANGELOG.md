@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.17
+----------------------
+
+_2021-11-11_
+
+ * Fix: Validate enum constant uniqueness for the entire package.
+ * Fix: Compile Kotlin/JS with both LEGACY and IR compilers.
+
 Version 4.0.0-alpha.16
 ----------------------
 
