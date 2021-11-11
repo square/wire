@@ -8,6 +8,8 @@ _2021-11-11_
 
  * Fix: Validate enum constant uniqueness for the entire package.
  * Fix: Compile Kotlin/JS with both LEGACY and IR compilers.
+ * Fix: Don't depend on moshi-kotlin in wire-moshi. This caused a transitive dependency on
+   kotlin-reflect, which we neither needed nor wanted.
 
 Version 4.0.0-alpha.16
 ----------------------
