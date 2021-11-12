@@ -17,11 +17,10 @@ package com.squareup.wire.schema
 
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
-import com.squareup.wire.testing.symlink
 import okio.ByteString.Companion.decodeHex
+import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.test.assertFailsWith
 import kotlin.text.Charsets.UTF_16BE
@@ -31,7 +30,9 @@ import kotlin.text.Charsets.UTF_32LE
 import kotlin.text.Charsets.UTF_8
 
 class SchemaLoaderTest {
-  private val fs = FakeFileSystem()
+  private val fs = FakeFileSystem().apply {
+    allowSymlinks = true
+  }
 
   @Test
   fun happyPath() {
@@ -276,7 +277,6 @@ class SchemaLoaderTest {
   }
 
   @Test
-  @Ignore("symlinks are not yet implemented in okio.FileSystem")
   fun symlinkDirectory() {
     fs.add("secret/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
@@ -284,9 +284,10 @@ class SchemaLoaderTest {
         |message Blue {
         |}
         """.trimMargin())
-    fs.symlink(
-        "colors/src/main/proto",
-        "../../../secret/proto"
+    fs.createDirectories("colors/src/main".toPath())
+    fs.createSymlink(
+        "colors/src/main/proto".toPath(),
+        "../../../secret/proto".toPath()
     )
 
     SchemaLoader(fs).use { loader ->
@@ -300,7 +301,6 @@ class SchemaLoaderTest {
   }
 
   @Test
-  @Ignore("symlinks are not yet implemented in okio.FileSystem")
   fun symlinkFile() {
     fs.add("secret/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
@@ -308,9 +308,10 @@ class SchemaLoaderTest {
         |message Blue {
         |}
         """.trimMargin())
-    fs.symlink(
-        "colors/src/main/proto/squareup/colors/blue.proto",
-        "../../../../../../secret/proto/squareup/colors/blue.proto"
+    fs.createDirectories("colors/src/main/proto/squareup/colors".toPath())
+    fs.createSymlink(
+        "colors/src/main/proto/squareup/colors/blue.proto".toPath(),
+        "../../../../../../secret/proto/squareup/colors/blue.proto".toPath()
     )
 
     SchemaLoader(fs).use { loader ->

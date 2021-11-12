@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.squareup.wire.Message
 import com.squareup.wire.StringWireLogger
 import com.squareup.wire.WireLogger
 import com.squareup.wire.kotlin.RpcCallStyle
@@ -23,11 +22,8 @@ import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.Target.SchemaHandler
 import com.squareup.wire.schema.WireRun.Module
 import com.squareup.wire.testing.add
-import com.squareup.wire.testing.find
-import com.squareup.wire.testing.get
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import kotlin.test.assertFailsWith
+import com.squareup.wire.testing.findFiles
+import com.squareup.wire.testing.readUtf8
 import okio.Buffer
 import okio.FileSystem
 import okio.Path
@@ -35,6 +31,9 @@ import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import kotlin.test.assertFailsWith
 
 class WireRunTest {
   private val fs = FakeFileSystem()
@@ -53,12 +52,12 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/squareup/colors/Blue.java",
         "generated/java/squareup/colors/Red.java")
-    assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
         .contains("public final class Blue extends Message")
-    assertThat(fs.get("generated/java/squareup/colors/Red.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Red.java"))
         .contains("public final class Red extends Message")
   }
 
@@ -75,12 +74,12 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Blue.kt",
         "generated/kt/squareup/colors/Red.kt")
-    assertThat(fs.get("generated/kt/squareup/colors/Blue.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
         .contains("class Blue")
-    assertThat(fs.get("generated/kt/squareup/colors/Red.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Red.kt"))
         .contains("class Red")
   }
 
@@ -99,15 +98,15 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/routes/RouteClient.kt",
         "generated/kt/squareup/routes/GrpcRouteClient.kt")
-    assertThat(fs.get("generated/kt/squareup/routes/RouteClient.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteClient.kt"))
         .contains(
             "interface RouteClient : Service",
             "fun GetUpdatedBlue()"
         )
-    assertThat(fs.get("generated/kt/squareup/routes/GrpcRouteClient.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteClient.kt"))
         .contains(
             "class GrpcRouteClient(\n  private val client: GrpcClient\n) : RouteClient",
             "override fun GetUpdatedBlue()"
@@ -135,9 +134,9 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/routes/RouteBlockingServer.kt")
-    assertThat(fs.get("generated/kt/squareup/routes/RouteBlockingServer.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteBlockingServer.kt"))
         .contains(
             "interface RouteBlockingServer : Service",
             "fun GetUpdatedRed")
@@ -160,20 +159,20 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt",
         "generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt",
         "generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt",
         "generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt")
-    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteGetUpdatedBlueClient.kt"))
         .contains("interface RouteGetUpdatedBlueClient : Service")
-    assertThat(fs.get("generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/RouteGetUpdatedRedClient.kt"))
         .contains("interface RouteGetUpdatedRedClient : Service")
-    assertThat(fs.get("generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedBlueClient.kt"))
         .contains(
             "class GrpcRouteGetUpdatedBlueClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedBlueClient")
         .doesNotContain("RouteGetUpdatedRedClient")
-    assertThat(fs.get("generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/routes/GrpcRouteGetUpdatedRedClient.kt"))
         .contains(
             "class GrpcRouteGetUpdatedRedClient(\n  private val client: GrpcClient\n) : RouteGetUpdatedRedClient")
         .doesNotContain("RouteGetUpdatedBlueClient")
@@ -192,12 +191,12 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/proto/squareup/colors/blue.proto",
         "generated/proto/squareup/colors/red.proto")
-    assertThat(fs.get("generated/proto/squareup/colors/blue.proto"))
+    assertThat(fs.readUtf8("generated/proto/squareup/colors/blue.proto"))
         .contains("message Blue {")
-    assertThat(fs.get("generated/proto/squareup/colors/red.proto"))
+    assertThat(fs.readUtf8("generated/proto/squareup/colors/red.proto"))
         .contains("message Red {")
   }
 
@@ -220,12 +219,12 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
-        "generated/kt/squareup/colors/Blue.kt",
-        "generated/java/squareup/colors/Red.java")
-    assertThat(fs.get("generated/kt/squareup/colors/Blue.kt"))
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
+        "generated/java/squareup/colors/Red.java",
+        "generated/kt/squareup/colors/Blue.kt")
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
         .contains("class Blue")
-    assertThat(fs.get("generated/java/squareup/colors/Red.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Red.java"))
         .contains("public final class Red extends Message")
   }
 
@@ -248,12 +247,12 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/squareup/colors/Blue.java",
         "generated/kt/squareup/colors/Red.kt")
-    assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
         .contains("public final class Blue extends Message")
-    assertThat(fs.get("generated/kt/squareup/colors/Red.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Red.kt"))
         .contains("class Red")
   }
 
@@ -278,15 +277,15 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Blue.kt",
         "generated/java/squareup/colors/Red.java",
         "generated/kt/squareup/polygons/Triangle.kt")
-    assertThat(fs.get("generated/kt/squareup/colors/Blue.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Blue.kt"))
         .contains("class Blue")
-    assertThat(fs.get("generated/java/squareup/colors/Red.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Red.java"))
         .contains("public final class Red extends Message")
-    assertThat(fs.get("generated/kt/squareup/polygons/Triangle.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/polygons/Triangle.kt"))
         .contains("class Triangle")
   }
 
@@ -311,15 +310,15 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/squareup/colors/Blue.java",
         "generated/java/squareup/colors/Red.java",
         "generated/kt/squareup/polygons/Triangle.kt")
-    assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
         .contains("public final class Blue extends Message")
-    assertThat(fs.get("generated/java/squareup/colors/Red.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Red.java"))
         .contains("public final class Red extends Message")
-    assertThat(fs.get("generated/kt/squareup/polygons/Triangle.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/polygons/Triangle.kt"))
         .contains("class Triangle")
   }
 
@@ -337,7 +336,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Blue.kt")
   }
 
@@ -355,7 +354,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Blue.kt")
   }
 
@@ -375,7 +374,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Blue.kt")
   }
 
@@ -396,7 +395,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/com/squareup/polygons/Square.java",
         "generated/kt/com/squareup/polygons/Rhombus.kt")
   }
@@ -419,7 +418,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/com/squareup/polygons/Square.java",
         "generated/java/com/squareup/polygons/Rhombus.java",
         "generated/kt/com/squareup/polygons/Square.kt")
@@ -444,7 +443,7 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactlyInAnyOrder(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Blue.kt",
         "generated/kt/squareup/colors/Red.kt")
   }
@@ -472,9 +471,9 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/squareup/colors/Blue.java")
-    assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
         .contains("public final class Blue extends Message")
   }
 
@@ -494,9 +493,9 @@ class WireRunTest {
         targets = listOf(JavaTarget(outDirectory = "generated/java"))
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/squareup/colors/Blue.java")
-    assertThat(fs.get("generated/java/squareup/colors/Blue.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/colors/Blue.java"))
         .contains("public final class Blue extends Message")
   }
 
@@ -516,15 +515,15 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/markdown/squareup/colors/Blue.md",
         "generated/markdown/squareup/colors/Red.md")
-    assertThat(fs.get("generated/markdown/squareup/colors/Blue.md")).isEqualTo("""
+    assertThat(fs.readUtf8("generated/markdown/squareup/colors/Blue.md")).isEqualTo("""
             |# Blue
             |
             |This is the color of the sky.
             |""".trimMargin())
-    assertThat(fs.get("generated/markdown/squareup/colors/Red.md")).isEqualTo("""
+    assertThat(fs.readUtf8("generated/markdown/squareup/colors/Red.md")).isEqualTo("""
             |# Red
             |
             |This is the color of the sky when the sky is lava.
@@ -568,7 +567,7 @@ class WireRunTest {
   @Test
   fun newCustomHandlerIsSerializableEvenIfTargetClassIsNot() {
     val customHandlerA = newCustomHandler(
-      "${WireRunTest::class.qualifiedName}${"$"}NotSerializableCustomHandler"
+        "${WireRunTest::class.qualifiedName}${"$"}NotSerializableCustomHandler"
     )
     val customHandlerB = reserialize(customHandlerA)
 
@@ -619,16 +618,16 @@ class WireRunTest {
   @Test
   fun errorReportingCustomHandler() {
     val customHandler = newCustomHandler(
-      "${WireRunTest::class.qualifiedName}${"$"}ErrorReportingCustomHandler"
+        "${WireRunTest::class.qualifiedName}${"$"}ErrorReportingCustomHandler"
     )
 
     assertThat(assertFailsWith<SchemaException> {
       callCustomHandler(customHandler)
     }).hasMessage(
-      """
-      |field starts with 'a'
-      |  for field angles (polygons/src/main/proto/squareup/polygons/triangle.proto:4:3)
-      """.trimMargin()
+        """
+        |field starts with 'a'
+        |  for field angles (polygons/src/main/proto/squareup/polygons/triangle.proto:4:3)
+        """.trimMargin()
     )
   }
 
@@ -649,7 +648,7 @@ class WireRunTest {
     val schema = schemaLoader.loadSchema()
     val errorCollector = ErrorCollector()
     val schemaHandler = customHandler.newHandler(
-            schema, fs, "out", StringWireLogger(), schemaLoader, errorCollector
+        schema, fs, "out", StringWireLogger(), schemaLoader, errorCollector
     )
     for (type in schema.types) {
       schemaHandler.handle(schema.getType(type)!!)
@@ -681,9 +680,9 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Orange.kt")
-    assertThat(fs.get("generated/kt/squareup/colors/Orange.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Orange.kt"))
         .contains("class Orange")
   }
 
@@ -700,9 +699,9 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/kt/squareup/colors/Orange.kt")
-    assertThat(fs.get("generated/kt/squareup/colors/Orange.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/colors/Orange.kt"))
         .contains("class Orange")
   }
 
@@ -725,8 +724,8 @@ class WireRunTest {
     )
     wireRun.execute(fs, logger)
 
-    assertThat(fs.find("gen/a")).containsExactly("gen/a/A.java")
-    assertThat(fs.find("gen/b")).containsExactly("gen/b/B.java")
+    assertThat(fs.findFiles("gen/a")).containsExactlyInAnyOrder("gen/a/A.java")
+    assertThat(fs.findFiles("gen/b")).containsExactlyInAnyOrder("gen/b/B.java")
   }
 
   @Test
@@ -769,11 +768,11 @@ class WireRunTest {
     wireRun.execute(fs, logger)
 
     // TODO(jwilson): fix modules to treat extension fields as first-class objects.
-    assertThat(fs.find("gen/a")).containsExactly(
+    assertThat(fs.findFiles("gen/a")).containsExactlyInAnyOrder(
         "gen/a/example/A.java",
         "gen/a/example/MapsToOption.java",
         "gen/a/example/TypeOption.java")
-    assertThat(fs.find("gen/b")).containsExactly(
+    assertThat(fs.findFiles("gen/b")).containsExactlyInAnyOrder(
         "gen/b/example/B.java",
         "gen/b/example/MapsToOption.java",
         "gen/b/example/TypeOption.java")
@@ -934,12 +933,12 @@ class WireRunTest {
         )
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/squareup/options/DocumentationUrlOption.java",
         "generated/kt/squareup/options/DocumentationUrlOption.kt")
-    assertThat(fs.get("generated/java/squareup/options/DocumentationUrlOption.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/options/DocumentationUrlOption.java"))
         .contains("public @interface DocumentationUrlOption")
-    assertThat(fs.get("generated/kt/squareup/options/DocumentationUrlOption.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/options/DocumentationUrlOption.kt"))
         .contains("annotation class DocumentationUrlOption")
   }
 
@@ -961,7 +960,7 @@ class WireRunTest {
             ))
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.find("generated")).isEmpty()
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder()
   }
 
   @Test
@@ -985,12 +984,12 @@ class WireRunTest {
         )
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/squareup/polygons/Octagon.java",
         "generated/kt/squareup/polygons/Octagon.kt")
-    assertThat(fs.get("generated/java/squareup/polygons/Octagon.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/polygons/Octagon.java"))
         .contains("@DocumentationUrlOption(\"https://en.wikipedia.org/wiki/Octagon\")")
-    assertThat(fs.get("generated/kt/squareup/polygons/Octagon.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/polygons/Octagon.kt"))
         .contains("@DocumentationUrlOption(\"https://en.wikipedia.org/wiki/Octagon\")")
   }
 
@@ -1015,12 +1014,12 @@ class WireRunTest {
         )
     )
     wireRun.execute(fs, logger)
-    assertThat(fs.find("generated")).containsExactly(
+    assertThat(fs.findFiles("generated")).containsExactlyInAnyOrder(
         "generated/java/squareup/polygons/Octagon.java",
         "generated/kt/squareup/polygons/Octagon.kt")
-    assertThat(fs.get("generated/java/squareup/polygons/Octagon.java"))
+    assertThat(fs.readUtf8("generated/java/squareup/polygons/Octagon.java"))
         .doesNotContain("@DocumentationUrl")
-    assertThat(fs.get("generated/kt/squareup/polygons/Octagon.kt"))
+    assertThat(fs.readUtf8("generated/kt/squareup/polygons/Octagon.kt"))
         .doesNotContain("@DocumentationUrl")
   }
 
