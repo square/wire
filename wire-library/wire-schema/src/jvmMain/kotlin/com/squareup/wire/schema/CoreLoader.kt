@@ -16,6 +16,8 @@
 package com.squareup.wire.schema
 
 import com.squareup.wire.schema.internal.parser.ProtoParser
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 
@@ -44,9 +46,8 @@ actual object CoreLoader : Loader {
 
   override fun load(path: String): ProtoFile {
     if (isWireRuntimeProto(path)) {
-      val resourceAsStream = CoreLoader::class.java.getResourceAsStream("/$path")
-      resourceAsStream.source().buffer().use { source ->
-        val data = source.readUtf8()
+      FileSystem.RESOURCES.read("/".toPath() / path) {
+        val data = readUtf8()
         val location = Location.get(path)
         val element = ProtoParser.parse(location, data)
         return ProtoFile.get(element)
