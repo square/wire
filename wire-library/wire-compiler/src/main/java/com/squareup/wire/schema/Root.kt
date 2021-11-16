@@ -19,6 +19,7 @@ import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.java.internal.ProfileParser
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoParser
+import com.squareup.wire.schema.internal.withUnixSlashes
 import okio.FileSystem
 import okio.IOException
 import okio.Path
@@ -157,7 +158,9 @@ internal class DirectoryRoot(
     return fileSystem.listRecursively(rootDirectory)
         .filter { it.toString().endsWith(".proto") }
         .map { descendant ->
-          val location = Location.get(base, descendant.relativeTo(rootDirectory).toString())
+          val location = Location.get(
+              base = base,
+              path = descendant.relativeTo(rootDirectory).withUnixSlashes().toString())
           ProtoFilePath(location, fileSystem, descendant)
         }
         .toSet()
@@ -166,7 +169,11 @@ internal class DirectoryRoot(
   override fun resolve(import: String): ProtoFilePath? {
     val resolved = rootDirectory / import
     if (!fileSystem.exists(resolved)) return null
-    return ProtoFilePath(Location.get(base, import), fileSystem, resolved)
+    return ProtoFilePath(
+        location = Location.get(base, import.toPath().withUnixSlashes().toString()),
+        fileSystem = fileSystem,
+        path = resolved
+    )
   }
 
   override fun toString(): String = base
