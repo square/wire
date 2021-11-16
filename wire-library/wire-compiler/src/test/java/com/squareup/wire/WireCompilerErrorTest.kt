@@ -16,6 +16,7 @@
 package com.squareup.wire
 
 import com.squareup.wire.schema.SchemaException
+import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
@@ -23,7 +24,9 @@ import org.junit.Test
 import kotlin.test.assertFailsWith
 
 class WireCompilerErrorTest {
-  private var fileSystem = FakeFileSystem()
+  private var fileSystem = FakeFileSystem().apply {
+    if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
+  }
   private var nextFileIndex = 1
 
   /**
