@@ -15,17 +15,18 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.io.Closer
-import okio.fakefilesystem.FakeFileSystem
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
+import okio.Path
+import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
 class RootTest {
-  private val fs = FakeFileSystem()
+  private val fs = FakeFileSystem().apply {
+    if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
+  }
 
   @Test fun standaloneFile() {
     fs.add("sample/src/main/proto/squareup/dinosaurs/dinosaur.proto", "/* dinosaur.proto */")

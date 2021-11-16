@@ -21,7 +21,6 @@ import org.junit.Test
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintWriter
-import java.util.ArrayList
 import kotlin.test.assertFailsWith
 
 class CommandLineOptionsTest {
