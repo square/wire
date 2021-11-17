@@ -23,12 +23,9 @@ import com.squareup.wire.java.Profile
 import com.squareup.wire.kotlin.KotlinGenerator
 import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
+import okio.IOException
 import okio.Path.Companion.toPath
-import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
-import okio.source
-import java.io.File
-import java.io.IOException
 
 /**
  * Builds a repository of `.proto` and `.wire` files to create schemas, profiles, and adapters for
@@ -64,18 +61,18 @@ class RepoBuilder {
 
   @Throws(IOException::class)
   fun add(path: String): RepoBuilder {
-    val file = File("../wire-tests/src/commonTest/proto/java/$path")
-    file.source().use { source ->
-      val protoFile = source.buffer().readUtf8()
+    val file = "../wire-tests/src/commonTest/proto/java/$path".toPath()
+    fs.read(file) {
+      val protoFile = readUtf8()
       return add(path, protoFile)
     }
   }
 
   @Throws(IOException::class)
   fun addLocal(path: String): RepoBuilder {
-    val file = File(path)
-    file.source().use { source ->
-      val protoFile = source.buffer().readUtf8()
+    val file = path.toPath()
+    fs.read(file) {
+      val protoFile = readUtf8()
       return add(path, protoFile)
     }
   }

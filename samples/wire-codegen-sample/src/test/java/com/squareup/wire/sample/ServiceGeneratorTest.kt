@@ -19,21 +19,21 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import com.squareup.wire.java.JavaGenerator
 import com.squareup.wire.schema.Location
-import com.squareup.wire.schema.SchemaLoader
 import com.squareup.wire.schema.Schema
-import okio.buffer
-import okio.sink
+import com.squareup.wire.schema.SchemaLoader
+import okio.FileSystem
+import okio.IOException
+import okio.Path.Companion.toOkioPath
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-import java.io.IOException
-import java.nio.file.FileSystems
 
 class ServiceGeneratorTest {
   @get:Rule
   var temporaryFolder = TemporaryFolder()
+
+  private val fileSystem = FileSystem.SYSTEM
 
   @Test @Throws(IOException::class)
   fun service() {
@@ -90,15 +90,15 @@ class ServiceGeneratorTest {
 
   @Throws(IOException::class)
   private fun schema(fileToProto: Map<String, String>): Schema {
-    val schemaLoader = SchemaLoader(FileSystems.getDefault())
+    val fileSystem = FileSystem.SYSTEM
+    val schemaLoader = SchemaLoader(fileSystem)
     schemaLoader.initRoots(listOf(Location.get(temporaryFolder.root.toString())))
     for (entry in fileToProto.entries) {
-      val file = File(temporaryFolder.root, entry.key)
-      file.parentFile
-          .mkdirs()
-      file.sink()
-          .buffer()
-          .use { out -> out.writeUtf8(entry.value) }
+      val file = temporaryFolder.root.toOkioPath() / entry.key
+      fileSystem.createDirectories(file.parent!!)
+      fileSystem.write(file) {
+        writeUtf8(entry.value)
+      }
     }
     return schemaLoader.loadSchema()
   }
