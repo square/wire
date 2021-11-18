@@ -213,9 +213,8 @@ public final class JavaGenerator {
         Set<String> collidingNames = collidingFieldNames(fieldsAndOneOfFields);
         for (Field field : fieldsAndOneOfFields) {
           String suggestion = collidingNames.contains(field.getName())
+            || field.getName().equals(field.getType().getSimpleName())
             || schema.getType(field.getQualifiedName()) != null
-            || (field.getName().equals(field.getType().getSimpleName())
-              && !field.getType().isScalar())
               ? field.getQualifiedName()
               : field.getName();
           nameAllocator.newName(suggestion, field);
