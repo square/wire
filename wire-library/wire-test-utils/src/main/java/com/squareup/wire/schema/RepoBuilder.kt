@@ -103,7 +103,7 @@ class RepoBuilder {
   }
 
   @Throws(IOException::class)
-  @JvmOverloads fun generateCode(typeName: String, profileName: String? = null): String {
+  @JvmOverloads fun generateJava(typeName: String, profileName: String? = null): String {
     val schema = schema()
     val javaGenerator = JavaGenerator.get(schema)
       .withProfile(profile(profileName))
