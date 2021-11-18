@@ -21,7 +21,7 @@ object versions {
   val jmhPlugin = "0.5.0"
   val jsr305 = "3.0.2"
   val junit = "4.12"
-  val kotlin = "1.5.31"
+  val kotlin = "1.6.0"
   val kotlinpoet = "1.9.0"
   val moshi = "1.12.0"
   val okhttp = "4.9.1"

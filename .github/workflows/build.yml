@@ -49,7 +49,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
 
   multiplatform:
-    runs-on: macos-latest
+    runs-on: macos-11
 
     steps:
       - name: Checkout
@@ -63,9 +63,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 14
-
-      - name: Setup Xcode
-        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
 
       - name: Check test files
         run: |
@@ -87,7 +84,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
 
   swift:
-    runs-on: macos-latest
+    runs-on: macos-11
 
     steps:
       - name: Checkout
@@ -100,9 +97,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 14
-
-      - name: Setup Xcode
-        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
 
       - name: Test Swift Runtime
         # This builds the wire-swift-runtime, verifies that generated protos match what's
@@ -124,7 +118,7 @@ jobs:
           ./gradlew -p wire-library :wire-tests-swift:build
 
   publish:
-    runs-on: macos-latest
+    runs-on: macos-11
     if: github.repository == 'square/wire' && github.ref == 'refs/heads/master'
     needs: [jvm, multiplatform]
 
@@ -137,9 +131,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 14
-
-      - name: Setup Xcode
-        run: sudo xcode-select -switch "/Applications/Xcode_12.app"
 
       - name: Upload Artifacts
         run: ./gradlew -p wire-library clean publish --stacktrace
