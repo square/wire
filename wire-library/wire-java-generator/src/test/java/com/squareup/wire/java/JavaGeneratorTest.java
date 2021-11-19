@@ -52,7 +52,7 @@ public final class JavaGeneratorTest {
             + "message Message {\n"
             + "  required float long = 1;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("Message")).contains(""
+    assertThat(repoBuilder.generateJava("Message")).contains(""
         + "    @Override\n"
         + "    public Message build() {\n"
         + "      if (long_ == null) {\n"
@@ -76,7 +76,7 @@ public final class JavaGeneratorTest {
             + "       int32 bar = 258;\n"
             + "    }\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("Message")).contains(""
+    assertThat(repoBuilder.generateJava("Message")).contains(""
         + "public Message(Builder builder, ByteString unknownFields)");
   }
 
@@ -131,7 +131,7 @@ public final class JavaGeneratorTest {
             + "type original.proto.ProtoMessage {\n"
             + "  target target.java.JavaMessage using target.java.JavaMessage#ADAPTER;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("original.proto.ProtoMessage", "android")).isEqualTo(""
+    assertThat(repoBuilder.generateJava("original.proto.ProtoMessage", "android")).isEqualTo(""
         + "package original.java;\n"
         + "\n"
         + "import com.squareup.wire.FieldEncoding;\n"
@@ -259,7 +259,7 @@ public final class JavaGeneratorTest {
             + "type original.proto.CoinFlip {\n"
             + "  target target.java.JavaCoinFlip using target.java.JavaCoinFlip#ADAPTER;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("original.proto.CoinFlip", "android")).isEqualTo(""
+    assertThat(repoBuilder.generateJava("original.proto.CoinFlip", "android")).isEqualTo(""
         + "package original.proto;\n"
         + "\n"
         + "import com.squareup.wire.FieldEncoding;\n"
@@ -346,7 +346,7 @@ public final class JavaGeneratorTest {
             + "type ProtoMessage {\n"
             + "  target JavaMessage using JavaMessage#ADAPTER;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("ProtoMessage", "android")).contains(""
+    assertThat(repoBuilder.generateJava("ProtoMessage", "android")).contains(""
         + "  @Override\n"
         + "  public JavaMessage redact(JavaMessage value) {\n"
         + "    return null;\n"
@@ -367,7 +367,7 @@ public final class JavaGeneratorTest {
             + "type A.B {\n"
             + "  target java.lang.String using AbAdapter#INSTANCE;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("A", "android")).contains(""
+    assertThat(repoBuilder.generateJava("A", "android")).contains(""
         + "  public abstract static class AbstractBAdapter extends ProtoAdapter<String> {\n");
   }
   /** https://github.com/square/wire/issues/655 */
@@ -384,7 +384,7 @@ public final class JavaGeneratorTest {
             + "  optional double g = 7 [default = nan ];\n"
             + "  optional double h = 8 [default = -nan ];\n"
             + "}\n");
-    String code = repoBuilder.generateCode("Message");
+    String code = repoBuilder.generateJava("Message");
     assertThat(code).contains("  public static final Integer DEFAULT_A = 10;");
     assertThat(code).contains("  public static final Integer DEFAULT_B = 32;");
     assertThat(code).contains("  public static final Long DEFAULT_C = 11L;");
@@ -403,7 +403,7 @@ public final class JavaGeneratorTest {
             + "  optional int64 b = 2 [default = 021 ];\n"
             + "}\n");
     try {
-      repoBuilder.generateCode("Message");
+      repoBuilder.generateJava("Message");
       fail();
     } catch (IllegalStateException expected) {
       assertThat(expected).hasMessage("Octal literal unsupported: 020");
@@ -492,7 +492,7 @@ public final class JavaGeneratorTest {
             + "message Person {\n"
             + "  optional Gender Gender = 1;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("common.proto.Person"))
+    assertThat(repoBuilder.generateJava("common.proto.Person"))
         .contains("public final Gender common_proto_Gender;");
   }
 
@@ -516,7 +516,7 @@ public final class JavaGeneratorTest {
             + "  repeated B b = 1;"
             + "  optional AnotherStatus Status = 2;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("common.proto.A"))
+    assertThat(repoBuilder.generateJava("common.proto.A"))
         .contains("public final AnotherStatus common_proto_Status;");
   }
 
@@ -531,7 +531,7 @@ public final class JavaGeneratorTest {
             + "  optional string string = 1;\n"
             + "  repeated string values = 2;\n"
             + "}\n");
-    assertThat(repoBuilder.generateCode("squareup.testing.wire.Data")).contains(""
+    assertThat(repoBuilder.generateJava("squareup.testing.wire.Data")).contains(""
         + "    public Builder string(String string) {\n"
         + "      this.string = string;\n"
         + "      return this;\n"
@@ -557,7 +557,7 @@ public final class JavaGeneratorTest {
             + "    MOBILE = 2;\n"
             + "  }\n"
             + "}\n");
-    String generatedCode = repoBuilder.generateCode("Person");
+    String generatedCode = repoBuilder.generateJava("Person");
     assertThat(generatedCode).contains(""
         + "  public String toString() {\n"
         + "    StringBuilder builder = new StringBuilder();\n"
@@ -588,7 +588,7 @@ public final class JavaGeneratorTest {
                 + "message Person {\n"
                 + "	required string name = 1;\n"
                 + "}\n");
-    String code = repoBuilder.generateCode("proto_package.Person");
+    String code = repoBuilder.generateJava("proto_package.Person");
     assertThat(code).contains("package wire_package");
     assertThat(code).contains("class Person");
   }
@@ -604,7 +604,7 @@ public final class JavaGeneratorTest {
             + "message Person {\n"
             + "	required string name = 1;\n"
             + "}\n");
-    String code = repoBuilder.generateCode("proto_package.Person");
+    String code = repoBuilder.generateJava("proto_package.Person");
     assertThat(code).contains("package wire_package");
     assertThat(code).contains("class Person");
   }
@@ -624,7 +624,7 @@ public final class JavaGeneratorTest {
           + "message Example {\n"
           + "   required Common.CommonMessage CommonMessage = 1;\n"
           + "}\n");
-    String code = repoBuilder.generateCode("a.Example");
+    String code = repoBuilder.generateJava("a.Example");
     assertThat(code).contains("package a");
     assertThat(code).contains("import a.common.CommonMessage");
     assertThat(code).contains("public CommonMessage a_CommonMessage");
@@ -648,7 +648,7 @@ public final class JavaGeneratorTest {
             + "message Home {\n"
             + "	repeated proto_package.Person person = 1;\n"
             + "}\n");
-    String code = repoBuilder.generateCode("city_package.Home");
+    String code = repoBuilder.generateJava("city_package.Home");
     assertThat(code).contains("package city_package");
     assertThat(code).contains("import wire_package.Person");
   }
@@ -664,7 +664,7 @@ public final class JavaGeneratorTest {
                 + "  SOUTH = 3;\n"
                 + "  WEST = 4;\n"
                 + "}\n");
-    String code = repoBuilder.generateCode("proto_package.Direction");
+    String code = repoBuilder.generateJava("proto_package.Direction");
     assertThat(code).contains("@Deprecated\npublic enum Direction");
   }
 
@@ -678,7 +678,7 @@ public final class JavaGeneratorTest {
                 + "  SOUTH = 3;\n"
                 + "  WEST = 4;\n"
                 + "}\n");
-    String code = repoBuilder.generateCode("proto_package.Direction");
+    String code = repoBuilder.generateJava("proto_package.Direction");
     assertThat(code).contains("  @Deprecated\n  EAST(2)");
   }
 
@@ -689,7 +689,7 @@ public final class JavaGeneratorTest {
                 + "message Person {\n"
                 + "  optional string name = 1 [deprecated = true];\n"
                 + "}\n");
-    String code = repoBuilder.generateCode("proto_package.Person");
+    String code = repoBuilder.generateJava("proto_package.Person");
     assertThat(code).contains("  @Deprecated\n  public final String name;");
   }
 
@@ -701,7 +701,7 @@ public final class JavaGeneratorTest {
                 + "  option deprecated = true;\n"
                 + "  optional string name = 1;\n"
                 + "}\n");
-    String code = repoBuilder.generateCode("proto_package.Person");
+    String code = repoBuilder.generateJava("proto_package.Person");
     assertThat(code).contains("@Deprecated\npublic final class Person");
   }
 }
