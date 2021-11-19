@@ -30,8 +30,6 @@ internal fun FileSystem.toOkioFileSystem(): okio.FileSystem {
   }
 }
 
-internal fun Path.endsWithDotProto() = toString().endsWith(".proto")
-
 private val UNICODE_BOMS = Options.of(
   "efbbbf".decodeHex(), // UTF-8
   "feff".decodeHex(), // UTF-16BE

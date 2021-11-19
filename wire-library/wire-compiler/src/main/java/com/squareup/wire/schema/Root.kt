@@ -67,23 +67,25 @@ internal fun Location.roots(
 
 /** Returns this path's roots. */
 private fun Path.roots(fileSystem: FileSystem, location: Location): List<Root> {
+  val symlinkTarget = fileSystem.metadataOrNull(this)?.symlinkTarget
+  val path = symlinkTarget ?: this
   return when {
-    fileSystem.metadataOrNull(this)?.isDirectory == true -> {
+    fileSystem.metadataOrNull(path)?.isDirectory == true -> {
       check(location.base.isEmpty())
-      listOf(DirectoryRoot(location.path, fileSystem, this))
+      listOf(DirectoryRoot(location.path, fileSystem, path))
     }
 
-    endsWithDotProto() -> listOf(ProtoFilePath(location, fileSystem, this))
+    path.toString().endsWith(".proto") -> listOf(ProtoFilePath(location, fileSystem, path))
 
     // Handle a .zip or .jar file by adding all .proto files within.
     else -> {
       try {
         check(location.base.isEmpty())
-        val sourceFs = fileSystem.openZip(this)
+        val sourceFs = fileSystem.openZip(path)
         listOf(DirectoryRoot(location.path, sourceFs, "/".toPath()))
       } catch (_: IOException) {
         throw IllegalArgumentException(
-          "expected a directory, archive (.zip / .jar / etc.), or .proto: $this"
+            "expected a directory, archive (.zip / .jar / etc.), or .proto: $this"
         )
       }
     }
@@ -153,7 +155,7 @@ internal class DirectoryRoot(
 ) : Root() {
   override fun allProtoFiles(): Set<ProtoFilePath> {
     return fileSystem.listRecursively(rootDirectory)
-        .filter { it.endsWithDotProto() }
+        .filter { it.toString().endsWith(".proto") }
         .map { descendant ->
           val location = Location.get(base, descendant.relativeTo(rootDirectory).toString())
           ProtoFilePath(location, fileSystem, descendant)

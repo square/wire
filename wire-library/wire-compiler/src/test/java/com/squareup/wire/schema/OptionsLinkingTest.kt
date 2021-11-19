@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("UsePropertyAccessSyntax")
+
 package com.squareup.wire.schema
 
-import okio.fakefilesystem.FakeFileSystem
 import com.squareup.wire.testing.add
-import com.squareup.wire.testing.exists
+import okio.Path.Companion.toPath
+import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -177,7 +179,7 @@ class OptionsLinkingTest {
   private fun loadAndLinkSchema(): Schema {
     SchemaLoader(fs).use { loader ->
       val protoPath = when {
-        fs.exists("proto-path") -> listOf(Location.get("proto-path"))
+        fs.exists("proto-path".toPath()) -> listOf(Location.get("proto-path"))
         else -> listOf()
       }
 

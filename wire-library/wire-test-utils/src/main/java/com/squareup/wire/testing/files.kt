@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.testing
 
-import java.io.IOException
 import java.nio.charset.Charset
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -42,45 +41,17 @@ fun FileSystem.add(
   }
 }
 
-fun FileSystem.symlink(linkPathString: String, targetPathString: String) {
-  throw UnsupportedOperationException("symlinks are not yet implemented in okio.FileSystem")
-}
-
-fun FileSystem.get(pathString: String): String {
+fun FileSystem.readUtf8(pathString: String): String {
   read(pathString.toPath()) {
     return readUtf8()
   }
 }
 
-fun FileSystem.exists(pathString: String): Boolean {
-  val path = pathString.toPath()
-  return exists(path)
-}
-
-/** Visit [path] and all its children recursively, if it has any. */
-fun FileSystem.visitAll(path: okio.Path, block: (okio.Path) -> Unit) {
-  block(path)
-
-  val toVisit: List<okio.Path> = try {
-    list(path)
-  } catch (e: IOException) {
-    listOf()
-  }
-
-  for (child in toVisit) {
-    visitAll(child, block)
-  }
-}
-
-
-fun FileSystem.find(path: String): Set<String> {
-  val result = mutableSetOf<String>()
-  visitAll(path.toPath()) { path ->
-    if (!metadata(path).isDirectory) {
-      result.add(path.toString())
-    }
-  }
-  return result
+fun FileSystem.findFiles(path: String): Set<String> {
+  return listRecursively(path.toPath())
+      .filter { !metadata(it).isDirectory }
+      .map { it.toString() }
+      .toSet()
 }
 
 fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>) {
