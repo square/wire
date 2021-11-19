@@ -15,16 +15,18 @@
  */
 package com.squareup.wire.testing
 
-import java.io.IOException
+import okio.ByteString
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
+import okio.buffer
+import okio.sink
+import org.assertj.core.api.IterableAssert
+import org.assertj.core.api.ListAssert
 import java.nio.charset.Charset
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.text.Charsets.UTF_8
-import okio.ByteString
-import okio.FileSystem
-import okio.Path.Companion.toPath
-import okio.buffer
-import okio.sink
 
 fun FileSystem.add(
   pathString: String,
@@ -42,45 +44,17 @@ fun FileSystem.add(
   }
 }
 
-fun FileSystem.symlink(linkPathString: String, targetPathString: String) {
-  throw UnsupportedOperationException("symlinks are not yet implemented in okio.FileSystem")
-}
-
-fun FileSystem.get(pathString: String): String {
+fun FileSystem.readUtf8(pathString: String): String {
   read(pathString.toPath()) {
     return readUtf8()
   }
 }
 
-fun FileSystem.exists(pathString: String): Boolean {
-  val path = pathString.toPath()
-  return exists(path)
-}
-
-/** Visit [path] and all its children recursively, if it has any. */
-fun FileSystem.visitAll(path: okio.Path, block: (okio.Path) -> Unit) {
-  block(path)
-
-  val toVisit: List<okio.Path> = try {
-    list(path)
-  } catch (e: IOException) {
-    listOf()
-  }
-
-  for (child in toVisit) {
-    visitAll(child, block)
-  }
-}
-
-
-fun FileSystem.find(path: String): Set<String> {
-  val result = mutableSetOf<String>()
-  visitAll(path.toPath()) { path ->
-    if (!metadata(path).isDirectory) {
-      result.add(path.toString())
-    }
-  }
-  return result
+fun FileSystem.findFiles(path: String): Set<String> {
+  return listRecursively(path.withPlatformSlashes().toPath())
+      .filter { !metadata(it).isDirectory }
+      .map { it.toString() }
+      .toSet()
 }
 
 fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>) {
@@ -99,4 +73,33 @@ fun FileSystem.addZip(pathString: String, vararg contents: Pair<String, String>)
       }
     }
   }
+}
+
+private val slash = Path.DIRECTORY_SEPARATOR
+private val otherSlash = if (slash == "/") "\\" else "/"
+
+/**
+ * This returns a string where all other slashes are replaced with the slash of the local platform.
+ * On Windows, `/` will be replaced with `\`. On other platforms, `\` will be replaced with `/`.
+ */
+fun String.withPlatformSlashes(): String {
+  return replace(otherSlash, slash)
+}
+
+/**
+ * This asserts that [this] contains exactly in any order all [values] regardless of the slash they
+ * may contain. This is useful to write one assertion which can be run on both macOS and Windows.
+ */
+fun IterableAssert<String>.containsRelativePaths(vararg values: String): IterableAssert<String> {
+  val values = values.map { it.withPlatformSlashes() }
+  return containsExactlyInAnyOrder(*values.toTypedArray())
+}
+
+/**
+ * This asserts that [this] contains exactly in any order all [values] regardless of the slash they
+ * may contain. This is useful to write one assertion which can be run on both macOS and Windows.
+ */
+fun ListAssert<String>.containsRelativePaths(vararg values: String): ListAssert<String> {
+  val values = values.map { it.withPlatformSlashes() }
+  return containsExactlyInAnyOrder(*values.toTypedArray())
 }

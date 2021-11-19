@@ -18,10 +18,10 @@ configure<AnimalSnifferExtension> {
 dependencies {
   implementation(project(":wire-runtime"))
   api(deps.moshi)
-  api(deps.moshiKotlin)
   testImplementation(project(":wire-test-utils"))
-  testImplementation(deps.junit)
   testImplementation(deps.assertj)
+  testImplementation(deps.junit)
+  testImplementation(deps.moshiKotlin)
 }
 
 configure<MavenPublishBaseExtension> {

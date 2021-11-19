@@ -109,6 +109,7 @@ internal class RealGrpcStreamingCall<S : Any, R : Any>(
       if (oldTimeout.hasDeadline()) newTimeout.deadlineNanoTime(oldTimeout.deadlineNanoTime())
       else newTimeout.clearDeadline()
     }
+    result.requestMetadata += this.requestMetadata
     return result
   }
 

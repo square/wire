@@ -1,25 +1,26 @@
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.stream.Collectors
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 buildscript {
   dependencies {
     classpath(deps.plugins.kotlin)
+    classpath(deps.okio.core)
   }
   repositories {
     mavenCentral()
   }
 }
 
-val protosDir = Paths.get("${rootProject.rootDir}/wire-library/wire-tests/src/commonTest/proto/java")
-val PROTOS = Files.find(protosDir, Integer.MAX_VALUE, { _, attrs -> attrs.isRegularFile() })
-  .map { protosDir.relativize(it) }
-  .filter { !it.startsWith("kotlin") }
-  .map { it.toString() }
+val fileSystem = FileSystem.SYSTEM
+val protosDir = "${rootProject.rootDir}/wire-library/wire-tests/src/commonTest/proto/java".toPath()
+val PROTOS = fileSystem.listRecursively(protosDir)
+  .filter { fileSystem.metadata(it).isRegularFile }
+  .map { it.relativeTo(protosDir).toString() }
   .filter { it.endsWith(".proto") }
   .sorted()
-  .collect(Collectors.toList())
+  .toList()
 
 val wire by configurations.creating {
   attributes {
@@ -99,8 +100,8 @@ val generateGsonAdapterJavaTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--java_out=wire-library/wire-gson-support/src/test/java",
           "collection_types.proto",
           "dinosaur_java.proto",
@@ -115,8 +116,8 @@ val generateGsonAdapterInteropKotlinTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-library/wire-gson-support/src/test/java",
           "--java_interop",
           "dinosaur_java_interop_kotlin.proto",
@@ -131,8 +132,8 @@ val generateGsonAdapterKotlinTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-library/wire-gson-support/src/test/java",
           "dinosaur_kotlin.proto",
           "period_kotlin.proto",
@@ -234,6 +235,19 @@ val generateKotlinTests by tasks.creating(JavaExec::class) {
       "to_string.proto",
       "unknown_fields.proto",
       "uses_any.proto"
+  )
+}
+
+val generateKotlinZipTests by tasks.creating(JavaExec::class) {
+  group = "Generate Tests"
+  description = "Generates Kotlin classes from the test jar"
+  classpath = wire
+  main = "com.squareup.wire.WireCompiler"
+  args = listOf(
+      "--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin/protos.jar",
+      "--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin",
+      "squareup/geology/period.proto",
+      "squareup/dinosaurs/dinosaur.proto"
   )
 }
 
@@ -423,15 +437,13 @@ val generateSwiftTests by tasks.creating {
 }
 
 // GRPC
-
-val grpcProtosDir = Paths.get("${rootProject.rootDir}/wire-grpc-tests/src/test/proto")
-val GRPC_PROTOS = Files.find(grpcProtosDir, Integer.MAX_VALUE, { _, attrs -> attrs.isRegularFile() })
-  .map { grpcProtosDir.relativize(it) }
-  .filter { !it.startsWith("kotlin") }
-  .map { it.toString() }
-  .filter { it.endsWith(".proto") }
+val grpcProtosDir = "${rootProject.rootDir}/wire-grpc-tests/src/test/proto".toPath()
+val GRPC_PROTOS = fileSystem.listRecursively(grpcProtosDir)
+  .filter { fileSystem.metadata(it).isRegularFile }
+  .map { it.relativeTo(grpcProtosDir).toString() }
+  .filter { !it.startsWith("kotlin") && it.endsWith(".proto") }
   .sorted()
-  .collect(Collectors.toList())
+  .toList()
 
 val generateGrpcTests by tasks.creating(JavaExec::class) {
   group = "Generate gRPC Tests"
@@ -466,8 +478,8 @@ val generateMoshiAdapterJavaTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--java_out=wire-library/wire-moshi-adapter/src/test/java",
           "collection_types.proto",
           "person_java.proto",
@@ -483,8 +495,8 @@ val generateMoshiAdapterInteropKotlinTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-library/wire-moshi-adapter/src/test/java",
           "--java_interop",
           "person_java_interop_kotlin.proto",
@@ -500,8 +512,8 @@ val generateMoshiAdapterKotlinTests by tasks.creating(JavaExec::class) {
   classpath = wire
   main = "com.squareup.wire.WireCompiler"
   args = listOf(
-          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto",
           "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto2",
+          "--proto_path=wire-library/wire-tests/src/commonTest/shared/proto/proto3",
           "--kotlin_out=wire-library/wire-moshi-adapter/src/test/java",
           "person_kotlin.proto",
           "dinosaur_kotlin.proto",
@@ -587,6 +599,7 @@ val generateTests by tasks.creating {
     generateAndroidTests,
     generateAndroidCompactTests,
     generateKotlinTests,
+    generateKotlinZipTests,
     generateKotlinServicesTests,
     generateKotlinAndroidTests,
     generateKotlinJavaInteropTests,

@@ -15,16 +15,16 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.io.Closer
 import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.java.internal.ProfileParser
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoParser
+import com.squareup.wire.schema.internal.withUnixSlashes
 import okio.FileSystem
+import okio.IOException
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.openZip
-import java.io.IOException
 
 internal sealed class Root {
   abstract val base: String?
@@ -44,7 +44,6 @@ internal sealed class Root {
 // TODO(jwilson): rework this API to combine baseToRoots and Closer.
 internal fun Location.roots(
   fs: FileSystem,
-  closer: Closer,
   baseToRoots: MutableMap<String, List<Root>> = mutableMapOf()
 ): List<Root> {
   if (isWireRuntimeProto(this)) {
@@ -52,7 +51,7 @@ internal fun Location.roots(
     return listOf(ProtoFilePath(this, fs, path.toPath()))
   } else if (base.isNotEmpty()) {
     val roots = baseToRoots.computeIfAbsent(base) {
-      Location.get(it).roots(fs, closer)
+      Location.get(it).roots(fs)
     }
     for (root in roots) {
       val resolved = root.resolve(path) ?: continue
@@ -62,31 +61,32 @@ internal fun Location.roots(
   } else {
     val path = path.toPath()
     return baseToRoots.computeIfAbsent(this.path) {
-      path.roots(fs, closer, this)
+      path.roots(fs, this)
     }
   }
 }
 
 /** Returns this path's roots. */
-private fun Path.roots(fileSystem: FileSystem, closer: Closer, location: Location): List<Root> {
+private fun Path.roots(fileSystem: FileSystem, location: Location): List<Root> {
+  val symlinkTarget = fileSystem.metadataOrNull(this)?.symlinkTarget
+  val path = symlinkTarget ?: this
   return when {
-    fileSystem.metadataOrNull(this)?.isDirectory == true -> {
+    fileSystem.metadataOrNull(path)?.isDirectory == true -> {
       check(location.base.isEmpty())
-      listOf(DirectoryRoot(location.path, fileSystem, this))
+      listOf(DirectoryRoot(location.path, fileSystem, path))
     }
 
-    endsWithDotProto() -> listOf(ProtoFilePath(location, fileSystem, this))
+    path.toString().endsWith(".proto") -> listOf(ProtoFilePath(location, fileSystem, path))
 
     // Handle a .zip or .jar file by adding all .proto files within.
     else -> {
       try {
         check(location.base.isEmpty())
-        val sourceFs = fileSystem.openZip(this)
-        // TODO(jwilson): register the ZipFileSystem with closer if Okio 3.0 makes that a requirement.
+        val sourceFs = fileSystem.openZip(path)
         listOf(DirectoryRoot(location.path, sourceFs, "/".toPath()))
       } catch (_: IOException) {
         throw IllegalArgumentException(
-          "expected a directory, archive (.zip / .jar / etc.), or .proto: $this"
+            "expected a directory, archive (.zip / .jar / etc.), or .proto: $this"
         )
       }
     }
@@ -155,20 +155,25 @@ internal class DirectoryRoot(
   val rootDirectory: Path
 ) : Root() {
   override fun allProtoFiles(): Set<ProtoFilePath> {
-    val result = mutableSetOf<ProtoFilePath>()
-    fileSystem.visitAll(rootDirectory) { descendant ->
-      if (descendant.endsWithDotProto()) {
-        val location = Location.get(base, rootDirectory.relativize(descendant))
-        result.add(ProtoFilePath(location, fileSystem, descendant))
-      }
-    }
-    return result
+    return fileSystem.listRecursively(rootDirectory)
+        .filter { it.toString().endsWith(".proto") }
+        .map { descendant ->
+          val location = Location.get(
+              base = base,
+              path = descendant.relativeTo(rootDirectory).withUnixSlashes().toString())
+          ProtoFilePath(location, fileSystem, descendant)
+        }
+        .toSet()
   }
 
   override fun resolve(import: String): ProtoFilePath? {
     val resolved = rootDirectory / import
     if (!fileSystem.exists(resolved)) return null
-    return ProtoFilePath(Location.get(base, import), fileSystem, resolved)
+    return ProtoFilePath(
+        location = Location.get(base, import.toPath().withUnixSlashes().toString()),
+        fileSystem = fileSystem,
+        path = resolved
+    )
   }
 
   override fun toString(): String = base

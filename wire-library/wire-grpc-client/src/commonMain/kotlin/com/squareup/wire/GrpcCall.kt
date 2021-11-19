@@ -15,7 +15,7 @@
  */
 package com.squareup.wire
 
-import com.squareup.wire.internal.Throws
+import kotlinx.coroutines.CancellationException
 import okio.IOException
 import okio.Timeout
 
@@ -60,7 +60,7 @@ interface GrpcCall<S : Any, R : Any> {
   fun isCanceled(): Boolean
 
   /** Invokes the call immediately and suspends until its response is received. */
-  @Throws(IOException::class)
+  @Throws(IOException::class, CancellationException::class)
   suspend fun execute(request: S): R
 
   /** Invokes the call immediately and blocks until its response is received. */

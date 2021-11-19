@@ -1321,6 +1321,64 @@ class GrpcClientTest {
   }
 
   @Test
+  fun requestResponseMetadataOnSuccessfulClonedCall() {
+    // First call.
+    mockService.enqueue(
+      ReceiveCall(
+        path = "/routeguide.RouteGuide/GetFeature",
+        requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
+      )
+    )
+    mockService.enqueueReceivePoint(latitude = 5, longitude = 6)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(
+      SendMessage(
+        message = RouteGuideProto.Feature.newBuilder()
+          .setName("tree at 5,6")
+          .build(),
+        responseHeaders = mapOf("response-lucky-animal" to "horse")
+      )
+    )
+    mockService.enqueue(SendCompleted)
+    // Cloned call.
+    mockService.enqueue(
+      ReceiveCall(
+        path = "/routeguide.RouteGuide/GetFeature",
+        requestHeaders = mapOf("request-lucky-number" to "twenty-two", "all-in" to "true"),
+      )
+    )
+    mockService.enqueueReceivePoint(latitude = 15, longitude = 16)
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(
+      SendMessage(
+        message = RouteGuideProto.Feature.newBuilder()
+          .setName("tree at 15,16")
+          .build(),
+        responseHeaders = mapOf("response-lucky-animal" to "emu")
+      )
+    )
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.GetFeature()
+    val callMetadata = mutableMapOf("request-lucky-number" to "twenty-two")
+    grpcCall.requestMetadata = callMetadata
+
+    // First call.
+    grpcCall.executeBlocking(Point(latitude = 5, longitude = 6))
+    assertThat(grpcCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("horse")
+
+    // Cloned call.
+    val clonedCall = grpcCall.clone()
+    // Modifying the original call's metadata should not affect the already cloned `clonedCall`.
+    callMetadata["request-lucky-number"] = "one"
+    clonedCall.requestMetadata += mapOf("all-in" to "true")
+    clonedCall.executeBlocking(Point(latitude = 15, longitude = 16))
+    assertThat(clonedCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("emu")
+
+    mockService.awaitSuccessBlocking()
+  }
+
+  @Test
   fun requestResponseMetadataOnSuccessfulStreamingCall() {
     mockService.enqueue(
       ReceiveCall(
@@ -1351,6 +1409,74 @@ class GrpcClientTest {
     assertThat(responseChannel.read()).isEqualTo(Feature(name = "house"))
     assertThat(responseChannel.read()).isNull()
     assertThat(grpcCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("horse")
+  }
+
+  @Test
+  fun requestResponseMetadataOnSuccessfulClonedStreamingCall() {
+    // First call.
+    mockService.enqueue(
+      ReceiveCall(
+        path = "/routeguide.RouteGuide/ListFeatures",
+        requestHeaders = mapOf("request-lucky-number" to "twenty-two"),
+      )
+    )
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(4, 5))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(
+      SendMessage(
+        message = RouteGuideProto.Feature.newBuilder()
+          .setName("tree")
+          .build(),
+        responseHeaders = mapOf("response-lucky-animal" to "horse")
+      )
+    )
+    mockService.enqueueSendFeature(name = "house")
+    mockService.enqueue(SendCompleted)
+    // Clone call.
+    mockService.enqueue(
+      ReceiveCall(
+        path = "/routeguide.RouteGuide/ListFeatures",
+        requestHeaders = mapOf("request-lucky-number" to "twenty-two", "all-in" to "true"),
+      )
+    )
+    mockService.enqueueReceiveRectangle(lo = Point(0, 0), hi = Point(14, 15))
+    mockService.enqueue(ReceiveComplete)
+    mockService.enqueue(
+      SendMessage(
+        message = RouteGuideProto.Feature.newBuilder()
+          .setName("forest")
+          .build(),
+        responseHeaders = mapOf("response-lucky-animal" to "emu")
+      )
+    )
+    mockService.enqueueSendFeature(name = "cabane")
+    mockService.enqueue(SendCompleted)
+
+    val grpcCall = routeGuideService.ListFeatures()
+    val callMetadata = mutableMapOf("request-lucky-number" to "twenty-two")
+    grpcCall.requestMetadata = callMetadata
+
+    // First call.
+    val (requestChannel, responseChannel) = grpcCall.executeBlocking()
+    requestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(4, 5)))
+    requestChannel.close()
+    assertThat(responseChannel.read()).isEqualTo(Feature(name = "tree"))
+    assertThat(responseChannel.read()).isEqualTo(Feature(name = "house"))
+    assertThat(responseChannel.read()).isNull()
+    assertThat(grpcCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("horse")
+
+    // Cloned call.
+    val clonedCall = grpcCall.clone()
+    // Modifying the original call's metadata should not affect the already cloned `clonedCall`.
+    callMetadata["request-lucky-number"] = "one"
+    clonedCall.requestMetadata += mapOf("all-in" to "true")
+    val (cloneRequestChannel, cloneResponseChannel) = clonedCall.executeBlocking()
+    cloneRequestChannel.write(Rectangle(lo = Point(0, 0), hi = Point(14, 15)))
+    cloneRequestChannel.close()
+    assertThat(cloneResponseChannel.read()).isEqualTo(Feature(name = "forest"))
+    assertThat(cloneResponseChannel.read()).isEqualTo(Feature(name = "cabane"))
+    assertThat(cloneResponseChannel.read()).isNull()
+    assertThat(clonedCall.responseMetadata!!["response-lucky-animal"]).isEqualTo("emu")
   }
 
   private fun removeGrpcStatusInterceptor(): Interceptor {

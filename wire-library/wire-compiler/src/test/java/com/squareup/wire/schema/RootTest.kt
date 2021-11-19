@@ -15,28 +15,24 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.io.Closer
-import okio.fakefilesystem.FakeFileSystem
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
+import okio.Path
+import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
 class RootTest {
-  private val fs = FakeFileSystem()
-  private val closer = Closer.create()
-
-  @After fun tearDown() {
-    closer.close()
+  private val fs = FakeFileSystem().apply {
+    if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
   }
 
   @Test fun standaloneFile() {
     fs.add("sample/src/main/proto/squareup/dinosaurs/dinosaur.proto", "/* dinosaur.proto */")
 
     val location = Location.get("sample/src/main/proto", "squareup/dinosaurs/dinosaur.proto")
-    val roots = location.roots(fs, closer)
+    val roots = location.roots(fs)
     assertThat(roots.size == 1)
 
     // Standalone files resolve because we have a base directory.
@@ -52,7 +48,7 @@ class RootTest {
     fs.add("sample/src/main/proto/squareup/dinosaurs/geology.proto", "/* geology.proto */")
 
     val sourceDir = Location.get("sample/src/main/proto")
-    val roots = sourceDir.roots(fs, closer)
+    val roots = sourceDir.roots(fs)
     assertThat(roots.size == 1)
 
     assertThat(roots[0].resolve("squareup/dinosaurs/dinosaur.proto")?.location)
@@ -73,7 +69,7 @@ class RootTest {
         "squareup/dinosaurs/geology.proto" to "/* geology.proto */")
 
     val sourceZip = Location.get("lib/dinosaurs.zip")
-    val roots = sourceZip.roots(fs, closer)
+    val roots = sourceZip.roots(fs)
     assertThat(roots.size == 1)
 
     assertThat(roots[0].resolve("squareup/dinosaurs/dinosaur.proto")?.location)
@@ -94,7 +90,7 @@ class RootTest {
         "squareup/dinosaurs/raptor.nba" to "/* raptor.nba */")
 
     val sourceZip = Location.get("lib/dinosaurs.zip")
-    val roots = sourceZip.roots(fs, closer)
+    val roots = sourceZip.roots(fs)
     assertThat(roots.size == 1)
     assertThat(roots[0].allProtoFiles().map { it.location })
         .containsOnly(Location.get(sourceZip.toString(), "squareup/dinosaurs/raptor.proto"))
@@ -105,7 +101,7 @@ class RootTest {
     fs.add("sample/src/main/proto/squareup/dinosaurs/raptor.nba", "/* raptor.nba */")
 
     val sourceDir = Location.get("sample/src/main/proto")
-    val roots = sourceDir.roots(fs, closer)
+    val roots = sourceDir.roots(fs)
     assertThat(roots.size == 1)
     assertThat(roots[0].allProtoFiles().map { it.location })
         .containsOnly(Location.get(sourceDir.toString(), "squareup/dinosaurs/raptor.proto"))
@@ -116,7 +112,7 @@ class RootTest {
 
     val onlyFile = Location.get("sample/src/main/proto/squareup/dinosaurs/raptor.nba")
     val exception = assertFailsWith<IllegalArgumentException> {
-      onlyFile.roots(fs, closer)
+      onlyFile.roots(fs)
     }
     assertThat(exception)
         .hasMessage("expected a directory, archive (.zip / .jar / etc.), or .proto: $onlyFile")

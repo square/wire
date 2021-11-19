@@ -17,14 +17,17 @@
 
 package com.squareup.wire.schema
 
-import okio.fakefilesystem.FakeFileSystem
 import com.squareup.wire.testing.add
+import okio.Path
+import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
 class CycleCheckerTest {
-  private val fs = FakeFileSystem()
+  private val fs = FakeFileSystem().apply {
+    if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
+  }
 
   @Test
   fun singleFileImportCycle() {

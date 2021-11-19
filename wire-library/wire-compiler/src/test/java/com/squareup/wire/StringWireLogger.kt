@@ -19,8 +19,8 @@ import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.ProtoType
-import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 import okio.Path
+import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 internal class StringWireLogger : WireLogger {
   private var quiet: Boolean = false

@@ -104,7 +104,7 @@ fun <S : Any, R : Any> GrpcCall(function: (S) -> R): GrpcCall<S, R> {
       }
     }
 
-    override fun clone() = GrpcCall(function)
+    override fun clone() = GrpcCall(function).also { it.requestMetadata += requestMetadata }
   }
 }
 
@@ -199,7 +199,8 @@ fun <S : Any, R : Any> GrpcStreamingCall(
       return requestChannel.toMessageSink() to responseChannel.toMessageSource()
     }
 
-    override fun clone() = GrpcStreamingCall(function)
+    override fun clone() =
+      GrpcStreamingCall(function).also { it.requestMetadata += requestMetadata }
   }
 }
 

@@ -21,6 +21,8 @@ import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.Field.Label.REQUIRED
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.internal.MAX_TAG_VALUE
+import com.squareup.wire.schema.internal.withUnixSlashes
+import okio.Path.Companion.toPath
 
 /** Basic parser for `.proto` schema declarations. */
 class ProtoParser internal constructor(
@@ -55,8 +57,8 @@ class ProtoParser internal constructor(
             location = location,
             packageName = packageName,
             syntax = syntax,
-            imports = imports,
-            publicImports = publicImports,
+            imports = imports.map { it.toPath().withUnixSlashes().toString() },
+            publicImports = publicImports.map { it.toPath().withUnixSlashes().toString() },
             types = nestedTypes,
             services = services,
             extendDeclarations = extendsList,

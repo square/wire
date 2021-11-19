@@ -404,7 +404,13 @@ class KotlinGenerator private constructor(
             newName("ADAPTER", "ADAPTER")
             newName("ENUM_OPTIONS", "ENUM_OPTIONS")
             message.constants.forEach { constant ->
-              newName(constant.name, constant)
+              val constantName = when (constant.name) {
+                // `name` and `ordinal` are private fields of all Kotlin enums. We are escaping them
+                // manually because KotlinPoet does not escape them.
+                "name", "ordinal" -> constant.name + "_"
+                else -> constant.name
+              }
+              newName(constantName, constant)
             }
           }
           is MessageType -> {
@@ -1153,7 +1159,7 @@ class KotlinGenerator private constructor(
               addStatement("%N += %P", resultName, buildCodeBlock {
                 add(fieldName)
                 if (fieldOrOneOf.isRedacted) {
-                  add("=██")
+                  add("=$DOUBLE_FULL_BLOCK")
                 } else {
                   if (fieldOrOneOf.type == ProtoType.STRING) {
                     add("=\${%M($fieldName)}", sanitizeMember)
@@ -1170,7 +1176,7 @@ class KotlinGenerator private constructor(
               addStatement("%N += %P", resultName, buildCodeBlock {
                 add(fieldName)
                 if (fieldOrOneOf.fields.any { it.isRedacted }) {
-                  add("=██")
+                  add("=$DOUBLE_FULL_BLOCK")
                 } else {
                   add("=\$")
                   add(fieldName)
@@ -2433,6 +2439,8 @@ class KotlinGenerator private constructor(
           .replace("""[""", """\[""")
           .replace("""]""", """\]""")
     }
+
+    private const val DOUBLE_FULL_BLOCK = "\u2588\u2588"
   }
 }
 
