@@ -609,6 +609,27 @@ public final class JavaGeneratorTest {
     assertThat(code).contains("class Person");
   }
 
+  @Test public void packageNameUsedIfFieldNameIsSameAsNonScalarTypeName() throws IOException {
+    RepoBuilder repoBuilder = new RepoBuilder()
+        .add("common/common_message.proto",
+            "package a.Common;\n"
+          + "option java_package = \"a.common\";"
+          + "message CommonMessage {\n"
+          + "   required string First = 1;\n"
+          + "}\n")
+        .add("example.proto",
+            "package a;\n"
+          + "import \"common/common_message.proto\";\n"
+          + "\n"
+          + "message Example {\n"
+          + "   required Common.CommonMessage CommonMessage = 1;\n"
+          + "}\n");
+    String code = repoBuilder.generateCode("a.Example");
+    assertThat(code).contains("package a");
+    assertThat(code).contains("import a.common.CommonMessage");
+    assertThat(code).contains("public CommonMessage a_CommonMessage");
+  }
+
   @Test public void wirePackageUsedInImport() throws IOException {
     RepoBuilder repoBuilder = new RepoBuilder()
         .add("proto_package/person.proto",
