@@ -18,6 +18,7 @@ package com.squareup.wire.schema
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
 import okio.ByteString.Companion.decodeHex
+import okio.Path
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
@@ -31,7 +32,7 @@ import kotlin.text.Charsets.UTF_8
 
 class SchemaLoaderTest {
   private val fs = FakeFileSystem().apply {
-    allowSymlinks = true
+    if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
   }
 
   @Test
@@ -221,8 +222,8 @@ class SchemaLoaderTest {
 
     SchemaLoader(fs).use { loader ->
       loader.initRoots(
-        sourcePath = listOf(Location.get("/")),
-        protoPath = listOf(Location.get("/")),
+        sourcePath = listOf(Location.get(fs.workingDirectory.toString())),
+        protoPath = listOf(Location.get(fs.workingDirectory.toString())),
       )
       val schema = loader.loadSchema()
       assertThat(schema.getType(ProtoType.get("Address"))).isInstanceOf(MessageType::class.java)
@@ -278,6 +279,8 @@ class SchemaLoaderTest {
 
   @Test
   fun symlinkDirectory() {
+    if (!fs.allowSymlinks) return
+
     fs.add("secret/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;
@@ -302,6 +305,8 @@ class SchemaLoaderTest {
 
   @Test
   fun symlinkFile() {
+    if (!fs.allowSymlinks) return
+
     fs.add("secret/proto/squareup/colors/blue.proto", """
         |syntax = "proto2";
         |package squareup.colors;

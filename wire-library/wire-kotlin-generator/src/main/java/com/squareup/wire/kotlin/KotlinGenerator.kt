@@ -1159,7 +1159,7 @@ class KotlinGenerator private constructor(
               addStatement("%N += %P", resultName, buildCodeBlock {
                 add(fieldName)
                 if (fieldOrOneOf.isRedacted) {
-                  add("=██")
+                  add("=$DOUBLE_FULL_BLOCK")
                 } else {
                   if (fieldOrOneOf.type == ProtoType.STRING) {
                     add("=\${%M($fieldName)}", sanitizeMember)
@@ -1176,7 +1176,7 @@ class KotlinGenerator private constructor(
               addStatement("%N += %P", resultName, buildCodeBlock {
                 add(fieldName)
                 if (fieldOrOneOf.fields.any { it.isRedacted }) {
-                  add("=██")
+                  add("=$DOUBLE_FULL_BLOCK")
                 } else {
                   add("=\$")
                   add(fieldName)
@@ -2439,6 +2439,8 @@ class KotlinGenerator private constructor(
           .replace("""[""", """\[""")
           .replace("""]""", """\]""")
     }
+
+    private const val DOUBLE_FULL_BLOCK = "\u2588\u2588"
   }
 }
 

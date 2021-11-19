@@ -188,6 +188,8 @@ public final class JavaGenerator {
   private static final String URL_CHARS = "[-!#$%&'()*+,./0-9:;=?@A-Z\\[\\]_a-z~]";
   private static final int MAX_PARAMS_IN_CONSTRUCTOR = 16;
 
+  private static final String DOUBLE_FULL_BLOCK = "\u2588\u2588";
+
   /**
    * Preallocate all of the names we'll need for {@code type}. Names are allocated in precedence
    * order, so names we're stuck with (serialVersionUID etc.) occur before proto field names are
@@ -1715,7 +1717,8 @@ public final class JavaGenerator {
         result.addCode("if ($N != null) ", fieldName);
       }
       if (field.isRedacted()) {
-        result.addStatement("$N.append(\", $N=██\")", builderName, field.getName());
+        result.addStatement("$N.append(\", $N=$L\")", builderName, field.getName(),
+            DOUBLE_FULL_BLOCK);
       } else if (field.getType().equals(ProtoType.STRING)) {
         result.addStatement("$N.append(\", $N=\").append($T.sanitize($L))", builderName,
             field.getName(), Internal.class, fieldName);

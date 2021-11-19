@@ -15,19 +15,22 @@
  */
 package com.squareup.wire.schema
 
-import okio.fakefilesystem.FakeFileSystem
 import com.squareup.javapoet.ClassName
 import com.squareup.wire.java.AdapterConstant
 import com.squareup.wire.java.Profile
 import com.squareup.wire.testing.add
 import com.squareup.wire.testing.addZip
-import java.io.IOException
+import okio.Path
+import okio.fakefilesystem.FakeFileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
+import java.io.IOException
 
 class ProfileLoaderTest {
-  private val fs = FakeFileSystem()
+  private val fs = FakeFileSystem().apply {
+    if (Path.DIRECTORY_SEPARATOR == "\\") emulateWindows() else emulateUnix()
+  }
 
   @Test @Throws(IOException::class)
   fun test() {
