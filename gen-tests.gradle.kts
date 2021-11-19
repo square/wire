@@ -1,25 +1,26 @@
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.stream.Collectors
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 buildscript {
   dependencies {
     classpath(deps.plugins.kotlin)
+    classpath(deps.okio.core)
   }
   repositories {
     mavenCentral()
   }
 }
 
-val protosDir = Paths.get("${rootProject.rootDir}/wire-library/wire-tests/src/commonTest/proto/java")
-val PROTOS = Files.find(protosDir, Integer.MAX_VALUE, { _, attrs -> attrs.isRegularFile() })
-  .map { protosDir.relativize(it) }
-  .filter { !it.startsWith("kotlin") }
-  .map { it.toString() }
+val fileSystem = FileSystem.SYSTEM
+val protosDir = "${rootProject.rootDir}/wire-library/wire-tests/src/commonTest/proto/java".toPath()
+val PROTOS = fileSystem.listRecursively(protosDir)
+  .filter { fileSystem.metadata(it).isRegularFile }
+  .map { it.relativeTo(protosDir).toString() }
   .filter { it.endsWith(".proto") }
   .sorted()
-  .collect(Collectors.toList())
+  .toList()
 
 val wire by configurations.creating {
   attributes {
@@ -436,15 +437,13 @@ val generateSwiftTests by tasks.creating {
 }
 
 // GRPC
-
-val grpcProtosDir = Paths.get("${rootProject.rootDir}/wire-grpc-tests/src/test/proto")
-val GRPC_PROTOS = Files.find(grpcProtosDir, Integer.MAX_VALUE, { _, attrs -> attrs.isRegularFile() })
-  .map { grpcProtosDir.relativize(it) }
-  .filter { !it.startsWith("kotlin") }
-  .map { it.toString() }
-  .filter { it.endsWith(".proto") }
+val grpcProtosDir = "${rootProject.rootDir}/wire-grpc-tests/src/test/proto".toPath()
+val GRPC_PROTOS = fileSystem.listRecursively(grpcProtosDir)
+  .filter { fileSystem.metadata(it).isRegularFile }
+  .map { it.relativeTo(grpcProtosDir).toString() }
+  .filter { !it.startsWith("kotlin") && it.endsWith(".proto") }
   .sorted()
-  .collect(Collectors.toList())
+  .toList()
 
 val generateGrpcTests by tasks.creating(JavaExec::class) {
   group = "Generate gRPC Tests"
