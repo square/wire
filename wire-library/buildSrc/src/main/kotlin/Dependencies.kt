@@ -24,7 +24,7 @@ object versions {
   val kotlin = "1.5.31"
   val kotlinpoet = "1.9.0"
   val moshi = "1.12.0"
-  val okhttp = "4.9.1"
+  val okhttp = "4.9.3"
   val okio = "3.0.0"
   val protobuf = "3.17.3"
   val protobufGradlePlugin = "0.8.16"
@@ -75,7 +75,7 @@ object deps {
   object okhttp {
     val mockwebserver = "com.squareup.okhttp3:mockwebserver"
     val core = "com.squareup.okhttp3:okhttp"
-    val bom = "com.squareup.okhttp3:okhttp-bom:4.9.1"
+    val bom = "com.squareup.okhttp3:okhttp-bom:${versions.okhttp}"
   }
 
   object jmh {
