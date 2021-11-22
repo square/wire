@@ -37,8 +37,10 @@ val shadowJar by tasks.getting(ShadowJar::class) {
   classifier = "jar-with-dependencies"
 }
 
-artifacts {
-  archives(shadowJar)
+publishing {
+  publications.withType<MavenPublication>().configureEach {
+    artifact(shadowJar)
+  }
 }
 
 // The `shadow` plugin internally applies the `distribution` plugin and
