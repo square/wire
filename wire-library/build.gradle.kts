@@ -164,3 +164,11 @@ allprojects {
     }
   }
 }
+
+tasks.register("publishPluginToGradlePortalIfRelease") {
+  val VERSION_NAME: String by project
+  // Snapshots cannot be released to the Gradle portal.
+  if (VERSION_NAME.endsWith("-SNAPSHOT")) return@register
+
+  dependsOn(":wire-gradle-plugin:publishPlugins")
+}
