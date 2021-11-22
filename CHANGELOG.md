@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.18
+----------------------
+
+_2021-11-22_
+
+ * Fix: In Java, rename instances to avoid field and class name conflicts.
+ * New: Wire should build and execute properly on Windows.
+
 Version 4.0.0-alpha.17
 ----------------------
 

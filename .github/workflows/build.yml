@@ -180,7 +180,7 @@ jobs:
         run: sudo xcode-select -switch "/Applications/Xcode_12.app"
 
       - name: Upload Artifacts
-        run: ./gradlew -p wire-library clean publish --stacktrace
+        run: ./gradlew -p wire-library clean publish --stacktrace --no-parallel
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}

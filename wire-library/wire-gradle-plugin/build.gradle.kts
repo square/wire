@@ -3,7 +3,7 @@ import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 
 plugins {
-  id("com.gradle.plugin-publish") version "0.16.0"
+  id("com.gradle.plugin-publish") version "0.18.0"
   kotlin("jvm")
   id("java-gradle-plugin")
   id("org.jetbrains.dokka")
@@ -17,6 +17,19 @@ gradlePlugin {
       displayName = "Wire"
       implementationClass = "com.squareup.wire.gradle.WirePlugin"
       description = "generate code from .proto files"
+    }
+  }
+}
+
+pluginBundle {
+  website = "https://github.com/square/wire"
+  vcsUrl = "https://github.com/square/wire"
+  description = "generate code from .proto files"
+
+  (plugins) {
+    "wire" {
+      displayName = "Wire"
+      tags = listOf("wire", "protobuf", "plugin")
     }
   }
 }
