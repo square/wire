@@ -92,7 +92,7 @@ internal class SchemaReflectorTest {
                 .process(ServerReflectionRequest(file_containing_symbol = ".A"))
         assertThat(response.file_descriptor_response!!.file_descriptor_proto.map {
             DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-        }.map { it.name }).containsExactly("b.proto", "a.proto")
+        }.map { it.name }).containsExactly("a.proto", "b.proto")
 
         val responseB = SchemaReflector(schema, includeDependencies = true)
                 .process(ServerReflectionRequest(file_containing_symbol = ".B"))
@@ -124,7 +124,7 @@ internal class SchemaReflectorTest {
                 .process(ServerReflectionRequest(file_containing_symbol = ".A"))
         assertThat(response.file_descriptor_response!!.file_descriptor_proto.map {
             DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-        }.map { it.name }).containsExactly("b.proto", "c.proto", "a.proto")
+        }.map { it.name }).containsExactly("a.proto", "b.proto", "c.proto")
     }
 
     @Test
@@ -153,7 +153,7 @@ internal class SchemaReflectorTest {
                 .process(ServerReflectionRequest(file_containing_symbol = ".A"))
         assertThat(response.file_descriptor_response!!.file_descriptor_proto.map {
             DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-        }.map { it.name }).containsExactly("c.proto", "b.proto", "a.proto")
+        }.map { it.name }).containsExactly("a.proto", "b.proto", "c.proto")
     }
 
     @Test
@@ -183,7 +183,7 @@ internal class SchemaReflectorTest {
                 .process(ServerReflectionRequest(file_containing_symbol = ".A"))
         assertThat(response.file_descriptor_response!!.file_descriptor_proto.map {
             DescriptorProtos.FileDescriptorProto.parseFrom(it.toByteArray())
-        }.map { it.name }).containsExactly("c.proto", "b-new.proto", "b.proto", "a.proto")
+        }.map { it.name }).containsExactly("a.proto", "b.proto", "b-new.proto", "c.proto")
     }
 
 }
