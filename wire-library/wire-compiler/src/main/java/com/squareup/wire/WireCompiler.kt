@@ -97,7 +97,6 @@ class WireCompiler internal constructor(
   val treeShakingRubbish: List<String>,
   val modules: Map<String, WireRun.Module>,
   val dryRun: Boolean,
-  val namedFilesOnly: Boolean,
   val emitAndroid: Boolean,
   val emitAndroidAnnotations: Boolean,
   val emitCompact: Boolean,
@@ -201,9 +200,7 @@ class WireCompiler internal constructor(
     private const val INCLUDES_FLAG = "--includes="
     private const val EXCLUDES_FLAG = "--excludes="
     private const val MANIFEST_FLAG = "--experimental-module-manifest="
-    private const val QUIET_FLAG = "--quiet"
     private const val DRY_RUN_FLAG = "--dry_run"
-    private const val NAMED_FILES_ONLY = "--named_files_only"
     private const val ANDROID = "--android"
     private const val ANDROID_ANNOTATIONS = "--android-annotations"
     private const val COMPACT = "--compact"
@@ -251,9 +248,7 @@ class WireCompiler internal constructor(
       var javaOut: String? = null
       var kotlinOut: String? = null
       var swiftOut: String? = null
-      var quiet = false
       var dryRun = false
-      var namedFilesOnly = false
       var emitAndroid = false
       var emitAndroidAnnotations = false
       var emitCompact = false
@@ -314,9 +309,7 @@ class WireCompiler internal constructor(
             modules = parseManifestModules(yaml)
           }
 
-          arg == QUIET_FLAG -> quiet = true
           arg == DRY_RUN_FLAG -> dryRun = true
-          arg == NAMED_FILES_ONLY -> namedFilesOnly = true
           arg == ANDROID -> emitAndroid = true
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
           arg == COMPACT -> emitCompact = true
@@ -334,8 +327,6 @@ class WireCompiler internal constructor(
             "Nothing to do! Specify $JAVA_OUT_FLAG, $KOTLIN_OUT_FLAG, or $SWIFT_OUT_FLAG")
       }
 
-      logger.setQuiet(quiet)
-
       if (treeShakingRoots.isEmpty()) {
         treeShakingRoots += "*"
       }
@@ -352,7 +343,6 @@ class WireCompiler internal constructor(
           treeShakingRubbish = treeShakingRubbish,
           modules = modules,
           dryRun = dryRun,
-          namedFilesOnly = namedFilesOnly,
           emitAndroid = emitAndroid,
           emitAndroidAnnotations = emitAndroidAnnotations,
           emitCompact = emitCompact,
