@@ -27,11 +27,11 @@ import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.Target.SchemaHandler
 import com.squareup.wire.swift.SwiftGenerator
-import java.io.IOException
-import java.io.Serializable
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
+import java.io.IOException
+import java.io.Serializable
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 sealed class Target : Serializable {
@@ -253,7 +253,7 @@ data class JavaTarget(
             javaFile.packageName.replace(".", "/") /
             "${javaTypeName.simpleName()}.java"
 
-        logger.artifact(modulePath, javaFile)
+        logger.artifactHandled(modulePath, "${javaFile.packageName}.${javaFile.typeSpec.name}")
         try {
           fs.createDirectories(filePath.parent!!)
           fs.write(filePath) {
@@ -415,7 +415,7 @@ data class KotlinTarget(
             "${kotlinFile.name}.kt"
         val path = outDirectory.toPath()
 
-        logger.artifact(path, kotlinFile)
+        logger.artifactHandled(path, "${kotlinFile.packageName}.${(kotlinFile.members.first() as TypeSpec).name}")
         try {
           fs.createDirectories(filePath.parent!!)
           fs.write(filePath) {
@@ -492,7 +492,7 @@ data class SwiftTarget(
               "Error emitting ${swiftFile.moduleName}.${typeName.canonicalName} to $modulePath", e)
         }
 
-        logger.artifact(modulePath, type.type, swiftFile)
+        logger.artifactHandled(modulePath, "${swiftFile.moduleName}.${typeName.canonicalName}")
         return filePath
       }
 
@@ -559,7 +559,7 @@ data class ProtoTarget(
             .substringBeforeLast("/", missingDelimiterValue = ".")
         val outputDirectory = modulePath / relativePath
         val outputFilePath = outputDirectory / "${protoFile.name()}.proto"
-        logger.artifact(outputDirectory, protoFile.location.path)
+        logger.artifactHandled(outputDirectory, protoFile.location.path)
 
         try {
           fs.createDirectories(outputFilePath.parent!!)

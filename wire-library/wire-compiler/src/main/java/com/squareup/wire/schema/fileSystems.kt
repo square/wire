@@ -18,7 +18,6 @@ package com.squareup.wire.schema
 import okio.BufferedSource
 import okio.ByteString.Companion.decodeHex
 import okio.Options
-import okio.Path
 import java.nio.charset.Charset
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems

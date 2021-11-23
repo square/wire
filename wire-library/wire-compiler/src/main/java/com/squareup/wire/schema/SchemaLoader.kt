@@ -15,7 +15,6 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.io.Closer
 import com.squareup.wire.java.Profile
 import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto

@@ -18,7 +18,7 @@ application {
 
 dependencies {
   api(project(":wire-schema"))
-  api(project(":wire-kotlin-generator"))
+  implementation(project(":wire-kotlin-generator"))
   implementation(project(":wire-java-generator"))
   implementation(project(":wire-swift-generator"))
   implementation(project(":wire-profiles"))
