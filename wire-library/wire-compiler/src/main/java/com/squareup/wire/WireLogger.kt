@@ -15,18 +15,38 @@
  */
 package com.squareup.wire
 
-import com.squareup.javapoet.JavaFile
-import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.schema.ProtoType
 import okio.Path
-import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
+/**
+ * Logger class used by [WireRun][com.squareup.wire.schema.WireRun] and
+ * [SchemaHandlers][com.squareup.wire.schema.Target.SchemaHandler] to log information related to
+ * processing the protobuf [Schema][com.squareup.wire.schema.Schema].
+ */
 interface WireLogger {
+  // TODO(Benoit) I think we should remove this one.
   fun setQuiet(quiet: Boolean)
-  fun artifact(outputPath: Path, filePath: String)
-  fun artifact(outputPath: Path, javaFile: JavaFile)
-  fun artifact(outputPath: Path, kotlinFile: FileSpec)
-  fun artifact(outputPath: Path, type: ProtoType, swiftFile: SwiftFileSpec)
+  /**
+   * This is called when an artifact is handled by a
+   * [SchemaHandler][com.squareup.wire.schema.Target.SchemaHandler].
+   * @param outputPath is the path where the artifact is written on disk.
+   * @param qualifiedName is the file path when generating a `.proto` file, the type or service
+   *   name prefixed with its package name when generating a `.java` or `.kt` file, and the type
+   *   name when generating a `.swift` file.
+   */
+  fun artifactHandled(outputPath: Path, qualifiedName: String)
+
+  /**
+   * This is called when an artifact has been passed down to a
+   * [SchemaHandler][com.squareup.wire.schema.Target.SchemaHandler] but has been skipped. This is
+   * useful for dry-runs.
+   * @param type is the unique identifier for the skipped type.
+   */
   fun artifactSkipped(type: ProtoType)
+
+  /**
+   * This is called when [WireRun][com.squareup.wire.schema.WireRun] found unusual configurations.
+   * For instance when types marked as roots or prunes are not used.
+   */
   fun warn(message: String)
 }
