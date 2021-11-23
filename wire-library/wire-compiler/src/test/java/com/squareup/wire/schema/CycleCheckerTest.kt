@@ -259,12 +259,11 @@ class CycleCheckerTest {
   }
 
   private fun loadAndLinkSchema(): Schema {
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(
-          sourcePath = listOf(Location.get("source-path")),
-          protoPath = listOf()
-      )
-      return loader.loadSchema()
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(
+      sourcePath = listOf(Location.get("source-path")),
+      protoPath = listOf()
+    )
+    return loader.loadSchema()
   }
 }

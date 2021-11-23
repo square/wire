@@ -192,12 +192,11 @@ class LinkerTest {
   }
 
   private fun loadAndLinkSchema(): Schema {
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(
-          sourcePath = listOf(Location.get("source-path")),
-          protoPath = listOf(Location.get("proto-path"))
-      )
-      return loader.loadSchema()
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(
+      sourcePath = listOf(Location.get("source-path")),
+      protoPath = listOf(Location.get("proto-path"))
+    )
+    return loader.loadSchema()
   }
 }

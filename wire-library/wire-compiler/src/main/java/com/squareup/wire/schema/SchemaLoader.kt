@@ -15,13 +15,11 @@
  */
 package com.squareup.wire.schema
 
-import com.google.common.io.Closer
 import com.squareup.wire.java.Profile
 import com.squareup.wire.java.internal.ProfileFileElement
 import com.squareup.wire.schema.CoreLoader.isWireRuntimeProto
 import com.squareup.wire.schema.internal.parser.ProtoFileElement
 import okio.FileSystem
-import java.io.Closeable
 import java.io.IOException
 import java.util.ArrayDeque
 import java.nio.file.FileSystem as NioFileSystem
@@ -30,7 +28,7 @@ import java.nio.file.FileSystem as NioFileSystem
  * Load proto files and their transitive dependencies and parse them. Keep track of which files were
  * loaded from where so that we can use that information later when deciding what to generate.
  */
-class SchemaLoader : Closeable, Loader, ProfileLoader {
+class SchemaLoader : Loader, ProfileLoader {
   private val fileSystem: FileSystem
 
   /** Errors accumulated by this load. */
@@ -186,8 +184,6 @@ class SchemaLoader : Closeable, Loader, ProfileLoader {
   internal fun reportLoadingErrors() {
     errors.throwIfNonEmpty()
   }
-
-  override fun close() = Unit
 
   override fun loadProfile(name: String, schema: Schema): Profile {
     val allLocations = schema.protoFiles.map { it.location }

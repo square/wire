@@ -180,18 +180,17 @@ class OptionsLinkingTest {
   }
 
   private fun loadAndLinkSchema(): Schema {
-    SchemaLoader(fs).use { loader ->
-      val protoPath = when {
-        fs.exists("proto-path".toPath()) -> listOf(Location.get("proto-path"))
-        else -> listOf()
-      }
-
-      loader.initRoots(
-          sourcePath = listOf(Location.get("source-path")),
-          protoPath = protoPath
-      )
-      return loader.loadSchema()
+    val loader = SchemaLoader(fs)
+    val protoPath = when {
+      fs.exists("proto-path".toPath()) -> listOf(Location.get("proto-path"))
+      else -> listOf()
     }
+
+    loader.initRoots(
+      sourcePath = listOf(Location.get("source-path")),
+      protoPath = protoPath
+    )
+    return loader.loadSchema()
   }
 
   companion object {
