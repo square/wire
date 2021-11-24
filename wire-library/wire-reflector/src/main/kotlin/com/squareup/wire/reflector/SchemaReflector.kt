@@ -29,7 +29,6 @@ import grpc.reflection.v1alpha.ListServiceResponse
 import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
 import grpc.reflection.v1alpha.ServiceResponse
-import okio.ByteString
 
 /**
  * This converts a Wire Schema model to a protobuf DescriptorProtos model and serves that.
@@ -187,8 +186,10 @@ class SchemaReflector(
     return null
   }
 
-  // allDependencies returns protoFile and all its transitive dependencies in topographical order such that files always
-  // appear after their dependencies.
+  /**
+   * Returns [protoFile] and all its transitive dependencies in topographical order such that files
+   * always appear before their dependencies.
+   */
   private fun allDependencies(protoFile: ProtoFile): List<ProtoFile> {
     if (!includeDependencies) return listOf(protoFile)
 
@@ -199,13 +200,13 @@ class SchemaReflector(
 
   private fun collectAllDependencies(protoFile: ProtoFile, visited: MutableSet<String>, result: MutableList<ProtoFile>) {
     if (visited.add(protoFile.name())) {
+      result.add(protoFile)
       protoFile.imports.forEach {
         collectAllDependencies(schema.protoFile(it)!!, visited, result)
       }
       protoFile.publicImports.forEach {
         collectAllDependencies(schema.protoFile(it)!!, visited, result)
       }
-      result.add(protoFile)
     }
   }
 }
