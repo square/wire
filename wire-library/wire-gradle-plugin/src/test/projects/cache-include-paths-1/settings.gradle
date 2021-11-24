@@ -1,0 +1,5 @@
+buildCache {
+  local {
+    directory = new File(rootDir, '../.cache-include-paths-build-cache')
+  }
+}
