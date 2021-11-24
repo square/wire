@@ -148,7 +148,7 @@ class WireCompilerTest {
   @Test
   fun testChildPackage() {
     val sources = arrayOf("child_pkg.proto")
-    compileToJava(sources, "--named_files_only")
+    compileToJava(sources)
 
     val outputs = arrayOf("com/squareup/wire/protos/ChildPackage.java")
     assertJavaOutputs(outputs)
@@ -194,7 +194,7 @@ class WireCompilerTest {
   @Test
   fun testCustomOptions() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToJava(sources, "--named_files_only", "--emit_applied_options")
+    compileToJava(sources, "--emit_applied_options")
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/custom_options/EnumOptionOption.java",
@@ -214,7 +214,7 @@ class WireCompilerTest {
   @Test
   fun testCustomOptionsNoOptions() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToJava(sources, "--excludes=google.protobuf.*", "--named_files_only")
+    compileToJava(sources, "--excludes=google.protobuf.*")
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/custom_options/FooBar.java",
@@ -523,7 +523,7 @@ class WireCompilerTest {
   @Test
   fun testCustomOptionsKotlin() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToKotlin(sources, "--named_files_only", "--emit_applied_options")
+    compileToKotlin(sources, "--emit_applied_options")
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/custom_options/EnumOptionOption.kt",
