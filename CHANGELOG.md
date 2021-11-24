@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.19
+----------------------
+
+_2021-11-23_
+
+ * Fix: Reverse the topological sort of dependent files in `SchemaReflector`. We had problems with
+   `grpc-curl` which expects the requested file to be listed first.
+ * Upgrade: [OkHttp 4.9.3][okhttp_4_9_3].
+
 Version 4.0.0-alpha.18
 ----------------------
 
@@ -997,5 +1006,6 @@ Initial version.
  [javapoet]: https://github.com/square/javapoet
  [okio_3_0_0]: https://square.github.io/okio/changelog/#version-300
  [okio_3_0_0_a_3]: https://square.github.io/okio/changelog/#version-300-alpha3
+ [okhttp_4_9_3]: https://github.com/square/okhttp/blob/master/CHANGELOG.md#version-493
  [reflect]: https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
  [swiftblogpost]: https://cashapp.github.io/2020-08-19/wire-support-for-swift-part-1
