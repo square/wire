@@ -87,40 +87,38 @@ class SchemaLoaderTest {
         |}
         """.trimMargin())
 
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(
-          sourcePath = listOf(
-              Location.get("colors/src/main/proto")
-          ),
-          protoPath = listOf(
-              Location.get("polygons/src/main/proto"),
-              Location.get("lib/curves.zip")
-          )
+    val loader = SchemaLoader(fs)
+    loader.initRoots(
+      sourcePath = listOf(
+        Location.get("colors/src/main/proto")
+      ),
+      protoPath = listOf(
+        Location.get("polygons/src/main/proto"),
+        Location.get("lib/curves.zip")
       )
-      val sourcePathFiles = loader.loadSourcePathFiles()
-      assertThat(sourcePathFiles.map { it.location }).containsExactly(
-          Location.get("colors/src/main/proto", "squareup/colors/blue.proto"),
-          Location.get("colors/src/main/proto", "squareup/colors/red.proto")
-      )
-      assertThat(loader.load("google/protobuf/descriptor.proto").location)
-          .isEqualTo(Location.get("google/protobuf/descriptor.proto"))
-      assertThat(loader.load("squareup/curves/circle.proto").location)
-          .isEqualTo(Location.get("lib/curves.zip", "squareup/curves/circle.proto"))
-      assertThat(loader.load("squareup/curves/oval.proto").location)
-          .isEqualTo(Location.get("lib/curves.zip", "squareup/curves/oval.proto"))
-      assertThat(loader.load("squareup/polygons/triangle.proto").location)
-          .isEqualTo(Location.get("polygons/src/main/proto", "squareup/polygons/triangle.proto"))
-      loader.reportLoadingErrors()
-    }
+    )
+    val sourcePathFiles = loader.loadSourcePathFiles()
+    assertThat(sourcePathFiles.map { it.location }).containsExactly(
+      Location.get("colors/src/main/proto", "squareup/colors/blue.proto"),
+      Location.get("colors/src/main/proto", "squareup/colors/red.proto")
+    )
+    assertThat(loader.load("google/protobuf/descriptor.proto").location)
+      .isEqualTo(Location.get("google/protobuf/descriptor.proto"))
+    assertThat(loader.load("squareup/curves/circle.proto").location)
+      .isEqualTo(Location.get("lib/curves.zip", "squareup/curves/circle.proto"))
+    assertThat(loader.load("squareup/curves/oval.proto").location)
+      .isEqualTo(Location.get("lib/curves.zip", "squareup/curves/oval.proto"))
+    assertThat(loader.load("squareup/polygons/triangle.proto").location)
+      .isEqualTo(Location.get("polygons/src/main/proto", "squareup/polygons/triangle.proto"))
+    loader.reportLoadingErrors()
   }
 
   @Test
   fun noSourcesFound() {
     val exception = assertFailsWith<SchemaException> {
-      SchemaLoader(fs).use { loader ->
-        loader.initRoots(sourcePath = listOf())
-        loader.loadSourcePathFiles()
-      }
+      val loader = SchemaLoader(fs)
+      loader.initRoots(sourcePath = listOf())
+      loader.loadSourcePathFiles()
     }
     assertThat(exception).hasMessage("no sources")
   }
@@ -134,14 +132,13 @@ class SchemaLoaderTest {
         |}
         """.trimMargin())
 
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(
-          sourcePath = listOf(Location.get("colors/src/main/proto", "squareup/shapes/blue.proto"))
-      )
-      val sourcePathFiles = loader.loadSourcePathFiles()
-      assertThat(sourcePathFiles.map { it.location.path })
-          .containsExactly("squareup/shapes/blue.proto")
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(
+      sourcePath = listOf(Location.get("colors/src/main/proto", "squareup/shapes/blue.proto"))
+    )
+    val sourcePathFiles = loader.loadSourcePathFiles()
+    assertThat(sourcePathFiles.map { it.location.path })
+      .containsExactly("squareup/shapes/blue.proto")
   }
 
   @Test
@@ -154,12 +151,11 @@ class SchemaLoaderTest {
         """.trimMargin())
 
     val exception = assertFailsWith<SchemaException> {
-      SchemaLoader(fs).use { loader ->
-        loader.initRoots(
-            sourcePath = listOf(Location.get("colors/src/main/proto/squareup/shapes/blue.proto"))
-        )
-        loader.loadSourcePathFiles()
-      }
+      val loader = SchemaLoader(fs)
+      loader.initRoots(
+        sourcePath = listOf(Location.get("colors/src/main/proto/squareup/shapes/blue.proto"))
+      )
+      loader.loadSourcePathFiles()
     }
     assertThat(exception).hasMessage("expected colors/src/main/proto/squareup/shapes/blue.proto " +
         "to have a path ending with squareup/colors/blue.proto")
@@ -181,20 +177,19 @@ class SchemaLoaderTest {
         |}
         """.trimMargin())
 
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(
-          sourcePath = listOf(Location.get("colors/src/main/proto")),
-          protoPath = listOf(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
-      )
-      val sourcePathFiles = loader.loadSourcePathFiles()
-      assertThat(sourcePathFiles.map { it.location.path }).containsExactlyInAnyOrder(
-          "squareup/colors/blue.proto"
-      )
-      assertThat(loader.load("google/protobuf/descriptor.proto").location)
-          .isEqualTo(Location.get("google/protobuf/descriptor.proto"))
-      assertThat(loader.load("squareup/curves/circle.proto").location)
-          .isEqualTo(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(
+      sourcePath = listOf(Location.get("colors/src/main/proto")),
+      protoPath = listOf(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
+    )
+    val sourcePathFiles = loader.loadSourcePathFiles()
+    assertThat(sourcePathFiles.map { it.location.path }).containsExactlyInAnyOrder(
+      "squareup/colors/blue.proto"
+    )
+    assertThat(loader.load("google/protobuf/descriptor.proto").location)
+      .isEqualTo(Location.get("google/protobuf/descriptor.proto"))
+    assertThat(loader.load("squareup/curves/circle.proto").location)
+      .isEqualTo(Location.get("curves/src/main/proto", "squareup/curves/circle.proto"))
   }
 
   @Test
@@ -220,15 +215,14 @@ class SchemaLoaderTest {
       |  Address address = 3;
       |}""".trimMargin())
 
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(
-        sourcePath = listOf(Location.get(fs.workingDirectory.toString())),
-        protoPath = listOf(Location.get(fs.workingDirectory.toString())),
-      )
-      val schema = loader.loadSchema()
-      assertThat(schema.getType(ProtoType.get("Address"))).isInstanceOf(MessageType::class.java)
-      assertThat(schema.getType(ProtoType.get("Customer"))).isInstanceOf(MessageType::class.java)
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(
+      sourcePath = listOf(Location.get(fs.workingDirectory.toString())),
+      protoPath = listOf(Location.get(fs.workingDirectory.toString())),
+    )
+    val schema = loader.loadSchema()
+    assertThat(schema.getType(ProtoType.get("Address"))).isInstanceOf(MessageType::class.java)
+    assertThat(schema.getType(ProtoType.get("Customer"))).isInstanceOf(MessageType::class.java)
   }
 
   @Test
@@ -264,10 +258,9 @@ class SchemaLoaderTest {
         |}
         """.trimMargin(), charset = UTF_32LE, bom = "ffff0000".decodeHex())
 
-    val sourcePathFiles = SchemaLoader(fs).use { loader ->
-      loader.initRoots(sourcePath = listOf(Location.get("colors")))
-      loader.loadSourcePathFiles()
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(sourcePath = listOf(Location.get("colors")))
+    val sourcePathFiles = loader.loadSourcePathFiles()
     assertThat(sourcePathFiles.map { it.location.path }).containsExactlyInAnyOrder(
         "squareup/colors/red.proto",
         "squareup/colors/orange.proto",
@@ -293,14 +286,14 @@ class SchemaLoaderTest {
         "../../../secret/proto".toPath()
     )
 
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(
-          sourcePath = listOf(Location.get("colors/src/main/proto"))
-      )
-      val sourcePathFiles = loader.loadSourcePathFiles()
-      assertThat(sourcePathFiles.map { it.location }).containsExactly(
-          Location("colors/src/main/proto", "squareup/colors/blue.proto"))
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(
+      sourcePath = listOf(Location.get("colors/src/main/proto"))
+    )
+    val sourcePathFiles = loader.loadSourcePathFiles()
+    assertThat(sourcePathFiles.map { it.location }).containsExactly(
+      Location("colors/src/main/proto", "squareup/colors/blue.proto")
+    )
   }
 
   @Test
@@ -319,15 +312,14 @@ class SchemaLoaderTest {
         "../../../../../../secret/proto/squareup/colors/blue.proto".toPath()
     )
 
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(
-          sourcePath = listOf(Location.get("colors/src/main/proto"))
-      )
-      val sourcePathFiles = loader.loadSourcePathFiles()
-      assertThat(sourcePathFiles.map { it.location }).containsExactlyInAnyOrder(
-          Location("colors/src/main/proto", "squareup/colors/blue.proto")
-      )
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(
+      sourcePath = listOf(Location.get("colors/src/main/proto"))
+    )
+    val sourcePathFiles = loader.loadSourcePathFiles()
+    assertThat(sourcePathFiles.map { it.location }).containsExactlyInAnyOrder(
+      Location("colors/src/main/proto", "squareup/colors/blue.proto")
+    )
   }
 
   @Test
@@ -355,21 +347,20 @@ class SchemaLoaderTest {
         """.trimMargin())
 
     val exception = assertFailsWith<SchemaException> {
-      SchemaLoader(fs).use { loader ->
-        loader.initRoots(
-            sourcePath = listOf(
-                Location.get("colors/src/main/proto")
-            ),
-            protoPath = listOf(
-                Location.get("polygons/src/main/proto"),
-                Location.get("lib/curves.zip")
-            )
+      val loader = SchemaLoader(fs)
+      loader.initRoots(
+        sourcePath = listOf(
+          Location.get("colors/src/main/proto")
+        ),
+        protoPath = listOf(
+          Location.get("polygons/src/main/proto"),
+          Location.get("lib/curves.zip")
         )
-        loader.loadSourcePathFiles()
-        loader.load("squareup/curves/circle.proto")
-        loader.load("squareup/polygons/rectangle.proto")
-        loader.reportLoadingErrors()
-      }
+      )
+      loader.loadSourcePathFiles()
+      loader.load("squareup/curves/circle.proto")
+      loader.load("squareup/polygons/rectangle.proto")
+      loader.reportLoadingErrors()
     }
     assertThat(exception).hasMessage("""
         |unable to find squareup/curves/circle.proto
@@ -407,20 +398,19 @@ class SchemaLoaderTest {
         """.trimMargin())
 
     val exception = assertFailsWith<SchemaException> {
-      SchemaLoader(fs).use { loader ->
-        loader.initRoots(
-            sourcePath = listOf(
-                Location.get("colors/src/main/proto")
-            ),
-            protoPath = listOf(
-                Location.get("polygons/src/main/proto"),
-                Location.get("lib/curves.zip")
-            )
+      val loader = SchemaLoader(fs)
+      loader.initRoots(
+        sourcePath = listOf(
+          Location.get("colors/src/main/proto")
+        ),
+        protoPath = listOf(
+          Location.get("polygons/src/main/proto"),
+          Location.get("lib/curves.zip")
         )
-        loader.loadSourcePathFiles()
-        loader.load("squareup/curves/circle.proto")
-        loader.reportLoadingErrors()
-      }
+      )
+      loader.loadSourcePathFiles()
+      loader.load("squareup/curves/circle.proto")
+      loader.reportLoadingErrors()
     }
     assertThat(exception).hasMessage("""
         |squareup/curves/circle.proto is ambiguous:
@@ -519,18 +509,17 @@ class SchemaLoaderTest {
         """.trimMargin()
     )
 
-    val schema = SchemaLoader(fs).use { loader ->
-      loader.loadExhaustively = true
-      loader.initRoots(
-        sourcePath = listOf(
-          Location.get("colors/src/main/proto", "squareup/colors/red.proto")
-        ),
-        protoPath = listOf(
-          Location.get("colors/src/main/proto")
-        )
+    val loader = SchemaLoader(fs)
+    loader.loadExhaustively = true
+    loader.initRoots(
+      sourcePath = listOf(
+        Location.get("colors/src/main/proto", "squareup/colors/red.proto")
+      ),
+      protoPath = listOf(
+        Location.get("colors/src/main/proto")
       )
-      loader.loadSchema()
-    }
+    )
+    val schema = loader.loadSchema()
     val redMessage = schema.getType("squareup.colors.Red") as MessageType
     assertThat(redMessage.field("orange")!!.type).isEqualTo(ProtoType.get("squareup.colors.Orange"))
 

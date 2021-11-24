@@ -154,10 +154,9 @@ class ProfileLoaderTest {
     name: String,
     sourcePath: List<Location> = listOf(Location.get("source-path"))
   ): Profile {
-    SchemaLoader(fs).use { loader ->
-      loader.initRoots(sourcePath)
-      val schema = loader.loadSchema()
-      return loader.loadProfile(name, schema)
-    }
+    val loader = SchemaLoader(fs)
+    loader.initRoots(sourcePath)
+    val schema = loader.loadSchema()
+    return loader.loadProfile(name, schema)
   }
 }

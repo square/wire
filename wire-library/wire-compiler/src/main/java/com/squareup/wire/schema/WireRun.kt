@@ -208,9 +208,7 @@ data class WireRun(
   }
 
   fun execute(fs: FileSystem = FileSystem.SYSTEM, logger: WireLogger = ConsoleWireLogger()) {
-    return SchemaLoader(fs).use { schemaLoader ->
-      execute(fs, logger, schemaLoader)
-    }
+    return execute(fs, logger, SchemaLoader(fs))
   }
 
   private fun execute(fs: FileSystem, logger: WireLogger, schemaLoader: SchemaLoader) {
