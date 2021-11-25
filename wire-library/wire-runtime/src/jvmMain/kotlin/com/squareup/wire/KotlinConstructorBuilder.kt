@@ -60,18 +60,29 @@ internal class KotlinConstructorBuilder<M : Message<M, B>, B : Message.Builder<M
 
   @Suppress("UNCHECKED_CAST")
   override fun build(): M {
-    val args = messageType.declaredWireFields()
-        .map(::get)
-        .plus(buildUnknownFields())
+    val protoFields = messageType.declaredProtoFields()
+    val unknownFields = buildUnknownFields()
+    val args = protoFields.map { get(it.wireField) }
+        .plus(unknownFields)
+        .toTypedArray()
+    val fieldTypes = protoFields.map { it.type }
+        .plus(unknownFields::class.java)
         .toTypedArray()
 
-    val constructor = messageType.declaredConstructors.first()
+    val constructor = messageType.getConstructor(*fieldTypes)
 
     return constructor.newInstance(*args) as M
   }
 
-  private fun Class<M>.declaredWireFields() = declaredFields
-      .mapNotNull {
-        it.declaredAnnotations.filterIsInstance(WireField::class.java).firstOrNull()
+  private fun Class<M>.declaredProtoFields(): List<ProtoField> = declaredFields
+      .mapNotNull { field ->
+        val wireField = field.declaredAnnotations.filterIsInstance(WireField::class.java)
+            .firstOrNull()
+        return@mapNotNull wireField?.let { ProtoField(field.type, wireField) }
       }
+
+  private class ProtoField(
+    val type: Class<*>,
+    val wireField: WireField,
+  )
 }
