@@ -881,6 +881,8 @@ class SwiftGenerator private constructor(
   }
 
   companion object {
+    fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
+
     private val BUILT_IN_TYPES = mapOf(
         ProtoType.BOOL to BOOL,
         ProtoType.BYTES to DATA,

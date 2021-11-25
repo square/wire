@@ -693,6 +693,21 @@ class WirePluginTest {
   }
 
   @Test
+  fun doNotEmitWireRuntimeProtos() {
+    val fixtureRoot = File("src/test/projects/do-not-emit-wire-runtime-protos")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+
+    // We should generate Octagon only. Other proto files in this project are all the special ones
+    // which Wire doesn't want to generate, google types and Wire extensions.
+    val task = result.task(":generateProtos")
+    assertThat(task).isNotNull()
+    assertThat(result.output)
+      .contains("Writing squareup.polygons.Octagon")
+      .doesNotContain("google.protobuf")
+  }
+
+  @Test
   fun emitKotlinThenEmitJava() {
     val fixtureRoot = File("src/test/projects/emit-kotlin-then-emit-java")
 
