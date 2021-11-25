@@ -88,43 +88,43 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
 
-#  windows:
-#    runs-on: windows-latest
-#
-#    steps:
-#      - name: Set git to use LF and not automatically replace them with CRLF.
-#        run: |
-#          git config --global core.autocrlf false
-#
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#
-#      - name: Validate Gradle Wrapper
-#        uses: gradle/wrapper-validation-action@v1
-#
-#      - name: Configure JDK
-#        uses: actions/setup-java@v2
-#        with:
-#          distribution: 'zulu'
-#          java-version: 14
-#
-#      - name: Check test files
-#        run: |
-#          ./gradlew clean generateTests
-#          if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
-#        shell: bash
-#
-#      - name: Install Chrome
-#        uses: browser-actions/setup-chrome@latest
-#
-#      - name: Test
-#        run: |
-#          .\gradlew.bat -p wire-library build -Pswift=false
-#          .\gradlew.bat build
-#        env:
-#          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-#          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-#          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Set git to use LF and not automatically replace them with CRLF.
+        run: |
+          git config --global core.autocrlf false
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Configure JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 14
+
+      - name: Check test files
+        run: |
+          ./gradlew clean generateTests
+          if [ ! -z "$(git status --porcelain)" ]; then git diff; echo -e "\nTest files changed. Did you run ./gradlew generateTests?"; exit 1; fi
+        shell: bash
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@latest
+
+      - name: Test
+        run: |
+          .\gradlew.bat -p wire-library build -Pswift=false
+          .\gradlew.bat build
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
 
   swift:
     runs-on: macos-latest
