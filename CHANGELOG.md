@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+Version 4.0.0-alpha.20
+----------------------
+
+_2021-11-25_
+
+ * New: Enable iosSimulatorArm64 for Kotlin multiplatform.
+ * New: SchemaLoader doesn't extend the `Closeable` interface anymore.
+ * Fix: Don't re-use the cache if protobuf inputs have changed.
+ * Fix: Wire will not generate respective built-in types for Java, Kotlin, and Swift generation.
+    Those are usually the google types for which Wire will provide its own implementation.
+
 Version 4.0.0-alpha.19
 ----------------------
 
