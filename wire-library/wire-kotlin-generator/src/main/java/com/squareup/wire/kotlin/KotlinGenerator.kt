@@ -2296,6 +2296,8 @@ class KotlinGenerator private constructor(
   }
 
   companion object {
+    fun builtInType(protoType: ProtoType): Boolean = protoType in BUILT_IN_TYPES.keys
+
     private val BUILT_IN_TYPES = mapOf(
         ProtoType.BOOL to BOOLEAN,
         ProtoType.BYTES to ByteString::class.asClassName(),
@@ -2331,9 +2333,6 @@ class KotlinGenerator private constructor(
         ProtoType.BOOL_VALUE to BOOLEAN.copy(nullable = true),
         ProtoType.STRING_VALUE to String::class.asClassName().copy(nullable = true),
         ProtoType.BYTES_VALUE to ByteString::class.asClassName().copy(nullable = true),
-        FIELD_OPTIONS to ClassName("com.google.protobuf", "FieldOptions"),
-        MESSAGE_OPTIONS to ClassName("com.google.protobuf", "MessageOptions"),
-        ENUM_OPTIONS to ClassName("com.google.protobuf", "EnumOptions")
     )
     private val PROTOTYPE_TO_IDENTITY_VALUES = mapOf(
         ProtoType.BOOL to CodeBlock.of("false"),

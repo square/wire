@@ -82,9 +82,6 @@ import okio.ByteString;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.squareup.wire.internal._PlatformKt.camelCase;
-import static com.squareup.wire.schema.Options.ENUM_OPTIONS;
-import static com.squareup.wire.schema.Options.FIELD_OPTIONS;
-import static com.squareup.wire.schema.Options.MESSAGE_OPTIONS;
 import static com.squareup.wire.schema.internal.JvmLanguages.annotationTargetType;
 import static com.squareup.wire.schema.internal.JvmLanguages.builtInAdapterString;
 import static com.squareup.wire.schema.internal.JvmLanguages.eligibleAsAnnotationMember;
@@ -122,6 +119,10 @@ public final class JavaGenerator {
       return Integer.compare(o1.getTag(), o2.getTag());
     }
   });
+
+  public static boolean builtInType(ProtoType protoType) {
+    return BUILT_IN_TYPES_MAP.containsKey(protoType);
+  }
 
   private static final Map<ProtoType, TypeName> BUILT_IN_TYPES_MAP =
       ImmutableMap.<ProtoType, TypeName>builder()
@@ -161,9 +162,6 @@ public final class JavaGenerator {
           .put(ProtoType.BOOL_VALUE, TypeName.BOOLEAN)
           .put(ProtoType.STRING_VALUE, ClassName.get(String.class))
           .put(ProtoType.BYTES_VALUE, ClassName.get(ByteString.class))
-          .put(FIELD_OPTIONS, ClassName.get("com.google.protobuf", "FieldOptions"))
-          .put(ENUM_OPTIONS, ClassName.get("com.google.protobuf", "EnumOptions"))
-          .put(MESSAGE_OPTIONS, ClassName.get("com.google.protobuf", "MessageOptions"))
           .build();
 
   private static final Map<ProtoType, CodeBlock> PROTOTYPE_TO_IDENTITY_VALUES =

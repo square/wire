@@ -27,11 +27,11 @@ import com.squareup.wire.kotlin.RpcCallStyle
 import com.squareup.wire.kotlin.RpcRole
 import com.squareup.wire.schema.Target.SchemaHandler
 import com.squareup.wire.swift.SwiftGenerator
-import java.io.IOException
-import java.io.Serializable
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
+import java.io.IOException
+import java.io.Serializable
 import io.outfoxx.swiftpoet.FileSpec as SwiftFileSpec
 
 sealed class Target : Serializable {
@@ -222,7 +222,9 @@ data class JavaTarget(
         .withOptions(emitDeclaredOptions, emitAppliedOptions)
 
     return object : SchemaHandler {
-      override fun handle(type: Type): Path {
+      override fun handle(type: Type): Path? {
+        if (JavaGenerator.builtInType(type.type)) return null
+
         val typeSpec = javaGenerator.generateType(type)
         val javaTypeName = javaGenerator.generatedTypeName(type)
         return write(javaTypeName, typeSpec, type.type, type.location)
@@ -365,7 +367,9 @@ data class KotlinTarget(
     )
 
     return object : SchemaHandler {
-      override fun handle(type: Type): Path {
+      override fun handle(type: Type): Path? {
+        if (KotlinGenerator.builtInType(type.type)) return null
+
         val typeSpec = kotlinGenerator.generateType(type)
         val className = kotlinGenerator.generatedTypeName(type)
         return write(className, typeSpec, type.type, type.location)
@@ -471,7 +475,9 @@ data class SwiftTarget(
 
     val generator = SwiftGenerator(schema, upstreamTypes)
     return object : SchemaHandler {
-      override fun handle(type: Type): Path {
+      override fun handle(type: Type): Path? {
+        if (SwiftGenerator.builtInType(type.type)) return null
+
         val typeName = generator.generatedTypeName(type)
         val swiftFile = SwiftFileSpec.builder(typeName.moduleName, typeName.simpleName)
             .addComment(WireCompiler.CODE_GENERATED_BY_WIRE)
