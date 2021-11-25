@@ -104,7 +104,12 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
 
   private fun getInstanceGetter(messageType: Class<M>): (M) -> Any? {
     if (Modifier.isPrivate(messageField.modifiers)) {
-      val getterName = "get" + messageField.name.replaceFirstChar { it.uppercase() }
+      val fieldName = messageField.name
+      val getterName = if (IS_GETTER_FIELD_NAME_REGEX.matches(fieldName)) {
+        fieldName
+      } else {
+        "get" + fieldName.replaceFirstChar { it.uppercase() }
+      }
       val getter = messageType.getMethod(getterName)
       return { instance -> getter.invoke(instance) }
     } else {
@@ -153,4 +158,9 @@ class FieldBinding<M : Message<M, B>, B : Message.Builder<M, B>> internal constr
   override operator fun get(message: M): Any? = instanceGetter(message)
 
   override fun getFromBuilder(builder: B): Any? = builderGetter(builder)
+
+  companion object {
+    // If a field's name matches this regex, its getter name will match the field name.
+    private val IS_GETTER_FIELD_NAME_REGEX = Regex("^is[^a-z].*$")
+  }
 }
