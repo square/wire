@@ -79,8 +79,8 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -p wire-library build -Pswift=false
-          ./gradlew build
+          ./gradlew -p wire-library build -Pswift=false --stacktrace
+          ./gradlew build --stacktrace
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
@@ -117,8 +117,8 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew -p wire-library build -Pswift=false
-          ./gradlew build
+          ./gradlew -p wire-library build --stacktrace -Pswift=false
+          ./gradlew build --stacktrace
         shell: bash
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
