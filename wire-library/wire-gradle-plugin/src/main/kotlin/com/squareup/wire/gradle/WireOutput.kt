@@ -50,7 +50,7 @@ open class JavaOutput @Inject constructor() : WireOutput() {
   var androidAnnotations: Boolean = false
   var compact: Boolean = false
   var emitDeclaredOptions: Boolean = true
-  var emitAppliedOptions: Boolean = false
+  var emitAppliedOptions: Boolean = true
 
   override fun toTarget(outputDirectory: String): JavaTarget {
     return JavaTarget(
@@ -74,7 +74,7 @@ open class KotlinOutput @Inject constructor() : WireOutput() {
   var android: Boolean = false
   var javaInterop: Boolean = false
   var emitDeclaredOptions: Boolean = true
-  var emitAppliedOptions: Boolean = false
+  var emitAppliedOptions: Boolean = true
   var rpcCallStyle: String = "suspending"
   var rpcRole: String = "client"
   var singleMethodServices: Boolean = false

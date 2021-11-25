@@ -206,7 +206,7 @@ class WireCompiler internal constructor(
     private const val ANDROID_ANNOTATIONS = "--android-annotations"
     private const val COMPACT = "--compact"
     private const val SKIP_DECLARED_OPTIONS = "--skip_declared_options"
-    private const val EMIT_APPLIED_OPTIONS = "--emit_applied_options"
+    private const val SKIP_APPLIED_OPTIONS = "--skip_applied_options"
     private const val PERMIT_PACKAGE_CYCLES_OPTIONS = "--permit_package_cycles"
     private const val JAVA_INTEROP = "--java_interop"
     private const val KOTLIN_BOX_ONEOFS_MIN_SIZE = "--kotlin_box_oneofs_min_size="
@@ -255,7 +255,7 @@ class WireCompiler internal constructor(
       var emitAndroidAnnotations = false
       var emitCompact = false
       var emitDeclaredOptions = true
-      var emitAppliedOptions = false
+      var emitAppliedOptions = true
       var permitPackageCycles = false
       var javaInterop = false
       var kotlinBoxOneOfsMinSize = 5_000
@@ -317,7 +317,7 @@ class WireCompiler internal constructor(
           arg == ANDROID_ANNOTATIONS -> emitAndroidAnnotations = true
           arg == COMPACT -> emitCompact = true
           arg == SKIP_DECLARED_OPTIONS -> emitDeclaredOptions = false
-          arg == EMIT_APPLIED_OPTIONS -> emitAppliedOptions = true
+          arg == SKIP_APPLIED_OPTIONS -> emitAppliedOptions = false
           arg == PERMIT_PACKAGE_CYCLES_OPTIONS -> permitPackageCycles = true
           arg == JAVA_INTEROP -> javaInterop = true
           arg.startsWith("--") -> throw IllegalArgumentException("Unknown argument '$arg'.")

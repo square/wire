@@ -407,7 +407,7 @@ wire {
     emitDeclaredOptions = true,
 
     // True to emit annotations for options applied on messages, fields, etc.
-    emitAppliedOptions = false
+    emitAppliedOptions = true
   }
 }
 ```
@@ -452,7 +452,7 @@ wire {
     emitDeclaredOptions = true,
 
     // True to emit annotations for options applied on messages, fields, etc.
-    emitAppliedOptions = false,
+    emitAppliedOptions = true,
 
     // `suspending` to generate coroutines APIs that require a Kotlin coroutines context.
     // `blocking` to generate blocking APIs callable by Java and Kotlin.
