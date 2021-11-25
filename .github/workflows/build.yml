@@ -47,6 +47,8 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_SIGNING_PRIVATE_KEY }}
+          GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
 
   multiplatform:
     runs-on: macos-latest
@@ -182,7 +184,7 @@ jobs:
       - name: Upload Artifacts
         run: |
           ./gradlew -p wire-library clean publish --stacktrace --no-parallel
-          ./gradlew -p wire-library publishPluginToGradlePortalIfRelease --stacktrace -Pgradle.publish.key="${{ secrets.GRADLE_PUBLISH_KEY }}" -Pgradle.publish.secret="${{ secrets.GRADLE_PUBLISH_SECRET }}"
+          ./gradlew -p wire-library publishPluginToGradlePortalIfRelease --stacktrace
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
