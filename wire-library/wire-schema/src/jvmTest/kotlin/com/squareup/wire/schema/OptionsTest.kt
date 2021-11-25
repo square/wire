@@ -97,10 +97,16 @@ class OptionsTest {
             |   NUMBER = 1;
             |   STRING = 2;
             |}
+            |enum Scheme {
+            |  UNKNOWN = 0;
+            |  HTTP = 1;
+            |  HTTPS = 2;
+            |}
             | 
             |message FooOptions {
             |  optional string name = 1;
-            |  optional FooParameterType type = 2; 
+            |  optional FooParameterType type = 2;
+            |  repeated Scheme schemes = 3;
             |} 
             |extend google.protobuf.MessageOptions {
             |  repeated FooOptions foo = 12345;
@@ -110,11 +116,14 @@ class OptionsTest {
             |  option (foo) = {
             |    name: "test"
             |    type: STRING
+            |    schemes: HTTP
+            |    schemes: HTTPS
             |  };
             |  
             |  option (foo) = {
             |    name: "test2"
             |    type: NUMBER
+            |    schemes: [HTTP, HTTPS]
             |  };
             |  
             |  optional int32 b = 2;
@@ -131,21 +140,26 @@ class OptionsTest {
     assertThat(optionElements[0].toSchema())
         .isEqualTo("""|(foo) = {
                       |  name: "test",
-                      |  type: STRING
+                      |  type: STRING,
+                      |  schemes: [
+                      |    HTTP,
+                      |    HTTPS
+                      |  ]
                       |}""".trimMargin())
 
     val foo = ProtoMember.get(Options.MESSAGE_OPTIONS, "foo")
 
     val name = ProtoMember.get(ProtoType.get("FooOptions"), "name")
     val type = ProtoMember.get(ProtoType.get("FooOptions"), "type")
+    val schemes = ProtoMember.get(ProtoType.get("FooOptions"), "schemes")
 
     val message = schema.getType("Message") as MessageType
     message.toElement().name
 
     assertThat(message.options.map)
         .isEqualTo(mapOf( foo to
-            arrayListOf(mapOf(name to "test", type to "STRING" ),
-            mapOf ( name to "test2", type to "NUMBER" ) )))
+            arrayListOf(mapOf(name to "test", type to "STRING", schemes to listOf("HTTP","HTTPS")),
+            mapOf (name to "test2", type to "NUMBER", schemes to listOf("HTTP","HTTPS")))))
   }
 
   @Test

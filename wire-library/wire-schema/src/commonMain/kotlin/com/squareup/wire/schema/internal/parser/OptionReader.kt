@@ -170,8 +170,13 @@ class OptionReader(internal val reader: SyntaxReader) {
     while (true) {
       // If we see the close brace, finish immediately. This handles [] and ,] cases.
       if (reader.peekChar(']')) return result
-
-      result.add(readKindAndValue().value)
+      val option = readKindAndValue()
+      val value = if (option.kind == BOOLEAN || option.kind == ENUM || option.kind == NUMBER) {
+        OptionElement.OptionPrimitive(option.kind, option.value)
+      } else {
+        option.value
+      }
+      result.add(value)
 
       if (reader.peekChar(',')) continue
       reader.expect(reader.peekChar() == ']') { "expected ',' or ']'" }

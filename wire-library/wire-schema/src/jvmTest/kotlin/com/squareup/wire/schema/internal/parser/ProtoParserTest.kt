@@ -1796,7 +1796,7 @@ class ProtoParserTest {
                             OptionElement.create(
                                 "squareup.a.b",
                                 Kind.MAP,
-                                mapOf("value" to listOf("FOO", "BAR")),
+                                mapOf("value" to listOf(OptionElement.OptionPrimitive(Kind.ENUM,"FOO"), OptionElement.OptionPrimitive(Kind.ENUM,"BAR"))),
                                 true
                             )
                         )
