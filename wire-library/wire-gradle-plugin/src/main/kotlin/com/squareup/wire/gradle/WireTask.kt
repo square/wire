@@ -37,6 +37,7 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 import javax.inject.Inject
 
 @CacheableTask
@@ -49,11 +50,11 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   val pluginVersion: Property<String> = objects.property(String::class.java)
     .convention(VERSION)
 
-  @get:Internal
-  internal abstract val sourceInput: ListProperty<Location>
+  @get:Input
+  internal abstract val sourceInput: ListProperty<InputLocation>
 
-  @get:Internal
-  internal abstract val protoInput: ListProperty<Location>
+  @get:Input
+  internal abstract val protoInput: ListProperty<InputLocation>
 
   @get:Input
   abstract val roots: ListProperty<String>
@@ -137,10 +138,11 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
       }
     }
 
+    val projectDirAsFile = projectDir.asFile
     val allTargets = targets.get()
     val wireRun = WireRun(
-      sourcePath = sourceInput.get(),
-      protoPath = protoInput.get(),
+      sourcePath = sourceInput.get().map { it.toLocation(projectDirAsFile) },
+      protoPath = protoInput.get().map { it.toLocation(projectDirAsFile) },
       treeShakingRoots = roots.get().ifEmpty { includes },
       treeShakingRubbish = prunes.get().ifEmpty { excludes },
       moves = moves.get().map { it.toTypeMoverMove() },
@@ -167,5 +169,15 @@ abstract class WireTask @Inject constructor(objects: ObjectFactory) : SourceTask
   @PathSensitive(PathSensitivity.RELATIVE)
   override fun getSource(): FileTree {
     return super.getSource()
+  }
+
+  companion object {
+    private fun InputLocation.toLocation(projectDir: File): Location {
+      return if (base.isEmpty()) {
+        Location.get(projectDir.resolve(path).absolutePath)
+      } else {
+        Location.get(projectDir.resolve(base).absolutePath, path)
+      }
+    }
   }
 }

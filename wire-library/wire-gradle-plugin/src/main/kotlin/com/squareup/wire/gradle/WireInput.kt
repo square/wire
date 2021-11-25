@@ -16,7 +16,6 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.gradle.WireExtension.ProtoRootSet
-import com.squareup.wire.schema.Location
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
@@ -26,12 +25,11 @@ import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.FileOrUriNotationConverter
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
 import java.io.File
 import java.net.URI
 
 /**
- * Builds Wire's inputs (expressed as [Location] lists) from Gradle's objects (expressed as
+ * Builds Wire's inputs (expressed as [InputLocation] lists) from Gradle's objects (expressed as
  * directory trees, jars, and coordinates). This includes registering dependencies with the project
  * so they can be resolved for us.
  */
@@ -142,7 +140,7 @@ internal class WireInput(var configuration: Configuration) {
     }
   }
 
-  fun toLocations(project: Project): Provider<List<Location>> {
+  fun toLocations(project: Project): Provider<List<InputLocation>> {
     // We create a provider to support lazily created locations which do not exist at
     // configuration time.
     return project.provider {
@@ -152,27 +150,29 @@ internal class WireInput(var configuration: Configuration) {
     }
   }
 
-  private fun File.toLocations(project: Project, dependency: Dependency) =
-    if (dependency is FileCollectionDependency && dependency.files is SourceDirectorySet) {
-      val srcDir = (dependency.files as SourceDirectorySet).srcDirs.first {
-        startsWith(it.path)
-      }
+  private fun File.toLocations(project: Project, dependency: Dependency): List<InputLocation> {
+    return if (dependency is FileCollectionDependency && dependency.files is SourceDirectorySet) {
+      val srcDir = (dependency.files as SourceDirectorySet).srcDirs.first { startsWith(it.path) }
       listOf(
-        Location.get(
-          base = srcDir.path,
-          path = relativeTo(srcDir).toString()
-        )
+          InputLocation.get(
+              project = project,
+              base = srcDir.path,
+              path = relativeTo(srcDir).toString()
+          )
       )
     } else if (isJar) {
       val filters = dependencyFilters.getOrDefault(dependency, listOf())
-        .ifEmpty { return@toLocations listOf(Location.get(path)) }
+          .ifEmpty { return@toLocations listOf(InputLocation.get(project, path)) }
 
-      mutableListOf<Location>().apply {
+      mutableListOf<InputLocation>().apply {
         project.zipTree(path)
-          .matching { pattern -> filters.forEach { it.act(pattern) } }
-          .visit { if (!it.isDirectory) add(Location.get(path, it.path)) }
+            .matching { pattern -> filters.forEach { it.act(pattern) } }
+            .visit { if (!it.isDirectory) add(InputLocation.get(project, path, it.path)) }
       }
-    } else listOf(Location.get(path))
+    } else {
+      listOf(InputLocation.get(project, path))
+    }
+  }
 
   private val File.isJar
     get() = path.endsWith(".jar")
