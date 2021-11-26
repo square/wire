@@ -167,8 +167,9 @@ allprojects {
 
 tasks.register("publishPluginToGradlePortalIfRelease") {
   val VERSION_NAME: String by project
-  // Snapshots cannot be released to the Gradle portal.
-  if (VERSION_NAME.endsWith("-SNAPSHOT")) return@register
+  // Snapshots cannot be released to the Gradle portal. And we don't want to release internal square
+  // builds.
+  if (VERSION_NAME.endsWith("-SNAPSHOT") || VERSION_NAME.contains("square")) return@register
 
   dependsOn(":wire-gradle-plugin:publishPlugins")
 }
