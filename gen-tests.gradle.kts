@@ -137,7 +137,8 @@ val generateGsonAdapterKotlinTests by tasks.creating(JavaExec::class) {
           "--kotlin_out=wire-library/wire-gson-support/src/test/java",
           "dinosaur_kotlin.proto",
           "period_kotlin.proto",
-          "person_kotlin.proto"
+          "person_kotlin.proto",
+          "getters_kotlin.proto"
   )
 }
 
@@ -517,7 +518,8 @@ val generateMoshiAdapterKotlinTests by tasks.creating(JavaExec::class) {
           "--kotlin_out=wire-library/wire-moshi-adapter/src/test/java",
           "person_kotlin.proto",
           "dinosaur_kotlin.proto",
-          "period_kotlin.proto"
+          "period_kotlin.proto",
+          "getters_kotlin.proto"
   )
 }
 

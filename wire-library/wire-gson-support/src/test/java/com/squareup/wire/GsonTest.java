@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.wire.proto2.RepeatedPackedAndMap;
 import com.squareup.wire.proto2.alltypes.AllTypes;
+import com.squareup.wire.proto2.kotlin.Getters;
 import com.squareup.wire.proto2.person.kotlin.Person;
 import java.io.File;
 import java.io.IOException;
@@ -160,5 +161,17 @@ public class GsonTest {
         new Person("Jo", 1, "foo@square.com", Collections.emptyList(), ByteString.EMPTY);
     String json = gson.toJson(person);
     assertJsonEquals("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\", \"phone\":[]}", json);
+  }
+
+  @Test public void kotlinGettersFromJson() {
+    Getters getters = gson
+        .fromJson("{\"isa\":1,\"isA\":2,\"is_a\":3,\"is32\":32,\"isb\":true}", Getters.class);
+    assertThat(getters).isEqualTo(new Getters(1, 2, 3, 32, true, ByteString.EMPTY));
+  }
+
+  @Test public void kotlinGettersToJson() {
+    Getters getters = new Getters(1, 2, 3, 32, true, ByteString.EMPTY);
+    String json = gson.toJson(getters);
+    assertJsonEquals("{\"isa\":1,\"isA\":2,\"is_a\":3,\"is32\":32,\"isb\":true}", json);
   }
 }

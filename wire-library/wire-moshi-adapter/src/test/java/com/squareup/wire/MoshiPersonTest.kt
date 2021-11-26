@@ -2,6 +2,7 @@ package com.squareup.wire
 
 import com.squareup.moshi.Moshi
 import com.squareup.wire.json.assertJsonEquals
+import com.squareup.wire.proto2.kotlin.Getters
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.squareup.wire.proto2.person.java.Person as JavaPerson
@@ -59,6 +60,20 @@ class MoshiPersonTest {
     val personWithNameClobberedWithNull = moshi.adapter(JavaInteropKotlinPerson::class.java)
         .fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"email\":null}")
     assertThat(personWithNameClobberedWithNull!!.email).isEqualTo("foo@square.com")
+  }
+
+  @Test
+  fun kotlinGettersFromJson() {
+    val getters = moshi.adapter(Getters::class.java)
+      .fromJson("""{"isa":1,"isA":2,"is_a":3,"is32":32,"isb":true}""")
+    assertThat(getters).isEqualTo(Getters(isa = 1, isA = 2, is_a = 3, is32 = 32, isb = true))
+  }
+
+  @Test
+  fun kotlinGettersToJson() {
+    val getters = moshi.adapter(Getters::class.java)
+      .toJson(Getters(isa = 1, isA = 2, is_a = 3, is32 = 32, isb = true))
+    assertThat(getters).isEqualTo("""{"isa":1,"isA":2,"is_a":3,"is32":32,"isb":true}""")
   }
 
   companion object {
