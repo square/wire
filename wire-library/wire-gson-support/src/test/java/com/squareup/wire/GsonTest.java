@@ -151,16 +151,20 @@ public class GsonTest {
   }
 
   @Test public void kotlinWithoutBuilderFromJson() {
-    Person person = gson.fromJson("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\"}", Person.class);
+    Person person = gson.fromJson(
+        "{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\",\"is_canadian\":true}",
+        Person.class);
     assertThat(person).isEqualTo(
-        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), ByteString.EMPTY));
+        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), true, ByteString.EMPTY));
   }
 
   @Test public void kotlinWithoutBuilderToJson() {
     Person person =
-        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), ByteString.EMPTY);
+        new Person("Jo", 1, "foo@square.com", Collections.emptyList(), false, ByteString.EMPTY);
     String json = gson.toJson(person);
-    assertJsonEquals("{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\", \"phone\":[]}", json);
+    assertJsonEquals(
+        "{\"id\":1,\"name\":\"Jo\",\"email\":\"foo@square.com\", \"phone\":[],\"is_canadian\":false}",
+        json);
   }
 
   @Test public void kotlinGettersFromJson() {

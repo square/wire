@@ -63,6 +63,11 @@ public class Person(
   )
   public val email: String? = null,
   phone: List<PhoneNumber> = emptyList(),
+  @field:WireField(
+    tag = 5,
+    adapter = "com.squareup.wire.ProtoAdapter#BOOL"
+  )
+  public val is_canadian: Boolean? = null,
   unknownFields: ByteString = ByteString.EMPTY
 ) : Message<Person, Nothing>(ADAPTER, unknownFields) {
   /**
@@ -90,6 +95,7 @@ public class Person(
     if (id != other.id) return false
     if (email != other.email) return false
     if (phone != other.phone) return false
+    if (is_canadian != other.is_canadian) return false
     return true
   }
 
@@ -101,6 +107,7 @@ public class Person(
       result = result * 37 + id.hashCode()
       result = result * 37 + (email?.hashCode() ?: 0)
       result = result * 37 + phone.hashCode()
+      result = result * 37 + (is_canadian?.hashCode() ?: 0)
       super.hashCode = result
     }
     return result
@@ -112,6 +119,7 @@ public class Person(
     result += """id=$id"""
     if (email != null) result += """email=${sanitize(email)}"""
     if (phone.isNotEmpty()) result += """phone=$phone"""
+    if (is_canadian != null) result += """is_canadian=$is_canadian"""
     return result.joinToString(prefix = "Person{", separator = ", ", postfix = "}")
   }
 
@@ -120,8 +128,9 @@ public class Person(
     id: Int = this.id,
     email: String? = this.email,
     phone: List<PhoneNumber> = this.phone,
+    is_canadian: Boolean? = this.is_canadian,
     unknownFields: ByteString = this.unknownFields
-  ): Person = Person(name, id, email, phone, unknownFields)
+  ): Person = Person(name, id, email, phone, is_canadian, unknownFields)
 
   public companion object {
     @JvmField
@@ -139,6 +148,7 @@ public class Person(
         size += ProtoAdapter.INT32.encodedSizeWithTag(2, value.id)
         size += ProtoAdapter.STRING.encodedSizeWithTag(3, value.email)
         size += PhoneNumber.ADAPTER.asRepeated().encodedSizeWithTag(4, value.phone)
+        size += ProtoAdapter.BOOL.encodedSizeWithTag(5, value.is_canadian)
         return size
       }
 
@@ -147,11 +157,13 @@ public class Person(
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.is_canadian)
         writer.writeBytes(value.unknownFields)
       }
 
       public override fun encode(writer: ReverseProtoWriter, `value`: Person): Unit {
         writer.writeBytes(value.unknownFields)
+        ProtoAdapter.BOOL.encodeWithTag(writer, 5, value.is_canadian)
         PhoneNumber.ADAPTER.asRepeated().encodeWithTag(writer, 4, value.phone)
         ProtoAdapter.STRING.encodeWithTag(writer, 3, value.email)
         ProtoAdapter.INT32.encodeWithTag(writer, 2, value.id)
@@ -163,12 +175,14 @@ public class Person(
         var id: Int? = null
         var email: String? = null
         val phone = mutableListOf<PhoneNumber>()
+        var is_canadian: Boolean? = null
         val unknownFields = reader.forEachTag { tag ->
           when (tag) {
             1 -> name = ProtoAdapter.STRING.decode(reader)
             2 -> id = ProtoAdapter.INT32.decode(reader)
             3 -> email = ProtoAdapter.STRING.decode(reader)
             4 -> phone.add(PhoneNumber.ADAPTER.decode(reader))
+            5 -> is_canadian = ProtoAdapter.BOOL.decode(reader)
             else -> reader.readUnknownField(tag)
           }
         }
@@ -177,6 +191,7 @@ public class Person(
           id = id ?: throw missingRequiredFields(id, "id"),
           email = email,
           phone = phone,
+          is_canadian = is_canadian,
           unknownFields = unknownFields
         )
       }
