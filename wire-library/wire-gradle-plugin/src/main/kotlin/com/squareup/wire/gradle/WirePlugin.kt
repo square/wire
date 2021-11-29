@@ -109,12 +109,28 @@ class WirePlugin : Plugin<Project> {
       }
     }
 
-    val outputs = extension.outputs.ifEmpty { listOf(JavaOutput()) }
+    val outputs =
+      if (extension.outputs.isEmpty()) {
+        listOf(JavaOutput())
+      } else if (
+        extension.outputs.size ==
+        extension.outputs.filter {
+          CustomOutput::class.java.isAssignableFrom(it.javaClass)
+        }.size
+        && !extension.outputs
+          .filter { it.javaClass == CustomOutput::class.java }
+          .any { !(it as CustomOutput).applyDefaultTargetIfNoTargetAssigned }
+      ) {
+        listOf(*extension.outputs.toTypedArray(), JavaOutput())
+      } else {
+        extension.outputs
+      }
+
     val hasJavaOutput = outputs.any { it is JavaOutput }
     val hasKotlinOutput = outputs.any { it is KotlinOutput }
     check(!hasKotlinOutput || kotlin.get()) {
       "Wire Gradle plugin applied in " +
-          "project '${project.path}' but no supported Kotlin plugin was found"
+        "project '${project.path}' but no supported Kotlin plugin was found"
     }
 
     addWireRuntimeDependency(hasJavaOutput, hasKotlinOutput)
@@ -137,7 +153,8 @@ class WirePlugin : Plugin<Project> {
         protoSourceInput.addPaths(project, defaultSourceFolders(source))
       }
 
-      val inputFiles = project.layout.files(protoSourceInput.inputFiles, protoPathInput.inputFiles)
+      val inputFiles =
+        project.layout.files(protoSourceInput.inputFiles, protoPathInput.inputFiles)
 
       val projectDependencies = (protoSourceInput.dependencies + protoPathInput.dependencies)
         .filterIsInstance<ProjectDependency>()
@@ -151,7 +168,8 @@ class WirePlugin : Plugin<Project> {
           }
         )
       }
-      val generatedSourcesDirectories = targets.map { target -> project.file(target.outDirectory) }.toSet()
+      val generatedSourcesDirectories =
+        targets.map { target -> project.file(target.outDirectory) }.toSet()
 
       // Both the JavaCompile and KotlinCompile tasks might already have been configured by now.
       // Even though we add the Wire output directories into the corresponding sourceSets, the
