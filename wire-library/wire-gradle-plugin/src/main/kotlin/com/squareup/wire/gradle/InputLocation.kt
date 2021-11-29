@@ -1,6 +1,8 @@
 package com.squareup.wire.gradle
 
 import com.squareup.wire.internal.Serializable
+import okio.Path.Companion.toOkioPath
+import okio.Path.Companion.toPath
 import org.gradle.api.Project
 
 class InputLocation private constructor(
@@ -24,9 +26,18 @@ class InputLocation private constructor(
       base: String,
       path: String
     ): InputLocation {
-      // We store [base] relative to the [project] in order to not invalidate the cache when we
-      // don't have to.
-      return InputLocation(project.relativePath(base).trimEnd('/'), path)
+      val basePath = base.toPath()
+      // On Windows, a dependency could live on another drive. If that's a case,
+      // `project.relativePath` will throw so we don't try to optimize its reference.
+      val base = if (basePath.isAbsolute && project.buildDir.toOkioPath().root != basePath.root) {
+        base
+      } else {
+        // We store [base] relative to the [project] in order to not invalidate the cache when we
+        // don't have to.
+        project.relativePath(base)
+      }
+
+      return InputLocation(base.trimEnd('/'), path)
     }
   }
 }
