@@ -2361,7 +2361,7 @@ class KotlinGenerator private constructor(
       emitAndroid: Boolean = false,
       javaInterop: Boolean = false,
       emitDeclaredOptions: Boolean = true,
-      emitAppliedOptions: Boolean = false,
+      emitAppliedOptions: Boolean = true,
       rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
       rpcRole: RpcRole = RpcRole.CLIENT,
       boxOneOfsMinSize: Int = 5_000,

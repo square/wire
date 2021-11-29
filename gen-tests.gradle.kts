@@ -43,7 +43,6 @@ val generateJavaTests by tasks.creating(JavaExec::class) {
   args = listOf(
       "--proto_path=wire-library/wire-tests/src/commonTest/proto/java",
       "--java_out=wire-library/wire-tests/src/jvmJavaTest/proto-java",
-      "--emit_applied_options",
       "--excludes=squareup.options.*"
   ) + PROTOS
 }
@@ -210,7 +209,6 @@ val generateKotlinTests by tasks.creating(JavaExec::class) {
   args = listOf(
       "--proto_path=wire-library/wire-tests/src/commonTest/proto/kotlin",
       "--kotlin_out=wire-library/wire-tests/src/commonTest/proto-kotlin",
-      "--emit_applied_options",
       "--kotlin_box_oneofs_min_size=8",
       "all_types.proto",
       "bool.proto",
@@ -324,7 +322,6 @@ val generateKotlinJavaInteropTests by tasks.creating(JavaExec::class) {
       "--kotlin_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
       "--java_interop",
       "--kotlin_box_oneofs_min_size=8",
-      "--emit_applied_options",
       "all_types.proto",
       "deprecated.proto",
       "custom_options.proto",
@@ -358,7 +355,6 @@ val generateJavaForKotlinJavaInteropTests by tasks.creating(JavaExec::class) {
   args = listOf(
     "--proto_path=wire-library/wire-tests/src/commonTest/proto/java",
     "--java_out=wire-library/wire-tests/src/jvmKotlinInteropTest/proto-kotlin",
-    "--emit_applied_options",
     "depend_on_kotlin_option.proto"
   )
 }

@@ -194,7 +194,7 @@ class WireCompilerTest {
   @Test
   fun testCustomOptions() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToJava(sources, "--emit_applied_options")
+    compileToJava(sources)
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/custom_options/EnumOptionOption.java",
@@ -523,7 +523,7 @@ class WireCompilerTest {
   @Test
   fun testCustomOptionsKotlin() {
     val sources = arrayOf("custom_options.proto", "option_redacted.proto")
-    compileToKotlin(sources, "--emit_applied_options")
+    compileToKotlin(sources)
 
     val outputs = arrayOf(
         "com/squareup/wire/protos/custom_options/EnumOptionOption.kt",

@@ -191,7 +191,7 @@ data class JavaTarget(
   val emitDeclaredOptions: Boolean = true,
 
   /** True to emit annotations for options applied on messages, fields, etc. */
-  val emitAppliedOptions: Boolean = false
+  val emitAppliedOptions: Boolean = true
 ) : Target() {
   override fun newHandler(
     schema: Schema,
@@ -304,7 +304,7 @@ data class KotlinTarget(
   val emitDeclaredOptions: Boolean = true,
 
   /** True to emit annotations for options applied on messages, fields, etc. */
-  val emitAppliedOptions: Boolean = false,
+  val emitAppliedOptions: Boolean = true,
 
   /** Blocking or suspending. */
   val rpcCallStyle: RpcCallStyle = RpcCallStyle.SUSPENDING,
