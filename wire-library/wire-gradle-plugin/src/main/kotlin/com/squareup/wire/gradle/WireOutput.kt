@@ -121,6 +121,7 @@ open class CustomOutput @Inject constructor() : WireOutput() {
   var includes: List<String>? = null
   var excludes: List<String>? = null
   var exclusive: Boolean = true
+  var applyDefaultTargetIfNoTargetAssigned = false
   /**
    * Assign the custom handler instance. If you use this, your custom handler should implement
    * [java.io.Serializable] (which Gradle uses as a cache key).

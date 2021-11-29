@@ -856,6 +856,17 @@ class WirePluginTest {
   }
 
   @Test
+  fun customOutputDefaultTarget() {
+    val fixtureRoot = File("src/test/projects/custom-output-use-java-default-target")
+
+    val result = gradleRunner.runFixture(fixtureRoot) { build() }
+    assertThat(result.task(":generateMainProtos")).isNotNull
+    assertThat(result.output)
+      .contains("Writing com.squareup.geology.Period")
+      .contains("src/test/projects/custom-output-use-java-default-target/build/generated/source/wire")
+  }
+
+  @Test
   fun customOutputNoSuchClass() {
     val fixtureRoot = File("src/test/projects/custom-output-no-such-class")
 

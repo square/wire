@@ -109,7 +109,22 @@ class WirePlugin : Plugin<Project> {
       }
     }
 
-    val outputs = extension.outputs.ifEmpty { listOf(JavaOutput()) }
+    val outputs = if (extension.outputs.isEmpty()) {
+        listOf(JavaOutput())
+      } else if (
+        extension.outputs.size ==
+        extension.outputs.filter {
+          CustomOutput::class.java.isAssignableFrom(it.javaClass)
+        }.size
+        && !extension.outputs
+          .filter { it.javaClass == CustomOutput::class.java }
+          .any { !(it as CustomOutput).applyDefaultTargetIfNoTargetAssigned }
+      ) {
+        listOf(*extension.outputs.toTypedArray(), JavaOutput())
+      } else {
+        extension.outputs
+      }
+
     val hasJavaOutput = outputs.any { it is JavaOutput }
     val hasKotlinOutput = outputs.any { it is KotlinOutput }
     check(!hasKotlinOutput || kotlin.get()) {

@@ -1,0 +1,53 @@
+import com.squareup.wire.WireLogger
+import com.squareup.wire.schema.*
+import org.jetbrains.annotations.Nullable;
+import okio.Path;
+import java.lang.Override;
+import okio.FileSystem;
+
+plugins {
+  id 'application'
+  id 'com.squareup.wire'
+}
+
+class MyCustomHandler implements CustomHandlerBeta, Serializable {
+  public Target.SchemaHandler newHandler(Schema schema, FileSystem fs,
+          String outDirectory, WireLogger logger, ProfileLoader profileLoader) {
+    return new MySchemaHandler();
+  }
+
+  public Target.SchemaHandler newHandler(Schema schema, FileSystem fs,
+          String outDirectory, WireLogger logger, ProfileLoader profileLoader,
+          ErrorCollector errorCollector) {
+    return new MySchemaHandler();
+  }
+
+  public class MySchemaHandler implements Target.SchemaHandler {
+    @Nullable @Override public Path handle(Extend extend, Field field) {
+      return null;
+    }
+
+    @Override public List<Path> handle(Service service) {
+      return null;
+    }
+
+    @Nullable @Override public Path handle(Type type) {
+      return null;
+    }
+
+    @Override public void handle(ProtoFile protoFile,
+            EmittingRules emittingRules,
+            ClaimedDefinitions claimedDefinitions,
+            Map<Path, String> map, boolean b) {
+    }
+  }
+}
+
+wire {
+  sourcePath 'src/main/proto'
+
+  custom {
+    customHandler = new MyCustomHandler()
+    applyDefaultTargetIfNoTargetAssigned = true
+  }
+}
