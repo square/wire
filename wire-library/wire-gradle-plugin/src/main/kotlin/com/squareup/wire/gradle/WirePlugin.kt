@@ -111,7 +111,8 @@ class WirePlugin : Plugin<Project> {
 
     val outputs = extension.outputs
     check(outputs.isNotEmpty()) {
-      "At least one target must be provided for project '${project.path}"
+      "At least one target must be provided for project '${project.path}\n" +
+          "See our documentation for details: https://square.github.io/wire/wire_compiler/#customizing-output"
     }
     val hasJavaOutput = outputs.any { it is JavaOutput }
     val hasKotlinOutput = outputs.any { it is KotlinOutput }
